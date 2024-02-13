@@ -62,4 +62,13 @@ public interface CandidateDependantService {
      */
     void updateIntakeData(@NonNull Candidate candidate, CandidateIntakeDataUpdate data)
             throws NoSuchObjectException;
+
+    /**
+     * Retrieves the dependant object for the given id.
+     * @param id id of requested dependant
+     * @return CandidateDependant
+     * @throws NoSuchObjectException if no dependant with that id exists
+     */
+    CandidateDependant getDependant(Long id)
+        throws NoSuchObjectException;
 }

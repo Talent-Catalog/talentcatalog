@@ -16,10 +16,13 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
@@ -66,4 +69,19 @@ public interface CandidateVisaJobCheckService {
      */
     void updateIntakeData(
             @Nullable Long visaJobId, CandidateVisaCheckData data) throws NoSuchObjectException;
+
+    /**
+     * Gets a list of CandidateDependant objects listed as relocating in a given candidate visa job check.
+     * Useful if more processing needs to be done on this data which is otherwise in the form of
+     * a comma-separated string.
+     * @param visaJobCheckId candidate visa job check id
+     * @return list of candidate dependants
+     * @throws NoSuchObjectException if there are no dependants on this visa job check.
+     */
+    List<CandidateDependant> getRelocatingDependants(Long visaJobCheckId)
+        throws NoSuchObjectException;
+
+//    TODO doc
+    Candidate getCandidate(Long visaJobCheckId) throws NoSuchObjectException;
+
 }

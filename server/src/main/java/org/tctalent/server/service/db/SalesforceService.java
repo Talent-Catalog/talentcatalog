@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -319,4 +320,8 @@ public interface SalesforceService {
     void updateEmployerOpportunityStage(
         String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
         throws SalesforceException, WebClientException;
+
+    // TODO: doc
+    void updateSfCaseRelocationInfo(Long visaJobCheckId)
+        throws NoSuchObjectException;
 }

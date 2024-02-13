@@ -16,6 +16,11 @@
 
 package org.tctalent.server.api.admin;
 
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -24,11 +29,8 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;
+import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-visa-job")
@@ -36,10 +38,13 @@ public class CandidateVisaJobCheckAdminApi
         implements IJoinedTableApi<CreateCandidateVisaJobCheckRequest,
         CreateCandidateVisaJobCheckRequest, CreateCandidateVisaJobCheckRequest> {
     private final CandidateVisaJobCheckService candidateVisaJobCheckService;
+    private final SalesforceService salesforceService;
 
     public CandidateVisaJobCheckAdminApi(
-            CandidateVisaJobCheckService candidateVisaJobCheckService) {
+            CandidateVisaJobCheckService candidateVisaJobCheckService,
+        SalesforceService salesforceService) {
         this.candidateVisaJobCheckService = candidateVisaJobCheckService;
+        this.salesforceService = salesforceService;
     }
 
     /**
@@ -84,6 +89,12 @@ public class CandidateVisaJobCheckAdminApi
     public boolean delete(long id)
             throws EntityReferencedException, InvalidRequestException {
         return candidateVisaJobCheckService.deleteVisaJobCheck(id);
+    }
+
+    @PostMapping("update-sf-case-relocation-info/{id}")
+    public void updateSfCaseRelocationInfo(@PathVariable("id") Long visaJobCheckId)
+        throws NoSuchObjectException {
+        salesforceService.updateSfCaseRelocationInfo(visaJobCheckId);
     }
 
     private DtoBuilder candidateVisaJobDto() {

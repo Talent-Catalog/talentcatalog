@@ -18,6 +18,27 @@ package org.tctalent.server.service.db.impl;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -39,8 +60,10 @@ import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.configuration.SalesforceRecordTypeConfig;
 import org.tctalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
@@ -60,31 +83,11 @@ import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
+import org.tctalent.server.service.db.CandidateVisaJobCheckService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import reactor.core.publisher.Mono;
-
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Standard implementation of Salesforce service
@@ -187,6 +190,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final SalesforceConfig salesforceConfig;
     private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
     private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
+    private final CandidateVisaJobCheckService candidateVisaJobCheckService;
 
     private PrivateKey privateKey;
 
@@ -204,11 +208,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Autowired
     public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
-        SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig) {
+        SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
+        CandidateVisaJobCheckService candidateVisaJobCheckService) {
         this.emailHelper = emailHelper;
         this.salesforceConfig = salesforceConfig;
         this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
         this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
+        this.candidateVisaJobCheckService = candidateVisaJobCheckService;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
@@ -382,6 +388,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             String closingComments = null;
             String closingCommentsForCandidate = null;
             String employerFeedback = null;
+            Map<String, Integer> relocationInfo = null;
             if (candidateOppParams != null) {
                 final CandidateOpportunityStage stage = candidateOppParams.getStage();
                 stageName = stage == null ? null : stage.getSalesforceStageName();
@@ -390,6 +397,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 closingComments = candidateOppParams.getClosingComments();
                 closingCommentsForCandidate = candidateOppParams.getClosingCommentsForCandidate();
                 employerFeedback = candidateOppParams.getEmployerFeedback();
+                relocationInfo = candidateOppParams.getRelocationInfo();
             }
 
             //Always need to specify a stage name when creating a new opp
@@ -414,6 +422,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
             if (employerFeedback != null) {
                 opportunityRequest.setEmployerFeedback(employerFeedback);
+            }
+            if (relocationInfo != null) {
+                opportunityRequest.setRelocatingBoys(relocationInfo.get("relocatingBoys"));
+                opportunityRequest.setRelocatingGirls(relocationInfo.get("relocatingGirls"));
+                opportunityRequest.setRelocatingChildren(relocationInfo.get("relocatingChildren"));
+                opportunityRequest.setRelocatingMen(relocationInfo.get("relocatingMen"));
+                opportunityRequest.setRelocatingWomen(relocationInfo.get("relocatingWomen"));
+                opportunityRequest.setRelocatingAdults(relocationInfo.get("relocatingAdults"));
             }
         }
 
@@ -1815,6 +1831,31 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public void setExternalCandidateOppId(String externalCandidateOppId) {
             put(candidateOpportunitySFFieldName, externalCandidateOppId);
         }
+
+        public void setRelocatingBoys(Integer relocatingBoys) {
+            put("Relocating_boys__c", relocatingBoys);
+        }
+
+        public void setRelocatingGirls(Integer relocatingGirls) {
+            put("Relocating_girls__c", relocatingGirls);
+        }
+
+        public void setRelocatingMen(Integer relocatingMen) {
+            put("Relocating_men__c", relocatingMen);
+        }
+
+        public void setRelocatingWomen(Integer relocatingWomen) {
+            put("Relocating_women__c", relocatingWomen);
+        }
+
+        // These two categories are for when gender given as 'other' or not specified by candidate
+        public void setRelocatingChildren(Integer relocatingChildren) {
+            put("Relocating_children_gender_other__c", relocatingChildren);
+        }
+
+        public void setRelocatingAdults(Integer relocatingAdults) {
+            put("Relocating_adults_gender_other__c", relocatingAdults);
+        }
     }
 
     /**
@@ -2004,4 +2045,98 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         int checkSize();
     }
+
+    private Map<String, Integer> processSfCaseRelocationInfo(
+        Long visaJobCheckId, Candidate relocatingCandidate) throws NoSuchObjectException {
+
+        // Get the dependants if any (can return null and processing will continue)
+        List<CandidateDependant> relocatingDependants =
+            candidateVisaJobCheckService.getRelocatingDependants(visaJobCheckId);
+
+        // Initiate values to populate SF candidate opp relocation info fields
+        Integer relocatingBoys = 0;
+        Integer relocatingGirls = 0;
+        Integer relocatingChildren = 0;
+        Integer relocatingMen = 0;
+        Integer relocatingWomen = 0;
+        Integer relocatingAdults = 0;
+
+        // Process dependents if any and update values accordingly
+        if(relocatingDependants != null) {
+            for (CandidateDependant relocatingDependant : relocatingDependants) {
+
+                // TODO: make DOB required at intake - at present it can be null so we need escape
+                boolean isChild = true;
+
+                if(relocatingDependant.getDob() != null) {
+                    isChild = (Period.between(relocatingDependant.getDob(), LocalDate.now()))
+                        .getYears() < 18;
+                }
+
+                Gender gender = relocatingDependant.getGender();
+
+                if (isChild) {
+                    if (Gender.male == gender) {
+                        relocatingBoys++;
+                    } else if (Gender.female == gender) {
+                        relocatingGirls++;
+                    } else {
+                        relocatingChildren++;
+                    }
+                } else {
+                    if (Gender.male == gender) {
+                        relocatingMen++;
+                    } else if (Gender.female == gender) {
+                        relocatingWomen++;
+                    } else {
+                        relocatingAdults++;
+                    }
+                }
+            }
+        }
+
+        // Process candidate who will always be an adult
+        if(Gender.male == relocatingCandidate.getGender()) {
+            relocatingMen++;
+        } else if(Gender.female == relocatingCandidate.getGender()) {
+            relocatingWomen++;
+        } else {
+            relocatingAdults++;
+        }
+
+        Map<String, Integer> relocationInfo = new HashMap<>();
+        relocationInfo.put("relocatingBoys", relocatingBoys);
+        relocationInfo.put("relocatingGirls", relocatingGirls);
+        relocationInfo.put("relocatingChildren", relocatingChildren);
+        relocationInfo.put("relocatingMen", relocatingMen);
+        relocationInfo.put("relocatingWomen", relocatingWomen);
+        relocationInfo.put("relocatingAdults", relocatingAdults);
+
+        return relocationInfo;
+    }
+
+    @Override
+    public void updateSfCaseRelocationInfo(Long visaJobCheckId)
+        throws NoSuchObjectException {
+
+        // Get the relocating candidate and add to list
+        Candidate relocatingCandidate = candidateVisaJobCheckService.getCandidate(visaJobCheckId);
+        List<Candidate> candidateList = Collections.singletonList(relocatingCandidate);
+
+        // Process the relocation info and add to candidate opportunity params
+        Map<String, Integer> relocationInfo = processSfCaseRelocationInfo(
+            visaJobCheckId, relocatingCandidate);
+
+        CandidateOpportunityParams candidateOppParams = new CandidateOpportunityParams();
+        candidateOppParams.setRelocationInfo(relocationInfo);
+
+        // Get the SF job opp that this visa assessment and candidate opp relate to
+        SalesforceJobOpp sfJobOpp = candidateVisaJobCheckService
+            .getVisaJobCheck(visaJobCheckId)
+            .getJobOpp();
+
+        // Update the candidate opp
+        createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);
+    }
+
 }
