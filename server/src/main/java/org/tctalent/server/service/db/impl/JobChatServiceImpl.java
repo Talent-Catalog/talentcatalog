@@ -131,7 +131,7 @@ public class JobChatServiceImpl implements JobChatService {
                 if (candidate == null) {
                     throw new InvalidRequestException("Missing candidate");
                 }
-                yield(jobChatRepository.findByTypeAndCandidateOpp(type, candidate.getId()));
+                yield(jobChatRepository.findByTypeAndCandidate(type, candidate.getId()));
             }
         };
 

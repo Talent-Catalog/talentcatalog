@@ -31,8 +31,10 @@ public interface JobChatRepository extends JpaRepository<JobChat, Long>,
     JobChat findByTypeAndJob(@Param("type") JobChatType type, @Param("jobId") Long jobId);
 
     @Query("select c from JobChat c where c.type = :type "
-        + "and c.candidateOpp is not null and c.candidateOpp.id = :oppId")
-    JobChat findByTypeAndCandidateOpp(@Param("type") JobChatType type, @Param("oppId") Long oppId);
+        + "and c.candidate is not null and c.candidate.id = :candidateId")
+    JobChat findByTypeAndCandidate(
+        @Param("type") JobChatType type,
+        @Param("candidateId") Long candidateId);
 
     @Query("select c from JobChat c where c.type = :type "
         + "and c.jobOpp is not null and c.jobOpp.id = :jobId "

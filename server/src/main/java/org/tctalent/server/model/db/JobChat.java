@@ -59,16 +59,6 @@ public class JobChat extends AbstractAuditableDomainObject<Long> {
   private Candidate candidate;
 
   /**
-   * todo Phase this out - replaced with candidate
-   * Optional candidate opportunity associated with chat. This will be required for job chats
-   * related to a particular candidate going for that job.
-   */
-  @Nullable
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "candidate_opp_id")
-  private CandidateOpportunity candidateOpp;
-
-  /**
    * Optional source partner associated with chat. This will be required for job chats
    * involving a particular source partner working on the job.
    */
