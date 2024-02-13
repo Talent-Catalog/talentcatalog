@@ -90,13 +90,15 @@ public class JobChatServiceImpl implements JobChatService {
     }
 
     @Override
-    public @NonNull JobChat createCandidateOppChat(
-        @NonNull JobChatType type, @NonNull Candidate candidate) {
-        if (type != JobChatType.CandidateProspect &&
-            type != JobChatType.CandidateRecruiting) {
-            throw new InvalidRequestException("Unsupported type: " + type);
-        }
-        return createJobChat(type, null, null, candidate);
+    public @NonNull JobChat createCandidateProspectChat(@NonNull Candidate candidate) {
+        return createJobChat(JobChatType.CandidateProspect, null, null, candidate);
+    }
+
+    @NonNull
+    @Override
+    public JobChat createCandidateRecruitingChat(@NonNull Candidate candidate,
+        @NonNull SalesforceJobOpp job) throws InvalidRequestException {
+        return createJobChat(JobChatType.CandidateRecruiting, job, null, candidate);
     }
 
     @Override
@@ -127,11 +129,21 @@ public class JobChatServiceImpl implements JobChatService {
                 yield(jobChatRepository.findByTypeAndJobAndPartner(type, job.getId(), sourcePartner.getId()));
             }
 
-            case CandidateProspect, CandidateRecruiting -> {
+            case CandidateProspect -> {
                 if (candidate == null) {
                     throw new InvalidRequestException("Missing candidate");
                 }
                 yield(jobChatRepository.findByTypeAndCandidate(type, candidate.getId()));
+            }
+
+            case CandidateRecruiting -> {
+                if (candidate == null) {
+                    throw new InvalidRequestException("Missing candidate");
+                }
+                if (job == null) {
+                    throw new InvalidRequestException("Missing Job");
+                }
+                yield(jobChatRepository.findByTypeAndCandidateAndJob(type, candidate.getId(), job.getId()));
             }
         };
 

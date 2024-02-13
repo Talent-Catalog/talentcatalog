@@ -65,11 +65,12 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     const chatRequests = [
       {
         type: JobChatType.CandidateRecruiting,
-        candidateOppId: opp?.id
+        candidateId: this.candidate.id,
+        jobId: opp?.jobOpp?.id
       },
       {
         type: JobChatType.CandidateProspect,
-        candidateOppId: opp?.id
+        candidateId: this.candidate.id
       },
       {
         type: JobChatType.AllJobCandidates,

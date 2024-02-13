@@ -77,6 +77,7 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     const candidateRecruitingChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateRecruiting,
       candidateId: this.opp?.candidate?.id,
+      jobId: this.opp?.jobOpp?.id
     }
 
     this.loading = true;

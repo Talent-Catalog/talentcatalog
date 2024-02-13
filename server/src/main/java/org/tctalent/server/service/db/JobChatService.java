@@ -94,16 +94,23 @@ public interface JobChatService {
         @NonNull SalesforceJobOpp job, @NonNull PartnerImpl sourcePartner);
 
     /**
-     * Creates a JobChat associated with a Candidate Opportunity
+     * Creates a {@link JobChatType#CandidateProspect} type JobChat
      *
-     * @param type      Should be {@link JobChatType#CandidateProspect} or
-     *                  {@link JobChatType#CandidateRecruiting}
-     * @param candidate Candidate associated with job chat
+     * @param candidate Candidate associated with chat
      * @return created JobChat
-     * @throws InvalidRequestException if type is not allowed
      */
-    @NonNull JobChat createCandidateOppChat(
-        @NonNull JobChatType type, @NonNull Candidate candidate)
+    @NonNull JobChat createCandidateProspectChat(@NonNull Candidate candidate)
+        throws InvalidRequestException;
+
+    /**
+     * Creates a {@link JobChatType#CandidateRecruiting} type JobChat
+     *
+     * @param candidate Candidate associated with job chat
+     * @param job Job associated with job chat
+     * @return created JobChat
+     */
+    @NonNull JobChat createCandidateRecruitingChat(
+        @NonNull Candidate candidate, @NonNull SalesforceJobOpp job)
         throws InvalidRequestException;
 
     /**

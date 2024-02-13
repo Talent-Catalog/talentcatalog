@@ -46,7 +46,6 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateStatus;
-import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Opportunity;
@@ -146,8 +145,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         if (create) {
             //Create the chats
-            jobChatService.createCandidateOppChat(JobChatType.CandidateProspect, opp.getCandidate());
-            jobChatService.createCandidateOppChat(JobChatType.CandidateRecruiting, opp.getCandidate());
+            jobChatService.createCandidateProspectChat(opp.getCandidate());
+            jobChatService.createCandidateRecruitingChat(opp.getCandidate(), opp.getJobOpp());
         }
 
         return opp;
