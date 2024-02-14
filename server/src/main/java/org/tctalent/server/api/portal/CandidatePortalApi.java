@@ -406,6 +406,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateProfileDto() {
         return new DtoBuilder()
+                .add("id")
                 .add("user", userDto())
                 /* CONTACT */
                 .add("candidateNumber")
@@ -449,6 +450,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidateOpportunityDto() {
         return new DtoBuilder()
             .add("id")
+            .add("candidate", shortCandidateDto())
             .add("closed")
             .add("closingCommentsForCandidate")
             .add("jobOpp", jobDto())
@@ -481,5 +483,13 @@ public class CandidatePortalApi {
             .add("fileInterviewGuidanceName")
             ;
     }
+
+    private DtoBuilder shortCandidateDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("candidateNumber")
+            ;
+    }
+
 
 }

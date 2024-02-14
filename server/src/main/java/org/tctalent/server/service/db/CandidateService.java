@@ -16,12 +16,21 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.ExportFailedException;
@@ -59,15 +68,6 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 public interface CandidateService {
 
@@ -509,15 +509,21 @@ public interface CandidateService {
     void resolveOutstandingTaskAssignments(ResolveTaskAssignmentsRequest request);
 
     /**
-     * Syncs all live (status incomplete, pending, active) TC candidates to Salesforce
-     * Scheduled to happen each GMT nighttime
-     * Shedlock used to avoid duplicate method call
+     * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
+     * Scheduled for 1800 GMT every Sunday as it's quite time-consuming.
+     * Shedlock is used to avoid duplicate method call.
+     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates(), which can be called from 12 hours
+     * past the original scheduled call (to give it plenty of time to complete).
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
      */
-    void syncLiveCandidatesToSf();
+    void syncCandidatesToSf();
 
     /**
      * Upserts candidates to SF contacts and updates their TC profile SF links
      * @param orderedCandidates - candidates must be ordered for final step of updating SF links to work
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
 

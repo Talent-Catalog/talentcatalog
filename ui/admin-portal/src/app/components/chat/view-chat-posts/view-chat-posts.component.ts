@@ -43,7 +43,7 @@ export class ViewChatPostsComponent extends PostsComponentBase
   private fetchJobChat() {
     const request: CreateChatRequest = {
       type: this.jobChatType,
-      candidateOppId: this.candidateOpp?.id,
+      candidateId: this.candidateOpp?.candidate?.id,
       jobId: this.job?.id,
       sourcePartnerId: this.sourcePartner?.id
     }

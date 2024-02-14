@@ -49,13 +49,14 @@ public class JobChat extends AbstractAuditableDomainObject<Long> {
   private SalesforceJobOpp jobOpp;
 
   /**
-   * Optional candidate opportunity associated with chat. This will be required for job chats
-   * related to a particular candidate going for that job.
+   * Optional candidate associated with chat. This will be required for job chats
+   * related to a particular candidate going for a job but also for non job related chats with
+   * the candidate.
    */
   @Nullable
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "candidate_opp_id")
-  private CandidateOpportunity candidateOpp;
+  @JoinColumn(name = "candidate_id")
+  private Candidate candidate;
 
   /**
    * Optional source partner associated with chat. This will be required for job chats

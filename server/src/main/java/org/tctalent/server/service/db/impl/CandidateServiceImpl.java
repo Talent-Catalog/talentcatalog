@@ -17,6 +17,33 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -29,7 +56,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -145,34 +174,6 @@ import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
-
-import javax.servlet.http.HttpServletRequest;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 /**
@@ -2693,31 +2694,38 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    @Scheduled(cron = "0 2 0 * * ?", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
-    public void syncLiveCandidatesToSf()
+    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT12H",
+                    lockAtMostFor = "PT12H")
+    public void syncCandidatesToSf()
         throws SalesforceException, WebClientException {
-        // Live candidate sync only desirable from TC prod to SF prod due to sandbox object limit of 10,000
-        if (environment.equals(Environment.prod.name())) {
-            // Gather all live candidates
+        // We only want to run this in prod due to SF sandbox object limit of 10,000
+        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+
+            log.info("Initiating TC-SF candidate sync");
+
+            // Batches of 200 == SF REST API request limit
+            Pageable pageable = PageRequest.of(0, 200, Sort.unsorted());
+
+            // Candidates with an 'active' status or already uploaded to SF
             List<CandidateStatus> statuses = new ArrayList<>(
                 EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
                     CandidateStatus.incomplete));
-            List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
 
-            // Split them into batches of 200 gathered in another list (to stay on the right side of SF REST API call record limit)
-            int batchSize = 200;
-            List<List<Candidate>> candidateBatches = new ArrayList<>();
-            for (int i = 0; i < candidates.size(); i += batchSize) {
-                candidateBatches.add(
-                    candidates.subList(i, Math.min(i + batchSize, candidates.size())));
-            }
+            Page<Candidate> candidatePage = candidateRepository
+                .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
 
-            // Iterate through batches to create/update candidate contact records
-            for (int i = 0; i < candidateBatches.size(); i += 1) {
-                //Need ordered list so that can match with returned contacts.
-                List<Candidate> orderedCandidates = new ArrayList<>(candidateBatches.get(i));
-                upsertCandidatesToSf(orderedCandidates);
+            log.info(candidatePage.getTotalElements() + " candidates meet the criteria");
+
+            // Iterate through batches, upserting to SF
+            while(candidatePage.hasNext()) {
+                candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
+                    statuses, candidatePage.nextPageable());
+                List<Candidate> candidateList = candidatePage.getContent();
+                upsertCandidatesToSf(candidateList);
+
+                log.info("Upserted batch " + candidatePage.getNumber() + " of " +
+                    candidatePage.getTotalPages());
             }
         }
     }
