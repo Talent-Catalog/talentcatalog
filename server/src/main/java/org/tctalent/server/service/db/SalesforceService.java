@@ -323,6 +323,6 @@ public interface SalesforceService {
         throws SalesforceException, WebClientException;
 
     // TODO: doc
-    boolean updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
+    void updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
         throws NoSuchObjectException, SalesforceException, WebClientException;
 }

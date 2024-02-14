@@ -2047,15 +2047,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         int checkSize();
     }
 
-    private Map<String, Integer> processSfCaseRelocationInfo(
-        CandidateVisaJobCheck visaJobCheck, Candidate relocatingCandidate) throws NoSuchObjectException {
+    private Map<String, Integer> processSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck,
+        Candidate relocatingCandidate) throws NoSuchObjectException {
 
         // Get the dependants if any (can return null and processing will continue)
         List<CandidateDependant> relocatingDependants =
             candidateVisaJobCheckService.getRelocatingDependants(visaJobCheck);
 
         // Initiate values to populate SF candidate opp relocation info fields
-        // TODO change these to ints
+        // TODO add some doc explaining the gender non-specific categories
         int relocatingBoys = 0;
         int relocatingGirls = 0;
         int relocatingChildren = 0;
@@ -2119,7 +2119,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public boolean updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
+    public void updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
         throws NoSuchObjectException, SalesforceException, WebClientException {
 
         // Get the relocating candidate and add to list
@@ -2138,8 +2138,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         // Update the candidate opp
         createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);
-
-        return true;
     }
 
 }
