@@ -26,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Account;
@@ -322,6 +323,6 @@ public interface SalesforceService {
         throws SalesforceException, WebClientException;
 
     // TODO: doc
-    void updateSfCaseRelocationInfo(Long visaJobCheckId)
-        throws NoSuchObjectException;
+    boolean updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
+        throws NoSuchObjectException, SalesforceException, WebClientException;
 }

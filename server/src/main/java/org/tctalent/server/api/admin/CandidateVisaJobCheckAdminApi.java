@@ -20,12 +20,14 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;
@@ -91,10 +93,11 @@ public class CandidateVisaJobCheckAdminApi
         return candidateVisaJobCheckService.deleteVisaJobCheck(id);
     }
 
-    @PostMapping("update-sf-case-relocation-info/{id}")
-    public void updateSfCaseRelocationInfo(@PathVariable("id") Long visaJobCheckId)
-        throws NoSuchObjectException {
-        salesforceService.updateSfCaseRelocationInfo(visaJobCheckId);
+    @PutMapping("{id}/update-sf-case-relocation-info")
+    public void updateSfCaseRelocationInfo(@PathVariable("id") long id)
+            throws NoSuchObjectException, SalesforceException, WebClientException {
+        CandidateVisaJobCheck VisaJobCheck = candidateVisaJobCheckService.getVisaJobCheck(id);
+        salesforceService.updateSfCaseRelocationInfo(VisaJobCheck);
     }
 
     private DtoBuilder candidateVisaJobDto() {

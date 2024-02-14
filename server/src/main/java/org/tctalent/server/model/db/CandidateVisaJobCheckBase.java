@@ -16,14 +16,20 @@
 
 package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.util.CollectionUtils;
-
-import javax.persistence.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.persistence.Convert;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.util.CollectionUtils;
+import org.tctalent.server.exception.NoSuchObjectException;
 
 @Getter
 @Setter
@@ -147,5 +153,11 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
             relocatingDependantIds.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(",")) : null;
+    }
+
+    public Candidate getCandidate()
+        throws NoSuchObjectException {
+        Candidate candidate = this.getCandidateVisaCheck().getCandidate();
+        return candidate;
     }
 }

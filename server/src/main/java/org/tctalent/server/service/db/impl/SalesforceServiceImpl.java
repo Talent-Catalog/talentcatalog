@@ -67,6 +67,7 @@ import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -2047,25 +2048,27 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     private Map<String, Integer> processSfCaseRelocationInfo(
-        Long visaJobCheckId, Candidate relocatingCandidate) throws NoSuchObjectException {
+        CandidateVisaJobCheck visaJobCheck, Candidate relocatingCandidate) throws NoSuchObjectException {
 
         // Get the dependants if any (can return null and processing will continue)
         List<CandidateDependant> relocatingDependants =
-            candidateVisaJobCheckService.getRelocatingDependants(visaJobCheckId);
+            candidateVisaJobCheckService.getRelocatingDependants(visaJobCheck);
 
         // Initiate values to populate SF candidate opp relocation info fields
-        Integer relocatingBoys = 0;
-        Integer relocatingGirls = 0;
-        Integer relocatingChildren = 0;
-        Integer relocatingMen = 0;
-        Integer relocatingWomen = 0;
-        Integer relocatingAdults = 0;
+        // TODO change these to ints
+        int relocatingBoys = 0;
+        int relocatingGirls = 0;
+        int relocatingChildren = 0;
+        int relocatingMen = 0;
+        int relocatingWomen = 0;
+        int relocatingAdults = 0;
 
         // Process dependents if any and update values accordingly
         if(relocatingDependants != null) {
             for (CandidateDependant relocatingDependant : relocatingDependants) {
 
                 // TODO: make DOB required at intake - at present it can be null so we need escape
+                // add comment
                 boolean isChild = true;
 
                 if(relocatingDependant.getDob() != null) {
@@ -2116,27 +2119,27 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public void updateSfCaseRelocationInfo(Long visaJobCheckId)
-        throws NoSuchObjectException {
+    public boolean updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
+        throws NoSuchObjectException, SalesforceException, WebClientException {
 
         // Get the relocating candidate and add to list
-        Candidate relocatingCandidate = candidateVisaJobCheckService.getCandidate(visaJobCheckId);
+        Candidate relocatingCandidate = visaJobCheck.getCandidate();
         List<Candidate> candidateList = Collections.singletonList(relocatingCandidate);
 
         // Process the relocation info and add to candidate opportunity params
         Map<String, Integer> relocationInfo = processSfCaseRelocationInfo(
-            visaJobCheckId, relocatingCandidate);
+            visaJobCheck, relocatingCandidate);
 
         CandidateOpportunityParams candidateOppParams = new CandidateOpportunityParams();
         candidateOppParams.setRelocationInfo(relocationInfo);
 
         // Get the SF job opp that this visa assessment and candidate opp relate to
-        SalesforceJobOpp sfJobOpp = candidateVisaJobCheckService
-            .getVisaJobCheck(visaJobCheckId)
-            .getJobOpp();
+        SalesforceJobOpp sfJobOpp = visaJobCheck.getJobOpp();
 
         // Update the candidate opp
         createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);
+
+        return true;
     }
 
 }

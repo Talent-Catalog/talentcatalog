@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
@@ -73,6 +72,15 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
                 .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, visaJobId));
     }
 
+    // tODO decide if we keep this
+    @Override
+    public CandidateVisaJobCheck getVisaJobCheck(Long candidateId, Long jobOppId)
+        throws NoSuchObjectException {
+        return candidateVisaJobRepository.findByCandidateIdAndJobOppId(candidateId, jobOppId)
+            .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, candidateId));
+    }
+
+
     @Override
     public CandidateVisaJobCheck createVisaJobCheck(
             long visaId, CreateCandidateVisaJobCheckRequest request)
@@ -116,23 +124,14 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
     }
 
     @Override
-    public List<CandidateDependant> getRelocatingDependants(Long visaJobCheckId)
+    public List<CandidateDependant> getRelocatingDependants(CandidateVisaJobCheck visaJobCheck)
         throws NoSuchObjectException {
-        CandidateVisaJobCheck candidateVisaJobCheck = getVisaJobCheck(visaJobCheckId);
-        List<Long> relocatingDependantIds = candidateVisaJobCheck.getRelocatingDependantIds();
+        List<Long> relocatingDependantIds = visaJobCheck.getRelocatingDependantIds();
 
         return relocatingDependantIds != null ?
             relocatingDependantIds
             .stream()
             .map(dependantId -> candidateDependantService.getDependant(dependantId))
             .collect(Collectors.toList()) : null;
-    }
-
-    @Override
-    public Candidate getCandidate(Long visaJobCheckId)
-        throws NoSuchObjectException {
-        CandidateVisaJobCheck cvjc = getVisaJobCheck(visaJobCheckId);
-        Candidate candidate = cvjc.getCandidateVisaCheck().getCandidate();
-        return candidate;
     }
 }

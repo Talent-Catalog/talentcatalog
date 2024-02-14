@@ -21,7 +21,6 @@ import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
@@ -35,6 +34,18 @@ public interface CandidateVisaJobCheckService {
      * @throws NoSuchObjectException if the there is no visa job check record with that id
      */
     CandidateVisaJobCheck getVisaJobCheck(long visaJobId) throws NoSuchObjectException;
+
+    /**
+     * Gets the candidate visa job check record from the given ids.
+     * @param candidateId ID of candidate
+     * @param jobOppId ID of job opportunity
+     * @return Desired record
+     * @throws NoSuchObjectException if the there is no candidate visa job check record with
+     * for that candidate and job opportunity
+     */
+    // TODO decide if we keep this
+    CandidateVisaJobCheck getVisaJobCheck(Long candidateId, Long jobOppId)
+        throws NoSuchObjectException;
 
     /**
      * Creates a new candidate visa check record from the data in the given
@@ -74,14 +85,12 @@ public interface CandidateVisaJobCheckService {
      * Gets a list of CandidateDependant objects listed as relocating in a given candidate visa job check.
      * Useful if more processing needs to be done on this data which is otherwise in the form of
      * a comma-separated string.
-     * @param visaJobCheckId candidate visa job check id
+     * @param visaJobCheck instance of {@link CandidateVisaJobCheck}
      * @return list of candidate dependants
      * @throws NoSuchObjectException if there are no dependants on this visa job check.
      */
-    List<CandidateDependant> getRelocatingDependants(Long visaJobCheckId)
+    // TODO decide if we need this and its repo method - pass the visaJoBCheck if keeping
+    List<CandidateDependant> getRelocatingDependants(CandidateVisaJobCheck visaJobCheck)
         throws NoSuchObjectException;
-
-//    TODO doc
-    Candidate getCandidate(Long visaJobCheckId) throws NoSuchObjectException;
 
 }

@@ -2049,14 +2049,4 @@ public class SystemAdminApi {
     public void sfUpdateLiveCandidates() {
         candidateService.syncLiveCandidatesToSf();
     }
-
-    @GetMapping("push-visa-button-null-dependants")
-    public void pushVisaButton() {
-        salesforceService.updateSfCaseRelocationInfo(4L);
-    }
-
-    @GetMapping("push-visa-button-lots-of-dependants")
-    public void pushVisaButton2() {
-        salesforceService.updateSfCaseRelocationInfo(5L);
-    }
 }

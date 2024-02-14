@@ -16,10 +16,20 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 
 public interface CandidateVisaJobRepository
         extends JpaRepository<CandidateVisaJobCheck, Long> {
-
+  // TODO decide if we need this (it's for accessing from createOrUpdateCandidateOpportunity if we want to update relocation info at certain stages).
+  @Query(" select cvjc from CandidateVisaJobCheck cvjc "
+          + " inner join cvjc.candidateVisaCheck cvc "
+          + " where cvc.candidate.id = :candidateId "
+          + " and cvjc.jobOpp.id = :jobOppId")
+  Optional<CandidateVisaJobCheck> findByCandidateIdAndJobOppId(
+      @Param("candidateId") long candidateId,
+      @Param("jobOppId") long jobOppId);
 }
