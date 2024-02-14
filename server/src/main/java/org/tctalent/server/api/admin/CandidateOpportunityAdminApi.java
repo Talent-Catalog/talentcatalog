@@ -123,6 +123,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
 
     private DtoBuilder shortCandidateDto() {
         return new DtoBuilder()
+            .add("id")
             .add("candidateNumber")
             .add("user", shortUserDto())
             ;

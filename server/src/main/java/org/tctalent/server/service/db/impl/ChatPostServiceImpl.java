@@ -208,16 +208,16 @@ public class ChatPostServiceImpl implements ChatPostService {
         String folderLink;
         if (chat.getJobOpp() != null) {
             folderLink = chat.getJobOpp().getSubmissionList().getFolderlink();
-        } else if (chat.getCandidateOpp() != null) {
-            folderLink = chat.getCandidateOpp().getCandidate().getFolderlink();
+        } else if (chat.getCandidate() != null) {
+            folderLink = chat.getCandidate().getFolderlink();
             // If the candidate related to the candidate opportunity has no Google Drive folder, create it.
             if (folderLink == null) {
-                long candidateId = chat.getCandidateOpp().getCandidate().getId();
+                long candidateId = chat.getCandidate().getId();
                 Candidate candidate = this.candidateService.createCandidateFolder(candidateId);
                 folderLink = candidate.getFolderlink();
             }
         } else {
-            throw new NoSuchObjectException("No candidate opp or job associated with chat.");
+            throw new NoSuchObjectException("No candidate or job associated with chat.");
         }
         return folderLink;
     }
@@ -226,10 +226,10 @@ public class ChatPostServiceImpl implements ChatPostService {
         GoogleFileSystemDrive drive;
         if (chat.getJobOpp() != null) {
             drive = googleDriveConfig.getListFoldersDrive();
-        } else if (chat.getCandidateOpp() != null) {
+        } else if (chat.getCandidate() != null) {
             drive = googleDriveConfig.getCandidateDataDrive();
         } else {
-            throw new NoSuchObjectException("No candidate opp or job associated with chat.");
+            throw new NoSuchObjectException("No candidate or job associated with chat.");
         }
         return drive;
     }

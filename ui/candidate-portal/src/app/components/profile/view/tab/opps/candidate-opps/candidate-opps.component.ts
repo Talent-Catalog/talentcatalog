@@ -65,11 +65,12 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     const chatRequests = [
       {
         type: JobChatType.CandidateRecruiting,
-        candidateOppId: opp?.id
+        candidateId: this.candidate.id,
+        jobId: opp?.jobOpp?.id
       },
       {
         type: JobChatType.CandidateProspect,
-        candidateOppId: opp?.id
+        candidateId: this.candidate.id
       },
       {
         type: JobChatType.AllJobCandidates,
@@ -85,7 +86,10 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     this.loading = true;
     this.error = null;
     forkJoin(chats$).subscribe(
-      (jobChats) => {this.mapOppChatsByOppId.set(opp.id, jobChats); this.loading = false;},
+      (jobChats) => {
+        this.mapOppChatsByOppId.set(opp.id, this.chatService.removeDuplicateChats(jobChats));
+        this.loading = false;
+      },
       (error) => {
         this.error = error;
         this.loading = false;
