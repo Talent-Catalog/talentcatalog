@@ -33,6 +33,6 @@ public class CreateChatRequest {
     @Nullable
     private Long sourcePartnerId;
     @Nullable
-    private Long candidateOppId;
+    private Long candidateId;
 }
 
