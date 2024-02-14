@@ -56,7 +56,7 @@ export class ChatService implements OnDestroy {
    * See, for example, https://stackoverflow.com/questions/63948352/typescript-map-with-objects-as-keys
    * @private
    */
-  private chatObservableByRequest: Map<string, Observable<JobChat>> = new Map();
+  private chatByRequest$: Map<string, Observable<JobChat>> = new Map();
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -82,7 +82,7 @@ export class ChatService implements OnDestroy {
     //Clean up data structures.
     this.chatIsReads.clear();
     this.chatPosts$.clear();
-    this.chatObservableByRequest.clear();
+    this.chatByRequest$.clear();
 
   }
 
@@ -96,13 +96,13 @@ export class ChatService implements OnDestroy {
     const requestKey = JSON.stringify(request);
 
     //Check if we have already fetched the chat matching this request - if so return cached value
-    let chat$ = this.chatObservableByRequest.get(requestKey);
+    let chat$ = this.chatByRequest$.get(requestKey);
     if (chat$ == null) {
       chat$ = this.http.post<JobChat>(`${this.apiUrl}/get-or-create`, request).pipe(
         //This allows the return from the get/create server call to be shared.
         shareReplay(1)
       );
-      this.chatObservableByRequest.set(requestKey, chat$);
+      this.chatByRequest$.set(requestKey, chat$);
     }
     return chat$;
   }
@@ -147,17 +147,13 @@ export class ChatService implements OnDestroy {
     //Check if we already have an observable for this chat...
     let observable = this.chatPosts$.get(chat.id);
     if (observable == null) {
-      //todo Plug this with temp Observable - could concat with final Obseravble
       //Not yet subscribed to this chat - subscribe and save the observable.
       this.configureStompService();
 
       observable = this.rxStompService.watch('/topic/chat/' + chat.id)
       .pipe(
 
-        //todo Is this observable already multicast.
-        //todo Do we want to unsubscribe when ref coount gets to zero. If we do,
-        //how does rxStompService handle that- and we also need to clear the this.chatPosts for this
-        //chat so that we resubscribe.
+        //Want this to be shareable among multiple subscribers
         share(),
 
         //Keep track of subscriptions so that we can unsubscribe on destroy
@@ -309,5 +305,13 @@ export class ChatService implements OnDestroy {
   private completeMarkAsReads() {
     this.chatIsReads$.forEach(subject => subject.complete());
     this.chatIsReads$.clear();
+  }
+
+  removeDuplicateChats(jobChats: JobChat[]) {
+    let filterMap: Map<number, JobChat> = new Map<number, JobChat>();
+    for (const jobChat of jobChats) {
+      filterMap.set(jobChat.id, jobChat);
+    }
+    return Array.from(filterMap.values());
   }
 }

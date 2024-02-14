@@ -75,9 +75,11 @@ export class ViewCandidateComponent implements OnInit {
     //Scan the opportunities to extract all their chats.
     let chats$ = candidateOpportunities
     //First map opportunities to stream of arrays of chat requests for each opportunity
-    .map(opp =>
-      [{type: JobChatType.CandidateRecruiting, candidateId: candidateId, jobId: opp.jobOpp?.id},
-      {type: JobChatType.AllJobCandidates, jobId: opp.jobOpp?.id}]
+    .map(opp => [
+        {type: JobChatType.CandidateRecruiting, candidateId: candidateId, jobId: opp.jobOpp?.id},
+        {type: JobChatType.CandidateProspect, candidateId: candidateId},
+        {type: JobChatType.AllJobCandidates, jobId: opp.jobOpp?.id}
+      ]
     )
     //Convert this stream of arrays of requests, into a stream of requests (ie flattening the arrays)
     .reduce((accumulator,
@@ -85,17 +87,15 @@ export class ViewCandidateComponent implements OnInit {
     //Lastly map the requests to Observable<JobChat> by calling the service with each request.
     .map(request => this.chatService.getOrCreate(request));
 
-
-    //todo Problem is this is not good enough - candidate propsect gets fetched all over the place
-    //todo Separate getCreates from fetches.
-    //Add the common CandidateProspect chat - only need one of those - it is shared across opportunities
-    chats$.push(this.chatService.getOrCreate({type: JobChatType.CandidateProspect, candidateId: candidateId}))
-
     //Now fetch all those chats
     this.loading = true;
     this.error = null;
     forkJoin(chats$).subscribe(
-      (jobChats) => {this.chatsForAllJobs = jobChats; this.loading = false;},
+      (jobChats) => {
+        //Filter out duplicate chats (a CandidateProspect chat can be shared across multiple opps)
+        this.chatsForAllJobs = this.chatService.removeDuplicateChats(jobChats);
+        this.loading = false;
+      },
       (error) => {
         this.error = error;
         this.loading = false;
