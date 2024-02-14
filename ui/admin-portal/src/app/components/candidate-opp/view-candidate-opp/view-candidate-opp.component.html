@@ -187,7 +187,7 @@
           </div>
 
           <app-view-chat-posts
-            [candidateOpp]="opp"
+            [candidateId]="opp.candidate.id"
             [jobChatType]="JobChatType.CandidateProspect"
           >
           </app-view-chat-posts>
@@ -210,7 +210,8 @@
           </div>
 
           <app-view-chat-posts
-            [candidateOpp]="opp"
+            [candidateId]="opp.candidate.id"
+            [jobId]="opp.jobOpp.id"
             [jobChatType]="JobChatType.CandidateRecruiting"
           >
           </app-view-chat-posts>
