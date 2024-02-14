@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -60,6 +61,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -2691,16 +2693,14 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-// TODO before pushing to prod: uncomment scheduling
     @Override
-//    @Scheduled(cron = "0 0 2 * * ?", zone = "GMT")
-//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-//                    lockAtMostFor = "PT23H")
-    public void syncLiveCandidatesToSf()
+    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT12H",
+                    lockAtMostFor = "PT12H")
+    public void syncCandidatesToSf()
         throws SalesforceException, WebClientException {
         // We only want to run this in prod due to SF sandbox object limit of 10,000
-        // TODO before pushing to prod: change env variable to 'prod'
-        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+        if (environment.equalsIgnoreCase(Environment.prod.name())) {
 
             log.info("Initiating TC-SF candidate sync");
 
@@ -2718,8 +2718,7 @@ public class CandidateServiceImpl implements CandidateService {
             log.info(candidatePage.getTotalElements() + " candidates meet the criteria");
 
             // Iterate through batches, upserting to SF
-            // TODO before pushing to prod: comment out 2nd 'while' condition
-            while(candidatePage.hasNext() && candidatePage.getNumber() < 6) {
+            while(candidatePage.hasNext()) {
                 candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
                     statuses, candidatePage.nextPageable());
                 List<Candidate> candidateList = candidatePage.getContent();
