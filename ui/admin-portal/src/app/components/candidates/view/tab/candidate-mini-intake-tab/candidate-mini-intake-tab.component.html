@@ -42,7 +42,7 @@
 <!--        </button>-->
       <div *ngIf="miniIntakeComplete; else notComplete">
         <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
-          Update Intake
+          Update
         </button>
       </div>
       <ng-template #notComplete>
@@ -50,7 +50,7 @@
                 (click)="completeIntake(false)"
                 [disabled]="candidate.miniIntakeCompletedDate != null">
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-          Complete Intake
+          Complete
         </button>
       </ng-template>
     </div>

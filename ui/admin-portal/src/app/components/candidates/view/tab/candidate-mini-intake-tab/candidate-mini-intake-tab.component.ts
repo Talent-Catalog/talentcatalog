@@ -17,19 +17,14 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  OldIntakeInputComponent
-} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
 import {OccupationService} from "../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
-import {
-  CandidateExamService,
-  CreateCandidateExamRequest
-} from "../../../../../services/candidate-exam.service";
+import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
 import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
@@ -55,6 +50,10 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
               private candidateCitizenshipService: CandidateCitizenshipService,
               private candidateExamService: CandidateExamService) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService, modalService)
+  }
+
+  get miniIntakeComplete() {
+    return this.candidate.miniIntakeCompletedDate != null;
   }
 
   public inputOldIntakeNote(formName: string, button) {

@@ -29,10 +29,7 @@ import {LanguageLevel} from '../../../model/language-level';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import {
-  CandidateNoteService,
-  CreateCandidateNoteRequest
-} from '../../../services/candidate-note.service';
+import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -134,10 +131,6 @@ export abstract class IntakeComponentTabBase implements OnInit {
 
   ngOnInit(): void {
     this.refreshIntakeDataInternal(true);
-  }
-
-  get miniIntakeComplete() {
-    return this.candidate.miniIntakeCompletedDate != null;
   }
 
   /**
@@ -295,12 +288,13 @@ export abstract class IntakeComponentTabBase implements OnInit {
         this.candidateService.completeIntake(this.candidate.id, full).subscribe(
           (candidate)=> {
             this.candidate = candidate;
-            let formCompleted: string = full ? 'Full Intake' : 'Mini Intake'
             //todo look at refactoring this note method (I don't need to update the button text, I can use new fields to show/disabled or not.)
+            let formCompleted: string = full ? 'Full Intake' : 'Mini Intake'
             this.createIntakeNote(formCompleted, 'complete', null);
             this.saving = false;
           }, (error) => {
             this.error = error;
+            this.saving = false;
           }
         )
       }
