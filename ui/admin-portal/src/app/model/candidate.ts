@@ -38,6 +38,7 @@ import {CandidateLanguage} from "./candidate-language";
 import {CandidateOccupation} from "./candidate-occupation";
 
 export interface ShortCandidate {
+  id: number;
   candidateNumber: string;
   user: ShortUser;
 }

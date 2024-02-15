@@ -38,6 +38,7 @@ import {TaskAssignment} from "./task-assignment";
 import {Job} from "./job";
 
 export interface ShortCandidate {
+  id: number;
   candidateNumber: string;
   user: ShortUser;
 }
