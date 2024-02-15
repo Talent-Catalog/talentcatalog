@@ -119,7 +119,9 @@ constructor(
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
-        this.pageSize = cached.pageSize;
+        // Keep page size smaller for this component. It is a preview of the source, so doesn't need to be long.
+        // It works better on all screen sizes, especially when we have a long split page.
+        this.pageSize = 12;
         this.sortField = cached.sortFields[0];
         this.sortDirection = cached.sortDirection;
         this.timestamp = cached.timestamp;
