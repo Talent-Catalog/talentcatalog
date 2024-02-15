@@ -31,7 +31,7 @@
       <div *ngIf="job.submissionList" class="mb-3 col-sm-12 col-md-4">
         <label title="Potential candidates should be added to this list" class="col-form-label"
                [ngClass]="{'alert alert-danger': highlightCandidates()}">
-          <i class="fas fa-list"></i>Submission List</label>
+          <i class="fas fa-rectangle-list"></i>Submission List</label>
 
         <div class="form-control-plaintext">
           <span><a [routerLink]="['/list',job.submissionList.id]">{{displaySavedList(job.submissionList)}}</a></span>
