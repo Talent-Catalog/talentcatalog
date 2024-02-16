@@ -21,7 +21,6 @@
           <div *ngIf="selectedJob">
             <div class="d-flex align-items-center mb-3 text-accent-1">
               <span class="fs-5 fw-bold">{{selectedJob.name + ' (' + selectedJob.id + ')'}}</span>
-            <span class="fs-5 fw-bold">{{selectedJob.name + ' (' + selectedJob.id + ')'}}</span>
               <button class="btn" (click)="doToggleStarred()">
                 <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
                 <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
