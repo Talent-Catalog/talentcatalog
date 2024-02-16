@@ -70,14 +70,16 @@ export class ViewCandidateComponent implements OnInit {
 
     //Get all candidate's opportunities
     let candidateOpportunities = this.candidate.candidateOpportunities;
+    const candidateId = this.candidate.id;
 
     //Scan the opportunities to extract all their chats.
     let chats$ = candidateOpportunities
     //First map opportunities to stream of arrays of chat requests for each opportunity
-    .map(opp =>
-      [{type: JobChatType.CandidateRecruiting, candidateOppId: opp.id},
-      {type: JobChatType.CandidateProspect, candidateOppId: opp.id},
-      {type: JobChatType.AllJobCandidates, jobId: opp.jobOpp?.id}]
+    .map(opp => [
+        {type: JobChatType.CandidateRecruiting, candidateId: candidateId, jobId: opp.jobOpp?.id},
+        {type: JobChatType.CandidateProspect, candidateId: candidateId},
+        {type: JobChatType.AllJobCandidates, jobId: opp.jobOpp?.id}
+      ]
     )
     //Convert this stream of arrays of requests, into a stream of requests (ie flattening the arrays)
     .reduce((accumulator,
@@ -89,7 +91,11 @@ export class ViewCandidateComponent implements OnInit {
     this.loading = true;
     this.error = null;
     forkJoin(chats$).subscribe(
-      (jobChats) => {this.chatsForAllJobs = jobChats; this.loading = false;},
+      (jobChats) => {
+        //Filter out duplicate chats (a CandidateProspect chat can be shared across multiple opps)
+        this.chatsForAllJobs = this.chatService.removeDuplicateChats(jobChats);
+        this.loading = false;
+      },
       (error) => {
         this.error = error;
         this.loading = false;

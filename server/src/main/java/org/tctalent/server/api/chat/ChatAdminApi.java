@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.api.admin.ITableApi;
 import org.tctalent.server.exception.EntityExistsException;
-import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatUserInfo;
@@ -39,7 +39,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.chat.CreateChatRequest;
 import org.tctalent.server.request.chat.SearchChatRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobChatUserService;
@@ -59,7 +59,7 @@ import org.tctalent.server.service.db.UserService;
 public class ChatAdminApi implements
     ITableApi<SearchChatRequest, CreateChatRequest, CreateChatRequest> {
 
-    private final CandidateOpportunityService candidateOpportunityService;
+    private final CandidateService candidateService;
     private final ChatPostService chatPostService;
     private final JobChatService chatService;
     private final JobChatUserService jobChatUserService;
@@ -75,11 +75,11 @@ public class ChatAdminApi implements
         final Long sourcePartnerId = request.getSourcePartnerId();
         PartnerImpl sourcePartner = sourcePartnerId == null ? null :
             (PartnerImpl) partnerService.getPartner(sourcePartnerId);
-        final Long candidateOppId = request.getCandidateOppId();
-        CandidateOpportunity candidateOpp = candidateOppId == null ? null : candidateOpportunityService.getCandidateOpportunity(candidateOppId);
+        final Long candidateId = request.getCandidateId();
+        Candidate candidate = candidateId == null ? null : candidateService.getCandidate(candidateId);
 
         JobChat chat = chatService.createJobChat(request.getType(),
-            jobOpp, sourcePartner, candidateOpp);
+            jobOpp, sourcePartner, candidate);
         return chatService.getJobChatDtoBuilder().build(chat);
     }
 
@@ -99,11 +99,11 @@ public class ChatAdminApi implements
         final Long sourcePartnerId = request.getSourcePartnerId();
         PartnerImpl sourcePartner = sourcePartnerId == null ? null :
             (PartnerImpl) partnerService.getPartner(sourcePartnerId);
-        final Long candidateOppId = request.getCandidateOppId();
-        CandidateOpportunity candidateOpp = candidateOppId == null ? null : candidateOpportunityService.getCandidateOpportunity(candidateOppId);
+        final Long candidateId = request.getCandidateId();
+        Candidate candidate = candidateId == null ? null : candidateService.getCandidate(candidateId);
 
         JobChat jobChat = chatService.getOrCreateJobChat(request.getType(),
-            jobOpp, sourcePartner, candidateOpp);
+            jobOpp, sourcePartner, candidate);
         return chatService.getJobChatDtoBuilder().build(jobChat);
     }
 
