@@ -27,7 +27,7 @@
             <a [routerLink]="['/job',selectedJob.id]">
               <i class="fa-solid fa-briefcase link-info" title="Job"></i>
             </a>
-            <a [routerLink]="['/list',selectedJob.submissionList.id]">
+            <a  *ngIf="selectedJob.submissionList" [routerLink]="['/list',selectedJob.submissionList.id]">
               <i class="fa-solid fa-rectangle-list link-info" title="Submission list"></i>
             </a>
 

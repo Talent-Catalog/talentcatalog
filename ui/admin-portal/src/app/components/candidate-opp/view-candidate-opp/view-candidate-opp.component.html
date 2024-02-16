@@ -24,7 +24,7 @@
           <a [routerLink]="['/job',opp.jobOpp.id]">
             <i class="fa-solid fa-briefcase link-info" title="Job"></i>
           </a>
-          <a [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+          <a *ngIf="opp.jobOpp.submissionList" [routerLink]="['/list',opp.jobOpp.submissionList.id]">
             <i class="fa-solid fa-rectangle-list link-info" title="Submission list"></i>
           </a>
           <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
