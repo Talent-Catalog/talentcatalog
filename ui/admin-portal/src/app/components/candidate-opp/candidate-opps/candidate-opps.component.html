@@ -117,22 +117,34 @@
           </td>
           <td *ngIf="!showJobOppName" [title]="opp.name">
             {{opp.name | truncate: 25}}
-            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
-              <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
-            </a>
             <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
               <i class="fas fa-user" title="Candidate"></i>
+            </a>
+            <a [routerLink]="['/opp',opp.id]">
+              <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
             </a>
             <a [routerLink]="['/job',opp.jobOpp.id]">
               <i class="fa-solid fa-briefcase" title="Job"></i>
             </a>
-            <a [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+            <a *ngIf="opp.jobOpp.submissionList" [routerLink]="['/list',opp.jobOpp.submissionList.id]">
               <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
+            </a>
+            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
+              <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
             </a>
           </td>
           <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
             <a [routerLink]="['/opp',opp.id]">
-              {{opp.jobOpp.name}}
+              {{opp.jobOpp.name}} <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+            </a>
+            <a [routerLink]="['/job',opp.jobOpp.id]">
+              <i class="fa-solid fa-briefcase" title="Job"></i>
+            </a>
+            <a *ngIf="opp.jobOpp.submissionList" [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+              <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
+            </a>
+            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
+              <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
             </a>
           </td>
           <td>
