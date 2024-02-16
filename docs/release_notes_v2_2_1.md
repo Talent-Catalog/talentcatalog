@@ -28,6 +28,9 @@ Check out the newest features and enhancements.
 - Remove button was not behaving correctly for submission lists - was not closing cases
 - Fixed bug where closed cases were sometimes being published in lists even when show closed cases 
 was not checked
+- Fixed bug where My cases was not working - added better support for next step due.
+- Fixed bug where overdue cases only was not saving. Added cases icon to fix problem of users not being able to quickly go to case
+- Added submissionList icon to fix problem of users not being able to quickly go to submission list
 
 # Developer Notes
 
