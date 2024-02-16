@@ -46,7 +46,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.ApiTestBase;
-import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
@@ -55,7 +55,7 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.chat.CreateChatRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatUserService;
 import org.tctalent.server.service.db.JobService;
@@ -96,7 +96,7 @@ class ChatAdminApiTest extends ApiTestBase {
     @MockBean
     ChatPostService chatPostService;
     @MockBean
-    CandidateOpportunityService candidateOpportunityService;
+    CandidateService candidateService;
     @MockBean
     JobService jobService;
     @MockBean
@@ -123,7 +123,7 @@ class ChatAdminApiTest extends ApiTestBase {
 
         given(chatService.createJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
-            nullable(CandidateOpportunity.class)))
+            nullable(Candidate.class)))
             .willReturn(chat);
 
         mockMvc.perform(post(BASE_PATH)
@@ -140,7 +140,7 @@ class ChatAdminApiTest extends ApiTestBase {
 
         verify(chatService).createJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
-            nullable(CandidateOpportunity.class)
+            nullable(Candidate.class)
         );
     }
 
@@ -171,7 +171,7 @@ class ChatAdminApiTest extends ApiTestBase {
 
         given(chatService.getOrCreateJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
-            nullable(CandidateOpportunity.class)))
+            nullable(Candidate.class)))
             .willReturn(chat);
 
         mockMvc.perform(post(BASE_PATH + GET_OR_CREATE_PATH)
@@ -188,7 +188,7 @@ class ChatAdminApiTest extends ApiTestBase {
 
         verify(chatService).getOrCreateJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
-            nullable(CandidateOpportunity.class)
+            nullable(Candidate.class)
         );
     }
 
