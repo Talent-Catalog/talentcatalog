@@ -32,6 +32,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
@@ -396,9 +397,25 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     public Page<CandidateOpportunity> searchCandidateOpportunities(
         SearchCandidateOpportunityRequest request) {
         User loggedInUser = userService.getLoggedInUser();
-        Page<CandidateOpportunity> opps = candidateOpportunityRepository.findAll(
-            CandidateOpportunitySpecification.buildSearchQuery(request, loggedInUser),
-            request.getPageRequest());
+        if (loggedInUser == null) {
+            throw new RuntimeException(); ///TODO JC
+        }
+
+        //todo This should be in its own http request
+
+        //Construct query
+        final Specification<CandidateOpportunity> spec =
+            CandidateOpportunitySpecification.buildSearchQuery(request, loggedInUser);
+
+        //Retrieve all results and gather the ids
+        List<CandidateOpportunity> allOpps = candidateOpportunityRepository.findAll(spec);
+        List<Long> oppIds = allOpps.stream().map(CandidateOpportunity::getId).toList();
+        List<Long> unreadChatIds =
+            candidateOpportunityRepository.findUnreadChatsInOpps(loggedInUser.getId(), oppIds);
+
+        //Retrieve just page requested.
+        Page<CandidateOpportunity> opps = candidateOpportunityRepository
+            .findAll(spec, request.getPageRequest());
 
         return opps;
     }
