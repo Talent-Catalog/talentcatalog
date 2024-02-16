@@ -3,7 +3,7 @@
   <ng-container ngbNavItem="LiveJobs">
     <a ngbNavLink
        title="Jobs associated with active opportunities which have been published on the TC"
-    >Live Jobs</a>
+    >Live Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.live">
@@ -13,7 +13,7 @@
   </ng-container>
 
   <ng-container ngbNavItem="StarredJobs">
-    <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs</a>
+    <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.starredByMe">
@@ -23,7 +23,7 @@
   </ng-container>
 
   <ng-container *ngIf="isJobCreator()" ngbNavItem="MyJobs">
-    <a ngbNavLink title="Jobs created by my partner organization">{{loggedInPartner.abbreviation}} Jobs</a>
+    <a ngbNavLink title="Jobs created by my partner organization">{{loggedInPartner.abbreviation}} Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator">
@@ -34,7 +34,7 @@
 
   <ng-container *ngIf="isJobCreator()" ngbNavItem="MyCasesAsJobCreator">
     <a ngbNavLink title="Candidate cases associated with jobs created by my partner organization">
-      {{myCasesTabName(SearchOppsBy.mineAsJobCreator)}}</a>
+      {{myCasesTabName(SearchOppsBy.mineAsJobCreator)}} <i class="fa-solid fa-address-book"></i></a>
     <ng-template ngbNavContent>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
@@ -45,7 +45,7 @@
 
   <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCasesAsSourcePartner">
     <a ngbNavLink title="Candidate cases managed by my partner organization">
-      {{myCasesTabName(SearchOppsBy.mineAsSourcePartner)}}</a>
+      {{myCasesTabName(SearchOppsBy.mineAsSourcePartner)}} <i class="fa-solid fa-address-book"></i></a>
     <ng-template ngbNavContent>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsSourcePartner"
@@ -55,7 +55,7 @@
   </ng-container>
 
   <ng-container *ngIf="isJobCreator()" ngbNavItem="NewJob">
-    <a ngbNavLink title="Create a new TC job">New Job</a>
+    <a ngbNavLink title="Create a new TC job">New Job <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-new-job></app-new-job>
     </ng-template>
