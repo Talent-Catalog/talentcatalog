@@ -54,3 +54,8 @@
   background-color: $accent1;
   color: $light;
 }
+.floating-col {
+  position: sticky;
+  top: 100px;
+  z-index: 1020;
+}

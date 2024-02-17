@@ -16,6 +16,9 @@
     <div>
       <h1 class="my-3">{{job.name}}
         <span class="ms-2">
+          <a *ngIf="job.submissionList" [routerLink]="['/list',job.submissionList.id]">
+            <i class="fas fa-rectangle-list link-info" title="Submission list"></i>
+          </a>
           <a *ngIf="job.sfId && canAccessSalesforce()" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
             <i class="fab fa-salesforce link-info" title="Show job in Salesforce"></i>
           </a>
