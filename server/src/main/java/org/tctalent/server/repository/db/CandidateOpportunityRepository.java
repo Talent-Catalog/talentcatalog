@@ -28,28 +28,30 @@ public interface CandidateOpportunityRepository extends JpaRepository<CandidateO
     JpaSpecificationExecutor<CandidateOpportunity> {
 
 
-    @Query("select chats.id from\n"
-        + "\n"
-        + "(select job_chat.id,job_chat.type from candidate_opportunity\n"
-        + "    join candidate on candidate_opportunity.candidate_id = candidate.id\n"
-        + "    join job_chat on candidate.id = job_chat.candidate_id and type = 'CandidateProspect'\n"
-        + "where candidate_opportunity.id in (:oppIds)\n"
-        + "union "
-        + "select job_chat.id,job_chat.type from candidate_opportunity\n"
-        + "    join candidate on candidate_opportunity.candidate_id = candidate.id\n"
-        + "    join job_chat on candidate.id = job_chat.candidate_id\n"
-        + "                         and job_id = candidate_opportunity.job_opp_id\n"
-        + "                         and type = 'CandidateRecruiting'\n"
-        + "where candidate_opportunity.id in (:oppIds)) as chats\n"
-        + "where\n"
-        + "        (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId)\n"
-        + "            < (select max(id) from chat_post where job_chat_id = chats.id)\n"
-        + "\n"
-        + "or  (\n"
-        + "        (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId) is null\n"
-        + "        and\n"
-        + "        (select count(*) from chat_post where job_chat_id = chats.id) > 0\n"
-        + "    )\n")
+    @Query(value = """
+        select chats.id from
+
+        (select job_chat.id from candidate_opportunity
+            join candidate on candidate_opportunity.candidate_id = candidate.id
+            join job_chat on candidate.id = job_chat.candidate_id and type = 'CandidateProspect'
+        where candidate_opportunity.id in (:oppIds)
+        union
+        select job_chat.id from candidate_opportunity
+            join candidate on candidate_opportunity.candidate_id = candidate.id
+            join job_chat on candidate.id = job_chat.candidate_id
+                                 and job_id = candidate_opportunity.job_opp_id
+                                 and type = 'CandidateRecruiting'
+        where candidate_opportunity.id in (:oppIds)) as chats
+        where
+                (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId)
+                    < (select max(id) from chat_post where job_chat_id = chats.id)
+
+        or  (
+                (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId) is null
+                and
+                (select count(*) from chat_post where job_chat_id = chats.id) > 0
+            )
+        """, nativeQuery = true)
     List<Long> findUnreadChatsInOpps(@Param("userId") long userId, @Param("oppIds") Iterable<Long> oppIds);
 
     @Query(" select op from CandidateOpportunity op "
