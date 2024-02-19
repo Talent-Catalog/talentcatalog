@@ -16,6 +16,23 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateVisaJobCheck;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,18 +46,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateVisaJobCheck;
+import org.tctalent.server.service.db.SalesforceService;
 
 /**
  * Unit tests for Candidate Visa Job Check Admin Api endpoints.
@@ -51,12 +57,16 @@ import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateVisaJob
 @AutoConfigureMockMvc
 public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-visa-job";
+    private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
 
     private static final CandidateVisaJobCheck candidateVisaJobCheck = getCandidateVisaJobCheck(false);
     private static final CandidateVisaJobCheck candidateVisaJobCheckComplete = getCandidateVisaJobCheck(true);
 
     @MockBean
     CandidateVisaJobCheckService candidateVisaJobCheckService;
+
+    @MockBean
+    SalesforceService salesforceService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -157,5 +167,22 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
                 .andExpect(status().isOk());
 
         verify(candidateVisaJobCheckService).deleteVisaJobCheck(anyLong());
+    }
+
+    @Test
+    @DisplayName("update sf case relocation info succeeds")
+    void updateSfCaseRelocationInfoSucceeds() throws Exception {
+        given(candidateVisaJobCheckService
+            .getVisaJobCheck(anyLong()))
+            .willReturn(any(CandidateVisaJobCheck.class));
+
+        mockMvc.perform(put(BASE_PATH + UPDATE_SF_CASE_PATH.replace(
+            "{id}", "3"))
+            .header("Authorization", "Bearer " + "jwt-token"))
+
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        verify(candidateVisaJobCheckService).getVisaJobCheck(anyLong());
     }
 }
