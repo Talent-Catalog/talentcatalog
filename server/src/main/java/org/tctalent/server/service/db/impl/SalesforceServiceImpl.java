@@ -2051,7 +2051,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private Map<String, Integer> processSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck,
         Candidate relocatingCandidate) throws NoSuchObjectException {
 
-        // Get the dependants if any (can return null and processing will continue)
+        // Get the dependants if any (can return null and processing will continue, which we want)
         List<CandidateDependant> relocatingDependants =
             candidateVisaJobCheckService.getRelocatingDependants(visaJobCheck);
 

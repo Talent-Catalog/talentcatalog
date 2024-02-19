@@ -87,8 +87,7 @@ public interface CandidateVisaJobCheckService {
      * Gets relocating dependants listed on a given candidate visa job assessment.
      * @param visaJobCheck instance of {@link CandidateVisaJobCheck}
      * @return list of candidate dependant objects or null if there aren't any for that assessment
-     * @throws NoSuchObjectException if a given candidate dependant id doesn't correspond to an
-     * existing candidate
+     * @throws NoSuchObjectException if there's no candidate dependant with a given id
      */
     List<CandidateDependant> getRelocatingDependants(CandidateVisaJobCheck visaJobCheck)
         throws NoSuchObjectException;

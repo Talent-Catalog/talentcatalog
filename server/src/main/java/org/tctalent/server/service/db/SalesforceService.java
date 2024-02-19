@@ -328,7 +328,7 @@ public interface SalesforceService {
      * breakdown of all individuals relocating as a result of that opportunity, including
      * the candidate.
      * @param visaJobCheck the candidate visa job check that is source of the info
-     * @throws NoSuchObjectException if a candidate dependant whose id is used doesn't exist
+     * @throws NoSuchObjectException if there's no candidate dependant with a given id
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
