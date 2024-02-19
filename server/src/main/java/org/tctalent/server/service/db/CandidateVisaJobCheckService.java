@@ -42,7 +42,7 @@ public interface CandidateVisaJobCheckService {
      * relocation info automatically at a certain candidate opportunity stage interval.
      * In that case, this method can be used from
      * SalesforceService.createOrUpdateCandidateOpportunities() to update relocation info
-     * accordingly, if this method's return passes a null check.
+     * accordingly, if the return passes a null check.
      * @param candidateId ID of candidate
      * @param jobOppId ID of job opportunity
      * @return Candidate Visa Job Check instance or null

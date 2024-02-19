@@ -2078,6 +2078,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                         .getYears() < 18;
                 }
 
+                // If gender check returns null, attribute to gender non-specific count
+                // (It's also not a required field.)
                 Gender gender = relocatingDependant.getGender();
 
                 if (isChild) {
@@ -2101,9 +2103,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
 
         // Process candidate who will always be an adult
-        if(Gender.male == relocatingCandidate.getGender()) {
+        Gender gender = relocatingCandidate.getGender();
+        if(Gender.male == gender) {
             relocatingMen++;
-        } else if(Gender.female == relocatingCandidate.getGender()) {
+        } else if(Gender.female == gender) {
             relocatingWomen++;
         } else {
             relocatingAdults++;
