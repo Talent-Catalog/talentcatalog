@@ -21,6 +21,7 @@ import {CandidateOpportunity, SearchOpportunityRequest} from "../model/candidate
 import {SearchResults} from "../model/search-results";
 import {CandidateOpportunityParams} from "../model/candidate";
 import {OpportunityService} from "../components/util/opportunity/OpportunityService";
+import {JobChatUserInfo} from "../model/chat";
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +71,10 @@ export class CandidateOpportunityService implements OpportunityService<Candidate
       observable = this.http.get<CandidateOpportunity>(`${this.apiUrl}/${id}`);
     }
     return observable;
+  }
+
+  checkUnreadChats(request: SearchOpportunityRequest): Observable<JobChatUserInfo> {
+    return this.http.post<JobChatUserInfo>(`${this.apiUrl}/check-unread-chats`, request);
   }
 
   searchPaged(request: SearchOpportunityRequest): Observable<SearchResults<CandidateOpportunity>> {

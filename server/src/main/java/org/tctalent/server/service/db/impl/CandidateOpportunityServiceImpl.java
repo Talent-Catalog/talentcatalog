@@ -41,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
@@ -394,14 +395,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
 
     @Override
-    public Page<CandidateOpportunity> searchCandidateOpportunities(
-        SearchCandidateOpportunityRequest request) {
+    public List<Long> findUnreadChatsInOpps(SearchCandidateOpportunityRequest request) {
         User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
-            throw new RuntimeException(); ///TODO JC
+            throw new InvalidSessionException("Not logged in");
         }
-
-        //todo This should be in its own http request
 
         //Construct query
         final Specification<CandidateOpportunity> spec =
@@ -412,6 +410,20 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         List<Long> oppIds = allOpps.stream().map(CandidateOpportunity::getId).toList();
         List<Long> unreadChatIds =
             candidateOpportunityRepository.findUnreadChatsInOpps(loggedInUser.getId(), oppIds);
+        return unreadChatIds;
+    }
+
+    @Override
+    public Page<CandidateOpportunity> searchCandidateOpportunities(
+        SearchCandidateOpportunityRequest request) {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        //Construct query
+        final Specification<CandidateOpportunity> spec =
+            CandidateOpportunitySpecification.buildSearchQuery(request, loggedInUser);
 
         //Retrieve just page requested.
         Page<CandidateOpportunity> opps = candidateOpportunityRepository

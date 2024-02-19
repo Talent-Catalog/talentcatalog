@@ -45,6 +45,7 @@ import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
+import {JobChatUserInfo} from "../../../model/chat";
 
 @Directive()
 export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
@@ -73,6 +74,9 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   pageSize: number;
 
   results: SearchResults<T>;
+
+  //todo - Maybe this should be an emitted event like oppSelection
+  unreadChats: boolean;
 
   //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
   @ViewChild("searchFilter")
@@ -258,11 +262,17 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.error = null;
     this.loading = true;
 
-    this.oppService.searchPaged(req).subscribe(
-      results => this.processSearchResults(results),
-      error => this.processSearchError(error)
+    this.oppService.searchPaged(req).subscribe({
+        next: results => this.processSearchResults(results),
+        error: error => this.processSearchError(error)
+      }
     )
 
+    this.oppService.checkUnreadChats(req).subscribe({
+        next: unreadChats => this.processChatsReadStatus(unreadChats),
+        error: error => this.processSearchError(error)
+      }
+    )
   }
 
   private populateRequestUsingContext(req: SearchOpportunityRequest) {
@@ -292,6 +302,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     }
   }
 
+  protected processChatsReadStatus(info: JobChatUserInfo) {
+    this.unreadChats = info.numberUnreadChats > 0;
+    this.loading = false;
+  }
 
   protected processSearchError(error: any) {
     this.error = error;
@@ -300,6 +314,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected processSearchResults(results: SearchResults<T>) {
     this.results = results;
+    this.loading = false;
 
     this.opps = results.content;
 
@@ -321,8 +336,6 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
     //Following the search filter loses focus, so focus back on it again
     setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
-
-    this.loading = false;
   }
 
   canAccessSalesforce(): boolean {
