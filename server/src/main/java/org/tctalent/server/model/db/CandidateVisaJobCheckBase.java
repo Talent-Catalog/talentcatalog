@@ -29,7 +29,6 @@ import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.CollectionUtils;
-import org.tctalent.server.exception.NoSuchObjectException;
 
 @Getter
 @Setter
@@ -155,8 +154,12 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
                 .collect(Collectors.joining(",")) : null;
     }
 
-    public Candidate getCandidate()
-        throws NoSuchObjectException {
+    /**
+     * Gets the candidate to whom the given instance of candidate job visa assessment refers, by
+     * querying the parent candidate visa check.
+     * @return candidate associated with given candidate job visa check
+     */
+    public Candidate getCandidate() {
         Candidate candidate = this.getCandidateVisaCheck().getCandidate();
         return candidate;
     }

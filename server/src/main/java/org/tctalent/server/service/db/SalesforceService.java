@@ -322,7 +322,16 @@ public interface SalesforceService {
         String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
         throws SalesforceException, WebClientException;
 
-    // TODO: doc
+    /**
+     * Updates a SF candidate opportunity's relocation information based on info from the
+     * candidate job visa assessment. This section on the SF record reports the age and gender
+     * breakdown of all individuals relocating as a result of that opportunity, including
+     * the candidate.
+     * @param visaJobCheck the candidate visa job check that is source of the info
+     * @throws NoSuchObjectException if a candidate dependant whose id is used doesn't exist
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
     void updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
         throws NoSuchObjectException, SalesforceException, WebClientException;
 }

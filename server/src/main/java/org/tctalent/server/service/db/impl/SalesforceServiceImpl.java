@@ -1849,7 +1849,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             put("Relocating_women__c", relocatingWomen);
         }
 
-        // These two categories are for when gender given as 'other' or not specified by candidate
+        // These two categories are for when gender given as 'other' or not specified by candidate.
+        // Labeled as such on SF, so it should be quite clear to end users of the stats.
         public void setRelocatingChildren(Integer relocatingChildren) {
             put("Relocating_children_gender_other__c", relocatingChildren);
         }
@@ -2055,20 +2056,21 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             candidateVisaJobCheckService.getRelocatingDependants(visaJobCheck);
 
         // Initiate values to populate SF candidate opp relocation info fields
-        // TODO add some doc explaining the gender non-specific categories
         int relocatingBoys = 0;
         int relocatingGirls = 0;
-        int relocatingChildren = 0;
         int relocatingMen = 0;
         int relocatingWomen = 0;
+        // These two categories are for when gender given as 'other' or not specified by candidate.
+        // Labeled as such on SF, so it should be quite clear to end users of the stats.
         int relocatingAdults = 0;
+        int relocatingChildren = 0;
 
         // Process dependents if any and update values accordingly
         if(relocatingDependants != null) {
             for (CandidateDependant relocatingDependant : relocatingDependants) {
 
-                // TODO: make DOB required at intake - at present it can be null so we need escape
-                // add comment
+                // At present DOB can be null at intake, so we need to escape error here by
+                // specifying a value — a dependant is statistically most likely to be a child.
                 boolean isChild = true;
 
                 if(relocatingDependant.getDob() != null) {

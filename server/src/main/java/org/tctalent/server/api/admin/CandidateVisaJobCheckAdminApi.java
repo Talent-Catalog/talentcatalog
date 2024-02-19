@@ -42,8 +42,7 @@ public class CandidateVisaJobCheckAdminApi
     private final CandidateVisaJobCheckService candidateVisaJobCheckService;
     private final SalesforceService salesforceService;
 
-    public CandidateVisaJobCheckAdminApi(
-            CandidateVisaJobCheckService candidateVisaJobCheckService,
+    public CandidateVisaJobCheckAdminApi(CandidateVisaJobCheckService candidateVisaJobCheckService,
         SalesforceService salesforceService) {
         this.candidateVisaJobCheckService = candidateVisaJobCheckService;
         this.salesforceService = salesforceService;

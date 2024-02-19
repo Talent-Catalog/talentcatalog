@@ -55,8 +55,9 @@ public class CandidateOpportunityParams extends OpportunityParams {
   private String employerFeedback;
 
   /**
-   * Relocation information given at visa assessment - gender and age breakdown of
-   * all relocating individuals including the candidate
+   * Relocation information for SF candidate opportunity update - gender and age breakdown of
+   * all relocating individuals including the candidate. Dependants are recorded at intake and then
+   * confirmed as relocating at visa assessment.
    */
   @Nullable
   private Map<String, Integer> relocationInfo;

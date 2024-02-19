@@ -89,7 +89,7 @@ public class CandidateDependantServiceImpl implements CandidateDependantService 
     }
 
     @Override
-    public CandidateDependant getDependant(Long dependantId)
+    public CandidateDependant getDependant(long dependantId)
         throws NoSuchObjectException {
         CandidateDependant candidateDependant;
         candidateDependant = candidateDependantRepository.findById(dependantId)

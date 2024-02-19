@@ -69,6 +69,6 @@ public interface CandidateDependantService {
      * @return CandidateDependant
      * @throws NoSuchObjectException if no dependant with that id exists
      */
-    CandidateDependant getDependant(Long id)
+    CandidateDependant getDependant(long id)
         throws NoSuchObjectException;
 }
