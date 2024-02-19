@@ -221,6 +221,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
     //Remember options
     this.localStorageService.set(this.savedStateKey()+this.myOppsOnlySuffix, this.myOppsOnly);
+    this.localStorageService.set(this.savedStateKey()+this.overdueOppsOnlySuffix, this.overdueOppsOnly);
     this.localStorageService.set(this.savedStateKey()+this.showClosedOppsSuffix, this.showClosedOpps);
     this.localStorageService.set(this.savedStateKey()+this.showInactiveOppsSuffix, this.showInactiveOpps);
 

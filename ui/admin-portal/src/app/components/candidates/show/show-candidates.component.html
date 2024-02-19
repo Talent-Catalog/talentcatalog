@@ -381,6 +381,15 @@
                 <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
                   <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
                 </a>
+                <a [routerLink]="['/candidate',candidate.candidateNumber]">
+                  <i class="fas fa-user" title="Candidate"></i>
+                </a>
+                <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
+                  <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+                </a>
+                <a *ngIf="isShowStage()" [routerLink]="['/job',this.candidateSource.sfJobOpp.id]">
+                  <i class="fa-solid fa-briefcase" title="Job"></i>
+                </a>
                 <a target="_blank" [href]="candidate.user.partner.websiteUrl">
                   <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
                 </a>

@@ -209,14 +209,29 @@ public class SystemAdminApi {
 
     @GetMapping("close_candidate_ops_for_closed_jobs")
     public void closeCandidateOpportunitiesForClosedJobs() {
+        //Get all closed job opps
         SearchJobRequest request = new SearchJobRequest();
         request.setSfOppClosed(true);
         final List<SalesforceJobOpp> jobOpps = jobService.searchJobsUnpaged(request);
+        
+        //For each closed job opp, closed it again (with the same closed stage).
+        //This will trigger the automatic closing of associated candidate opps.
+        log.info("Processing " + jobOpps.size() + " closed jobs");
+        int count = 0;
         for (SalesforceJobOpp jobOpp : jobOpps) {
             UpdateJobRequest updateJobRequest = new UpdateJobRequest();
             updateJobRequest.setStage(jobOpp.getStage());
-            jobService.updateJob(jobOpp.getId(), updateJobRequest);
+            try {
+                jobService.updateJob(jobOpp.getId(), updateJobRequest);
+            } catch (Exception e) {
+                log.warn("Exception thrown updating job " + jobOpp.getId(), e);
+            }
+            count++;
+            if (count%20 == 0) {
+                log.info("Processed " + count);
+            }
         }
+        log.info("Checked that cases are closed for " + jobOpps.size() + " closed jobs");
     }
 
     @GetMapping("load_candidate_ops")
@@ -2045,8 +2060,8 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
-    @GetMapping("sf-update-live-candidates")
-    public void sfUpdateLiveCandidates() {
-        candidateService.syncLiveCandidatesToSf();
+    @GetMapping("sf-update-candidates")
+    public void sfUpdateCandidates() {
+        candidateService.syncCandidatesToSf();
     }
 }
