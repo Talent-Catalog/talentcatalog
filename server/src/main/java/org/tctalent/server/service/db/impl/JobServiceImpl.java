@@ -50,6 +50,7 @@ import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.Candidate;
@@ -611,6 +612,12 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public List<Long> findUnreadChatsInOpps(SearchJobRequest request) {
+        //TODO JC findUnreadChatsInOpps not implemented in JobServiceImpl
+        throw new NotImplementedException("JobServiceImpl", "findUnreadChatsInOpps");
+    }
+
+    @Override
     public List<SalesforceJobOpp> searchJobsUnpaged(SearchJobRequest request) {
         User loggedInUser = userService.getLoggedInUser();
         List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
@@ -753,7 +760,7 @@ public class JobServiceImpl implements JobService {
         //closing stage.
         Map<CandidateOpportunityStage, List<Candidate>> closingStageCandidatesMap = new HashMap<>();
 
-        if (activeOpps.size() > 0) {
+        if (!activeOpps.isEmpty()) {
             final EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>
                 currentToClosingStageMap = closingStageLogic.get(jobCloseStage);
 

@@ -19,6 +19,7 @@ package org.tctalent.server.api.admin;
 import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -35,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
@@ -98,6 +100,15 @@ public class JobAdminApi implements
         throws NoSuchObjectException {
         SalesforceJobOpp job = jobService.removeSuggestedSearch(id, savedSearchId);
         return jobDto().build(job);
+    }
+
+    @PostMapping("check-unread-chats")
+    public @NotNull JobChatUserInfo checkUnreadChats(
+        @Valid @RequestBody SearchJobRequest request) {
+        List<Long> oppIds = jobService.findUnreadChatsInOpps(request);
+        JobChatUserInfo info = new JobChatUserInfo();
+        info.setNumberUnreadChats(oppIds.size());
+        return info;
     }
 
     @Override
