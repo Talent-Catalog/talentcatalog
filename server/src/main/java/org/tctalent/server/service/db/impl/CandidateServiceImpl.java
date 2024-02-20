@@ -176,7 +176,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-
 /**
  * This is the lowest level service relating to managing candidates.
  * The "higher level" services are:
