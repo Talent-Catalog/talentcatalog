@@ -40,10 +40,6 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
     this.selectedJob = job;
   }
 
-  doOpenJob() {
-    this.router.navigate(['job', this.selectedJob.id]);
-  }
-
   doToggleStarred() {
     this.loading = true;
     this.error = null

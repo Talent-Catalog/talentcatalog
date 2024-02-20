@@ -18,6 +18,33 @@ package org.tctalent.server.api.admin;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
+import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,34 +95,6 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.textExtract.TextExtractHelper;
-
-import java.io.File;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -210,14 +209,29 @@ public class SystemAdminApi {
 
     @GetMapping("close_candidate_ops_for_closed_jobs")
     public void closeCandidateOpportunitiesForClosedJobs() {
+        //Get all closed job opps
         SearchJobRequest request = new SearchJobRequest();
         request.setSfOppClosed(true);
         final List<SalesforceJobOpp> jobOpps = jobService.searchJobsUnpaged(request);
+        
+        //For each closed job opp, closed it again (with the same closed stage).
+        //This will trigger the automatic closing of associated candidate opps.
+        log.info("Processing " + jobOpps.size() + " closed jobs");
+        int count = 0;
         for (SalesforceJobOpp jobOpp : jobOpps) {
             UpdateJobRequest updateJobRequest = new UpdateJobRequest();
             updateJobRequest.setStage(jobOpp.getStage());
-            jobService.updateJob(jobOpp.getId(), updateJobRequest);
+            try {
+                jobService.updateJob(jobOpp.getId(), updateJobRequest);
+            } catch (Exception e) {
+                log.warn("Exception thrown updating job " + jobOpp.getId(), e);
+            }
+            count++;
+            if (count%20 == 0) {
+                log.info("Processed " + count);
+            }
         }
+        log.info("Checked that cases are closed for " + jobOpps.size() + " closed jobs");
     }
 
     @GetMapping("load_candidate_ops")
@@ -2046,8 +2060,8 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
-    @GetMapping("sf-update-live-candidates")
-    public void sfUpdateLiveCandidates() {
-        candidateService.syncLiveCandidatesToSf();
+    @GetMapping("sf-update-candidates")
+    public void sfUpdateCandidates() {
+        candidateService.syncCandidatesToSf();
     }
 }

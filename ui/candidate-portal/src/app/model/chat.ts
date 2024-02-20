@@ -53,5 +53,5 @@ export interface CreateChatRequest {
   type?: JobChatType;
   jobId?: number;
   sourcePartnerId?: number;
-  candidateOppId?: number;
+  candidateId?: number;
 }

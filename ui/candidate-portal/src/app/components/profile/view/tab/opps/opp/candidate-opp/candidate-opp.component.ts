@@ -52,11 +52,12 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   private fetchJobChats() {
     const destinationChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateRecruiting,
-      candidateOppId: this.selectedOpp?.id
+      candidateId: this.candidate.id,
+      jobId: this.selectedOpp?.jobOpp?.id
     }
     const sourceChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateProspect,
-      candidateOppId: this.selectedOpp?.id
+      candidateId: this.candidate.id
     }
     const allJobCandidatesChatRequest: CreateChatRequest = {
       type: JobChatType.AllJobCandidates,

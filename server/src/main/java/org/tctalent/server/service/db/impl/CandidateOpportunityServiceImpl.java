@@ -16,6 +16,19 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -26,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
-import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
@@ -34,7 +46,6 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateStatus;
-import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Opportunity;
@@ -57,27 +68,12 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 @Service
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateService candidateService;
     private final JobChatService jobChatService;
-    private final SalesforceConfig salesforceConfig;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
     private final UserService userService;
@@ -88,13 +84,12 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
     public CandidateOpportunityServiceImpl(
             CandidateOpportunityRepository candidateOpportunityRepository,
-            CandidateService candidateService, JobChatService jobChatService, SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
+            CandidateService candidateService, JobChatService jobChatService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
             UserService userService, AuthService authService, GoogleDriveConfig googleDriveConfig,
         FileSystemService fileSystemService) {
         this.candidateOpportunityRepository = candidateOpportunityRepository;
         this.candidateService = candidateService;
         this.jobChatService = jobChatService;
-        this.salesforceConfig = salesforceConfig;
         this.salesforceJobOppService = salesforceJobOppService;
         this.salesforceService = salesforceService;
         this.userService = userService;
@@ -150,8 +145,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         if (create) {
             //Create the chats
-            jobChatService.createCandidateOppChat(JobChatType.CandidateProspect, opp);
-            jobChatService.createCandidateOppChat(JobChatType.CandidateRecruiting, opp);
+            jobChatService.createCandidateProspectChat(opp.getCandidate());
+            jobChatService.createCandidateRecruitingChat(opp.getCandidate(), opp.getJobOpp());
         }
 
         return opp;
