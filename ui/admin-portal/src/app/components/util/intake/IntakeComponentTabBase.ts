@@ -154,6 +154,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
       'occupations': this.occupationService.listOccupations(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'intakeData':  this.candidateService.getIntakeData(this.candidate.id),
+      'candidate': this.candidateService.get(this.candidate.id)
     }).subscribe(results => {
       this.loading = false;
       this.countries = results['countries'];
@@ -163,6 +164,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
       this.occupations = results['occupations'];
       this.languageLevels = results['languageLevels'];
       this.candidateIntakeData = results['intakeData'];
+      this.candidate = results['candidate'];
       this.onDataLoaded(init);
     }, error => {
       this.loading = false;
@@ -288,6 +290,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
         this.candidateService.completeIntake(this.candidate.id, full).subscribe(
           (candidate)=> {
             this.candidate = candidate;
+            this.refreshIntakeData();
             //todo look at refactoring this note method (I don't need to update the button text, I can use new fields to show/disabled or not.)
             let intakeType: string = full ? 'Full Intake' : 'Mini Intake'
             this.createIntakeNote(intakeType, 'complete', null);
