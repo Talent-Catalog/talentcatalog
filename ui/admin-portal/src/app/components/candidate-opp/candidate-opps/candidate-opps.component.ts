@@ -12,6 +12,7 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 import {CountryService} from "../../../services/country.service";
+import {JobChat} from "../../../model/chat";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -88,5 +89,12 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
       overdue =  dueDate < today;
     }
     return overdue;
+  }
+
+  getChats(opp: CandidateOpportunity): JobChat[] {
+    //todo Where is this stored - it is static info associated with an opp so can be cached.
+    //Each individual chat request is cached - so can do the joined multi fetch which should pull
+    // from existing cache
+    return undefined;
   }
 }

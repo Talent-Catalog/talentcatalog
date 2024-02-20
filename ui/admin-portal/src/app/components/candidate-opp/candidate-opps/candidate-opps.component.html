@@ -116,6 +116,9 @@
             {{opp.nextStepDueDate}}
           </td>
           <td *ngIf="!showJobOppName" [title]="opp.name">
+            <app-chat-read-status
+              [chats]="getChats(opp)"
+            ></app-chat-read-status>
             {{opp.name | truncate: 25}}
             <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
               <i class="fas fa-user" title="Candidate"></i>
