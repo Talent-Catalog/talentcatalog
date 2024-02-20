@@ -17,9 +17,7 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  OldIntakeInputComponent
-} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -30,10 +28,7 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
-import {
-  CandidateExamService,
-  CreateCandidateExamRequest
-} from "../../../../../services/candidate-exam.service";
+import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
@@ -77,6 +72,10 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       .then((country) => button.textContent = 'Note created!')
       .catch(() => { /* Isn't possible */
       });
+  }
+
+  get fullIntakeComplete() {
+    return this.candidate.fullIntakeCompletedDate != null;
   }
 
   isPalestinian(): boolean {

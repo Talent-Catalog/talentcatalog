@@ -22,9 +22,13 @@
 </div>
 
 <div *ngIf="!loading" id="FullIntakeForm">
-  <div class="d-flex justify-content-between mb-2 ms-2">
+  <div class="d-flex justify-content-between mb-3 ms-2 align-items-end">
     <div class="d-flex flex-column justify-content-between">
-      <h5 class="mb-2">Full Intake</h5>
+      <div class="mb-3 d-flex">
+        <h4 class="mb-3">Full Intake</h4>
+        <h6 *ngIf="fullIntakeComplete" class="ms-2 text-success align-self-center">Completed by {{candidate.fullIntakeCompletedBy.firstName}} {{candidate.fullIntakeCompletedBy.lastName}}
+        on {{candidate.fullIntakeCompletedDate | date}}</h6>
+      </div>
       <div class="d-flex">
         <app-export-pdf [candidate]="candidate" [idToExport]="'FullIntakeForm'"></app-export-pdf>
 
@@ -37,24 +41,23 @@
 
     <div class="d-flex flex-column justify-content-between">
 
-      <div class="btn-group">
-          <button class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">
-            <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-            Input External Intake
-          </button>
-          <button class="btn btn-sm btn-success border border-white" (click)="createIntakeNote('Full Intake', 'start', $event.target)" [disabled]="saving || clickedOldIntake">
-            Start New Intake
-          </button>
-          <button class="btn btn-sm btn-secondary border border-white" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
-            Update Intake
-          </button>
+<!--          <button class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">-->
+<!--            <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
+<!--            Input External Intake-->
+<!--          </button>-->
+      <div *ngIf="fullIntakeComplete; else notComplete">
+        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+          Update
+        </button>
       </div>
-      <div>
-        <div class="text-muted small font-italic">- Before starting or updating the interview, please click appropriate button.</div>
-        <div class="text-muted small font-italic">- If entering an external intake click 'Input External Intake' and ignore other buttons.</div>
-        <div class="text-muted small font-italic">- This will create a note on the right to help track changes. Only click once per intake.</div>
-      </div>
-
+      <ng-template #notComplete>
+        <button class="btn btn-success"
+                (click)="completeIntake(true)"
+                [disabled]="candidate.fullIntakeCompletedDate != null">
+          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+          Complete
+        </button>
+      </ng-template>
     </div>
   </div>
 

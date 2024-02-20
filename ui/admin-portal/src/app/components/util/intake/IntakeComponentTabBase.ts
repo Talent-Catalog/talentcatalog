@@ -289,8 +289,8 @@ export abstract class IntakeComponentTabBase implements OnInit {
           (candidate)=> {
             this.candidate = candidate;
             //todo look at refactoring this note method (I don't need to update the button text, I can use new fields to show/disabled or not.)
-            let formCompleted: string = full ? 'Full Intake' : 'Mini Intake'
-            this.createIntakeNote(formCompleted, 'complete', null);
+            let intakeType: string = full ? 'Full Intake' : 'Mini Intake'
+            this.createIntakeNote(intakeType, 'complete', null);
             this.saving = false;
           }, (error) => {
             this.error = error;
