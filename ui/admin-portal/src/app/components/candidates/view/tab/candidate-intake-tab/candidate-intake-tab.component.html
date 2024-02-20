@@ -40,11 +40,11 @@
     </div>
 
     <div class="d-flex flex-column justify-content-between">
-
-<!--          <button class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">-->
-<!--            <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
-<!--            Input External Intake-->
-<!--          </button>-->
+      <!-- todo add a field to YAML file which we make this input external intake button dependant on. Then we can easily implement this button when needed.  -->
+<!--      <button *ngIf="!fullIntakeComplete" class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">-->
+<!--        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
+<!--        Input External Intake-->
+<!--      </button>-->
       <div *ngIf="fullIntakeComplete; else notComplete">
         <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
           Update

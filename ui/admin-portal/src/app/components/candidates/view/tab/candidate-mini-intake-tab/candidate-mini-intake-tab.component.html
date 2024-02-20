@@ -38,11 +38,11 @@
       </div>
     </div>
     <div class="d-flex justify-content-between">
-
-      <button *ngIf="!miniIntakeComplete" class="btn btn-primary border border-white" (click)="inputOldIntakeNote('Mini Intake', $event.target)" [disabled]="saving">
-        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-        Input External Intake
-      </button>
+      <!-- todo add a field to YAML file which we make this input external intake button dependant on. Then we can easily implement this button when needed.  -->
+<!--      <button *ngIf="!miniIntakeComplete" class="btn btn-primary border border-white" (click)="inputOldIntakeNote('Mini Intake', $event.target)" [disabled]="saving">-->
+<!--        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
+<!--        Input External Intake-->
+<!--      </button>-->
       <div *ngIf="miniIntakeComplete; else notComplete">
         <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
           Update
