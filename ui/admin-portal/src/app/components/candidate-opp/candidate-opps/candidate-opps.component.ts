@@ -12,7 +12,10 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 import {CountryService} from "../../../services/country.service";
-import {JobChat} from "../../../model/chat";
+import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
+import {forkJoin} from "rxjs";
+import {ChatService} from "../../../services/chat.service";
+import {SearchResults} from "../../../model/search-results";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -51,7 +54,15 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   showInactiveOppsTip = "Show cases that are no longer active - " +
     "for example if the candidate has already relocated";
 
+
+  /**
+   * Map of opp id to opp chats
+   */
+  private oppChats: Map<number, JobChat[]> = new Map<number, JobChat[]>();
+
+
   constructor(
+    private chatService: ChatService,
     fb: FormBuilder,
     authService: AuthorizationService,
     localStorageService: LocalStorageService,
@@ -70,6 +81,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
 
     if (changes.candidateOpps) {
       this.opps = this.candidateOpps;
+      this.fetchChats();
     }
   }
 
@@ -92,9 +104,47 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   }
 
   getChats(opp: CandidateOpportunity): JobChat[] {
-    //todo Where is this stored - it is static info associated with an opp so can be cached.
-    //Each individual chat request is cached - so can do the joined multi fetch which should pull
-    // from existing cache
-    return undefined;
+    return opp ? this.oppChats.get(opp.id) : null;
+  }
+
+  /**
+   * Override inherited method which processes the search results into this.opps so that
+   * we can fetch the opps chats.
+   * @param results
+   * @protected
+   */
+  protected processSearchResults(results: SearchResults<CandidateOpportunity>) {
+    //Call standard processing (which puts the results into this.opps)
+    super.processSearchResults(results);
+
+    //Then fetch the chats associated with all opps.
+    this.fetchChats();
+  }
+
+  private fetchChats() {
+    this.error = null;
+    for (const opp of this.opps) {
+      const candidateProspectChatRequest: CreateChatRequest = {
+        type: JobChatType.CandidateProspect,
+        candidateId: opp?.candidate?.id,
+      }
+      const candidateRecruitingChatRequest: CreateChatRequest = {
+        type: JobChatType.CandidateRecruiting,
+        candidateId: opp?.candidate?.id,
+        jobId: opp?.jobOpp?.id
+      }
+
+      forkJoin( [
+        this.chatService.getOrCreate(candidateProspectChatRequest),
+        this.chatService.getOrCreate(candidateRecruitingChatRequest),
+      ]).subscribe(
+        chats => {
+          this.oppChats.set(opp.id, chats);
+        },
+        (error) => {
+          this.error = error;
+        }
+      );
+    }
   }
 }
