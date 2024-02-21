@@ -13,7 +13,7 @@ import {EnumOption, enumOptions} from "../../../util/enum";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 import {CountryService} from "../../../services/country.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
-import {forkJoin} from "rxjs";
+import {forkJoin, Observable} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {SearchResults} from "../../../model/search-results";
 
@@ -54,6 +54,10 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   showInactiveOppsTip = "Show cases that are no longer active - " +
     "for example if the candidate has already relocated";
 
+  /**
+   * All chats associated with all opps. Used to construct overall chat read notifier.
+   */
+  private allChats: JobChat[] = [];
 
   /**
    * Map of opp id to opp chats
@@ -123,6 +127,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
 
   private fetchChats() {
     this.error = null;
+    let oppsChats$: Observable<JobChat[]>[] = [];
     for (const opp of this.opps) {
       const candidateProspectChatRequest: CreateChatRequest = {
         type: JobChatType.CandidateProspect,
@@ -134,17 +139,53 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
         jobId: opp?.jobOpp?.id
       }
 
-      forkJoin( [
+      oppsChats$.push(forkJoin( [
         this.chatService.getOrCreate(candidateProspectChatRequest),
         this.chatService.getOrCreate(candidateRecruitingChatRequest),
-      ]).subscribe(
-        chats => {
-          this.oppChats.set(opp.id, chats);
-        },
-        (error) => {
-          this.error = error;
-        }
-      );
+      ]));
+    }
+
+    //This is a forkJoin of forkJoins - one for each opp.
+    forkJoin(oppsChats$).subscribe({
+        next: chatsByOpp => this.processOppChats(chatsByOpp),
+        error: err => this.error = err
+      }
+    )
+  }
+
+  private processOppChats(chatsByOpp: JobChat[][]) {
+    for (let i = 0; i < this.opps.length; i++) {
+      const opp = this.opps[i];
+      let chats = chatsByOpp[i];
+      this.oppChats.set(opp.id, chats);
+
+      for (const jobChat of chats) {
+        this.allChats.push(jobChat);
+      }
+    }
+
+    //Construct a single observable for all visible chat's read statuses, and subscribe to it
+    const chatReadStatus$ = this.chatService.combineChatReadStatuses(this.allChats);
+    chatReadStatus$.subscribe(
+      {
+        next: chatsRead => this.processVisibleChatsReadUpdate(chatsRead),
+        error: err => this.error = err
+      }
+    )
+
+  }
+
+  private processVisibleChatsReadUpdate(chatsRead: boolean) {
+    if (this.chatsRead$) {
+      if (this.chatsRead$.value && !chatsRead) {
+        //Status from server says all chats read, but there are unread visible chats.
+        //Mark all chats read false
+        this.chatsRead$.next(false);
+      } else if (!this.chatsRead$.value && chatsRead) {
+        //All chats are showing not read, but all chats for visible opps are now read.
+        //Fetch from server again to see if there are still some non visible opps with unread chats.
+        this.search();
+      }
     }
   }
 }

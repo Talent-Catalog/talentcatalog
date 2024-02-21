@@ -5,6 +5,7 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {HomeComponent} from "../../candidates/home.component";
 import {SearchOppsBy} from "../../../model/base";
+import {BehaviorSubject} from "rxjs";
 
 @Component({
   selector: 'app-job-home',
@@ -12,6 +13,18 @@ import {SearchOppsBy} from "../../../model/base";
   styleUrls: ['./job-home.component.scss']
 })
 export class JobHomeComponent extends HomeComponent {
+
+  /**
+   * This tracks the overall read status of all the chats that it manages.
+   * It is used to drive the read status component on the tab in the Jobs home component - which displays an asterisk
+   * if some chats are unread.
+   * <p/>
+   * This component can call next on this subject if it knows that some of the chats it manages
+   * are unread. The fact that it is a BehaviorSubject means that you can query the current status
+   * of the higher level component.
+   */
+  jobCreatorChatsRead$: BehaviorSubject<boolean>;
+  sourcePartnerChatsRead$: BehaviorSubject<boolean>;
 
   constructor(
     protected localStorageService: LocalStorageService,
@@ -23,6 +36,13 @@ export class JobHomeComponent extends HomeComponent {
     this.lastTabKey = 'JobsHomeLastTab';
     this.lastCategoryTabKey = 'JobsHomeLastCategoryTab';
     this.defaultTabId = 'LiveJobs';
+  }
+
+  ngOnInit() {
+    super.ngOnInit();
+    //Initialize with null - Unknown.
+    this.jobCreatorChatsRead$ = new BehaviorSubject<boolean>(null);
+    this.sourcePartnerChatsRead$ = new BehaviorSubject<boolean>(null);
   }
 
   /**

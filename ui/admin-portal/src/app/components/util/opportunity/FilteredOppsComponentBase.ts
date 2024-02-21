@@ -46,10 +46,28 @@ import {User} from "../../../model/user";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {JobChatUserInfo} from "../../../model/chat";
+import {BehaviorSubject} from "rxjs";
 
 @Directive()
 export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
+
+  /**
+   * Defines type of opportunity search.
+   */
   @Input() searchBy: SearchOppsBy;
+
+  /**
+   * This is passed in from a higher level component which tracks whether the overall read status
+   * of all the chats that it manages.
+   * That component is the cases tab in the Jobs home component - which displays an asterisk
+   * if some chats are unread.
+   * <p/>
+   * This component can call next on this subject if it knows that some of the chats it manages
+   * are unread. The fact that it is a BehaviorSubject means that you can query the current status
+   * of the higher level component.
+   */
+  @Input() chatsRead$: BehaviorSubject<boolean>;
+
   @Output() oppSelection = new EventEmitter();
 
   opps: T[];
@@ -74,9 +92,6 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   pageSize: number;
 
   results: SearchResults<T>;
-
-  //todo - Maybe this should be an emitted event like oppSelection
-  unreadChats: boolean;
 
   //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
   @ViewChild("searchFilter")
@@ -303,7 +318,12 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   }
 
   protected processChatsReadStatus(info: JobChatUserInfo) {
-    this.unreadChats = info.numberUnreadChats > 0;
+    if (this.chatsRead$) {
+      //There is a high level component monitoring the read status of all chats.
+      //Notify that component but sending the new read status on the Subject. Read is true
+      //if there are no unread chats, otherwise false.
+      this.chatsRead$.next(info.numberUnreadChats === 0);
+    }
     this.loading = false;
   }
 

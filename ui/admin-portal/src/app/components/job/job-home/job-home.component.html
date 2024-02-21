@@ -34,10 +34,14 @@
 
   <ng-container *ngIf="isJobCreator()" ngbNavItem="MyCasesAsJobCreator">
     <a ngbNavLink title="Candidate cases associated with jobs created by my partner organization">
+      <app-chat-read-status
+        [observable]="jobCreatorChatsRead$"
+      ></app-chat-read-status>
       {{myCasesTabName(SearchOppsBy.mineAsJobCreator)}} <i class="fa-solid fa-address-book"></i></a>
     <ng-template ngbNavContent>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator"
+        [chatsRead$]="jobCreatorChatsRead$"
       >
       </app-candidate-opps-with-detail>
     </ng-template>
@@ -45,10 +49,14 @@
 
   <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCasesAsSourcePartner">
     <a ngbNavLink title="Candidate cases managed by my partner organization">
+      <app-chat-read-status
+        [observable]="sourcePartnerChatsRead$"
+      ></app-chat-read-status>
       {{myCasesTabName(SearchOppsBy.mineAsSourcePartner)}} <i class="fa-solid fa-address-book"></i></a>
     <ng-template ngbNavContent>
       <app-candidate-opps-with-detail
         [searchBy]="SearchOppsBy.mineAsSourcePartner"
+        [chatsRead$]="sourcePartnerChatsRead$"
       >
       </app-candidate-opps-with-detail>
     </ng-template>

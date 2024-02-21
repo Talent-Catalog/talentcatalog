@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Observable, Subject} from "rxjs";
+import {combineLatest, Observable, Subject} from "rxjs";
 import {ChatPost, CreateChatRequest, JobChat, JobChatUserInfo} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
@@ -84,6 +84,24 @@ export class ChatService implements OnDestroy {
     this.chatPosts$.clear();
     this.chatByRequest$.clear();
 
+  }
+
+  /**
+   * Creates a single chat read status from a group of chats indicating whether all chats are read
+   * or some are unread.
+   * @param chats Chats to be monitored
+   */
+  combineChatReadStatuses(chats: JobChat[]): Observable<boolean> {
+    //Construct array of chat read statuses from array of chats
+    let chatReadStatuses$ = chats.map(
+      (chat) => this.getChatIsRead$(chat));
+
+    //Combine the latest values of all the statuses and return a single status which is true
+    //only if all are true (ie none are false)
+    return combineLatest(chatReadStatuses$).pipe(
+      //For isRead to be true, no chats can be false (unread)
+      map(statuses =>  statuses.find(isRead => isRead == false) == null)
+    );
   }
 
   create(request: CreateChatRequest): Observable<JobChat> {

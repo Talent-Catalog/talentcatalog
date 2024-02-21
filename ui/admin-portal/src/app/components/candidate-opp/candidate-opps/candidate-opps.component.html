@@ -137,6 +137,9 @@
             </a>
           </td>
           <td *ngIf="showJobOppName" [title]="opp.jobOpp.name">
+            <app-chat-read-status
+              [chats]="getChats(opp)"
+            ></app-chat-read-status>
             <a [routerLink]="['/opp',opp.id]">
               {{opp.jobOpp.name}} <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
             </a>
