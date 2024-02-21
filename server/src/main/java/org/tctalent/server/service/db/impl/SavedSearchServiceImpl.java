@@ -276,7 +276,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             // This is an elasticsearch request
 
-            // Combine any joined searches (processed as elastic irrespective of keyword search)
+            // Combine any joined searches (which will all be processed as elastic)
             BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
                 simpleQueryString, excludedCandidates);
 
@@ -293,7 +293,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 candidateIds.add(hit.getContent().getMasterId());
             }
         } else {
-            //Compute the normal query
+            //Compute the non-elastic search query
             final Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
 
             List<Candidate> candidates = candidateRepository.findAll(query);
@@ -302,9 +302,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 candidateIds.add(candidate.getId());
             }
         }
-
         log.info("Found " + candidateIds.size() + " candidates in search");
-
         return candidateIds;
     }
 
@@ -897,7 +895,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         User user = userService.getLoggedInUser();
 
         // Not every base search will contain an elastic search term, since we're processing
-        // joined regular searches here too — so we need the option to skip this step
+        // joined regular searches here too — so we need a safe escape here
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             // Create a simple query string builder from the given string
             SimpleQueryStringBuilder simpleQueryStringBuilder =
@@ -1147,7 +1145,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private BoolQueryBuilder addElasticQuery(BoolQueryBuilder boolQueryBuilder,
         SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
-        // We don't want searches built on themselves
+        // We don't want searches built on themselves - this is also guarded against in frontend
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
@@ -1162,6 +1160,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Set<Candidate> excludeCandidates =
             computeCandidatesExcludedFromSearchCandidateRequest(request);
 
+        // Each recursion, if any, builds on the query
         boolQueryBuilder = computeElasticQuery(boolQueryBuilder, request,
             simpleStringQuery, excludeCandidates);
 
@@ -1520,7 +1519,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             // This is an elasticsearch request
 
-            // Combine any joined searches (processed as elastic irrespective of keyword search)
+            // Combine any joined searches (which will all be processed as elastic)
             BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
                 simpleQueryString, excludedCandidates);
 
@@ -1564,6 +1563,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 hits.getTotalHits());
 
         } else {
+            //Compute the non-elastic query
             Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
         }
