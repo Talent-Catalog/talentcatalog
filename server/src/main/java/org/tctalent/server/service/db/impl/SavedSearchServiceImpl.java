@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -82,6 +83,7 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
@@ -114,11 +116,13 @@ import org.tctalent.server.request.candidate.SearchJoinRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
+import org.tctalent.server.request.reviewstatus.CreateCandidateReviewStatusRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
+import org.tctalent.server.service.db.CandidateReviewStatusService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -139,6 +143,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
+    private final CandidateReviewStatusService candidateReviewStatusService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
@@ -249,6 +254,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //the standard saved search request.
         searchRequest.merge(request);
 
+        //Mark candidates with no review statuses as unverified
+        if (isNotEmpty(searchRequest.getReviewStatusFilter())) {
+            initialiseMissingReviewStatuses(savedSearchId, searchRequest);
+        }
         //Do the search
         final Page<Candidate> candidates = doSearchCandidates(searchRequest);
 
@@ -256,6 +265,26 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         markUserSelectedCandidates(savedSearchId, candidates);
 
         return candidates;
+    }
+
+    private void initialiseMissingReviewStatuses(long savedSearchId, SearchCandidateRequest request) {
+
+        // get all candidate ids with review statuses
+        final Set<Long> candidatesWithReviewStatuses =
+            candidateReviewStatusRepository.findReviewedCandidateIdsForSearch(
+                request.getSavedSearchId(), Arrays.stream(ReviewStatus.values()).toList());
+
+        // mark candidate ids with no review statuses as unverified
+        searchCandidates(savedSearchId)
+            .stream()
+            .filter(candidateId -> !candidatesWithReviewStatuses.contains(candidateId))
+            .forEach(candidateId -> candidateReviewStatusService.createCandidateReviewStatusItem(
+                CreateCandidateReviewStatusRequest.builder()
+                    .candidateId(candidateId)
+                    .savedSearchId(savedSearchId)
+                    .reviewStatus(ReviewStatus.unverified)
+                    .build()
+            ));
     }
 
     @Override
