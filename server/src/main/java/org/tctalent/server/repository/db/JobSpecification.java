@@ -162,6 +162,9 @@ public class JobSpecification {
                     ors.getExpressions().add(
                         builder.equal(job.get("createdBy"), loggedInUser.getId())
                     );
+                    ors.getExpressions().add(
+                        builder.equal(job.get("contactUser"), loggedInUser.getId())
+                    );
                 }
             }
 
@@ -189,7 +192,7 @@ public class JobSpecification {
                 }
             }
 
-            if (ors.getExpressions().size() != 0) {
+            if (!ors.getExpressions().isEmpty()) {
                 conjunction.getExpressions().add(ors);
             }
 
