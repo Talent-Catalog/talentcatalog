@@ -29,13 +29,12 @@ import {LanguageLevel} from '../../../model/language-level';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import {
-  CandidateNoteService,
-  CreateCandidateNoteRequest
-} from '../../../services/candidate-note.service';
+import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ConfirmationComponent} from "../confirm/confirmation.component";
 
 /**
  * Base class for all candidate intake tab components.
@@ -127,6 +126,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
     protected languageLevelService: LanguageLevelService,
     protected noteService: CandidateNoteService,
     protected authenticationService: AuthenticationService,
+    protected modalService: NgbModal
   ) { }
 
   ngOnInit(): void {
@@ -154,6 +154,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
       'occupations': this.occupationService.listOccupations(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'intakeData':  this.candidateService.getIntakeData(this.candidate.id),
+      'candidate': this.candidateService.get(this.candidate.id)
     }).subscribe(results => {
       this.loading = false;
       this.countries = results['countries'];
@@ -163,6 +164,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
       this.occupations = results['occupations'];
       this.languageLevels = results['languageLevels'];
       this.candidateIntakeData = results['intakeData'];
+      this.candidate = results['candidate'];
       this.onDataLoaded(init);
     }, error => {
       this.loading = false;
@@ -261,6 +263,46 @@ export abstract class IntakeComponentTabBase implements OnInit {
       name += '(' + user.partner.abbreviation + ')';
     }
     return name;
+  }
+
+  /**
+   * Populates the completedBy completedDate fields for a particular intake (mini or full)
+   * @param full boolean. If true, completing full intake. If false, completing mini intake.
+   */
+  completeIntake(full: boolean) {
+    const completeIntakeModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    let intake = full ? 'Full' : 'Mini'
+    completeIntakeModal.componentInstance.title = "Mark the " + intake + " Intake as complete?";
+    completeIntakeModal.componentInstance.message =
+      "This will mark the candidate as having had the intake completed and store the audit data of " +
+      "completion (who & when). Note: An intake can only be completed ONCE. " +
+      "Once completed, updates can be made to the intakes anytime, just click the Update Intake " +
+      "button to keep track of who/when completed the update.";
+
+    completeIntakeModal.result
+    .then((result) => {
+      if (result == true) {
+        this.saving = true;
+        this.candidateService.completeIntake(this.candidate.id, full).subscribe(
+          (candidate)=> {
+            this.candidate = candidate;
+            this.refreshIntakeData();
+            //todo look at refactoring this note method (I don't need to update the button text, I can use new fields to show/disabled or not.)
+            let intakeType: string = full ? 'Full Intake' : 'Mini Intake'
+            this.createIntakeNote(intakeType, 'complete', null);
+            this.saving = false;
+          }, (error) => {
+            this.error = error;
+            this.saving = false;
+          }
+        )
+      }
+    })
+    .catch(() => {});
   }
 
 }

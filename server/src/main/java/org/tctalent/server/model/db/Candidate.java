@@ -28,6 +28,7 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -45,6 +46,7 @@ import javax.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
@@ -716,6 +718,25 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @NotNull
     private Boolean contactConsentPartners;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mini_intake_completed_by")
+    private User miniIntakeCompletedBy;
+
+    @Nullable
+    @Column(name = "mini_intake_completed_date")
+    private OffsetDateTime miniIntakeCompletedDate;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "full_intake_completed_by")
+    private User fullIntakeCompletedBy;
+
+    @Nullable
+    @Column(name = "full_intake_completed_date")
+    private OffsetDateTime fullIntakeCompletedDate;
+
 
     public Candidate() {
     }
@@ -2063,6 +2084,42 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setContactConsentPartners(Boolean emailConsentPartners) {
         this.contactConsentPartners = emailConsentPartners;
+    }
+
+    @Nullable
+    public User getMiniIntakeCompletedBy() {
+        return miniIntakeCompletedBy;
+    }
+
+    public void setMiniIntakeCompletedBy(@Nullable User miniIntakeCompletedBy) {
+        this.miniIntakeCompletedBy = miniIntakeCompletedBy;
+    }
+
+    @Nullable
+    public OffsetDateTime getMiniIntakeCompletedDate() {
+        return miniIntakeCompletedDate;
+    }
+
+    public void setMiniIntakeCompletedDate(@Nullable OffsetDateTime miniIntakeCompletedDate) {
+        this.miniIntakeCompletedDate = miniIntakeCompletedDate;
+    }
+
+    @Nullable
+    public User getFullIntakeCompletedBy() {
+        return fullIntakeCompletedBy;
+    }
+
+    public void setFullIntakeCompletedBy(@Nullable User fullIntakeCompletedBy) {
+        this.fullIntakeCompletedBy = fullIntakeCompletedBy;
+    }
+
+    @Nullable
+    public OffsetDateTime getFullIntakeCompletedDate() {
+        return fullIntakeCompletedDate;
+    }
+
+    public void setFullIntakeCompletedDate(@Nullable OffsetDateTime fullIntakeCompletedDate) {
+        this.fullIntakeCompletedDate = fullIntakeCompletedDate;
     }
 
     public boolean isSelected() {
