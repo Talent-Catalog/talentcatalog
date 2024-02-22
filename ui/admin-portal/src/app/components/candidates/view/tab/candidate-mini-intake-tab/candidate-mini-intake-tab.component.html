@@ -44,7 +44,7 @@
 <!--        Input External Intake-->
 <!--      </button>-->
       <div *ngIf="miniIntakeComplete; else notComplete">
-        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
           Update
         </button>
       </div>
@@ -214,7 +214,7 @@
   </div>
   <div class="float-end mt-3">
     <div *ngIf="miniIntakeComplete; else notComplete">
-      <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+      <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
         Update
       </button>
     </div>
