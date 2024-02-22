@@ -489,15 +489,15 @@
             <div class="col-md-4">
               <div class="row row-cols-2">
                 <div>
-                  <label class="form-label">Mini Intake completed?</label>
-                  <ng-select placeholder="Select or type..." [formControlName]="'miniIntakeCompleted'">
+                  <label for="miniIntakeCompleted" class="form-label">Mini Intake completed?</label>
+                  <ng-select id="miniIntakeCompleted" placeholder="Select or type..." [formControlName]="'miniIntakeCompleted'">
                     <ng-option [value]="true">Yes</ng-option>
                     <ng-option [value]="false">No</ng-option>
                   </ng-select>
                 </div>
                 <div>
-                  <label class="form-label">Full Intake completed?</label>
-                  <ng-select placeholder="Select or type..." [formControlName]="'fullIntakeCompleted'">
+                  <label for="fullIntakeCompleted" class="form-label">Full Intake completed?</label>
+                  <ng-select id="fullIntakeCompleted" placeholder="Select or type..." [formControlName]="'fullIntakeCompleted'">
                     <ng-option [value]="true">Yes</ng-option>
                     <ng-option [value]="false">No</ng-option>
                   </ng-select>
