@@ -23,8 +23,10 @@ import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Account;
@@ -319,4 +321,17 @@ public interface SalesforceService {
     void updateEmployerOpportunityStage(
         String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
         throws SalesforceException, WebClientException;
+
+    /**
+     * Updates a SF candidate opportunity's relocation information based on info from the
+     * candidate job visa assessment. This section on the SF record reports the age and gender
+     * breakdown of all individuals relocating as a result of that opportunity, including
+     * the candidate.
+     * @param visaJobCheck the candidate visa job check that is source of the info
+     * @throws NoSuchObjectException if there's no candidate dependant with a given id
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    void updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
+        throws NoSuchObjectException, SalesforceException, WebClientException;
 }

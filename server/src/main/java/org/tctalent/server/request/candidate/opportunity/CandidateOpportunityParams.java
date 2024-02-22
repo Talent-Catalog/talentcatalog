@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.candidate.opportunity;
 
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -52,4 +53,12 @@ public class CandidateOpportunityParams extends OpportunityParams {
    */
   @Nullable
   private String employerFeedback;
+
+  /**
+   * Relocation information for SF candidate opportunity update - gender and age breakdown of
+   * all relocating individuals including the candidate. Dependants are recorded at intake and then
+   * confirmed as relocating at visa assessment.
+   */
+  @Nullable
+  private Map<String, Integer> relocationInfo;
 }

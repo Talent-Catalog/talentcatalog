@@ -16,14 +16,19 @@
 
 package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.util.CollectionUtils;
-
-import javax.persistence.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.persistence.Convert;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.util.CollectionUtils;
 
 @Getter
 @Setter
@@ -147,5 +152,15 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
             relocatingDependantIds.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(",")) : null;
+    }
+
+    /**
+     * Gets the candidate to whom the given instance of candidate job visa assessment refers, by
+     * querying the parent candidate visa check.
+     * @return candidate associated with given candidate job visa check
+     */
+    public Candidate getCandidate() {
+        Candidate candidate = this.getCandidateVisaCheck().getCandidate();
+        return candidate;
     }
 }
