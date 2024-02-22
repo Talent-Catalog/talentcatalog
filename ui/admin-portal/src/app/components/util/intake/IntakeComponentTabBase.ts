@@ -221,7 +221,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
    * Called when Start, update or complete buttons on intake forms are clicked.
    * Creates an appropriate note with user/time.
    * @param formName is the type of intake interview used for the comment/title.
-   * @param btnType is either start, update or complete.
+   * @param btnType is either update or complete.
    */
   public createIntakeNote(formName: string, btnType: string) {
     this.saving = true;
