@@ -230,7 +230,15 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected abstract createSearchRequest(): SearchOpportunityRequest;
 
-  search() {
+  /**
+   * This executes a search based on the current form fields by default - unless runSearch = false.
+   * <p/>
+   * If runSearch is false, it just uses the search fields to count the number of unwatched chats
+   * associated with the opps specified by the search fields.
+   * @param runSearch True (default) if actual new opps matching the search fields should be
+   * fetched from the server.
+   */
+  search(runSearch: boolean = true) {
     //Remember keyword filter
     this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
 
@@ -277,11 +285,13 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.error = null;
     this.loading = true;
 
-    this.oppService.searchPaged(req).subscribe({
-        next: results => this.processSearchResults(results),
-        error: error => this.processSearchError(error)
-      }
-    )
+    if (runSearch) {
+      this.oppService.searchPaged(req).subscribe({
+          next: results => this.processSearchResults(results),
+          error: error => this.processSearchError(error)
+        }
+      )
+    }
 
     this.oppService.checkUnreadChats(req).subscribe({
         next: unreadChats => this.processChatsReadStatus(unreadChats),

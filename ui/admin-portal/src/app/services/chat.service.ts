@@ -130,12 +130,16 @@ export class ChatService implements OnDestroy {
        map((message: Message) => {
         const payload: ChatPost = JSON.parse(message.body);
         return payload;
-       }),
-       tap(() => this.changeChatReadStatus(chat,false))
+       })
      );
   }
 
 
+  /**
+   * This returns info about the given chat and where the logged in user has read up to on that
+   * chat.
+   * @param chat
+   */
   private getJobChatUserInfo(chat: JobChat): Observable<JobChatUserInfo> {
     // console.log('Browser requests server for status of chat ' + chat.id);
     const user = this.authenticationService.getLoggedInUser();
@@ -154,8 +158,9 @@ export class ChatService implements OnDestroy {
   }
 
   markChatAsRead(chat: JobChat) {
-    this.changeChatReadStatus(chat, true);
     this.markAsReadUptoOnServer(chat).subscribe({
+      //Don't update status until it is reflected on the server database.
+      next: () => {this.changeChatReadStatus(chat, true)},
       error: error => {console.log("ChatService.markAsReadUpto: Error " + error )}
     })
   }
@@ -178,7 +183,8 @@ export class ChatService implements OnDestroy {
         //See https://www.learnrxjs.io/learn-rxjs/operators/filtering/takeuntil
         takeUntil(this.destroyStompSubscriptions$),
         tap( message => console.log('Post received from server for chat ' + chat.id
-        + ': ' + JSON.stringify(message.body)))
+        + ': ' + JSON.stringify(message.body))),
+        tap(() => this.changeChatReadStatus(chat,false))
       );
 
       if (this.chatPosts$.has(chat.id)) {
@@ -294,9 +300,16 @@ export class ChatService implements OnDestroy {
     //Check if we already have one for this chat..
     let chatIsRead = this.chatIsReads$.get(chat.id);
     if (chatIsRead == null) {
+      console.log("Creating new subject for chat " + chat.id);
       chatIsRead = new Subject<boolean>();
+
       //Save observable for this chat.
       this.chatIsReads$.set(chat.id, chatIsRead);
+
+      //Subscribe to chat.
+      //The standard tap in watchChat subscriptions will update chatIsRead subjects.
+      this.watchChat(chat).subscribe();
+      console.log("Subscribing to posts from chat " + chat.id);
     }
 
     return chatIsRead;

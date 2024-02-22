@@ -199,7 +199,9 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
       } else if (!this.chatsRead$.value && chatsRead) {
         //All chats are showing not read, but all chats for visible opps are now read.
         //Fetch from server again to see if there are still some non visible opps with unread chats.
-        this.search();
+        //Don't redo the search - we just want to see if there are any unread chats left in the full
+        //search results.
+        this.search(false);
       }
     }
   }
