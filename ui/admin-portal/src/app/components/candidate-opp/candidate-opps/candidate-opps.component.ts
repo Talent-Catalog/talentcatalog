@@ -13,7 +13,7 @@ import {EnumOption, enumOptions} from "../../../util/enum";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 import {CountryService} from "../../../services/country.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
-import {forkJoin, Observable} from "rxjs";
+import {forkJoin, Observable, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {SearchResults} from "../../../model/search-results";
 
@@ -63,6 +63,12 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
    * Map of opp id to opp chats
    */
   private oppChats: Map<number, JobChat[]> = new Map<number, JobChat[]>();
+
+  /**
+   * Subscription to all visible opps chats
+   * @private
+   */
+  private subscription: Subscription;
 
 
   constructor(
@@ -154,6 +160,8 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   }
 
   private processOppChats(chatsByOpp: JobChat[][]) {
+    //Recalculate all chats for new opps
+    this.allChats = [];
     for (let i = 0; i < this.opps.length; i++) {
       const opp = this.opps[i];
       let chats = chatsByOpp[i];
@@ -164,19 +172,26 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
       }
     }
 
+    //Resubscribe to composite status of all visible chats
+    this.subscribeToAllVisibleChats();
+  }
+
+  private subscribeToAllVisibleChats() {
+    this.unsubscribe();
     //Construct a single observable for all visible chat's read statuses, and subscribe to it
     const chatReadStatus$ = this.chatService.combineChatReadStatuses(this.allChats);
-    chatReadStatus$.subscribe(
+    console.log("Subscribed to chats " + this.allChats.map( chat => chat.id).join(','));
+    this.subscription = chatReadStatus$.subscribe(
       {
         next: chatsRead => this.processVisibleChatsReadUpdate(chatsRead),
         error: err => this.error = err
       }
     )
-
   }
 
   private processVisibleChatsReadUpdate(chatsRead: boolean) {
     if (this.chatsRead$) {
+      console.log("Visible chats read update: " + chatsRead);
       if (this.chatsRead$.value && !chatsRead) {
         //Status from server says all chats read, but there are unread visible chats.
         //Mark all chats read false
@@ -186,6 +201,14 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
         //Fetch from server again to see if there are still some non visible opps with unread chats.
         this.search();
       }
+    }
+  }
+
+  private unsubscribe() {
+    if (this.subscription) {
+      console.log("Unsubscribed from previous visible chats")
+      this.subscription.unsubscribe();
+      this.subscription = null;
     }
   }
 }
