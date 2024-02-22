@@ -15,28 +15,40 @@
       <div quill-editor-toolbar>
           <button class="ql-list" value="ordered"></button>
           <button class="ql-list" value="bullet"></button>
-
           <button class="ql-bold"></button>
           <button class="ql-italic"></button>
           <button class="ql-underline"></button>
-
-
-
           <button class="ql-link"></button>
           <button class="ql-image"></button>
-          <button class="custom-quill-btn" (click)="uploadFile()"><i class="fa-solid fa-file-upload small"></i></button>
 
+          <button class="custom-quill-btn" (click)="uploadFile()">
+            <i class="fa-solid fa-file-upload small"></i>
+          </button>
+
+          <button
+            [ngClass]="!this.isEmojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
+            (click)="clickEmojiButton()">
+            <i class="fa-regular fa-face-smile"></i>
+          </button>
       </div>
     </quill-editor>
   </div>
 
-
-
-  <div class="d-flex justify-content-end">
-    <button type="button" class="btn btn-success " (click)="onSend()"
-            [disabled]="postForm.invalid">
-      Send <i class="fa-solid fa-paper-plane"></i>
-    </button>
+  <div class="d-flex flex-row-reverse">
+    <div>
+      <button type="button" class="btn btn-success " (click)="onSend()"
+              [disabled]="postForm.invalid">
+        Send <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+    <div class="mx-3">
+      <emoji-mart
+        *ngIf="isEmojiPickerVisible"
+        (emojiClick)="addEmoji($event)"
+        title="Choose your emoji..."
+        autoFocus="true"
+      ></emoji-mart>
+    </div>
   </div>
 
 </form>

@@ -21,6 +21,7 @@ export class CreateUpdatePostComponent implements OnInit {
   postForm: FormGroup;
   quillEditorRef: Quill;
   moduleOptions = {};
+  public isEmojiPickerVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -113,5 +114,19 @@ export class CreateUpdatePostComponent implements OnInit {
     })
     .catch(() => {
     });
+  }
+
+  public addEmoji(event) {
+    // Below can be uncommented if we want the menu to disappear after one selection
+    // this.isEmojiPickerVisible = false;
+    let index: number = this.quillEditorRef.selection.savedRange.index;
+    this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
+    this.quillEditorRef.setSelection(index + 10, 0);
+  }
+
+  public clickEmojiButton() {
+    this.isEmojiPickerVisible = !this.isEmojiPickerVisible;
+    let index: number = this.quillEditorRef.selection.savedRange.index;
+    this.quillEditorRef.setSelection(index, 0);
   }
 }
