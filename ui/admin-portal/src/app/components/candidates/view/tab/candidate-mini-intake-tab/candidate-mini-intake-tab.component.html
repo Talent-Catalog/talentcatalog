@@ -22,9 +22,12 @@
 </div>
 
 <div *ngIf="!loading" id="MiniIntakeForm">
-  <div class="d-flex justify-content-between mb-2 ms-2">
+  <div class="d-flex justify-content-between mb-3 ms-2 align-items-end">
     <div class="d-flex flex-column justify-content-between">
-      <h5>Mini Intake</h5>
+      <div class="mb-3 d-flex">
+        <h4>Mini Intake</h4><h6 *ngIf="miniIntakeComplete" class="ms-2 mb-1 text-success align-self-center">Completed by {{candidate?.miniIntakeCompletedBy.firstName}} {{candidate.miniIntakeCompletedBy?.lastName}}
+        on {{candidate.miniIntakeCompletedDate | date}}</h6>
+      </div>
       <div class="d-flex">
         <app-export-pdf [candidate]="candidate" [idToExport]="'MiniIntakeForm'"></app-export-pdf>
 
@@ -34,30 +37,27 @@
         </div>
       </div>
     </div>
-    <div class="d-flex flex-column justify-content-between">
-
-      <div class="btn-group">
-        <button class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Mini Intake', $event.target)" [disabled]="saving">
+    <div class="d-flex justify-content-between">
+      <!-- todo add a field to YAML file which we make this input external intake button dependant on. Then we can easily implement this button when needed.  -->
+<!--      <button *ngIf="!miniIntakeComplete" class="btn btn-primary border border-white" (click)="inputOldIntakeNote('Mini Intake', $event.target)" [disabled]="saving">-->
+<!--        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
+<!--        Input External Intake-->
+<!--      </button>-->
+      <div *ngIf="miniIntakeComplete; else notComplete">
+        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+          Update
+        </button>
+      </div>
+      <ng-template #notComplete>
+        <button class="btn btn-success"
+                (click)="completeIntake(false)"
+                [disabled]="candidate.miniIntakeCompletedDate != null">
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-          Input External Intake
+          Complete
         </button>
-        <button class="btn btn-sm btn-success border border-white" (click)="createIntakeNote('Mini Intake', 'start', $event.target)" [disabled]="saving || clickedOldIntake">
-          Start Intake
-        </button>
-        <button class="btn btn-sm btn-secondary border border-white" (click)="createIntakeNote('Mini Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
-          Update Intake
-        </button>
-      </div>
-      <div>
-        <div class="text-muted small font-italic">- Before starting or updating the interview, please click appropriate button.</div>
-        <div class="text-muted small font-italic">- If entering an external intake click 'Input External Intake' and ignore other buttons.</div>
-        <div class="text-muted small font-italic">- This will create a note on the right to help track changes. Only click once per intake.</div>
-      </div>
-
+      </ng-template>
     </div>
   </div>
-
-  <hr/>
 
   <div>
     <ngb-accordion #miniIntake="ngbAccordion" [destroyOnHide]="false">
@@ -212,16 +212,20 @@
 
     </ngb-accordion>
   </div>
-
-</div>
-
-<div class="d-flex align-items-end flex-column justify-content-between">
-  <div class="d-flex float-end">
-    <button class="btn btn-sm btn-outline-dark me-1 mt-3 mb-2" (click)="createIntakeNote('Mini Intake', 'complete', $event.target)" [disabled]="saving">
-      Complete Intake
-    </button>
+  <div class="float-end mt-3">
+    <div *ngIf="miniIntakeComplete; else notComplete">
+      <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+        Update
+      </button>
+    </div>
+    <ng-template #notComplete>
+      <button class="btn btn-success"
+              (click)="completeIntake(false)"
+              [disabled]="candidate.miniIntakeCompletedDate != null">
+        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+        Complete
+      </button>
+    </ng-template>
   </div>
-  <div>
-    <div class="text-muted small font-italic">- No need to click if inputting an original intake.</div>
-  </div>
+
 </div>

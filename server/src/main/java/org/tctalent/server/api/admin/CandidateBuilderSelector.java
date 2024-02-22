@@ -167,6 +167,10 @@ public class CandidateBuilderSelector {
             .add("candidateProperties", candidatePropertyDto())
             .add("shareableNotes")
             .add("intaked")
+            .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
+            .add("miniIntakeCompletedDate")
+            .add("fullIntakeCompletedBy", userDto(userPropertyFilter))
+            .add("fullIntakeCompletedDate")
 
             ;
     }
