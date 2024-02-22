@@ -320,15 +320,20 @@
       </ngb-panel>
     </ngb-accordion>
   </div>
-</div>
 
-<div class="d-flex align-items-end flex-column justify-content-between">
-  <div class="d-flex float-end">
-    <button class="btn btn-sm btn-outline-dark me-1 mt-3 mb-2" (click)="createIntakeNote('Full Intake', 'complete', $event.target)" [disabled]="saving">
-      Complete Intake
-    </button>
-  </div>
-  <div>
-    <div class="text-muted small font-italic">- No need to click if inputting an original intake.</div>
+  <div class="float-end mt-3">
+    <div *ngIf="fullIntakeComplete; else notComplete">
+      <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+        Update
+      </button>
+    </div>
+    <ng-template #notComplete>
+      <button class="btn btn-success"
+              (click)="completeIntake(true)"
+              [disabled]="candidate.fullIntakeCompletedDate != null">
+        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+        Complete
+      </button>
+    </ng-template>
   </div>
 </div>
