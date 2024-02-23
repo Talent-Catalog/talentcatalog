@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -27,7 +27,8 @@ export class CreateUpdatePostComponent implements OnInit {
     private fb: FormBuilder,
     private rxStompService: RxStompService,
     private modalService: NgbModal,
-    private chatPostService: ChatPostService
+    private chatPostService: ChatPostService,
+    private elementRef: ElementRef
   ) {
     Quill.register('modules/imageHandler', ImageHandler);
     this.moduleOptions = {
