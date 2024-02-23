@@ -17,9 +17,21 @@
 package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 
 public interface CandidateVisaJobRepository
         extends JpaRepository<CandidateVisaJobCheck, Long> {
+
+  // Currently unused but retained in anticipation that we may later opt to auto-update
+  // relocation info automatically at a certain candidate opportunity stage interval.
+  @Query(" select cvjc from CandidateVisaJobCheck cvjc "
+          + " inner join cvjc.candidateVisaCheck cvc "
+          + " where cvc.candidate.id = :candidateId "
+          + " and cvjc.jobOpp.id = :jobOppId")
+  CandidateVisaJobCheck findByCandidateIdAndJobOppId(
+      @Param("candidateId") long candidateId,
+      @Param("jobOppId") long jobOppId);
 
 }
