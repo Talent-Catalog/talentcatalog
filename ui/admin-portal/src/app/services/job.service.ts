@@ -6,7 +6,6 @@ import {Job, JobDocType, SearchJobRequest, UpdateJobRequest} from "../model/job"
 import {SearchResults} from "../model/search-results";
 import {UpdateLinkRequest} from "../components/util/input/input-link/input-link.component";
 import {OpportunityService} from "../components/util/opportunity/OpportunityService";
-import {SearchOpportunityRequest} from "../model/candidate-opportunity";
 import {JobChatUserInfo} from "../model/chat";
 
 @Injectable({
@@ -39,7 +38,7 @@ export class JobService implements OpportunityService<Job> {
     return this.http.put<Job>(`${this.apiUrl}/${id}/remove-search`, savedSearchId);
   }
 
-  checkUnreadChats(request: SearchOpportunityRequest): Observable<JobChatUserInfo> {
+  checkUnreadChats(request: SearchJobRequest): Observable<JobChatUserInfo> {
     return this.http.post<JobChatUserInfo>(`${this.apiUrl}/check-unread-chats`, request);
   }
 

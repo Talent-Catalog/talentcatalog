@@ -189,7 +189,7 @@ public class JobSpecification {
                 }
             }
 
-            if (ors.getExpressions().size() != 0) {
+            if (!ors.getExpressions().isEmpty()) {
                 conjunction.getExpressions().add(ors);
             }
 

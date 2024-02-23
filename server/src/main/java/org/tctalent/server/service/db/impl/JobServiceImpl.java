@@ -39,6 +39,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -49,8 +50,8 @@ import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.Candidate;
@@ -613,8 +614,21 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<Long> findUnreadChatsInOpps(SearchJobRequest request) {
-        //TODO JC findUnreadChatsInOpps not implemented in JobServiceImpl
-        throw new NotImplementedException("JobServiceImpl", "findUnreadChatsInOpps");
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        //Construct query
+        final Specification<SalesforceJobOpp> spec =
+            JobSpecification.buildSearchQuery(request, loggedInUser);
+
+        //Retrieve all results and gather the ids
+        List<SalesforceJobOpp> allOpps = salesforceJobOppRepository.findAll(spec);
+        List<Long> oppIds = allOpps.stream().map(SalesforceJobOpp::getId).toList();
+        List<Long> unreadChatIds =
+            salesforceJobOppRepository.findUnreadChatsInOpps(loggedInUser.getId(), oppIds);
+        return unreadChatIds;
     }
 
     @Override
@@ -668,7 +682,7 @@ public class JobServiceImpl implements JobService {
 
         return salesforceJobOppRepository.save(job);
     }
-    
+
     @Override
     @NonNull
     public SalesforceJobOpp updateInterviewGuidanceLink(long id, UpdateLinkRequest updateLinkRequest)

@@ -6,8 +6,11 @@
 
   <ng-container ngbNavItem="LiveJobs">
     <a ngbNavLink
-       title="Jobs associated with active opportunities which have been published on the TC"
-    >Live Jobs <i class="fa-solid fa-briefcase"></i></a>
+       title="Jobs associated with active opportunities which have been published on the TC">
+      <app-chat-read-status
+        [observable]="liveJobChatsRead$"
+      ></app-chat-read-status>
+      Live Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.live">
@@ -17,7 +20,11 @@
   </ng-container>
 
   <ng-container ngbNavItem="StarredJobs">
-    <a ngbNavLink title="Starred jobs (eg those I am working with)"><i class="fas fa-star"></i>Jobs <i class="fa-solid fa-briefcase"></i></a>
+    <a ngbNavLink title="Starred jobs (eg those I am working with)">
+      <app-chat-read-status
+        [observable]="starredJobChatsRead$"
+      ></app-chat-read-status>
+      <i class="fas fa-star"></i>Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.starredByMe">
@@ -27,7 +34,11 @@
   </ng-container>
 
   <ng-container *ngIf="isJobCreator()" ngbNavItem="MyJobs">
-    <a ngbNavLink title="Jobs created by my partner organization">{{loggedInPartner.abbreviation}} Jobs <i class="fa-solid fa-briefcase"></i></a>
+    <a ngbNavLink title="Jobs created by my partner organization">
+      <app-chat-read-status
+        [observable]="partnerJobChatsRead$"
+      ></app-chat-read-status>
+      {{loggedInPartner.abbreviation}} Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
         [searchBy]="SearchOppsBy.mineAsJobCreator">
