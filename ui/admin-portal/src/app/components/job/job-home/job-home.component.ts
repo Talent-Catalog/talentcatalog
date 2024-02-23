@@ -33,7 +33,6 @@ export class JobHomeComponent extends HomeComponent {
   sourcePartnerChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   partnerJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   starredJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
-  liveJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   error: any;
 
@@ -89,15 +88,6 @@ export class JobHomeComponent extends HomeComponent {
     jobReq.starred = true;
     this.jobService.checkUnreadChats(jobReq).subscribe({
         next: info => this.processChatsReadStatus(this.starredJobChatsRead$, info),
-        error: error => this.error = error
-      }
-    )
-
-    jobReq.activeStages = true;
-    jobReq.ownedByMyPartner = null;
-    jobReq.starred = null;
-    this.jobService.checkUnreadChats(jobReq).subscribe({
-        next: info => this.processChatsReadStatus(this.liveJobChatsRead$, info),
         error: error => this.error = error
       }
     )

@@ -13,9 +13,10 @@ import {EnumOption, enumOptions} from "../../../util/enum";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 import {CountryService} from "../../../services/country.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
-import {forkJoin, Observable, Subscription} from "rxjs";
+import {forkJoin, Observable} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {SearchResults} from "../../../model/search-results";
+import {PartnerService} from "../../../services/partner.service";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -54,35 +55,20 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   showInactiveOppsTip = "Show cases that are no longer active - " +
     "for example if the candidate has already relocated";
 
-  /**
-   * All chats associated with all opps. Used to construct overall chat read notifier.
-   */
-  private allChats: JobChat[] = [];
-
-  /**
-   * Map of opp id to opp chats
-   */
-  private oppChats: Map<number, JobChat[]> = new Map<number, JobChat[]>();
-
-  /**
-   * Subscription to all visible opps chats
-   * @private
-   */
-  private subscription: Subscription;
-
 
   constructor(
-    private chatService: ChatService,
+    chatService: ChatService,
     fb: FormBuilder,
     authService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,
     salesforceService: SalesforceService,
     countryService: CountryService,
+    partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(fb, authService, localStorageService, oppService, salesforceService, countryService, locale,
-        "Opps")
+    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+      countryService, partnerService, locale,"Opps")
 
   }
 
@@ -111,10 +97,6 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
       overdue =  dueDate < today;
     }
     return overdue;
-  }
-
-  getChats(opp: CandidateOpportunity): JobChat[] {
-    return opp ? this.oppChats.get(opp.id) : null;
   }
 
   /**
@@ -157,60 +139,5 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
         error: err => this.error = err
       }
     )
-  }
-
-  private processOppChats(chatsByOpp: JobChat[][]) {
-    //Recalculate all chats for new opps
-    this.allChats = [];
-    for (let i = 0; i < this.opps.length; i++) {
-      const opp = this.opps[i];
-      let chats = chatsByOpp[i];
-      this.oppChats.set(opp.id, chats);
-
-      for (const jobChat of chats) {
-        this.allChats.push(jobChat);
-      }
-    }
-
-    //Resubscribe to composite status of all visible chats
-    this.subscribeToAllVisibleChats();
-  }
-
-  private subscribeToAllVisibleChats() {
-    this.unsubscribe();
-    //Construct a single observable for all visible chat's read statuses, and subscribe to it
-    const chatReadStatus$ = this.chatService.combineChatReadStatuses(this.allChats);
-    console.log("Subscribed to chats " + this.allChats.map( chat => chat.id).join(','));
-    this.subscription = chatReadStatus$.subscribe(
-      {
-        next: chatsRead => this.processVisibleChatsReadUpdate(chatsRead),
-        error: err => this.error = err
-      }
-    )
-  }
-
-  private processVisibleChatsReadUpdate(chatsRead: boolean) {
-    if (this.chatsRead$) {
-      console.log("Visible chats read update: " + chatsRead);
-      if (this.chatsRead$.value && !chatsRead) {
-        //Status from server says all chats read, but there are unread visible chats.
-        //Mark all chats read false
-        this.chatsRead$.next(false);
-      } else if (!this.chatsRead$.value && chatsRead) {
-        //All chats are showing not read, but all chats for visible opps are now read.
-        //Fetch from server again to see if there are still some non visible opps with unread chats.
-        //Don't redo the search - we just want to see if there are any unread chats left in the full
-        //search results.
-        this.search(false);
-      }
-    }
-  }
-
-  private unsubscribe() {
-    if (this.subscription) {
-      console.log("Unsubscribed from previous visible chats")
-      this.subscription.unsubscribe();
-      this.subscription = null;
-    }
   }
 }

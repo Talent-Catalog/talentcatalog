@@ -7,14 +7,11 @@
   <ng-container ngbNavItem="LiveJobs">
     <a ngbNavLink
        title="Jobs associated with active opportunities which have been published on the TC">
-      <app-chat-read-status
-        [observable]="liveJobChatsRead$"
-      ></app-chat-read-status>
       Live Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
-        [searchBy]="SearchOppsBy.live">
-        >
+        [searchBy]="SearchOppsBy.live"
+      >
       </app-jobs-with-detail>
     </ng-template>
   </ng-container>
@@ -27,8 +24,9 @@
       <i class="fas fa-star"></i>Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
-        [searchBy]="SearchOppsBy.starredByMe">
-        >
+        [searchBy]="SearchOppsBy.starredByMe"
+        [chatsRead$]="starredJobChatsRead$"
+      >
       </app-jobs-with-detail>
     </ng-template>
   </ng-container>
@@ -41,8 +39,9 @@
       {{loggedInPartner.abbreviation}} Jobs <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-jobs-with-detail
-        [searchBy]="SearchOppsBy.mineAsJobCreator">
-        >
+        [searchBy]="SearchOppsBy.mineAsJobCreator"
+        [chatsRead$]="partnerJobChatsRead$"
+      >
       </app-jobs-with-detail>
     </ng-template>
   </ng-container>
