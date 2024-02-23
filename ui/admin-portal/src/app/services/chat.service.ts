@@ -25,17 +25,6 @@ export class ChatService implements OnDestroy {
   private destroyStompSubscriptions$ = new Subject<void>();
 
   /**
-   * These record the current read status of each chat - which supports the {@link #isChatRead}
-   * method.
-   * <p/>
-   * Note that chatIsReads$ provide Observables for chat read status - so any time the status
-   * changes they will provide a new status. But they do not remember the current status.
-   *
-   * @private
-   */
-  private chatIsReads: Map<number, boolean> = new Map<number, boolean>();
-
-  /**
    * Map of Chat id to MarkAsRead Subject for that chat - this where notifications come in
    * for chat read status changes.
    */
@@ -81,7 +70,6 @@ export class ChatService implements OnDestroy {
     this.completeMarkAsReads();
 
     //Clean up data structures.
-    this.chatIsReads.clear();
     this.chatPosts$.clear();
     this.chatByRequest$.clear();
 
@@ -281,7 +269,7 @@ export class ChatService implements OnDestroy {
   getChatIsRead$(chat: JobChat): Observable<boolean> {
     const subject = this.getChatIsReadSubject(chat);
 
-    if (this.isChatRead(chat) == null) {
+    if (subject.value == null) {
       //If we don't know the status, we need to get it from the server.
       this.getJobChatUserInfo(chat).subscribe({
           next: info => {
@@ -316,23 +304,8 @@ export class ChatService implements OnDestroy {
     return chatIsRead;
   }
 
-  /**
-   * This returns the current read status of the given chat (Observables don't give you that -
-   * only changes).
-   * <p/>
-   * This is needed by code that wants to display the current read status now - without waiting
-   * for the next status change to come through on an Observable.
-   * @param chat Chat whose current read status is wanted
-   * @return True or False - or undefined if we don't know.
-   */
-  isChatRead(chat: JobChat): boolean {
-    //todo  This can be replaced by getting value of chat subject
-    return this.chatIsReads.get(chat.id);
-  }
-
   private changeChatReadStatus(chat: JobChat, isRead: boolean) {
     this.getChatIsReadSubject(chat).next(isRead);
-    this.chatIsReads.set(chat.id, isRead);
   }
 
   private completeMarkAsReads() {

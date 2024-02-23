@@ -40,29 +40,8 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.chats) {
       this.subscribeForChatUpdates();
-      this.computeIndicatorFromStaticStatus();
     } else if (changes.observable) {
       this.subscribeToObservable(this.observable);
-    }
-  }
-
-  computeIndicatorFromStaticStatus() {
-    if (this.chats == null) {
-      this.setIndicator(null);
-    } else {
-      //If any of the chats are don't know, then we don't now
-      if (this.chats && this.chats.length > 0) {
-        const dontKnow =
-          this.chats.find(chat => this.chatService.isChatRead(chat) == null) != null;
-        if (dontKnow) {
-          this.setIndicator(null);
-        } else {
-          //All read is true if none of them are false
-          let allChatsRead =
-            this.chats.find(chat => !this.chatService.isChatRead(chat)) == null;
-          this.setIndicator(allChatsRead);
-        }
-      }
     }
   }
 
@@ -81,8 +60,8 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
         //Construct single observable to monitor.
         const chatReadStatus$
           = this.chatService.combineChatReadStatuses(this.chats);
-
-        //todo Are we unsubscribing when we shouldn't?
+        console.log('ChatReadStatus subscribing to chats' +
+          this.chats.map(chat => chat.id).join(','))
         this.subscribeToObservable(chatReadStatus$)
       }
     }
