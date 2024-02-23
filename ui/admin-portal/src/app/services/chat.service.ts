@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {combineLatest, Observable, Subject} from "rxjs";
+import {BehaviorSubject, combineLatest, Observable, Subject} from "rxjs";
 import {ChatPost, CreateChatRequest, JobChat, JobChatUserInfo} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
@@ -39,7 +39,8 @@ export class ChatService implements OnDestroy {
    * Map of Chat id to MarkAsRead Subject for that chat - this where notifications come in
    * for chat read status changes.
    */
-  private chatIsReads$: Map<number, Subject<boolean>> = new Map<number, Subject<boolean>>();
+  private chatIsReads$: Map<number, BehaviorSubject<boolean>>
+    = new Map<number, BehaviorSubject<boolean>>();
 
   /**
    * Map of Chat id to Observable for that chat - this is where posts come in from server
@@ -296,12 +297,12 @@ export class ChatService implements OnDestroy {
     return subject;
   }
 
-  private getChatIsReadSubject(chat: JobChat): Subject<boolean> {
+  private getChatIsReadSubject(chat: JobChat): BehaviorSubject<boolean> {
     //Check if we already have one for this chat..
     let chatIsRead = this.chatIsReads$.get(chat.id);
     if (chatIsRead == null) {
       console.log("Creating new subject for chat " + chat.id);
-      chatIsRead = new Subject<boolean>();
+      chatIsRead = new BehaviorSubject<boolean>(null);
 
       //Save observable for this chat.
       this.chatIsReads$.set(chat.id, chatIsRead);
@@ -325,6 +326,7 @@ export class ChatService implements OnDestroy {
    * @return True or False - or undefined if we don't know.
    */
   isChatRead(chat: JobChat): boolean {
+    //todo  This can be replaced by getting value of chat subject
     return this.chatIsReads.get(chat.id);
   }
 
