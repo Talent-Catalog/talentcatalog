@@ -5,7 +5,11 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {HomeComponent} from "../../candidates/home.component";
 import {SearchOppsBy} from "../../../model/base";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
+import {SearchOpportunityRequest} from "../../../model/candidate-opportunity";
+import {OpportunityOwnershipType} from "../../../model/opportunity";
+import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
+import {JobChatUserInfo} from "../../../model/chat";
 
 @Component({
   selector: 'app-job-home',
@@ -23,10 +27,13 @@ export class JobHomeComponent extends HomeComponent {
    * are unread. The fact that it is a BehaviorSubject means that you can query the current status
    * of the higher level component.
    */
-  jobCreatorChatsRead$: BehaviorSubject<boolean>;
-  sourcePartnerChatsRead$: BehaviorSubject<boolean>;
+  jobCreatorChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  sourcePartnerChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+
+  error: any;
 
   constructor(
+    private candidateOpportunityService: CandidateOpportunityService,
     protected localStorageService: LocalStorageService,
     protected savedSearchService: SavedSearchService,
     protected authService: AuthorizationService,
@@ -40,9 +47,32 @@ export class JobHomeComponent extends HomeComponent {
 
   ngOnInit() {
     super.ngOnInit();
-    //Initialize with null - Unknown.
-    this.jobCreatorChatsRead$ = new BehaviorSubject<boolean>(null);
-    this.sourcePartnerChatsRead$ = new BehaviorSubject<boolean>(null);
+    this.loadChatReadStatuses();
+  }
+
+  private loadChatReadStatuses() {
+    let req = new SearchOpportunityRequest();
+    req.ownedByMyPartner = true;
+    req.activeStages = true;
+    req.ownershipType = OpportunityOwnershipType.AS_JOB_CREATOR;
+    this.candidateOpportunityService.checkUnreadChats(req).subscribe({
+        next: info => this.processChatsReadStatus(this.jobCreatorChatsRead$, info),
+        error: error => this.error = error
+      }
+    )
+
+    req.ownershipType = OpportunityOwnershipType.AS_SOURCE_PARTNER;
+    this.candidateOpportunityService.checkUnreadChats(req).subscribe({
+        next: info => this.processChatsReadStatus(this.sourcePartnerChatsRead$, info),
+        error: error => this.error = error
+      }
+    )
+  }
+
+  private processChatsReadStatus(subject: Subject<boolean>, info: JobChatUserInfo) {
+    if (subject) {
+      subject.next(info.numberUnreadChats === 0);
+    }
   }
 
   /**

@@ -294,7 +294,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     }
 
     this.oppService.checkUnreadChats(req).subscribe({
-        next: unreadChats => this.processChatsReadStatus(unreadChats),
+        next: info => this.processChatsReadStatus(info),
         error: error => this.processSearchError(error)
       }
     )
