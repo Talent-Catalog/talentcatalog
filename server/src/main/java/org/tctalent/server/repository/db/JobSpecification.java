@@ -162,6 +162,9 @@ public class JobSpecification {
                     ors.getExpressions().add(
                         builder.equal(job.get("createdBy"), loggedInUser.getId())
                     );
+                    ors.getExpressions().add(
+                        builder.equal(job.get("contactUser"), loggedInUser.getId())
+                    );
                 }
             }
 

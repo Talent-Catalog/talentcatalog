@@ -12,7 +12,9 @@ Check out the newest features and enhancements.
 
 
 ## General Improvements
-
+Enabled Elasticsearch queries to be built on base searches of any kind. Users can now save time by
+creating reusable candidate searches to pre-filter on the basis of commonly applicable criteria 
+such as organisational countries of operation and immigration pathway eligibility.
 
 ## Data Improvements
 

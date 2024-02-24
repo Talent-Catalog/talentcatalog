@@ -16,14 +16,6 @@
 
 package org.tctalent.server.service.db;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,6 +60,15 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface CandidateService {
 
@@ -435,6 +436,15 @@ public interface CandidateService {
      */
     void updateIntakeData(long id, CandidateIntakeDataUpdate data)
         throws NoSuchObjectException;
+
+    /**
+     * Updates the intake data associated with the given candidate.
+     * @param id ID of candidate
+     * @param full Boolean if full = true, it is a full intake. If false, it is a mini intake.
+     * @throws NoSuchObjectException if no candidate is found with that id
+     */
+    Candidate completeIntake(long id, boolean full)
+            throws NoSuchObjectException;
 
     /**
      * Checks all candidate data related to TBB destinations and checks that

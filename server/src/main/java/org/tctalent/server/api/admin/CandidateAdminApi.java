@@ -16,12 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -69,6 +63,13 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
@@ -316,6 +317,14 @@ public class CandidateAdminApi {
     public void updateIntakeData(
             @PathVariable("id") long id, @RequestBody CandidateIntakeDataUpdate data) {
         candidateService.updateIntakeData(id, data);
+    }
+
+    @PostMapping("{id}/intake")
+    public Map<String, Object> completeIntake(
+            @PathVariable("id") long id, @Valid @RequestBody boolean full) {
+        Candidate candidate = candidateService.completeIntake(id, full);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
     }
 
     @PutMapping("resolve-tasks")

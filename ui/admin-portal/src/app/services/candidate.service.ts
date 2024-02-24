@@ -177,6 +177,10 @@ export class CandidateService implements IntakeService {
     return this.http.put<void>(`${this.apiUrl}/${candidateId}/intake`, formData);
   }
 
+  completeIntake(candidateId: number, full: boolean): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/${candidateId}/intake`, full);
+  }
+
   resolveOutstandingTasks(details): Observable<void>  {
     return this.http.put<void>(`${this.apiUrl}/resolve-tasks`, details);
   }

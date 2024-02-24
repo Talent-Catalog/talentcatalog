@@ -15,6 +15,7 @@ import {
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateVisaJobService} from "../../../../../../../services/candidate-visa-job.service";
 
 @Component({
   selector: 'app-visa-job-check-ca',
@@ -37,9 +38,11 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   pathwaysInfoLink: string;
 
   error: string;
+  loading: boolean;
 
   constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService) {}
+              private candidateOccupationService: CandidateOccupationService,
+              private candidateVisaJobService: CandidateVisaJobService) {}
 
   ngOnInit(): void {
     // Get the candidate occupations
@@ -72,6 +75,20 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.visaJobCanada.expandAll();
+  }
+
+  requestSfCaseRelocationInfoUpdate() {
+    this.error = null;
+    this.loading = true;
+    this.candidateVisaJobService.updateSfCaseRelocationInfo(
+        this.selectedJobCheck.id).subscribe(
+        boolean => {
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        });
   }
 }
 
