@@ -39,7 +39,9 @@
     </div>
 
     <div class="d-flex flex-column justify-content-between">
-      <!-- todo add a field to YAML file which we make this input external intake button dependant on. Then we can easily implement this button when needed.  -->
+      <!-- THIS COMMENTED OUT BUTTON ALLOWS FOR DATA ENTRY OF A PREVIOUSLY COLLECTED INTAKE, SO WE CAN CORRECTLY SET THE AUDIT DATA OF
+      WHO/WHEN COMPLETED THE INTAKE. IT CURRENTLY JUST CREATES A NOTE, AND DOESN'T SAVE THE FIELDS TO THE DATABASE SO
+      NEED TO INCORPORATE WITH THE 'completeIntake()' METHOD. -->
 <!--      <button *ngIf="!fullIntakeComplete" class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">-->
 <!--        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
 <!--        Input External Intake-->
