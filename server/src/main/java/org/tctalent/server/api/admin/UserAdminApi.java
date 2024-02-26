@@ -19,7 +19,7 @@ package org.tctalent.server.api.admin;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,16 +50,11 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
 @RequestMapping("/api/admin/user")
+@RequiredArgsConstructor
 public class UserAdminApi {
 
     private final UserService userService;
     private final AuthService authService;
-
-    @Autowired
-    public UserAdminApi(UserService userService, AuthService authService) {
-        this.userService = userService;
-        this.authService = authService;
-    }
 
     @PostMapping("search")
     public List<Map<String, Object>> search(@RequestBody SearchUserRequest request) {
@@ -79,14 +74,10 @@ public class UserAdminApi {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        switch (loggedInUser.getRole()) {
-            case systemadmin:
-            case admin:
-            case partneradmin:
-                return userDto().build(user);
-            default:
-                return userDtoSemiLimited().build(user);
-        }
+        return switch (loggedInUser.getRole()) {
+            case systemadmin, admin, partneradmin -> userDto().build(user);
+            default -> userDtoSemiLimited().build(user);
+        };
 
     }
 
