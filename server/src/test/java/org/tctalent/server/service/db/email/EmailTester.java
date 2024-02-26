@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db.email;
 
 import java.nio.charset.StandardCharsets;
-
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.email.EmailSender.EmailType;
 import org.thymeleaf.TemplateEngine;
@@ -36,7 +35,7 @@ public class EmailTester {
     private static void testStubSend() {
         EmailSender emailSender = stubEmailSender();
         EmailHelper helper = new EmailHelper(emailSender, textTemplateEngine(), htmlTemplateEngine());
-        helper.sendResetPasswordEmail(user());
+        helper.sendResetPasswordEmail(user(), false);
     }
 
     private static User user() {

@@ -18,7 +18,6 @@ package org.tctalent.server.service.db.email;
 
 import java.time.LocalDate;
 import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,8 @@ public class EmailHelper {
 
     @Value("${web.portal}")
     private String portalUrl;
+    @Value("${web.admin}")
+    private String adminUrl;
 
     @Autowired
     public EmailHelper(EmailSender emailSender,
@@ -86,7 +87,7 @@ public class EmailHelper {
         }
     }
 
-    public void sendResetPasswordEmail(User user) throws EmailSendFailedException {
+    public void sendResetPasswordEmail(User user, boolean isAdminRequest) throws EmailSendFailedException {
 
         String email = user.getEmail();
         String displayName = user.getDisplayName();
@@ -98,7 +99,9 @@ public class EmailHelper {
         try {
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
-            ctx.setVariable("resetUrl", portalUrl + "/reset-password/" + token);
+
+            String resetUrl = isAdminRequest ? adminUrl : portalUrl;
+            ctx.setVariable("resetUrl", resetUrl + "/reset-password/" + token);
             ctx.setVariable("year", currentYear());
 
             subject = "Talent Beyond Boundaries - Reset Your Password";
