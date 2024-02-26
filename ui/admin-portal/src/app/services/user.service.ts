@@ -21,6 +21,7 @@ import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {UpdateUserRequest, User} from '../model/user';
 import {SearchUserRequest} from "../model/base";
+import {SendResetPasswordEmailRequest} from "../model/candidate";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -78,6 +79,18 @@ export class UserService {
 
   updatePassword(id: number, request) {
     return this.http.put(`${this.apiUrl}/password/${id}`, request);
+  }
+
+  sendResetPassword(request: SendResetPasswordEmailRequest) {
+    return this.http.post(`${this.apiUrl}/reset-password-email`, request);
+  }
+
+  checkPasswordResetToken(request) {
+    return this.http.post(`${this.apiUrl}/check-token`, request);
+  }
+
+  resetPassword(request) {
+    return this.http.post(`${this.apiUrl}/reset-password`, request);
   }
 
   delete(id: number): Observable<boolean>  {
