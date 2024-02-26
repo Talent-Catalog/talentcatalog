@@ -968,44 +968,27 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return s.toString();
     }
 
-    // At present, intakes are not an object but rather are informally constituted by fields in the candidate profile that are only filled when an intake is conducted;
-    // the 'Complete Intake' button — which intakers should click but don't have to — creates a candidate note that's used here to provide metadata; clearly this is an area for future improvement
+    // Intake audit data (who/when) is now saved in the database.
+    // However, for transfer to SF we just want a summary of the top level intake complete.
+    // This is consistent with what was previously saved to SF when we used candidate notes only to track the intake completion.
     @Transient
-    public String getIntaked() {
+    public String getTopLevelIntakeCompleted() {
         String intaked = "-";
-        for (CandidateNote note : candidateNotes) {
-            if (note.getTitle().contains("Full Intake interview completed")) {
-                intaked = "Full";
-                break;
-            }
-        }
-        if (!"Full".equals(intaked)) {
-            for (CandidateNote note : candidateNotes) {
-                if (note.getTitle().contains("Mini Intake interview completed")) {
-                    intaked = "Mini";
-                    break;
-                }
-            }
+        if (fullIntakeCompletedDate != null) {
+            intaked = "Full";
+        } else if (miniIntakeCompletedDate != null) {
+            intaked = "Mini";
         }
         return intaked;
     }
 
     @Transient
-    public String getIntakeDate() {
+    public String getTopLevelIntakeCompletedDate() {
         String intakeDate = "";
-        for (CandidateNote note : candidateNotes) {
-            if (note.getTitle().contains("Full Intake interview completed")) {
-                intakeDate = String.valueOf(note.getCreatedDate()).substring(0, 9);
-                break;
-            }
-        }
-        if (intakeDate.isEmpty()) {
-            for (CandidateNote note : candidateNotes) {
-                if (note.getTitle().contains("Mini Intake interview completed")) {
-                    intakeDate = String.valueOf(note.getCreatedDate()).substring(0, 9);
-                    break;
-                }
-            }
+        if (fullIntakeCompletedDate != null) {
+            intakeDate = String.valueOf(fullIntakeCompletedDate).substring(0, 9);
+        } else if (miniIntakeCompletedDate != null) {
+            intakeDate = String.valueOf(miniIntakeCompletedDate).substring(0, 9);
         }
         return intakeDate;
     }
