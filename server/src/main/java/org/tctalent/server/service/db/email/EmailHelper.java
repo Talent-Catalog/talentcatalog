@@ -18,9 +18,8 @@ package org.tctalent.server.service.db.email;
 
 import java.time.LocalDate;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,9 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class EmailHelper {
-    private static final Logger log = LoggerFactory.getLogger(EmailHelper.class);
-
 
     private final EmailSender emailSender;
     private final TemplateEngine textTemplateEngine;
@@ -43,15 +42,6 @@ public class EmailHelper {
     private String portalUrl;
     @Value("${web.admin}")
     private String adminUrl;
-
-    @Autowired
-    public EmailHelper(EmailSender emailSender,
-                       TemplateEngine textTemplateEngine,
-                       TemplateEngine htmlTemplateEngine) {
-        this.emailSender = emailSender;
-        this.textTemplateEngine = textTemplateEngine;
-        this.htmlTemplateEngine = htmlTemplateEngine;
-    }
 
     public void sendAlert(String alertMessage) {
         emailSender.sendAlert(alertMessage);
@@ -66,9 +56,9 @@ public class EmailHelper {
         String email = user.getEmail();
         String displayName = user.getDisplayName();
 
-        String subject = null;
-        String bodyText = null;
-        String bodyHtml = null;
+        String subject;
+        String bodyText;
+        String bodyHtml;
         try {
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
@@ -93,9 +83,9 @@ public class EmailHelper {
         String displayName = user.getDisplayName();
         String token = user.getResetToken();
 
-        String subject = null;
-        String bodyText = null;
-        String bodyHtml = null;
+        String subject;
+        String bodyText;
+        String bodyHtml;
         try {
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
@@ -120,9 +110,9 @@ public class EmailHelper {
         String email = user.getEmail();
         String displayName = user.getDisplayName();
 
-        String subject = null;
-        String bodyText = null;
-        String bodyHtml = null;
+        String subject;
+        String bodyText;
+        String bodyHtml;
         try {
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
@@ -147,9 +137,9 @@ public class EmailHelper {
         String email = user.getEmail();
         String displayName = user.getDisplayName();
 
-        String subject = null;
-        String bodyText = null;
-        String bodyHtml = null;
+        String subject;
+        String bodyText;
+        String bodyHtml;
         try {
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
