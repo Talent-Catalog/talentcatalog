@@ -29,18 +29,26 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.exception.ExpiredTokenException;
+import org.tctalent.server.exception.InvalidPasswordFormatException;
+import org.tctalent.server.exception.InvalidPasswordTokenException;
 import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
+import org.tctalent.server.request.user.ResetPasswordRequest;
 import org.tctalent.server.request.user.SearchUserRequest;
+import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/user")
 public class UserAdminApi {
 
@@ -99,6 +107,28 @@ public class UserAdminApi {
     public void updatePassword(@PathVariable("id") long id,
                                               @RequestBody UpdateUserPasswordRequest request) {
         this.userService.updateUserPassword(id, request);
+    }
+
+    @PostMapping(value="reset-password-email")
+    public void sendResetPasswordEmail(
+        @RequestBody SendResetPasswordEmailRequest request)
+        throws NoSuchObjectException, ReCaptchaInvalidException {
+
+        userService.generateResetPasswordToken(request);
+    }
+
+    @PostMapping(value="check-token")
+    public void checkResetTokenValidity(@RequestBody CheckPasswordResetTokenRequest request)
+        throws ExpiredTokenException, InvalidPasswordTokenException {
+
+        userService.checkResetToken(request);
+    }
+
+    @PostMapping(value="reset-password")
+    public void resetPassword(@RequestBody ResetPasswordRequest request) throws
+        InvalidPasswordFormatException {
+
+        userService.resetPassword(request);
     }
 
     @PutMapping("/mfa-reset/{id}")
