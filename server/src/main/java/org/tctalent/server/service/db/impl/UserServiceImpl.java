@@ -305,10 +305,8 @@ public class UserServiceImpl implements UserService {
 
         if (loggedInUser.getReadOnly()) {
             authSuccess = false;
-        } else if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-            authSuccess = true;
         } else {
-            authSuccess = false;
+            authSuccess = authService.hasAdminPrivileges(loggedInUser.getRole());
         }
 
         if (authSuccess) {
@@ -347,11 +345,10 @@ public class UserServiceImpl implements UserService {
         User loggedInUser = fetchLoggedInUser();
         if (loggedInUser.getReadOnly()) {
             authSuccess = false;
-        } else if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-            authSuccess = true;
         } else {
-            authSuccess = false;
+            authSuccess = authService.hasAdminPrivileges(loggedInUser.getRole());
         }
+
         return authSuccess;
     }
 
