@@ -289,12 +289,12 @@ export class CandidateFieldService {
     let mini = candidate?.miniIntakeCompletedDate != null ? 'Mini' : null;
     let full = candidate?.fullIntakeCompletedDate != null ? 'Full' : null;
     if (mini && full) {
-      return 'Mini: ' + this.dateFormatter(candidate?.miniIntakeCompletedDate)
-        + ', Full: ' + this.dateFormatter(candidate?.fullIntakeCompletedDate);
+      return 'Mini intake: ' + this.dateFormatter(candidate?.miniIntakeCompletedDate)
+        + ' Full intake: ' + this.dateFormatter(candidate?.fullIntakeCompletedDate);
     } else if (mini) {
-      return 'Mini: ' + this.dateFormatter(candidate?.miniIntakeCompletedDate)
+      return 'Mini intake: ' + this.dateFormatter(candidate?.miniIntakeCompletedDate)
     } else if (full) {
-      return 'Full: ' + this.dateFormatter(candidate?.fullIntakeCompletedDate);
+      return 'Full intake: ' + this.dateFormatter(candidate?.fullIntakeCompletedDate);
     }
   }
 
