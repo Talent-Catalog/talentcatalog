@@ -111,6 +111,9 @@
         <tr *ngFor="let opp of results?.content" (click)="selectCurrent(opp)"
             [ngClass]="{'current': currentOpp?.id == opp.id}">
           <td title="{{opp.country?.name}}">
+            <app-chat-read-status
+              [chats]="getChats(opp)"
+            ></app-chat-read-status>
             {{opp.name| truncate: 36}}
             <a [routerLink]="['/job',opp.id]">
               <i class="fa-solid fa-briefcase" title="Job"></i>

@@ -136,6 +136,14 @@ public interface JobService {
     SalesforceJobOpp removeSuggestedSearch(long id, long savedSearchId) throws NoSuchObjectException;
 
     /**
+     * Returns the ids of chats not fully read by the currently logged in user, which are
+     * associated with job opportunities returned from the given search request.
+     * @param request - Search Request
+     * @return Ids of unread chats
+     */
+    List<Long> findUnreadChatsInOpps(SearchJobRequest request);
+
+    /**
      * Get all jobs matching the given search request
      * @param request - Search Request (paging info is ignored)
      * @return Jobs matching the request

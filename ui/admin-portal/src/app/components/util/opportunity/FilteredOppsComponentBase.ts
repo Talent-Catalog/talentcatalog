@@ -45,15 +45,53 @@ import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
+import {JobChat, JobChatUserInfo} from "../../../model/chat";
+import {BehaviorSubject, Subscription} from "rxjs";
+import {ChatService} from "../../../services/chat.service";
+import {PartnerService} from "../../../services/partner.service";
+import {Partner} from "../../../model/partner";
 
 @Directive()
 export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
+
+  /**
+   * Defines type of opportunity search.
+   */
   @Input() searchBy: SearchOppsBy;
+
+  /**
+   * This is passed in from a higher level component which tracks whether the overall read status
+   * of all the chats that it manages.
+   * That component is the cases tab in the Jobs home component - which displays an asterisk
+   * if some chats are unread.
+   * <p/>
+   * This component can call next on this subject if it knows that some of the chats it manages
+   * are unread. The fact that it is a BehaviorSubject means that you can query the current status
+   * of the higher level component.
+   */
+  @Input() chatsRead$: BehaviorSubject<boolean>;
+
   @Output() oppSelection = new EventEmitter();
 
   opps: T[];
 
   currentOpp: T;
+
+  /**
+   * All chats associated with all opps. Used to construct overall chat read notifier.
+   */
+  protected allChats: JobChat[] = [];
+
+  /**
+   * Map of opp id to opp chats
+   */
+  protected oppChats: Map<number, JobChat[]> = new Map<number, JobChat[]>();
+
+  /**
+   * Subscription to all visible opps chats
+   * @private
+   */
+  protected subscription: Subscription;
 
   /*
    * These are default values which will normally be overridden in subclasses
@@ -87,6 +125,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   stages: EnumOption[] = [];
 
   destinations: Country[] = [];
+  sourcePartners: Partner[] = [];
 
   private filterKeySuffix: string = 'Filter';
   private myOppsOnlySuffix: string = 'MyOppsOnly';
@@ -98,12 +137,14 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private sortFieldSuffix: string = 'Sort';
 
   constructor(
+    protected chatService: ChatService,
     private fb: FormBuilder,
     private authService: AuthorizationService,
     private localStorageService: LocalStorageService,
     protected oppService: OpportunityService<T>,
     private salesforceService: SalesforceService,
     protected countryService: CountryService,
+    private partnerService: PartnerService,
     @Inject(LOCALE_ID) private locale: string,
     private stateKeysRoot: string
   ) {}
@@ -121,6 +162,11 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     }
 
     this.stages = this.loadStages();
+
+    this.partnerService.listSourcePartners().subscribe(
+      (sourcePartners) => {
+        this.sourcePartners = sourcePartners;
+      });
 
     this.countryService.listCountries().subscribe((destinations: Country[]): void => {
       this.destinations = destinations;
@@ -211,7 +257,15 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected abstract createSearchRequest(): SearchOpportunityRequest;
 
-  search() {
+  /**
+   * This executes a search based on the current form fields by default - unless runSearch = false.
+   * <p/>
+   * If runSearch is false, it just uses the search fields to count the number of unwatched chats
+   * associated with the opps specified by the search fields.
+   * @param fetchOpps True (default) if actual new opps matching the search fields should be
+   * fetched from the server.
+   */
+  search(fetchOpps: boolean = true) {
     //Remember keyword filter
     this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
 
@@ -258,11 +312,19 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.error = null;
     this.loading = true;
 
-    this.oppService.searchPaged(req).subscribe(
-      results => this.processSearchResults(results),
-      error => this.processSearchError(error)
-    )
+    if (fetchOpps) {
+      this.oppService.searchPaged(req).subscribe({
+          next: results => this.processSearchResults(results),
+          error: error => this.processSearchError(error)
+        }
+      )
+    }
 
+    this.oppService.checkUnreadChats(req).subscribe({
+        next: info => this.processChatsReadStatus(info),
+        error: error => this.processSearchError(error)
+      }
+    )
   }
 
   private populateRequestUsingContext(req: SearchOpportunityRequest) {
@@ -292,6 +354,15 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     }
   }
 
+  protected processChatsReadStatus(info: JobChatUserInfo) {
+    if (this.chatsRead$) {
+      //There is a high level component monitoring the read status of all chats.
+      //Notify that component but sending the new read status on the Subject. Read is true
+      //if there are no unread chats, otherwise false.
+      this.chatsRead$.next(info.numberUnreadChats === 0);
+    }
+    this.loading = false;
+  }
 
   protected processSearchError(error: any) {
     this.error = error;
@@ -300,6 +371,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected processSearchResults(results: SearchResults<T>) {
     this.results = results;
+    this.loading = false;
 
     this.opps = results.content;
 
@@ -321,8 +393,6 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
     //Following the search filter loses focus, so focus back on it again
     setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
-
-    this.loading = false;
   }
 
   canAccessSalesforce(): boolean {
@@ -331,6 +401,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   get getCandidateOpportunityStageName() {
     return getOpportunityStageName;
+  }
+
+  getChats(opp: Opportunity): JobChat[] {
+    return opp ? this.oppChats.get(opp.id) : null;
   }
 
   getOppSfLink(sfId: string): string {
@@ -386,4 +460,67 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   getNextStepHoverString(opp: CandidateOpportunity) {
     return (opp.nextStep ? opp.nextStep : '');
   }
+
+  /**
+   * This stores the chats for each opp in this.oppChats, indexed by the opp id.
+   * This can be accessed by {@link getChats}.
+   * <p/>
+   * It also puts chats for all opps into this.allChats.
+   * @param chatsByOpp Array of chats for each opp
+   */
+  protected processOppChats(chatsByOpp: JobChat[][]) {
+    //Recalculate all chats for new opps
+    this.allChats = [];
+    for (let i = 0; i < this.opps.length; i++) {
+      const opp = this.opps[i];
+      let chats = chatsByOpp[i];
+      this.oppChats.set(opp.id, chats);
+
+      for (const jobChat of chats) {
+        this.allChats.push(jobChat);
+      }
+    }
+
+    //Resubscribe to composite status of all visible chats
+    this.subscribeToAllVisibleChats();
+  }
+
+  private subscribeToAllVisibleChats() {
+    this.unsubscribe();
+    //Construct a single observable for all visible chat's read statuses, and subscribe to it
+    const chatReadStatus$ = this.chatService.combineChatReadStatuses(this.allChats);
+    console.log("Subscribed to chats " + this.allChats.map( chat => chat.id).join(','));
+    this.subscription = chatReadStatus$.subscribe(
+      {
+        next: chatsRead => this.processVisibleChatsReadUpdate(chatsRead),
+        error: err => this.error = err
+      }
+    )
+  }
+
+  private processVisibleChatsReadUpdate(chatsRead: boolean) {
+    if (this.chatsRead$) {
+      console.log("Visible chats read update: " + chatsRead);
+      if (this.chatsRead$.value && !chatsRead) {
+        //Status from server says all chats read, but there are unread visible chats.
+        //Mark all chats read false
+        this.chatsRead$.next(false);
+      } else if (!this.chatsRead$.value && chatsRead) {
+        //All chats are showing not read, but all chats for visible opps are now read.
+        //Fetch from server again to see if there are still some non visible opps with unread chats.
+        //Don't redo the search - we just want to see if there are any unread chats left in the full
+        //search results.
+        this.search(false);
+      }
+    }
+  }
+
+  private unsubscribe() {
+    if (this.subscription) {
+      console.log("Unsubscribed from previous visible chats")
+      this.subscription.unsubscribe();
+      this.subscription = null;
+    }
+  }
+
 }

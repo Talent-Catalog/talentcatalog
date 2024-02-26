@@ -32,6 +32,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
@@ -40,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
@@ -393,12 +395,39 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
 
     @Override
+    public List<Long> findUnreadChatsInOpps(SearchCandidateOpportunityRequest request) {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        //Construct query
+        final Specification<CandidateOpportunity> spec =
+            CandidateOpportunitySpecification.buildSearchQuery(request, loggedInUser);
+
+        //Retrieve all results and gather the ids
+        List<CandidateOpportunity> allOpps = candidateOpportunityRepository.findAll(spec);
+        List<Long> oppIds = allOpps.stream().map(CandidateOpportunity::getId).toList();
+        List<Long> unreadChatIds =
+            candidateOpportunityRepository.findUnreadChatsInOpps(loggedInUser.getId(), oppIds);
+        return unreadChatIds;
+    }
+
+    @Override
     public Page<CandidateOpportunity> searchCandidateOpportunities(
         SearchCandidateOpportunityRequest request) {
         User loggedInUser = userService.getLoggedInUser();
-        Page<CandidateOpportunity> opps = candidateOpportunityRepository.findAll(
-            CandidateOpportunitySpecification.buildSearchQuery(request, loggedInUser),
-            request.getPageRequest());
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        //Construct query
+        final Specification<CandidateOpportunity> spec =
+            CandidateOpportunitySpecification.buildSearchQuery(request, loggedInUser);
+
+        //Retrieve just page requested.
+        Page<CandidateOpportunity> opps = candidateOpportunityRepository
+            .findAll(spec, request.getPageRequest());
 
         return opps;
     }

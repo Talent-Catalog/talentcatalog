@@ -26,6 +26,7 @@ export interface JobChat {
 }
 
 export interface JobChatUserInfo {
+  numberUnreadChats?: number;
   lastReadPostId?: number;
   lastPostId?: number;
 }
