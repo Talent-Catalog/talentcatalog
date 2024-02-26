@@ -33,6 +33,19 @@
   right: 0;
 }
 
+.login::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/assets/images/login-splash-v2.2.1.png') no-repeat center center;
+  background-size: cover;
+  opacity: 0.15;
+  z-index: -1; /* Ensure it stays behind content */
+}
+
 input {
   padding: 1em;
   margin-bottom: 25px;
