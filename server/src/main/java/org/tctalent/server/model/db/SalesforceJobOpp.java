@@ -36,6 +36,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 /**
  * This is a copy of an Employer Job Opportunity on Salesforce
@@ -67,6 +68,14 @@ public class SalesforceJobOpp extends AbstractOpportunity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "jobOpp", cascade = CascadeType.MERGE)
     private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
+
+    /**
+     * Chats associated with the job
+     */
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "jobOpp", cascade = CascadeType.MERGE)
+    @Where( clause =
+        "type in ('JobCreatorAllSourcePartners','AllJobCandidates','JobCreatorSourcePartner')")
+    private Set<JobChat> chats = new HashSet<>();
 
     /**
      * TC user responsible for this job - will normally be "destination" staff located in the same

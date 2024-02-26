@@ -27,9 +27,12 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.JobChatUser;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
@@ -89,13 +92,48 @@ public class JobSpecification {
                         ));
             }
 
-            //TODO CandidateOpportunitySpecification and JobSpecification are both opportunity
-            //specifications and duplicate a lot of code which should be refactored out.
-
             final Boolean showActiveStages = request.getActiveStages();
             final Boolean showClosed = request.getSfOppClosed();
 
             boolean isStageFilterActive = false;
+
+            boolean withUnreadMessagesOnly = true;
+            //With unread messages only
+            if (withUnreadMessagesOnly) {
+
+                //Join with opp's chats
+                Join<Object, Object> jobChat = job.join("chats");
+
+                /*
+                Query returning the id of the last post in the chat that the user has read.
+                    select last_read_post.id from job_chat_user
+                    where job_chat_id = job_chat.id and user_id = :loggedInUser
+                 */
+                Subquery<Long> lastReadPost = query.subquery(Long.class);
+                Root<JobChatUser> lastReadPostRoot = lastReadPost.from(JobChatUser.class);
+
+                //Create where clause from predicates
+                Predicate equalsChat = builder.equal(lastReadPostRoot.get("chat").get("id"), jobChat.get("id"));
+                Predicate equalsUser = builder.equal(lastReadPostRoot.get("user").get("id"), loggedInUser.getId());
+                lastReadPost.select(lastReadPostRoot.get("lastReadPost").get("id")).where(
+                    builder.and(equalsChat, equalsUser)
+                );
+
+                /*
+                Subquery returning the id of the last post in the chat - it will have the largest id.
+                    select max(id) from chat_post where job_chat_id = job_chat.id
+                 */
+                Subquery<Long> lastPostId = query.subquery(Long.class);
+                Root<ChatPost> lastPostIdRoot = lastPostId.from(ChatPost.class);
+                Predicate equalsChat2 = builder.equal(
+                    lastPostIdRoot.get("jobChat").get("id"), jobChat.get("id"));
+                lastPostId.select(builder.max(lastPostIdRoot.get("id"))).where(equalsChat2);
+
+                //For chats which are not fully read by the user, the user's last read post will
+                //be less that the last post.
+                final Predicate notLastPost = builder.lessThan(lastReadPost, lastPostId);
+                conjunction.getExpressions().add(notLastPost);
+            }
 
             // STAGE
             List<JobOpportunityStage> stages = request.getStages();

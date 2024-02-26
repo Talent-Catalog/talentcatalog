@@ -41,12 +41,7 @@ public interface SalesforceJobOppRepository extends JpaRepository<SalesforceJobO
 
         (select job_chat.id from salesforce_job_opp
             join job_chat on salesforce_job_opp.id = job_id
-                and type = 'JobCreatorAllSourcePartners' or type = 'AllJobCandidates'
-            where salesforce_job_opp.id in (:oppIds)
-        union
-        select job_chat.id from salesforce_job_opp
-            join job_chat on salesforce_job_opp.id = job_id
-             and type = 'JobCreatorSourcePartner'
+                and type in ('JobCreatorAllSourcePartners','AllJobCandidates','JobCreatorSourcePartner')
             where salesforce_job_opp.id in (:oppIds)
         ) as chats
         
