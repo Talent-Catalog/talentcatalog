@@ -132,7 +132,19 @@ public class JobSpecification {
                 //For chats which are not fully read by the user, the user's last read post will
                 //be less that the last post.
                 final Predicate notLastPost = builder.lessThan(lastReadPost, lastPostId);
-                conjunction.getExpressions().add(notLastPost);
+
+                final Predicate unreadChat = builder.isNull(lastReadPost);
+
+                Subquery<Long> numberOfPosts = query.subquery(Long.class);
+                Root<ChatPost> numberOfPostsRoot = numberOfPosts.from(ChatPost.class);
+                Predicate equalsChat3 = builder.equal(
+                    numberOfPostsRoot.get("jobChat").get("id"), jobChat.get("id"));
+                numberOfPosts.select(builder.count(numberOfPostsRoot)).where(equalsChat3);
+                final Predicate chatHasPosts = builder.greaterThan(numberOfPosts, 0L);
+
+                //Now combine the predicates: notLastPost or (unreadChat and chatHasPosts).
+                conjunction.getExpressions().add(builder.or(notLastPost,
+                    builder.and(unreadChat, chatHasPosts)));
             }
 
             // STAGE
