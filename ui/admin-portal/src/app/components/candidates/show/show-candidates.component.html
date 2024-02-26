@@ -430,7 +430,7 @@
               </td>
               <td *ngFor="let field of selectedFields">
 
-                <span [title]="field.getTooltip(candidate)" [ngClass]="{
+                <span [ngbTooltip]="field.getTooltip(candidate)"  [ngClass]="{
                 'text-danger': field.getValue(candidate) === 'Overdue',
                 'text-success' : field.getValue(candidate) == 'Completed',
                 'text-warning' : field.getValue(candidate) == 'Abandoned'}">
