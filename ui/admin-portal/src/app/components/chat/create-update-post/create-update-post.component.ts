@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -28,7 +28,6 @@ export class CreateUpdatePostComponent implements OnInit {
     private rxStompService: RxStompService,
     private modalService: NgbModal,
     private chatPostService: ChatPostService,
-    private elementRef: ElementRef
   ) {
     Quill.register('modules/imageHandler', ImageHandler);
     this.moduleOptions = {
@@ -117,17 +116,32 @@ export class CreateUpdatePostComponent implements OnInit {
     });
   }
 
+  // Add an emoji to the Quill text editor and focus the caret directly after it
   public addEmoji(event) {
-    // Below can be uncommented if we want the menu to disappear after one selection
-    // this.isEmojiPickerVisible = false;
+    this.isEmojiPickerVisible = !this.isEmojiPickerVisible;
     let index: number = this.quillEditorRef.selection.savedRange.index;
     this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
     this.quillEditorRef.setSelection(index + 10, 0);
   }
 
+  // Toggle the emoji picker on and off using the button, refocus the caret
   public clickEmojiButton() {
     this.isEmojiPickerVisible = !this.isEmojiPickerVisible;
     let index: number = this.quillEditorRef.selection.savedRange.index;
     this.quillEditorRef.setSelection(index, 0);
+  }
+
+  // Close the emoji picker if user clicks anywhere except the picker or its button — requires
+  // slightly tortured logic because emoji picker is imported and so its elements are hard to select
+  @HostListener('document:click', ['$event'])
+  documentClick(event) {
+    if(this.isEmojiPickerVisible) {
+      let sectionClass: string =
+        event.target.closest('section') ? event.target.closest('section').classList[0] : "";
+      let clickedElementId: string = event.target.id;
+      if(!clickedElementId.includes('emoji') && !sectionClass.includes('emoji')) {
+        this.isEmojiPickerVisible = false
+      }
+    }
   }
 }

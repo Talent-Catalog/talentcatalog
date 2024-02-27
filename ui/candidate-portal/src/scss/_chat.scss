@@ -56,5 +56,36 @@ button.custom-quill-btn {
   padding-bottom: 5px !important;
 }
 
+button.custom-emoji-btn {
+  color: #444 !important;
+  padding-bottom: 4px !important;
+  padding-left: 0px !important;
+}
 
+button.custom-emoji-btn:hover {
+  color: #0066cc !important;
+  padding-bottom: 4px !important;
+  padding-left: 0px !important;
+}
+
+button.custom-emoji-btn-menu-open {
+  color: #0066cc !important;
+  padding-bottom: 4px !important;
+  padding-left: 0px !important;
+}
+
+#quillToolbar {
+  position: relative;
+}
+
+.emoji-mart {
+  position: absolute;
+  left: -40px;
+  top: 48px;
+  z-index: 1;
+  }
+
+.emoji-mart-scroll {
+  margin-top: 0px;
+}
 

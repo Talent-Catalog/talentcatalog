@@ -27,9 +27,10 @@
         </button>
 
         <button
+          id="emojiButton"
           [ngClass]="!this.isEmojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
           (click)="clickEmojiButton()">
-          <i class="fa-regular fa-face-smile"></i>
+          <i class="fa-regular fa-face-smile" id="emojiIcon"></i>
         </button>
 
         <emoji-mart
@@ -38,7 +39,9 @@
           emoji="point_up"
           title="Choose your emoji..."
           autoFocus="true"
+          [sheetSize]="32"
         ></emoji-mart>
+
       </div>
     </quill-editor>
   </div>

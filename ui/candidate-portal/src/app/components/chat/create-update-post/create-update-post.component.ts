@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -37,6 +37,7 @@ export class CreateUpdatePostComponent implements OnInit {
   postForm: FormGroup;
   quillEditorRef: Quill;
   moduleOptions = {};
+  public isEmojiPickerVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -128,6 +129,39 @@ export class CreateUpdatePostComponent implements OnInit {
 
       //Clear content.
       this.contentControl.patchValue(null);
+    }
+  }
+
+  // Add an emoji to the Quill text editor and focus the caret directly after it
+  public addEmoji(event) {
+    this.isEmojiPickerVisible = !this.isEmojiPickerVisible;
+    let index: number = this.quillEditorRef.selection.savedRange.index;
+    this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
+    this.quillEditorRef.setSelection(index + 10, 0);
+  }
+
+  // Toggle the emoji picker on and off using the button, refocus the caret
+  public clickEmojiButton() {
+    this.isEmojiPickerVisible = !this.isEmojiPickerVisible;
+    let index: number = this.quillEditorRef.selection.savedRange.index;
+    this.quillEditorRef.setSelection(index, 0);
+  }
+
+  // Close the emoji picker if user clicks anywhere except the picker or its button — requires
+  // slightly tortured logic because emoji picker is imported and so its elements are hard to select
+  // TODO: SS -at Font Awesome upgrade, emoji button icon can change and last condition check can go
+  @HostListener('document:click', ['$event'])
+  documentClick(event) {
+    if(this.isEmojiPickerVisible) {
+      let sectionClass: string =
+        event.target.closest('section') ? event.target.closest('section').classList[0] : "";
+      let clickedElementId: string = event.target.id;
+      let closestButtonId: string =
+        event.target.closest('button') ? event.target.closest('button').id : "";
+      if(!clickedElementId.includes('emoji') && !sectionClass.includes('emoji') &&
+      !closestButtonId.includes('emoji')) {
+        this.isEmojiPickerVisible = false
+      }
     }
   }
 }
