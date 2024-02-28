@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) 2023 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -22,10 +22,11 @@ import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.ChatPostReaction;
+import org.tctalent.server.model.db.ChatPostReaction;
 import org.tctalent.server.request.chat.reaction.CreateChatPostReactionRequest;
 import org.tctalent.server.service.db.ChatPostReactionService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -40,29 +41,16 @@ public class ChatPostReactionAdminApi
     private final ChatPostReactionService chatPostReactionService;
 
     /**
-     * Gets chat post reaction record using the given ID.
-     * @param id ID of chat post reaction
-     * @return Desired record
-     * TODO: @throws NoSuchObjectException if if the there is no record with that id
-     */
-    @Override
-    public @NotNull Map<String, Object> get(long id)
-            throws NoSuchObjectException {
-        ChatPostReaction chatPostReaction =
-                this.chatPostReactionService.getChatPostReaction(id);
-        return chatPostReactionDto().build(chatPostReaction);
-    }
-
-    /**
      * Creates a new chat post reaction record from the data in the given request.
      * @param request Request containing details
      * @return Created record
      */
     @Override
     public @NotNull Map<String, Object> create(
-            long chatPostId, @Valid CreateChatPostReactionRequest request) {
+            long chatPostId, @Valid CreateChatPostReactionRequest request)
+            throws EntityExistsException {
         ChatPostReaction reaction =
-            this.chatPostReactionService.createChatPostReaction(chatPostId, request);
+                this.chatPostReactionService.createChatPostReaction(chatPostId, request);
         return chatPostReactionDto().build(reaction);
     }
 
@@ -70,14 +58,29 @@ public class ChatPostReactionAdminApi
      * Delete the chat post reaction with the given id.
      * @param id ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
-     * TODO: @throws EntityReferencedException if the object cannot be deleted because
+     * @throws EntityReferencedException if the object cannot be deleted because
      * it is referenced by another object.
-     * TODO: @throws InvalidRequestException if not authorized to delete this record.
+     * @throws InvalidRequestException if not authorized to delete this record.
      */
     @Override
     public boolean delete(long id)
             throws EntityReferencedException, InvalidRequestException {
         return chatPostReactionService.deleteChatPostReaction(id);
+    }
+
+    /**
+     * Gets chat post reaction record using the given ID.
+     * @param id ID of chat post reaction
+     * @return Desired record
+     * @throws NoSuchObjectException if if the there is no record with that id
+     * TODO: may not need this one
+     */
+    @Override
+    public @NotNull Map<String, Object> get(long id)
+            throws NoSuchObjectException {
+        ChatPostReaction chatPostReaction =
+                this.chatPostReactionService.getChatPostReaction(id);
+        return chatPostReactionDto().build(chatPostReaction);
     }
 
     //TODO: doc

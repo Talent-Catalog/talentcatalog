@@ -14,43 +14,33 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model;
+package org.tctalent.server.model.db;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.ChatPost;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "chat_post_reaction")
 @SequenceGenerator(name = "seq_gen", sequenceName = "chat_post_reaction_id_seq", allocationSize = 1)
-public class ChatPostReaction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chat_post_reaction_id_seq")
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class ChatPostReaction extends AbstractDomainObject<Long> {
 
     /**
      * Associated chat post
      */
-    // TODO: fetch type may need review here - discuss w JC
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_post_id")
-    ChatPost chatPost;
+    private ChatPost chatPost;
 
     private String emoji;
 

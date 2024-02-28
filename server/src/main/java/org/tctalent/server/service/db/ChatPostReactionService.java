@@ -19,7 +19,7 @@ package org.tctalent.server.service.db;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.ChatPostReaction;
+import org.tctalent.server.model.db.ChatPostReaction;
 import org.tctalent.server.request.chat.reaction.CreateChatPostReactionRequest;
 
 public interface ChatPostReactionService {
@@ -27,18 +27,17 @@ public interface ChatPostReactionService {
      * Gets the chat post reaction record from the given id.
      * @param reactionId of chat post reaction
      * @return Desired record
-     * TODO: @throws NoSuchObjectException if the there is no reaction record with that id ?
+     * @throws NoSuchObjectException if the there is no reaction record with that id
+     * TODO: we may not need this one
      */
     ChatPostReaction getChatPostReaction(long reactionId) throws NoSuchObjectException;
-
-    // TODO: get reaction(s) by chat post ID
 
     /**
      * Creates a new chat post reaction from the data in the given request.
      * @param chatPostId id of the parent chat post
      * @param request Request containing visa job check details
      * @return Created record
-     * TODO: @throws NoSuchObjectException?
+     * @throws NoSuchObjectException if no chat post exists with the given id
      */
     ChatPostReaction createChatPostReaction(long chatPostId, CreateChatPostReactionRequest request)
             throws NoSuchObjectException;
@@ -58,7 +57,7 @@ public interface ChatPostReactionService {
      * Updates the chat post reaction associated with the ID provided.
      * @param reactionId ID of chat post reaction - If null this method does nothing
      * @param request {@link CreateChatPostReactionRequest}
-     * TODO: @throws NoSuchObjectException if the there is no ChatPostReaction record with the given ID.
+     * @throws NoSuchObjectException if the there is no ChatPostReaction record with the given ID.
      */
     ChatPostReaction updateChatPostReaction(long reactionId, CreateChatPostReactionRequest request)
             throws NoSuchObjectException;

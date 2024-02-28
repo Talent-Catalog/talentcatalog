@@ -16,13 +16,14 @@
 
 package org.tctalent.server.service.db.impl;
 
+import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.ChatPostReaction;
 import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.ChatPostReaction;
 import org.tctalent.server.repository.db.ChatPostReactionRepository;
 import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.request.chat.reaction.CreateChatPostReactionRequest;
@@ -71,19 +72,21 @@ public class ChatPostReactionImpl implements ChatPostReactionService {
     }
 
     @Override
-    public ChatPostReaction updateChatPostReaction(
+    public @Nullable ChatPostReaction updateChatPostReaction(
             long reactionId, CreateChatPostReactionRequest request)
         throws NoSuchObjectException {
         ChatPostReaction reaction = chatPostReactionRepository.findById(reactionId)
                 .orElseThrow(() -> new NoSuchObjectException(ChatPostReaction.class, reactionId));
 
+        // If user clicks on reaction to retract the only upvote, delete it
         if(null == request.getUserIds()) {
             deleteChatPostReaction(reaction.getId());
+            return null;
         } else {
             reaction.setUserIds(request.getUserIds());
+            chatPostReactionRepository.save(reaction);
+            return reaction;
         }
-        chatPostReactionRepository.save(reaction);
-        return reaction;
     }
 
 }

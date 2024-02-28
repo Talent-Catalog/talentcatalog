@@ -15,6 +15,7 @@
  */
 import {User} from "./user";
 import {Auditable} from "./base";
+import {ChatPostReaction} from "./chat-post-reaction";
 
 export interface Post extends Auditable {
   content: string;
@@ -38,7 +39,7 @@ export interface ChatPost {
   jobChat: JobChat;
   updatedBy: User;
   updatedDate: Date;
-
+  chatPostReactions?: ChatPostReaction[];
 }
 
 export enum JobChatType {

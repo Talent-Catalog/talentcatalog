@@ -16,9 +16,13 @@
 
 package org.tctalent.server.model.db;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -40,6 +44,9 @@ public class ChatPost extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "job_chat_id")
     private JobChat jobChat;
     private String content;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatPost", cascade = CascadeType.ALL)
+    private List<ChatPostReaction> chatPostReactions = new ArrayList<>();
 
     //Author of post is stored in inherited createdBy
     //Timestamp of post is stored in inherited createdDate

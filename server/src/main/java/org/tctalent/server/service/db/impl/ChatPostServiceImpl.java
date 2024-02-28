@@ -89,6 +89,7 @@ public class ChatPostServiceImpl implements ChatPostService {
             .add("jobChat", jobChatDto())
             .add("updatedDate")
             .add("updatedBy", userDto())
+            .add("chatPostReactions", reactionsDto())
             ;
     }
 
@@ -112,6 +113,14 @@ public class ChatPostServiceImpl implements ChatPostService {
         return new DtoBuilder()
             .add("id")
             .add("abbreviation")
+            ;
+    }
+
+    private DtoBuilder reactionsDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("emoji")
+            .add("userIds")
             ;
     }
 
