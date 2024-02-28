@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatUser;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -104,6 +105,20 @@ public class JobSpecification {
                 //Join with opp's chats
                 Join<Object, Object> jobChat = job.join("chats");
 
+                //TODO JC Still need to filter by type of chat.
+
+                /*
+                  Look for any associated chats that are not fully read.
+
+                  - Chats where user has not read to the last post
+                  - Chats which have posts, but have never been read.
+                 */
+
+                //CHATS WHICH ARE NOT READ TO END
+                //ie last read post < last post in chat
+                //Construct this predicate
+                final Predicate notReadToEnd;
+
                 /*
                 Query returning the id of the last post in the chat that the user has read.
                     select last_read_post.id from job_chat_user
@@ -131,9 +146,12 @@ public class JobSpecification {
 
                 //For chats which are not fully read by the user, the user's last read post will
                 //be less that the last post.
-                final Predicate notLastPost = builder.lessThan(lastReadPost, lastPostId);
+                notReadToEnd = builder.lessThan(lastReadPost, lastPostId);
 
-                final Predicate unreadChat = builder.isNull(lastReadPost);
+                //NON-EMPTY CHATS WHICH HAVE NEVER BEEN READ
+                //ie last read post < last post in chat
+                //Construct this predicate
+                final Predicate neverRead;
 
                 Subquery<Long> numberOfPosts = query.subquery(Long.class);
                 Root<ChatPost> numberOfPostsRoot = numberOfPosts.from(ChatPost.class);
@@ -141,10 +159,19 @@ public class JobSpecification {
                     numberOfPostsRoot.get("jobChat").get("id"), jobChat.get("id"));
                 numberOfPosts.select(builder.count(numberOfPostsRoot)).where(equalsChat3);
                 final Predicate chatHasPosts = builder.greaterThan(numberOfPosts, 0L);
+                final Predicate unreadChat = builder.isNull(lastReadPost);
+                neverRead = builder.and(unreadChat, chatHasPosts);
 
-                //Now combine the predicates: notLastPost or (unreadChat and chatHasPosts).
-                conjunction.getExpressions().add(builder.or(notLastPost,
-                    builder.and(unreadChat, chatHasPosts)));
+                //FINALLY...
+                //Now combine the predicates and do the query checking if the number of not fully
+                //read chats is greater than 0.
+                final Predicate notFullyRead = builder.or(notReadToEnd, neverRead);
+                Subquery<Long> numberOfChatsToRead = query.subquery(Long.class);
+                Root<JobChat> numberOfChatsToReadRoot = numberOfChatsToRead.from(JobChat.class);
+                numberOfChatsToRead.select(builder.count(numberOfChatsToReadRoot)).where(notFullyRead);
+                final Predicate oppHasUnreadChats = builder.greaterThan(numberOfChatsToRead, 0L);
+
+                conjunction.getExpressions().add(oppHasUnreadChats);
             }
 
             // STAGE
