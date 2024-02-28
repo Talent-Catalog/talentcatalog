@@ -32,6 +32,14 @@
                    formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
           </div>
         </div>
+        <div class="col-md-3">
+          <div class="form-check">
+            <label class="form-label" [title]="withUnreadMessagesTip"
+                   for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>
+            <input *ngIf="selectedStages.length === 0" [title]="withUnreadMessagesTip" type="checkbox"
+                   formControlName="withUnreadMessages" id="withUnreadMessages" class="form-check-input">
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="col-md-3 me-md-2">

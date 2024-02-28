@@ -100,16 +100,16 @@ public class JobSpecification {
 
             boolean isStageFilterActive = false;
 
-            boolean withUnreadMessagesOnly = true;
             //With unread messages only
-            if (withUnreadMessagesOnly) {
+            if (request.getWithUnreadMessages() != null && request.getWithUnreadMessages()) {
 
                 //Join with opp's chats
                 Join<Object, Object> jobChat = job.join("chats");
 
                 //Create predicate so that we just look at chats directly associated with jobs
                 List<JobChatType> belongsToJob = Arrays.asList(
-                    JobChatType.JobCreatorAllSourcePartners, JobChatType.AllJobCandidates, JobChatType.JobCreatorSourcePartner);
+                    JobChatType.JobCreatorAllSourcePartners, JobChatType.AllJobCandidates,
+                    JobChatType.JobCreatorSourcePartner);
                 final Predicate chatBelongsToJob = builder.in(jobChat.get("type")).value(belongsToJob);
 
                 /*

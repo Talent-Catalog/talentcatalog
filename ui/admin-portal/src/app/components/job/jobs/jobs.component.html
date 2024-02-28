@@ -14,7 +14,8 @@
     </div>
 
     <div *ngIf="searchBy === SearchOppsBy.mineAsJobCreator ||
-                searchBy === SearchOppsBy.mineAsSourcePartner" class="mt-2 mb-3">
+                searchBy === SearchOppsBy.mineAsSourcePartner ||
+                searchBy === SearchOppsBy.starredByMe" class="mt-2 mb-3">
       <div class="row">
         <div class="col-md-2 me-md-5">
           <div class="form-check">
@@ -38,6 +39,14 @@
                    for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
             <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox"
                    formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-check">
+            <label class="form-label" [title]="withUnreadMessagesTip"
+                   for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>
+            <input *ngIf="selectedStages.length === 0" [title]="withUnreadMessagesTip" type="checkbox"
+                   formControlName="withUnreadMessages" id="withUnreadMessages" class="form-check-input">
           </div>
         </div>
       </div>

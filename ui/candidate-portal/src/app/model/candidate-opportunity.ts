@@ -84,4 +84,6 @@ export class SearchOpportunityRequest extends PagedSearchRequest {
   sfOppClosed?: boolean;
   stages?: string[];
   destinationIds?: number[];
+  withUnreadMessages?: boolean;
+
 }

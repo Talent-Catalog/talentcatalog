@@ -104,6 +104,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   showClosedOppsTip = "Show opps that have been closed";
   showInactiveOppsLabel = "Show inactive opps";
   showInactiveOppsTip = "Show opps that are no longer active - for example if they have already relocated";
+  withUnreadMessagesLabel = "Opps with unread chat messages only";
+  withUnreadMessagesTip = "Only show opps which have unread chat messages";
 
   loading: boolean;
   error;
@@ -135,6 +137,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private showInactiveOppsSuffix: string = 'ShowInactiveOpps';
   private sortDirectionSuffix: string = 'SortDir';
   private sortFieldSuffix: string = 'Sort';
+  private withUnreadMessagesSuffix: string = 'WithUnreadMessages';
 
   constructor(
     protected chatService: ChatService,
@@ -191,17 +194,19 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     //Pick up previous options
     const previousMyOppsOnly: string = this.localStorageService.get(this.savedStateKey() + this.myOppsOnlySuffix);
     const previousOverdueOppsOnly: string = this.localStorageService.get(this.savedStateKey() + this.overdueOppsOnlySuffix);
+    const previousWithUnreadMessages: string = this.localStorageService.get(this.savedStateKey() + this.withUnreadMessagesSuffix);
     const previousShowClosedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showClosedOppsSuffix);
     const previousShowInactiveOpps: string = this.localStorageService.get(this.savedStateKey() + this.showInactiveOppsSuffix);
 
     this.searchForm = this.fb.group({
+      destinationIds: [],
       keyword: [filter],
       myOppsOnly: [previousMyOppsOnly ? previousMyOppsOnly : false],
       overdueOppsOnly: [previousOverdueOppsOnly ? previousOverdueOppsOnly : false],
+      selectedStages: [[]],
       showClosedOpps: [previousShowClosedOpps ? previousShowClosedOpps : false],
       showInactiveOpps: [previousShowInactiveOpps ? previousShowInactiveOpps : false],
-      selectedStages: [[]],
-      destinationIds: []
+      withUnreadMessages: [previousWithUnreadMessages ? previousWithUnreadMessages : false]
     });
 
     this.subscribeToFilterChanges();
@@ -241,6 +246,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     return this.searchForm ? this.searchForm.value.destinationIds : null;
   }
 
+  protected get withUnreadMessages(): boolean {
+    return this.searchForm ? this.searchForm.value.withUnreadMessages : false;
+  }
+
   private savedStateKey(): string {
     //This key is constructed from the combination of inputs which are associated with each tab
     // in home.component.html
@@ -278,6 +287,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.localStorageService.set(this.savedStateKey()+this.overdueOppsOnlySuffix, this.overdueOppsOnly);
     this.localStorageService.set(this.savedStateKey()+this.showClosedOppsSuffix, this.showClosedOpps);
     this.localStorageService.set(this.savedStateKey()+this.showInactiveOppsSuffix, this.showInactiveOpps);
+    this.localStorageService.set(this.savedStateKey()+this.withUnreadMessagesSuffix, this.withUnreadMessages);
 
     let req = this.createSearchRequest();
     req.keyword = this.keyword;
@@ -286,6 +296,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
     req.sortFields = [this.sortField];
     req.sortDirection = this.sortDirection;
+
+    req.withUnreadMessages = this.withUnreadMessages;
 
     req.stages = this.selectedStages;
 
@@ -351,6 +363,11 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
     if (this.showClosedOpps) {
       req.sfOppClosed = true;
+    }
+
+    if (this.withUnreadMessages) {
+      //Only show opps with unread chat messages
+      req.withUnreadMessages = true;
     }
   }
 
