@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Fetch;
@@ -33,6 +34,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobChatUser;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -105,7 +107,10 @@ public class JobSpecification {
                 //Join with opp's chats
                 Join<Object, Object> jobChat = job.join("chats");
 
-                //TODO JC Still need to filter by type of chat.
+                //Create predicate so that we just look at chats directly associated with jobs
+                List<JobChatType> belongsToJob = Arrays.asList(
+                    JobChatType.JobCreatorAllSourcePartners, JobChatType.AllJobCandidates, JobChatType.JobCreatorSourcePartner);
+                final Predicate chatBelongsToJob = builder.in(jobChat.get("type")).value(belongsToJob);
 
                 /*
                   Look for any associated chats that are not fully read.
@@ -168,7 +173,8 @@ public class JobSpecification {
                 final Predicate notFullyRead = builder.or(notReadToEnd, neverRead);
                 Subquery<Long> numberOfChatsToRead = query.subquery(Long.class);
                 Root<JobChat> numberOfChatsToReadRoot = numberOfChatsToRead.from(JobChat.class);
-                numberOfChatsToRead.select(builder.count(numberOfChatsToReadRoot)).where(notFullyRead);
+                numberOfChatsToRead.select(builder.count(numberOfChatsToReadRoot)).where(
+                    builder.and(chatBelongsToJob, notFullyRead));
                 final Predicate oppHasUnreadChats = builder.greaterThan(numberOfChatsToRead, 0L);
 
                 conjunction.getExpressions().add(oppHasUnreadChats);
