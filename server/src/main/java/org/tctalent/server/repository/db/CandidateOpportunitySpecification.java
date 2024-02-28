@@ -19,6 +19,7 @@ package org.tctalent.server.repository.db;
 import io.jsonwebtoken.lang.Collections;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Join;
@@ -32,12 +33,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerJobRelation;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
+import org.tctalent.server.util.SpecificationHelper;
 
 /**
  * Specification for sorting and searching {@link CandidateOpportunity} entities.
@@ -122,6 +125,23 @@ public class CandidateOpportunitySpecification {
                             )
                         );
                 }
+            }
+
+            //UNREAD MESSAGES
+            if (request.getWithUnreadMessages() != null && request.getWithUnreadMessages()) {
+
+                //Join with opp's chats
+                Join<Object, Object> jobChat = opp.join("chats");
+
+                //Create predicate so that we just look at chats directly associated with jobs
+                List<JobChatType> belongsToCase = Arrays.asList(
+                    JobChatType.CandidateProspect, JobChatType.CandidateRecruiting);
+                final Predicate chatBelongsToOpp = builder.in(jobChat.get("type")).value(belongsToCase);
+
+                final Predicate oppHasUnreadChats = SpecificationHelper.getOppHasUnreadChats(
+                    loggedInUser, query, builder, jobChat, chatBelongsToOpp);
+
+                conjunction.getExpressions().add(oppHasUnreadChats);
             }
 
             //OWNERSHIP

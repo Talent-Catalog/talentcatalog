@@ -69,6 +69,7 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "jobOpp", cascade = CascadeType.MERGE)
     private Set<CandidateOpportunity> candidateOpportunities = new HashSet<>();
 
+    //todo Do we need this - only used in JobSpecification for the join - which are no longer going to do
     /**
      * Chats associated with the job
      */
