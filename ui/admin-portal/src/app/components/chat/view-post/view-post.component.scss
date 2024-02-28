@@ -1,0 +1,22 @@
+button.create-emoji-reaction-btn {
+  border: none;
+  color: #444;
+  background-color: inherit;
+}
+
+button.create-emoji-reaction-btn:hover {
+  color: #0066cc;
+}
+
+button.create-emoji-reaction-btn-open {
+  color: #0066cc
+}
+
+button.emoji-reaction-btn {
+  // TODO: use TC palette
+  background-color: #ced4da;
+  border: none;
+  text-align: center;
+  border-radius: 4px;
+}
+

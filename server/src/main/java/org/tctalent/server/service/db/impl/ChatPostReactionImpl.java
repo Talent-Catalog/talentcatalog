@@ -53,7 +53,7 @@ public class ChatPostReactionImpl implements ChatPostReactionService {
             long chatPostId, CreateChatPostReactionRequest request)
             throws NoSuchObjectException {
 
-        ChatPost chatPost = chatPostRepository.findById(request.getChatPostId())
+        ChatPost chatPost = chatPostRepository.findById(chatPostId)
                 .orElseThrow(() -> new NoSuchObjectException(ChatPost.class, chatPostId));
 
         ChatPostReaction reaction = new ChatPostReaction();

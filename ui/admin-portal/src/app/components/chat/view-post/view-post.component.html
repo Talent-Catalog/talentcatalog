@@ -4,4 +4,25 @@
     <small>{{post?.createdDate | date: 'customDateTime'}}</small>
   </p>
   <p class="content" *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></p>
+  <div class="d-flex justify-content-end">
+    <button class="emoji-reaction-btn mx-1 px-1" *ngFor="let reaction of post.chatPostReactions">
+      {{reaction.emoji}}
+    </button>
+    <button
+      class="create-emoji-reaction-btn"
+      [ngClass]="!this.emojiReactPickerVisible ? 'emoji-react-btn' : 'emoji-react-btn-open'"
+      (click)="clickEmojiButton()">
+      <i class="fa-regular fa-face-smile fa-xs">
+      <i class="fa-solid fa-plus fa-xs"></i></i>
+    </button>
+    <emoji-mart
+      class="reaction-picker"
+      *ngIf="emojiReactPickerVisible"
+      (emojiClick)="addReaction(post, $event)"
+      emoji="point_up"
+      title="Choose your emoji..."
+      autoFocus="true"
+      [sheetSize]="32"
+    ></emoji-mart>
+  </div>
 </div>

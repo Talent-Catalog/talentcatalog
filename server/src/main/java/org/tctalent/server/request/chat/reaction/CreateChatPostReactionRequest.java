@@ -25,8 +25,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateChatPostReactionRequest {
-    @NotNull
-    private Long chatPostId;
 
     @NotNull
     private List<Long> userIds;

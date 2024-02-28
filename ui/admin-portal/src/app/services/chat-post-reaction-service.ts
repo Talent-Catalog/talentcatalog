@@ -21,7 +21,6 @@ import {Observable} from "rxjs";
 import {ChatPostReaction} from "../model/chat-post-reaction";
 
 export interface CreateChatPostReactionRequest {
-    chatPostId: number;
     emoji: string;
     userIds: number[];
 }
