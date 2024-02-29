@@ -24,7 +24,10 @@
 
           <button class="ql-link"></button>
           <button class="ql-image"></button>
-          <button class="custom-quill-btn" (click)="uploadFile()"><i class="fa-solid fa-file-upload small"></i></button>
+          <button class="custom-quill-btn" (click)="uploadFile()">
+            <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
+            <i *ngIf="!saving" class="fa-solid fa-file-upload small"></i>
+          </button>
 
       </div>
     </quill-editor>
