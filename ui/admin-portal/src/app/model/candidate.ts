@@ -105,7 +105,6 @@ export interface Candidate extends HasId {
   candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
-  intaked: string;
   miniIntakeCompletedBy: User;
   miniIntakeCompletedDate: number;
   fullIntakeCompletedBy: User;

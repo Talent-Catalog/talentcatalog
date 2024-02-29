@@ -16,9 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.TaskDtoHelper;
@@ -27,6 +24,10 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.dto.DtoPropertyFilter;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -166,7 +167,6 @@ public class CandidateBuilderSelector {
             .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
             .add("candidateProperties", candidatePropertyDto())
             .add("shareableNotes")
-            .add("intaked")
             .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
             .add("miniIntakeCompletedDate")
             .add("fullIntakeCompletedBy", userDto(userPropertyFilter))

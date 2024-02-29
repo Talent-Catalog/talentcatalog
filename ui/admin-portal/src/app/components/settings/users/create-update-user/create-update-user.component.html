@@ -36,7 +36,7 @@
     <form [formGroup]="userForm">
       <div class="mb-3">
         <label class="form-label" for="email">Email *</label>
-        <input type="email" class="form-control" id="email" formControlName="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$">
+        <input type="email" class="form-control" id="email" formControlName="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$">
         <div *ngIf="userForm.get('email').touched || userForm.get('email').dirty">
           <small *ngIf="userForm.get('email').errors?.['pattern']" class="text-danger">Please enter valid email address</small>
         </div>
