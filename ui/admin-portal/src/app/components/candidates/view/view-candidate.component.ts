@@ -16,7 +16,11 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
-import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
+import {
+  Candidate,
+  UpdateCandidateStatusInfo,
+  UpdateCandidateStatusRequest
+} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
@@ -29,18 +33,16 @@ import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
 import {forkJoin} from 'rxjs';
-import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
-import {CandidateAttachment} from '../../../model/candidate-attachment';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
-import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {TailoredCvComponent} from 'src/app/components/candidates/view/tailored-cv.component';
 import {AuthenticationService} from "../../../services/authentication.service";
+import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
+import {ChatService} from "../../../services/chat.service";
+
 
 @Component({
   selector: 'app-view-candidate',
@@ -55,33 +57,28 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   loading: boolean;
   savingList: boolean;
   loadingError: boolean;
-  selectDropdownText: boolean = true;
   error;
   candidate: Candidate;
+  candidateChat: JobChat;
+  candidateProspectTabVisible: boolean;
   loggedInUser: User;
 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
-  attachmentForm: FormGroup;
-  attachments: CandidateAttachment[];
-  cvs: CandidateAttachment[];
-  s3BucketUrl = environment.s3BucketUrl;
   token: string;
 
   constructor(private candidateService: CandidateService,
+              private chatService: ChatService,
               private savedListService: SavedListService,
               private candidateSavedListService: CandidateSavedListService,
               private localStorageService: LocalStorageService,
               private savedListCandidateService: SavedListCandidateService,
-              private candidateAttachmentService: CandidateAttachmentService,
               private route: ActivatedRoute,
               private router: Router,
               private modalService: NgbModal,
               private titleService: Title,
               private authService: AuthorizationService,
-              private authenticationService: AuthenticationService,
-              private candidateFieldService: CandidateFieldService,
-              private fb: FormBuilder) {
+              private authenticationService: AuthenticationService) {
     super(2, 4);
   }
 
@@ -89,6 +86,17 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     this.refreshCandidateInfo();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
+    this.checkVisibility();
+  }
+  private checkVisibility() {
+    const candidatePartner = this.candidate?.user?.partner;
+    const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
+
+    //User is source partner responsible for candidate or default source partner
+    const userIsCandidatePartner =
+      loggedInPartner.defaultSourcePartner || loggedInPartner.id == candidatePartner?.id;
+
+    this.candidateProspectTabVisible = userIsCandidatePartner;
   }
 
   refreshCandidateInfo() {
@@ -114,6 +122,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
         this.loading = false;
       });
     });
+  }
+
+  get JobChatType() {
+    return JobChatType;
   }
 
   private loadLists() {
@@ -190,6 +202,26 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     } else {
       this.titleService.setTitle(this.candidate.candidateNumber);
     }
+
+    this.fetchChat();
+  }
+
+  fetchChat() {
+    if (this.candidate) {
+      this.loading = true;
+      this.error = null;
+
+      const candidateProspectChatRequest: CreateChatRequest = {
+        type: JobChatType.CandidateProspect,
+        candidateId: this.candidate.id,
+      }
+      this.chatService.getOrCreate(candidateProspectChatRequest).subscribe(
+        {
+          next: (chat) => {this.candidateChat = chat; this.loading = false},
+          error: (error) => {this.error = error; this.loading = false}
+        }
+      )
+    }
   }
 
   downloadCV() {
@@ -239,6 +271,12 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
+  }
+
+  onMarkCandidateChatAsRead() {
+    if (this.candidateChat) {
+      this.chatService.markChatAsRead(this.candidateChat);
+    }
   }
 
   /*

@@ -12,6 +12,11 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {FilteredOppsComponentBase} from "../../util/opportunity/FilteredOppsComponentBase";
 import {CountryService} from "../../../services/country.service";
+import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
+import {forkJoin, Observable} from "rxjs";
+import {ChatService} from "../../../services/chat.service";
+import {SearchResults} from "../../../model/search-results";
+import {PartnerService} from "../../../services/partner.service";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -50,17 +55,20 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   showInactiveOppsTip = "Show cases that are no longer active - " +
     "for example if the candidate has already relocated";
 
+
   constructor(
+    chatService: ChatService,
     fb: FormBuilder,
     authService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,
     salesforceService: SalesforceService,
     countryService: CountryService,
+    partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(fb, authService, localStorageService, oppService, salesforceService, countryService, locale,
-        "Opps")
+    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+      countryService, partnerService, locale,"Opps")
 
   }
 
@@ -69,6 +77,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
 
     if (changes.candidateOpps) {
       this.opps = this.candidateOpps;
+      this.fetchChats();
     }
   }
 
@@ -88,5 +97,47 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
       overdue =  dueDate < today;
     }
     return overdue;
+  }
+
+  /**
+   * Override inherited method which processes the search results into this.opps so that
+   * we can fetch the opps chats.
+   * @param results
+   * @protected
+   */
+  protected processSearchResults(results: SearchResults<CandidateOpportunity>) {
+    //Call standard processing (which puts the results into this.opps)
+    super.processSearchResults(results);
+
+    //Then fetch the chats associated with all opps.
+    this.fetchChats();
+  }
+
+  private fetchChats() {
+    this.error = null;
+    let oppsChats$: Observable<JobChat[]>[] = [];
+    for (const opp of this.opps) {
+      const candidateProspectChatRequest: CreateChatRequest = {
+        type: JobChatType.CandidateProspect,
+        candidateId: opp?.candidate?.id,
+      }
+      const candidateRecruitingChatRequest: CreateChatRequest = {
+        type: JobChatType.CandidateRecruiting,
+        candidateId: opp?.candidate?.id,
+        jobId: opp?.jobOpp?.id
+      }
+
+      oppsChats$.push(forkJoin( [
+        this.chatService.getOrCreate(candidateProspectChatRequest),
+        this.chatService.getOrCreate(candidateRecruitingChatRequest),
+      ]));
+    }
+
+    //This is a forkJoin of forkJoins - one for each opp.
+    forkJoin(oppsChats$).subscribe({
+        next: chatsByOpp => this.processOppChats(chatsByOpp),
+        error: err => this.error = err
+      }
+    )
   }
 }

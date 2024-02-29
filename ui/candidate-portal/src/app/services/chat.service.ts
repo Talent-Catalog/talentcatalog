@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Observable, Subject} from "rxjs";
+import {BehaviorSubject, combineLatest, Observable, Subject} from "rxjs";
 import {ChatPost, CreateChatRequest, JobChat, JobChatUserInfo} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
@@ -25,21 +25,11 @@ export class ChatService implements OnDestroy {
   private destroyStompSubscriptions$ = new Subject<void>();
 
   /**
-   * These record the current read status of each chat - which supports the {@link #isChatRead}
-   * method.
-   * <p/>
-   * Note that chatIsReads$ provide Observables for chat read status - so any time the status
-   * changes they will provide a new status. But they do not remember the current status.
-   *
-   * @private
-   */
-  private chatIsReads: Map<number, boolean> = new Map<number, boolean>();
-
-  /**
    * Map of Chat id to MarkAsRead Subject for that chat - this where notifications come in
    * for chat read status changes.
    */
-  private chatIsReads$: Map<number, Subject<boolean>> = new Map<number, Subject<boolean>>();
+  private chatIsReads$: Map<number, BehaviorSubject<boolean>>
+    = new Map<number, BehaviorSubject<boolean>>();
 
   /**
    * Map of Chat id to Observable for that chat - this is where posts come in from server
@@ -80,10 +70,27 @@ export class ChatService implements OnDestroy {
     this.completeMarkAsReads();
 
     //Clean up data structures.
-    this.chatIsReads.clear();
     this.chatPosts$.clear();
     this.chatByRequest$.clear();
 
+  }
+
+  /**
+   * Creates a single chat read status from a group of chats indicating whether all chats are read
+   * or some are unread.
+   * @param chats Chats to be monitored
+   */
+  combineChatReadStatuses(chats: JobChat[]): Observable<boolean> {
+    //Construct array of chat read statuses from array of chats
+    let chatReadStatuses$ = chats.map(
+      (chat) => this.getChatIsRead$(chat));
+
+    //Combine the latest values of all the statuses and return a single status which is true
+    //only if all are true (ie none are false)
+    return combineLatest(chatReadStatuses$).pipe(
+      //For isRead to be true, no chats can be false (unread)
+      map(statuses =>  statuses.find(isRead => isRead == false) == null)
+    );
   }
 
   create(request: CreateChatRequest): Observable<JobChat> {
@@ -112,12 +119,16 @@ export class ChatService implements OnDestroy {
        map((message: Message) => {
         const payload: ChatPost = JSON.parse(message.body);
         return payload;
-       }),
-       tap(() => this.changeChatReadStatus(chat,false))
+       })
      );
   }
 
 
+  /**
+   * This returns info about the given chat and where the logged in user has read up to on that
+   * chat.
+   * @param chat
+   */
   private getJobChatUserInfo(chat: JobChat): Observable<JobChatUserInfo> {
     // console.log('Browser requests server for status of chat ' + chat.id);
     const user = this.authenticationService.getLoggedInUser();
@@ -136,8 +147,9 @@ export class ChatService implements OnDestroy {
   }
 
   markChatAsRead(chat: JobChat) {
-    this.changeChatReadStatus(chat, true);
     this.markAsReadUptoOnServer(chat).subscribe({
+      //Don't update status until it is reflected on the server database.
+      next: () => {this.changeChatReadStatus(chat, true)},
       error: error => {console.log("ChatService.markAsReadUpto: Error " + error )}
     })
   }
@@ -160,7 +172,8 @@ export class ChatService implements OnDestroy {
         //See https://www.learnrxjs.io/learn-rxjs/operators/filtering/takeuntil
         takeUntil(this.destroyStompSubscriptions$),
         tap( message => console.log('Post received from server for chat ' + chat.id
-        + ': ' + JSON.stringify(message.body)))
+        + ': ' + JSON.stringify(message.body))),
+        tap(() => this.changeChatReadStatus(chat,false))
       );
 
       if (this.chatPosts$.has(chat.id)) {
@@ -256,7 +269,7 @@ export class ChatService implements OnDestroy {
   getChatIsRead$(chat: JobChat): Observable<boolean> {
     const subject = this.getChatIsReadSubject(chat);
 
-    if (this.isChatRead(chat) == null) {
+    if (subject.value == null) {
       //If we don't know the status, we need to get it from the server.
       this.getJobChatUserInfo(chat).subscribe({
           next: info => {
@@ -272,34 +285,27 @@ export class ChatService implements OnDestroy {
     return subject;
   }
 
-  private getChatIsReadSubject(chat: JobChat): Subject<boolean> {
+  private getChatIsReadSubject(chat: JobChat): BehaviorSubject<boolean> {
     //Check if we already have one for this chat..
     let chatIsRead = this.chatIsReads$.get(chat.id);
     if (chatIsRead == null) {
-      chatIsRead = new Subject<boolean>();
+      console.log("Creating new subject for chat " + chat.id);
+      chatIsRead = new BehaviorSubject<boolean>(null);
+
       //Save observable for this chat.
       this.chatIsReads$.set(chat.id, chatIsRead);
+
+      //Subscribe to chat.
+      //The standard tap in watchChat subscriptions will update chatIsRead subjects.
+      this.watchChat(chat).subscribe();
+      console.log("Subscribing to posts from chat " + chat.id);
     }
 
     return chatIsRead;
   }
 
-  /**
-   * This returns the current read status of the given chat (Observables don't give you that -
-   * only changes).
-   * <p/>
-   * This is needed by code that wants to display the current read status now - without waiting
-   * for the next status change to come through on an Observable.
-   * @param chat Chat whose current read status is wanted
-   * @return True or False - or undefined if we don't know.
-   */
-  isChatRead(chat: JobChat): boolean {
-    return this.chatIsReads.get(chat.id);
-  }
-
   private changeChatReadStatus(chat: JobChat, isRead: boolean) {
     this.getChatIsReadSubject(chat).next(isRead);
-    this.chatIsReads.set(chat.id, isRead);
   }
 
   private completeMarkAsReads() {

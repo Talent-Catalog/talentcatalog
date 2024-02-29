@@ -179,7 +179,7 @@
 
       <!-- Chat between source partner candidate-->
       <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
-        <a ngbNavLink>Chat with candidate
+        <a ngbNavLink [title]="'Chat ' + candidateChat?.id">Chat with candidate
           <app-chat-read-status *ngIf="candidateChat"
             [chats]="[candidateChat]"
             >
@@ -193,7 +193,7 @@
           </div>
 
           <app-view-chat-posts
-            [candidateOpp]="opp"
+            [candidateId]="opp.candidate.id"
             [jobChatType]="JobChatType.CandidateProspect"
           >
           </app-view-chat-posts>
@@ -202,7 +202,7 @@
 
       <!-- Chat including source partner and job creator-->
       <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible">
-        <a ngbNavLink>{{candidateRecruitingTabTitle}}
+        <a ngbNavLink [title]="'Chat ' + candidateRecruitingChat?.id">{{candidateRecruitingTabTitle}}
           <app-chat-read-status *ngIf="candidateRecruitingChat"
             [chats]="[candidateRecruitingChat]"
           >
@@ -216,7 +216,8 @@
           </div>
 
           <app-view-chat-posts
-            [candidateOpp]="opp"
+            [candidateId]="opp.candidate.id"
+            [jobId]="opp.jobOpp.id"
             [jobChatType]="JobChatType.CandidateRecruiting"
           >
           </app-view-chat-posts>

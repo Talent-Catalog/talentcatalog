@@ -236,6 +236,28 @@
             </ng-template>
           </ng-container>
 
+          <!-- Chat between source partner candidate-->
+          <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
+            <a ngbNavLink>Chat with candidate
+              <app-chat-read-status *ngIf="candidateChat"
+                                    [chats]="[candidateChat]"
+              >
+              </app-chat-read-status>
+            </a>
+            <ng-template ngbNavContent>
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-success " (click)="onMarkCandidateChatAsRead()">
+                  Mark as Read <i class="fa-solid"></i>
+                </button>
+              </div>
+
+              <app-view-chat-posts
+                [chat]="candidateChat"
+              >
+              </app-view-chat-posts>
+            </ng-template>
+          </ng-container>
+
         </nav>
         <div [ngbNavOutlet]="nav" class="mt-2"></div>
       </div>

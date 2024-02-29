@@ -5,6 +5,13 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {HomeComponent} from "../../candidates/home.component";
 import {SearchOppsBy} from "../../../model/base";
+import {BehaviorSubject, Subject} from "rxjs";
+import {SearchOpportunityRequest} from "../../../model/candidate-opportunity";
+import {OpportunityOwnershipType} from "../../../model/opportunity";
+import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
+import {JobChatUserInfo} from "../../../model/chat";
+import {SearchJobRequest} from "../../../model/job";
+import {JobService} from "../../../services/job.service";
 
 @Component({
   selector: 'app-job-home',
@@ -13,7 +20,25 @@ import {SearchOppsBy} from "../../../model/base";
 })
 export class JobHomeComponent extends HomeComponent {
 
+  /**
+   * This tracks the overall read status of all the chats that it manages.
+   * It is used to drive the read status component on the tab in the Jobs home component - which displays an asterisk
+   * if some chats are unread.
+   * <p/>
+   * This component can call next on this subject if it knows that some of the chats it manages
+   * are unread. The fact that it is a BehaviorSubject means that you can query the current status
+   * of the higher level component.
+   */
+  jobCreatorChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  sourcePartnerChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  partnerJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  starredJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+
+  error: any;
+
   constructor(
+    private candidateOpportunityService: CandidateOpportunityService,
+    private jobService: JobService,
     protected localStorageService: LocalStorageService,
     protected savedSearchService: SavedSearchService,
     protected authService: AuthorizationService,
@@ -23,6 +48,55 @@ export class JobHomeComponent extends HomeComponent {
     this.lastTabKey = 'JobsHomeLastTab';
     this.lastCategoryTabKey = 'JobsHomeLastCategoryTab';
     this.defaultTabId = 'LiveJobs';
+  }
+
+  ngOnInit() {
+    super.ngOnInit();
+    this.loadChatReadStatuses();
+  }
+
+  private loadChatReadStatuses() {
+    let req = new SearchOpportunityRequest();
+    req.ownedByMyPartner = true;
+    req.activeStages = true;
+    req.ownershipType = OpportunityOwnershipType.AS_JOB_CREATOR;
+    this.candidateOpportunityService.checkUnreadChats(req).subscribe({
+        next: info => this.processChatsReadStatus(this.jobCreatorChatsRead$, info),
+        error: error => this.error = error
+      }
+    )
+
+    req.ownershipType = OpportunityOwnershipType.AS_SOURCE_PARTNER;
+    this.candidateOpportunityService.checkUnreadChats(req).subscribe({
+        next: info => this.processChatsReadStatus(this.sourcePartnerChatsRead$, info),
+        error: error => this.error = error
+      }
+    )
+
+    let jobReq = new SearchJobRequest();
+    jobReq.ownedByMyPartner = true;
+    jobReq.activeStages = true;
+    jobReq.starred = null;
+    this.jobService.checkUnreadChats(jobReq).subscribe({
+        next: info => this.processChatsReadStatus(this.partnerJobChatsRead$, info),
+        error: error => this.error = error
+      }
+    )
+
+    jobReq.ownedByMyPartner = null;
+    jobReq.activeStages = null;
+    jobReq.starred = true;
+    this.jobService.checkUnreadChats(jobReq).subscribe({
+        next: info => this.processChatsReadStatus(this.starredJobChatsRead$, info),
+        error: error => this.error = error
+      }
+    )
+  }
+
+  private processChatsReadStatus(subject: Subject<boolean>, info: JobChatUserInfo) {
+    if (subject) {
+      subject.next(info.numberUnreadChats === 0);
+    }
   }
 
   /**

@@ -1,8 +1,6 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {CreateChatRequest, JobChatType} from "../../../model/chat";
-import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {Partner} from "../../../model/partner";
-import {Job} from "../../../model/job";
 import {ChatService} from "../../../services/chat.service";
 import {PostsComponentBase} from "../../util/chat/PostsComponentBase";
 import {ChatPostService} from "../../../services/chat-post.service";
@@ -14,8 +12,8 @@ import {ChatPostService} from "../../../services/chat-post.service";
 })
 export class ViewChatPostsComponent extends PostsComponentBase
   implements OnInit, OnChanges, OnDestroy {
-  @Input() candidateOpp: CandidateOpportunity;
-  @Input() job: Job;
+  @Input() candidateId: number;
+  @Input() jobId: number;
   @Input() jobChatType: JobChatType;
   @Input() sourcePartner: Partner;
   @Input() readOnly: boolean = false;
@@ -43,8 +41,8 @@ export class ViewChatPostsComponent extends PostsComponentBase
   private fetchJobChat() {
     const request: CreateChatRequest = {
       type: this.jobChatType,
-      candidateId: this.candidateOpp?.candidate?.id,
-      jobId: this.job?.id,
+      candidateId: this.candidateId,
+      jobId: this.jobId,
       sourcePartnerId: this.sourcePartner?.id
     }
 

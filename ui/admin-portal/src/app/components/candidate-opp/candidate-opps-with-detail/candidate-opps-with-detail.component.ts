@@ -3,6 +3,7 @@ import {SearchOppsBy} from "../../../model/base";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {CandidateOppsComponent} from "../candidate-opps/candidate-opps.component";
+import {BehaviorSubject} from "rxjs";
 
 @Component({
   selector: 'app-candidate-opps-with-detail',
@@ -16,6 +17,19 @@ export class CandidateOppsWithDetailComponent extends MainSidePanelBase implemen
    */
   @Input() searchBy: SearchOppsBy;
   @Input() candidateOpps: CandidateOpportunity[];
+
+  /**
+   * This is passed in from a higher level component which tracks whether the overall read status
+   * of all the chats that it manages.
+   * That component is the cases tab in the Jobs home component - which displays an asterisk
+   * if some chats are unread.
+   * <p/>
+   * This component can call next on this subject if it knows that some of the chats it manages
+   * are unread. The fact that it is a BehaviorSubject means that you can query the current status
+   * of the higher level component.
+   */
+  @Input() chatsRead$: BehaviorSubject<boolean>;
+
   @Output() candidateOppUpdated = new EventEmitter<CandidateOpportunity>();
 
   //Pick up reference to child CandidateOppsComponent - so we can call methods on it - see below
