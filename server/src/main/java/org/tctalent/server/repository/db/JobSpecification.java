@@ -175,7 +175,7 @@ public class JobSpecification {
                     .and(chatIsLinkedToJob, chatTypeBelongsToOpp);
 
 
-                final Predicate oppHasUnreadChats = SpecificationHelper.getOppHasUnreadChats(
+                final Predicate oppHasUnreadChats = SpecificationHelper.hasUnreadChats(
                     loggedInUser, query, builder, numberOfChatsToRead, numberOfChatsToReadRoot,
                     chatBelongsToOpp);
 

@@ -40,13 +40,13 @@ public class SpecificationHelper {
      * @param builder Standard specification builder
      * @param numberOfChatsToRead Query on JobChats which will be used to check for unread chats
      * @param numberOfChatsToReadRoot Root associated with query
-     * @param chatBelongsToOpp Predicate which identifies which chats are being checked
+     * @param chatsFilter Predicate which identifies which chats are being checked
      * @return Predicate indicating whether any unread chats were found
      */
-    public static Predicate getOppHasUnreadChats(User user, CriteriaQuery<?> query,
+    public static Predicate hasUnreadChats(User user, CriteriaQuery<?> query,
         CriteriaBuilder builder,
         Subquery<Long> numberOfChatsToRead, Root<JobChat> numberOfChatsToReadRoot,
-        Predicate chatBelongsToOpp) {
+        Predicate chatsFilter) {
     /*
       Look for any associated chats that are not fully read.
 
@@ -108,7 +108,7 @@ public class SpecificationHelper {
         //read chats is greater than 0.
         final Predicate notFullyRead = builder.or(notReadToEnd, neverRead);
         numberOfChatsToRead.select(builder.count(numberOfChatsToReadRoot)).where(
-            builder.and(chatBelongsToOpp, notFullyRead));
+            builder.and(chatsFilter, notFullyRead));
         final Predicate oppHasUnreadChats = builder.greaterThan(numberOfChatsToRead, 0L);
         return oppHasUnreadChats;
     }

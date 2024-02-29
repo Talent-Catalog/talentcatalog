@@ -148,7 +148,7 @@ public class CandidateOpportunitySpecification {
 
 
                 final Predicate oppHasUnreadChats = SpecificationHelper
-                    .getOppHasUnreadChats(loggedInUser, query, builder,
+                    .hasUnreadChats(loggedInUser, query, builder,
                         numberOfChatsToRead, numberOfChatsToReadRoot, chatBelongsToOpp);
 
                 conjunction.getExpressions().add(oppHasUnreadChats);
