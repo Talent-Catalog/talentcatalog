@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="overdueOppsOnlyTip"
                    for="overdueOppsOnly">{{ overdueOppsOnlyLabel }}</label>
@@ -51,7 +51,7 @@
                    formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="withUnreadMessagesTip"
                    for="withUnreadMessages">{{ withUnreadMessagesLabel }}</label>
@@ -60,6 +60,11 @@
                    formControlName="withUnreadMessages" id="withUnreadMessages"
                    class="form-check-input">
           </div>
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-link" (click)="refresh()">
+            <i class="fas fa-sync" title="Refresh data"></i>
+          </button>
         </div>
       </div>
     </div>

@@ -266,6 +266,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected abstract createSearchRequest(): SearchOpportunityRequest;
 
+  refresh(): void {
+    this.search();
+  }
+
   /**
    * This executes a search based on the current form fields by default - unless runSearch = false.
    * <p/>

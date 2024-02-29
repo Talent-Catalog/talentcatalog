@@ -43,13 +43,19 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
           <div class="form-check">
             <label class="form-label" [title]="withUnreadMessagesTip"
                    for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>
             <input *ngIf="selectedStages.length === 0" [title]="withUnreadMessagesTip" type="checkbox"
                    formControlName="withUnreadMessages" id="withUnreadMessages" class="form-check-input">
           </div>
+        </div>
+
+        <div class="col-md-6">
+          <button class="btn btn-link" (click)="refresh()">
+            <i class="fas fa-sync" title="Refresh data"></i>
+          </button>
         </div>
       </div>
     </div>
