@@ -17,7 +17,7 @@
                 searchBy === SearchOppsBy.mineAsSourcePartner ||
                 searchBy === SearchOppsBy.starredByMe" class="mt-2 mb-3">
       <div class="row">
-        <div class="col-md-2 me-md-5">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="myOppsOnlyTip"
                    for="myOppsOnly">{{myOppsOnlyLabel}}</label>
@@ -25,7 +25,7 @@
                    formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-3 me-md-2">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="showClosedOppsTip"
                    for="showClosedOpps">{{showClosedOppsLabel}}</label>
@@ -33,7 +33,7 @@
                    formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="showInactiveOppsTip"
                    for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
@@ -41,7 +41,9 @@
                    formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-3">
+      </div>
+      <div class="row">
+        <div class="col-md-8">
           <div class="form-check">
             <label class="form-label" [title]="withUnreadMessagesTip"
                    for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>
