@@ -33,6 +33,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerJobRelation;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -130,16 +131,25 @@ public class CandidateOpportunitySpecification {
             //UNREAD MESSAGES
             if (request.getWithUnreadMessages() != null && request.getWithUnreadMessages()) {
 
-                //Join with opp's chats
-                Join<Object, Object> jobChat = opp.join("chats");
+                Subquery<Long> numberOfChatsToRead = query.subquery(Long.class);
+                Root<JobChat> numberOfChatsToReadRoot = numberOfChatsToRead.from(JobChat.class);
+
+                final Predicate chatIsLinkedToJob = builder.equal(
+                    numberOfChatsToReadRoot.get("candidate").get("id"), opp.get("candidate").get("id"));
 
                 //Create predicate so that we just look at chats directly associated with jobs
-                List<JobChatType> belongsToCase = Arrays.asList(
+                List<JobChatType> belongsToOpp = Arrays.asList(
                     JobChatType.CandidateProspect, JobChatType.CandidateRecruiting);
-                final Predicate chatBelongsToOpp = builder.in(jobChat.get("type")).value(belongsToCase);
+                final Predicate chatTypeBelongsToOpp = builder
+                    .in(numberOfChatsToReadRoot.get("type")).value(belongsToOpp);
 
-                final Predicate oppHasUnreadChats = SpecificationHelper.getOppHasUnreadChats(
-                    loggedInUser, query, builder, jobChat, chatBelongsToOpp);
+                final Predicate chatBelongsToOpp = builder
+                    .and(chatIsLinkedToJob, chatTypeBelongsToOpp);
+
+
+                final Predicate oppHasUnreadChats = SpecificationHelper
+                    .getOppHasUnreadChats(loggedInUser, query, builder,
+                        numberOfChatsToRead, numberOfChatsToReadRoot, chatBelongsToOpp);
 
                 conjunction.getExpressions().add(oppHasUnreadChats);
             }

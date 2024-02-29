@@ -18,7 +18,6 @@ package org.tctalent.server.util;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -28,14 +27,26 @@ import org.tctalent.server.model.db.JobChatUser;
 import org.tctalent.server.model.db.User;
 
 /**
- * TODO JC Doc
+ * Some helper methods for Specifications
  *
  * @author John Cameron
  */
 public class SpecificationHelper {
 
-    public static Predicate getOppHasUnreadChats(User loggedInUser, CriteriaQuery<?> query,
-        CriteriaBuilder builder, Join<Object, Object> jobChat, Predicate chatBelongsToOpp) {
+    /**
+     * Common code for checking whether the given user has unread messages for an opp's chats.
+     * @param user This is the user who is reading chats
+     * @param query Standard specification query
+     * @param builder Standard specification builder
+     * @param numberOfChatsToRead Query on JobChats which will be used to check for unread chats
+     * @param numberOfChatsToReadRoot Root associated with query
+     * @param chatBelongsToOpp Predicate which identifies which chats are being checked
+     * @return Predicate indicating whether any unread chats were found
+     */
+    public static Predicate getOppHasUnreadChats(User user, CriteriaQuery<?> query,
+        CriteriaBuilder builder,
+        Subquery<Long> numberOfChatsToRead, Root<JobChat> numberOfChatsToReadRoot,
+        Predicate chatBelongsToOpp) {
     /*
       Look for any associated chats that are not fully read.
 
@@ -57,8 +68,9 @@ public class SpecificationHelper {
         Root<JobChatUser> lastReadPostRoot = lastReadPost.from(JobChatUser.class);
 
         //Create where clause from predicates
-        Predicate equalsChat = builder.equal(lastReadPostRoot.get("chat").get("id"), jobChat.get("id"));
-        Predicate equalsUser = builder.equal(lastReadPostRoot.get("user").get("id"), loggedInUser.getId());
+        Predicate equalsChat = builder.equal(lastReadPostRoot.get("chat").get("id"),
+            numberOfChatsToReadRoot.get("id"));
+        Predicate equalsUser = builder.equal(lastReadPostRoot.get("user").get("id"), user.getId());
         lastReadPost.select(lastReadPostRoot.get("lastReadPost").get("id")).where(
             builder.and(equalsChat, equalsUser)
         );
@@ -70,7 +82,7 @@ public class SpecificationHelper {
         Subquery<Long> lastPostId = query.subquery(Long.class);
         Root<ChatPost> lastPostIdRoot = lastPostId.from(ChatPost.class);
         Predicate equalsChat2 = builder.equal(
-            lastPostIdRoot.get("jobChat").get("id"), jobChat.get("id"));
+            lastPostIdRoot.get("jobChat").get("id"), numberOfChatsToReadRoot.get("id"));
         lastPostId.select(builder.max(lastPostIdRoot.get("id"))).where(equalsChat2);
 
         //For chats which are not fully read by the user, the user's last read post will
@@ -85,7 +97,7 @@ public class SpecificationHelper {
         Subquery<Long> numberOfPosts = query.subquery(Long.class);
         Root<ChatPost> numberOfPostsRoot = numberOfPosts.from(ChatPost.class);
         Predicate equalsChat3 = builder.equal(
-            numberOfPostsRoot.get("jobChat").get("id"), jobChat.get("id"));
+            numberOfPostsRoot.get("jobChat").get("id"), numberOfChatsToReadRoot.get("id"));
         numberOfPosts.select(builder.count(numberOfPostsRoot)).where(equalsChat3);
         final Predicate chatHasPosts = builder.greaterThan(numberOfPosts, 0L);
         final Predicate unreadChat = builder.isNull(lastReadPost);
@@ -95,8 +107,6 @@ public class SpecificationHelper {
         //Now combine the predicates and do the query checking if the number of not fully
         //read chats is greater than 0.
         final Predicate notFullyRead = builder.or(notReadToEnd, neverRead);
-        Subquery<Long> numberOfChatsToRead = query.subquery(Long.class);
-        Root<JobChat> numberOfChatsToReadRoot = numberOfChatsToRead.from(JobChat.class);
         numberOfChatsToRead.select(builder.count(numberOfChatsToReadRoot)).where(
             builder.and(chatBelongsToOpp, notFullyRead));
         final Predicate oppHasUnreadChats = builder.greaterThan(numberOfChatsToRead, 0L);

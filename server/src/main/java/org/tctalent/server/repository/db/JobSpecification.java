@@ -28,9 +28,11 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -156,17 +158,26 @@ public class JobSpecification {
             //UNREAD MESSAGES
             if (request.getWithUnreadMessages() != null && request.getWithUnreadMessages()) {
 
-                //Join with opp's chats
-                Join<Object, Object> jobChat = job.join("chats");
+                Subquery<Long> numberOfChatsToRead = query.subquery(Long.class);
+                Root<JobChat> numberOfChatsToReadRoot = numberOfChatsToRead.from(JobChat.class);
+
+                final Predicate chatIsLinkedToJob = builder.equal(
+                    numberOfChatsToReadRoot.get("jobOpp").get("id"), job.get("id"));
 
                 //Create predicate so that we just look at chats directly associated with jobs
                 List<JobChatType> belongsToJob = Arrays.asList(
                     JobChatType.JobCreatorAllSourcePartners, JobChatType.AllJobCandidates,
                     JobChatType.JobCreatorSourcePartner);
-                final Predicate chatBelongsToOpp = builder.in(jobChat.get("type")).value(belongsToJob);
+                final Predicate chatTypeBelongsToOpp = builder
+                    .in(numberOfChatsToReadRoot.get("type")).value(belongsToJob);
+
+                final Predicate chatBelongsToOpp = builder
+                    .and(chatIsLinkedToJob, chatTypeBelongsToOpp);
+
 
                 final Predicate oppHasUnreadChats = SpecificationHelper.getOppHasUnreadChats(
-                    loggedInUser, query, builder, jobChat, chatBelongsToOpp);
+                    loggedInUser, query, builder, numberOfChatsToRead, numberOfChatsToReadRoot,
+                    chatBelongsToOpp);
 
                 conjunction.getExpressions().add(oppHasUnreadChats);
             }
