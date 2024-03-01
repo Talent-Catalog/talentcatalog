@@ -183,6 +183,8 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       minEducationLevel: [],
       educationMajorIds: [[]],
       surveyTypeIds: [[]],
+      miniIntakeCompleted: [null],
+      fullIntakeCompleted: [null],
       searchJoinRequests: this.fb.array([]),
       //for display purposes
       occupations: [[]],

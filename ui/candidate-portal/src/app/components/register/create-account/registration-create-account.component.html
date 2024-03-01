@@ -25,7 +25,7 @@
     <div class="mb-3">
       <label class="form-label" for="username">{{'REGISTRATION.CONTACT.LABEL.USERNAME' | translate }} <sup>*</sup></label>
       <input type="email" class="form-control" id="username" placeholder="" [formControlName]="'username'"
-             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$">
+             pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$">
       <div *ngIf="registrationForm.get('username').touched || registrationForm.get('username').dirty" class="text-danger">
         <small *ngIf="registrationForm.get('username').errors?.['pattern']">
           {{ 'FORM.ERROR.EMAIL' | translate }}

@@ -39,13 +39,16 @@
     </div>
 
     <div class="d-flex flex-column justify-content-between">
-      <!-- todo add a field to YAML file which we make this input external intake button dependant on. Then we can easily implement this button when needed.  -->
+      <!-- THIS COMMENTED OUT BUTTON ALLOWS FOR DATA ENTRY OF A PREVIOUSLY COLLECTED INTAKE, SO WE CAN CORRECTLY SET THE AUDIT DATA OF
+      WHO/WHEN COMPLETED THE INTAKE. IT CURRENTLY JUST CREATES A NOTE, AND DOESN'T SAVE THE FIELDS TO THE DATABASE SO
+      NEED TO INCORPORATE WITH THE 'completeIntake()' METHOD. -->
 <!--      <button *ngIf="!fullIntakeComplete" class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">-->
 <!--        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>-->
 <!--        Input External Intake-->
 <!--      </button>-->
       <div *ngIf="fullIntakeComplete; else notComplete">
-        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving || clickedOldIntake">
+          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Update
         </button>
       </div>
@@ -320,15 +323,20 @@
       </ngb-panel>
     </ngb-accordion>
   </div>
-</div>
 
-<div class="d-flex align-items-end flex-column justify-content-between">
-  <div class="d-flex float-end">
-    <button class="btn btn-sm btn-outline-dark me-1 mt-3 mb-2" (click)="createIntakeNote('Full Intake', 'complete', $event.target)" [disabled]="saving">
-      Complete Intake
-    </button>
-  </div>
-  <div>
-    <div class="text-muted small font-italic">- No need to click if inputting an original intake.</div>
+  <div class="float-end mt-3">
+    <div *ngIf="fullIntakeComplete; else notComplete">
+      <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving || clickedOldIntake">
+        Update
+      </button>
+    </div>
+    <ng-template #notComplete>
+      <button class="btn btn-success"
+              (click)="completeIntake(true)"
+              [disabled]="candidate.fullIntakeCompletedDate != null">
+        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+        Complete
+      </button>
+    </ng-template>
   </div>
 </div>

@@ -95,6 +95,9 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private Integer minEducationLevel;
     private String educationMajorIds;
+    
+    private Boolean miniIntakeCompleted;
+    private Boolean fullIntakeCompleted;
 
     private String regoReferrerParam;
 
@@ -373,6 +376,22 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setEducationMajorIds(String educationMajorIds) {
         this.educationMajorIds = educationMajorIds;
+    }
+
+    public Boolean getMiniIntakeCompleted() {
+        return miniIntakeCompleted;
+    }
+
+    public void setMiniIntakeCompleted(Boolean miniIntakeCompleted) {
+        this.miniIntakeCompleted = miniIntakeCompleted;
+    }
+
+    public Boolean getFullIntakeCompleted() {
+        return fullIntakeCompleted;
+    }
+
+    public void setFullIntakeCompleted(Boolean fullIntakeCompleted) {
+        this.fullIntakeCompleted = fullIntakeCompleted;
     }
 
     public Set<SearchJoin> getSearchJoins() {

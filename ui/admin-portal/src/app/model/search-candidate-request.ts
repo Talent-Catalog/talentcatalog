@@ -59,4 +59,6 @@ export interface SearchCandidateRequest {
   searchJoins?: SavedSearchJoin[];
   exclusionListId?: number;
   candidateFilterByOpps?: CandidateFilterByOpps;
+  miniIntakeCompleted?: boolean;
+  fullIntakeCompleted?: boolean;
 }
