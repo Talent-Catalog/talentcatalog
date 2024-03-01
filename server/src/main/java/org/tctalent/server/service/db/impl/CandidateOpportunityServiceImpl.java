@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -130,9 +132,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             opp.setJobOpp(jobOpp);
             opp.setCandidate(candidate);
             opp.setName(salesforceService.generateCandidateOppName(candidate, jobOpp));
+
+            //todo These defaults will be overwritten by whatever is in oppParams (if it is non null).
+            //Instead should set these defaults only if oppParams corresponding are empty.
             opp.setStage(CandidateOpportunityStage.prospect);
             opp.setNextStep("Contact candidate and do intake");
             opp.setNextStepDueDate(LocalDate.now().plusWeeks(2));
+
             String sfId = fetchSalesforceId(candidate, jobOpp);
             if (sfId == null) {
                 log.error("Could not find SF candidate opp for candidate "
@@ -438,11 +444,20 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         CandidateOpportunity opp = getCandidateOpportunity(id);
 
-        //Update Salesforce
+        //todo Update nextStep with stamp if it has changed
+        //Can't do in setNextStep method of opp because we don't have user
+        //Is there a danger in modifying request? Same request can be applied to multiple opps.
+        //Not really a problem - that multi update should be treated as new for everyone anyway.
+        //todo Where do those multi updates get done?
+
         final SalesforceJobOpp jobOpp = opp.getJobOpp();
         final Candidate candidate = opp.getCandidate();
 
+        //Update Salesforce
         createUpdateCandidateOpportunities(Collections.singletonList(candidate), jobOpp, request);
+
+        //todo I think this is already called by the above method - but we need the updated opp
+        //which we don't get from the above methods
         opp = createOrUpdateCandidateOpportunity(candidate, request, jobOpp );
 
         return opp;
@@ -457,7 +472,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 opp.setStage(stage);
             }
 
-            opp.setNextStep(oppParams.getNextStep());
+            //Process next step
+            User loggedInUser = userService.getLoggedInUser();
+            if (loggedInUser == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
+
+            final String processedNextStep = auditStampNextStep(
+                loggedInUser.getUsername(), LocalDate.now(),
+                opp.getNextStep(), oppParams.getNextStep());
+            opp.setNextStep(processedNextStep);
+
             opp.setNextStepDueDate(oppParams.getNextStepDueDate());
             opp.setClosingComments(oppParams.getClosingComments());
             opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
