@@ -167,6 +167,35 @@
           </ng-template>
         </ng-container>
 
+        <!-- Submission List -->
+        <ng-container ngbNavItem="Submission List">
+          <a ngbNavLink>Submission List</a>
+          <ng-template ngbNavContent>
+            <div *ngIf= "job.submissionList">
+              <div class="form-control-plaintext">
+              <span>Click to open submission list:
+                <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>
+              </span>
+              </div>
+              <div *ngIf="!showBreadcrumb">
+                <div class="mt-4">
+                  <h6><small class="fst-italic">
+                    Candidate opportunities ("cases") going for this job </small>
+                    <a [routerLink]="['/list',job.submissionList.id]">
+                      <i class="fas fa-expand link-info" title="Open full submission list"></i>
+                    </a>
+                  </h6>
+                </div>
+                <app-candidate-source-results
+                  [candidateSource]="job.submissionList"
+                  [showSourceDetails]="false"
+                >
+                </app-candidate-source-results>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+
       </nav>
       <div [ngbNavOutlet]="nav" class="mt-2"></div>
 

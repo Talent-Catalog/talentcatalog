@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="candidateSource">
+<div *ngIf="candidateSource && showSourceDetails">
   <app-candidate-source
           [candidateSource]="candidateSource" [seeMore]="false" [showMore]="true"
           [showOpen]="true" [showDelete]="true" [showEdit]="true" [showCopy]="true"

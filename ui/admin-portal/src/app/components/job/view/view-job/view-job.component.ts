@@ -50,6 +50,11 @@ import {Partner} from "../../../../model/partner";
 })
 export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnChanges {
   @Input() job: Job;
+
+  /**
+   * When showBreadcrumb is false, we display abbreviated information, suitable for showing in the
+   * detail display of a selected job
+   */
   @Input() showBreadcrumb: boolean = true;
   @Output() jobUpdated = new EventEmitter<Job>();
 
