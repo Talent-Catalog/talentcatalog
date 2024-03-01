@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -726,7 +728,15 @@ public class JobServiceImpl implements JobService {
 
         final String nextStep = request.getNextStep();
         if (nextStep != null) {
-            job.setNextStep(nextStep);
+            //Process next Step
+            User loggedInUser = userService.getLoggedInUser();
+            if (loggedInUser == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
+
+            String processedNextStep = auditStampNextStep(
+                loggedInUser.getUsername(), LocalDate.now(), job.getNextStep(), nextStep);
+            job.setNextStep(processedNextStep);
         }
 
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
