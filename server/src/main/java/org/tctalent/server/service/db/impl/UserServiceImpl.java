@@ -63,7 +63,6 @@ import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.exception.UsernameTakenException;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -109,7 +108,8 @@ public class UserServiceImpl implements UserService {
 
     @Value("${web.portal}")
     private String portalUrl;
-
+    @Value("${web.admin}")
+    private String adminUrl;
 
     //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
     //tools
@@ -305,10 +305,8 @@ public class UserServiceImpl implements UserService {
 
         if (loggedInUser.getReadOnly()) {
             authSuccess = false;
-        } else if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-            authSuccess = true;
         } else {
-            authSuccess = false;
+            authSuccess = authService.hasAdminPrivileges(loggedInUser.getRole());
         }
 
         if (authSuccess) {
@@ -347,11 +345,10 @@ public class UserServiceImpl implements UserService {
         User loggedInUser = fetchLoggedInUser();
         if (loggedInUser.getReadOnly()) {
             authSuccess = false;
-        } else if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-            authSuccess = true;
         } else {
-            authSuccess = false;
+            authSuccess = authService.hasAdminPrivileges(loggedInUser.getRole());
         }
+
         return authSuccess;
     }
 
@@ -584,14 +581,14 @@ public class UserServiceImpl implements UserService {
             this.userRepository.save(user);
 
             try {
-                Candidate candidate = candidateRepository.findByUserId(user.getId());
-                emailHelper.sendResetPasswordEmail(user);
+                emailHelper.sendResetPasswordEmail(user, request.getIsAdmin());
             } catch (EmailSendFailedException e) {
                 log.error("unable to send reset password email for " + user.getEmail());
             }
 
             // temporary for testing till emails are working
-            log.info("RESET URL: " + portalUrl + "/reset-password/" + user.getResetToken());
+            String resetUrl = request.getIsAdmin().equals(Boolean.TRUE) ? adminUrl : portalUrl;
+            log.info("RESET URL: " + resetUrl + "/reset-password/" + user.getResetToken());
         } else {
             log.error("unable to send reset email for " + request.getEmail());
         }
