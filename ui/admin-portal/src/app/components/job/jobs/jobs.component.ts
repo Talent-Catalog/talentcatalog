@@ -30,6 +30,8 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
   showClosedOppsTip = "Show jobs that have been closed";
   showInactiveOppsLabel = "Show inactive jobs";
   showInactiveOppsTip = "Show jobs that are not currently accepting new candidates";
+  withUnreadMessagesLabel = "Jobs with unread chats only";
+  withUnreadMessagesTip = "Only show jobs which have unread chats";
 
   constructor(
     chatService: ChatService,

@@ -2,7 +2,7 @@
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
-  {{error}}
+  {{ error }}
 </div>
 
 <div class="searches" *ngIf="searchBy">
@@ -16,39 +16,55 @@
     <div *ngIf="searchBy === SearchOppsBy.mineAsSourcePartner ||
     searchBy === SearchOppsBy.mineAsJobCreator " class="mt-2 mb-3">
       <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="myOppsOnlyTip"
-                   for="myOppsOnly">{{myOppsOnlyLabel}}</label>
+                   for="myOppsOnly">{{ myOppsOnlyLabel }}</label>
             <input [title]="myOppsOnlyTip" type="checkbox"
                    formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="form-check">
-            <label class="form-label" [title]="overdueOppsOnlyTip"
-                   for="overdueOppsOnly">{{overdueOppsOnlyLabel}}</label>
-            <input *ngIf="selectedStages.length === 0" [title]="overdueOppsOnlyTip" type="checkbox"
-                   formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3 me-md-2">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="showClosedOppsTip"
-                   for="showClosedOpps">{{showClosedOppsLabel}}</label>
+                   for="showClosedOpps">{{ showClosedOppsLabel }}</label>
             <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox"
                    formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="showInactiveOppsTip"
-                   for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
+                   for="showInactiveOpps">{{ showInactiveOppsLabel }}</label>
             <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox"
-                   formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">
+                   formControlName="showInactiveOpps" id="showInactiveOpps"
+                   class="form-check-input">
           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-check">
+            <label class="form-label" [title]="overdueOppsOnlyTip"
+                   for="overdueOppsOnly">{{ overdueOppsOnlyLabel }}</label>
+            <input *ngIf="selectedStages.length === 0" [title]="overdueOppsOnlyTip" type="checkbox"
+                   formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-check">
+            <label class="form-label" [title]="withUnreadMessagesTip"
+                   for="withUnreadMessages">{{ withUnreadMessagesLabel }}</label>
+            <input *ngIf="selectedStages.length === 0" [title]="withUnreadMessagesTip"
+                   type="checkbox"
+                   formControlName="withUnreadMessages" id="withUnreadMessages"
+                   class="form-check-input">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-link" (click)="refresh()">
+            <i class="fas fa-sync" title="Refresh data"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -78,27 +94,32 @@
         <thead class="table-primary">
         <tr>
           <th *ngIf="!preview" (click)="toggleSort('nextStepDueDate', 'DESC')">
-            <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField" [sortDirection]="sortDirection"
+            <app-sorted-by [column]="'nextStepDueDate'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             NS Due
           </th>
           <th *ngIf="!showJobOppName" (click)="toggleSort('name')">
-            <app-sorted-by [column]="'name'" [sortColumn]="sortField" [sortDirection]="sortDirection"
+            <app-sorted-by [column]="'name'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Candidate Opportunity
           </th>
           <th *ngIf="showJobOppName" (click)="toggleSort('jobOpp.name')">
-            <app-sorted-by column="jobOpp.name" [sortColumn]="sortField" [sortDirection]="sortDirection"
+            <app-sorted-by column="jobOpp.name" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Candidate Job Opportunity
           </th>
           <th (click)="toggleSort('stage')">
-            <app-sorted-by [column]="'stage'" [sortColumn]="sortField" [sortDirection]="sortDirection"
+            <app-sorted-by [column]="'stage'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Stage
           </th>
           <th *ngIf="!preview" (click)="toggleSort('updatedDate', 'DESC')">
-            <app-sorted-by column="updatedDate" [sortColumn]="sortField" [sortDirection]="sortDirection"
+            <app-sorted-by column="updatedDate" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"
                            *ngIf="searchBy"></app-sorted-by>
             Next step
           </th>
@@ -113,13 +134,13 @@
             [title]="isOverdue(opp) ? 'The next step is overdue' : ''"
             [ngClass]="{'current': currentOpp?.id == opp.id, 'alert alert-warning': isOverdue(opp)}">
           <td *ngIf="!preview">
-            {{opp.nextStepDueDate}}
+            {{ opp.nextStepDueDate }}
           </td>
           <td *ngIf="!showJobOppName" [title]="opp.name">
             <app-chat-read-status
               [chats]="getChats(opp)"
             ></app-chat-read-status>
-            {{opp.name | truncate: 25}}
+            {{ opp.name | truncate: 25 }}
             <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
               <i class="fas fa-user" title="Candidate"></i>
             </a>
@@ -129,10 +150,12 @@
             <a [routerLink]="['/job',opp.jobOpp.id]">
               <i class="fa-solid fa-briefcase" title="Job"></i>
             </a>
-            <a *ngIf="opp.jobOpp.submissionList" [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+            <a *ngIf="opp.jobOpp.submissionList"
+               [routerLink]="['/list',opp.jobOpp.submissionList.id]">
               <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
             </a>
-            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
+            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
+               target="_blank">
               <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
             </a>
           </td>
@@ -141,31 +164,35 @@
               [chats]="getChats(opp)"
             ></app-chat-read-status>
             <a [routerLink]="['/opp',opp.id]">
-              {{opp.jobOpp.name}} <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+              {{ opp.jobOpp.name }} <i class="fas fa-address-book"
+                                       title="Case (candidate opportunity)"></i>
             </a>
             <a [routerLink]="['/job',opp.jobOpp.id]">
               <i class="fa-solid fa-briefcase" title="Job"></i>
             </a>
-            <a *ngIf="opp.jobOpp.submissionList" [routerLink]="['/list',opp.jobOpp.submissionList.id]">
+            <a *ngIf="opp.jobOpp.submissionList"
+               [routerLink]="['/list',opp.jobOpp.submissionList.id]">
               <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
             </a>
-            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)" target="_blank">
+            <a *ngIf="opp.sfId && canAccessSalesforce()" [href]="getOppSfLink(opp.sfId)"
+               target="_blank">
               <i class="fab fa-salesforce" title="Show opp in Salesforce"></i>
             </a>
           </td>
           <td>
-            {{getCandidateOpportunityStageName(opp)}}
+            {{ getCandidateOpportunityStageName(opp) }}
           </td>
           <td *ngIf="!preview" [title]="getNextStepHoverString(opp)">
-            {{opp.nextStep | truncate: 38}}
+            {{ opp.nextStep | truncate: 38 }}
           </td>
           <td *ngIf="preview">
-            <div *ngIf="opp?.nextStep" [ngbPopover]="nextStepPopover" triggers="mouseenter:mouseleave" container="body">
+            <div *ngIf="opp?.nextStep" [ngbPopover]="nextStepPopover"
+                 triggers="mouseenter:mouseleave" container="body">
               <i class="fa-solid fa-shoe-prints"></i>
             </div>
             <ng-template #nextStepPopover>
-              <strong>Due date: </strong>{{opp.nextStepDueDate}}<br>
-              <strong>Next step: </strong>{{opp.nextStep}}
+              <strong>Due date: </strong>{{ opp.nextStepDueDate }}<br>
+              <strong>Next step: </strong>{{ opp.nextStep }}
             </ng-template>
           </td>
         </tr>
@@ -186,7 +213,7 @@
           (pageChange)="search()">
         </ngb-pagination>
 
-        Found {{results?.totalElements}} in total
+        Found {{ results?.totalElements }} in total
       </div>
 
       <!-- loading -->

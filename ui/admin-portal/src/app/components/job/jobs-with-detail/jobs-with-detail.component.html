@@ -20,46 +20,15 @@
           </div>
 
           <div *ngIf="selectedJob">
-            <div class="d-flex align-items-center mb-3 text-accent-1">
-              <span class="fs-5 fw-bold">{{selectedJob.name + ' (' + selectedJob.id + ')'}}</span>
-              <button class="btn" (click)="doToggleStarred()">
-                <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
-                <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
-              </button>
-            <a [routerLink]="['/job',selectedJob.id]">
-              <i class="fa-solid fa-briefcase link-info" title="Job"></i>
-            </a>
-            <a  *ngIf="selectedJob.submissionList" [routerLink]="['/list',selectedJob.submissionList.id]">
-              <i class="fa-solid fa-rectangle-list link-info" title="Submission list"></i>
-            </a>
-
-              <div class="alert alert-danger" *ngIf="error">
-                {{error}}
-              </div>
-            </div>
-
-            <app-view-job-summary
+            <app-view-job
+              *ngIf="selectedJob"
               [job]="selectedJob"
+              [showBreadcrumb]="false"
+              (jobUpdated)="onJobUpdated($event)"
             >
-            </app-view-job-summary>
+            </app-view-job>
 
-
-            <div class="mt-4">
-              <h6>Submission List - <small class="fst-italic">Candidate opportunities ("cases") going for this job</small></h6>
-            </div>
-
-            <app-candidate-source-results *ngIf= "selectedJob.submissionList"
-                                          [candidateSource]="selectedJob.submissionList" >
-              <!--                                    (toggleStarred)="onToggleStarred($event)"-->
-              <!--                                    (toggleWatch)="onToggleWatch($event)"-->
-              <!--                                    (deleteSource)="onDeleteSource($event)"-->
-              <!--                                    (editSource)="onEditSource($event)"-->
-              <!--                                    (copySource)="onCopySource($event)"-->
-              >
-
-            </app-candidate-source-results>
           </div>
-
         </div>
       </div>
     </div>

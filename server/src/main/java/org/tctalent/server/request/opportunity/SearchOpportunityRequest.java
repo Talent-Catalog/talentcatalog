@@ -90,4 +90,10 @@ public class SearchOpportunityRequest extends PagedSearchRequest {
     @Nullable
     private Boolean sfOppClosed;
 
+    /**
+     * If specified, match opportunities based on whether they have unread chat messages.
+     */
+    @Nullable
+    private Boolean withUnreadMessages;
+
 }

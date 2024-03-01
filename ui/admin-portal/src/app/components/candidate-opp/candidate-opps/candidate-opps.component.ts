@@ -54,6 +54,8 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   showInactiveOppsLabel = "Show inactive cases";
   showInactiveOppsTip = "Show cases that are no longer active - " +
     "for example if the candidate has already relocated";
+  withUnreadMessagesLabel = "Cases with unread chat messages only";
+  withUnreadMessagesTip = "Only show cases which have unread chat messages";
 
 
   constructor(

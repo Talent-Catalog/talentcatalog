@@ -53,7 +53,7 @@ export class CandidateOppsWithDetailComponent extends MainSidePanelBase implemen
 
   /**
    * The selected component which has been displayed (by ViewCandidateOppComponent) has fired
-   * and event saying that the opp has been updated.
+   * an event saying that the opp has been updated.
    * @param opp Modified opp.
    */
   onCandidateOppUpdated(opp: CandidateOpportunity) {
