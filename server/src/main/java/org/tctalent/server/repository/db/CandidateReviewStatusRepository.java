@@ -32,9 +32,4 @@ public interface CandidateReviewStatusRepository extends JpaRepository<Candidate
   Set<Candidate> findReviewedCandidatesForSearch(
       @Param("savedSearchId") Long savedSearchId, @Param("statuses") List<ReviewStatus> statuses);
 
-  @Query(" select review.candidate.id from CandidateReviewStatusItem review "
-      + " where review.savedSearch.id = :savedSearchId and review.reviewStatus in (:statuses) ")
-  Set<Long> findReviewedCandidateIdsForSearch(
-      @Param("savedSearchId") Long savedSearchId, @Param("statuses") List<ReviewStatus> statuses);
-
 }
