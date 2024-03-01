@@ -581,13 +581,13 @@ public class UserServiceImpl implements UserService {
             this.userRepository.save(user);
 
             try {
-                emailHelper.sendResetPasswordEmail(user, request.getIsAdmin());
+                emailHelper.sendResetPasswordEmail(user);
             } catch (EmailSendFailedException e) {
                 log.error("unable to send reset password email for " + user.getEmail());
             }
 
             // temporary for testing till emails are working
-            String resetUrl = request.getIsAdmin().equals(Boolean.TRUE) ? adminUrl : portalUrl;
+            String resetUrl = user.getRole() == Role.user ? portalUrl : adminUrl;
             log.info("RESET URL: " + resetUrl + "/reset-password/" + user.getResetToken());
         } else {
             log.error("unable to send reset email for " + request.getEmail());
