@@ -17,19 +17,12 @@
 package org.tctalent.server.request.reviewstatus;
 
 import javax.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.tctalent.server.model.db.ReviewStatus;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class CreateCandidateReviewStatusRequest {
 
     @NotNull
