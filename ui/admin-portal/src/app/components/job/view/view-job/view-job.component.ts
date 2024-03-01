@@ -50,6 +50,7 @@ import {Partner} from "../../../../model/partner";
 })
 export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnChanges {
   @Input() job: Job;
+  @Input() showBreadcrumb: boolean = true;
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;

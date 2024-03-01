@@ -1,6 +1,6 @@
 <div *ngIf="job">
 
-  <nav aria-label="breadcrumb">
+  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
     <ol class="breadcrumb align-items-center">
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li *ngIf="job.name" class="breadcrumb-item active" aria-current="page">Job / {{job.name}}</li>
@@ -14,8 +14,14 @@
 
   <div class="d-flex justify-content-between align-items-center">
     <div>
-      <h1 class="my-3">{{job.name}}
+      <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{job.name}}
         <span class="ms-2">
+          <a *ngIf="!showBreadcrumb" [routerLink]="['/job',job.id]">
+            <i class="fas fa-expand link-info" title="Open"></i>
+          </a>
+          <a *ngIf="!showBreadcrumb" [routerLink]="['/job',job.id]">
+            <i class="fa-solid fa-briefcase link-info" title="Job (Same as Open)"></i>
+          </a>
           <a *ngIf="job.submissionList" [routerLink]="['/list',job.submissionList.id]">
             <i class="fas fa-rectangle-list link-info" title="Submission list"></i>
           </a>
@@ -31,7 +37,7 @@
           </div>
         </span>
       </h1>
-      <p class="text-accent-1 fst-italic fs-5">
+      <p [ngClass]="{'fs-5' : showBreadcrumb, 'fs-6 mb-0' : !showBreadcrumb}">
         Job Opportunity Number {{job.id}}
       </p>
     </div>

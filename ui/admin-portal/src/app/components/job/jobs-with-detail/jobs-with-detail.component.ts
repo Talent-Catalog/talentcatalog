@@ -65,4 +65,8 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   isStarred(): boolean {
     return isStarredByMe(this.selectedJob?.starringUsers, this.authenticationService);
   }
+
+  onJobUpdated(opp: Job) {
+    //Currently we don't process this event
+  }
 }
