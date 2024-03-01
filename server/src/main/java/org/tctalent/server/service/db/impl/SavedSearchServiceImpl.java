@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -116,7 +115,6 @@ import org.tctalent.server.request.candidate.SearchJoinRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
-import org.tctalent.server.request.reviewstatus.CreateCandidateReviewStatusRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
@@ -254,10 +252,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //the standard saved search request.
         searchRequest.merge(request);
 
-        //Mark candidates with no review statuses as unverified
-        if (isNotEmpty(searchRequest.getReviewStatusFilter())) {
-            initialiseMissingReviewStatuses(savedSearchId, searchRequest);
+        //If user filters on unverified statuses we bypass performing a full search
+        //Simply return candidates that the user has already reviewed as verified and/or rejected
+        if (request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
+            return reviewedCandidates(searchRequest);
         }
+
         //Do the search
         final Page<Candidate> candidates = doSearchCandidates(searchRequest);
 
@@ -267,24 +267,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
-    private void initialiseMissingReviewStatuses(long savedSearchId, SearchCandidateRequest request) {
+    private Page<Candidate> reviewedCandidates(SearchCandidateRequest request) {
+        Page<Candidate> candidates = candidateRepository.findReviewedCandidatesBySavedSearchId(
+            request.getSavedSearchId(),
+            request.getReviewStatusFilter(),
+            request.getPageRequestWithoutSort());
 
-        // get all candidate ids with review statuses
-        final Set<Long> candidatesWithReviewStatuses =
-            candidateReviewStatusRepository.findReviewedCandidateIdsForSearch(
-                request.getSavedSearchId(), Arrays.stream(ReviewStatus.values()).toList());
-
-        // mark candidate ids with no review statuses as unverified
-        searchCandidates(savedSearchId)
-            .stream()
-            .filter(candidateId -> !candidatesWithReviewStatuses.contains(candidateId))
-            .forEach(candidateId -> candidateReviewStatusService.createCandidateReviewStatusItem(
-                CreateCandidateReviewStatusRequest.builder()
-                    .candidateId(candidateId)
-                    .savedSearchId(savedSearchId)
-                    .reviewStatus(ReviewStatus.unverified)
-                    .build()
-            ));
+        return candidates;
     }
 
     @Override
