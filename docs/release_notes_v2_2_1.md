@@ -1,5 +1,5 @@
 ---
-title: What's New in the Talent Catalog
+title: What's New in the very good Talent Catalog
 sass:
   style: compressed
 ---
