@@ -25,5 +25,6 @@ import lombok.ToString;
 @ToString
 public class SendResetPasswordEmailRequest {
     private String email;
+    private Boolean isAdmin;
     private String reCaptchaV3Token;
 }
