@@ -114,7 +114,8 @@ export function isEnumOptionArray(obj: Object): obj is EnumOption[] {
 }
 
 /**
- * Fetches the index of a value in an enum.
+ * Fetches the index of a value in an enum. Example is when an enum is ordered, and we want to
+ * compare the location of one enum key, in relation to another enum key.
  * @param enumeration this is the Enum we want to get the key & ordinal from.
  * @param key this is what we want the index of, so we can return the ordinal.
  */
