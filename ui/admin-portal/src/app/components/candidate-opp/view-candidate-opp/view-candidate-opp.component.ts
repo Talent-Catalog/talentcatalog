@@ -7,7 +7,12 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {CandidateOpportunity, isCandidateOpportunity} from "../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage,
+  isCandidateOpportunity,
+  isOppStageGreaterThanOrEqualTo
+} from "../../../model/candidate-opportunity";
 import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-opp.component";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
@@ -22,6 +27,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {ChatService} from "../../../services/chat.service";
 import {forkJoin} from "rxjs";
+import {getOrdinal} from "../../../util/enum";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -183,7 +189,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
 
     this.candidateProspectTabVisible = userIsCandidatePartner;
 
-    //todo Recruiters only see candidates past the CVReview stage.
     this.candidateRecruitingTabVisible = userIsCandidatePartner || userIsJobCreator;
 
     //Label on candidateRecruiting chat depends on who the logged in user is.
@@ -241,5 +246,14 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     if (this.candidateRecruitingChat) {
       this.chatService.markChatAsRead(this.candidateRecruitingChat);
     }
+  }
+
+  /**
+   *  Recruiters only see candidates past the CV Review stage.
+   */
+  cvReviewStageOrMore() {
+    let oppStage: number = getOrdinal(CandidateOpportunityStage, this.opp?.stage);
+    let cvReviewStage: number = getOrdinal(CandidateOpportunityStage, 'cvReview');
+    return isOppStageGreaterThanOrEqualTo(oppStage, cvReviewStage)
   }
 }
