@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -50,4 +52,16 @@ public interface JobChatRepository extends JpaRepository<JobChat, Long>,
     JobChat findByTypeAndJobAndPartner(
         @Param("type") JobChatType type, @Param("jobId") Long jobId,
         @Param("partnerId") Long partnerId);
+
+    /**
+     * Find chats which have posts where the date of the last post is greater than a given date
+     * @param dateTime We want chats with posts after this date
+     * @return Chats since the given date
+     */
+    @Query(value = """
+        select id from job_chat c where
+        (select created_date from chat_post
+        where chat_post.id = (select max(chat_post.id) from chat_post where chat_post.job_chat_id = c.id)) > :date
+        """, nativeQuery = true)
+    List<Long> myFindChatsWithPostsSinceDate(@Param("date") OffsetDateTime dateTime);
 }

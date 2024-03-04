@@ -23,9 +23,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
@@ -166,4 +169,19 @@ public class JobChatServiceImpl implements JobChatService {
         final List<JobChat> chats = jobChatRepository.findAll(Sort.by(Direction.ASC, "id"));
         return chats;
     }
+
+    //One minute past Midnight GMT
+    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+//todo    @SchedulerLock(name = "JobChatService_notifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+    @Transactional
+    public void notifyOfChatsWithNewPosts() {
+        OffsetDateTime yesterday = OffsetDateTime.now().minusDays(30);
+        List<Long> chatsWithNewPosts = jobChatRepository.myFindChatsWithPostsSinceDate(yesterday);
+
+        //TODO JC Load all chats - put comment in Repository why had to use native query.
+
+        //TODO JC Extract all users who need to be notified, then loop through constructing their emails
+        throw new NotImplementedException(JobChatServiceImpl.class, "Found " + chatsWithNewPosts.size());
+    }
+
 }

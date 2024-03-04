@@ -83,6 +83,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
@@ -115,6 +116,7 @@ public class SystemAdminApi {
     private final CountryService countryService;
     private final FileSystemService fileSystemService;
     private final JobService jobService;
+    private final JobChatService jobChatService;
     private final LanguageService languageService;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
@@ -162,7 +164,7 @@ public class SystemAdminApi {
             CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
             CountryService countryService,
             FileSystemService fileSystemService,
-            JobService jobService, LanguageService languageService,
+            JobService jobService, JobChatService jobChatService, LanguageService languageService,
             PopulateElasticsearchService populateElasticsearchService,
             SalesforceService salesforceService,
             SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
@@ -179,6 +181,7 @@ public class SystemAdminApi {
         this.countryService = countryService;
         this.fileSystemService = fileSystemService;
         this.jobService = jobService;
+        this.jobChatService = jobChatService;
         this.languageService = languageService;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
@@ -192,6 +195,11 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
+
+    @GetMapping("notifyOfChatsWithNewPosts")
+    public void notifyOfNewChatPosts() {
+        jobChatService.notifyOfChatsWithNewPosts();
+    }
 
     @GetMapping("create_employer_for_all_jobs")
     public void createEmployerForAllJobs() {
@@ -213,7 +221,7 @@ public class SystemAdminApi {
         SearchJobRequest request = new SearchJobRequest();
         request.setSfOppClosed(true);
         final List<SalesforceJobOpp> jobOpps = jobService.searchJobsUnpaged(request);
-        
+
         //For each closed job opp, closed it again (with the same closed stage).
         //This will trigger the automatic closing of associated candidate opps.
         log.info("Processing " + jobOpps.size() + " closed jobs");

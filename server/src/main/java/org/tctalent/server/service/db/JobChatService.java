@@ -128,4 +128,9 @@ public interface JobChatService {
      */
     @NonNull
     List<JobChat> listJobChats();
+
+    /**
+     * For testing only. Normally a scheduled call.
+     */
+    void notifyOfChatsWithNewPosts();
 }
