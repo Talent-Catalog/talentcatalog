@@ -16,6 +16,7 @@ import {
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../../../model/chat";
 import {ChatService} from "../../../../../../../services/chat.service";
 import {forkJoin, of} from "rxjs";
+import {getOrdinal} from "../../../../../../util/enum";
 
 const STAGE_TRANSLATION_KEY_ROOT = 'CASE-STAGE.';
 
@@ -56,23 +57,22 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   }
 
   private fetchJobChats() {
-    let oppStage: number = Object.keys(CandidateOpportunityStage).indexOf(this.selectedOpp?.stage)
-    // todo only if past CV review stage.
-    //  How to find the number of a desired stage? I can use object keys method.
-    //  If i'm using this anyways for the desired stage, do I just use this for the opp stage too instead of passing down the stage number?
-    let cvReviewStage: number = Object.keys(CandidateOpportunityStage).indexOf('cvReview');
+    const sourceChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateProspect,
+      candidateId: this.candidate.id
+    }
+
+    let oppStage: number = getOrdinal(CandidateOpportunityStage,this.selectedOpp?.stage);
+    // Only want to show destination chat if candidate is at or further than the CV Review stage.
+    let cvReviewStage: number = getOrdinal(CandidateOpportunityStage, 'cvReview');
     this.showDestinationChat = isOppStageGreaterThanOrEqualTo(oppStage, cvReviewStage)
     const destinationChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateRecruiting,
       candidateId: this.candidate.id,
       jobId: this.selectedOpp?.jobOpp?.id
     }
-    const sourceChatRequest: CreateChatRequest = {
-      type: JobChatType.CandidateProspect,
-      candidateId: this.candidate.id
-    }
-    // todo only if past Accept Offer stage. Do we want to show for closed stages?
-    let offerStage: number = Object.keys(CandidateOpportunityStage).indexOf('offer');
+    // Only want to show all job candidates chat if candidate is at or further than the Offer stage.
+    let offerStage: number = getOrdinal(CandidateOpportunityStage, 'offer');
     this.showAllChat = isOppStageGreaterThanOrEqualTo(oppStage, offerStage);
     const allJobCandidatesChatRequest: CreateChatRequest = {
       type: JobChatType.AllJobCandidates,
