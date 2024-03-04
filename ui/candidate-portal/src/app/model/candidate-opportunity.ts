@@ -88,6 +88,6 @@ export class SearchOpportunityRequest extends PagedSearchRequest {
 
 }
 
-export function isOppStageGreaterThanOrEqualTo(selectedOppStageNumber: number ,  desiredStagedNumber: number) {
-  return selectedOppStageNumber >= desiredStagedNumber;
+export function isOppStageGreaterThanOrEqualTo(selectedOppStageNumber: number, desiredStageNumber: number) {
+  return selectedOppStageNumber >= desiredStageNumber;
 }

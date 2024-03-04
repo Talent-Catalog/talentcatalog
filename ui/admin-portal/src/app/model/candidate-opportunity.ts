@@ -87,4 +87,8 @@ export class SearchOpportunityRequest extends PagedSearchRequest {
   withUnreadMessages?: boolean;
 }
 
+export function isOppStageGreaterThanOrEqualTo(selectedOppStageNumber: number, desiredStageNumber: number) {
+  return selectedOppStageNumber >= desiredStageNumber;
+}
+
 
