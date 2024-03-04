@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import {
   CandidateOpportunity,
-  CandidateOpportunityStage,
   isCandidateOpportunity,
   isOppStageGreaterThanOrEqualTo
 } from "../../../model/candidate-opportunity";
@@ -27,7 +26,6 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {ChatService} from "../../../services/chat.service";
 import {forkJoin} from "rxjs";
-import {getOrdinal} from "../../../util/enum";
 
 @Component({
   selector: 'app-view-candidate-opp',
@@ -252,8 +250,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
    *  Recruiters only see candidates past the CV Review stage.
    */
   cvReviewStageOrMore() {
-    let oppStage: number = getOrdinal(CandidateOpportunityStage, this.opp?.stage);
-    let cvReviewStage: number = getOrdinal(CandidateOpportunityStage, 'cvReview');
-    return isOppStageGreaterThanOrEqualTo(oppStage, cvReviewStage)
+    return isOppStageGreaterThanOrEqualTo(this.opp?.stage, 'cvReview')
   }
 }

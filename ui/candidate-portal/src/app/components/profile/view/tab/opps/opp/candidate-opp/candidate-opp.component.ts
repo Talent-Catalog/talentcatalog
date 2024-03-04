@@ -10,13 +10,11 @@ import {
 import {Candidate} from "../../../../../../../model/candidate";
 import {
   CandidateOpportunity,
-  CandidateOpportunityStage,
   isOppStageGreaterThanOrEqualTo
 } from "../../../../../../../model/candidate-opportunity";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../../../model/chat";
 import {ChatService} from "../../../../../../../services/chat.service";
 import {forkJoin, of} from "rxjs";
-import {getOrdinal} from "../../../../../../util/enum";
 
 const STAGE_TRANSLATION_KEY_ROOT = 'CASE-STAGE.';
 
@@ -61,19 +59,15 @@ export class CandidateOppComponent implements OnInit, OnChanges {
       type: JobChatType.CandidateProspect,
       candidateId: this.candidate.id
     }
-
-    let oppStage: number = getOrdinal(CandidateOpportunityStage,this.selectedOpp?.stage);
     // Only want to show destination chat if candidate is at or further than the CV Review stage.
-    let cvReviewStage: number = getOrdinal(CandidateOpportunityStage, 'cvReview');
-    this.showDestinationChat = isOppStageGreaterThanOrEqualTo(oppStage, cvReviewStage)
+    this.showDestinationChat = isOppStageGreaterThanOrEqualTo(this.selectedOpp?.stage, "cvReview")
     const destinationChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateRecruiting,
       candidateId: this.candidate.id,
       jobId: this.selectedOpp?.jobOpp?.id
     }
     // Only want to show all job candidates chat if candidate is at or further than the Offer stage.
-    let offerStage: number = getOrdinal(CandidateOpportunityStage, 'offer');
-    this.showAllChat = isOppStageGreaterThanOrEqualTo(oppStage, offerStage);
+    this.showAllChat = isOppStageGreaterThanOrEqualTo(this.selectedOpp?.stage, "offer");
     const allJobCandidatesChatRequest: CreateChatRequest = {
       type: JobChatType.AllJobCandidates,
       jobId: this.selectedOpp?.jobOpp?.id
