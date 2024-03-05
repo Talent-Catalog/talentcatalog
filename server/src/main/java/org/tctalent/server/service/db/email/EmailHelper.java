@@ -66,7 +66,7 @@ public class EmailHelper {
             ctx.setVariable("forgotPwdUrl", portalUrl + "/reset-password/");
             ctx.setVariable("year", currentYear());
 
-            subject = "Talent Beyond Boundaries - Thank you for your application";
+            subject = "Talent Catalog - Thank you for your registration";
             bodyText = textTemplateEngine.process("registration", ctx);
             bodyHtml = htmlTemplateEngine.process("registration", ctx);
 
@@ -121,7 +121,7 @@ public class EmailHelper {
             ctx.setVariable("forgotPwdUrl", portalUrl + "/reset-password/");
             ctx.setVariable("year", currentYear());
 
-            subject = "Talent Beyond Boundaries - Please provide more details application";
+            subject = "Talent Catalog - Please provide more registration details";
             bodyText = textTemplateEngine.process("incomplete-application", ctx);
             bodyHtml = htmlTemplateEngine.process("incomplete-application", ctx);
 
@@ -145,7 +145,7 @@ public class EmailHelper {
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("searches", savedSearches);
 
-            subject = "TBB - New candidates matching your watched searches";
+            subject = "Talent Catalog - New candidates matching your watched searches";
             bodyText = textTemplateEngine.process("watcher-notification", ctx);
             bodyHtml = htmlTemplateEngine.process("watcher-notification", ctx);
 
