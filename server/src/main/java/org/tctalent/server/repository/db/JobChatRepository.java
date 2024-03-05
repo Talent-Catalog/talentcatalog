@@ -28,6 +28,11 @@ import org.tctalent.server.model.db.JobChatType;
 public interface JobChatRepository extends JpaRepository<JobChat, Long>,
     JpaSpecificationExecutor<JobChat> {
 
+
+    @Query(" select c from JobChat c "
+        + " where c.id in (:ids) ")
+    List<JobChat> findByIds(@Param("ids") Iterable<Long> ids);
+
     @Query("select c from JobChat c where c.type = :type "
         + "and c.jobOpp is not null and c.jobOpp.id = :jobId")
     JobChat findByTypeAndJob(@Param("type") JobChatType type, @Param("jobId") Long jobId);
@@ -54,7 +59,14 @@ public interface JobChatRepository extends JpaRepository<JobChat, Long>,
         @Param("partnerId") Long partnerId);
 
     /**
-     * Find chats which have posts where the date of the last post is greater than a given date
+     * Find chats which have posts where the date of the last post is greater than a given date.
+     * <p/>
+     * Note: I had to use a native query returning chat ids instead of a non-native query returning
+     * JobChats because the Spring Framework JPA Data code crashed with a Null pointer exception
+     * trying to validate the query - even though the query was valid.
+     * As a workaround, this query returns ids which can be passed to {@link #findByIds(Iterable)}
+     * to retrieve the JobChat objects - JC
+     *
      * @param dateTime We want chats with posts after this date
      * @return Chats since the given date
      */
