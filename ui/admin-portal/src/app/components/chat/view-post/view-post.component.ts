@@ -2,6 +2,7 @@ import {
   Component,
   HostListener,
   Input,
+  OnChanges,
   OnInit,
   SimpleChanges,
   ViewEncapsulation
@@ -9,12 +10,8 @@ import {
 import {isHtml} from 'src/app/util/string';
 import {ChatPost} from "../../../model/chat";
 import {UserService} from "../../../services/user.service";
-import {User} from "../../../model/user";
-import {AuthenticationService} from "../../../services/authentication.service";
-import {
-  ChatPostReactionService,
-  CreateChatPostReactionRequest
-} from "../../../services/chat-post-reaction-service";
+import {CreateReactionRequest, ReactionService} from "../../../services/reaction.service";
+import {Reaction} from "../../../model/reaction";
 
 @Component({
   selector: 'app-view-post',
@@ -24,10 +21,10 @@ import {
   // See here: https://stackoverflow.com/a/44215795
   encapsulation: ViewEncapsulation.None
 })
-export class ViewPostComponent implements OnInit {
+export class ViewPostComponent implements OnInit, OnChanges {
 
-  emojiReactPickerVisible: boolean = false;
-  loggedInUser: User;
+  isCurrentPost: boolean = false;
+  public reactionPickerVisible: boolean = false;
 
   // Currently ngx-quill just inserts the url into an <img> tag, this is then saved as innerHTML.
   // Adding this event listener allows us to make the images clickable and open the src attribute in a new tab.
@@ -39,18 +36,23 @@ export class ViewPostComponent implements OnInit {
   }
 
   @Input() post: ChatPost;
+  @Input() currentPost: ChatPost;
 
-  constructor(
-    private authenticationService: AuthenticationService,
-    private chatPostReactionService: ChatPostReactionService
-  ) { }
+  constructor(private reactionService: ReactionService) { }
 
   ngOnInit(): void {
-    this.loggedInUser = this.authenticationService.getLoggedInUser();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(this.post)
+    for (const propName in changes) {
+      if (changes.hasOwnProperty(propName)) {
+        switch (propName) {
+          case 'currentPost': {
+            this.setIsCurrentPost(changes.currentPost.currentValue)
+          }
+        }
+      }
+    }
   }
 
   get isHtml() {
@@ -62,28 +64,35 @@ export class ViewPostComponent implements OnInit {
     return UserService.userToString(user, false, false);
   }
 
-  public clickEmojiButton() {
-    this.emojiReactPickerVisible = !this.emojiReactPickerVisible;
+  private setIsCurrentPost(currentPost: ChatPost) {
+    this.isCurrentPost = currentPost === this.post;
+    if(!this.isCurrentPost) this.reactionPickerVisible = false;
   }
 
-  public addReaction(post, event) {
-    this.emojiReactPickerVisible = !this.emojiReactPickerVisible;
-    this.createReaction(post.id,`${event.emoji.native}`)
+  public openReactionPicker() {
+    this.reactionPickerVisible = !this.reactionPickerVisible;
   }
 
-  private createReaction(postId: number, emoji: string) {
-    const createReactionRequest: CreateChatPostReactionRequest = {
-      emoji: emoji,
-      userIds: [this.loggedInUser.id,]
+  public emojiSelect(event) {
+    const request: CreateReactionRequest = {
+      emoji: `${event.emoji.native}`
     }
-
-    this.chatPostReactionService.create(postId, createReactionRequest).subscribe(
-      (chatPostReaction) => {
-        this.post.chatPostReactions.push(chatPostReaction);
-      },
-      (error) => {
-        console.log("nope")
-      });
+    this.reactionService.create(this.post.id, request).subscribe({
+      complete: () =>
+          this.reactionService.list(this.post.id)
+          .subscribe(updatedReactions =>
+              this.post.reactions = updatedReactions
+          )})
   }
+
+  public updateReaction(reaction: Reaction) {
+    this.reactionService.update(reaction.id).subscribe({
+      complete: () =>
+          this.reactionService.list(this.post.id)
+          .subscribe(updatedReactions =>
+              this.post.reactions = updatedReactions
+          )})
+  }
+
 
 }

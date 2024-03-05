@@ -14,8 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface ChatPostReaction {
-    id: number;
-    emoji: string;
-    userIds: number[];
+package org.tctalent.server.request.chat.reaction;
+
+import javax.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class CreateReactionRequest {
+
+    @NotBlank
+    private String emoji;
+
 }

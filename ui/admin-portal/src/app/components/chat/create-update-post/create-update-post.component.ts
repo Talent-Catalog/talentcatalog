@@ -1,4 +1,4 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -21,7 +21,7 @@ export class CreateUpdatePostComponent implements OnInit {
   postForm: FormGroup;
   quillEditorRef: Quill;
   moduleOptions = {};
-  public emojiPostPickerVisible: boolean = false;
+  public emojiPickerVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -116,32 +116,21 @@ export class CreateUpdatePostComponent implements OnInit {
     });
   }
 
-  // Add an emoji to the Quill text editor and focus the caret directly after it
+  // Add an emoji to the text editor and focus the caret directly after it
   public addEmoji(event) {
-    this.emojiPostPickerVisible = !this.emojiPostPickerVisible;
-    let index: number = this.quillEditorRef.selection.savedRange.index;
+    this.emojiPickerVisible = false;
+    const index: number = this.quillEditorRef.selection.savedRange.index;
     this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
-    this.quillEditorRef.setSelection(index + 10, 0);
+    this.quillEditorRef.setSelection(index + 2, 0);
   }
 
-  // Toggle the emoji picker on and off using the button, refocus the caret
+  // Toggle the emoji picker on and off using the button on the editor toolbar, refocus the caret
   public clickEmojiButton() {
-    this.emojiPostPickerVisible = !this.emojiPostPickerVisible;
-    let index: number = this.quillEditorRef.selection.savedRange.index;
-    this.quillEditorRef.setSelection(index, 0);
-  }
-
-  // Close the emoji picker if user clicks anywhere except the picker or its button — requires
-  // slightly tortured logic because emoji picker is imported and so its elements are hard to select
-  @HostListener('document:click', ['$event'])
-  documentClick(event) {
-    if(this.emojiPostPickerVisible) {
-      let sectionClass: string =
-        event.target.closest('section') ? event.target.closest('section').classList[0] : "";
-      let clickedElementId: string = event.target.id;
-      if(!clickedElementId.includes('emoji') && !sectionClass.includes('emoji')) {
-        this.emojiPostPickerVisible = false
-      }
+    this.emojiPickerVisible = !this.emojiPickerVisible;
+    if(!this.emojiPickerVisible) {
+      const index: number = this.quillEditorRef.selection.savedRange.index;
+      this.quillEditorRef.setSelection(index, 0);
     }
   }
+
 }

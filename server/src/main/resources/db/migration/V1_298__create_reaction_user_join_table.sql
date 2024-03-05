@@ -14,22 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.chat.reaction;
+create table reaction_user
+(
+    reaction_id bigint not null references reaction,
+    user_id bigint not null references users,
+    primary key (reaction_id, user_id)
+);
 
-import java.util.List;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class CreateChatPostReactionRequest {
-
-    @NotNull
-    private List<Long> userIds;
-
-    @NotBlank
-    private String emoji;
-
-}

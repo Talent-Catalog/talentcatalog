@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.repository.db;
+import {User} from "./user";
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.tctalent.server.model.db.ChatPostReaction;
-
-public interface ChatPostReactionRepository
-        extends JpaRepository<ChatPostReaction, Long> { }
+export interface Reaction {
+    id: number;
+    emoji: string;
+    users: User[];
+}

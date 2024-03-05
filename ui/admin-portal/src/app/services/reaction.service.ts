@@ -18,33 +18,35 @@ import {Injectable} from "@angular/core";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {ChatPostReaction} from "../model/chat-post-reaction";
+import {Reaction} from "../model/reaction";
 
-export interface CreateChatPostReactionRequest {
+export interface CreateReactionRequest {
     emoji: string;
-    userIds: number[];
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class ChatPostReactionService {
-    private apiUrl: string = environment.chatApiUrl + '/chat-post-reaction';
+export class ReactionService {
+    private apiUrl: string = environment.chatApiUrl + '/reaction';
 
     constructor(private http: HttpClient) { }
 
-    create(chatPostId: number, chatPostReactionRequest: CreateChatPostReactionRequest):
-        Observable<ChatPostReaction> {
-        return this.http.post<ChatPostReaction>(
-            `${this.apiUrl}/${chatPostId}`, chatPostReactionRequest);
+    create(chatPostId: number, request: CreateReactionRequest):
+        Observable<Reaction> {
+        return this.http.post<Reaction>(
+            `${this.apiUrl}/${chatPostId}`, request);
     }
 
     delete(id: number): Observable<boolean> {
         return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
     }
 
-    update(id: number, chatPostReactionRequest: CreateChatPostReactionRequest):
-    Observable<ChatPostReaction> {
-        return this.http.put<ChatPostReaction>(`${this.apiUrl}/${id}`, chatPostReactionRequest);
+    update(id: number): Observable<Reaction> {
+        return this.http.put<Reaction>(`${this.apiUrl}/${id}/update-reaction`, null);
+    }
+
+    list(chatPostId: number): Observable<Reaction[]> {
+        return this.http.get<Reaction[]>(`${this.apiUrl}/${chatPostId}/list/`);
     }
 }

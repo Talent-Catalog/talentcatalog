@@ -14,10 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-create table chat_post_reaction
-(
-    id                      bigserial not null primary key,
-    chat_post_id            bigint references chat_post,
-    user_ids                text,
-    emoji                   text
-);
+package org.tctalent.server.repository.db;
+
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.tctalent.server.model.db.Reaction;
+
+public interface ReactionRepository extends JpaRepository<Reaction, Long>,
+    JpaSpecificationExecutor<Reaction> {
+    Optional<List<Reaction>> findBychatPostId(Long chatPostId);
+
+    Optional<Reaction> findByEmojiAndChatPostId(String emoji, Long chatPostId);
+}

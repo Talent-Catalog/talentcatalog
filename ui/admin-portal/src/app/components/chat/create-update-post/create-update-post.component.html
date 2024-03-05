@@ -28,17 +28,19 @@
 
         <button
           id="emojiButton"
-          [ngClass]="!this.emojiPostPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
+          [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-selected'"
           (click)="clickEmojiButton()">
           <i class="fa-regular fa-face-smile" id="emojiIcon"></i>
         </button>
 
         <emoji-mart
-          *ngIf="emojiPostPickerVisible"
+          id="editorPicker"
+          *ngIf="emojiPickerVisible"
           (emojiClick)="addEmoji($event)"
           emoji="point_up"
-          title="Choose your emoji..."
+          title="Add emoji...&nbsp;&nbsp;👍"
           autoFocus="true"
+          [perLine]="8"
           [sheetSize]="32"
         ></emoji-mart>
 

@@ -37,6 +37,7 @@ export class User {
   usingMfa: boolean;
   mfaConfigured: boolean;
   partner: Partner;
+  displayName: string;
 
   //Can be populated after upload
   name: string;

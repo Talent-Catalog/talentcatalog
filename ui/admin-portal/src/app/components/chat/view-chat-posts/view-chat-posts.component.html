@@ -5,12 +5,13 @@
   {{error}}
 </div>
 
-<div class="container">
+<div class="container" id="chatPosts">
   <div id="posts" *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
     <div *ngFor="let post of posts"
-         (click)="selectCurrent(post)"
-         [ngClass]="{'current': currentPost?.id == post.id}">
+       (click)="selectCurrent(post)"
+       [ngClass]="{'current': currentPost?.id == post.id}">
       <app-view-post
+        [currentPost] ="currentPost"
         [post]="post">
       </app-view-post>
     </div>

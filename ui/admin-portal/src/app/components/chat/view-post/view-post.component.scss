@@ -1,22 +1,44 @@
-button.create-emoji-reaction-btn {
+button.reaction-btn {
   border: none;
-  color: #444;
   background-color: inherit;
+  color: #444;
 }
 
-button.create-emoji-reaction-btn:hover {
+button.reaction-btn:hover {
   color: #0066cc;
 }
 
-button.create-emoji-reaction-btn-open {
-  color: #0066cc
-}
-
-button.emoji-reaction-btn {
-  // TODO: use TC palette
-  background-color: #ced4da;
+button.reaction-btn-selected {
   border: none;
-  text-align: center;
-  border-radius: 4px;
+  background-color: inherit;
+  color: #0066cc;
 }
 
+button.update-reaction-btn {
+  // TODO: use TC palette, make consistent pill-shaped
+  background-color: #ced4da;
+  border: 0.1em solid #444;
+  margin: 0.2em;
+  text-align: center;
+  color: #444;
+  display: inline-block;
+  border-radius: 8em;
+  font-size: small;
+}
+
+button.update-reaction-btn:hover {
+  // TODO: use TC palette, make consistent pill-shaped
+  border-color: #0066cc;
+  color: #0066cc;
+}
+
+emoji-mart#reactionPicker {
+  position: sticky;
+  margin-top: -0.5em;
+  margin-left: 0.4em;
+  z-index: 1;
+}
+
+div#reactionTooltipEmoji {
+  font-size: xx-large;
+}

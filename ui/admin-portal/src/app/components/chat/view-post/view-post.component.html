@@ -4,25 +4,41 @@
     <small>{{post?.createdDate | date: 'customDateTime'}}</small>
   </p>
   <p class="content" *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></p>
-  <div class="d-flex justify-content-end">
-    <button class="emoji-reaction-btn mx-1 px-1" *ngFor="let reaction of post.chatPostReactions">
-      {{reaction.emoji}}
+
+  <div class="d-flex flex-row-reverse flex-wrap">
+    <button
+    id="reactionBtn"
+    [ngClass]="!this.reactionPickerVisible ?
+    'reaction-btn' : 'reaction-btn-selected'"
+    (click)="openReactionPicker()">
+      <i id="reactionBtnSmiley" class="fa-regular fa-face-smile fa-xs">
+      <i id="reactionBtnPlus" class="fa-solid fa-plus fa-2xs"></i></i>
     </button>
     <button
-      class="create-emoji-reaction-btn"
-      [ngClass]="!this.emojiReactPickerVisible ? 'emoji-react-btn' : 'emoji-react-btn-open'"
-      (click)="clickEmojiButton()">
-      <i class="fa-regular fa-face-smile fa-xs">
-      <i class="fa-solid fa-plus fa-xs"></i></i>
+    class="update-reaction-btn"
+    *ngFor="let reaction of post.reactions"
+    (click)="updateReaction(reaction)">
+      <span [ngbTooltip]="reactionToolTip">
+        {{reaction.emoji}} {{reaction.users.length}}
+      </span>
+      <ng-template #reactionToolTip>
+        <div id="reactionTooltipEmoji">
+          {{reaction.emoji}}
+        </div>
+        <div *ngFor="let user of reaction.users">
+          {{user.displayName}}
+        </div>
+      </ng-template>
     </button>
-    <emoji-mart
-      class="reaction-picker"
-      *ngIf="emojiReactPickerVisible"
-      (emojiClick)="addReaction(post, $event)"
-      emoji="point_up"
-      title="Choose your emoji..."
-      autoFocus="true"
-      [sheetSize]="32"
-    ></emoji-mart>
   </div>
 </div>
+<emoji-mart
+  id="reactionPicker"
+  *ngIf="reactionPickerVisible"
+  (emojiClick)="emojiSelect($event)"
+  emoji="point_up"
+  title="Add emoji...&nbsp;&nbsp;👍"
+  autoFocus="true"
+  [perLine]="8"
+  [sheetSize]="32"
+></emoji-mart>

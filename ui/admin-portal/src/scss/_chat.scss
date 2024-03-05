@@ -15,6 +15,7 @@
  */
 
 @import "~src/scss/variables";
+@import "../app/components/chat/view-post/view-post.component.scss";
 
 #posts {
   overflow: scroll;
@@ -37,6 +38,8 @@
   font-size: 14px;
   color: $accent1;
 }
+
+//TODO put in components folder?
 
 .content {
   margin-top: 0.2em;
@@ -66,15 +69,15 @@ button.custom-emoji-btn:hover {
   padding-top: 1px !important;
 }
 
-button.custom-emoji-btn-menu-open {
+button.custom-emoji-btn-selected {
   color: #0066cc !important;
   padding-top: 1px !important;
 }
 
-.emoji-mart {
+emoji-mart#editorPicker {
   position: absolute;
   top: -420px;
-  left: 200px;
+  left: -40px;
 }
 
 #quillToolbar {

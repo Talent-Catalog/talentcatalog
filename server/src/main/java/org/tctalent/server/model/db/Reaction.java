@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,38 +16,42 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Represents a post in a JobChat.
- *
- * @author John Cameron
- */
 @Getter
 @Setter
 @Entity
-@Table(name = "chat_post")
-@SequenceGenerator(name = "seq_gen", sequenceName = "chat_post_id_seq", allocationSize = 1)
-public class ChatPost extends AbstractAuditableDomainObject<Long> {
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_chat_id")
-    private JobChat jobChat;
-    private String content;
+@Table(name = "reaction")
+@SequenceGenerator(name = "seq_gen", sequenceName = "reaction_id_seq", allocationSize = 1)
+public class Reaction extends AbstractDomainObject<Long> {
 
-    @OneToMany(mappedBy = "chatPost", cascade = CascadeType.ALL)
-    private List<Reaction> reactions = new ArrayList<>();
+    /**
+     * Associated user(s)
+     */
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(
+        name = "reaction_user",
+        joinColumns = @JoinColumn(name = "reaction_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> users;
 
-    //Author of post is stored in inherited createdBy
-    //Timestamp of post is stored in inherited createdDate
+    /**
+     * Associated chat post
+     */
+    @ManyToOne
+    @JoinColumn(name = "chat_post_id")
+    private ChatPost chatPost;
+
+    private String emoji;
 }
