@@ -48,7 +48,6 @@ export class ResetPasswordComponent implements OnInit {
 
     const req: SendResetPasswordEmailRequest = new SendResetPasswordEmailRequest();
     req.email = this.email;
-    req.isAdmin = true;
 
     this.userService.sendResetPassword(req).subscribe(
         () => {

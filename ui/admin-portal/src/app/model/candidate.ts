@@ -778,5 +778,4 @@ export function getDestinationOccupationSubcatLink(countryId: number): string {
 
 export class SendResetPasswordEmailRequest {
   email: string;
-  isAdmin: boolean;
 }
