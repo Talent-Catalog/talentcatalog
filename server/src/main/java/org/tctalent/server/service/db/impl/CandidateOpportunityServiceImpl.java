@@ -214,7 +214,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
 
     @Override
-    public CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp) {
+    public @Nullable CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp) {
         return candidateOpportunityRepository.findByCandidateIdAndJobId(candidate.getId(), jobOpp.getId());
     }
 

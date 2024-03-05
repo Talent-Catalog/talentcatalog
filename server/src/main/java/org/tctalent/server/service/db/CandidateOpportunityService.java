@@ -70,6 +70,14 @@ public interface CandidateOpportunityService {
     void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws SalesforceException, WebClientException;
 
+    /**
+     * Finds the candidate opportunity associated with the given candidate and job
+     *
+     * @param candidate Candidate
+     * @param jobOpp    Job
+     * @return Candidate opportunity, may be null if none found.
+     */
+    @Nullable
     CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp);
 
     /**
