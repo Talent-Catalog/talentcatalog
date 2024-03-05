@@ -30,7 +30,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -38,7 +43,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -50,6 +57,8 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Opportunity;
@@ -552,4 +561,81 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         return uploadedFile;
     }
+
+    //One minute past Midnight GMT
+    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+//todo    @SchedulerLock(name = "CandidateOpportunityService_notifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+    @Transactional
+    public void notifyOfChatsWithNewPosts() {
+
+        Map<Long, Set<JobChat>> userNotifications = new HashMap<>();
+
+
+        OffsetDateTime yesterday = OffsetDateTime.now().minusDays(30);
+        List<Long> chatsWithNewPosts = jobChatService.findChatsWithPostsSinceDate(yesterday);
+
+        List<JobChat> chats = jobChatService.findByIds(chatsWithNewPosts);
+
+        //TODO JC Extract all users who need to be notified, then loop through constructing their emails
+        for (JobChat chat : chats) {
+            JobChatType chatType = chat.getType();
+            Candidate candidate = chat.getCandidate();
+            SalesforceJobOpp job = chat.getJobOpp();
+            switch (chatType) {
+                case CandidateProspect -> {
+                    if (candidate != null) {
+                        Set<JobChat> userChats =
+                            userNotifications.computeIfAbsent(
+                                candidate.getUser().getId(), k -> new HashSet<>());
+                        userChats.add(chat);
+                    }
+                }
+                case CandidateRecruiting -> {
+                    if (candidate != null && job != null) {
+                        CandidateOpportunity aCase = findOpp(candidate, job);
+                        if (aCase != null) {
+                            //Candidates only see this chat if they are at or past the review stage
+                            if (aCase.getStage().isWon() || !aCase.getStage().isClosed()
+                                && CandidateOpportunityStage.cvReview.compareTo(aCase.getStage()) <= 0) {
+                                Set<JobChat> userChats =
+                                    userNotifications.computeIfAbsent(
+                                        candidate.getUser().getId(), k -> new HashSet<>());
+                                userChats.add(chat);
+                            }
+                        }
+                    }
+                }
+                case AllJobCandidates -> {
+                    if (job != null) {
+                        Set<CandidateOpportunity> cases = job.getCandidateOpportunities();
+                        for (CandidateOpportunity aCase : cases) {
+                            //Candidates only see this chat if they have accepted the job offer
+                            if (aCase.getStage().isWon() || !aCase.getStage().isClosed()
+                                && CandidateOpportunityStage.acceptance.compareTo(aCase.getStage()) <= 0) {
+                                candidate = aCase.getCandidate();
+                                Set<JobChat> userChats =
+                                    userNotifications.computeIfAbsent(
+                                        candidate.getUser().getId(), k -> new HashSet<>());
+                                userChats.add(chat);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Construct and send emails
+        for (Long userId : userNotifications.keySet()) {
+            final Set<JobChat> userChats = userNotifications.get(userId);
+            String s = userChats.stream()
+                .map(c -> c.getId().toString())
+                .collect(Collectors.joining(","));
+            log.info("Tell user " + userId + " about posts to chats " + s);
+            User user = userService.getUser(userId);
+            if (user != null) {
+//todo                emailHelper.sendWatcherEmail(user, userChats);
+            }
+        }
+    }
+
 }

@@ -17,18 +17,18 @@
 package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
@@ -42,6 +42,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @Service
 @RequiredArgsConstructor
 public class JobChatServiceImpl implements JobChatService {
+    private static final Logger log = LoggerFactory.getLogger(JobChatServiceImpl.class);
 
     private final UserService userService;
     private final JobChatRepository jobChatRepository;
@@ -102,6 +103,11 @@ public class JobChatServiceImpl implements JobChatService {
     public JobChat createCandidateRecruitingChat(@NonNull Candidate candidate,
         @NonNull SalesforceJobOpp job) throws InvalidRequestException {
         return createJobChat(JobChatType.CandidateRecruiting, job, null, candidate);
+    }
+
+    @Override
+    public List<JobChat> findByIds(@NonNull Collection<Long> ids) {
+        return jobChatRepository.findByIds(ids);
     }
 
     @Override
@@ -170,18 +176,8 @@ public class JobChatServiceImpl implements JobChatService {
         return chats;
     }
 
-    //One minute past Midnight GMT
-    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
-//todo    @SchedulerLock(name = "JobChatService_notifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
-    @Transactional
-    public void notifyOfChatsWithNewPosts() {
-        OffsetDateTime yesterday = OffsetDateTime.now().minusDays(30);
-        List<Long> chatsWithNewPosts = jobChatRepository.myFindChatsWithPostsSinceDate(yesterday);
-
-        //TODO JC Load all chats - put comment in Repository why had to use native query.
-
-        //TODO JC Extract all users who need to be notified, then loop through constructing their emails
-        throw new NotImplementedException(JobChatServiceImpl.class, "Found " + chatsWithNewPosts.size());
+    @Override
+    public List<Long> findChatsWithPostsSinceDate(OffsetDateTime dateTime) {
+        return jobChatRepository.myFindChatsWithPostsSinceDate(dateTime);
     }
-
 }

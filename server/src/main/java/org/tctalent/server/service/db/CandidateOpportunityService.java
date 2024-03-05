@@ -117,6 +117,8 @@ public interface CandidateOpportunityService {
      */
     List<Long> findUnreadChatsInOpps(SearchCandidateOpportunityRequest request);
 
+    void notifyOfChatsWithNewPosts();
+
     /**
      * Get candidate opportunities from a paged search request
      * @param request - Paged Search Request

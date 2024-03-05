@@ -198,7 +198,7 @@ public class SystemAdminApi {
 
     @GetMapping("notifyOfChatsWithNewPosts")
     public void notifyOfNewChatPosts() {
-        jobChatService.notifyOfChatsWithNewPosts();
+        candidateOpportunityService.notifyOfChatsWithNewPosts();
     }
 
     @GetMapping("create_employer_for_all_jobs")
