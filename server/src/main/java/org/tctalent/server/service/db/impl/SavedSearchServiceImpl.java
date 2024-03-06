@@ -82,6 +82,7 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
@@ -119,6 +120,7 @@ import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
+import org.tctalent.server.service.db.CandidateReviewStatusService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -139,6 +141,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
+    private final CandidateReviewStatusService candidateReviewStatusService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
@@ -249,11 +252,26 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //the standard saved search request.
         searchRequest.merge(request);
 
+        //If user filters on unverified statuses we bypass performing a full search
+        //Simply return candidates that the user has already reviewed as verified and/or rejected
+        if (request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
+            return reviewedCandidates(searchRequest);
+        }
+
         //Do the search
         final Page<Candidate> candidates = doSearchCandidates(searchRequest);
 
         //Add in any selections
         markUserSelectedCandidates(savedSearchId, candidates);
+
+        return candidates;
+    }
+
+    private Page<Candidate> reviewedCandidates(SearchCandidateRequest request) {
+        Page<Candidate> candidates = candidateRepository.findReviewedCandidatesBySavedSearchId(
+            request.getSavedSearchId(),
+            request.getReviewStatusFilter(),
+            request.getPageRequestWithoutSort());
 
         return candidates;
     }

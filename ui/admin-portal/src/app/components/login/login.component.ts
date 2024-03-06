@@ -23,6 +23,7 @@ import {EncodedQrImage} from "../../util/qr";
 import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthenticationService} from "../../services/authentication.service";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-login',
@@ -36,6 +37,8 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   error;
 
+  backgroundImage: string;
+
   constructor(private builder: FormBuilder,
               private authenticationService: AuthenticationService,
               private modalService: NgbModal,
@@ -44,6 +47,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
+
     this.route.queryParams.subscribe(params => {
       this.returnUrl = params['returnUrl'] || '';
     });
