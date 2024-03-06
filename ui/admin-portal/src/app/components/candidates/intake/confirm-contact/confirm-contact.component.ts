@@ -33,15 +33,16 @@ export class ConfirmContactComponent implements OnInit {
   }
 
   get date(): string {
-    if (this.candidate?.dob) {
-      let dobString = dateString(this.candidate.dob);
-
-      const dobDate = new Date(this.candidate.dob);
-      if (!Number.isNaN(dobDate.getTime())) { // Checks if the date is valid
-        dobString += ' (Age ' + this.calculateAge(dobDate) + ')';
-      }
-      return dobString;
+    if (!this.candidate?.dob) {
+      return 'Date of birth not provided';
     }
+
+    let dobString = dateString(this.candidate.dob);
+    const dobDate = new Date(this.candidate.dob);
+    if (!Number.isNaN(dobDate.getTime())) { // Checks if the date is valid
+      dobString += ' (Age ' + this.calculateAge(dobDate) + ')';
+    }
+    return dobString;
   }
 
   candidateSurveyAnswer(): string {
