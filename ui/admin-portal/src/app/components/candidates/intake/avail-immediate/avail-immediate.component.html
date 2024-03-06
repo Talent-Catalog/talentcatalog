@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
+  <div *ngIf="availImmediate === 'Yes'">
     <div class="mb-3">
       <label class="form-label" for="availImmediateReason">Factors preventing immediate availability for international work.</label>
       <ng-select id="availImmediateReason" [formControlName]="'availImmediateReason'" (clear)="setNoResponse('availImmediateReason')"
