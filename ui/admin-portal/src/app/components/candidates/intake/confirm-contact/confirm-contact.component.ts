@@ -45,6 +45,14 @@ export class ConfirmContactComponent implements OnInit {
     return dobString;
   }
 
+  get gender(): string {
+    const gender = this.candidate?.gender?.trim();
+    if (!gender) {
+      return 'No gender specified';
+    }
+    return this.capitaliseFirstLetter(gender);
+  }
+
   candidateSurveyAnswer(): string {
     let answer = this.candidate.surveyType?.name;
     if (this.candidate.surveyComment) {
@@ -69,6 +77,10 @@ export class ConfirmContactComponent implements OnInit {
     }
 
     return age;
+  }
+
+  private capitaliseFirstLetter(text: string): string {
+    return text && text.length > 0 ? text.charAt(0).toUpperCase() + text.slice(1) : '';
   }
 
 }
