@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -551,8 +552,16 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
     //One minute past Midnight GMT
     @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
-//todo    @SchedulerLock(name = "CandidateOpportunityService_notifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+    @SchedulerLock(name = "CandidateOpportunityService_scheduledNotifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     @Transactional
+    public void scheduledNotifyOfChatsWithNewPosts() {
+        notifyOfChatsWithNewPosts();
+    }
+
+    /**
+     * Can be called directly by SystemAdminApi as often as needed without running into
+     * the SchedulerLock which is on {@link #scheduledNotifyOfChatsWithNewPosts()}
+     */
     public void notifyOfChatsWithNewPosts() {
 
         Map<Long, Set<JobChat>> userNotifications = new HashMap<>();
