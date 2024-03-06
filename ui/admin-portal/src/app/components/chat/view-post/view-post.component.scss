@@ -1,39 +1,55 @@
+/*!
+ * Copyright (c) 2024 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+@import "~src/scss/variables";
+
 button.reaction-btn {
   border: none;
   background-color: inherit;
-  color: #444;
+  color: $accent2;
 }
 
 button.reaction-btn:hover {
-  color: #0066cc;
+  color: $primary;
 }
 
 button.reaction-btn-selected {
   border: none;
   background-color: inherit;
-  color: #0066cc;
+  color: $primary;
 }
 
 button.update-reaction-btn {
-  // TODO: use TC palette, make consistent pill-shaped
-  background-color: #ced4da;
-  border: 0.1em solid #444;
+  background-color: $accent3;
+  border: 0.1em solid $accent2;
   margin: 0.2em;
   text-align: center;
-  color: #444;
+  color: $accent1;
   display: inline-block;
   border-radius: 8em;
   font-size: small;
 }
 
 button.update-reaction-btn:hover {
-  // TODO: use TC palette, make consistent pill-shaped
-  border-color: #0066cc;
-  color: #0066cc;
+  border-color: $primary;
+  color: $primary;
 }
 
 emoji-mart#reactionPicker {
-  position: sticky;
+  position: absolute;
   margin-top: -0.5em;
   margin-left: 0.4em;
   z-index: 1;
@@ -41,4 +57,8 @@ emoji-mart#reactionPicker {
 
 div#reactionTooltipEmoji {
   font-size: xx-large;
+}
+
+span#postPicker {
+  position:relative;
 }

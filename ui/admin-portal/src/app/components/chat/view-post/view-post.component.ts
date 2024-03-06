@@ -1,10 +1,12 @@
 import {
   Component,
+  ElementRef,
   HostListener,
   Input,
   OnChanges,
   OnInit,
   SimpleChanges,
+  ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {isHtml} from 'src/app/util/string';
@@ -38,6 +40,8 @@ export class ViewPostComponent implements OnInit, OnChanges {
   @Input() post: ChatPost;
   @Input() currentPost: ChatPost;
 
+  @ViewChild('pickerSpan') pickerSpan: ElementRef;
+
   constructor(private reactionService: ReactionService) { }
 
   ngOnInit(): void {
@@ -48,7 +52,9 @@ export class ViewPostComponent implements OnInit, OnChanges {
       if (changes.hasOwnProperty(propName)) {
         switch (propName) {
           case 'currentPost': {
-            this.setIsCurrentPost(changes.currentPost.currentValue)
+            this.setIsCurrentPostAndCloseOpenedPickerIfFalse(
+              changes.currentPost.currentValue
+            )
           }
         }
       }
@@ -64,16 +70,27 @@ export class ViewPostComponent implements OnInit, OnChanges {
     return UserService.userToString(user, false, false);
   }
 
-  private setIsCurrentPost(currentPost: ChatPost) {
+  // Ensures that no two reaction pickers are open at the same time.
+  // ngOnChanges subscribes to the currentPost @Input — if a post with an open picker is no longer
+  // current, the picker is closed. Because this is a duplicated component (per post), we can't
+  // manage that behaviour with unique identifiers.
+  private setIsCurrentPostAndCloseOpenedPickerIfFalse(currentPost: ChatPost) {
     this.isCurrentPost = currentPost === this.post;
     if(!this.isCurrentPost) this.reactionPickerVisible = false;
   }
 
-  public openReactionPicker() {
+  // Toggles the picker on and off — if on, focuses the scroll bar on its center
+  public toggleReactionPicker() {
     this.reactionPickerVisible = !this.reactionPickerVisible;
+    if(this.reactionPickerVisible) {
+      this.pickerSpan.nativeElement.scrollIntoView({block: "center", behavior: "smooth"})
+    }
   }
 
+  // This method may also update or even delete a reaction, if the user submits an emoji already
+  // associated with the post. This behaviour is managed by ReactionService on the server.
   public emojiSelect(event) {
+    this.reactionPickerVisible = false;
     const request: CreateReactionRequest = {
       emoji: `${event.emoji.native}`
     }
@@ -94,5 +111,9 @@ export class ViewPostComponent implements OnInit, OnChanges {
           )})
   }
 
+  // These emojis didn't work for some reason — this function excludes them from the picker.
+  emojisToShowFilter = (emoji: any) => {
+    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
+  }
 
 }

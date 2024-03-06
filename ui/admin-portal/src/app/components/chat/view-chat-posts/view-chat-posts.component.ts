@@ -65,27 +65,38 @@ export class ViewChatPostsComponent extends PostsComponentBase
     this.requestJobChat(request);
   }
 
+  // Ensures that reaction and editor emoji pickers are not open at the same time, and that clicks
+  // anywhere on the DOM outside an open picker will close that picker. Reaction pickers are
+  // attached to instances of ViewPostComponent (reacting to posts) and the editor picker is
+  // attached to the Quill toolbar (writing posts).
   @HostListener('document:click', ['$event'])
   documentClick(event) {
+    // Find the post with an open reaction picker, if any
     const postWithOpenPicker =
         this.viewPostComponents.find(
             (view) => view.reactionPickerVisible)
 
+    // Check if any picker is open
     if(this.editor.emojiPickerVisible || postWithOpenPicker != null) {
 
+      // Generate value to check if click was within any emoji picker
       const sectionClass: string =
           event.target.closest('section') ?
               event.target.closest('section').classList[0] : "";
 
+      // Generate value to check if click was on an emoji picker toggle button (smiley emoji icon)
       const clickedElementId: string = event.target.id;
 
-      if (clickedElementId.includes('emoji') && postWithOpenPicker != null) {
+      if (clickedElementId.includes('emojiBtn') && postWithOpenPicker != null) {
+        // If click was on editor picker toggle button, close any open reaction picker
         postWithOpenPicker.reactionPickerVisible = false;
-      } else if (clickedElementId.includes('reaction') && this.editor.emojiPickerVisible) {
+      } else if (clickedElementId.includes('reactionBtn') && this.editor.emojiPickerVisible) {
+        // If click was on reaction picker toggle button, close the editor picker
         this.editor.emojiPickerVisible = false
       } else if (!sectionClass.includes('emoji') &&
-          !clickedElementId.includes('reaction') &&
-          !clickedElementId.includes('emoji')) {
+          !clickedElementId.includes('reactionBtn') &&
+          !clickedElementId.includes('emojiBtn')) {
+        // If click was not on any emoji picker toggle button or emoji picker, close any open picker
         this.editor.emojiPickerVisible = false;
         postWithOpenPicker.reactionPickerVisible = false;
       }

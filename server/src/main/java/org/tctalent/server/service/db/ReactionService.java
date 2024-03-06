@@ -17,41 +17,31 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Reaction;
 import org.tctalent.server.request.chat.reaction.CreateReactionRequest;
 
 public interface ReactionService {
-    /**
-     * Gets the reaction record from the given id.
-     * @param id of reaction
-     * @return Desired record
-     * @throws NoSuchObjectException if the there is no reaction record with that id
-     * TODO: we may not need this one
-     */
-    Reaction get(long id) throws NoSuchObjectException;
 
     /**
-     * Creates a new reaction from the data in the given request.
+     * Creates a new reaction from the emoji in the given request, or calls update if that emoji
+     * was already associated with a reaction.
      * @param chatPostId id of the parent chat post
-     * @param request {@link CreateReactionRequest}
-     * @return Created record
+     * @param request {@link CreateReactionRequest} containing the emoji.
+     * @return the created or updated record, or null if a record was deleted
      * @throws NoSuchObjectException if no chat post exists with the given id
      */
     Reaction create(long chatPostId, CreateReactionRequest request)
             throws NoSuchObjectException;
 
     /**
-     * Delete the reaction with the given id.
+     * Deletes the reaction with the given id.
      * @param id ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
-     * @throws EntityReferencedException if the object cannot be deleted because
-     * it is referenced by another object.
      * @throws InvalidRequestException if not authorized to delete this list.
      */
-    boolean delete(long id) throws EntityReferencedException, InvalidRequestException;
+    boolean delete(long id) throws InvalidRequestException;
 
     /**
      * Updates the reaction associated with the ID provided:
@@ -64,6 +54,11 @@ public interface ReactionService {
      */
     Reaction updateReaction(long id) throws NoSuchObjectException;
 
-//    TODO doc
+    /**
+     * Provides a list of the reactions associated with a given post.
+     * @param chatPostId id of the chat post being queried
+     * @return list
+     * @throws NoSuchObjectException if chat post not found
+     */
     List<Reaction> list(long chatPostId) throws NoSuchObjectException;
 }

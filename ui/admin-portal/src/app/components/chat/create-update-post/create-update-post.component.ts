@@ -116,7 +116,7 @@ export class CreateUpdatePostComponent implements OnInit {
     });
   }
 
-  // Add an emoji to the text editor and focus the caret directly after it
+  // Adds an emoji to the text editor and focuses the caret directly after it.
   public addEmoji(event) {
     this.emojiPickerVisible = false;
     const index: number = this.quillEditorRef.selection.savedRange.index;
@@ -124,13 +124,18 @@ export class CreateUpdatePostComponent implements OnInit {
     this.quillEditorRef.setSelection(index + 2, 0);
   }
 
-  // Toggle the emoji picker on and off using the button on the editor toolbar, refocus the caret
+  // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
   public clickEmojiButton() {
     this.emojiPickerVisible = !this.emojiPickerVisible;
     if(!this.emojiPickerVisible) {
       const index: number = this.quillEditorRef.selection.savedRange.index;
       this.quillEditorRef.setSelection(index, 0);
     }
+  }
+
+  // These emojis didn't work for some reason — this function excludes them from the picker.
+  emojisToShowFilter = (emoji: any) => {
+    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
   }
 
 }

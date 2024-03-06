@@ -10,7 +10,7 @@
     id="reactionBtn"
     [ngClass]="!this.reactionPickerVisible ?
     'reaction-btn' : 'reaction-btn-selected'"
-    (click)="openReactionPicker()">
+    (click)="toggleReactionPicker()">
       <i id="reactionBtnSmiley" class="fa-regular fa-face-smile fa-xs">
       <i id="reactionBtnPlus" class="fa-solid fa-plus fa-2xs"></i></i>
     </button>
@@ -32,13 +32,16 @@
     </button>
   </div>
 </div>
-<emoji-mart
-  id="reactionPicker"
-  *ngIf="reactionPickerVisible"
-  (emojiClick)="emojiSelect($event)"
-  emoji="point_up"
-  title="Add emoji...&nbsp;&nbsp;👍"
-  autoFocus="true"
-  [perLine]="8"
-  [sheetSize]="32"
-></emoji-mart>
+<span id="postPicker" #pickerSpan>
+  <emoji-mart
+    id="reactionPicker"
+    *ngIf="reactionPickerVisible"
+    (emojiClick)="emojiSelect($event)"
+    emoji="point_up"
+    title="Add emoji...&nbsp;&nbsp;👍"
+    [autoFocus]="true"
+    [perLine]="8"
+    [sheetSize]="32"
+    [emojisToShowFilter]="emojisToShowFilter"
+  ></emoji-mart>
+</span>

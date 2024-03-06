@@ -44,9 +44,11 @@ public class ReactionAdminApi
     private final ReactionService reactionService;
 
     /**
-     * Creates a reaction record from the data in the given request.
+     * Creates a reaction record from the data in the given request or calls update if that emoji
+     * is already associated with a reaction on this post. Update may in turn even call delete, if
+     * that user was the last remaining user associated with the existing reaction.
      * @param request Request containing details
-     * @return Created record
+     * @return Created or updated record, null if an existing record was deleted
      */
     @Override
     public @NotNull Map<String, Object> create(
@@ -57,7 +59,7 @@ public class ReactionAdminApi
     }
 
     /**
-     * Delete the reaction with the given id.
+     * Deletes the reaction with the given id.
      * @param id ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
      * @throws EntityReferencedException if the object cannot be deleted because
@@ -70,20 +72,13 @@ public class ReactionAdminApi
         return reactionService.delete(id);
     }
 
-    /**
-     * Gets reaction record using the given ID.
-     * @param id ID of reaction
-     * @return Desired record
-     * @throws NoSuchObjectException if if the there is no record with that id
-     * TODO:maybe not needed
-     */
-    @Override
-    public @NotNull Map<String, Object> get(long id)
-            throws NoSuchObjectException {
-        Reaction reaction = this.reactionService.get(id);
-        return reactionDto().build(reaction);
-    }
-
+  /**
+   * Updates an existing user reaction, adding or removing a user (depending whether they were
+   * already associated with it) or calling delete on it if they were the last associated user.
+   * @param id of the reaction to be updated
+   * @return updated reaction or null if it was deleted
+   * @throws NoSuchObjectException if the reaction doesn't exist
+   */
     @PutMapping("{id}/update-reaction")
     public @NotNull Map<String, Object> updateReaction(
         @PathVariable("id") long id)
@@ -92,6 +87,12 @@ public class ReactionAdminApi
         return reactionDto().build(reaction);
     }
 
+  /**
+   * Returns a list containing the reactions associated with a given chat post.
+   * @param chatPostId ID of parent record
+   * @return list of chat post's reactions, empty if there are none
+   * @throws NoSuchObjectException if the chat post doesn't exist
+   */
     public List<Map<String, Object>> list(long chatPostId)
         throws NoSuchObjectException {
         List<Reaction> reactionList = reactionService.list(chatPostId);

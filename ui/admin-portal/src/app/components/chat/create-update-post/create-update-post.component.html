@@ -27,10 +27,10 @@
         </button>
 
         <button
-          id="emojiButton"
+          id="emojiBtn"
           [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-selected'"
           (click)="clickEmojiButton()">
-          <i class="fa-regular fa-face-smile" id="emojiIcon"></i>
+          <i class="fa-regular fa-face-smile" id="emojiBtnIcon"></i>
         </button>
 
         <emoji-mart
@@ -39,11 +39,11 @@
           (emojiClick)="addEmoji($event)"
           emoji="point_up"
           title="Add emoji...&nbsp;&nbsp;👍"
-          autoFocus="true"
+          [autoFocus]="true"
           [perLine]="8"
           [sheetSize]="32"
+          [emojisToShowFilter]="emojisToShowFilter"
         ></emoji-mart>
-
       </div>
     </quill-editor>
   </div>

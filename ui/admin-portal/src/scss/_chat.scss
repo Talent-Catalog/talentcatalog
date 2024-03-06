@@ -15,7 +15,6 @@
  */
 
 @import "~src/scss/variables";
-@import "../app/components/chat/view-post/view-post.component.scss";
 
 #posts {
   overflow: scroll;
@@ -39,8 +38,6 @@
   color: $accent1;
 }
 
-//TODO put in components folder?
-
 .content {
   margin-top: 0.2em;
   margin-bottom: 0;
@@ -57,29 +54,4 @@
 button.custom-quill-btn {
   color: #444;
   padding-top: 0 !important;
-}
-
-button.custom-emoji-btn {
-  color: #444 !important;
-  padding-top: 1px !important;
-}
-
-button.custom-emoji-btn:hover {
-  color: #0066cc !important;
-  padding-top: 1px !important;
-}
-
-button.custom-emoji-btn-selected {
-  color: #0066cc !important;
-  padding-top: 1px !important;
-}
-
-emoji-mart#editorPicker {
-  position: absolute;
-  top: -420px;
-  left: -40px;
-}
-
-#quillToolbar {
-  position: relative;
 }

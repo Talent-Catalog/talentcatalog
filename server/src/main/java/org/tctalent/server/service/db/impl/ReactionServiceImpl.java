@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Reaction;
@@ -47,19 +46,11 @@ public class ReactionServiceImpl implements ReactionService {
     private final ChatPostService chatPostService;
 
     @Override
-    public Reaction get(long reactionId)
-            throws NoSuchObjectException {
-
-        return reactionRepository.findById(reactionId)
-                .orElseThrow(() -> new NoSuchObjectException(Reaction.class, reactionId));
-    }
-
-    @Override
     public Reaction create(
             long chatPostId, CreateReactionRequest request)
             throws NoSuchObjectException {
 
-        // If user selected emoji matching existing reaction, divert to update()
+        // If user selected emoji matching existing reaction, call update and return updated record.
         Optional<Reaction> matchingReaction =
             reactionRepository.findByEmojiAndChatPostId(request.getEmoji(), chatPostId);
 
@@ -67,7 +58,7 @@ public class ReactionServiceImpl implements ReactionService {
             return updateReaction(matchingReaction.get().getId());
         }
 
-        // Otherwise, create a new reaction for the given emoji
+        // Otherwise, create a new reaction for the given emoji.
         Reaction reaction = new Reaction();
         reaction.setUsers(Collections.singleton(userService.getLoggedInUser()));
         reaction.setEmoji(request.getEmoji());
@@ -78,7 +69,7 @@ public class ReactionServiceImpl implements ReactionService {
 
     @Override
     public boolean delete(long reactionId)
-            throws EntityReferencedException, InvalidRequestException {
+            throws InvalidRequestException {
         reactionRepository.deleteById(reactionId);
         return true;
     }
@@ -89,17 +80,21 @@ public class ReactionServiceImpl implements ReactionService {
         final User loggedInUser = userService.getLoggedInUser();
         Reaction reaction = reactionRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Reaction.class, id));
+        // Check if user was already associated with the reaction
         Set<User> users = reaction.getUsers();
         if(users.contains(loggedInUser)) {
+            // Delete the reaction if they were the only associated user
             if(users.size() == 1) {
                 delete(id);
                 return null;
             } else {
+                // Remove them if there are other users associated with it
                 users.remove(loggedInUser);
                 reaction.setUsers(users);
                 return reactionRepository.save(reaction);
             }
         } else {
+            // If they were not associated with it already, add them
             users.add(loggedInUser);
             return reactionRepository.save(reaction);
         }
@@ -112,6 +107,6 @@ public class ReactionServiceImpl implements ReactionService {
             reactionRepository.findBychatPostId(chatPostId)
                 .orElseThrow(() -> new NoSuchObjectException(Reaction.class, chatPostId));
         return reactionList;
-    };
+    }
 
 }
