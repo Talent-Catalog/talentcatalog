@@ -201,7 +201,7 @@
       </ng-container>
 
       <!-- Chat including source partner and job creator-->
-      <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible">
+      <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible && cvReviewStageOrMore()">
         <a ngbNavLink [title]="'Chat ' + candidateRecruitingChat?.id">{{candidateRecruitingTabTitle}}
           <app-chat-read-status *ngIf="candidateRecruitingChat"
             [chats]="[candidateRecruitingChat]"
