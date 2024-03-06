@@ -37,7 +37,7 @@ export class ConfirmContactComponent implements OnInit {
       let dobString = dateString(this.candidate.dob);
 
       const dobDate = new Date(this.candidate.dob);
-      if (!isNaN(dobDate.getTime())) { // Checks if the date is valid
+      if (!Number.isNaN(dobDate.getTime())) { // Checks if the date is valid
         dobString += ' (Age ' + this.calculateAge(dobDate) + ')';
       }
       return dobString;
