@@ -141,10 +141,11 @@ server:
 #  todo Unused?
   url: https://tctalent.org
 web:
-  #  todo Unused?
+  # Used in EmailHelper
   portal: https://tctalent.org/candidate-portal
 
-  # This is used in SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
+  # This is used in EmailHelper
+  # and SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
   admin: https://tctalent.org/admin-portal
 
 flyway:
