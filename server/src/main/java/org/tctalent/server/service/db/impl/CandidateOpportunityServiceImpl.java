@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -76,16 +77,19 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
+@RequiredArgsConstructor
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateService candidateService;
+    private final EmailHelper emailHelper;
     private final JobChatService jobChatService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
@@ -93,23 +97,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final AuthService authService;
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
-
-
-    public CandidateOpportunityServiceImpl(
-            CandidateOpportunityRepository candidateOpportunityRepository,
-            CandidateService candidateService, JobChatService jobChatService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
-            UserService userService, AuthService authService, GoogleDriveConfig googleDriveConfig,
-        FileSystemService fileSystemService) {
-        this.candidateOpportunityRepository = candidateOpportunityRepository;
-        this.candidateService = candidateService;
-        this.jobChatService = jobChatService;
-        this.salesforceJobOppService = salesforceJobOppService;
-        this.salesforceService = salesforceService;
-        this.userService = userService;
-        this.authService = authService;
-        this.googleDriveConfig = googleDriveConfig;
-        this.fileSystemService = fileSystemService;
-    }
 
     /**
      * Creates or updates CandidateOpportunities associated with the given candidates going for
@@ -570,13 +557,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         Map<Long, Set<JobChat>> userNotifications = new HashMap<>();
 
-
         OffsetDateTime yesterday = OffsetDateTime.now().minusDays(30);
         List<Long> chatsWithNewPosts = jobChatService.findChatsWithPostsSinceDate(yesterday);
 
         List<JobChat> chats = jobChatService.findByIds(chatsWithNewPosts);
 
-        //TODO JC Extract all users who need to be notified, then loop through constructing their emails
+        //Note that this is Candidate user notification only.
+        //Extract all users who need to be notified of chats with new posts
         for (JobChat chat : chats) {
             JobChatType chatType = chat.getType();
             Candidate candidate = chat.getCandidate();
@@ -633,7 +620,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             log.info("Tell user " + userId + " about posts to chats " + s);
             User user = userService.getUser(userId);
             if (user != null) {
-//todo                emailHelper.sendWatcherEmail(user, userChats);
+                emailHelper.sendNewChatPostsForCandidateUserEmail(user, userChats);
             }
         }
     }

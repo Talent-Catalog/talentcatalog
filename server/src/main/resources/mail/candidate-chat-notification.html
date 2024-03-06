@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>New Chat Posts Notification</title>
+</head>
+<body>
+<div class="password-reset">
+    <p>Dear <span th:text="${displayName}"></span>,</p>
+
+    <p>
+        In the last 24 hours the Talent Catalog has detected that new posts have been added to
+        chats that you are subscribed to. Log in to the Talent Catalog to see the new posts.
+    </p>
+
+    <p>
+        Login by clicking <a th:href="${loginUrl}">here</a>
+    </p>
+
+    <p>
+        Your Talent Catalog username is <span th:text="${username}"></span>.
+    </p>
+    <p>
+        If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
+    </p>
+</div>
+</body>
+</html>

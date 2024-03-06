@@ -15,10 +15,10 @@
   -->
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Welcome to the Talent Beyond Boundaries Portal</title>
+    <title>Talent Catalog Portal</title>
 </head>
 <body>
    <div class="password-reset">
@@ -27,25 +27,23 @@
          <strong>Thank you for registering on the <a href="https://tctalent.org/">Talent Catalog</a></strong>
       </p>
 
-      <p>Your username is <span th:text="${username}"></span>.<br/>
-      If you forget your password, you can reset it <a th:href="${forgotPwdUrl}">here</a>.
+      <p>Your local Talent Catalog partner is <span th:text="${partner}"></span></p>
+
+      <p>
+         Login again by clicking <a th:href="${loginUrl}">here</a>
+      </p>
+
+      <p>
+         Your Talent Catalog username is <span th:text="${username}"></span>.
+      </p>
+
+      <p>
+         If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
       </p>
 
       <p>
          For the best chance of attracting an employer’s attention, continue to update your profile
          as you gain additional experience, education, or skills.
-      </p>
-      <p>
-         Be assured that we will not share your contact information with any other party without
-         your permission (see our
-         <a href="https://www.talentbeyondboundaries.org/privacy-and-data-protection-policy">
-            Privacy Policy</a>).
-      </p>
-
-      <p>
-         <a href="https://www.youtube.com/watch?v=YH_5_vBhiFk">Talent Beyond Boundaries’ mission</a>
-         is to help refugees and other forcibly displaced people find safety and security through
-         skilled migration.
       </p>
 
       <p>
@@ -62,20 +60,30 @@
 
       <p>
          If you manage to secure an international job offer
-         <em>independently of Talent Beyond Boundaries</em>,
+         <em>independently of <span th:text="${partner}"></span></em>,
          let us know, as we may be able to assist you with your visa application.
       </p>
 
-      <p>
-         In the meantime, we share frequent program updates via these channels:
-      </p>
-      <p><a href="https://www.talentbeyondboundaries.org/">Website</a></p>
-      <p><a href="https://www.facebook.com/TalentBeyondBoundaries/">Facebook</a></p>
-      <p><a href="https://www.youtube.com/channel/UCClJU4xIHJYjajl-o98c40A">YouTube</a></p>
 
-      <p>Sincerely,</p>
-      <p>Talent Beyond Boundaries<br/>
-      <a href="https://www.talentbeyondboundaries.org/">talentbeyondboundaries.org</a></p>
+      <p><strong>Privacy Policy:</strong></p>
+
+      <p>
+         Your contact information will not be shared with any other party without your permission.
+      </p>
+      <p><strong>Notes:</strong></p>
+      <p>
+         Please do not share your username or password.
+      </p>
+      <p>
+         Partners using the Talent Catalog will never ask you for any form of payment for
+         registering or to receive a job offer. We do not charge any money for our services.
+         If anyone asks you for money, that is a scam.
+         You should ignore the request and notify <span th:text="${partner}"></span> immediately.
+      <p>
+         Please contact your local partner, <span th:text="${partner}"></span>,
+         if you would like to delete your profile.
+      </p>
+
    </div>
 </body>
 </html>

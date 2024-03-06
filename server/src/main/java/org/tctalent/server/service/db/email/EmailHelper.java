@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.thymeleaf.TemplateEngine;
@@ -54,6 +55,7 @@ public class EmailHelper {
     public void sendRegistrationEmail(User user) throws EmailSendFailedException {
 
         String email = user.getEmail();
+        String partner = user.getPartner().getAbbreviation();
         String displayName = user.getDisplayName();
 
         String subject;
@@ -61,9 +63,10 @@ public class EmailHelper {
         String bodyHtml;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("username", user.getUsername());
-            ctx.setVariable("forgotPwdUrl", portalUrl + "/reset-password/");
+            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
             ctx.setVariable("year", currentYear());
 
             subject = "Talent Catalog - Thank you for your registration";
@@ -82,12 +85,14 @@ public class EmailHelper {
         String email = user.getEmail();
         String displayName = user.getDisplayName();
         String token = user.getResetToken();
+        String partner = user.getPartner().getAbbreviation();
 
         String subject;
         String bodyText;
         String bodyHtml;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
 
             String resetUrl = isAdminRequest ? adminUrl : portalUrl;
@@ -109,16 +114,18 @@ public class EmailHelper {
 
         String email = user.getEmail();
         String displayName = user.getDisplayName();
+        String partner = user.getPartner().getAbbreviation();
 
         String subject;
         String bodyText;
         String bodyHtml;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("candidateMessage", message);
             ctx.setVariable("username", user.getUsername());
-            ctx.setVariable("forgotPwdUrl", portalUrl + "/reset-password/");
+            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
             ctx.setVariable("year", currentYear());
 
             subject = "Talent Catalog - Please provide more registration details";
@@ -132,9 +139,10 @@ public class EmailHelper {
         }
     }
 
-    public void sendWatcherEmail(User user, Set<SavedSearch> savedSearches) {
+    public void sendNewChatPostsForCandidateUserEmail(User user, Set<JobChat> chats) {
 
         String email = user.getEmail();
+        String partner = user.getPartner().getAbbreviation();
         String displayName = user.getDisplayName();
 
         String subject;
@@ -142,6 +150,34 @@ public class EmailHelper {
         String bodyHtml;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("chats", chats);
+            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
+
+            subject = "Talent Catalog - New chat posts";
+            bodyText = textTemplateEngine.process("candidate-chat-notification", ctx);
+            bodyHtml = htmlTemplateEngine.process("candidate-chat-notification", ctx);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            log.error("error sending candidate chat notification email", e);
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    public void sendWatcherEmail(User user, Set<SavedSearch> savedSearches) {
+
+        String email = user.getEmail();
+        String partner = user.getPartner().getAbbreviation();
+        String displayName = user.getDisplayName();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("searches", savedSearches);
 

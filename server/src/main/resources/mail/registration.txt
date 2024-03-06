@@ -1,33 +1,29 @@
 Dear [(${displayName})],
 
 Thank you for registering on the Talent Catalog
-       
-Your username is [(${username})].
 
-If you forget your password, you can reset it here [(${forgotPwdUrl})] (copy paste to browser address bar).
- 
+Your local Talent Catalog partner is [(${partner})].
+
+Login again by going to [(${loginUrl})] in your browser.
+
+Your Talent Catalog username is [(${username})].
+
+If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
+
 For the best chance of attracting an employer’s attention, continue to update your profile as you gain additional experience, education, or skills.
 
-Be assured that we will not share your contact information with any other party without your permission (see our Privacy Policy https://www.talentbeyondboundaries.org/privacy-and-data-protection-policy).
-       
-Talent Beyond Boundaries’ mission (https://www.youtube.com/watch?v=YH_5_vBhiFk) is to help refugees and other forcibly displaced people find safety and security through skilled migration.
-       
-Please keep in mind that - while we want to help everyone - only a very small proportion of people listed in our Talent Catalog will ever be offered international employment. Thus you should not completely rely on this solution, and should continue to pursue other opportunities if/when they are available to you.
-       
-We will only contact you if an employer expresses interest in your profile.
-       
-If you manage to secure an international job offer independently of Talent Beyond Boundaries, let us know, as we may be able to assist you with your visa application.
-       
-In the meantime, we share frequent program updates via these channels:
+Please note that having an active profile does not mean that you will be matched with a job opportunity. You will only be contacted if an employer expresses interest in your profile.
 
-Website https://www.talentbeyondboundaries.org/
+Please continue to update your profile as you gain additional experience, education, or skills.
 
-Facebook https://www.facebook.com/TalentBeyondBoundaries/
+Privacy Policy:
 
-YouTube https://www.youtube.com/channel/UCClJU4xIHJYjajl-o98c40A
-       
-Sincerely,
+* Your contact information will not be shared with any other party without your permission.
 
-Talent Beyond Boundaries
+Notes:
 
-https://www.talentbeyondboundaries.org/
+* Please do not share your username or password.
+
+* Partners using the Talent Catalog will never ask you for any form of payment for registering or to receive a job offer. We do not charge any money for our services. If anyone asks you for money, that is a scam. You should ignore the request and notify <span th:text="${partner}"></span> immediately.
+
+* Please contact your local partner, [(${partner})], if you would like to delete your profile.
