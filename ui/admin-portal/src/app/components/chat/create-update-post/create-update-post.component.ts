@@ -52,9 +52,9 @@ export class CreateUpdatePostComponent implements OnInit {
     this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
       urlDto => {
         if (file.type.startsWith("image")) {
-          this.contentControl.patchValue(this.postForm.value.content + " <img src='" + urlDto.url + "'>")
+          this.contentControl.patchValue(this.postForm.value?.content + " <img alt='Uploaded image' src='" + urlDto.url + "'>")
         } else {
-          this.contentControl.patchValue(this.postForm.value.content + " <a href=" + urlDto.url + ">link to file</a>")
+          this.contentControl.patchValue(this.postForm.value?.content + " <a href=" + urlDto.url + ">link to file</a>")
         }
         this.saving = false;
       },
