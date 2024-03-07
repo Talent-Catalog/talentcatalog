@@ -49,13 +49,15 @@
                      [items]="hasPassportOptions" [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
         </div>
-        <div *ngIf="hasPassport === 'ValidPassport'">
+        <div *ngIf="hasPassport === 'ValidPassport' || hasPassport === 'ValidDocument'">
           <div class="mb-3">
-            <label class="form-label" [for]="'passportExp'+myRecordIndex">Passport Expiry Date?</label>
+            <label class="form-label" [for]="'passportExp'+myRecordIndex">
+              {{hasPassport === 'ValidPassport' ? 'Passport' : 'Document'}} Expiry Date?
+            </label>
             <app-date-picker [id]="'passportExp'+myRecordIndex" [control]="form.controls.citizenPassportExp" [allowPast]="false"></app-date-picker>
             <div *ngIf="dateDifference()"
                  class="alert alert-danger">
-              This passport has expired since entry.
+              This {{hasPassport === 'ValidPassport' ? 'passport' : 'document'}} has expired since entry.
             </div>
           </div>
         </div>
