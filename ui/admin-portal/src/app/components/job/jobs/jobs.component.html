@@ -14,9 +14,10 @@
     </div>
 
     <div *ngIf="searchBy === SearchOppsBy.mineAsJobCreator ||
-                searchBy === SearchOppsBy.mineAsSourcePartner" class="mt-2 mb-3">
+                searchBy === SearchOppsBy.mineAsSourcePartner ||
+                searchBy === SearchOppsBy.starredByMe" class="mt-2 mb-3">
       <div class="row">
-        <div class="col-md-2 me-md-5">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="myOppsOnlyTip"
                    for="myOppsOnly">{{myOppsOnlyLabel}}</label>
@@ -24,7 +25,7 @@
                    formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-3 me-md-2">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="showClosedOppsTip"
                    for="showClosedOpps">{{showClosedOppsLabel}}</label>
@@ -32,13 +33,29 @@
                    formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <div class="form-check">
             <label class="form-label" [title]="showInactiveOppsTip"
                    for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
             <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox"
                    formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">
           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-check">
+            <label class="form-label" [title]="withUnreadMessagesTip"
+                   for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>
+            <input *ngIf="selectedStages.length === 0" [title]="withUnreadMessagesTip" type="checkbox"
+                   formControlName="withUnreadMessages" id="withUnreadMessages" class="form-check-input">
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <button class="btn btn-link" (click)="refresh()">
+            <i class="fas fa-sync" title="Refresh data"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -111,6 +128,9 @@
         <tr *ngFor="let opp of results?.content" (click)="selectCurrent(opp)"
             [ngClass]="{'current': currentOpp?.id == opp.id}">
           <td title="{{opp.country?.name}}">
+            <app-chat-read-status
+              [chats]="getChats(opp)"
+            ></app-chat-read-status>
             {{opp.name| truncate: 36}}
             <a [routerLink]="['/job',opp.id]">
               <i class="fa-solid fa-briefcase" title="Job"></i>

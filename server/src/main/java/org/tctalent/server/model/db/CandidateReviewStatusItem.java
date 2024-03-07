@@ -16,10 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -28,6 +24,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This indicates whether a candidate who turns up in a saved search really belongs in that search.
@@ -37,7 +36,7 @@ import javax.persistence.Table;
  * saved search for bakers! You could just modify the candidate's profile to remove that movie
  * preference - but you may not want to do that. Another way is to note that the candidate does
  * not really belong in the "Baker" saved search. You can do that by creating one of these objects
- * - setting the reviewStatus to {@link ReviewStatus#rejected}. Then the candidate will not longer
+ * - setting the reviewStatus to {@link ReviewStatus#rejected}. Then the candidate will no longer
  * appear in the search (unless you explicitly ask to see candidates rejected from the search).
  */
 @Getter

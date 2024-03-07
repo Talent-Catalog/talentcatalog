@@ -12,13 +12,13 @@
     <div class="d-flex justify-content-between align-items-center">
       <h1 [ngClass]="{'fs-5 fw-bold mb-2':!showBreadcrumb, 'mb-3': showBreadcrumb}">{{opp.name}}
         <span class="small text-muted icon-padding">
-          <a [routerLink]="['/opp',opp.id]">
+          <a *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
             <i class="fas fa-expand link-info" title="Open"></i>
           </a>
           <a [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
             <i class="fas fa-user link-info" title="Candidate"></i>
           </a>
-          <a [routerLink]="['/opp',opp.id]">
+          <a *ngIf="!showBreadcrumb" [routerLink]="['/opp',opp.id]">
             <i class="fas fa-address-book link-info" title="Case (same as Open)"></i>
           </a>
           <a [routerLink]="['/job',opp.jobOpp.id]">
@@ -179,7 +179,7 @@
 
       <!-- Chat between source partner candidate-->
       <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
-        <a ngbNavLink>Chat with candidate
+        <a ngbNavLink [title]="'Chat ' + candidateChat?.id">Chat with candidate
           <app-chat-read-status *ngIf="candidateChat"
             [chats]="[candidateChat]"
             >
@@ -193,7 +193,7 @@
           </div>
 
           <app-view-chat-posts
-            [candidateOpp]="opp"
+            [candidateId]="opp.candidate.id"
             [jobChatType]="JobChatType.CandidateProspect"
           >
           </app-view-chat-posts>
@@ -201,8 +201,8 @@
       </ng-container>
 
       <!-- Chat including source partner and job creator-->
-      <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible">
-        <a ngbNavLink>{{candidateRecruitingTabTitle}}
+      <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible && cvReviewStageOrMore()">
+        <a ngbNavLink [title]="'Chat ' + candidateRecruitingChat?.id">{{candidateRecruitingTabTitle}}
           <app-chat-read-status *ngIf="candidateRecruitingChat"
             [chats]="[candidateRecruitingChat]"
           >
@@ -216,7 +216,8 @@
           </div>
 
           <app-view-chat-posts
-            [candidateOpp]="opp"
+            [candidateId]="opp.candidate.id"
+            [jobId]="opp.jobOpp.id"
             [jobChatType]="JobChatType.CandidateRecruiting"
           >
           </app-view-chat-posts>

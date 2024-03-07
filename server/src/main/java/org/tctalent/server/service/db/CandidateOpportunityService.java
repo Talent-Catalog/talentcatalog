@@ -18,6 +18,7 @@ package org.tctalent.server.service.db;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -100,6 +101,13 @@ public interface CandidateOpportunityService {
     @NonNull
     CandidateOpportunity loadCandidateOpportunity(Opportunity op) throws SalesforceException;
 
+    /**
+     * Returns the ids of chats not fully read by the currently logged in user, which are
+     * associated with candidate opportunities returned from the given search request.
+     * @param request - Search Request
+     * @return Ids of unread chats
+     */
+    List<Long> findUnreadChatsInOpps(SearchCandidateOpportunityRequest request);
 
     /**
      * Get candidate opportunities from a paged search request

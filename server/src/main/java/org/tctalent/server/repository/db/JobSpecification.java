@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Fetch;
@@ -27,15 +28,19 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.job.SearchJobRequest;
+import org.tctalent.server.util.SpecificationHelper;
 
 /**
  * Specification for sorting and searching {@link SalesforceJobOpp} entities
@@ -88,9 +93,6 @@ public class JobSpecification {
                                 builder.like(builder.lower(job.get("name")), likeMatchTerm)
                         ));
             }
-
-            //TODO CandidateOpportunitySpecification and JobSpecification are both opportunity
-            //specifications and duplicate a lot of code which should be refactored out.
 
             final Boolean showActiveStages = request.getActiveStages();
             final Boolean showClosed = request.getSfOppClosed();
@@ -151,6 +153,33 @@ public class JobSpecification {
                     published = builder.isNull(job.get("publishedDate"));
                 }
                 conjunction.getExpressions().add(published);
+            }
+
+            //UNREAD MESSAGES
+            if (request.getWithUnreadMessages() != null && request.getWithUnreadMessages()) {
+
+                Subquery<Long> numberOfChatsToRead = query.subquery(Long.class);
+                Root<JobChat> numberOfChatsToReadRoot = numberOfChatsToRead.from(JobChat.class);
+
+                final Predicate chatIsLinkedToJob = builder.equal(
+                    numberOfChatsToReadRoot.get("jobOpp").get("id"), job.get("id"));
+
+                //Create predicate so that we just look at chats directly associated with jobs
+                List<JobChatType> belongsToJob = Arrays.asList(
+                    JobChatType.JobCreatorAllSourcePartners, JobChatType.AllJobCandidates,
+                    JobChatType.JobCreatorSourcePartner);
+                final Predicate chatTypeBelongsToOpp = builder
+                    .in(numberOfChatsToReadRoot.get("type")).value(belongsToJob);
+
+                final Predicate chatBelongsToOpp = builder
+                    .and(chatIsLinkedToJob, chatTypeBelongsToOpp);
+
+
+                final Predicate oppHasUnreadChats = SpecificationHelper.hasUnreadChats(
+                    loggedInUser, query, builder, numberOfChatsToRead, numberOfChatsToReadRoot,
+                    chatBelongsToOpp);
+
+                conjunction.getExpressions().add(oppHasUnreadChats);
             }
 
             // (starred OR owned)

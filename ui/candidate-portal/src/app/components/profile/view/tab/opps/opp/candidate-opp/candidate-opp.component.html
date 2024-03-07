@@ -115,7 +115,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr (click)="setSelectedChatType(JobChatType.CandidateRecruiting)">
+                <tr *ngIf="showDestinationChat" (click)="setSelectedChatType(JobChatType.CandidateRecruiting)">
                   <td>
                     <div class="link underline">
                       <app-chat-read-status
@@ -126,7 +126,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr (click)="setSelectedChatType(JobChatType.AllJobCandidates)">
+                <tr *ngIf="showAllChat" (click)="setSelectedChatType(JobChatType.AllJobCandidates)">
                   <td>
                     <div class="link underline">
                     <app-chat-read-status

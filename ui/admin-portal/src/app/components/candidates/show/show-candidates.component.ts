@@ -232,7 +232,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectedCandidates = [];
 
-    this.statuses = [ReviewStatus[ReviewStatus.rejected], ReviewStatus[ReviewStatus.verified]];
+    this.statuses = [
+      ReviewStatus[ReviewStatus.rejected],
+      ReviewStatus[ReviewStatus.verified],
+      ReviewStatus[ReviewStatus.unverified]
+    ];
 
     //Different use of searchForm depending on whether saved search or saved list
 

@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db.email;
 
 import java.nio.charset.StandardCharsets;
-
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.email.EmailSender.EmailType;
 import org.thymeleaf.TemplateEngine;
@@ -76,7 +75,7 @@ public class EmailTester {
 
     private static ITemplateResolver textTemplateResolver() {
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setOrder(Integer.valueOf(2));
+        templateResolver.setOrder(2);
         templateResolver.setPrefix("mail/");
         templateResolver.setSuffix(".txt");
         templateResolver.setTemplateMode(TemplateMode.TEXT);
@@ -87,7 +86,7 @@ public class EmailTester {
 
     private static ITemplateResolver htmlTemplateResolver() {
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setOrder(Integer.valueOf(2));
+        templateResolver.setOrder(2);
         templateResolver.setPrefix("mail/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);

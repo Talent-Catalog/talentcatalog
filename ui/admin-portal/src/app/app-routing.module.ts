@@ -41,6 +41,10 @@ import {ManageChatsComponent} from "./components/chat/manage-chats/manage-chats.
 import {SearchHomeComponent} from "./components/search/search-home/search-home.component";
 import {JobHomeComponent} from "./components/job/job-home/job-home.component";
 import {ListHomeComponent} from "./components/list/list-home/list-home.component";
+import {ResetPasswordComponent} from "./components/account/reset-password/reset-password.component";
+import {
+  UserChangePasswordComponent
+} from "./components/account/user-change-password/user-change-password.component";
 
 const routes: Routes = [
   {
@@ -199,6 +203,22 @@ const routes: Routes = [
     data: {
       hideHeader: true,
       title: 'TC Login'
+    }
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    data: {
+      hideHeader: true,
+      title: 'TC Reset Password'
+    }
+  },
+  {
+    path: 'reset-password/:token',
+    component: UserChangePasswordComponent,
+    data: {
+      hideHeader: true,
+      title: 'TC Reset Password'
     }
   },
   {

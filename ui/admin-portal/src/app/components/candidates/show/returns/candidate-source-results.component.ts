@@ -48,6 +48,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges {
   pageSize: number;
   results: SearchResults<Candidate>;
   @Input() candidateSource: CandidateSource;
+  @Input() showSourceDetails = true;
   @Output() toggleStarred = new EventEmitter<CandidateSource>();
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
   @Output() copySource = new EventEmitter<CandidateSource>();
