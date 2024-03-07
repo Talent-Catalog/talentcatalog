@@ -18,7 +18,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
-import Quill from 'quill';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
@@ -34,8 +33,6 @@ export class CreateUpdatePostComponent implements OnInit {
   error: any;
   saving: any;
   postForm: FormGroup;
-  quillEditorRef: Quill;
-  moduleOptions = {};
 
   constructor(
     private fb: FormBuilder,
@@ -50,13 +47,6 @@ export class CreateUpdatePostComponent implements OnInit {
     });
   }
 
-  editorCreated(quill: Quill) {
-    this.quillEditorRef = quill;
-  }
-
-  // Note: The image handler must return a Promise<String> so we need to convert our http request observable to a promise.
-  // The doc suggests using the toPromise() method on the subscription, however this is to be deprecated in new versions of Rxjs.
-  // Alternative option is create a new promise and resolve with the url string.
   private doUpload(file: File) {
     const formData: FormData = new FormData();
     formData.append('file', file);
@@ -64,7 +54,7 @@ export class CreateUpdatePostComponent implements OnInit {
     this.error = null;
     this.saving = true;
     // Upload image to the job's Google Drive folder (subfolder: ChatUploads).
-    // The url string will then be returned through the Promise, and embedded into the editor.
+    // The url string will then be returned and embedded into the editor.
     this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
       urlDto => {
         if (file.type.startsWith("image")) {
