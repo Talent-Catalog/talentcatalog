@@ -60,7 +60,7 @@ export class CreateUpdatePostComponent implements OnInit {
         if (file.type.startsWith("image")) {
           this.contentControl.patchValue(this.postForm.value?.content + " <img alt='Uploaded image' src='" + urlDto.url + "'>")
         } else {
-          this.contentControl.patchValue(this.postForm.value?.content + " <a href=" + urlDto.url + ">link to file</a>")
+          this.contentControl.patchValue(this.postForm.value?.content + " <a target='_blank' href=" + urlDto.url + ">link to file</a>")
         }
         this.saving = false;
       },

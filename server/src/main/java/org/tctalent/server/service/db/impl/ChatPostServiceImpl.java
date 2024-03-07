@@ -137,7 +137,7 @@ public class ChatPostServiceImpl implements ChatPostService {
 
         GoogleFileSystemFile uploadedFile = uploadChatFile(chat, file);
 
-        return createEmbedDisplayLink(uploadedFile);
+        return createEmbedDisplayLink(uploadedFile, file);
     }
 
     private GoogleFileSystemFile uploadChatFile(JobChat chat, MultipartFile file)
@@ -186,17 +186,23 @@ public class ChatPostServiceImpl implements ChatPostService {
     }
 
     /**
-     * In order for the image to display via the html in the post or the editor, we need to alter
+     * In order for the file to display via the html in the post or the editor, we need to alter
      * the link. It needs to be a display link (not embed or preview).
      * See here: https://support.google.com/drive/thread/34363118?hl=en&msgid=34384934
+     * The link type differs for an image tag embed, or if it's a hyperlink to a file.
      * Update! There is a bug/change with Google that no longer is embedding images as before. The work around is setting
      * to a thumbnail but with a param to set width.
      * See here for workaround: https://support.google.com/sites/thread/253003338/images-from-google-drive-in-embedded-html-no-longer-working?hl=en
      * @param uploadedFile which we want to display in the html of the post
-     * @return
+     * @param file we uploaded that we want to get the content type from to determine which link we need.
+     * @return string url to embed and open file
      */
-    private String createEmbedDisplayLink(GoogleFileSystemFile uploadedFile) {
-        return "https://drive.google.com/thumbnail?sz=w1920&id=" +  uploadedFile.getId();
+    private String createEmbedDisplayLink(GoogleFileSystemFile uploadedFile, MultipartFile file) {
+        if (file.getContentType() != null && file.getContentType().startsWith("image")) {
+            return "https://drive.google.com/thumbnail?sz=w1920&id=" +  uploadedFile.getId();
+        } else {
+            return "https://drive.google.com/file/d/" +  uploadedFile.getId() + "/view?usp=sharing";
+        }
     }
 
     /**
