@@ -117,7 +117,7 @@ export class CreateUpdatePostComponent implements OnInit {
   }
 
   // Adds an emoji to the text editor and focuses the caret directly after it.
-  public addEmoji(event) {
+  public onSelectEmoji(event) {
     this.emojiPickerVisible = false;
     const index: number = this.quillEditorRef.selection.savedRange.index;
     this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
@@ -125,7 +125,7 @@ export class CreateUpdatePostComponent implements OnInit {
   }
 
   // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
-  public clickEmojiButton() {
+  public onClickEmojiBtn() {
     this.emojiPickerVisible = !this.emojiPickerVisible;
     if(!this.emojiPickerVisible) {
       const index: number = this.quillEditorRef.selection.savedRange.index;

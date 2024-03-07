@@ -29,19 +29,12 @@ public interface ReactionService {
      * was already associated with a reaction.
      * @param chatPostId id of the parent chat post
      * @param request {@link CreateReactionRequest} containing the emoji.
-     * @return the created or updated record, or null if a record was deleted
-     * @throws NoSuchObjectException if no chat post exists with the given id
+     * @return list of reactions belonging to given chat post
+     * @throws NoSuchObjectException if post or reaction (if update called) not found
+     * @throws InvalidRequestException if not authorised to delete (if delete method called)
      */
-    Reaction create(long chatPostId, CreateReactionRequest request)
+    List<Reaction> createReaction(long chatPostId, CreateReactionRequest request)
             throws NoSuchObjectException;
-
-    /**
-     * Deletes the reaction with the given id.
-     * @param id ID of record to be deleted
-     * @return True if record was deleted, false if it was not found.
-     * @throws InvalidRequestException if not authorized to delete this list.
-     */
-    boolean delete(long id) throws InvalidRequestException;
 
     /**
      * Updates the reaction associated with the ID provided:
@@ -49,16 +42,10 @@ public interface ReactionService {
      * if an associated user but not the only one, remove them and save the reaction;
      * if not an associated user, add them and save.
      * @param id ID of reaction
-     * @return reaction if updated, null if deleted
-     * @throws NoSuchObjectException if the there is no Reaction record with the given ID.
+     * @return list of reactions belonging to given chat post
+     * @throws NoSuchObjectException if the there is no Reaction record with the given ID
+     * @throws InvalidRequestException if not authorised to delete (if delete method called)
      */
-    Reaction updateReaction(long id) throws NoSuchObjectException;
+    List<Reaction> updateReaction(long id) throws NoSuchObjectException;
 
-    /**
-     * Provides a list of the reactions associated with a given post.
-     * @param chatPostId id of the chat post being queried
-     * @return list
-     * @throws NoSuchObjectException if chat post not found
-     */
-    List<Reaction> list(long chatPostId) throws NoSuchObjectException;
 }

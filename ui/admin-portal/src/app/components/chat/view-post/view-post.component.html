@@ -10,14 +10,14 @@
     id="reactionBtn"
     [ngClass]="!this.reactionPickerVisible ?
     'reaction-btn' : 'reaction-btn-selected'"
-    (click)="toggleReactionPicker()">
+    (click)="onClickReactionBtn()">
       <i id="reactionBtnSmiley" class="fa-regular fa-face-smile fa-xs">
       <i id="reactionBtnPlus" class="fa-solid fa-plus fa-2xs"></i></i>
     </button>
     <button
     class="update-reaction-btn"
     *ngFor="let reaction of post.reactions"
-    (click)="updateReaction(reaction)">
+    (click)="onSelectReaction(reaction)">
       <span [ngbTooltip]="reactionToolTip">
         {{reaction.emoji}} {{reaction.users.length}}
       </span>
@@ -36,7 +36,7 @@
   <emoji-mart
     id="reactionPicker"
     *ngIf="reactionPickerVisible"
-    (emojiClick)="emojiSelect($event)"
+    (emojiClick)="onSelectEmoji($event)"
     emoji="point_up"
     title="Add emoji...&nbsp;&nbsp;👍"
     [autoFocus]="true"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -46,62 +45,72 @@ public class ReactionServiceImpl implements ReactionService {
     private final ChatPostService chatPostService;
 
     @Override
-    public Reaction create(
-            long chatPostId, CreateReactionRequest request)
-            throws NoSuchObjectException {
+    public List<Reaction> createReaction(long chatPostId, CreateReactionRequest request)
+            throws NoSuchObjectException, InvalidRequestException {
 
         // If user selected emoji matching existing reaction, call update and return updated record.
         Optional<Reaction> matchingReaction =
             reactionRepository.findByEmojiAndChatPostId(request.getEmoji(), chatPostId);
 
         if (matchingReaction.isPresent()) {
-            return updateReaction(matchingReaction.get().getId());
+            updateReaction(matchingReaction.get().getId());
+        } else {
+            // Otherwise, create a new reaction for the given emoji.
+            Reaction reaction = new Reaction();
+            reaction.setUsers(Collections.singleton(userService.getLoggedInUser()));
+            reaction.setEmoji(request.getEmoji());
+            reaction.setChatPost(chatPostService.getChatPost(chatPostId));
+
+            reactionRepository.save(reaction);
         }
-
-        // Otherwise, create a new reaction for the given emoji.
-        Reaction reaction = new Reaction();
-        reaction.setUsers(Collections.singleton(userService.getLoggedInUser()));
-        reaction.setEmoji(request.getEmoji());
-        reaction.setChatPost(chatPostService.getChatPost(chatPostId));
-
-        return reactionRepository.save(reaction);
+        return listReactions(chatPostId);
     }
 
-    @Override
-    public boolean delete(long reactionId)
+    /**
+     * Deletes the reaction with the given id.
+     * @param id ID of record to be deleted
+     * @throws InvalidRequestException if not authorized to delete this reaction
+     */
+    private void deleteReaction(long id)
             throws InvalidRequestException {
-        reactionRepository.deleteById(reactionId);
-        return true;
+        reactionRepository.deleteById(id);
     }
 
     @Override
-    public @Nullable Reaction updateReaction(long id)
-            throws NoSuchObjectException {
+    public List<Reaction> updateReaction(long id)
+            throws NoSuchObjectException, InvalidRequestException {
         final User loggedInUser = userService.getLoggedInUser();
         Reaction reaction = reactionRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Reaction.class, id));
-        // Check if user was already associated with the reaction
+
+        // Check if user already associated with the reaction
         Set<User> users = reaction.getUsers();
         if(users.contains(loggedInUser)) {
             // Delete the reaction if they were the only associated user
             if(users.size() == 1) {
-                delete(id);
-                return null;
+                deleteReaction(id);
             } else {
                 // Remove them if there are other users associated with it
                 users.remove(loggedInUser);
                 reaction.setUsers(users);
-                return reactionRepository.save(reaction);
+                reactionRepository.save(reaction);
             }
         } else {
             // If they were not associated with it already, add them
             users.add(loggedInUser);
-            return reactionRepository.save(reaction);
+            reactionRepository.save(reaction);
         }
+
+        return listReactions(reaction.getChatPost().getId());
     }
 
-    @Override
-    public List<Reaction> list(long chatPostId)
+    /**
+     * Provides a list of the reactions associated with a given post.
+     * @param chatPostId id of the chat post being queried
+     * @return list of chat posts associated reactions
+     * @throws NoSuchObjectException if chat post not found
+     */
+    private List<Reaction> listReactions(long chatPostId)
         throws NoSuchObjectException {
         List<Reaction> reactionList =
             reactionRepository.findBychatPostId(chatPostId)

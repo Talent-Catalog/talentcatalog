@@ -80,7 +80,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
   }
 
   // Toggles the picker on and off — if on, focuses the scroll bar on its center
-  public toggleReactionPicker() {
+  public onClickReactionBtn() {
     this.reactionPickerVisible = !this.reactionPickerVisible;
     if(this.reactionPickerVisible) {
       this.pickerSpan.nativeElement.scrollIntoView({block: "center", behavior: "smooth"})
@@ -89,26 +89,24 @@ export class ViewPostComponent implements OnInit, OnChanges {
 
   // This method may also update or even delete a reaction, if the user submits an emoji already
   // associated with the post. This behaviour is managed by ReactionService on the server.
-  public emojiSelect(event) {
+  public onSelectEmoji(event) {
     this.reactionPickerVisible = false;
     const request: CreateReactionRequest = {
       emoji: `${event.emoji.native}`
     }
-    this.reactionService.create(this.post.id, request).subscribe({
-      complete: () =>
-          this.reactionService.list(this.post.id)
-          .subscribe(updatedReactions =>
-              this.post.reactions = updatedReactions
-          )})
+    this.reactionService.createReaction(this.post.id, request)
+                          .subscribe({
+                            next: (updatedReactions) =>
+                            this.post.reactions = updatedReactions
+                          })
   }
 
-  public updateReaction(reaction: Reaction) {
-    this.reactionService.update(reaction.id).subscribe({
-      complete: () =>
-          this.reactionService.list(this.post.id)
-          .subscribe(updatedReactions =>
-              this.post.reactions = updatedReactions
-          )})
+  public onSelectReaction(reaction: Reaction) {
+    this.reactionService.updateReaction(reaction.id)
+                          .subscribe({
+                            next: (updatedReactions) =>
+                            this.post.reactions = updatedReactions
+                          })
   }
 
   // These emojis didn't work for some reason — this function excludes them from the picker.

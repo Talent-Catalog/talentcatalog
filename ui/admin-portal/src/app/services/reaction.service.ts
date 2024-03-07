@@ -32,21 +32,14 @@ export class ReactionService {
 
     constructor(private http: HttpClient) { }
 
-    create(chatPostId: number, request: CreateReactionRequest):
-        Observable<Reaction> {
-        return this.http.post<Reaction>(
+    createReaction(chatPostId: number, request: CreateReactionRequest):
+        Observable<Reaction[]> {
+        return this.http.post<Reaction[]>(
             `${this.apiUrl}/${chatPostId}`, request);
     }
 
-    delete(id: number): Observable<boolean> {
-        return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+    updateReaction(id: number): Observable<Reaction[]> {
+        return this.http.put<Reaction[]>(`${this.apiUrl}/${id}/update-reaction`, null);
     }
 
-    update(id: number): Observable<Reaction> {
-        return this.http.put<Reaction>(`${this.apiUrl}/${id}/update-reaction`, null);
-    }
-
-    list(chatPostId: number): Observable<Reaction[]> {
-        return this.http.get<Reaction[]>(`${this.apiUrl}/${chatPostId}/list/`);
-    }
 }
