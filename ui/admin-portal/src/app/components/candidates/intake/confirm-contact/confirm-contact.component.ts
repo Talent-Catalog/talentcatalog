@@ -33,9 +33,24 @@ export class ConfirmContactComponent implements OnInit {
   }
 
   get date(): string {
-    if (this.candidate?.dob) {
-      return dateString(this.candidate.dob)
+    if (!this.candidate?.dob) {
+      return 'Date of birth not provided';
     }
+
+    let dobString = dateString(this.candidate.dob);
+    const dobDate = new Date(this.candidate.dob);
+    if (!Number.isNaN(dobDate.getTime())) { // Checks if the date is valid
+      dobString += ' (Age ' + this.calculateAge(dobDate) + ')';
+    }
+    return dobString;
+  }
+
+  get gender(): string {
+    const gender = this.candidate?.gender?.trim();
+    if (!gender) {
+      return 'No gender specified';
+    }
+    return this.capitaliseFirstLetter(gender);
   }
 
   candidateSurveyAnswer(): string {
@@ -44,6 +59,28 @@ export class ConfirmContactComponent implements OnInit {
       answer += ' ' + this.candidate.surveyComment;
     }
     return answer;
+  }
+
+  private calculateAge(dob: Date): number {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDate();
+
+    const birthYear = dob.getFullYear();
+    const birthMonth = dob.getMonth();
+    const birthDay = dob.getDate();
+
+    let age = currentYear - birthYear;
+    if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+      age--;
+    }
+
+    return age;
+  }
+
+  private capitaliseFirstLetter(text: string): string {
+    return text && text.length > 0 ? text.charAt(0).toUpperCase() + text.slice(1) : '';
   }
 
 }
