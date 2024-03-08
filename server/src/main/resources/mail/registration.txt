@@ -2,9 +2,9 @@ Dear [(${displayName})],
 
 Thank you for registering on the Talent Catalog
 
-Your local Talent Catalog partner is [(${partner})].
+Your local Talent Catalog partner is [(${partner.getAbbreviation()})] [(${partner.getWebsiteUrl()})].
 
-Login again by going to [(${loginUrl})] in your browser.
+You can log in again by going to [(${loginUrl})] in your browser.
 
 Your Talent Catalog username is [(${username})].
 
@@ -26,4 +26,4 @@ Notes:
 
 * Partners using the Talent Catalog will never ask you for any form of payment for registering or to receive a job offer. We do not charge any money for our services. If anyone asks you for money, that is a scam. You should ignore the request and notify <span th:text="${partner}"></span> immediately.
 
-* Please contact your local partner, [(${partner})], if you would like to delete your profile.
+* Please contact your local partner, [(${partner.getAbbreviation()})], if you would like to delete your profile.

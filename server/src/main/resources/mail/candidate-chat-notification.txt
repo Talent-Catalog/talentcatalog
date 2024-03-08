@@ -1,8 +1,10 @@
 Dear [(${displayName})],
 
-In the last 24 hours the Talent Catalog has detected that new posts have been added to chats that you are subscribed to. Log in to the Talent Catalog to see the new posts.
+In the last 24 hours the Talent Catalog has detected that new posts have been added to chats that you are subscribed to.
 
-Login by going to [(${loginUrl})] in your browser.
+Log in to the Talent Catalog to see the new posts.
+
+You can log in by going to [(${loginUrl})] in your browser.
 
 Your Talent Catalog username is [(${username})].
 

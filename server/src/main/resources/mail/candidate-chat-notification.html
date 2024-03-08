@@ -5,18 +5,20 @@
     <title>New Chat Posts Notification</title>
 </head>
 <body>
-<div class="password-reset">
+<div>
     <p>Dear <span th:text="${displayName}"></span>,</p>
 
     <p>
         In the last 24 hours the Talent Catalog has detected that new posts have been added to
-        chats that you are subscribed to. Log in to the Talent Catalog to see the new posts.
+        chats that you are subscribed to.
     </p>
-
     <p>
-        Login by clicking <a th:href="${loginUrl}">here</a>
+        Log in to the Talent Catalog to see the new posts.
     </p>
-
+    <p>
+        You can log in by clicking <a th:href="${loginUrl}">here</a>
+        or by going to <span th:text="${loginUrl}"></span> in your browser.
+    </p>
     <p>
         Your Talent Catalog username is <span th:text="${username}"></span>.
     </p>

@@ -2,7 +2,7 @@ Dear [(${displayName})],
 
 Thank you for registering with the Talent Catalog.
 
-Your local Talent Catalog partner is [(${partner})].
+Your local Talent Catalog partner is [(${partner.getAbbreviation()})] [(${partner.getWebsiteUrl()})].
 
 Our team has reviewed your profile and determined that it is incomplete. This means your profile cannot currently be considered for international employment opportunities until you have added the missing information. Please look back through your profile and add additional information. Remember to "submit" your profile at the end.
 
@@ -26,6 +26,6 @@ Notes:
 
 * Please do not share your username or password.
 
-* Partners using the Talent Catalog will never ask you for any form of payment for registering or to receive a job offer. We do not charge any money for our services. If anyone asks you for money, that is a scam. You should ignore the request and notify <span th:text="${partner}"></span> immediately.
+* Partners using the Talent Catalog will never ask you for any form of payment for registering or to receive a job offer. We do not charge any money for our services. If anyone asks you for money, that is a scam. You should ignore the request and notify <span th:text="${partner.getAbbreviation()}"></span> immediately.
 
-* Please contact your local partner, [(${partner})], if you would like to delete your profile.
+* Please contact your local partner, [(${partner.getAbbreviation()})], if you would like to delete your profile.

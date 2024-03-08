@@ -27,6 +27,7 @@ import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -55,7 +56,7 @@ public class EmailHelper {
     public void sendRegistrationEmail(User user) throws EmailSendFailedException {
 
         String email = user.getEmail();
-        String partner = user.getPartner().getAbbreviation();
+        Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
         String subject;
@@ -85,7 +86,7 @@ public class EmailHelper {
         String email = user.getEmail();
         String displayName = user.getDisplayName();
         String token = user.getResetToken();
-        String partner = user.getPartner().getAbbreviation();
+        Partner partner = user.getPartner();
 
         String subject;
         String bodyText;
@@ -114,7 +115,7 @@ public class EmailHelper {
 
         String email = user.getEmail();
         String displayName = user.getDisplayName();
-        String partner = user.getPartner().getAbbreviation();
+        Partner partner = user.getPartner();
 
         String subject;
         String bodyText;
@@ -142,7 +143,7 @@ public class EmailHelper {
     public void sendNewChatPostsForCandidateUserEmail(User user, Set<JobChat> chats) {
 
         String email = user.getEmail();
-        String partner = user.getPartner().getAbbreviation();
+        Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
         String subject;
@@ -153,13 +154,19 @@ public class EmailHelper {
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("chats", chats);
-            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
+            ctx.setVariable("loginUrl", portalUrl);
+            ctx.setVariable("username", user.getUsername());
 
             subject = "Talent Catalog - New chat posts";
             bodyText = textTemplateEngine.process("candidate-chat-notification", ctx);
             bodyHtml = htmlTemplateEngine.process("candidate-chat-notification", ctx);
 
-            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+            log.info("Sending email to " + email);
+            log.info("Subject: " + subject);
+            log.info("Text\n" + bodyText);
+            log.info("Html\n" + bodyHtml);
+
+//todo             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
             log.error("error sending candidate chat notification email", e);
             throw new EmailSendFailedException(e);
@@ -169,7 +176,7 @@ public class EmailHelper {
     public void sendWatcherEmail(User user, Set<SavedSearch> savedSearches) {
 
         String email = user.getEmail();
-        String partner = user.getPartner().getAbbreviation();
+        Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
         String subject;

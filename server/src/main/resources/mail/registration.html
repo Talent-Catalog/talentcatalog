@@ -21,22 +21,24 @@
     <title>Talent Catalog Portal</title>
 </head>
 <body>
-   <div class="password-reset">
+   <div>
       <p>Dear <span th:text="${displayName}"></span>,</p>
       <p>
          <strong>Thank you for registering on the <a href="https://tctalent.org/">Talent Catalog</a></strong>
       </p>
 
-      <p>Your local Talent Catalog partner is <span th:text="${partner}"></span></p>
-
       <p>
-         Login again by clicking <a th:href="${loginUrl}">here</a>
+         Your local Talent Catalog partner is
+         <span th:text="${partner.getAbbreviation()} + ' ' + ${partner.getWebsiteUrl()}"></span>
       </p>
 
+      <p>
+         You can log in again by clicking <a th:href="${loginUrl}">here</a>
+         or by going to <span th:text="${loginUrl}"></span> in your browser.
+      </p>
       <p>
          Your Talent Catalog username is <span th:text="${username}"></span>.
       </p>
-
       <p>
          If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
       </p>
@@ -50,7 +52,7 @@
          Please keep in mind that - while we want to help everyone -
          <strong>only a very small proportion of people listed in our Talent Catalog will ever be
             offered international employment</strong>.
-         Thus you should not completely rely on this solution, and should continue to pursue other
+         So you should not completely rely on this solution, and should continue to pursue other
          opportunities if/when they are available to you.
       </p>
 
@@ -60,7 +62,7 @@
 
       <p>
          If you manage to secure an international job offer
-         <em>independently of <span th:text="${partner}"></span></em>,
+         <em>independently of <span th:text="${partner.getAbbreviation()}"></span></em>,
          let us know, as we may be able to assist you with your visa application.
       </p>
 
@@ -78,9 +80,9 @@
          Partners using the Talent Catalog will never ask you for any form of payment for
          registering or to receive a job offer. We do not charge any money for our services.
          If anyone asks you for money, that is a scam.
-         You should ignore the request and notify <span th:text="${partner}"></span> immediately.
+         You should ignore the request and notify <span th:text="${partner.getAbbreviation()}"></span> immediately.
       <p>
-         Please contact your local partner, <span th:text="${partner}"></span>,
+         Please contact your local partner, <span th:text="${partner.getAbbreviation()}"></span>,
          if you would like to delete your profile.
       </p>
 

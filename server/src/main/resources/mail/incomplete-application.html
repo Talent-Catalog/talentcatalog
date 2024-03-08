@@ -21,12 +21,15 @@
     <title>Talent Catalog Portal</title>
 </head>
 <body>
-<div class="password-reset">
+<div>
     <p>Dear <span th:text="${displayName}"></span>,</p>
     <p>
         <strong>Thank you for registering on the <a href="https://tctalent.org/">Talent Catalog</a></strong>
     </p>
-    <p>Your local Talent Catalog partner is <span th:text="${partner}"></span></p>
+    <p>
+        Your local Talent Catalog partner is
+        <span th:text="${partner.getAbbreviation()} + ${partner.getWebsiteUrl()}"></span>
+    </p>
 
     <p>Our team has reviewed your profile and determined that it is incomplete.
         This means your profile cannot currently be considered for international employment
@@ -36,10 +39,12 @@
 
     <p th:text="${candidateMessage}"></p>
 
-    <p>
-        Login again to complete your profile by clicking <a th:href="${loginUrl}">here</a>
-    </p>
 
+    <p>
+        Please log in again and update your application
+        by clicking <a th:href="${loginUrl}">here</a>
+        or by going to <span th:text="${loginUrl}"></span> in your browser.
+    </p>
     <p>
         Your Talent Catalog username is <span th:text="${username}"></span>.
     </p>
@@ -77,9 +82,9 @@
         Partners using the Talent Catalog will never ask you for any form of payment for
         registering or to receive a job offer. We do not charge any money for our services.
         If anyone asks you for money, that is a scam.
-        You should ignore the request and notify <span th:text="${partner}"></span> immediately.
+        You should ignore the request and notify <span th:text="${partner.getAbbreviation()}"></span> immediately.
     <p>
-    Please contact your local partner, <span th:text="${partner}"></span>,
+    Please contact your local partner, <span th:text="${partner.getAbbreviation()}"></span>,
     if you would like to delete your profile.
     </p>
 </div>
