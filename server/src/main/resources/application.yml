@@ -203,7 +203,7 @@ aws:
     secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
 #email:
-#   type: SMTP # STUB or SMTP
+#   type: STUB or SMTP
 #   host: smtp.gmail.com
 #   port: 587
 #   user: tbbtalent@talentbeyondboundaries.org
@@ -213,7 +213,7 @@ aws:
 #   testOverrideEmail: tbbtalent@talentbeyondboundaries.org
 
 email:
-  type: SMTP # STUB or SMTP
+  type: ${EMAIL_TYPE}:STUB
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
   user: ${EMAIL_USER:tbbtalent@talentbeyondboundaries.org}
