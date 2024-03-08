@@ -166,7 +166,7 @@ public class EmailHelper {
             log.info("Text\n" + bodyText);
             log.info("Html\n" + bodyHtml);
 
-//todo             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
             log.error("error sending candidate chat notification email", e);
             throw new EmailSendFailedException(e);
