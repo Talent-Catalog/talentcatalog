@@ -69,7 +69,7 @@ public class EmailSender {
     @Value("${email.password}")
     private String password;
     @Value("${email.authenticated}")
-    private Boolean authenticate;
+    private Boolean authenticated;
     @Value("${email.alertEmail}")
     private String alertEmail;
     @Value("${email.defaultEmail}")
@@ -200,9 +200,9 @@ public class EmailSender {
             properties.put("mail.smtp.host", host);
             properties.put("mail.smtp.username", user);
             properties.put("mail.debug", "false");
-            properties.put("mail.smtp.auth", authenticate != null ? authenticate.toString() : "false");
-            properties.put("mail.smtp.starttls.enable", authenticate != null ? authenticate : false);
-            if (authenticate != null && authenticate) {
+            properties.put("mail.smtp.auth", authenticated != null ? authenticated.toString() : "false");
+            properties.put("mail.smtp.starttls.enable", authenticated != null ? authenticated : false);
+            if (authenticated != null && authenticated) {
                 Authenticator authenticator = new Authenticator() {
                     @Override
                     protected PasswordAuthentication getPasswordAuthentication() {

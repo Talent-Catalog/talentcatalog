@@ -202,7 +202,8 @@ aws:
 #email:
 #   type: STUB or SMTP
 #   user - email login user
-#   authenticated: true
+#   authenticated - turns on email authentication (mail.smtp.auth)
+#   alertEmail - this is the email that alert messages is sent to
 #   defaultEmail - this is set as the from email on sent emails
 #   testOverrideEmail - if set, all emails will be sent to this email address - no matter what the
 #                       "to" email is.
