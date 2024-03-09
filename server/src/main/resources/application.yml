@@ -201,13 +201,11 @@ aws:
 
 #email:
 #   type: STUB or SMTP
-#   host: smtp.gmail.com
-#   port: 587
-#   user: tbbtalent@talentbeyondboundaries.org
-#   password: //check passpack
+#   user - email login user
 #   authenticated: true
-#   defaultEmail: tbbtalent@talentbeyondboundaries.org
-#   testOverrideEmail: tbbtalent@talentbeyondboundaries.org
+#   defaultEmail - this is set as the from email on sent emails
+#   testOverrideEmail - if set, all emails will be sent to this email address - no matter what the
+#                       "to" email is.
 
 email:
   type: ${EMAIL_TYPE:STUB}
