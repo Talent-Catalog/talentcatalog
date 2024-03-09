@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
+import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
@@ -81,7 +82,7 @@ public class EmailHelper {
         }
     }
 
-    public void sendResetPasswordEmail(User user, boolean isAdminRequest) throws EmailSendFailedException {
+    public void sendResetPasswordEmail(User user) throws EmailSendFailedException {
 
         String email = user.getEmail();
         String displayName = user.getDisplayName();
@@ -96,7 +97,7 @@ public class EmailHelper {
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
 
-            String resetUrl = isAdminRequest ? adminUrl : portalUrl;
+            String resetUrl = user.getRole() == Role.user ? portalUrl : adminUrl;
             ctx.setVariable("resetUrl", resetUrl + "/reset-password/" + token);
             ctx.setVariable("year", currentYear());
 

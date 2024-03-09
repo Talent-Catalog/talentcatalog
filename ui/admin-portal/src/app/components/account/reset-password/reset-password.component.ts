@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-reset-password',
@@ -15,11 +16,14 @@ export class ResetPasswordComponent implements OnInit {
   resetPasswordForm: FormGroup;
   updated: boolean;
 
+  backgroundImage: string;
+
   constructor(private fb: FormBuilder,
               private userService: UserService) {
   }
 
   ngOnInit(): void {
+    this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
     this.loading = false;
     this.error = null;
     this.updated = false;
@@ -48,7 +52,6 @@ export class ResetPasswordComponent implements OnInit {
 
     const req: SendResetPasswordEmailRequest = new SendResetPasswordEmailRequest();
     req.email = this.email;
-    req.isAdmin = true;
 
     this.userService.sendResetPassword(req).subscribe(
         () => {

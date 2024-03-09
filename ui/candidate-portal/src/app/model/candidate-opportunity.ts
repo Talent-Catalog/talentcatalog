@@ -18,6 +18,7 @@ import {PagedSearchRequest} from "./base";
 import {ShortJob} from "./job";
 import {Opportunity, OpportunityOwnershipType} from "./opportunity";
 import {ShortCandidate} from "./candidate";
+import {getOrdinal} from "../components/util/enum";
 
 export function isCandidateOpportunity(opp: Opportunity): opp is CandidateOpportunity {
   return opp ? 'jobOpp' in opp : false;
@@ -86,4 +87,10 @@ export class SearchOpportunityRequest extends PagedSearchRequest {
   destinationIds?: number[];
   withUnreadMessages?: boolean;
 
+}
+
+export function isOppStageGreaterThanOrEqualTo(selectedOppStageKey: string, desiredStageKey: string) {
+  let oppOrdinal: number = getOrdinal(CandidateOpportunityStage, selectedOppStageKey);
+  let desiredOrdinal: number = getOrdinal(CandidateOpportunityStage, desiredStageKey);
+  return oppOrdinal >= desiredOrdinal;
 }
