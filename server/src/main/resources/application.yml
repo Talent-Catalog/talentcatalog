@@ -5,9 +5,6 @@ tbb:
   destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
   partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
 
-  alert:
-    email: alert@talentbeyondboundaries.org
-
 logging:
   level:
     reactor:
@@ -213,16 +210,17 @@ aws:
 #   testOverrideEmail: tbbtalent@talentbeyondboundaries.org
 
 email:
-  type: ${EMAIL_TYPE}:STUB
+  type: ${EMAIL_TYPE:STUB}
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  user: ${EMAIL_USER:tbbtalent@talentbeyondboundaries.org}
+  user: ${EMAIL_USER:tc@talentcatalog.net}
 
-  # For dev this should be set in tbb-secrets
+  # For dev this should be set in tc-secrets
   password: ${EMAIL_PASSWORD:}
   authenticated: true
-  defaultEmail: ${EMAIL_DEFAULTEMAIL:tbbtalent@talentbeyondboundaries.org}
-  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:tbbtalent@talentbeyondboundaries.org}
+  alertEmail: alert@talentcatalog.net
+  defaultEmail: ${EMAIL_DEFAULTEMAIL:tc@talentcatalog.net}
+  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:}
 
 
 #Support for in context language translation
