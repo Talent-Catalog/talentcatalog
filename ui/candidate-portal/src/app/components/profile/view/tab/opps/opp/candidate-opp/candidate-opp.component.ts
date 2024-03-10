@@ -8,10 +8,13 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {Candidate} from "../../../../../../../model/candidate";
-import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  isOppStageGreaterThanOrEqualTo
+} from "../../../../../../../model/candidate-opportunity";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../../../model/chat";
 import {ChatService} from "../../../../../../../services/chat.service";
-import {forkJoin} from "rxjs";
+import {forkJoin, of} from "rxjs";
 
 const STAGE_TRANSLATION_KEY_ROOT = 'CASE-STAGE.';
 
@@ -31,6 +34,8 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   sourceChat: JobChat;
   selectedChat: JobChat;
   selectedChatType: JobChatType;
+  showDestinationChat: boolean;
+  showAllChat: boolean;
 
   constructor(
     private chatService: ChatService
@@ -50,15 +55,19 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   }
 
   private fetchJobChats() {
+    const sourceChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateProspect,
+      candidateId: this.candidate.id
+    }
+    // Only want to show destination chat if candidate is at or further than the CV Review stage.
+    this.showDestinationChat = isOppStageGreaterThanOrEqualTo(this.selectedOpp?.stage, "cvReview")
     const destinationChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateRecruiting,
       candidateId: this.candidate.id,
       jobId: this.selectedOpp?.jobOpp?.id
     }
-    const sourceChatRequest: CreateChatRequest = {
-      type: JobChatType.CandidateProspect,
-      candidateId: this.candidate.id
-    }
+    // Only want to show all job candidates chat if candidate is at or further than the Offer stage.
+    this.showAllChat = isOppStageGreaterThanOrEqualTo(this.selectedOpp?.stage, "offer");
     const allJobCandidatesChatRequest: CreateChatRequest = {
       type: JobChatType.AllJobCandidates,
       jobId: this.selectedOpp?.jobOpp?.id
@@ -66,8 +75,8 @@ export class CandidateOppComponent implements OnInit, OnChanges {
 
     forkJoin( {
       'sourceChat': this.chatService.getOrCreate(sourceChatRequest),
-      'destinationChat': this.chatService.getOrCreate(destinationChatRequest),
-      'allJobCandidatesChat': this.chatService.getOrCreate(allJobCandidatesChatRequest),
+      'destinationChat': this.showDestinationChat ? this.chatService.getOrCreate(destinationChatRequest) : of(null),
+      'allJobCandidatesChat': this.showAllChat? this.chatService.getOrCreate(allJobCandidatesChatRequest) : of(null),
     }).subscribe(
       results => {
         this.loading = false;

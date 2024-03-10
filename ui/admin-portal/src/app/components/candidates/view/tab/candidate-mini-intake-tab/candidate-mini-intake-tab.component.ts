@@ -17,19 +17,26 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {
+  OldIntakeInputComponent
+} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
 import {OccupationService} from "../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
+import {AuthorizationService} from "../../../../../services/authorization.service";
+import {EditCandidateContactComponent} from "../../contact/edit/edit-candidate-contact.component";
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
@@ -47,6 +54,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
               noteService: CandidateNoteService,
               authenticationService: AuthenticationService,
               modalService: NgbModal,
+              private authorizationService: AuthorizationService,
               private candidateCitizenshipService: CandidateCitizenshipService,
               private candidateExamService: CandidateExamService) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService, modalService)
@@ -108,4 +116,22 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
+  isEditable(): boolean {
+    return this.authorizationService.isEditableCandidate(this.candidate);
+  }
+
+  editContactDetails(event: MouseEvent) {
+    event.stopPropagation(); // Stop the click event from opening/closing the accordion
+    const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    editCandidateModal.componentInstance.candidateId = this.candidate.id;
+
+    editCandidateModal.result
+    .then((candidate) => this.candidate = candidate)
+    .catch(() => { /* Isn't possible */ });
+
+  }
 }
