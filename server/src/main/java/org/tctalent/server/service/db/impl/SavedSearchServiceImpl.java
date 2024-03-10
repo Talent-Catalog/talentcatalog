@@ -254,7 +254,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //If user filters on unverified statuses we bypass performing a full search
         //Simply return candidates that the user has already reviewed as verified and/or rejected
-        if (request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
+        if (request.getReviewStatusFilter() != null &&
+            request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
             return reviewedCandidates(searchRequest);
         }
 
