@@ -126,7 +126,7 @@ public interface JobChatService {
     /**
      * Find chats which have posts where the date of the last post is greater than a given date.
      * <p/>
-     * Note that this is in this service rather that JobChatService to avoid circular dependency.
+     * Note that this is in this service rather than ChatPostService to avoid circular dependency.
      * Implementing this method requires a lot of candidate opportunity processing to determine
      * which chats are associated with logged in user.
      *
