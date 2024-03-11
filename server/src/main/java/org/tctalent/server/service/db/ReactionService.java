@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
+import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Reaction;
@@ -32,9 +33,10 @@ public interface ReactionService {
      * @return list of reactions belonging to given chat post
      * @throws NoSuchObjectException if post or reaction (if update called) not found
      * @throws InvalidRequestException if not authorised to delete (if delete method called)
+     * @throws EntityExistsException if reaction already exists
      */
     List<Reaction> createReaction(long chatPostId, CreateReactionRequest request)
-            throws NoSuchObjectException;
+            throws NoSuchObjectException, InvalidRequestException, EntityExistsException;
 
     /**
      * Updates the reaction associated with the ID provided:

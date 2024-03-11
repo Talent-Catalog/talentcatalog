@@ -46,8 +46,8 @@ public class ReactionAdminApi {
      * Creates a reaction record from the data in the given request or calls update if that emoji
      * is already associated with a reaction on this post. Update may in turn even call delete, if
      * that user was the last remaining user associated with the existing reaction.
-     * @param request Request containing details
-     * @return updated reactions list
+     * @param request Request containing emoji
+     * @return updated reactions list for the parent chat post
      * @throws EntityExistsException if reaction already exists
      * @throws NoSuchObjectException if post or reaction (if update called) not found
      * @throws InvalidRequestException if not authorised to delete (if delete method called)
@@ -64,7 +64,7 @@ public class ReactionAdminApi {
    * Updates an existing user reaction, adding or removing a user (depending on whether they were
    * already associated with it) or calling delete if they were the last associated user.
    * @param id of the reaction to be updated
-   * @return updated reactions list
+   * @return updated reactions list for the parent chat post
    * @throws NoSuchObjectException if the there is no Reaction record with the given ID
    * @throws InvalidRequestException if not authorised to delete (if delete method called)
    */

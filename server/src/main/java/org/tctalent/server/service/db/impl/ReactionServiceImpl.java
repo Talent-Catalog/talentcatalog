@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Reaction;
@@ -46,7 +47,7 @@ public class ReactionServiceImpl implements ReactionService {
 
     @Override
     public List<Reaction> createReaction(long chatPostId, CreateReactionRequest request)
-            throws NoSuchObjectException, InvalidRequestException {
+            throws NoSuchObjectException, InvalidRequestException, EntityExistsException {
 
         // If user selected emoji matching existing reaction, call update and return updated record.
         Optional<Reaction> matchingReaction =
@@ -80,7 +81,7 @@ public class ReactionServiceImpl implements ReactionService {
     public List<Reaction> updateReaction(long id)
             throws NoSuchObjectException, InvalidRequestException {
         final User loggedInUser = userService.getLoggedInUser();
-        Reaction reaction = reactionRepository.findById(id)
+        final Reaction reaction = reactionRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Reaction.class, id));
 
         // Check if user already associated with the reaction

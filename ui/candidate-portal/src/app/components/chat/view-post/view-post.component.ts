@@ -53,7 +53,7 @@ export class ViewPostComponent implements OnInit {
     return UserService.userToString(user, false, false);
   }
 
-  // Toggles the picker on and off — if on, focuses the scroll bar on its center
+  // Toggles the picker on and off — if on, focuses the scroll bar on its post
   public onClickReactionBtn() {
     this.reactionPickerVisible = !this.reactionPickerVisible;
     if(this.reactionPickerVisible) {
