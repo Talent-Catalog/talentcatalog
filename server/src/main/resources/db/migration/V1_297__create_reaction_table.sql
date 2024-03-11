@@ -14,10 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-create table chat_post_reaction
+create table reaction
 (
     id                      bigserial not null primary key,
     chat_post_id            bigint references chat_post,
-    user_ids                text,
     emoji                   text
 );
