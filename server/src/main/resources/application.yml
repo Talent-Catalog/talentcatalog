@@ -57,6 +57,8 @@ spring:
       repositories:
         enabled: false
 
+  thymeleaf:
+    prefix: classpath:/mail/
 
   datasource:
     driverClassName: org.postgresql.Driver
@@ -139,10 +141,11 @@ server:
 #  todo Unused?
   url: https://tctalent.org
 web:
-  #  todo Unused?
+  # Used in EmailHelper
   portal: https://tctalent.org/candidate-portal
 
-  # This is used in SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
+  # This is used in EmailHelper
+  # and SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
   admin: https://tctalent.org/admin-portal
 
 flyway:
@@ -200,7 +203,7 @@ aws:
     secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
 #email:
-#   type: SMTP # STUB or SMTP
+#   type: STUB or SMTP
 #   host: smtp.gmail.com
 #   port: 587
 #   user: tbbtalent@talentbeyondboundaries.org
@@ -210,7 +213,7 @@ aws:
 #   testOverrideEmail: tbbtalent@talentbeyondboundaries.org
 
 email:
-  type: SMTP # STUB or SMTP
+  type: ${EMAIL_TYPE:STUB}
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
   user: ${EMAIL_USER:tbbtalent@talentbeyondboundaries.org}
