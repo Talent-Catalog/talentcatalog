@@ -87,4 +87,15 @@ public class CandidateDependantServiceImpl implements CandidateDependantService 
         cd.populateIntakeData(candidate, data);
         candidateDependantRepository.save(cd);
     }
+
+    @Override
+    public CandidateDependant getDependant(long dependantId)
+        throws NoSuchObjectException {
+        CandidateDependant candidateDependant;
+        candidateDependant = candidateDependantRepository.findById(dependantId)
+            .orElseThrow(() -> new NoSuchObjectException(CandidateDependant.class, dependantId));
+
+        return candidateDependant;
+    }
+
 }

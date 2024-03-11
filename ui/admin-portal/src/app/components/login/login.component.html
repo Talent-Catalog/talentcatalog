@@ -14,6 +14,8 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
+<div class="background-image-wrapper" [ngStyle]="{'background-image': backgroundImage}"></div>
+
 <form class="login wrapper" [formGroup]="loginForm" (submit)="login()">
   <h1>Login</h1>
 
@@ -34,4 +36,10 @@
       </div>
     </div>
   </button>
+
+  <div class="text-center mt-2 small">
+    <a [routerLink]="'/reset-password'">Forgot Password?</a>
+  </div>
+
 </form>
+

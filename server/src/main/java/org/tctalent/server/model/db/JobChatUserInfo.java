@@ -23,8 +23,9 @@ import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 /**
- * This is the data returned to the browser regard where a user has read up to on a chat and
- * where the chat ends.
+ * This is the data returned to the browser regarding a user's chat usage.
+ * <p/>
+ * The data can be related to a particular chat or a group of chats.
  *
  * @author John Cameron
  */
@@ -35,7 +36,18 @@ import org.springframework.lang.Nullable;
 public class JobChatUserInfo {
 
     /**
+     * Reports the number of chats that are unread by the user.
+     * <p/>
+     * Returned in response to a query about some of the user's chats.
+     */
+    @Nullable
+    Integer numberUnreadChats;
+
+    /**
      * Last id post read by user.
+     * <p/>
+     * Returned in response to a query about a particular chat which the user can view.
+     * <p/>
      * Null if chat has not been read, or we don't know.
      */
     @Nullable
@@ -43,6 +55,9 @@ public class JobChatUserInfo {
 
     /**
      * ID of last post in chat.
+     * <p/>
+     * Returned in response to a query about a particular chat which the user can view.
+     * <p/>
      * Null if we don't know, or there are no posts in the chat.
      */
     @Nullable

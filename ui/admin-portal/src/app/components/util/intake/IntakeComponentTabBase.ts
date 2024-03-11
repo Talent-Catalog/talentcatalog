@@ -221,39 +221,30 @@ export abstract class IntakeComponentTabBase implements OnInit {
    * Called when Start, update or complete buttons on intake forms are clicked.
    * Creates an appropriate note with user/time.
    * @param formName is the type of intake interview used for the comment/title.
-   * @param btnType is either start, update or complete.
-   * @param button is the button that's clicked, used to change the button text on click.
+   * @param btnType is either update or complete.
    */
-  public createIntakeNote(formName: string, btnType: string, button) {
+  public createIntakeNote(formName: string, btnType: string) {
+    this.saving = true;
     this.loggedInUser = this.authenticationService.getLoggedInUser();
-    let btnText: string;
     if (btnType === "update") {
        this.noteRequest = {
         candidateId: this.candidate.id,
         title: formName + ' interview updated by ' + this.makeUserName(this.loggedInUser)
           + ' on ' + dateString(new Date()) + '.',
       };
-       btnText = 'Updated!';
     } else if (btnType === "complete") {
       this.noteRequest = {
         candidateId: this.candidate.id,
         title: formName + ' interview completed by ' + this.makeUserName(this.loggedInUser)
           + ' on ' + dateString(new Date()) + '.',
       };
-      btnText = 'Completed!';
-    } else {
-      this.noteRequest = {
-        candidateId: this.candidate.id,
-        title: formName + ' interview started by ' + this.makeUserName(this.loggedInUser)
-          + ' on ' + dateString(new Date()) + '.',
-      };
-      btnText = 'Started!';
     }
     this.noteService.create(this.noteRequest).subscribe(
       (candidateNote) => {
-        button.textContent = btnText;
+        this.saving = false;
       }, (error) => {
         this.error = error;
+        this.saving = false;
       })
   };
 
@@ -293,7 +284,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
             this.refreshIntakeData();
             //todo look at refactoring this note method (I don't need to update the button text, I can use new fields to show/disabled or not.)
             let intakeType: string = full ? 'Full Intake' : 'Mini Intake'
-            this.createIntakeNote(intakeType, 'complete', null);
+            this.createIntakeNote(intakeType, 'complete');
             this.saving = false;
           }, (error) => {
             this.error = error;

@@ -198,6 +198,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   public filterSearch: boolean = false;
 
+  private savedListStateKeyPrefix: string = 'ListKey';
+  private showClosedOppsSuffix: string = 'ShowClosedOpps';
+
   sideProfile: NgbOffcanvasRef;
 
   constructor(private http: HttpClient,
@@ -229,7 +232,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectedCandidates = [];
 
-    this.statuses = [ReviewStatus[ReviewStatus.rejected], ReviewStatus[ReviewStatus.verified]];
+    this.statuses = [
+      ReviewStatus[ReviewStatus.rejected],
+      ReviewStatus[ReviewStatus.verified],
+      ReviewStatus[ReviewStatus.unverified]
+    ];
 
     //Different use of searchForm depending on whether saved search or saved list
 
@@ -242,7 +249,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (isSavedList(this.candidateSource)) {
       this.searchForm = this.fb.group({
         keyword: [''],
-        showClosedOpps: [false]
+        showClosedOpps: [this.showClosedOpps]
       });
       this.subscribeToFilterChanges();
 
@@ -275,8 +282,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return this.searchForm ? this.searchForm.value.keyword : "";
   }
 
+  private savedListStateKey(): string {
+    return this.savedListStateKeyPrefix + this.candidateSource.id;
+  }
+
   get showClosedOpps(): boolean {
-    return this.searchForm ? this.searchForm.value.showClosedOpps : null;
+    const savedShowClosedOpps = this.localStorageService.get(this.savedListStateKey() + this.showClosedOppsSuffix);
+    return savedShowClosedOpps ? savedShowClosedOpps === 'true' : true;
   }
 
   get ReviewStatus() {
@@ -291,8 +303,14 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       )
       .subscribe(() => {
         this.filterSearch = true;
+        this.saveShowClosedOpps();
         this.doSearch(true);
       });
+  }
+
+  private saveShowClosedOpps(): void {
+    const showClosedOppsValue = this.searchForm.get('showClosedOpps').value;
+    this.localStorageService.set(this.savedListStateKey() + this.showClosedOppsSuffix, showClosedOppsValue.toString());
   }
 
   ngOnChanges(changes: SimpleChanges): void {

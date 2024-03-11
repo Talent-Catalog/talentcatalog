@@ -18,7 +18,9 @@ import {SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 import {Observable} from "rxjs";
 import {SearchResults} from "../../../model/search-results";
 import {Opportunity} from "../../../model/opportunity";
+import {JobChatUserInfo} from "../../../model/chat";
 
 export interface OpportunityService<T extends Opportunity> {
+  checkUnreadChats(request: SearchOpportunityRequest): Observable<JobChatUserInfo>;
   searchPaged(request: SearchOpportunityRequest): Observable<SearchResults<T>>
 }

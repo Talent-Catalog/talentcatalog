@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,6 +41,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -49,6 +52,7 @@ import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UnauthorisedActionException;
@@ -611,6 +615,25 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public List<Long> findUnreadChatsInOpps(SearchJobRequest request) {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        //Construct query
+        final Specification<SalesforceJobOpp> spec =
+            JobSpecification.buildSearchQuery(request, loggedInUser);
+
+        //Retrieve all results and gather the ids
+        List<SalesforceJobOpp> allOpps = salesforceJobOppRepository.findAll(spec);
+        List<Long> oppIds = allOpps.stream().map(SalesforceJobOpp::getId).toList();
+        List<Long> unreadChatIds =
+            salesforceJobOppRepository.findUnreadChatsInOpps(loggedInUser.getId(), oppIds);
+        return unreadChatIds;
+    }
+
+    @Override
     public List<SalesforceJobOpp> searchJobsUnpaged(SearchJobRequest request) {
         User loggedInUser = userService.getLoggedInUser();
         List<SalesforceJobOpp> jobs = salesforceJobOppRepository.findAll(
@@ -661,7 +684,7 @@ public class JobServiceImpl implements JobService {
 
         return salesforceJobOppRepository.save(job);
     }
-    
+
     @Override
     @NonNull
     public SalesforceJobOpp updateInterviewGuidanceLink(long id, UpdateLinkRequest updateLinkRequest)
@@ -705,7 +728,15 @@ public class JobServiceImpl implements JobService {
 
         final String nextStep = request.getNextStep();
         if (nextStep != null) {
-            job.setNextStep(nextStep);
+            //Process next Step
+            User loggedInUser = userService.getLoggedInUser();
+            if (loggedInUser == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
+
+            String processedNextStep = auditStampNextStep(
+                loggedInUser.getUsername(), LocalDate.now(), job.getNextStep(), nextStep);
+            job.setNextStep(processedNextStep);
         }
 
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
@@ -753,7 +784,7 @@ public class JobServiceImpl implements JobService {
         //closing stage.
         Map<CandidateOpportunityStage, List<Candidate>> closingStageCandidatesMap = new HashMap<>();
 
-        if (activeOpps.size() > 0) {
+        if (!activeOpps.isEmpty()) {
             final EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>
                 currentToClosingStageMap = closingStageLogic.get(jobCloseStage);
 

@@ -16,45 +16,48 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
-import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
-import org.tctalent.server.service.db.CandidateVisaJobCheckService;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CandidateVisaJobRepository;
 import org.tctalent.server.repository.db.CandidateVisaRepository;
 import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
+import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
+import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
+import org.tctalent.server.service.db.CandidateDependantService;
+import org.tctalent.server.service.db.CandidateVisaJobCheckService;
 
 //** Manage candidate visa checks
 // * @author John Cameron
 @Service
 public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
     private final CandidateVisaJobRepository candidateVisaJobRepository;
-    private final CandidateRepository candidateRepository;
     private final CandidateVisaRepository candidateVisaRepository;
     private final OccupationRepository occupationRepository;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
+    private final CandidateDependantService candidateDependantService;
 
     public CandidateVisaJobCheckImpl(
             CandidateVisaJobRepository candidateVisaJobRepository,
-            CandidateRepository candidateRepository,
             CandidateVisaRepository candidateVisaRepository,
             OccupationRepository occupationRepository,
-            SalesforceJobOppRepository salesforceJobOppRepository) {
+            SalesforceJobOppRepository salesforceJobOppRepository,
+            CandidateDependantService candidateDependantService) {
         this.candidateVisaJobRepository = candidateVisaJobRepository;
-        this.candidateRepository = candidateRepository;
         this.candidateVisaRepository = candidateVisaRepository;
         this.occupationRepository = occupationRepository;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
+        this.candidateDependantService = candidateDependantService;
     }
 
     @Override
@@ -63,6 +66,14 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
 
         return candidateVisaJobRepository.findById(visaJobId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, visaJobId));
+    }
+
+    @Override
+    public CandidateVisaJobCheck getVisaJobCheck(long candidateId, long jobOppId) {
+        CandidateVisaJobCheck candidateVisaJobCheck = candidateVisaJobRepository
+                                                        .findByCandidateIdAndJobOppId(candidateId,
+                                                            jobOppId);
+            return candidateVisaJobCheck;
     }
 
     @Override
@@ -105,5 +116,17 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
         cvj.populateIntakeData(occupation, data);
         candidateVisaJobRepository.save(cvj);
 
+    }
+
+    @Override
+    public List<CandidateDependant> getRelocatingDependants(CandidateVisaJobCheck visaJobCheck)
+        throws NoSuchObjectException {
+        List<Long> relocatingDependantIds = visaJobCheck.getRelocatingDependantIds();
+
+        return relocatingDependantIds != null ?
+            relocatingDependantIds
+            .stream()
+            .map(candidateDependantService::getDependant)
+            .collect(Collectors.toList()) : null;
     }
 }
