@@ -27,7 +27,7 @@ export class CreateUpdatePostComponent implements OnInit {
     private fb: FormBuilder,
     private rxStompService: RxStompService,
     private modalService: NgbModal,
-    private chatPostService: ChatPostService,
+    private chatPostService: ChatPostService
   ) {
     Quill.register('modules/imageHandler', ImageHandler);
     this.moduleOptions = {

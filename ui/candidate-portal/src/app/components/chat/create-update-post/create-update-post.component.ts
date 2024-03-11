@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -32,12 +32,14 @@ import {FileSelectorComponent} from "../../util/file-selector/file-selector.comp
 export class CreateUpdatePostComponent implements OnInit {
   @Input() chat: JobChat;
 
+  @ViewChild('editorPickerSpan') editorPickerSpan: ElementRef;
+
   error: any;
   saving: any;
   postForm: FormGroup;
   quillEditorRef: Quill;
   moduleOptions = {};
-  public isEmojiPickerVisible: boolean = false;
+  public emojiPickerVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -116,6 +118,35 @@ export class CreateUpdatePostComponent implements OnInit {
     });
   }
 
+  // Adds an emoji to the text editor and focuses the caret directly after it.
+  public onSelectEmoji(event) {
+    this.emojiPickerVisible = false;
+    const index: number = this.quillEditorRef.selection.savedRange.index;
+    this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
+    this.quillEditorRef.setSelection(index + 2, 0);
+  }
+
+  // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
+  public onClickEmojiBtn() {
+    this.emojiPickerVisible = !this.emojiPickerVisible;
+    // If closing the picker, refocus the caret — if not, scroll into view.
+    if(!this.emojiPickerVisible) {
+      const index: number = this.quillEditorRef.selection.savedRange.index;
+      this.quillEditorRef.setSelection(index, 0);
+    } else {
+      setTimeout(() => {
+        this.editorPickerSpan.nativeElement.scrollIntoView(
+          {block: "center", behavior: 'smooth'}
+        );
+      });
+    }
+  }
+
+  // These emojis didn't work for some reason — this function excludes them from the picker.
+  emojisToShowFilter = (emoji: any) => {
+    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
+  }
+
   get contentControl() { return this.postForm.get('content'); }
 
   onSend() {
@@ -132,36 +163,4 @@ export class CreateUpdatePostComponent implements OnInit {
     }
   }
 
-  // Add an emoji to the Quill text editor and focus the caret directly after it
-  public addEmoji(event) {
-    this.isEmojiPickerVisible = !this.isEmojiPickerVisible;
-    let index: number = this.quillEditorRef.selection.savedRange.index;
-    this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
-    this.quillEditorRef.setSelection(index + 10, 0);
-  }
-
-  // Toggle the emoji picker on and off using the button, refocus the caret
-  public clickEmojiButton() {
-    this.isEmojiPickerVisible = !this.isEmojiPickerVisible;
-    let index: number = this.quillEditorRef.selection.savedRange.index;
-    this.quillEditorRef.setSelection(index, 0);
-  }
-
-  // Close the emoji picker if user clicks anywhere except the picker or its button — requires
-  // slightly tortured logic because emoji picker is imported and so its elements are hard to select
-  // TODO: SS -at Font Awesome upgrade, emoji button icon can change and last condition check can go
-  @HostListener('document:click', ['$event'])
-  documentClick(event) {
-    if(this.isEmojiPickerVisible) {
-      let sectionClass: string =
-        event.target.closest('section') ? event.target.closest('section').classList[0] : "";
-      let clickedElementId: string = event.target.id;
-      let closestButtonId: string =
-        event.target.closest('button') ? event.target.closest('button').id : "";
-      if(!clickedElementId.includes('emoji') && !sectionClass.includes('emoji') &&
-      !closestButtonId.includes('emoji')) {
-        this.isEmojiPickerVisible = false
-      }
-    }
-  }
 }

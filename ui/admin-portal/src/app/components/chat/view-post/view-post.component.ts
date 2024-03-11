@@ -3,9 +3,7 @@ import {
   ElementRef,
   HostListener,
   Input,
-  OnChanges,
   OnInit,
-  SimpleChanges,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -23,9 +21,8 @@ import {Reaction} from "../../../model/reaction";
   // See here: https://stackoverflow.com/a/44215795
   encapsulation: ViewEncapsulation.None
 })
-export class ViewPostComponent implements OnInit, OnChanges {
+export class ViewPostComponent implements OnInit {
 
-  isCurrentPost: boolean = false;
   public reactionPickerVisible: boolean = false;
 
   // Currently ngx-quill just inserts the url into an <img> tag, this is then saved as innerHTML.
@@ -40,25 +37,11 @@ export class ViewPostComponent implements OnInit, OnChanges {
   @Input() post: ChatPost;
   @Input() currentPost: ChatPost;
 
-  @ViewChild('pickerSpan') pickerSpan: ElementRef;
+  @ViewChild('thisPost') thisPost: ElementRef;
 
   constructor(private reactionService: ReactionService) { }
 
   ngOnInit(): void {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    for (const propName in changes) {
-      if (changes.hasOwnProperty(propName)) {
-        switch (propName) {
-          case 'currentPost': {
-            this.setIsCurrentPostAndCloseOpenedPickerIfFalse(
-              changes.currentPost.currentValue
-            )
-          }
-        }
-      }
-    }
   }
 
   get isHtml() {
@@ -70,20 +53,13 @@ export class ViewPostComponent implements OnInit, OnChanges {
     return UserService.userToString(user, false, false);
   }
 
-  // Ensures that no two reaction pickers are open at the same time.
-  // ngOnChanges subscribes to the currentPost @Input — if a post with an open picker is no longer
-  // current, the picker is closed. Because this is a duplicated component (per post), we can't
-  // manage that behaviour with unique identifiers.
-  private setIsCurrentPostAndCloseOpenedPickerIfFalse(currentPost: ChatPost) {
-    this.isCurrentPost = currentPost === this.post;
-    if(!this.isCurrentPost) this.reactionPickerVisible = false;
-  }
-
   // Toggles the picker on and off — if on, focuses the scroll bar on its center
   public onClickReactionBtn() {
     this.reactionPickerVisible = !this.reactionPickerVisible;
     if(this.reactionPickerVisible) {
-      this.pickerSpan.nativeElement.scrollIntoView({block: "center", behavior: "smooth"})
+      setTimeout(() => {
+        this.thisPost.nativeElement.scrollIntoView({behavior: 'smooth'});
+      });
     }
   }
 
@@ -109,9 +85,33 @@ export class ViewPostComponent implements OnInit, OnChanges {
                           })
   }
 
-  // These emojis didn't work for some reason — this function excludes them from the picker.
+  // These emojis don't work for some reason — this function excludes them from the picker.
   emojisToShowFilter = (emoji: any) => {
     return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
   }
+
+  // Below commented-out methods and class property were closing unwanted emoji pickers.
+  // Leaving them here as they're likely to be useful for future styling and functionality.
+  // Used in conjunction with @Input currentPost.
+
+  // isCurrentPost: boolean = false;
+
+  // ngOnChanges(changes: SimpleChanges) {
+  //   for (const propName in changes) {
+  //     if (changes.hasOwnProperty(propName)) {
+  //       switch (propName) {
+  //         case 'currentPost': {
+  //           this.setIsCurrentPost(
+  //             changes.currentPost.currentValue
+  //           )
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  //
+  // private setIsCurrentPost(currentPost: ChatPost) {
+  //   this.isCurrentPost = currentPost === this.post;
+  // }
 
 }

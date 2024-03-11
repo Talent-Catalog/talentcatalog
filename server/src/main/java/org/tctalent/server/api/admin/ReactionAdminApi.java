@@ -24,6 +24,7 @@ package org.tctalent.server.api.admin;
  import org.springframework.web.bind.annotation.PathVariable;
  import org.springframework.web.bind.annotation.PostMapping;
  import org.springframework.web.bind.annotation.PutMapping;
+ import org.springframework.web.bind.annotation.RequestBody;
  import org.springframework.web.bind.annotation.RequestMapping;
  import org.springframework.web.bind.annotation.RestController;
  import org.tctalent.server.exception.EntityExistsException;
@@ -47,13 +48,13 @@ public class ReactionAdminApi {
      * that user was the last remaining user associated with the existing reaction.
      * @param request Request containing details
      * @return updated reactions list
+     * @throws EntityExistsException if reaction already exists
      * @throws NoSuchObjectException if post or reaction (if update called) not found
      * @throws InvalidRequestException if not authorised to delete (if delete method called)
-     * @throws EntityExistsException if reaction already exists
      */
     @PostMapping("{id}")
     public @NotNull List<Map<String, Object>> createReaction(
-          @PathVariable("id") long chatPostId, @Valid CreateReactionRequest request)
+          @PathVariable("id") long chatPostId, @Valid @RequestBody CreateReactionRequest request)
             throws NoSuchObjectException, InvalidRequestException, EntityExistsException {
         List<Reaction> reactions = this.reactionService.createReaction(chatPostId, request);
         return reactionDto().buildList(reactions);

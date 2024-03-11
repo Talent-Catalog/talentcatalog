@@ -37,7 +37,6 @@ export class User {
   usingMfa: boolean;
   mfaConfigured: boolean;
   partner: Partner;
-  displayName: string;
 
   //Can be populated after upload
   name: string;
@@ -49,6 +48,11 @@ export interface ShortUser {
   lastName: string;
   email: string;
   partner: ShortPartner;
+}
+
+export interface DisplayUser {
+  id: number;
+  displayName: string;
 }
 
 export interface UpdateUserRequest {

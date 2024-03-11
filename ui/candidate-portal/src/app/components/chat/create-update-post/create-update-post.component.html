@@ -42,23 +42,24 @@
         </button>
 
         <button
-          id="emojiButton"
-          [ngClass]="!this.isEmojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
-          (click)="clickEmojiButton()">
+          id="emojiBtn"
+          [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
+          (click)="onClickEmojiBtn()">
           <fa-icon icon="face-smile" size="xs"></fa-icon>
         </button>
 
-        <emoji-mart
-          *ngIf="isEmojiPickerVisible"
-          (emojiClick)="addEmoji($event)"
-          emoji="point_up"
-          title=""
-          autoFocus="true"
-          [showPreview]="false"
-          [sheetSize]="32"
-          [exclude]="['recent']"
-        ></emoji-mart>
-
+        <span #editorPickerSpan>
+          <emoji-mart
+            id="editorPicker"
+            *ngIf="emojiPickerVisible"
+            (emojiClick)="onSelectEmoji($event)"
+            emoji="point_up"
+            title="Add emoji..."
+            [autoFocus]="true"
+            [perLine]="8"
+            [emojisToShowFilter]="emojisToShowFilter"
+          ></emoji-mart>
+        </span>
       </div>
     </quill-editor>
   </div>

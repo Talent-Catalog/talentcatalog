@@ -71,10 +71,10 @@ export class ViewChatPostsComponent extends PostsComponentBase
   // attached to the Quill toolbar (writing posts).
   @HostListener('document:click', ['$event'])
   documentClick(event) {
-    // Find the post with an open reaction picker, if any
+    // Identify the post with an open reaction picker, if any
     const postWithOpenPicker =
         this.viewPostComponents.find(
-            (view) => view.reactionPickerVisible)
+            (post) => post.reactionPickerVisible)
 
     // Check if any picker is open
     if(this.editor.emojiPickerVisible || postWithOpenPicker != null) {
@@ -87,10 +87,7 @@ export class ViewChatPostsComponent extends PostsComponentBase
       // Generate value to check if click was on an emoji picker toggle button (smiley emoji icon)
       const clickedElementId: string = event.target.id;
 
-      if (clickedElementId.includes('emojiBtn') && postWithOpenPicker != null) {
-        // If click was on editor picker toggle button, close any open reaction picker
-        postWithOpenPicker.reactionPickerVisible = false;
-      } else if (clickedElementId.includes('reactionBtn') && this.editor.emojiPickerVisible) {
+      if (clickedElementId.includes('reactionBtn') && this.editor.emojiPickerVisible) {
         // If click was on reaction picker toggle button, close the editor picker
         this.editor.emojiPickerVisible = false
       } else if (!sectionClass.includes('emoji') &&

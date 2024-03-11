@@ -1,4 +1,4 @@
-<div class="post">
+<div class="post" #thisPost>
   <p class="audit">
    <strong> {{createdBy}}: </strong>
     <small>{{post?.createdDate | date: 'customDateTime'}}</small>
@@ -32,16 +32,15 @@
     </button>
   </div>
 </div>
-<span id="postPicker" #pickerSpan>
-  <emoji-mart
-    id="reactionPicker"
-    *ngIf="reactionPickerVisible"
-    (emojiClick)="onSelectEmoji($event)"
-    emoji="point_up"
-    title="Add emoji...&nbsp;&nbsp;👍"
-    [autoFocus]="true"
-    [perLine]="8"
-    [sheetSize]="32"
-    [emojisToShowFilter]="emojisToShowFilter"
-  ></emoji-mart>
-</span>
+
+<emoji-mart
+  id="reactionPicker"
+  *ngIf="reactionPickerVisible"
+  (emojiClick)="onSelectEmoji($event)"
+  emoji="point_up"
+  title="Add emoji..."
+  [autoFocus]="true"
+  [emojisToShowFilter]="emojisToShowFilter"
+></emoji-mart>
+
+<div *ngIf="reactionPickerVisible" class="overlay"></div>

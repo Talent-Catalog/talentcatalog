@@ -126,6 +126,7 @@ import {
   faFileUpload,
   faFolderOpen,
   faGlobe,
+  faPlus,
   faQuestion,
   faQuestionCircle,
   faTimes
@@ -338,7 +339,8 @@ export class AppModule {
       faQuestionCircle,
       faFolderOpen,
       faFileUpload,
-      faFaceSmile
+      faFaceSmile,
+      faPlus
     );
   }
 }
