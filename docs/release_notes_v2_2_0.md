@@ -44,11 +44,11 @@ candidate relocation directly from the Talent Catalog.
     <img src="./assets/images/v220/CandidateRecord.png" 
             alt="Candidate Data in Salesforce" class="card-image">
     <div class="card-body">
-      <div class="card-title">Nightly Candidate Data Sync</div>
+      <div class="card-title">Weekly & On-Demand Candidate Data Sync</div>
       <div class="card-description">
-        Active candidate profiles will now be updated nightly from the Talent Catalog to 
-Salesforce. This opens new capabilities for reporting and analysis, and potential to connect 
-third party tools for candidate communication, data visualisation and more.
+        Candidate profiles will now sync from the Talent Catalog to Salesforce, automatically once a
+week and by request at any interval. This opens new capabilities for reporting and analysis, and 
+potential to connect third party tools for candidate communication, data visualisation and more.
       </div>
     </div>
   </a>

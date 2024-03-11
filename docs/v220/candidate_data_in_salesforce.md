@@ -4,9 +4,10 @@ sass:
   style: compressed
 ---
 
-# Candidate Data Updated Nightly to Salesforce
+# Candidate Data Synced Weekly to Salesforce
 
-All active candidate profiles will now be updated nightly from the Talent Catalog to Salesforce.
+Candidate profiles will now sync from the Talent Catalog to Salesforce, automatically once a
+week and by request at any interval.
 
 Previously only candidates in active recruitment had been updated at key steps — and even then, only
 a small subset of fields. In consultation with key stakeholders, the dataset has been broadened and 
