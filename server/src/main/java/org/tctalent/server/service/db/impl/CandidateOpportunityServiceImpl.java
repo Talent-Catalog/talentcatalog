@@ -53,6 +53,7 @@ import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateOpportunitySpecification;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
@@ -398,6 +399,62 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             newStatus = CandidateStatus.withdrawn;
         }
         return newStatus;
+    }
+
+    @Async
+    @Override
+    public void loadCandidateOpportunityLastActiveStages() {
+
+        log.info("Loading candidate opportunities from Salesforce");
+
+        final int limit = 3;
+
+        String lastId = null;
+        int totalOpps = 0;
+        int nOpps = -1;
+        while (nOpps != 0) {
+
+            log.info("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId));
+            List<Opportunity> ops = salesforceService.findCandidateOpportunities(
+                lastId == null ? null : "Id > '" + lastId + "'", limit);
+            nOpps = ops.size();
+            totalOpps += nOpps;
+            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps);
+            if (nOpps > 0) {
+                lastId = ops.get(nOpps - 1).getId();
+
+                List<String> oppIds = ops.stream().map(Opportunity::getId).toList();
+                List<OpportunityHistory> histories = salesforceService.findOpportunityHistories(oppIds);
+
+                String currentOppId = null;
+                List<OpportunityHistory> currentOppHistory = new ArrayList<>();
+                for (OpportunityHistory history : histories) {
+                    if (history.getOpportunityId().equals(currentOppId)) {
+                        currentOppHistory.add(history);
+                    } else {
+                        //Process current opp's history
+                        processOppHistory(currentOppHistory);
+
+                        //Start new history
+                        currentOppId = history.getOpportunityId();
+                        currentOppHistory.clear();
+                        currentOppHistory.add(history);
+                    }
+                }
+                //Need to process the last one
+                processOppHistory(currentOppHistory);
+//                        log.info("Updated/created candidate opportunity " + candidateOpp.getName());
+            }
+        }
+    }
+
+    private void processOppHistory(List<OpportunityHistory> currentOppHistory) {
+        if (!currentOppHistory.isEmpty()) {
+            String oppId = currentOppHistory.get(0).getOpportunityId();
+            log.info("Processing history for opp " + oppId);
+            //TODO JC Implement processOppHistory
+
+        }
     }
 
     @Override
