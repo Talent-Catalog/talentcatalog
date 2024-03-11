@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +36,7 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -53,6 +56,15 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
     public @NotNull Map<String, Object> get(@PathVariable long id) throws NoSuchObjectException {
         CandidateOpportunity opp = candidateOpportunityService.getCandidateOpportunity(id);
         return candidateOpportunityDto().build(opp);
+    }
+
+    @PostMapping("check-unread-chats")
+    public @NotNull JobChatUserInfo checkUnreadChats(
+        @Valid @RequestBody SearchCandidateOpportunityRequest request) {
+        List<Long> oppIds = candidateOpportunityService.findUnreadChatsInOpps(request);
+        JobChatUserInfo info = new JobChatUserInfo();
+        info.setNumberUnreadChats(oppIds.size());
+        return info;
     }
 
     @Override

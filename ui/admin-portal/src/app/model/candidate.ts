@@ -105,7 +105,6 @@ export interface Candidate extends HasId {
   candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
-  intaked: string;
   miniIntakeCompletedBy: User;
   miniIntakeCompletedDate: number;
   fullIntakeCompletedBy: User;
@@ -779,5 +778,4 @@ export function getDestinationOccupationSubcatLink(countryId: number): string {
 
 export class SendResetPasswordEmailRequest {
   email: string;
-  reCaptchaV3Token: string;
 }

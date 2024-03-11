@@ -17,7 +17,6 @@
 package org.tctalent.server.request.reviewstatus;
 
 import javax.validation.constraints.NotNull;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.ReviewStatus;

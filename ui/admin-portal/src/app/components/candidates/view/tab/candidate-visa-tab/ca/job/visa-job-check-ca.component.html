@@ -179,6 +179,22 @@
           [dependants]="candidateIntakeData.candidateDependants">
         </app-relocating-dependants>
       </div>
+      <div>
+        <button class="btn btn-primary mb-3"
+          (click)="requestSfCaseRelocationInfoUpdate()">
+          <span *ngIf="loading; else elseBlock">
+            <i class="fas fa-spinner fa-spin"></i>
+          </span>
+          <ng-template #elseBlock>
+            <i class="fa-solid fa-chart-simple"></i>
+          </ng-template>
+          Update case stats
+        </button>
+      </div>
+      <!-- ERROR -->
+      <div *ngIf="error">
+        {{error}}
+      </div>
       <div class="card card-body intake-data">
         <app-fixed-input [question]="'Marital status'" [answer]="candidateIntakeData?.maritalStatus"></app-fixed-input>
         <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="candidateIntakeData?.partnerEduLevel?.name"></app-fixed-input>

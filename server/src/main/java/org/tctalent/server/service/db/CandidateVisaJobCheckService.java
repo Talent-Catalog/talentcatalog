@@ -16,10 +16,12 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
@@ -32,6 +34,20 @@ public interface CandidateVisaJobCheckService {
      * @throws NoSuchObjectException if the there is no visa job check record with that id
      */
     CandidateVisaJobCheck getVisaJobCheck(long visaJobId) throws NoSuchObjectException;
+
+    /**
+     * Gets the candidate visa job check record for the given job and candidate id or returns null
+     * if there isn't one.
+     * Currently unused but retained in anticipation that we may later opt to auto-update
+     * relocation info automatically at a certain candidate opportunity stage interval.
+     * In that case, this method can be used from
+     * SalesforceService.createOrUpdateCandidateOpportunities() to update relocation info
+     * accordingly, if the return passes a null check.
+     * @param candidateId ID of candidate
+     * @param jobOppId ID of job opportunity
+     * @return Candidate Visa Job Check instance or null
+     */
+    CandidateVisaJobCheck getVisaJobCheck(long candidateId, long jobOppId);
 
     /**
      * Creates a new candidate visa check record from the data in the given
@@ -66,4 +82,14 @@ public interface CandidateVisaJobCheckService {
      */
     void updateIntakeData(
             @Nullable Long visaJobId, CandidateVisaCheckData data) throws NoSuchObjectException;
+
+    /**
+     * Gets relocating dependants listed on a given candidate visa job assessment.
+     * @param visaJobCheck instance of {@link CandidateVisaJobCheck}
+     * @return list of candidate dependant objects or null if there aren't any for that assessment
+     * @throws NoSuchObjectException if there's no candidate dependant with a given id
+     */
+    List<CandidateDependant> getRelocatingDependants(CandidateVisaJobCheck visaJobCheck)
+        throws NoSuchObjectException;
+
 }

@@ -34,4 +34,9 @@ export class CandidateVisaJobService {
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
+
+  updateSfCaseRelocationInfo(id: number): Observable<void> {
+    return this.http.put<void>(
+        `${this.apiUrl}/${id}/update-sf-case-relocation-info`, null);
+  }
 }

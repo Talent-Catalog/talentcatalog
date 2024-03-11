@@ -43,6 +43,9 @@ export class CandidateFieldService {
   //Residence status is a string enum - you can display the string value of the enum like this.
   private residenceStatusFormatter = (value) => ResidenceStatus[value];
 
+  private intakeTypeFormatter = (value) => {
+    return this.getIntakesCompleted(value);
+  }
   private getIeltsScoreType = (value) => {
     return this.getIeltsScore(value);
   }
@@ -50,7 +53,11 @@ export class CandidateFieldService {
     return this.getTasksStatus(value);
   }
 
-  private unhcrStatusTooltip = (value) => UnhcrStatus[value];
+  private unhcrStatusTooltip = (value) => UnhcrStatus[value.unhcrStatus];
+
+  private intakeDatesTooltip = (value) => {
+    return this.getIntakeDates(value);
+  }
 
   private allDisplayableFields = [];
 
@@ -63,7 +70,7 @@ export class CandidateFieldService {
     "user.firstName",
     "user.lastName",
     "status",
-    "intaked",
+    "intakeStatus",
     "updatedDate",
     "nationality.name",
     "country.name",
@@ -129,8 +136,8 @@ export class CandidateFieldService {
         null, null, true),
       new CandidateFieldInfo("NextStep", "candidateOpportunities.nextStep", null,
       null, null, true),
-      new CandidateFieldInfo("Intaked", "intaked", null,
-      null, null, false)
+      new CandidateFieldInfo("Intake Status", "intakeStatus", this.intakeDatesTooltip,
+      this.intakeTypeFormatter, null, false)
       // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
       // new CandidateFieldInfo("Tasks Status", "taskAssignments", null,
       //   this.getOverallTasksStatus, null),
@@ -264,6 +271,31 @@ export class CandidateFieldService {
       }
     }
     return score;
+  }
+
+  getIntakesCompleted(candidate: Candidate): string {
+    let mini = candidate?.miniIntakeCompletedDate != null ? 'Mini' : null;
+    let full = candidate?.fullIntakeCompletedDate != null ? 'Full' : null;
+    if (mini && full) {
+      return mini + ', ' + full;
+    } else if (mini) {
+      return mini;
+    } else if (full) {
+      return full;
+    }
+  }
+
+  getIntakeDates(candidate: Candidate): string {
+    let mini = candidate?.miniIntakeCompletedDate != null ? 'Mini' : null;
+    let full = candidate?.fullIntakeCompletedDate != null ? 'Full' : null;
+    if (mini && full) {
+      return 'Mini intake: ' + this.dateFormatter(candidate?.miniIntakeCompletedDate)
+        + ' Full intake: ' + this.dateFormatter(candidate?.fullIntakeCompletedDate);
+    } else if (mini) {
+      return 'Mini intake: ' + this.dateFormatter(candidate?.miniIntakeCompletedDate)
+    } else if (full) {
+      return 'Full intake: ' + this.dateFormatter(candidate?.fullIntakeCompletedDate);
+    }
   }
 
   getTasksStatus(values: TaskAssignment[]): string {

@@ -331,6 +331,28 @@ public class CandidateSpecification {
                         builder.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
                 );
             }
+            
+            // MINI INTAKE COMPLETE
+            if (request.getMiniIntakeCompleted() != null) {
+                if(request.getMiniIntakeCompleted()) {
+                    conjunction.getExpressions().add(
+                        builder.isNotNull(candidate.get("miniIntakeCompletedDate"))); 
+                } else {
+                    conjunction.getExpressions().add(
+                        builder.isNull(candidate.get("miniIntakeCompletedDate")));
+                }
+            }
+
+            // FULL INTAKE COMPLETE
+            if (request.getFullIntakeCompleted() != null) {
+                if(request.getFullIntakeCompleted()) {
+                    conjunction.getExpressions().add(
+                        builder.isNotNull(candidate.get("fullIntakeCompletedDate")));
+                } else {
+                    conjunction.getExpressions().add(
+                        builder.isNull(candidate.get("fullIntakeCompletedDate")));
+                }
+            }
 
             // MAJOR SEARCH
             if (!Collections.isEmpty(request.getEducationMajorIds())) {

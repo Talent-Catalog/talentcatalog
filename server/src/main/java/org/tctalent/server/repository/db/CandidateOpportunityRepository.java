@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -25,6 +26,36 @@ import org.tctalent.server.model.db.CandidateOpportunity;
 
 public interface CandidateOpportunityRepository extends JpaRepository<CandidateOpportunity, Long>,
     JpaSpecificationExecutor<CandidateOpportunity> {
+
+
+    @Query(value = """
+        select chats.id from
+
+        (select job_chat.id from candidate_opportunity
+            join candidate on candidate_opportunity.candidate_id = candidate.id
+            join job_chat on candidate.id = job_chat.candidate_id
+                and type = 'CandidateProspect'
+            where candidate_opportunity.id in (:oppIds)
+        union
+        select job_chat.id from candidate_opportunity
+            join candidate on candidate_opportunity.candidate_id = candidate.id
+            join job_chat on candidate.id = job_chat.candidate_id
+                                 and job_id = candidate_opportunity.job_opp_id
+                and type = 'CandidateRecruiting'
+            where candidate_opportunity.id in (:oppIds)
+        ) as chats
+        
+        where
+                (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId)
+                    < (select max(id) from chat_post where job_chat_id = chats.id)
+
+        or  (
+                (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId) is null
+                and
+                (select count(*) from chat_post where job_chat_id = chats.id) > 0
+            )
+        """, nativeQuery = true)
+    List<Long> findUnreadChatsInOpps(@Param("userId") long userId, @Param("oppIds") Iterable<Long> oppIds);
 
     @Query(" select op from CandidateOpportunity op "
         + " where op.sfId = :sfId ")

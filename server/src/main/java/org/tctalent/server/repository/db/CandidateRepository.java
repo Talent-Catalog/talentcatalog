@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.ReviewStatus;
 
 /**
  * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
@@ -119,6 +120,15 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " or c.sflink is not null")
     Page<Candidate> findByStatusesOrSfLinkIsNotNull(
         @Param("statuses") List<CandidateStatus> statuses, Pageable pageable);
+
+
+    @Query("select c from Candidate c "
+        + "join CandidateReviewStatusItem cri "
+        + "on c.id = cri.candidate.id "
+        + "where cri.savedSearch.id = :savedSearchId "
+        + "and cri.reviewStatus not in (:statuses)")
+    Page<Candidate> findReviewedCandidatesBySavedSearchId(@Param("savedSearchId") Long savedSearchId,
+        @Param("statuses") List<ReviewStatus> statuses, Pageable pageable);
 
     @Transactional
     @Modifying

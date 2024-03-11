@@ -54,7 +54,7 @@ export class CandidateFieldInfo {
     let tooltip: string = '';
     if (this.tooltipSupplier != null) {
       const value = this.getValue(candidate);
-      tooltip = this.tooltipSupplier(value);
+      tooltip = this.tooltipSupplier(candidate);
     }
     return tooltip;
   }
@@ -62,7 +62,7 @@ export class CandidateFieldInfo {
   getValue(candidate: Candidate): string {
     let value;
     // Need to format field with the candidate object not value
-    if (this.fieldPath === "ieltsScore") {
+    if (this.fieldPath === "ieltsScore" || this.fieldPath === "intakeStatus") {
       value = candidate;
     } else {
       value = this.getUnformattedValue(candidate);
