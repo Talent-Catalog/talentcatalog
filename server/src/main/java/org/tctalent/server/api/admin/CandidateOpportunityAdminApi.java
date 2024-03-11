@@ -104,6 +104,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
             .add("name")
             .add("nextStep")
             .add("nextStepDueDate")
+            .add("lastActiveStage")
             .add("stage")
             .add("createdBy", shortUserDto())
             .add("createdDate")

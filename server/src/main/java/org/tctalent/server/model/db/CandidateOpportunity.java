@@ -69,6 +69,12 @@ public class CandidateOpportunity extends AbstractOpportunity {
     SalesforceJobOpp jobOpp;
 
     /**
+     * Last active stage of opportunity.
+     */
+    @Enumerated(EnumType.STRING)
+    CandidateOpportunityStage lastActiveStage;
+
+    /**
      * Current stage of opportunity.
      */
     @Enumerated(EnumType.STRING)
@@ -95,6 +101,9 @@ public class CandidateOpportunity extends AbstractOpportunity {
         setStageOrder(stage.ordinal());
         setClosed(this.stage.isClosed());
         setWon(this.stage.isWon());
+        if (!stage.isClosed()) {
+            setLastActiveStage(stage);
+        }
     }
 
 }

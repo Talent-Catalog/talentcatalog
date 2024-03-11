@@ -38,7 +38,6 @@ import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -46,13 +45,10 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class CandidatePortalApi {
 
     private final CandidateService candidateService;
-    private final TaskAssignmentService taskAssignmentService;
 
     @Autowired
-    public CandidatePortalApi(CandidateService candidateService,
-        TaskAssignmentService taskAssignmentService) {
+    public CandidatePortalApi(CandidateService candidateService) {
         this.candidateService = candidateService;
-        this.taskAssignmentService = taskAssignmentService;
     }
 
     @GetMapping("contact")
@@ -457,6 +453,7 @@ public class CandidatePortalApi {
             .add("name")
             .add("nextStep")
             .add("nextStepDueDate")
+            .add("lastActiveStage")
             .add("stage")
             .add("createdBy", userDto())
             .add("createdDate")
