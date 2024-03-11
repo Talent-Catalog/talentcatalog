@@ -566,7 +566,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         Map<Long, Set<JobChat>> userNotifications = new HashMap<>();
 
-        OffsetDateTime yesterday = OffsetDateTime.now().minusDays(30);
+        OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
         List<Long> chatsWithNewPosts = jobChatService.findChatsWithPostsSinceDate(yesterday);
 
         List<JobChat> chats = jobChatService.findByIds(chatsWithNewPosts);
