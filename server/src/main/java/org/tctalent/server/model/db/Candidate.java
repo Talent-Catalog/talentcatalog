@@ -16,17 +16,16 @@
 
 package org.tctalent.server.model.db;
 
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.annotations.Formula;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.SavedSearchAdminApi;
-import org.tctalent.server.model.es.CandidateEs;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.util.SalesforceHelper;
-
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -43,16 +42,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.annotations.Formula;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.util.SalesforceHelper;
 
 @Entity
 @Table(name = "candidate")
@@ -700,6 +699,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private VaccinationStatus covidVaccinatedStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo professionalLicense;
+
+    @Nullable
+    private String professionalLicenseNotes;
 
     @Nullable
     private LocalDate covidVaccinatedDate;
@@ -2178,6 +2184,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setTaskAssignments(List<TaskAssignmentImpl> taskAssignments) {
         this.taskAssignments = taskAssignments;
     }
+
+    @Nullable
+    public YesNo getProfessionalLicense() { return professionalLicense; }
+
+    public void setProfessionalLicense(@Nullable YesNo professionalLicense) { this.professionalLicense = professionalLicense; }
+
+    @Nullable
+    public String getProfessionalLicenseNotes() { return professionalLicenseNotes; }
+
+    public void setProfessionalLicenseNotes(@Nullable String professionalLicenseNotes) { this.professionalLicenseNotes = professionalLicenseNotes; }
 
     @Transient
     public Set<SavedList> getSavedLists() {

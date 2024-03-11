@@ -166,6 +166,9 @@ public class CandidateIntakeDataUpdate {
     private Long partnerIeltsYr;
     private Long partnerCitizenshipId;
 
+    private YesNo professionalLicense;
+    private String professionalLicenseNotes;
+
     private ResidenceStatus residenceStatus;
     private String residenceStatusNotes;
 

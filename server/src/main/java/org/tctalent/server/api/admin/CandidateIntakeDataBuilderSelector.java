@@ -115,6 +115,9 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerIeltsYr")
                 .add("partnerCitizenship", countryDto())
 
+                .add("professionalLicense")
+                .add("professionalLicenseNotes")
+
                 .add("residenceStatus")
                 .add("residenceStatusNotes")
 

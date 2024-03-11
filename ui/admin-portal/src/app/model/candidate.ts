@@ -218,6 +218,9 @@ export interface CandidateIntakeData {
   partnerIeltsYr?: number;
   partnerCitizenship?: Country;
 
+  professionalLicense?: YesNo;
+  professionalLicenseNotes?: string;
+
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;

@@ -777,6 +777,9 @@ import {ResetPasswordComponent} from './components/account/reset-password/reset-
 import {
   UserChangePasswordComponent
 } from './components/account/user-change-password/user-change-password.component';
+import {
+  ProfessionalLicenseComponent
+} from './components/candidates/intake/professional-license/professional-license.component';
 
 @NgModule({
   declarations: [
@@ -1092,7 +1095,8 @@ import {
     LanguageThresholdComponent,
     MonitoringEvaluationConsentComponent,
     ResetPasswordComponent,
-    UserChangePasswordComponent
+    UserChangePasswordComponent,
+    ProfessionalLicenseComponent
   ],
   imports: [
     BrowserModule,
