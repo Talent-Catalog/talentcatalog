@@ -129,16 +129,10 @@ export class CreateUpdatePostComponent implements OnInit {
   // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
   public onClickEmojiBtn() {
     this.emojiPickerVisible = !this.emojiPickerVisible;
-    // If closing the picker, refocus the caret — if not, scroll into view.
+    // If closing the picker, focus the caret in editor.
     if(!this.emojiPickerVisible) {
       const index: number = this.quillEditorRef.selection.savedRange.index;
       this.quillEditorRef.setSelection(index, 0);
-    } else {
-      setTimeout(() => {
-        this.editorPickerSpan.nativeElement.scrollIntoView(
-          {block: "center", behavior: 'smooth'}
-        );
-      });
     }
   }
 
