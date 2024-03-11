@@ -126,6 +126,7 @@ public class ChatPostServiceImpl implements ChatPostService {
 
     private DtoBuilder reactionUserDto() {
         return new DtoBuilder()
+            .add("id")
             .add("displayName")
             ;
     }
