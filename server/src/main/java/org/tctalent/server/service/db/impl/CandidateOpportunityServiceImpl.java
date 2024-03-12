@@ -269,8 +269,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private CandidateOpportunity loadCandidateOpportunity(Opportunity op, boolean createJobOpp) throws SalesforceException {
         String id = op.getId();
         //Look for existing candidate op with that SF id.
-        CandidateOpportunity candidateOpportunity = candidateOpportunityRepository.findBySfId(id)
-            .orElse(null);
+        CandidateOpportunity candidateOpportunity = getCandidateOpportunityFromSfId(id);
         if (candidateOpportunity == null) {
             candidateOpportunity = new CandidateOpportunity();
         }
