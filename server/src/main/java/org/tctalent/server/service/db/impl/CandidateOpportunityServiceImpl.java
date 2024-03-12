@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,7 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.CandidateOpportunityStageHistory;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
@@ -404,7 +406,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         log.info("Loading candidate opportunities from Salesforce");
 
-        final int limit = 3;
+        final int limit = 10;
 
         String lastId = null;
         int totalOpps = 0;
@@ -440,18 +442,55 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 }
                 //Need to process the last one
                 processOppHistory(currentOppHistory);
-//                        log.info("Updated/created candidate opportunity " + candidateOpp.getName());
             }
         }
     }
 
-    private void processOppHistory(List<OpportunityHistory> currentOppHistory) {
-        if (!currentOppHistory.isEmpty()) {
-            String oppId = currentOppHistory.get(0).getOpportunityId();
-            log.info("Processing history for opp " + oppId);
-            //TODO JC Implement processOppHistory
+    private void processOppHistory(List<OpportunityHistory> currentOppHistories) {
+        if (!currentOppHistories.isEmpty()) {
+            //Fetch opp to update.
+            final String oppId = currentOppHistories.get(0).getOpportunityId();
+            CandidateOpportunity opp = getCandidateOpportunityFromSfId(oppId);
+            if (opp == null) {
+                log.warn("Could not find candidate opp with SF id = " + oppId);
+            } else {
+                //Decode Salesforce history into stageHistories
+                List<CandidateOpportunityStageHistory> stageHistories = new ArrayList<>();
+                for (OpportunityHistory history : currentOppHistories) {
+                    CandidateOpportunityStageHistory stageHistory = new CandidateOpportunityStageHistory();
+                    stageHistory.decodeFromSfHistory(history);
+                    stageHistories.add(stageHistory);
+                }
 
+                //Process decoded stageHistories.
+                //Note that this relies on the fact that the histories are sorted in descending
+                //timestamp order - do that the most recent come first.
+                //See SalesforceService.findOpportunityHistories
+                final Optional<CandidateOpportunityStage> lastActiveStage = stageHistories.stream()
+                    .map(CandidateOpportunityStageHistory::getStage)
+                    .filter(stage -> !stage.isClosed())
+                    .findFirst();
+
+                //If we only have closed stages - so no lastActiveStage - default to prospect
+                CandidateOpportunityStage stage = lastActiveStage.orElse(
+                    CandidateOpportunityStage.prospect);
+
+                //Set lastActiveStage on candidate opp
+                opp.setLastActiveStage(stage);
+                candidateOpportunityRepository.save(opp);
+                log.info("Updated lastActiveStage of candidate opportunity "
+                    + opp.getName() + "(" + opp.getId() + ") to " + stage.name());
+            }
         }
+    }
+
+    @Nullable
+    private CandidateOpportunity getCandidateOpportunityFromSfId(String oppId) {
+        //todo If this is running too slow, could index the sfId field on the database.
+        //todo But this is currently only used in an one off SystemAdminApi call so maybe
+        //todo not worth indexing.
+        //todo If we do index it, this method should be exposed in CandidateOpportunityService interface.
+        return candidateOpportunityRepository.findBySfId(oppId).orElse(null);
     }
 
     @Override

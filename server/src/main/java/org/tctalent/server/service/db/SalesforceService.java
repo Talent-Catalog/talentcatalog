@@ -176,9 +176,11 @@ public interface SalesforceService {
 
     /**
      * Searches for a Salesforce Opportunity History records corresponding to the given Salesforce
-     * opportunity ids
+     * opportunity ids.
      * @param opportunityIds Salesforce ids
-     * @return List of opportunity history records.
+     * @return List of opportunity history records in descending order of
+     * OpportunityId, SystemModstamp (ie time stamp). So for a given opportunity id, the most recent
+     * history entries come first.
      * @throws SalesforceException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce

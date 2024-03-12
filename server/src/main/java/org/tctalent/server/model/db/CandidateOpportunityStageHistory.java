@@ -17,8 +17,13 @@
 package org.tctalent.server.model.db;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tctalent.server.model.sf.OpportunityHistory;
+import org.tctalent.server.util.SalesforceHelper;
 
 /**
  * Stage history item associated with a Candidate Opportunity.
@@ -30,6 +35,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CandidateOpportunityStageHistory {
+    private static final Logger log = LoggerFactory.getLogger(CandidateOpportunityStageHistory.class);
 
     /**
      * Stage
@@ -40,4 +46,34 @@ public class CandidateOpportunityStageHistory {
      * Time at which stage was set to above value
      */
     private OffsetDateTime timeStamp;
+
+    /**
+     * Populates this object from the given history from Salesforce.
+     * <p/>
+     * This involves decoding a date stamp string and a stage name string into an OffsetDateTime and
+     * a CandidateOpportunityStage.
+     * @param sfHistory A Salesforce OpportunityHistory
+     */
+    public void decodeFromSfHistory(OpportunityHistory sfHistory) {
+        String oppId = sfHistory.getOpportunityId();
+
+        String sfDateStamp = sfHistory.getSystemModstamp();
+        if (sfDateStamp != null) {
+            try {
+                setTimeStamp(SalesforceHelper.parseSalesforceOffsetDateTime(sfDateStamp));
+            } catch (DateTimeParseException ex) {
+                log.error("Error decoding timeStamp from SF opp history: " + sfDateStamp +
+                    " in candidate op " + oppId);
+            }
+        }
+        CandidateOpportunityStage stage;
+        try {
+            stage = CandidateOpportunityStage.textToEnum(sfHistory.getStageName());
+        } catch (IllegalArgumentException e) {
+            log.error("Error decoding stage in load: " + sfHistory.getStageName() +
+                " in candidate op " + oppId);
+            stage = CandidateOpportunityStage.prospect;
+        }
+        setStage(stage);
+    }
 }
