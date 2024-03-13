@@ -5,9 +5,6 @@ tbb:
   destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
   partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
 
-  alert:
-    email: alert@talentbeyondboundaries.org
-
 logging:
   level:
     reactor:
@@ -204,25 +201,26 @@ aws:
 
 #email:
 #   type: STUB or SMTP
-#   host: smtp.gmail.com
-#   port: 587
-#   user: tbbtalent@talentbeyondboundaries.org
-#   password: //check passpack
-#   authenticated: true
-#   defaultEmail: tbbtalent@talentbeyondboundaries.org
-#   testOverrideEmail: tbbtalent@talentbeyondboundaries.org
+#   user - email login user
+#   authenticated - turns on email authentication (mail.smtp.auth)
+#   alertEmail - this is the email that alert messages is sent to
+#   defaultEmail - this is set as the from email on sent emails
+#   testOverrideEmail - if set, all emails will be sent to this email address - no matter what the
+#                       "to" email is.
 
 email:
   type: ${EMAIL_TYPE:STUB}
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  user: ${EMAIL_USER:tbbtalent@talentbeyondboundaries.org}
+  user: ${EMAIL_USER:tc@talentcatalog.net}
 
-  # For dev this should be set in tbb-secrets
+  # For dev this could be set in tc-secrets - but only needed if email.type is not STUB, which it
+  # normally will be in dev.
   password: ${EMAIL_PASSWORD:}
   authenticated: true
-  defaultEmail: ${EMAIL_DEFAULTEMAIL:tbbtalent@talentbeyondboundaries.org}
-  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:tbbtalent@talentbeyondboundaries.org}
+  alertEmail: alert@talentcatalog.net
+  defaultEmail: ${EMAIL_DEFAULTEMAIL:tc@talentcatalog.net}
+  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:}
 
 
 #Support for in context language translation
