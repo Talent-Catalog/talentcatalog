@@ -32,6 +32,10 @@
       [question]="'Email'"
       [answer]="candidate.user?.email">
     </app-fixed-input>
+    <app-fixed-input
+        [question]="'Gender'"
+        [answer]="gender">
+    </app-fixed-input>
   </div>
   <div class="col-4">
     <app-fixed-input
@@ -63,6 +67,10 @@
     <app-fixed-input
       [question]="'UNHCR Consent'"
       [answer]="candidate?.unhcrConsent">
+    </app-fixed-input>
+    <app-fixed-input
+        [question]="'UNRWA Registered'"
+        [answer]="candidate?.unrwaRegistered">
     </app-fixed-input>
     <app-fixed-input
       [question]="'How did you hear about us'"

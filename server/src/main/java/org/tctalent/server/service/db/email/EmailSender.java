@@ -38,6 +38,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +47,11 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+@Setter
 @Service
 public class EmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
-
-    @Value("${tbb.alert.email}")
-    private String alertEmail;
     private final String alertSubject = "Talent Catalog Alert";
 
     public enum EmailType {
@@ -70,13 +69,15 @@ public class EmailSender {
     @Value("${email.password}")
     private String password;
     @Value("${email.authenticated}")
-    private Boolean authenticate;
+    private Boolean authenticated;
+    @Value("${email.alertEmail}")
+    private String alertEmail;
     @Value("${email.defaultEmail}")
     private String defaultEmail;
     @Value("${email.testOverrideEmail}")
     private String testOverrideEmail;
 
-    private Properties properties = new Properties();
+    private final Properties properties = new Properties();
     private Session session;
     private Transport transport;
 
@@ -199,9 +200,9 @@ public class EmailSender {
             properties.put("mail.smtp.host", host);
             properties.put("mail.smtp.username", user);
             properties.put("mail.debug", "false");
-            properties.put("mail.smtp.auth", authenticate != null ? authenticate.toString() : "false");
-            properties.put("mail.smtp.starttls.enable", authenticate != null ? authenticate : false);
-            if (authenticate != null && authenticate) {
+            properties.put("mail.smtp.auth", authenticated != null ? authenticated.toString() : "false");
+            properties.put("mail.smtp.starttls.enable", authenticated != null ? authenticated : false);
+            if (authenticated != null && authenticated) {
                 Authenticator authenticator = new Authenticator() {
                     @Override
                     protected PasswordAuthentication getPasswordAuthentication() {
@@ -254,7 +255,7 @@ public class EmailSender {
         }
 
         @Override
-        public void connect() throws MessagingException {
+        public void connect() {
         }
 
         @Override
@@ -272,38 +273,4 @@ public class EmailSender {
             }
         }
     }
-
-    public void setType(EmailType type) {
-        this.type = type;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAuthenticate(Boolean authenticate) {
-        this.authenticate = authenticate;
-    }
-
-    public void setDefaultEmail(String defaultEmail) {
-        this.defaultEmail = defaultEmail;
-    }
-
-    public void setTestOverrideEmail(String testOverrideEmail) {
-        this.testOverrideEmail = testOverrideEmail;
-    }
-
-
 }
