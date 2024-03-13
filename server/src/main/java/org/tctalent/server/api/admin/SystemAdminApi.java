@@ -201,6 +201,15 @@ public class SystemAdminApi {
         candidateOpportunityService.notifyOfChatsWithNewPosts();
     }
 
+    /**
+     * This loads the last active stages of all cases from Salesforce.
+     */
+    @GetMapping("load_case_last_active_stages")
+    public void loadCandidateOpportunityLastActiveStages() {
+        candidateOpportunityService.loadCandidateOpportunityLastActiveStages();
+    }
+
+
     @GetMapping("create_employer_for_all_jobs")
     public void createEmployerForAllJobs() {
         jobService.createEmployerForAllJobs();

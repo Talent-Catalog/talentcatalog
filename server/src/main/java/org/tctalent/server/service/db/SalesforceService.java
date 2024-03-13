@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
@@ -171,6 +172,21 @@ public interface SalesforceService {
      */
     @Nullable
     Opportunity findOpportunity(String sfId)
+            throws SalesforceException, WebClientException;
+
+    /**
+     * Searches for a Salesforce Opportunity History records corresponding to the given Salesforce
+     * opportunity ids.
+     * @param opportunityIds Salesforce ids
+     * @return List of opportunity history records in descending order of
+     * OpportunityId, SystemModstamp (ie time stamp). So for a given opportunity id, the most recent
+     * history entries come first.
+     * @throws SalesforceException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    @NonNull
+    List<OpportunityHistory> findOpportunityHistories(List<String> opportunityIds)
             throws SalesforceException, WebClientException;
 
     /**
