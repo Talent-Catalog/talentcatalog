@@ -63,7 +63,7 @@ public class CandidateOpportunityStageHistory {
                 setTimeStamp(SalesforceHelper.parseSalesforceOffsetDateTime(sfDateStamp));
             } catch (DateTimeParseException ex) {
                 log.error("Error decoding timeStamp from SF opp history: " + sfDateStamp +
-                    " in candidate op " + oppId);
+                    " in candidate opp " + oppId);
             }
         }
         CandidateOpportunityStage stage;
