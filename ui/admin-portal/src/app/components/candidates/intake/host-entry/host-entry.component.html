@@ -95,13 +95,6 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label" for="returnHomeSafe">Do you feel it is safe to permanently return to your home country?</label>
-        <ng-select id="returnHomeSafe" [formControlName]="'returnHomeSafe'" (clear)="setNoResponse('returnHomeSafe')"
-                   [items]="homeSafeOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-      </div>
-
-      <div class="mb-3">
         <label class="form-label" for="leftHomeReasons">
           What are the primary reasons you left your home country and currently live in {{candidate.country.name}}?
         </label>
@@ -118,6 +111,13 @@
                     id="leftHomeNotes" [formControlName]="'leftHomeNotes'"
                     placeholder="" ></textarea>
         </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="returnHomeSafe">Do you feel it is safe to permanently return to your home country?</label>
+        <ng-select id="returnHomeSafe" [formControlName]="'returnHomeSafe'" (clear)="setNoResponse('returnHomeSafe')"
+                   [items]="homeSafeOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
 
       <div class="mb-3">
