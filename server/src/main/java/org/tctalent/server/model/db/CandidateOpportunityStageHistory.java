@@ -71,7 +71,7 @@ public class CandidateOpportunityStageHistory {
             stage = CandidateOpportunityStage.textToEnum(sfHistory.getStageName());
         } catch (IllegalArgumentException e) {
             log.error("Error decoding stage in load: " + sfHistory.getStageName() +
-                " in candidate op " + oppId);
+                " in candidate opp " + oppId);
             stage = CandidateOpportunityStage.prospect;
         }
         setStage(stage);
