@@ -30,7 +30,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -38,7 +45,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -50,6 +59,8 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Opportunity;
@@ -67,16 +78,19 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
+@RequiredArgsConstructor
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
     private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateService candidateService;
+    private final EmailHelper emailHelper;
     private final JobChatService jobChatService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
@@ -84,23 +98,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final AuthService authService;
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
-
-
-    public CandidateOpportunityServiceImpl(
-            CandidateOpportunityRepository candidateOpportunityRepository,
-            CandidateService candidateService, JobChatService jobChatService, SalesforceJobOppService salesforceJobOppService, SalesforceService salesforceService,
-            UserService userService, AuthService authService, GoogleDriveConfig googleDriveConfig,
-        FileSystemService fileSystemService) {
-        this.candidateOpportunityRepository = candidateOpportunityRepository;
-        this.candidateService = candidateService;
-        this.jobChatService = jobChatService;
-        this.salesforceJobOppService = salesforceJobOppService;
-        this.salesforceService = salesforceService;
-        this.userService = userService;
-        this.authService = authService;
-        this.googleDriveConfig = googleDriveConfig;
-        this.fileSystemService = fileSystemService;
-    }
 
     /**
      * Creates or updates CandidateOpportunities associated with the given candidates going for
@@ -214,7 +211,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
 
     @Override
-    public CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp) {
+    public @Nullable CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp) {
         return candidateOpportunityRepository.findByCandidateIdAndJobId(candidate.getId(), jobOpp.getId());
     }
 
@@ -552,4 +549,89 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         return uploadedFile;
     }
+
+    //One minute past Midnight GMT
+    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+    @SchedulerLock(name = "CandidateOpportunityService_scheduledNotifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+    @Transactional
+    public void scheduledNotifyOfChatsWithNewPosts() {
+        notifyOfChatsWithNewPosts();
+    }
+
+    /**
+     * Can be called directly by SystemAdminApi as often as needed without running into
+     * the SchedulerLock which is on {@link #scheduledNotifyOfChatsWithNewPosts()}
+     */
+    public void notifyOfChatsWithNewPosts() {
+
+        Map<Long, Set<JobChat>> userNotifications = new HashMap<>();
+
+        OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
+        List<Long> chatsWithNewPosts = jobChatService.findChatsWithPostsSinceDate(yesterday);
+
+        List<JobChat> chats = jobChatService.findByIds(chatsWithNewPosts);
+
+        //Note that this is Candidate user notification only.
+        //Extract all users who need to be notified of chats with new posts
+        for (JobChat chat : chats) {
+            JobChatType chatType = chat.getType();
+            Candidate candidate = chat.getCandidate();
+            SalesforceJobOpp job = chat.getJobOpp();
+            switch (chatType) {
+                case CandidateProspect -> {
+                    if (candidate != null) {
+                        Set<JobChat> userChats =
+                            userNotifications.computeIfAbsent(
+                                candidate.getUser().getId(), k -> new HashSet<>());
+                        userChats.add(chat);
+                    }
+                }
+                case CandidateRecruiting -> {
+                    if (candidate != null && job != null) {
+                        CandidateOpportunity aCase = findOpp(candidate, job);
+                        if (aCase != null) {
+                            //Candidates only see this chat if they are at or past the review stage
+                            if (aCase.getStage().isWon() || !aCase.getStage().isClosed()
+                                && CandidateOpportunityStage.cvReview.compareTo(aCase.getStage()) <= 0) {
+                                Set<JobChat> userChats =
+                                    userNotifications.computeIfAbsent(
+                                        candidate.getUser().getId(), k -> new HashSet<>());
+                                userChats.add(chat);
+                            }
+                        }
+                    }
+                }
+                case AllJobCandidates -> {
+                    if (job != null) {
+                        Set<CandidateOpportunity> cases = job.getCandidateOpportunities();
+                        for (CandidateOpportunity aCase : cases) {
+                            //Candidates only see this chat if they have accepted the job offer
+                            if (aCase.getStage().isWon() || !aCase.getStage().isClosed()
+                                && CandidateOpportunityStage.acceptance.compareTo(aCase.getStage()) <= 0) {
+                                candidate = aCase.getCandidate();
+                                Set<JobChat> userChats =
+                                    userNotifications.computeIfAbsent(
+                                        candidate.getUser().getId(), k -> new HashSet<>());
+                                userChats.add(chat);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Construct and send emails
+        for (Long userId : userNotifications.keySet()) {
+            final Set<JobChat> userChats = userNotifications.get(userId);
+            String s = userChats.stream()
+                .map(c -> c.getId().toString())
+                .collect(Collectors.joining(","));
+            log.info("Tell user " + userId + " about posts to chats " + s);
+            User user = userService.getUser(userId);
+            if (user != null) {
+                emailHelper.sendNewChatPostsForCandidateUserEmail(user, userChats);
+            }
+        }
+    }
+
 }

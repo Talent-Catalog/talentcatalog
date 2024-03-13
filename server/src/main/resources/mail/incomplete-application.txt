@@ -1,35 +1,31 @@
 Dear [(${displayName})],
 
-Thank you for registering with Talent Beyond Boundaries.
+Thank you for registering with the Talent Catalog.
+
+Your local Talent Catalog partner is [(${partner.getAbbreviation()})] [(${partner.getWebsiteUrl()})].
 
 Our team has reviewed your profile and determined that it is incomplete. This means your profile cannot currently be considered for international employment opportunities until you have added the missing information. Please look back through your profile and add additional information. Remember to "submit" your profile at the end.
+
 [(${candidateMessage})]
 
-Please login and update your application
+Please login again and update your application by going to [(${loginUrl})] in your browser.
 
-Your username is [(${username})].
+Your Talent Catalog username is [(${username})].
 
-If you forget your password, you can reset it here [(${forgotPwdUrl})] (copy paste to browser address bar).
+If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
 
-Please note that having an active profile does not mean that you will be matched with a job opportunity. TBB will only contact you if an employer expresses interest in your profile. 
+Please note that having an active profile does not mean that you will be matched with a job opportunity. You will only be contacted if an employer expresses interest in your profile.
 
-Please continue to update your profile as you gain additional experience, education, or skills. Talent Beyond Boundaries’ (TBB) mission is to open international visa pathways for refugees and other forcibly displaced people to use their skills and talents as a route towards restored self-reliance and safety.
+Please continue to update your profile as you gain additional experience, education, or skills.
 
-TBB is a nonprofit organization with a cooperation agreement with UNHCR. We link those who are displaced by conflict with jobs in countries around the world where their skills are needed and facilitate the visas for them to work abroad. Anyone is welcome to create a profile on the Talent Catalog; by sharing information about your employment history and skills, you contribute to demonstrating the breadth and depth of talent among displaced people. However, at this time, TBB is only considering applicants currently based in Lebanon and Jordan for positions in Australia, Canada, and the United Kingdom. We will continue to update the Talent Catalog, our website, and our social media with any changes to our program. 
-We share frequent updates of our progress to open this new pathway to our various media channels and will also email these updates to registrants who have provided an email.
-Please follow us on our various channels:
+Privacy Policy:
 
-https://www.facebook.com/TalentBeyondBoundaries/ We invite you to like us on Facebook and share widely.
+* Your contact information will not be shared with any other party without your permission.
 
-https://www.youtube.com/watch?v=YH_5_vBhiFk  Check out our youtube channels for helpful videos and updates.
+Notes:
 
-https://tctalent.org/  We urge you to log back in if any of your information changes.
+* Please do not share your username or password.
 
-http://www.talentbeyondboundaries.org/ Check out our website.
+* Partners using the Talent Catalog will never ask you for any form of payment for registering or to receive a job offer. We do not charge any money for our services. If anyone asks you for money, that is a scam. You should ignore the request and notify <span th:text="${partner.getAbbreviation()}"></span> immediately.
 
-Private Policy:
-
-TBB will not share your contact information with any other party without your permission. Talent Beyond Boundaries staff and their partners will never ask you for any form of payment for registering or to receive a job offer. TBB is a not-for-profit organization and we do not charge any money for our services, and. Do not share your username or password, or any payment method, as any such request is fraudulent. If anyone makes such a request, please alert TBB immediately. Please contact us if you would like to delete your profile.
-
-Sincerely,
-Talent Beyond Boundaries
+* Please contact your local partner, [(${partner.getAbbreviation()})], if you would like to delete your profile.
