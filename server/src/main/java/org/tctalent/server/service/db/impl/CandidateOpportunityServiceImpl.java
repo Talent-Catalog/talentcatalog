@@ -431,7 +431,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                         currentOppHistory.add(history);
                     } else {
                         //Process current opp's history
-                        processOppHistory(currentOppHistory);
+                        processOppHistory(currentOppId, currentOppHistory);
 
                         //Start new history
                         currentOppId = history.getOpportunityId();
@@ -440,45 +440,51 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     }
                 }
                 //Need to process the last one
-                processOppHistory(currentOppHistory);
+                processOppHistory(currentOppId, currentOppHistory);
             }
         }
     }
 
-    private void processOppHistory(List<OpportunityHistory> currentOppHistories) {
-        if (!currentOppHistories.isEmpty()) {
+    private void processOppHistory(@Nullable String oppId, List<OpportunityHistory> oppHistories) {
+        if (oppId != null) {
             //Fetch opp to update.
-            final String oppId = currentOppHistories.get(0).getOpportunityId();
             CandidateOpportunity opp = getCandidateOpportunityFromSfId(oppId);
             if (opp == null) {
                 log.warn("Could not find candidate opp with SF id = " + oppId);
             } else {
-                //Decode Salesforce history into stageHistories
-                List<CandidateOpportunityStageHistory> stageHistories = new ArrayList<>();
-                for (OpportunityHistory history : currentOppHistories) {
-                    CandidateOpportunityStageHistory stageHistory = new CandidateOpportunityStageHistory();
-                    stageHistory.decodeFromSfHistory(history);
-                    stageHistories.add(stageHistory);
+                CandidateOpportunityStage lastActiveStage;
+                if (oppHistories.isEmpty()) {
+                    //If we have no history, assume last active stage is prospect
+                    lastActiveStage = CandidateOpportunityStage.prospect;
+                } else {
+                    //Decode Salesforce history into stageHistories
+                    List<CandidateOpportunityStageHistory> stageHistories = new ArrayList<>();
+                    for (OpportunityHistory history : oppHistories) {
+                        CandidateOpportunityStageHistory stageHistory = new CandidateOpportunityStageHistory();
+                        stageHistory.decodeFromSfHistory(history);
+                        stageHistories.add(stageHistory);
+                    }
+
+                    //Process decoded stageHistories.
+                    //Note that this relies on the fact that the histories are sorted in descending
+                    //timestamp order - do that the most recent come first.
+                    //See SalesforceService.findOpportunityHistories
+                    final Optional<CandidateOpportunityStage> lastActiveStageOptional = stageHistories.stream()
+                        .map(CandidateOpportunityStageHistory::getStage)
+                        .filter(stage -> !stage.isClosed())
+                        .findFirst();
+
+                    //If we only have closed stages - so no lastActiveStage - default to prospect
+                    lastActiveStage = lastActiveStageOptional.orElse(
+                        CandidateOpportunityStage.prospect);
                 }
 
-                //Process decoded stageHistories.
-                //Note that this relies on the fact that the histories are sorted in descending
-                //timestamp order - do that the most recent come first.
-                //See SalesforceService.findOpportunityHistories
-                final Optional<CandidateOpportunityStage> lastActiveStage = stageHistories.stream()
-                    .map(CandidateOpportunityStageHistory::getStage)
-                    .filter(stage -> !stage.isClosed())
-                    .findFirst();
-
-                //If we only have closed stages - so no lastActiveStage - default to prospect
-                CandidateOpportunityStage stage = lastActiveStage.orElse(
-                    CandidateOpportunityStage.prospect);
-
                 //Set lastActiveStage on candidate opp
-                opp.setLastActiveStage(stage);
+                opp.setLastActiveStage(lastActiveStage);
                 candidateOpportunityRepository.save(opp);
                 log.info("Updated lastActiveStage of candidate opportunity "
-                    + opp.getName() + "(" + opp.getId() + ") to " + stage.name());
+                    + opp.getName() + "(" + opp.getId() + ") to " + lastActiveStage.name());
+
             }
         }
     }

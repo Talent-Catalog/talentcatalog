@@ -70,9 +70,10 @@ public class CandidateOpportunity extends AbstractOpportunity {
 
     /**
      * Last active stage of opportunity.
+     * Defaults to prospect.
      */
     @Enumerated(EnumType.STRING)
-    CandidateOpportunityStage lastActiveStage;
+    CandidateOpportunityStage lastActiveStage = CandidateOpportunityStage.prospect;
 
     /**
      * Current stage of opportunity.
