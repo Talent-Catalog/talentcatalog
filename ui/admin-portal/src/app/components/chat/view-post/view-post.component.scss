@@ -1,0 +1,69 @@
+/*!
+ * Copyright (c) 2024 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+button.reaction-btn {
+  border: none;
+  background-color: inherit;
+  color: #444;
+}
+
+button.reaction-btn:hover {
+  color: #0066cc;
+}
+
+button.reaction-btn-selected {
+  border: none;
+  background-color: inherit;
+  color: #0066cc;
+}
+
+button.update-reaction-btn {
+  background-color: #a8c4d6;
+  border: 0.1em solid #444;
+  margin: 0.2em;
+  text-align: center;
+  color: #444;
+  display: inline-block;
+  border-radius: 8em;
+  font-size: small;
+}
+
+button.update-reaction-btn:hover {
+  border-color: #0066cc;
+  color: #0066cc;
+}
+
+emoji-mart#reactionPicker {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+div#reactionTooltipEmoji {
+  font-size: xx-large;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}

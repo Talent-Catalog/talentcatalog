@@ -50,6 +50,11 @@ export interface ShortUser {
   partner: ShortPartner;
 }
 
+export interface DisplayUser {
+  id: number;
+  displayName: string;
+}
+
 export interface UpdateUserRequest {
   email: string;
   firstName: string;
