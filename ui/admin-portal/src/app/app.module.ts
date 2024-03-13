@@ -777,6 +777,7 @@ import {ResetPasswordComponent} from './components/account/reset-password/reset-
 import {
   UserChangePasswordComponent
 } from './components/account/user-change-password/user-change-password.component';
+import {PickerModule} from "@ctrl/ngx-emoji-mart";
 
 @NgModule({
   declarations: [
@@ -1111,7 +1112,8 @@ import {
       storageType: 'localStorage'
     }),
     DragulaModule.forRoot(),
-    QuillModule.forRoot()
+    QuillModule.forRoot(),
+    PickerModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

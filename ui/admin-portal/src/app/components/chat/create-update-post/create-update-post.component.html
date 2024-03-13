@@ -12,25 +12,40 @@
                   formControlName="content"
                   [modules]="moduleOptions"
                   (onEditorCreated)="editorCreated($event)">
-      <div quill-editor-toolbar>
-          <button class="ql-list" value="ordered"></button>
-          <button class="ql-list" value="bullet"></button>
 
-          <button class="ql-bold"></button>
-          <button class="ql-italic"></button>
-          <button class="ql-underline"></button>
+      <div quill-editor-toolbar id="quillToolbar">
+        <button class="ql-list" value="ordered"></button>
+        <button class="ql-list" value="bullet"></button>
+        <button class="ql-bold"></button>
+        <button class="ql-italic"></button>
+        <button class="ql-underline"></button>
+        <button class="ql-link"></button>
+        <button class="ql-image"></button>
 
+        <button class="custom-quill-btn" (click)="uploadFile()">
+          <i class="fa-solid fa-file-upload small"></i>
+        </button>
 
+        <button
+          id="emojiBtn"
+          [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-selected'"
+          (click)="onClickEmojiBtn()">
+          <i class="fa-regular fa-face-smile" id="emojiBtnIcon"></i>
+        </button>
 
-          <button class="ql-link"></button>
-          <button class="ql-image"></button>
-          <button class="custom-quill-btn" (click)="uploadFile()"><i class="fa-solid fa-file-upload small"></i></button>
-
+        <emoji-mart
+          id="editorPicker"
+          *ngIf="emojiPickerVisible"
+          (emojiClick)="onSelectEmoji($event)"
+          emoji="point_up"
+          title="Add emoji...&nbsp;&nbsp;👍"
+          [autoFocus]="true"
+          [perLine]="8"
+          [emojisToShowFilter]="emojisToShowFilter"
+        ></emoji-mart>
       </div>
     </quill-editor>
   </div>
-
-
 
   <div class="d-flex justify-content-end">
     <button type="button" class="btn btn-success " (click)="onSend()"

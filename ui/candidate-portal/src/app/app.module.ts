@@ -122,9 +122,11 @@ import {
   faEdit,
   faEllipsisH,
   faExternalLinkAlt,
+  faFaceSmile,
   faFileUpload,
   faFolderOpen,
   faGlobe,
+  faPlus,
   faQuestion,
   faQuestionCircle,
   faTimes
@@ -191,6 +193,7 @@ import {
   RegistrationCreateAccountComponent
 } from './components/register/create-account/registration-create-account.component';
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
+import {PickerModule} from "@ctrl/ngx-emoji-mart";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -294,7 +297,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     FontAwesomeModule,
     NgSelectModule,
     NgxWigModule,
-    QuillModule.forRoot()
+    QuillModule.forRoot(),
+    PickerModule
   ],
   providers: [
     {provide: RedirectGuard},
@@ -334,7 +338,9 @@ export class AppModule {
       faArrowLeft,
       faQuestionCircle,
       faFolderOpen,
-      faFileUpload
+      faFileUpload,
+      faFaceSmile,
+      faPlus
     );
   }
 }

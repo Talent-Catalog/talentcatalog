@@ -25,8 +25,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.model.db.Role;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -55,6 +57,7 @@ public class EmailHelper {
     public void sendRegistrationEmail(User user) throws EmailSendFailedException {
 
         String email = user.getEmail();
+        Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
         String subject;
@@ -62,12 +65,13 @@ public class EmailHelper {
         String bodyHtml;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("username", user.getUsername());
-            ctx.setVariable("forgotPwdUrl", portalUrl + "/reset-password/");
+            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
             ctx.setVariable("year", currentYear());
 
-            subject = "Talent Beyond Boundaries - Thank you for your application";
+            subject = "Talent Catalog - Thank you for your registration";
             bodyText = textTemplateEngine.process("registration", ctx);
             bodyHtml = htmlTemplateEngine.process("registration", ctx);
 
@@ -83,12 +87,14 @@ public class EmailHelper {
         String email = user.getEmail();
         String displayName = user.getDisplayName();
         String token = user.getResetToken();
+        Partner partner = user.getPartner();
 
         String subject;
         String bodyText;
         String bodyHtml;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
 
             String resetUrl = user.getRole() == Role.user ? portalUrl : adminUrl;
@@ -110,19 +116,21 @@ public class EmailHelper {
 
         String email = user.getEmail();
         String displayName = user.getDisplayName();
+        Partner partner = user.getPartner();
 
         String subject;
         String bodyText;
         String bodyHtml;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("candidateMessage", message);
             ctx.setVariable("username", user.getUsername());
-            ctx.setVariable("forgotPwdUrl", portalUrl + "/reset-password/");
+            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
             ctx.setVariable("year", currentYear());
 
-            subject = "Talent Beyond Boundaries - Please provide more details application";
+            subject = "Talent Catalog - Please provide more registration details";
             bodyText = textTemplateEngine.process("incomplete-application", ctx);
             bodyHtml = htmlTemplateEngine.process("incomplete-application", ctx);
 
@@ -133,9 +141,10 @@ public class EmailHelper {
         }
     }
 
-    public void sendWatcherEmail(User user, Set<SavedSearch> savedSearches) {
+    public void sendNewChatPostsForCandidateUserEmail(User user, Set<JobChat> chats) {
 
         String email = user.getEmail();
+        Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
         String subject;
@@ -143,10 +152,44 @@ public class EmailHelper {
         String bodyHtml;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("chats", chats);
+            ctx.setVariable("loginUrl", portalUrl);
+            ctx.setVariable("username", user.getUsername());
+
+            subject = "Talent Catalog - New chat posts";
+            bodyText = textTemplateEngine.process("candidate-chat-notification", ctx);
+            bodyHtml = htmlTemplateEngine.process("candidate-chat-notification", ctx);
+
+            log.info("Sending email to " + email);
+            log.info("Subject: " + subject);
+            log.info("Text\n" + bodyText);
+            log.info("Html\n" + bodyHtml);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            log.error("error sending candidate chat notification email", e);
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    public void sendWatcherEmail(User user, Set<SavedSearch> savedSearches) {
+
+        String email = user.getEmail();
+        Partner partner = user.getPartner();
+        String displayName = user.getDisplayName();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("searches", savedSearches);
 
-            subject = "TBB - New candidates matching your watched searches";
+            subject = "Talent Catalog - New candidates matching your watched searches";
             bodyText = textTemplateEngine.process("watcher-notification", ctx);
             bodyHtml = htmlTemplateEngine.process("watcher-notification", ctx);
 

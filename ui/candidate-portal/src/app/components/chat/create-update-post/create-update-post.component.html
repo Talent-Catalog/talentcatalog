@@ -1,4 +1,3 @@
-
 <!--
   ~ Copyright (c) 2023 Talent Beyond Boundaries.
   ~
@@ -28,23 +27,39 @@
                   formControlName="content"
                   [modules]="moduleOptions"
                   (onEditorCreated)="editorCreated($event)">
-      <div quill-editor-toolbar>
+      <div quill-editor-toolbar id="quillToolbar">
         <button class="ql-list" value="ordered"></button>
         <button class="ql-list" value="bullet"></button>
-
         <button class="ql-bold"></button>
         <button class="ql-italic"></button>
         <button class="ql-underline"></button>
-
-
-
         <button class="ql-link"></button>
         <button class="ql-image"></button>
+
         <button class="custom-quill-btn" (click)="uploadFile()">
           <fa-icon *ngIf="!saving" icon="file-upload" size="xs"></fa-icon>
           <app-loading [loading]="saving"></app-loading>
         </button>
 
+        <button
+          id="emojiBtn"
+          [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
+          (click)="onClickEmojiBtn()">
+          <fa-icon icon="face-smile" size="xs"></fa-icon>
+        </button>
+
+        <span #editorPickerSpan>
+          <emoji-mart
+            id="editorPicker"
+            *ngIf="emojiPickerVisible"
+            (emojiClick)="onSelectEmoji($event)"
+            emoji="point_up"
+            title="Add emoji..."
+            [autoFocus]="true"
+            [perLine]="8"
+            [emojisToShowFilter]="emojisToShowFilter"
+          ></emoji-mart>
+        </span>
       </div>
     </quill-editor>
   </div>

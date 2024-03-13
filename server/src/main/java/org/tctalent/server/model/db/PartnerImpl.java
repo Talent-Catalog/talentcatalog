@@ -32,7 +32,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.partner.Partner;
@@ -40,7 +39,6 @@ import org.tctalent.server.util.SalesforceHelper;
 
 @Getter
 @Setter
-@ToString
 @Entity(name = "Partner")
 @Table(name = "partner")
 public class PartnerImpl extends AbstractDomainObject<Long>
@@ -153,4 +151,13 @@ public class PartnerImpl extends AbstractDomainObject<Long>
         this.registrationLandingPage = registrationLandingPage;
     }
 
+    /**
+     * Simple toString rather than Lombok generated one which was causing an infinite recursion
+     * error.
+     * @return Partner name
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
 }

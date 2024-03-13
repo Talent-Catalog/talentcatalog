@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2023 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,32 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-button.custom-emoji-btn {
-  color: #444 !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
+package org.tctalent.server.repository.db;
+
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.tctalent.server.model.db.Reaction;
+
+public interface ReactionRepository extends JpaRepository<Reaction, Long>,
+    JpaSpecificationExecutor<Reaction> {
+    Optional<List<Reaction>> findBychatPostId(Long chatPostId);
+
+    Optional<Reaction> findByEmojiAndChatPostId(String emoji, Long chatPostId);
 }
-
-button.custom-emoji-btn:hover {
-  color: #0066cc !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
-button.custom-emoji-btn-menu-open {
-  color: #0066cc !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
-emoji-mart#editorPicker {
-  position: absolute;
-  top: -456px;
-  left: -20px;
-}
-
-#quillToolbar {
-  position: relative;
-}
-
-

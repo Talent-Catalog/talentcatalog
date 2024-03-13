@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db;
 
+import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -112,6 +114,26 @@ public interface JobChatService {
     @NonNull JobChat createCandidateRecruitingChat(
         @NonNull Candidate candidate, @NonNull SalesforceJobOpp job)
         throws InvalidRequestException;
+
+    /**
+     * Return chats by their ids
+     * @param ids The ids to be looked up. If an id does not correspond to any chat,
+     *            it is ignored and no chat is returned.
+     * @return Chats with ids matching the given ids.
+     */
+    List<JobChat> findByIds(@NonNull Collection<Long> ids);
+
+    /**
+     * Find chats which have posts where the date of the last post is greater than a given date.
+     * <p/>
+     * Note that this is in this service rather than ChatPostService to avoid circular dependency.
+     * Implementing this method requires a lot of candidate opportunity processing to determine
+     * which chats are associated with logged in user.
+     *
+     * @param dateTime We want chats with posts after this date
+     * @return Chats since the given date
+     */
+    List<Long> findChatsWithPostsSinceDate(OffsetDateTime dateTime);
 
     /**
      * Get the JobChat with the given id.

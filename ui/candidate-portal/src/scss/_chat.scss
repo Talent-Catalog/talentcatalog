@@ -14,8 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
-
 #posts {
   overflow: scroll;
   max-height: 60vh;
@@ -56,5 +54,11 @@ button.custom-quill-btn {
   padding-bottom: 5px !important;
 }
 
+.emoji-mart-scroll {
+  margin-top: 0;
+}
 
+.emoji-mart-category {
+  margin: 0;
+}
 

@@ -15,46 +15,78 @@
   -->
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Talent Beyond Boundaries Portal</title>
+    <title>Talent Catalog Portal</title>
 </head>
 <body>
-<div class="password-reset">
+<div>
     <p>Dear <span th:text="${displayName}"></span>,</p>
-    <p>Thank you for registering with Talent Beyond Boundaries. </p>
+    <p>
+        <strong>Thank you for registering on the <a href="https://tctalent.org/">Talent Catalog</a></strong>
+    </p>
+    <p>
+        Your local Talent Catalog partner is
+        <span th:text="${partner.getAbbreviation()} + ${partner.getWebsiteUrl()}"></span>
+    </p>
 
-    <p>Our team has reviewed your profile and determined that it is incomplete. This means your profile cannot currently be considered for international employment opportunities until you have added the missing information. Please look back through your profile and add additional information. Remember to "submit" your profile at the end.</p>
+    <p>Our team has reviewed your profile and determined that it is incomplete.
+        This means your profile cannot currently be considered for international employment
+        opportunities until you have added the missing information.
+        Please look back through your profile and add additional information.
+        Remember to "submit" your profile at the end.</p>
 
     <p th:text="${candidateMessage}"></p>
 
-    <p>Your username is <span th:text="${username}"></span>.<br/>
-        If you forget your password, you can reset it <a th:href="${forgotPwdUrl}">here</a>.</p>
 
-    <p>Please note that having an active profile does not mean that you will be matched with a job opportunity. You will only be contacted if an employer expresses interest in your profile.</p>
+    <p>
+        Please log in again and update your application
+        by clicking <a th:href="${loginUrl}">here</a>
+        or by going to <span th:text="${loginUrl}"></span> in your browser.
+    </p>
+    <p>
+        Your Talent Catalog username is <span th:text="${username}"></span>.
+    </p>
+    <p>
+        If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
+    </p>
 
-    <p>Please continue to update your profile as you gain additional experience, education, or skills. Our mission is to open international visa pathways for refugees and other forcibly displaced people to use their skills and talents as a route towards restored self-reliance and safety. </p>
+    <p>
+        For the best chance of attracting an employer’s attention, continue to update your profile
+        as you gain additional experience, education, or skills.
+    </p>
 
-    <p>TBB is a nonprofit organization with a cooperation agreement with UNHCR. We link those who are displaced by conflict with jobs in countries around the world where their skills are needed and facilitate the visas for them to work abroad. Anyone is welcome to create a profile on the Talent Catalog; by sharing information about your employment history and skills, you contribute to demonstrating the breadth and depth of talent among displaced people. However, at this time, TBB is only considering applicants currently based in Lebanon and Jordan for positions in Australia, Canada, and the United Kingdom. We will continue to update the Talent Catalog, our website, and our social media with any changes to our program. 
-        We share frequent updates of our progress to open this new pathway to our various media channels and will also email these updates to registrants who have provided an email.  Please follow us on our various channels:</p>
+    <p>
+        Please keep in mind that - while we want to help everyone -
+        <strong>only a very small proportion of people listed in our Talent Catalog will ever be
+            offered international employment</strong>.
+        Thus you should not completely rely on this solution, and should continue to pursue other
+        opportunities if/when they are available to you.
+    </p>
 
-    <p><strong>Please follow us on our various channels:</strong></p>
+    <p>
+        <strong>We will only contact you if an employer expresses interest in your profile</strong>.
+    </p>
 
-    <p><a href="https://www.facebook.com/TalentBeyondBoundaries/">TBB Facebook</a> We invite you to like us on Facebook and share widely.</p>
+    <p><strong>Privacy Policy:</strong></p>
 
-    <p><a href="https://www.youtube.com/watch?v=YH_5_vBhiFk">TBB Introduction Video</a> Check out our youtube channels for helpful videos and updates.</p>
-
-    <p><a href="https://tctalent.org/">Talent Catalog</a> We urge you to log back in if any of your information changes.</p>
-
-    <p><a href="http://www.talentbeyondboundaries.org/">TBB Website</a> Check out our website.</p>
-
-    <p><strong>Private Policy:</strong></p>
-
-    <p>TBB will not share your contact information with any other party without your permission. Talent Beyond Boundaries staff and their partners will never ask you for any form of payment for registering or to receive a job offer. TBB is a not-for-profit organization and we do not charge any money for our services, and. Do not share your username or password, or any payment method, as any such request is fraudulent. If anyone makes such a request, please alert TBB immediately. Please contact us if you would like to delete your profile.</p>
-
-    <p><b><i>Sincerely,<br/>
-        Talent Beyond Boundaries</i></b></p>
+    <p>
+        Your contact information will not be shared with any other party without your permission.
+    </p>
+    <p><strong>Notes:</strong></p>
+    <p>
+        Please do not share your username or password.
+    </p>
+    <p>
+        Partners using the Talent Catalog will never ask you for any form of payment for
+        registering or to receive a job offer. We do not charge any money for our services.
+        If anyone asks you for money, that is a scam.
+        You should ignore the request and notify <span th:text="${partner.getAbbreviation()}"></span> immediately.
+    <p>
+    Please contact your local partner, <span th:text="${partner.getAbbreviation()}"></span>,
+    if you would like to delete your profile.
+    </p>
 </div>
 </body>
 </html>
