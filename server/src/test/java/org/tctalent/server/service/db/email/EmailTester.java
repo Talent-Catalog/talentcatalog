@@ -54,7 +54,7 @@ public class EmailTester {
         sender.setPort(0);
         sender.setUser("");
         sender.setPassword("");
-        sender.setAuthenticate(false);
+        sender.setAuthenticated(false);
         sender.setDefaultEmail("test-from@dp.test.com");
         sender.setTestOverrideEmail("");
         sender.init();

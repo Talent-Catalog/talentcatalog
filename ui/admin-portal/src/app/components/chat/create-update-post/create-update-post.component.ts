@@ -21,6 +21,7 @@ export class CreateUpdatePostComponent implements OnInit {
   postForm: FormGroup;
   quillEditorRef: Quill;
   moduleOptions = {};
+  public emojiPickerVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -114,4 +115,27 @@ export class CreateUpdatePostComponent implements OnInit {
     .catch(() => {
     });
   }
+
+  // Adds an emoji to the text editor and focuses the caret directly after it.
+  public onSelectEmoji(event) {
+    this.emojiPickerVisible = false;
+    const index: number = this.quillEditorRef.selection.savedRange.index;
+    this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
+    this.quillEditorRef.setSelection(index + 2, 0);
+  }
+
+  // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
+  public onClickEmojiBtn() {
+    this.emojiPickerVisible = !this.emojiPickerVisible;
+    if(!this.emojiPickerVisible) {
+      const index: number = this.quillEditorRef.selection.savedRange.index;
+      this.quillEditorRef.setSelection(index, 0);
+    }
+  }
+
+  // These emojis didn't work for some reason — this function excludes them from the picker.
+  emojisToShowFilter = (emoji: any) => {
+    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
+  }
+
 }

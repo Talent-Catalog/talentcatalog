@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +27,11 @@ import org.tctalent.server.model.db.JobChatType;
 
 public interface JobChatRepository extends JpaRepository<JobChat, Long>,
     JpaSpecificationExecutor<JobChat> {
+
+
+    @Query(" select c from JobChat c "
+        + " where c.id in (:ids) ")
+    List<JobChat> findByIds(@Param("ids") Iterable<Long> ids);
 
     @Query("select c from JobChat c where c.type = :type "
         + "and c.jobOpp is not null and c.jobOpp.id = :jobId")
@@ -50,4 +57,23 @@ public interface JobChatRepository extends JpaRepository<JobChat, Long>,
     JobChat findByTypeAndJobAndPartner(
         @Param("type") JobChatType type, @Param("jobId") Long jobId,
         @Param("partnerId") Long partnerId);
+
+    /**
+     * Find chats which have posts where the date of the last post is greater than a given date.
+     * <p/>
+     * Note: I had to use a native query returning chat ids instead of a non-native query returning
+     * JobChats because the Spring Framework JPA Data code crashed with a Null pointer exception
+     * trying to validate the query - even though the query was valid.
+     * As a workaround, this query returns ids which can be passed to {@link #findByIds(Iterable)}
+     * to retrieve the JobChat objects - JC
+     *
+     * @param dateTime We want chats with posts after this date
+     * @return Chats since the given date
+     */
+    @Query(value = """
+        select id from job_chat c where
+        (select created_date from chat_post
+        where chat_post.id = (select max(chat_post.id) from chat_post where chat_post.job_chat_id = c.id)) > :date
+        """, nativeQuery = true)
+    List<Long> myFindChatsWithPostsSinceDate(@Param("date") OffsetDateTime dateTime);
 }
