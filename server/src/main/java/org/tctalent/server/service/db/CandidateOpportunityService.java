@@ -110,6 +110,11 @@ public interface CandidateOpportunityService {
     CandidateOpportunity loadCandidateOpportunity(Opportunity op) throws SalesforceException;
 
     /**
+     * This loads the last active stages of all cases from Salesforce.
+     */
+    void loadCandidateOpportunityLastActiveStages();
+
+    /**
      * Returns the ids of chats not fully read by the currently logged in user, which are
      * associated with candidate opportunities returned from the given search request.
      * @param request - Search Request

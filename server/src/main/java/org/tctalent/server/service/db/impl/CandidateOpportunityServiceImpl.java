@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -58,12 +59,14 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.CandidateOpportunityStageHistory;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateOpportunitySpecification;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
@@ -266,8 +269,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private CandidateOpportunity loadCandidateOpportunity(Opportunity op, boolean createJobOpp) throws SalesforceException {
         String id = op.getId();
         //Look for existing candidate op with that SF id.
-        CandidateOpportunity candidateOpportunity = candidateOpportunityRepository.findBySfId(id)
-            .orElse(null);
+        CandidateOpportunity candidateOpportunity = getCandidateOpportunityFromSfId(id);
         if (candidateOpportunity == null) {
             candidateOpportunity = new CandidateOpportunity();
         }
@@ -395,6 +397,105 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             newStatus = CandidateStatus.withdrawn;
         }
         return newStatus;
+    }
+
+    @Async
+    @Override
+    public void loadCandidateOpportunityLastActiveStages() {
+
+        log.info("Loading candidate opportunities from Salesforce");
+
+        final int limit = 10;
+
+        String lastId = null;
+        int totalOpps = 0;
+        int nOpps = -1;
+        while (nOpps != 0) {
+
+            log.info("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId));
+            List<Opportunity> ops = salesforceService.findCandidateOpportunities(
+                lastId == null ? null : "Id > '" + lastId + "'", limit);
+            nOpps = ops.size();
+            totalOpps += nOpps;
+            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps);
+            if (nOpps > 0) {
+                lastId = ops.get(nOpps - 1).getId();
+
+                List<String> oppIds = ops.stream().map(Opportunity::getId).toList();
+                List<OpportunityHistory> histories = salesforceService.findOpportunityHistories(oppIds);
+
+                String currentOppId = null;
+                List<OpportunityHistory> currentOppHistory = new ArrayList<>();
+                for (OpportunityHistory history : histories) {
+                    if (history.getOpportunityId().equals(currentOppId)) {
+                        currentOppHistory.add(history);
+                    } else {
+                        //Process current opp's history
+                        processOppHistory(currentOppId, currentOppHistory);
+
+                        //Start new history
+                        currentOppId = history.getOpportunityId();
+                        currentOppHistory.clear();
+                        currentOppHistory.add(history);
+                    }
+                }
+                //Need to process the last one
+                processOppHistory(currentOppId, currentOppHistory);
+            }
+        }
+    }
+
+    private void processOppHistory(@Nullable String oppId, List<OpportunityHistory> oppHistories) {
+        if (oppId != null) {
+            //Fetch opp to update.
+            CandidateOpportunity opp = getCandidateOpportunityFromSfId(oppId);
+            if (opp == null) {
+                log.warn("Could not find candidate opp with SF id = " + oppId);
+            } else {
+                CandidateOpportunityStage lastActiveStage;
+                if (oppHistories.isEmpty()) {
+                    //If we have no history, assume last active stage is prospect
+                    lastActiveStage = CandidateOpportunityStage.prospect;
+                } else {
+                    //Decode Salesforce history into stageHistories
+                    List<CandidateOpportunityStageHistory> stageHistories = new ArrayList<>();
+                    for (OpportunityHistory history : oppHistories) {
+                        CandidateOpportunityStageHistory stageHistory = new CandidateOpportunityStageHistory();
+                        stageHistory.decodeFromSfHistory(history);
+                        stageHistories.add(stageHistory);
+                    }
+
+                    //Process decoded stageHistories.
+                    //Note that this relies on the fact that the histories are sorted in descending
+                    //timestamp order - do that the most recent come first.
+                    //See SalesforceService.findOpportunityHistories
+                    final Optional<CandidateOpportunityStage> lastActiveStageOptional = stageHistories.stream()
+                        .map(CandidateOpportunityStageHistory::getStage)
+                        .filter(stage -> !stage.isClosed())
+                        .findFirst();
+
+                    //If we only have closed stages - so no lastActiveStage - default to prospect
+                    lastActiveStage = lastActiveStageOptional.orElse(
+                        CandidateOpportunityStage.prospect);
+                }
+
+                //Set lastActiveStage on candidate opp
+                opp.setLastActiveStage(lastActiveStage);
+                candidateOpportunityRepository.save(opp);
+                log.info("Updated lastActiveStage of candidate opportunity "
+                    + opp.getName() + "(" + opp.getId() + ") to " + lastActiveStage.name());
+
+            }
+        }
+    }
+
+    @Nullable
+    private CandidateOpportunity getCandidateOpportunityFromSfId(String oppId) {
+        //todo If this is running too slow, could index the sfId field on the database.
+        //todo But this is currently only used in an one off SystemAdminApi call so maybe
+        //todo not worth indexing.
+        //todo If we do index it, this method should be exposed in CandidateOpportunityService interface.
+        return candidateOpportunityRepository.findBySfId(oppId).orElse(null);
     }
 
     @Override

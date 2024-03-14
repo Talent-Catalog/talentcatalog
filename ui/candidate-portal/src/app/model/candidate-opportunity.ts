@@ -33,6 +33,7 @@ export interface CandidateOpportunity extends Opportunity {
 
   candidate: ShortCandidate;
   jobOpp: ShortJob;
+  lastActiveStage: CandidateOpportunityStage;
   stage: CandidateOpportunityStage;
 }
 

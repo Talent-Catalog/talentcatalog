@@ -59,15 +59,17 @@ export class CandidateOppComponent implements OnInit, OnChanges {
       type: JobChatType.CandidateProspect,
       candidateId: this.candidate.id
     }
-    // Only want to show destination chat if candidate is at or further than the CV Review stage.
-    this.showDestinationChat = isOppStageGreaterThanOrEqualTo(this.selectedOpp?.stage, "cvReview")
+    // Only want to show destination chat if candidate has reached or gone further than the CV Review stage.
+    this.showDestinationChat = isOppStageGreaterThanOrEqualTo(
+      this.selectedOpp?.lastActiveStage, "cvReview")
     const destinationChatRequest: CreateChatRequest = {
       type: JobChatType.CandidateRecruiting,
       candidateId: this.candidate.id,
       jobId: this.selectedOpp?.jobOpp?.id
     }
-    // Only want to show all job candidates chat if candidate is at or further than the Offer stage.
-    this.showAllChat = isOppStageGreaterThanOrEqualTo(this.selectedOpp?.stage, "offer");
+    // Only want to show all job candidates chat if candidate has reached or gone further than the Offer stage.
+    this.showAllChat = isOppStageGreaterThanOrEqualTo(
+      this.selectedOpp?.lastActiveStage, "offer");
     const allJobCandidatesChatRequest: CreateChatRequest = {
       type: JobChatType.AllJobCandidates,
       jobId: this.selectedOpp?.jobOpp?.id
@@ -75,8 +77,10 @@ export class CandidateOppComponent implements OnInit, OnChanges {
 
     forkJoin( {
       'sourceChat': this.chatService.getOrCreate(sourceChatRequest),
-      'destinationChat': this.showDestinationChat ? this.chatService.getOrCreate(destinationChatRequest) : of(null),
-      'allJobCandidatesChat': this.showAllChat? this.chatService.getOrCreate(allJobCandidatesChatRequest) : of(null),
+      'destinationChat': this.showDestinationChat ?
+        this.chatService.getOrCreate(destinationChatRequest) : of(null),
+      'allJobCandidatesChat': this.showAllChat?
+        this.chatService.getOrCreate(allJobCandidatesChatRequest) : of(null),
     }).subscribe(
       results => {
         this.loading = false;

@@ -18,6 +18,27 @@ package org.tctalent.server.service.db.impl;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -59,6 +80,7 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
@@ -68,28 +90,6 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import reactor.core.publisher.Mono;
-
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Standard implementation of Salesforce service
@@ -127,7 +127,7 @@ import java.util.stream.Collectors;
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
-    private static final String apiVersion = "v56.0";
+    private static final String apiVersion = "v58.0";
 
     /*
      * Unique Salesforce external ID's used to determine in Salesforce "upserts" whether
@@ -678,13 +678,42 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         OpportunityQueryResult result =
             response.bodyToMono(OpportunityQueryResult.class).block();
 
-        //Retrieve the contact from the response
+        //Retrieve the opps from the response
         List<Opportunity> opps = null;
         if (result != null) {
             opps = result.records;
         }
 
         return opps;
+    }
+
+    static class OpportunityHistoryQueryResult extends QueryResult {
+        public List<OpportunityHistory> records;
+    }
+
+    @NonNull
+    @Override
+    public List<OpportunityHistory> findOpportunityHistories(List<String> opportunityIds)
+        throws SalesforceException, WebClientException {
+
+        String ids = opportunityIds.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
+
+        String query =
+            "SELECT OpportunityId, StageName, SystemModstamp" +
+                " FROM OpportunityHistory WHERE OpportunityId IN (" + ids
+                + ") ORDER BY OpportunityId,SystemModstamp DESC";
+        ClientResponse response = executeQuery(query);
+
+        OpportunityHistoryQueryResult result =
+            response.bodyToMono(OpportunityHistoryQueryResult.class).block();
+
+        //Retrieve the objects from the response
+        List<OpportunityHistory> history = new ArrayList<>();
+        if (result != null) {
+            history = result.records;
+        }
+
+        return history;
     }
 
     @Override
