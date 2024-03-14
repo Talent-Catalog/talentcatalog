@@ -9,41 +9,39 @@
   <div class="my-3">
     <quill-editor id="content"
                   placeholder="Write your message..."
-                  formControlName="content"
-                  [modules]="moduleOptions"
+                  [formControlName]="'content'"
                   (onEditorCreated)="editorCreated($event)">
-
       <div quill-editor-toolbar id="quillToolbar">
-        <button class="ql-list" value="ordered"></button>
-        <button class="ql-list" value="bullet"></button>
-        <button class="ql-bold"></button>
-        <button class="ql-italic"></button>
-        <button class="ql-underline"></button>
-        <button class="ql-link"></button>
-        <button class="ql-image"></button>
+          <button class="ql-list" value="ordered" title="Ordered list"></button>
+          <button class="ql-list" value="bullet" title="Bullet list"></button>
+          <button class="ql-bold" title="Bold text"></button>
+          <button class="ql-italic" title="Italic text"></button>
+          <button class="ql-underline" title="Underline text"></button>
+          <button class="ql-link" title="Add link"></button>
 
-        <button class="custom-quill-btn" (click)="uploadFile()">
-          <i class="fa-solid fa-file-upload small"></i>
-        </button>
+          <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
+            <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
+            <i *ngIf="!saving" class="fa-solid fa-file-upload small"></i>
+          </button>
 
-        <button
-          id="emojiBtn"
-          [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-selected'"
-          (click)="onClickEmojiBtn()">
-          <i class="fa-regular fa-face-smile" id="emojiBtnIcon"></i>
-        </button>
+          <button
+            id="emojiBtn"
+            [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-selected'"
+            (click)="onClickEmojiBtn()">
+            <i class="fa-regular fa-face-smile" id="emojiBtnIcon"></i>
+          </button>
 
-        <emoji-mart
-          id="editorPicker"
-          *ngIf="emojiPickerVisible"
-          (emojiClick)="onSelectEmoji($event)"
-          emoji="point_up"
-          title="Add emoji...&nbsp;&nbsp;👍"
-          [autoFocus]="true"
-          [perLine]="8"
-          [emojisToShowFilter]="emojisToShowFilter"
-        ></emoji-mart>
-      </div>
+          <emoji-mart
+            id="editorPicker"
+            *ngIf="emojiPickerVisible"
+            (emojiClick)="onSelectEmoji($event)"
+            emoji="point_up"
+            title="Add emoji...&nbsp;&nbsp;👍"
+            [autoFocus]="true"
+            [perLine]="8"
+            [emojisToShowFilter]="emojisToShowFilter"
+          ></emoji-mart>
+        </div>
     </quill-editor>
   </div>
 
