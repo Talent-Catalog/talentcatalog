@@ -31,6 +31,6 @@ public class Post {
     private String content;
 
     public void setContent(String content) {
-        this.content = HtmlSanitizer.sanitize(content);
+        this.content = HtmlSanitizer.sanitizeWithLinksNewTab(content);
     }
 }
