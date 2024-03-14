@@ -35,7 +35,7 @@
         <button class="ql-link" title="Add link"></button>
         <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
           <fa-icon *ngIf="!saving" icon="file-upload" size="xs"></fa-icon>
-          <app-loading [loading]="saving"></app-loading>
+          <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
         </button>
 
         <button
