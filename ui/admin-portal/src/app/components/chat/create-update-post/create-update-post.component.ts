@@ -4,6 +4,7 @@ import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
+import Quill from 'quill';
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 @Component({
@@ -18,7 +19,6 @@ export class CreateUpdatePostComponent implements OnInit {
   saving: any;
   postForm: FormGroup;
   quillEditorRef: Quill;
-  moduleOptions = {};
   public emojiPickerVisible: boolean = false;
 
   constructor(

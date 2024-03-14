@@ -19,7 +19,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
 import Quill from 'quill';
-import {ImageHandler, Options} from "ngx-quill-upload";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
@@ -38,7 +37,6 @@ export class CreateUpdatePostComponent implements OnInit {
   saving: any;
   postForm: FormGroup;
   quillEditorRef: Quill;
-  moduleOptions = {};
   public emojiPickerVisible: boolean = false;
 
   constructor(

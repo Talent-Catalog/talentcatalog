@@ -9,7 +9,8 @@
   <div class="my-3">
     <quill-editor id="content"
                   placeholder="Write your message..."
-                  formControlName="content">
+                  formControlName="content"
+                  (onEditorCreated)="editorCreated($event)">
       <div quill-editor-toolbar>
           <button class="ql-list" value="ordered" title="Ordered list"></button>
           <button class="ql-list" value="bullet" title="Bullet list"></button>
