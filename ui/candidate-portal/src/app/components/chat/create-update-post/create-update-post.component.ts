@@ -66,10 +66,11 @@ export class CreateUpdatePostComponent implements OnInit {
     // The url string will then be returned and embedded into the editor.
     this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
       urlDto => {
+        const index: number = this.quillEditorRef.selection.savedRange.index;
         if (file.type.startsWith("image")) {
-          this.contentControl.patchValue(this.postForm.value?.content + " <img alt='Uploaded image' src='" + urlDto.url + "'>")
+          this.quillEditorRef.insertEmbed(index, 'image', urlDto.url, 'user');
         } else {
-          this.contentControl.patchValue(this.postForm.value?.content + " <a target='_blank' href=" + urlDto.url + ">link to file</a>")
+          this.quillEditorRef.insertText(index, 'link to file', 'link', urlDto.url, 'user');
         }
         this.saving = false;
       },
