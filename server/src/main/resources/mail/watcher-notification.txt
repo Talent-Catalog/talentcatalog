@@ -1,12 +1,9 @@
 Dear [(${displayName})],
 
-In the last 24 hours new candidates have registered who match the saved searches below.
+In the last 24 hours the Talent Catalog has detected that new candidates have registered who match the saved searches below.
 
 Copy paste links to your browser address bar to see details.
 
 [# th:each="search : ${searches}"]
   - [(${search.getName()})] : https://tctalent.org/admin-portal/candidates/search/[(${search.getId()})]
 [/]
-
-Sincerely,
-Talent Beyond Boundaries

@@ -64,7 +64,23 @@
   <div>
     <ngb-accordion #miniIntake="ngbAccordion" [destroyOnHide]="false">
 
-      <ngb-panel id="intake-confirm" title="Confirm General Information">
+      <ngb-panel id="intake-confirm">
+        <ng-template ngbPanelTitle let-opened="opened">
+          <div class="container-fluid gx-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <p class="mb-0">Confirm General Information</p>
+              </div>
+              <div class="col-1">
+                <button type="button" class="btn btn-secondary btn-sm"
+                        *ngIf="isEditable()"
+                        (click)="editContactDetails($event)">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
         <ng-template ngbPanelContent>
           <app-confirm-contact
             [candidate]="candidate"
@@ -153,6 +169,10 @@
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-family>
+          <app-health-issues
+            [entity]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-health-issues>
         </ng-template>
       </ngb-panel>
 

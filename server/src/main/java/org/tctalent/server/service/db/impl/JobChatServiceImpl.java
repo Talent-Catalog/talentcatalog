@@ -17,8 +17,11 @@
 package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
@@ -39,6 +42,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @Service
 @RequiredArgsConstructor
 public class JobChatServiceImpl implements JobChatService {
+    private static final Logger log = LoggerFactory.getLogger(JobChatServiceImpl.class);
 
     private final UserService userService;
     private final JobChatRepository jobChatRepository;
@@ -99,6 +103,11 @@ public class JobChatServiceImpl implements JobChatService {
     public JobChat createCandidateRecruitingChat(@NonNull Candidate candidate,
         @NonNull SalesforceJobOpp job) throws InvalidRequestException {
         return createJobChat(JobChatType.CandidateRecruiting, job, null, candidate);
+    }
+
+    @Override
+    public List<JobChat> findByIds(@NonNull Collection<Long> ids) {
+        return jobChatRepository.findByIds(ids);
     }
 
     @Override
@@ -165,5 +174,10 @@ public class JobChatServiceImpl implements JobChatService {
     public List<JobChat> listJobChats() {
         final List<JobChat> chats = jobChatRepository.findAll(Sort.by(Direction.ASC, "id"));
         return chats;
+    }
+
+    @Override
+    public List<Long> findChatsWithPostsSinceDate(OffsetDateTime dateTime) {
+        return jobChatRepository.myFindChatsWithPostsSinceDate(dateTime);
     }
 }

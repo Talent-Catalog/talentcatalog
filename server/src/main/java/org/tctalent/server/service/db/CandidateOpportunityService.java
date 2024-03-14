@@ -70,6 +70,14 @@ public interface CandidateOpportunityService {
     void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws SalesforceException, WebClientException;
 
+    /**
+     * Finds the candidate opportunity associated with the given candidate and job
+     *
+     * @param candidate Candidate
+     * @param jobOpp    Job
+     * @return Candidate opportunity, may be null if none found.
+     */
+    @Nullable
     CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp);
 
     /**
@@ -102,12 +110,19 @@ public interface CandidateOpportunityService {
     CandidateOpportunity loadCandidateOpportunity(Opportunity op) throws SalesforceException;
 
     /**
+     * This loads the last active stages of all cases from Salesforce.
+     */
+    void loadCandidateOpportunityLastActiveStages();
+
+    /**
      * Returns the ids of chats not fully read by the currently logged in user, which are
      * associated with candidate opportunities returned from the given search request.
      * @param request - Search Request
      * @return Ids of unread chats
      */
     List<Long> findUnreadChatsInOpps(SearchCandidateOpportunityRequest request);
+
+    void notifyOfChatsWithNewPosts();
 
     /**
      * Get candidate opportunities from a paged search request

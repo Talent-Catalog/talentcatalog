@@ -26,11 +26,26 @@
             <i *ngIf="!saving" class="fa-solid fa-file-upload small"></i>
           </button>
 
+        <button
+          id="emojiBtn"
+          [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-selected'"
+          (click)="onClickEmojiBtn()">
+          <i class="fa-regular fa-face-smile" id="emojiBtnIcon"></i>
+        </button>
+
+        <emoji-mart
+          id="editorPicker"
+          *ngIf="emojiPickerVisible"
+          (emojiClick)="onSelectEmoji($event)"
+          emoji="point_up"
+          title="Add emoji...&nbsp;&nbsp;👍"
+          [autoFocus]="true"
+          [perLine]="8"
+          [emojisToShowFilter]="emojisToShowFilter"
+        ></emoji-mart>
       </div>
     </quill-editor>
   </div>
-
-
 
   <div class="d-flex justify-content-end">
     <button type="button" class="btn btn-success " (click)="onSend()"

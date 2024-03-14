@@ -14,10 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
+import Quill from 'quill';
+import {ImageHandler, Options} from "ngx-quill-upload";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
@@ -30,9 +32,14 @@ import {FileSelectorComponent} from "../../util/file-selector/file-selector.comp
 export class CreateUpdatePostComponent implements OnInit {
   @Input() chat: JobChat;
 
+  @ViewChild('editorPickerSpan') editorPickerSpan: ElementRef;
+
   error: any;
   saving: any;
   postForm: FormGroup;
+  quillEditorRef: Quill;
+  moduleOptions = {};
+  public emojiPickerVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -45,6 +52,10 @@ export class CreateUpdatePostComponent implements OnInit {
     this.postForm = this.fb.group({
       content: ["", Validators.required]
     });
+  }
+
+  editorCreated(quill: Quill) {
+    this.quillEditorRef = quill;
   }
 
   private doUpload(file: File) {
@@ -105,4 +116,28 @@ export class CreateUpdatePostComponent implements OnInit {
       .catch(() => {
       });
   }
+
+  // Adds an emoji to the text editor and focuses the caret directly after it.
+  public onSelectEmoji(event) {
+    this.emojiPickerVisible = false;
+    const index: number = this.quillEditorRef.selection.savedRange.index;
+    this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
+    this.quillEditorRef.setSelection(index + 2, 0);
+  }
+
+  // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
+  public onClickEmojiBtn() {
+    this.emojiPickerVisible = !this.emojiPickerVisible;
+    // If closing the picker, focus the caret in editor.
+    if(!this.emojiPickerVisible) {
+      const index: number = this.quillEditorRef.selection.savedRange.index;
+      this.quillEditorRef.setSelection(index, 0);
+    }
+  }
+
+  // These emojis didn't work for some reason — this function excludes them from the picker.
+  emojisToShowFilter = (emoji: any) => {
+    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
+  }
+
 }

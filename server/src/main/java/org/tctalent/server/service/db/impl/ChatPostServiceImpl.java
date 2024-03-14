@@ -90,6 +90,7 @@ public class ChatPostServiceImpl implements ChatPostService {
             .add("jobChat", jobChatDto())
             .add("updatedDate")
             .add("updatedBy", userDto())
+            .add("reactions", reactionDto())
             ;
     }
 
@@ -113,6 +114,21 @@ public class ChatPostServiceImpl implements ChatPostService {
         return new DtoBuilder()
             .add("id")
             .add("abbreviation")
+            ;
+    }
+
+    private DtoBuilder reactionDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("emoji")
+            .add("users", reactionUserDto())
+            ;
+    }
+
+    private DtoBuilder reactionUserDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("displayName")
             ;
     }
 

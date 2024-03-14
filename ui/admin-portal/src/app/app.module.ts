@@ -766,7 +766,7 @@ import {ListHomeComponent} from './components/list/list-home/list-home.component
 import {QuillModule} from 'ngx-quill';
 import {
   ChatReadStatusComponent
-} from './components/chat/chat-read-status/chat-read-status.component'
+} from './components/chat/chat-read-status/chat-read-status.component';
 import {
   LanguageThresholdComponent
 } from './components/candidates/visa/visa-job-assessments/language-threshold/language-threshold.component';
@@ -776,7 +776,8 @@ import {
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {
   UserChangePasswordComponent
-} from './components/account/user-change-password/user-change-password.component'
+} from './components/account/user-change-password/user-change-password.component';
+import {PickerModule} from "@ctrl/ngx-emoji-mart";
 
 @NgModule({
   declarations: [
@@ -1111,7 +1112,8 @@ import {
       storageType: 'localStorage'
     }),
     DragulaModule.forRoot(),
-    QuillModule.forRoot()
+    QuillModule.forRoot(),
+    PickerModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
