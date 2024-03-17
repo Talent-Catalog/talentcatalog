@@ -17,6 +17,33 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -147,34 +174,6 @@ import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
-
-import javax.servlet.http.HttpServletRequest;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * This is the lowest level service relating to managing candidates.
@@ -2189,12 +2188,6 @@ public class CandidateServiceImpl implements CandidateService {
             partnerEnglishLevel = languageLevelRepository.findById(partnerEnglishLevelId).orElse(null);
         }
 
-        final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
-        Country partnerCitizenship = null;
-        if (partnerCitizenshipId != null) {
-            partnerCitizenship = countryRepository.findById(partnerCitizenshipId).orElse(null);
-        }
-
         final Long drivingLicenseCountryId = data.getDrivingLicenseCountryId();
         Country drivingLicenseCountry = null;
         if (drivingLicenseCountryId != null) {
@@ -2208,7 +2201,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         populateIntakeData(candidate, data, partnerCandidate, partnerEducationLevel,
-                partnerOccupation, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry, birthCountry);
+                partnerOccupation, partnerEnglishLevel, drivingLicenseCountry, birthCountry);
 
         save(candidate, true);
 
@@ -2288,7 +2281,6 @@ public class CandidateServiceImpl implements CandidateService {
         @Nullable EducationLevel partnerEduLevel,
         @Nullable Occupation partnerOccupation,
         @Nullable LanguageLevel partnerEnglishLevel,
-        @Nullable Country partnerCitizenship,
         @Nullable Country drivingLicenseCountry,
         @Nullable Country birthCountry) {
         if (data.getAsylumYear() != null) {
@@ -2473,8 +2465,8 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getPartnerIeltsYr() != null) {
             candidate.setPartnerIeltsYr(data.getPartnerIeltsYr());
         }
-        if (data.getPartnerCitizenshipId() != null) {
-            candidate.setPartnerCitizenship(partnerCitizenship);
+        if (data.getPartnerCitizenship() != null) {
+            candidate.setPartnerCitizenship(data.getPartnerCitizenship());
         }
         if (data.getResidenceStatus() != null) {
             candidate.setResidenceStatus(data.getResidenceStatus());
@@ -2764,5 +2756,17 @@ public class CandidateServiceImpl implements CandidateService {
                     contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
+    }
+
+    @Override
+    public List<Country> getPartnerCitizenshipCountryList(Candidate candidate)
+        throws NoSuchObjectException {
+        List<Long> partnerCitizenshipIds = candidate.getPartnerCitizenship();
+
+        return partnerCitizenshipIds != null ?
+            partnerCitizenshipIds
+                .stream()
+                .map(countryService::getCountry)
+                .collect(Collectors.toList()) : null;
     }
 }

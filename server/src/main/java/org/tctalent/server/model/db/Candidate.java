@@ -16,17 +16,18 @@
 
 package org.tctalent.server.model.db;
 
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.annotations.Formula;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.SavedSearchAdminApi;
-import org.tctalent.server.model.es.CandidateEs;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.util.SalesforceHelper;
-
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -43,16 +44,17 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.annotations.Formula;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
+import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.util.SalesforceHelper;
 
 @Entity
 @Table(name = "candidate")
@@ -618,10 +620,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Long partnerIeltsYr;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "partner_citizenship_id")
     @Nullable
-    private Country partnerCitizenship;
+    private String partnerCitizenship;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -1920,9 +1920,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerIeltsYr(@Nullable Long partnerIeltsYr) { this.partnerIeltsYr = partnerIeltsYr; }
 
     @Nullable
-    public Country getPartnerCitizenship() { return partnerCitizenship; }
+    public List<Long> getPartnerCitizenship() {
+        return partnerCitizenship != null ?
+            Stream.of(partnerCitizenship.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList()) : null;
+    }
 
-    public void setPartnerCitizenship(@Nullable Country partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
+    public void setPartnerCitizenship(List<Country> partnerCitizenshipCountryList) {
+        this.partnerCitizenship = !CollectionUtils.isEmpty(partnerCitizenshipCountryList) ?
+            partnerCitizenshipCountryList.stream()
+                .map(Country::getId)
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")) : null;
+    }
 
     @Nullable
     public YesNo getMilitaryService() { return militaryService; }

@@ -16,6 +16,14 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,15 +68,6 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 public interface CandidateService {
 
@@ -537,5 +536,8 @@ public interface CandidateService {
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
 
+    // TODO: doc
+    List<Country> getPartnerCitizenshipCountryList(Candidate candidate)
+        throws NoSuchObjectException;
 
 }
