@@ -89,8 +89,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("intRecruitRural")
                 .add("intRecruitRuralNotes")
 
-                .add("langAssessment")
-                .add("langAssessmentScore")
+                .add("englishAssessment")
+                .add("englishAssessmentScore")
                 .add("leftHomeReasons")
                 .add("leftHomeNotes")
                 .add("militaryService")

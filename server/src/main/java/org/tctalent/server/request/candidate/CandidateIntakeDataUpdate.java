@@ -140,8 +140,8 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure intRecruitRural;
     private String intRecruitRuralNotes;
 
-    private String langAssessment;
-    private String langAssessmentScore;
+    private String englishAssessment;
+    private String englishAssessmentScore;
     private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeNotes;
     private YesNo militaryService;
