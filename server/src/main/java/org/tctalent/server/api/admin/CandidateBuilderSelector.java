@@ -18,12 +18,18 @@ package org.tctalent.server.api.admin;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.dto.DtoPropertyFilter;
@@ -35,6 +41,7 @@ import org.tctalent.server.util.dto.DtoPropertyFilter;
  * @author John Cameron
  */
 public class CandidateBuilderSelector {
+    private final CandidateOpportunityService candidateOpportunityService;
     private final UserService userService;
 
     private final Set<String> candidatePublicProperties =
@@ -83,7 +90,9 @@ public class CandidateBuilderSelector {
             "partner"
         ));
 
-    public CandidateBuilderSelector(UserService userService) {
+    public CandidateBuilderSelector(
+        CandidateOpportunityService candidateOpportunityService, UserService userService) {
+        this.candidateOpportunityService = candidateOpportunityService;
         this.userService = userService;
     }
 
@@ -92,12 +101,27 @@ public class CandidateBuilderSelector {
         User user = userService.getLoggedInUser();
         Partner partner = user == null ? null : user.getPartner();
 
+
+        //If partner is a job creator, look up the candidates for whom they can see all properties
+        //(ie candidates who have got past the CV Review stage in any job opps managed by the partner)
+
+        //Start by fetching all the opps associated with the partner
+        List<CandidateOpportunity> partnerOpps = candidateOpportunityService.findJobCreatorPartnerOpps(partner);
+
+        //Get all the candidates associated with those opps which got to the CV Review stage.
+        //The partner should be able to see full details of these candidates - because they have
+        //progressed this far with these candidates in the past.
+        Set<Candidate> fullyVisibleCandidates = partnerOpps.stream()
+            .filter(opp -> CandidateOpportunityStage.cvReview.compareTo(opp.getLastActiveStage()) <= 0)
+            .map(CandidateOpportunity::getCandidate)
+            .collect(Collectors.toSet());
+
         //Default to Role.limited if user is null.
         Role role = user == null ? Role.limited : user.getRole();
         DtoPropertyFilter candidatePropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
-            partner, role, candidatePublicProperties, candidateSemiLimitedExtraProperties);
+            partner, role, fullyVisibleCandidates, candidatePublicProperties, candidateSemiLimitedExtraProperties);
         DtoPropertyFilter userPropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
-            partner, role, userPublicProperties, null);
+            partner, role, fullyVisibleCandidates, userPublicProperties, null);
         return candidateDto(candidatePropertyFilter, userPropertyFilter);
     }
 

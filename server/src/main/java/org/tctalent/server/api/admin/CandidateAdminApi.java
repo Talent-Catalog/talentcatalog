@@ -16,6 +16,12 @@
 
 package org.tctalent.server.api.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -64,13 +70,6 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
 @RestController()
 @RequestMapping("/api/admin/candidate")
 public class CandidateAdminApi {
@@ -94,7 +93,7 @@ public class CandidateAdminApi {
         this.candidateService = candidateService;
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
-        builderSelector = new CandidateBuilderSelector(userService);
+        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
         intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector();
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;

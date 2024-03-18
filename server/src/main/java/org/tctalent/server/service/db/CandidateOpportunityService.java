@@ -30,6 +30,7 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
@@ -79,6 +80,14 @@ public interface CandidateOpportunityService {
      */
     @Nullable
     CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp);
+
+    /**
+     * Finds all opps associated with the given job creator partner
+     * @param partner Job creator partner
+     * @return Candidate opps associated with partner. Empty if none or if partner is null or not a job creator.
+     */
+    @NonNull
+    List<CandidateOpportunity> findJobCreatorPartnerOpps(@Nullable Partner partner);
 
     /**
      * Get the CandidateOpportunity with the given id.

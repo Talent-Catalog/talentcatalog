@@ -65,6 +65,7 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
@@ -216,6 +217,18 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public @Nullable CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp) {
         return candidateOpportunityRepository.findByCandidateIdAndJobId(candidate.getId(), jobOpp.getId());
+    }
+
+    @NonNull
+    @Override
+    public List<CandidateOpportunity> findJobCreatorPartnerOpps(@Nullable Partner partner) {
+        List<CandidateOpportunity> opps;
+        if (partner != null && partner.isJobCreator()) {
+            opps = candidateOpportunityRepository.findPartnerOpps(partner.getId());
+        } else {
+            opps = new ArrayList<>();
+        }
+        return opps;
     }
 
     @NonNull

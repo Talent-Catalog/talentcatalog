@@ -46,6 +46,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.list.ContentUpdateType;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
@@ -83,14 +84,14 @@ public class SavedListCandidateAdminApi implements
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
     @Autowired
     public SavedListCandidateAdminApi(
-        CandidateService candidateService,
+        CandidateService candidateService, CandidateOpportunityService candidateOpportunityService,
         CandidateSavedListService candidateSavedListService,
         SavedListService savedListService,
         UserService userService) {
         this.candidateService = candidateService;
         this.candidateSavedListService = candidateSavedListService;
         this.savedListService = savedListService;
-        candidateBuilderSelector = new CandidateBuilderSelector(userService);
+        candidateBuilderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
     }
 
     @GetMapping(value = "{id}/is-empty")
