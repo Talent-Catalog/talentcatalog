@@ -74,6 +74,7 @@ export class ViewJobUploadsComponent implements OnInit {
     this.saving = true;
     this.jobService.updateJobLink(this.job.id, docType, updateLinkRequest).subscribe(
       job => {
+        this.job = job;
         //Need event to bubble up and change job
         this.jobUpdated.emit(job)
         this.saving = false;
@@ -93,6 +94,7 @@ export class ViewJobUploadsComponent implements OnInit {
     this.saving = true;
     this.jobService.uploadJobDoc(this.job.id, docType, formData).subscribe(
       job => {
+        this.job = job;
         //Need event to bubble up and change job
         this.jobUpdated.emit(job)
         this.saving = false;
