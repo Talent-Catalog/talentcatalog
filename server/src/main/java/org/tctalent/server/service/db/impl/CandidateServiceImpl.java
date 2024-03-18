@@ -1515,8 +1515,8 @@ public class CandidateServiceImpl implements CandidateService {
             score = new BigDecimal(ieltsGen.getScore());
         } else if (ieltsAca != null && ieltsAca.getScore() != null) {
             score = new BigDecimal(ieltsAca.getScore());
-        } else if (candidate.getEnglishAssessmentScore() != null) {
-            score = new BigDecimal(candidate.getEnglishAssessmentScore());
+        } else if (candidate.getLangAssessmentScore() != null) {
+            score = new BigDecimal(candidate.getLangAssessmentScore());
         } else {
             score = null;
         }
@@ -2395,16 +2395,16 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getIntRecruitRuralNotes() != null) {
             candidate.setIntRecruitRuralNotes(data.getIntRecruitRuralNotes());
         }
-        if (data.getEnglishAssessment() != null) {
-            candidate.setEnglishAssessment(data.getEnglishAssessment());
+        if (data.getLangAssessment() != null) {
+            candidate.setLangAssessment(data.getLangAssessment());
         }
 
-        if (data.getEnglishAssessmentScore() != null) {
-            // If the EnglishAssessmentScore is NoResponse set to null in database.
-            if (data.getEnglishAssessmentScore().equals("NoResponse")) {
-                candidate.setEnglishAssessmentScore(null);
+        if (data.getLangAssessmentScore() != null) {
+            // If the LangAssessmentScore is NoResponse set to null in database.
+            if (data.getLangAssessmentScore().equals("NoResponse")) {
+                candidate.setLangAssessmentScore(null);
             } else {
-                candidate.setEnglishAssessmentScore(data.getEnglishAssessmentScore());
+                candidate.setLangAssessmentScore(data.getLangAssessmentScore());
             }
             computeIeltsScore(candidate);
         }

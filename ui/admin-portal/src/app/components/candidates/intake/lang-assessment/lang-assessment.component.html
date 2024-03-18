@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="englishAssessment"><strong>English: </strong>Can you tell me about yourself and your profession? What is your biggest accomplishment?</label>
+    <label class="form-label" for="langAssessment"><strong>English: </strong>Can you tell me about yourself and profession? What is your biggest accomplishment?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -27,41 +27,17 @@
       </app-autosave-status>
     </div>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="englishAssessment" [formControlName]="'englishAssessment'"
+              id="langAssessment" [formControlName]="'langAssessment'"
               placeholder="" ></textarea>
   </div>
   <div class="mb-3">
-    <label class="form-label" for="englishAssessmentScore">
+    <label class="form-label" for="langAssessmentScore">
       Estimated IELTS score
     </label>
     <app-ielts-score-validation
-      id="englishAssessmentScore"
-      control="form.controls.englishAssessmentScore">
+      id="langAssessmentScore"
+      [control]="form.controls.langAssessmentScore">
     </app-ielts-score-validation>
-  </div>
-  <div class="mb-3">
-    <label class="form-label" for="frenchAssessment">
-      <strong>French: </strong>
-      Pouvez-vous me parler de vous et de votre métier? Quelle est votre plus grande réussite?
-    </label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="frenchAssessment" [formControlName]="'frenchAssessment'"
-              placeholder="" ></textarea>
-  </div>
-  <div class="mb-3">
-    <label class="form-label" for="frenchAssessmentScore">
-      Estimated TEF/TCF Canada
-    </label>
-    <!--    <app-ielts-score-validation-->
-    <!--      id="frenchAssessmentScore"-->
-    <!--      [control]="form.controls.frenchAssessmentScore">-->
-    <!--    </app-ielts-score-validation>-->
   </div>
 </form>
 

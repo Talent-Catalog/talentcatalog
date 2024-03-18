@@ -663,10 +663,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Country drivingLicenseCountry;
 
     @Nullable
-    private String englishAssessment;
+    private String langAssessment;
 
     @Nullable
-    private String englishAssessmentScore;
+    private String langAssessmentScore;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
@@ -1979,14 +1979,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
 
     @Nullable
-    public String getEnglishAssessment() { return englishAssessment; }
+    public String getLangAssessment() { return langAssessment; }
 
-    public void setEnglishAssessment(@Nullable String englishAssessment) { this.englishAssessment = englishAssessment; }
+    public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
 
     @Nullable
-    public String getEnglishAssessmentScore() { return englishAssessmentScore; }
+    public String getLangAssessmentScore() { return langAssessmentScore; }
 
-    public void setEnglishAssessmentScore(@Nullable String englishAssessmentScore) { this.englishAssessmentScore = englishAssessmentScore; }
+    public void setLangAssessmentScore(@Nullable String langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
 
     @Nullable
     public BigDecimal getIeltsScore() {
