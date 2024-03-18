@@ -2757,16 +2757,4 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
-
-    @Override
-    public List<Country> getPartnerCitizenshipCountryList(Candidate candidate)
-        throws NoSuchObjectException {
-        List<Long> partnerCitizenshipIds = candidate.getPartnerCitizenship();
-
-        return partnerCitizenshipIds != null ?
-            partnerCitizenshipIds
-                .stream()
-                .map(countryService::getCountry)
-                .collect(Collectors.toList()) : null;
-    }
 }

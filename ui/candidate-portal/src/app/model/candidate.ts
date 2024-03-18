@@ -211,7 +211,7 @@ export interface CandidateIntakeData {
   partnerIelts?: IeltsStatus;
   partnerIeltsScore?: string;
   partnerIeltsYr?: number;
-  partnerCitizenship?: Country;
+  partnerCitizenship?: number[];
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;

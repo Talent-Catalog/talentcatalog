@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.tctalent.server.model.db.AvailImmediateReason;
-import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
 import org.tctalent.server.model.db.Exam;
@@ -165,7 +164,7 @@ public class CandidateIntakeDataUpdate {
     private IeltsStatus partnerIelts;
     private String partnerIeltsScore;
     private Long partnerIeltsYr;
-    private List<Country> partnerCitizenship;
+    private List<Long> partnerCitizenship;
 
     private ResidenceStatus residenceStatus;
     private String residenceStatusNotes;

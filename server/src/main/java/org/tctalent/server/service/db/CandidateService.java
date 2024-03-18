@@ -536,8 +536,5 @@ public interface CandidateService {
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
 
-    // TODO: doc
-    List<Country> getPartnerCitizenshipCountryList(Candidate candidate)
-        throws NoSuchObjectException;
 
 }

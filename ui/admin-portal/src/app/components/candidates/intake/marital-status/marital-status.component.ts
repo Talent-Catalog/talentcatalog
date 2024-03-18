@@ -16,7 +16,13 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {Candidate, IeltsStatus, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {
+  Candidate,
+  IeltsStatus,
+  MaritalStatus,
+  YesNo,
+  YesNoUnsure
+} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -64,7 +70,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       partnerIelts: [this.candidateIntakeData?.partnerIelts],
       partnerIeltsScore: [this.candidateIntakeData?.partnerIeltsScore],
       partnerIeltsYr: [this.candidateIntakeData?.partnerIeltsYr],
-      partnerCitizenshipId: [this.candidateIntakeData?.partnerCitizenship?.id],
+      partnerCitizenship: [this.candidateIntakeData?.partnerCitizenship],
     });
     this.years = generateYearArray(1950, true);
   }
