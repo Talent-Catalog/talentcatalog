@@ -101,6 +101,13 @@ public class CandidateBuilderSelector {
         return candidateDto(candidatePropertyFilter, userPropertyFilter);
     }
 
+    /**
+     * Candidate Dto's fetch both properties of the candidate entity and the user entity (because
+     * every candidate is a user).
+     * @param candidatePropertyFilter Filter for candidate properties
+     * @param userPropertyFilter Filter for candidate's user properties
+     * @return DtoBuilder
+     */
     private DtoBuilder candidateDto(
         DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter) {
         return new DtoBuilder(candidatePropertyFilter)
