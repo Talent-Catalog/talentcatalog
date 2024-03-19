@@ -71,8 +71,7 @@
 
     <ng-template #nclcToolTip>
       The NCLC framework is used for immigration purposes by the Canadian government to standardise
-      French second-language test scores. Admissible tests include the TEF and TCF whose
-      correspondence to NCLCs are described
+      scores from the TEF and TCF French tests, whose correspondence to NCLCs are described
       <a href="https://www.canada.ca/en/immigration-refugees-citizenship/corporate/publications-manuals/operational-bulletins-manuals/standard-requirements/language-requirements/test-equivalency-charts.html"
          target="_blank">
         here.
@@ -82,11 +81,11 @@
          target="_blank">
         this guide
       </a>
-      to make their estimate.
+      to assist in grading the candidate from 1 to 10.
     </ng-template>
     <app-nclc-score-validation
-        id="frenchAssessmentScore"
-        [control]="form.controls.frenchAssessmentScore">
+      id="frenchAssessmentScore"
+      [control]="form.controls.frenchAssessmentScore">
     </app-nclc-score-validation>
   </div>
 </form>

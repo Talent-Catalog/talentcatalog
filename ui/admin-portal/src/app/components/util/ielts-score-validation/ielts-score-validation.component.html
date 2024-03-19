@@ -1,14 +1,4 @@
-<!--TODO: replicate onInput and html control behaviour from NCLC version -->
-
-<input type="number"
-       step="0.5"
-       placeholder="0-9"
-       class="form-control mb-3"
-       style="width: 80px"
-       min="0" max="9"
-       [(ngModel)]="this.value"
-       (ngModelChange)="update()"
->
+<input type="text" class="form-control" [(ngModel)]="this.value" (ngModelChange)="update()">
 <div class="alert alert-danger" *ngIf="error && this.value != null">
   {{error}}
 </div>
