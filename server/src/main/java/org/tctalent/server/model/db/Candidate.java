@@ -1923,7 +1923,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * Provides a list of country IDs for the candidate's partner's citizenships,
      * instead of the comma separated string we store on the DB.
      * Not currently used but left in case of future utility.
-     * The admin portal receives the unchanged string which it recognises as an array of numbers.
      * @return list of country IDs or null if nothing stored
      */
     @Nullable
