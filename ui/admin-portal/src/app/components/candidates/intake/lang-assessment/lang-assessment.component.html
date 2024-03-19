@@ -36,7 +36,7 @@
     </label>
     <app-ielts-score-validation
       id="englishAssessmentScore"
-      control="form.controls.englishAssessmentScore">
+      [control]="form.controls.englishAssessmentScore">
     </app-ielts-score-validation>
   </div>
   <div class="mb-3">
@@ -56,12 +56,28 @@
   </div>
   <div class="mb-3">
     <label class="form-label" for="frenchAssessmentScore">
-      Estimated TEF/TCF Canada
+      Estimated French ability in Niveaux de compétence linguistique canadiens (NCLC)
     </label>
-    <!--    <app-ielts-score-validation-->
-    <!--      id="frenchAssessmentScore"-->
-    <!--      [control]="form.controls.frenchAssessmentScore">-->
-    <!--    </app-ielts-score-validation>-->
+    <button id="nclcTipButton"
+    [ngbTooltip]="nclcToolTip"
+    placement="right"
+    triggers="click">
+        <i class="fa-regular fa-circle-question fa-xs"></i>
+    </button>
+
+    <ng-template #nclcToolTip>
+      The NCLC framework is used for immigration purposes by the Canadian government to standardise
+      French second-language test scores. Admissible tests include the TEF and TCF whose
+      correspondence to NCLCs are described
+      <a href="https://www.canada.ca/en/immigration-refugees-citizenship/corporate/publications-manuals/operational-bulletins-manuals/standard-requirements/language-requirements/test-equivalency-charts.html"
+      target="_blank">here.</a> Intakers may refer to
+      <a href="https://www.language.ca/wp-content/uploads/2019/02/CLB_NCLC_Overview-of-Competencies.pdf"
+      target="_blank">this guide</a> to make their estimate.
+    </ng-template>
+    <app-nclc-score-validation
+        id="frenchAssessmentScore"
+        [control]="form.controls.frenchAssessmentScore">
+    </app-nclc-score-validation>
   </div>
 </form>
 

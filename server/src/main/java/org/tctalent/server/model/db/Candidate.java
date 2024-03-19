@@ -668,6 +668,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String englishAssessmentScore;
 
+    @Nullable
+    private String frenchAssessment;
+
+    @Nullable
+    private String frenchAssessmentScore;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
     @Nullable
@@ -1979,14 +1985,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
 
     @Nullable
-    public String getEnglishAssessment() { return englishAssessment; }
+    public String getEnglishAssessment() {
+        return englishAssessment;
+    }
 
-    public void setEnglishAssessment(@Nullable String englishAssessment) { this.englishAssessment = englishAssessment; }
+    public void setEnglishAssessment(@Nullable String englishAssessment) {
+        this.englishAssessment = englishAssessment;
+    }
 
     @Nullable
-    public String getEnglishAssessmentScore() { return englishAssessmentScore; }
+    public String getEnglishAssessmentScore() {
+        return englishAssessmentScore;
+    }
 
-    public void setEnglishAssessmentScore(@Nullable String englishAssessmentScore) { this.englishAssessmentScore = englishAssessmentScore; }
+    public void setEnglishAssessmentScore(@Nullable String englishAssessmentScore) {
+        this.englishAssessmentScore = englishAssessmentScore;
+    }
+
+    @Nullable
+    public String getFrenchAssessment() { return frenchAssessment; }
+
+    public void setFrenchAssessment(@Nullable String frenchAssessment) {
+        this.frenchAssessment = frenchAssessment;
+    }
+
+    @Nullable
+    public String getFrenchAssessmentScore() {
+        return frenchAssessmentScore;
+    }
+
+    public void setFrenchAssessmentScore(@Nullable String frenchAssessmentScore) {
+        this.frenchAssessmentScore = frenchAssessmentScore;
+    }
 
     @Nullable
     public BigDecimal getIeltsScore() {

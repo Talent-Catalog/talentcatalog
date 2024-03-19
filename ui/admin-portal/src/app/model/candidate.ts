@@ -98,8 +98,8 @@ export interface Candidate extends HasId {
   unhcrStatus: UnhcrStatus;
   ieltsScore: string;
   numberDependants: number;
-  englishAssessmentScore: string;
-  frenchAssessmentScore: string;
+  englishAssessmentScore?: string;
+  frenchAssessmentScore?: string;
   candidateExams: CandidateExam[];
   candidateAttachments?: CandidateAttachment[];
   taskAssignments?: TaskAssignment[];

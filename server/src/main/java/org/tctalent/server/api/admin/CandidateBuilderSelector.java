@@ -139,6 +139,7 @@ public class CandidateBuilderSelector {
             .add("maritalStatus")
             .add("drivingLicense")
             .add("englishAssessmentScore")
+            .add("frenchAssessmentScore")
             .add("residenceStatus")
             .add("ieltsScore")
             .add("numberDependants")

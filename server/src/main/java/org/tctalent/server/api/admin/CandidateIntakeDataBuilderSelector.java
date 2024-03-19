@@ -91,6 +91,8 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("englishAssessment")
                 .add("englishAssessmentScore")
+                .add("frenchAssessment")
+                .add("frenchAssessmentScore")
                 .add("leftHomeReasons")
                 .add("leftHomeNotes")
                 .add("militaryService")

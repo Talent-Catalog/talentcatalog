@@ -2398,7 +2398,6 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getEnglishAssessment() != null) {
             candidate.setEnglishAssessment(data.getEnglishAssessment());
         }
-
         if (data.getEnglishAssessmentScore() != null) {
             // If the EnglishAssessmentScore is NoResponse set to null in database.
             if (data.getEnglishAssessmentScore().equals("NoResponse")) {
@@ -2408,7 +2407,17 @@ public class CandidateServiceImpl implements CandidateService {
             }
             computeIeltsScore(candidate);
         }
-
+        if (data.getFrenchAssessment() != null) {
+            candidate.setFrenchAssessment(data.getFrenchAssessment());
+        }
+        if (data.getFrenchAssessmentScore() != null) {
+            // If the FrenchAssessmentScore is NoResponse set to null in database.
+            if (data.getFrenchAssessmentScore().equals("NoResponse")) {
+                candidate.setFrenchAssessmentScore(null);
+            } else {
+                candidate.setFrenchAssessmentScore(data.getFrenchAssessmentScore());
+            }
+        }
         if (data.getLeftHomeReasons() != null) {
             candidate.setLeftHomeReasons(data.getLeftHomeReasons());
         }
