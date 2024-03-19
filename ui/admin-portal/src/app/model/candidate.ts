@@ -99,7 +99,7 @@ export interface Candidate extends HasId {
   ieltsScore: string;
   numberDependants: number;
   englishAssessmentScore?: string;
-  frenchAssessmentScore?: string;
+  frenchAssessmentScore?: number;
   candidateExams: CandidateExam[];
   candidateAttachments?: CandidateAttachment[];
   taskAssignments?: TaskAssignment[];
@@ -177,7 +177,7 @@ export interface CandidateIntakeData {
   englishAssessmentScore?: string;
 
   frenchAssessment?: string;
-  frenchAssessmentScore?: string;
+  frenchAssessmentScore?: number;
 
   familyMove?: YesNo;
   familyMoveNotes?: string;

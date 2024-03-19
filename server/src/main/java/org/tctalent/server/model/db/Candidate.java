@@ -672,7 +672,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String frenchAssessment;
 
     @Nullable
-    private String frenchAssessmentScore;
+    private Long frenchAssessmentScore;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
@@ -2010,11 +2010,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public String getFrenchAssessmentScore() {
+    public Long getFrenchAssessmentScore() {
         return frenchAssessmentScore;
     }
 
-    public void setFrenchAssessmentScore(@Nullable String frenchAssessmentScore) {
+    public void setFrenchAssessmentScore(@Nullable Long frenchAssessmentScore) {
         this.frenchAssessmentScore = frenchAssessmentScore;
     }
 

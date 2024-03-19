@@ -2411,8 +2411,8 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setFrenchAssessment(data.getFrenchAssessment());
         }
         if (data.getFrenchAssessmentScore() != null) {
-            // If the FrenchAssessmentScore is NoResponse set to null in database.
-            if (data.getFrenchAssessmentScore().equals("NoResponse")) {
+            // If the FrenchAssessmentScore is 0, set to null in database.
+            if (data.getFrenchAssessmentScore() == 0) {
                 candidate.setFrenchAssessmentScore(null);
             } else {
                 candidate.setFrenchAssessmentScore(data.getFrenchAssessmentScore());

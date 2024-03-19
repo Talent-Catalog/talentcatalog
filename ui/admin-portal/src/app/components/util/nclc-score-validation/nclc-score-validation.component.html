@@ -1,12 +1,10 @@
 <input type="number"
        class="form-control mb-3"
-       [(ngModel)]="this.value"
-       (ngModelChange)="update()"
+       (input)="onInput($event)"
        placeholder="1-10"
        style="width: 80px"
        min="1" max="10"
-       (input)="onInput($event)"
 >
-<div class="alert alert-danger" *ngIf="error && this.value != null">
+<div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>
