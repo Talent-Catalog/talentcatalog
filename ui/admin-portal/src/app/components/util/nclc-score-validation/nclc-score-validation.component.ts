@@ -47,4 +47,12 @@ export class NclcScoreValidationComponent implements OnInit {
     }
   }
 
+  onInput(event: any) {
+    const input = event.target as HTMLInputElement;
+    let value = parseInt(input.value, 10);
+    if (value > 10 || input.value.length > 2) {
+      input.value = value.toString().slice(0, 1);
+    }
+  }
+
 }
