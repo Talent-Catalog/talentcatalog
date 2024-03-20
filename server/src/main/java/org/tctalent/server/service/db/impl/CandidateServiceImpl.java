@@ -1515,8 +1515,8 @@ public class CandidateServiceImpl implements CandidateService {
             score = new BigDecimal(ieltsGen.getScore());
         } else if (ieltsAca != null && ieltsAca.getScore() != null) {
             score = new BigDecimal(ieltsAca.getScore());
-        } else if (candidate.getLangAssessmentScore() != null) {
-            score = new BigDecimal(candidate.getLangAssessmentScore());
+        } else if (candidate.getEnglishAssessmentScoreIelts() != null) {
+            score = new BigDecimal(candidate.getEnglishAssessmentScoreIelts());
         } else {
             score = null;
         }
@@ -2266,7 +2266,12 @@ public class CandidateServiceImpl implements CandidateService {
             candidateExam.setOtherExam(data.getOtherExam());
         }
         if (data.getExamScore() != null) {
-            candidateExam.setScore(data.getExamScore());
+            // If the ExamScore is NoResponse set to null in database.
+            if (data.getExamScore().equals("NoResponse")) {
+                candidateExam.setScore(null);
+            } else {
+                candidateExam.setScore(data.getExamScore());
+            }
         }
         if (data.getExamYear() != null) {
             candidateExam.setYear(data.getExamYear());
@@ -2388,20 +2393,30 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getIntRecruitRuralNotes() != null) {
             candidate.setIntRecruitRuralNotes(data.getIntRecruitRuralNotes());
         }
-        if (data.getLangAssessment() != null) {
-            candidate.setLangAssessment(data.getLangAssessment());
+        if (data.getEnglishAssessment() != null) {
+            candidate.setEnglishAssessment(data.getEnglishAssessment());
         }
-
-        if (data.getLangAssessmentScore() != null) {
-            // If the LangAssessmentScore is NoResponse set to null in database.
-            if (data.getLangAssessmentScore().equals("NoResponse")) {
-                candidate.setLangAssessmentScore(null);
+        if (data.getEnglishAssessmentScoreIelts() != null) {
+            // If the EnglishAssessmentScoreIelts is NoResponse set to null in database.
+            if (data.getEnglishAssessmentScoreIelts().equals("NoResponse")) {
+                candidate.setEnglishAssessmentScoreIelts(null);
             } else {
-                candidate.setLangAssessmentScore(data.getLangAssessmentScore());
+                candidate.setEnglishAssessmentScoreIelts(data.getEnglishAssessmentScoreIelts());
             }
             computeIeltsScore(candidate);
         }
-
+        if (data.getFrenchAssessment() != null) {
+            candidate.setFrenchAssessment(data.getFrenchAssessment());
+        }
+        if (data.getFrenchAssessmentScoreNclc() != null) {
+            // If the FrenchAssessmentScoreNclc is 0 (used here as a numerical equivalent to
+            // 'NoResponse', enabling previous answers to be deleted), set to null in database.
+            if (data.getFrenchAssessmentScoreNclc() == 0) {
+                candidate.setFrenchAssessmentScoreNclc(null);
+            } else {
+                candidate.setFrenchAssessmentScoreNclc(data.getFrenchAssessmentScoreNclc());
+            }
+        }
         if (data.getLeftHomeReasons() != null) {
             candidate.setLeftHomeReasons(data.getLeftHomeReasons());
         }

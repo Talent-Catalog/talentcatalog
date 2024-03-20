@@ -778,6 +778,9 @@ import {
   UserChangePasswordComponent
 } from './components/account/user-change-password/user-change-password.component';
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
+import {
+  NclcScoreValidationComponent
+} from './components/util/nclc-score-validation/nclc-score-validation.component';
 
 @NgModule({
   declarations: [
@@ -1093,7 +1096,8 @@ import {PickerModule} from "@ctrl/ngx-emoji-mart";
     LanguageThresholdComponent,
     MonitoringEvaluationConsentComponent,
     ResetPasswordComponent,
-    UserChangePasswordComponent
+    UserChangePasswordComponent,
+    NclcScoreValidationComponent
   ],
   imports: [
     BrowserModule,
