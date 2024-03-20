@@ -20,8 +20,9 @@ import {LanguageService} from '../services/language.service';
 import {LanguageLoader} from "../services/language.loader";
 import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
-import {Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {ChatService} from "../services/chat.service";
+import {environment} from "../../environments/environment";
 
 @Component({
   selector: 'app-root',
@@ -44,6 +45,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.trackPageViews();
 
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
@@ -87,4 +89,34 @@ export class AppComponent implements OnInit {
     //Show login screen
     this.router.navigate(['login']);
   }
+
+  /**
+   * Tracks page views in a Single Page Application (SPA) context using Google Analytics.
+   *
+   * In traditional websites, navigation between pages naturally triggers a page load,
+   * which Google Analytics uses to track page views. However, in SPAs like those built with Angular,
+   * navigation changes the content dynamically without reloading the entire page. This function
+   * subscribes to Angular Router events to detect when navigation ends and a new "page" is viewed,
+   * manually sending page view information to Google Analytics.
+   *
+   * The `NavigationEnd` event indicates a successful route change, at which point we use the
+   * `gtag` function with the 'config' command to send the current page path to Google Analytics.
+   *
+   * Additionally, console logs are included for testing purposes.
+   *
+   * See, for example, https://blog.mestwin.net/add-google-analytics-to-angular-application-in-3-easy-steps
+   */
+  trackPageViews() {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        gtag('config', environment.googleAnalyticsId, {
+          'page_path': event.urlAfterRedirects
+        });
+        // console.log('Sending Google Analytics tracking for: ', event.urlAfterRedirects);
+        // console.log('Google Analytics property ID: ', environment.googleAnalyticsId);
+      }
+    });
+  }
 }
+
+declare let gtag: Function;
