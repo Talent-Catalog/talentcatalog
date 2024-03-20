@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,13 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-// Making the NCLC tip icon a button enables it to be keyboard-focusable,
-// per Bootstrap doc advice https://getbootstrap.com/docs/5.0/components/tooltips/#markup
-// Overriding the native button style fixes the visual aspect.
-#nclcTipButton {
-  border: none;
-  background-color: inherit;
-  margin-left: 5px;
-  padding: 0;
-}
-
+alter table candidate add column french_assessment text;
+alter table candidate add column french_assessment_score_nclc integer;
