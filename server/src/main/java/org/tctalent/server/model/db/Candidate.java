@@ -26,16 +26,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
@@ -56,21 +46,11 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Formula;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.SavedSearchAdminApi;
-import org.tctalent.server.model.es.CandidateEs;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.util.SalesforceHelper;
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.annotations.Formula;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
-import org.springframework.util.CollectionUtils;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -684,10 +664,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Country drivingLicenseCountry;
 
     @Nullable
-    private String langAssessment;
+    private String englishAssessment;
 
     @Nullable
-    private String langAssessmentScore;
+    private String englishAssessmentScoreIelts;
+
+    @Nullable
+    private String frenchAssessment;
+
+    @Nullable
+    private Long frenchAssessmentScoreNclc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
@@ -2021,14 +2007,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
 
     @Nullable
-    public String getLangAssessment() { return langAssessment; }
+    public String getEnglishAssessment() {
+        return englishAssessment;
+    }
 
-    public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
+    public void setEnglishAssessment(@Nullable String englishAssessment) {
+        this.englishAssessment = englishAssessment;
+    }
 
     @Nullable
-    public String getLangAssessmentScore() { return langAssessmentScore; }
+    public String getEnglishAssessmentScoreIelts() {
+        return englishAssessmentScoreIelts;
+    }
 
-    public void setLangAssessmentScore(@Nullable String langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+    public void setEnglishAssessmentScoreIelts(@Nullable String englishAssessmentScoreIelts) {
+        this.englishAssessmentScoreIelts = englishAssessmentScoreIelts;
+    }
+
+    @Nullable
+    public String getFrenchAssessment() { return frenchAssessment; }
+
+    public void setFrenchAssessment(@Nullable String frenchAssessment) {
+        this.frenchAssessment = frenchAssessment;
+    }
+
+    @Nullable
+    public Long getFrenchAssessmentScoreNclc() {
+        return frenchAssessmentScoreNclc;
+    }
+
+    public void setFrenchAssessmentScoreNclc(@Nullable Long frenchAssessmentScoreNclc) {
+        this.frenchAssessmentScoreNclc = frenchAssessmentScoreNclc;
+    }
 
     @Nullable
     public BigDecimal getIeltsScore() {
