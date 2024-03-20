@@ -1515,8 +1515,8 @@ public class CandidateServiceImpl implements CandidateService {
             score = new BigDecimal(ieltsGen.getScore());
         } else if (ieltsAca != null && ieltsAca.getScore() != null) {
             score = new BigDecimal(ieltsAca.getScore());
-        } else if (candidate.getEnglishAssessmentScore() != null) {
-            score = new BigDecimal(candidate.getEnglishAssessmentScore());
+        } else if (candidate.getEnglishAssessmentScoreIelts() != null) {
+            score = new BigDecimal(candidate.getEnglishAssessmentScoreIelts());
         } else {
             score = null;
         }
@@ -2398,25 +2398,25 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getEnglishAssessment() != null) {
             candidate.setEnglishAssessment(data.getEnglishAssessment());
         }
-        if (data.getEnglishAssessmentScore() != null) {
-            // If the EnglishAssessmentScore is NoResponse set to null in database.
-            if (data.getEnglishAssessmentScore().equals("NoResponse")) {
-                candidate.setEnglishAssessmentScore(null);
+        if (data.getEnglishAssessmentScoreIelts() != null) {
+            // If the EnglishAssessmentScoreIelts is NoResponse set to null in database.
+            if (data.getEnglishAssessmentScoreIelts().equals("NoResponse")) {
+                candidate.setEnglishAssessmentScoreIelts(null);
             } else {
-                candidate.setEnglishAssessmentScore(data.getEnglishAssessmentScore());
+                candidate.setEnglishAssessmentScoreIelts(data.getEnglishAssessmentScoreIelts());
             }
             computeIeltsScore(candidate);
         }
         if (data.getFrenchAssessment() != null) {
             candidate.setFrenchAssessment(data.getFrenchAssessment());
         }
-        if (data.getFrenchAssessmentScore() != null) {
-            // If the FrenchAssessmentScore is 0 (used here as a numerical equivalent to
+        if (data.getFrenchAssessmentScoreNclc() != null) {
+            // If the FrenchAssessmentScoreNclc is 0 (used here as a numerical equivalent to
             // 'NoResponse', enabling previous answers to be deleted), set to null in database.
-            if (data.getFrenchAssessmentScore() == 0) {
-                candidate.setFrenchAssessmentScore(null);
+            if (data.getFrenchAssessmentScoreNclc() == 0) {
+                candidate.setFrenchAssessmentScoreNclc(null);
             } else {
-                candidate.setFrenchAssessmentScore(data.getFrenchAssessmentScore());
+                candidate.setFrenchAssessmentScoreNclc(data.getFrenchAssessmentScoreNclc());
             }
         }
         if (data.getLeftHomeReasons() != null) {

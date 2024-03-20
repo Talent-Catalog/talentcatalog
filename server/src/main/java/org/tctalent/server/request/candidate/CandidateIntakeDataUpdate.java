@@ -141,9 +141,9 @@ public class CandidateIntakeDataUpdate {
     private String intRecruitRuralNotes;
 
     private String englishAssessment;
-    private String englishAssessmentScore;
+    private String englishAssessmentScoreIelts;
     private String frenchAssessment;
-    private Long frenchAssessmentScore;
+    private Long frenchAssessmentScoreNclc;
     private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeNotes;
     private YesNo militaryService;

@@ -31,12 +31,12 @@
               placeholder="" ></textarea>
   </div>
   <div class="mb-3">
-    <label class="form-label" for="englishAssessmentScore">
+    <label class="form-label" for="englishAssessmentScoreIelts">
       Estimated IELTS score
     </label>
     <app-ielts-score-validation
-      id="englishAssessmentScore"
-      [control]="form.controls.englishAssessmentScore">
+      id="englishAssessmentScoreIelts"
+      [control]="form.controls.englishAssessmentScoreIelts">
     </app-ielts-score-validation>
   </div>
   <div class="mb-3">
@@ -59,7 +59,7 @@
     </textarea>
   </div>
   <div class="mb-3">
-    <label class="form-label" for="frenchAssessmentScore">
+    <label class="form-label" for="frenchAssessmentScoreNclc">
       Estimated French ability in Niveaux de compétence linguistique canadiens (NCLC)
     </label>
     <button id="nclcTipButton"
@@ -84,8 +84,8 @@
       to assist in grading the candidate from 1 to 10.
     </ng-template>
     <app-nclc-score-validation
-      id="frenchAssessmentScore"
-      [control]="form.controls.frenchAssessmentScore">
+      id="frenchAssessmentScoreNclc"
+      [control]="form.controls.frenchAssessmentScoreNclc">
     </app-nclc-score-validation>
   </div>
 </form>

@@ -666,13 +666,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String englishAssessment;
 
     @Nullable
-    private String englishAssessmentScore;
+    private String englishAssessmentScoreIelts;
 
     @Nullable
     private String frenchAssessment;
 
     @Nullable
-    private Long frenchAssessmentScore;
+    private Long frenchAssessmentScoreNclc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
@@ -1994,12 +1994,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public String getEnglishAssessmentScore() {
-        return englishAssessmentScore;
+    public String getEnglishAssessmentScoreIelts() {
+        return englishAssessmentScoreIelts;
     }
 
-    public void setEnglishAssessmentScore(@Nullable String englishAssessmentScore) {
-        this.englishAssessmentScore = englishAssessmentScore;
+    public void setEnglishAssessmentScoreIelts(@Nullable String englishAssessmentScoreIelts) {
+        this.englishAssessmentScoreIelts = englishAssessmentScoreIelts;
     }
 
     @Nullable
@@ -2010,12 +2010,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public Long getFrenchAssessmentScore() {
-        return frenchAssessmentScore;
+    public Long getFrenchAssessmentScoreNclc() {
+        return frenchAssessmentScoreNclc;
     }
 
-    public void setFrenchAssessmentScore(@Nullable Long frenchAssessmentScore) {
-        this.frenchAssessmentScore = frenchAssessmentScore;
+    public void setFrenchAssessmentScoreNclc(@Nullable Long frenchAssessmentScoreNclc) {
+        this.frenchAssessmentScoreNclc = frenchAssessmentScoreNclc;
     }
 
     @Nullable
