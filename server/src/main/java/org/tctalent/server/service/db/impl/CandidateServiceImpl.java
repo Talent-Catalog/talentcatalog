@@ -2272,7 +2272,12 @@ public class CandidateServiceImpl implements CandidateService {
             candidateExam.setOtherExam(data.getOtherExam());
         }
         if (data.getExamScore() != null) {
-            candidateExam.setScore(data.getExamScore());
+            // If the ExamScore is NoResponse set to null in database.
+            if (data.getExamScore().equals("NoResponse")) {
+                candidateExam.setScore(null);
+            } else {
+                candidateExam.setScore(data.getExamScore());
+            }
         }
         if (data.getExamYear() != null) {
             candidateExam.setYear(data.getExamYear());
