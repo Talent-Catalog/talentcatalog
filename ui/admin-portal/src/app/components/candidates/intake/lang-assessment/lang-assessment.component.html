@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="langAssessment"><strong>English: </strong>Can you tell me about yourself and profession? What is your biggest accomplishment?</label>
+    <label class="form-label" for="englishAssessment"><strong>English: </strong>Can you tell me about yourself and your profession? What is your biggest accomplishment?</label>
     <div class="float-end">
       <app-autosave-status
         [saving]="saving"
@@ -27,17 +27,66 @@
       </app-autosave-status>
     </div>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="langAssessment" [formControlName]="'langAssessment'"
+              id="englishAssessment" [formControlName]="'englishAssessment'"
               placeholder="" ></textarea>
   </div>
   <div class="mb-3">
-    <label class="form-label" for="langAssessmentScore">
+    <label class="form-label" for="englishAssessmentScoreIelts">
       Estimated IELTS score
     </label>
     <app-ielts-score-validation
-      id="langAssessmentScore"
-      [control]="form.controls.langAssessmentScore">
+      id="englishAssessmentScoreIelts"
+      [control]="form.controls.englishAssessmentScoreIelts">
     </app-ielts-score-validation>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="frenchAssessment">
+      <strong>French: </strong>
+      Pouvez-vous me parler de vous et de votre métier? Quelle est votre plus grande réussite?
+    </label>
+    <div class="float-end">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <textarea type="text"
+              class="md-textarea-auto form-control"
+              rows="4"
+              id="frenchAssessment"
+              [formControlName]="'frenchAssessment'"
+              placeholder="">
+    </textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="frenchAssessmentScoreNclc">
+      Estimated French ability in Niveaux de compétence linguistique canadiens (NCLC)
+    </label>
+    <button id="nclcTipButton"
+            [ngbTooltip]="nclcToolTip"
+            placement="right"
+            triggers="click">
+      <i class="fa-regular fa-circle-question fa-xs"></i>
+    </button>
+
+    <ng-template #nclcToolTip>
+      The NCLC framework is used for immigration purposes by the Canadian government to standardise
+      scores from the TEF and TCF French tests, whose correspondence to NCLCs are described
+      <a href="https://www.canada.ca/en/immigration-refugees-citizenship/corporate/publications-manuals/operational-bulletins-manuals/standard-requirements/language-requirements/test-equivalency-charts.html"
+         target="_blank">
+        here.
+      </a>
+      Intakers may refer to
+      <a href="https://www.language.ca/wp-content/uploads/2019/02/CLB_NCLC_Overview-of-Competencies.pdf"
+         target="_blank">
+        this guide
+      </a>
+      to assist in grading the candidate from 1 to 10.
+    </ng-template>
+    <app-nclc-score-validation
+      id="frenchAssessmentScoreNclc"
+      [control]="form.controls.frenchAssessmentScoreNclc">
+    </app-nclc-score-validation>
   </div>
 </form>
 

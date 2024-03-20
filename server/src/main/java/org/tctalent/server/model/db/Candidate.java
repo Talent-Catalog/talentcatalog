@@ -663,10 +663,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Country drivingLicenseCountry;
 
     @Nullable
-    private String langAssessment;
+    private String englishAssessment;
 
     @Nullable
-    private String langAssessmentScore;
+    private String englishAssessmentScoreIelts;
+
+    @Nullable
+    private String frenchAssessment;
+
+    @Nullable
+    private Long frenchAssessmentScoreNclc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
@@ -1979,14 +1985,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
 
     @Nullable
-    public String getLangAssessment() { return langAssessment; }
+    public String getEnglishAssessment() {
+        return englishAssessment;
+    }
 
-    public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
+    public void setEnglishAssessment(@Nullable String englishAssessment) {
+        this.englishAssessment = englishAssessment;
+    }
 
     @Nullable
-    public String getLangAssessmentScore() { return langAssessmentScore; }
+    public String getEnglishAssessmentScoreIelts() {
+        return englishAssessmentScoreIelts;
+    }
 
-    public void setLangAssessmentScore(@Nullable String langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+    public void setEnglishAssessmentScoreIelts(@Nullable String englishAssessmentScoreIelts) {
+        this.englishAssessmentScoreIelts = englishAssessmentScoreIelts;
+    }
+
+    @Nullable
+    public String getFrenchAssessment() { return frenchAssessment; }
+
+    public void setFrenchAssessment(@Nullable String frenchAssessment) {
+        this.frenchAssessment = frenchAssessment;
+    }
+
+    @Nullable
+    public Long getFrenchAssessmentScoreNclc() {
+        return frenchAssessmentScoreNclc;
+    }
+
+    public void setFrenchAssessmentScoreNclc(@Nullable Long frenchAssessmentScoreNclc) {
+        this.frenchAssessmentScoreNclc = frenchAssessmentScoreNclc;
+    }
 
     @Nullable
     public BigDecimal getIeltsScore() {
