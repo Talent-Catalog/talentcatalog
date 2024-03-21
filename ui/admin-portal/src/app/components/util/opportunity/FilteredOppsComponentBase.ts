@@ -35,11 +35,7 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
-import {
-  getOpportunityStageName,
-  Opportunity,
-  OpportunityOwnershipType
-} from "../../../model/opportunity";
+import {getOpportunityStageName, Opportunity, OpportunityOwnershipType} from "../../../model/opportunity";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
@@ -210,6 +206,8 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     });
 
     this.subscribeToFilterChanges();
+
+    this.subscribeToStagesChanges();
 
     this.search();
   }
@@ -440,6 +438,27 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     )
     .subscribe(() => {
       this.search();
+    });
+  }
+
+  /**
+   * Disable/enable the checkboxes depending on if there are stages selected. We don't search by these fields AND a stage,
+   * so want to disable (and set to false) when a stage is added. Re-enable once the stages are removed.
+   */
+  private subscribeToStagesChanges() {
+    this.searchForm.get('selectedStages').valueChanges.subscribe(
+      (stages) => {
+          if (stages.length > 0) {
+            this.searchForm.get('showClosedOpps').reset({value: false, disabled: true});
+            this.searchForm.get('showInactiveOpps').reset({value: false, disabled: true});
+            this.searchForm.get('overdueOppsOnly').reset({value: false, disabled: true});
+            this.searchForm.get('withUnreadMessages').reset({value: false, disabled: true});
+          } else {
+            this.searchForm.get('showClosedOpps').enable()
+            this.searchForm.get('showInactiveOpps').enable()
+            this.searchForm.get('overdueOppsOnly').enable()
+            this.searchForm.get('withUnreadMessages').enable()
+          }
     });
   }
 

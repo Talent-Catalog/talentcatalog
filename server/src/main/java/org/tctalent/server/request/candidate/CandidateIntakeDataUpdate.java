@@ -166,7 +166,7 @@ public class CandidateIntakeDataUpdate {
     private IeltsStatus partnerIelts;
     private String partnerIeltsScore;
     private Long partnerIeltsYr;
-    private Long partnerCitizenshipId;
+    private List<Long> partnerCitizenship;
 
     private ResidenceStatus residenceStatus;
     private String residenceStatusNotes;

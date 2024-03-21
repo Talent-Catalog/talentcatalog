@@ -18,47 +18,47 @@
       <div class="row">
         <div class="col-md-4">
           <div class="form-check">
-            <label class="form-label" [title]="myOppsOnlyTip"
-                   for="myOppsOnly">{{ myOppsOnlyLabel }}</label>
             <input [title]="myOppsOnlyTip" type="checkbox"
                    formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
+            <label class="form-check-label" [title]="myOppsOnlyTip"
+                   for="myOppsOnly">{{ myOppsOnlyLabel }}</label>
           </div>
         </div>
         <div class="col-md-4">
           <div class="form-check">
-            <label class="form-label" [title]="showClosedOppsTip"
-                   for="showClosedOpps">{{ showClosedOppsLabel }}</label>
-            <input *ngIf="selectedStages.length === 0" [title]="showClosedOppsTip" type="checkbox"
+            <input [title]="showClosedOppsTip" type="checkbox"
                    formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
+            <label class="form-check-label" [title]="showClosedOppsTip"
+                   for="showClosedOpps">{{ showClosedOppsLabel }}</label>
           </div>
         </div>
         <div class="col-md-4">
           <div class="form-check">
-            <label class="form-label" [title]="showInactiveOppsTip"
-                   for="showInactiveOpps">{{ showInactiveOppsLabel }}</label>
-            <input *ngIf="selectedStages.length === 0" [title]="showInactiveOppsTip" type="checkbox"
+            <input [title]="showInactiveOppsTip" type="checkbox"
                    formControlName="showInactiveOpps" id="showInactiveOpps"
                    class="form-check-input">
+            <label class="form-check-label" [title]="showInactiveOppsTip"
+                   for="showInactiveOpps">{{ showInactiveOppsLabel }}</label>
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-md-4">
           <div class="form-check">
-            <label class="form-label" [title]="overdueOppsOnlyTip"
-                   for="overdueOppsOnly">{{ overdueOppsOnlyLabel }}</label>
-            <input *ngIf="selectedStages.length === 0" [title]="overdueOppsOnlyTip" type="checkbox"
+            <input [title]="overdueOppsOnlyTip" type="checkbox"
                    formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
+            <label class="form-check-label" [title]="overdueOppsOnlyTip"
+                   for="overdueOppsOnly">{{ overdueOppsOnlyLabel }}</label>
           </div>
         </div>
         <div class="col-md-4">
           <div class="form-check">
-            <label class="form-label" [title]="withUnreadMessagesTip"
-                   for="withUnreadMessages">{{ withUnreadMessagesLabel }}</label>
-            <input *ngIf="selectedStages.length === 0" [title]="withUnreadMessagesTip"
+            <input [title]="withUnreadMessagesTip"
                    type="checkbox"
                    formControlName="withUnreadMessages" id="withUnreadMessages"
                    class="form-check-input">
+            <label class="form-check-label" [title]="withUnreadMessagesTip"
+                   for="withUnreadMessages">{{ withUnreadMessagesLabel }}</label>
           </div>
         </div>
         <div class="col-md-4">

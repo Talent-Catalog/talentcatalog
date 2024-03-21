@@ -2188,12 +2188,6 @@ public class CandidateServiceImpl implements CandidateService {
             partnerEnglishLevel = languageLevelRepository.findById(partnerEnglishLevelId).orElse(null);
         }
 
-        final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
-        Country partnerCitizenship = null;
-        if (partnerCitizenshipId != null) {
-            partnerCitizenship = countryRepository.findById(partnerCitizenshipId).orElse(null);
-        }
-
         final Long drivingLicenseCountryId = data.getDrivingLicenseCountryId();
         Country drivingLicenseCountry = null;
         if (drivingLicenseCountryId != null) {
@@ -2207,7 +2201,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         populateIntakeData(candidate, data, partnerCandidate, partnerEducationLevel,
-                partnerOccupation, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry, birthCountry);
+                partnerOccupation, partnerEnglishLevel, drivingLicenseCountry, birthCountry);
 
         save(candidate, true);
 
@@ -2292,7 +2286,6 @@ public class CandidateServiceImpl implements CandidateService {
         @Nullable EducationLevel partnerEduLevel,
         @Nullable Occupation partnerOccupation,
         @Nullable LanguageLevel partnerEnglishLevel,
-        @Nullable Country partnerCitizenship,
         @Nullable Country drivingLicenseCountry,
         @Nullable Country birthCountry) {
         if (data.getAsylumYear() != null) {
@@ -2487,8 +2480,8 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getPartnerIeltsYr() != null) {
             candidate.setPartnerIeltsYr(data.getPartnerIeltsYr());
         }
-        if (data.getPartnerCitizenshipId() != null) {
-            candidate.setPartnerCitizenship(partnerCitizenship);
+        if (data.getPartnerCitizenship() != null) {
+            candidate.setPartnerCitizenship(data.getPartnerCitizenship());
         }
         if (data.getResidenceStatus() != null) {
             candidate.setResidenceStatus(data.getResidenceStatus());

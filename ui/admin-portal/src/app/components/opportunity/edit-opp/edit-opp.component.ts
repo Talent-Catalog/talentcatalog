@@ -1,5 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {CandidateOpportunity, CandidateOpportunityStage, isCandidateOpportunity} from "../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage,
+  isCandidateOpportunity
+} from "../../../model/candidate-opportunity";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -25,6 +29,8 @@ export class EditOppComponent implements OnInit {
 
   closing = false;
 
+  oppType: string;
+
   /**
    * When set to true, this will indicate that the given case is the only remaining child of its job parent
    */
@@ -46,9 +52,11 @@ export class EditOppComponent implements OnInit {
       if (isCandidateOpportunity(this.opp)) {
         this.opportunityStageOptions = enumOptions(CandidateOpportunityStage);
         this.checkOpenCases(this.opp);
+        this.oppType = 'Candidate Opportunity'
       }
       if (isJob(this.opp)) {
         this.opportunityStageOptions = enumOptions(JobOpportunityStage);
+        this.oppType = 'Job'
       }
     }
 
