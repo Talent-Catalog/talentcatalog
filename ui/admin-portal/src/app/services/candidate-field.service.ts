@@ -274,15 +274,15 @@ export class CandidateFieldService {
   }
 
   getIntakesCompleted(candidate: Candidate): string {
-    let mini = candidate?.miniIntakeCompletedDate != null ? 'Mini' : null;
     let full = candidate?.fullIntakeCompletedDate != null ? 'Full' : null;
-    if (mini && full) {
-      return mini + ', ' + full;
+    let mini = candidate?.miniIntakeCompletedDate != null ? 'Mini' : null;
+    let intakeStatus = null;
+    if (full) {
+      intakeStatus = mini ? full : full + ' *no mini';
     } else if (mini) {
-      return mini;
-    } else if (full) {
-      return full;
+      intakeStatus = mini;
     }
+    return intakeStatus;
   }
 
   getIntakeDates(candidate: Candidate): string {
