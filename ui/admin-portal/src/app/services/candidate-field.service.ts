@@ -73,7 +73,7 @@ export class CandidateFieldService {
     "user.firstName",
     "user.lastName",
     "status",
-    "intakeStatus",
+    "latestIntake",
     "updatedDate",
     "nationality.name",
     "country.name",
@@ -139,7 +139,7 @@ export class CandidateFieldService {
         null, null, true),
       new CandidateFieldInfo("NextStep", "candidateOpportunities.nextStep", null,
       null, null, true),
-      new CandidateFieldInfo("Intake Status", "intakeStatus", this.intakeDatesTooltip,
+      new CandidateFieldInfo("Latest Intake", "latestIntake", this.intakeDatesTooltip,
       this.intakeTypeFormatter, null, false),
       new CandidateFieldInfo("Latest Intake Date", "latestIntakeDate", null,
       this.intakeDateFormatter, null, false)
