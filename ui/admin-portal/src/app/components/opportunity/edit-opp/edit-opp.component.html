@@ -10,7 +10,7 @@
   <form [formGroup]="salesforceStageForm">
 
     <div class="mb-3">
-      <label class="form-label" for="stage">Candidate Opportunity Stage - order is just a guide, most stages are optional.</label>
+      <label class="form-label" for="stage">{{oppType}} Stage - order is just a guide, most stages are optional.</label>
       <ng-select id="stage" [formControlName]="'stage'" [items]="opportunityStageOptions"
                  placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
     </div>

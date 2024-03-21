@@ -69,7 +69,7 @@ export enum CandidateOpportunityStage {
   candidateUnreachable = "Closed. Candidate unreachable",
   candidateWithdraws = "Closed. Candidate withdraws",
   jobOfferRetracted = "Closed. Job offer retracted",
-  relocatedNoJobOfferPathway = "Closed. No job offer pathway (Canadian pathway - based on skills not job offer)"
+  relocatedNoJobOfferPathway = "Closed. No job offer stream (Canadian pathway stream - based on skills not job offer)"
 }
 
 /**
