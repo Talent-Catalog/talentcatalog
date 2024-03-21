@@ -38,7 +38,7 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
-  //Pick up reference to child CandidateOppsComponent - so we can call methods on it - see below
+  //Pick up reference to child Jobs Component - so we can call methods on it - see below
   @ViewChild(JobsComponent, { static: false }) jobsComponent: JobsComponent;
 
   constructor(

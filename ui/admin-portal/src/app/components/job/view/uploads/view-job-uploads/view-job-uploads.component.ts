@@ -3,10 +3,7 @@ import {Job, JobDocType} from "../../../../../model/job";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {JobService} from "../../../../../services/job.service";
-import {
-  InputLinkComponent,
-  UpdateLinkRequest
-} from "../../../../util/input/input-link/input-link.component";
+import {InputLinkComponent, UpdateLinkRequest} from "../../../../util/input/input-link/input-link.component";
 import {JobPrepItem, JobPrepJD, JobPrepJOI} from "../../../../../model/job-prep-item";
 
 /*
@@ -74,7 +71,6 @@ export class ViewJobUploadsComponent implements OnInit {
     this.saving = true;
     this.jobService.updateJobLink(this.job.id, docType, updateLinkRequest).subscribe(
       job => {
-        this.job = job;
         //Need event to bubble up and change job
         this.jobUpdated.emit(job)
         this.saving = false;
@@ -94,7 +90,6 @@ export class ViewJobUploadsComponent implements OnInit {
     this.saving = true;
     this.jobService.uploadJobDoc(this.job.id, docType, formData).subscribe(
       job => {
-        this.job = job;
         //Need event to bubble up and change job
         this.jobUpdated.emit(job)
         this.saving = false;
