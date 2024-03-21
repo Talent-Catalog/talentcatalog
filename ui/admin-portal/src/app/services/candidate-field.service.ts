@@ -46,6 +46,9 @@ export class CandidateFieldService {
   private intakeTypeFormatter = (value) => {
     return this.getIntakesCompleted(value);
   }
+  private intakeDateFormatter = (value) => {
+    return this.getLatestIntakeDates(value);
+  }
   private getIeltsScoreType = (value) => {
     return this.getIeltsScore(value);
   }
@@ -137,7 +140,9 @@ export class CandidateFieldService {
       new CandidateFieldInfo("NextStep", "candidateOpportunities.nextStep", null,
       null, null, true),
       new CandidateFieldInfo("Intake Status", "intakeStatus", this.intakeDatesTooltip,
-      this.intakeTypeFormatter, null, false)
+      this.intakeTypeFormatter, null, false),
+      new CandidateFieldInfo("Latest Intake Date", "latestIntakeDate", null,
+      this.intakeDateFormatter, null, false)
       // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
       // new CandidateFieldInfo("Tasks Status", "taskAssignments", null,
       //   this.getOverallTasksStatus, null),
@@ -283,6 +288,20 @@ export class CandidateFieldService {
       intakeStatus = mini;
     }
     return intakeStatus;
+  }
+
+  getLatestIntakeDates(candidate: Candidate): string {
+    let full = candidate?.fullIntakeCompletedDate != null ?
+      this.dateFormatter(candidate.fullIntakeCompletedDate) : null;
+    let mini = candidate?.miniIntakeCompletedDate != null ?
+      this.dateFormatter(candidate.miniIntakeCompletedDate) : null;
+    let intakeDate = null;
+    if (full) {
+      intakeDate = full;
+    } else if (mini) {
+      intakeDate = mini;
+    }
+    return intakeDate;
   }
 
   getIntakeDates(candidate: Candidate): string {
