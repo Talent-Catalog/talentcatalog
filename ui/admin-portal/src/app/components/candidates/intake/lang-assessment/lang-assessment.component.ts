@@ -35,8 +35,10 @@ export class LangAssessmentComponent extends IntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      langAssessment: [this.candidateIntakeData?.langAssessment],
-      langAssessmentScore: [this.candidateIntakeData?.langAssessmentScore],
+      englishAssessment: [this.candidateIntakeData?.englishAssessment],
+      englishAssessmentScoreIelts: [this.candidateIntakeData?.englishAssessmentScoreIelts],
+      frenchAssessment: [this.candidateIntakeData?.frenchAssessment],
+      frenchAssessmentScoreNclc: [this.candidateIntakeData?.frenchAssessmentScoreNclc],
     });
     this.regexpIeltsScore = new RegExp('^([0-8](\\.5)?$)|(^9$)');
     this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only."

@@ -1,26 +1,18 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-// Making the NCLC tip icon a button enables it to be keyboard-focusable,
-// per Bootstrap doc advice https://getbootstrap.com/docs/5.0/components/tooltips/#markup
-// Overriding the native button style fixes the visual aspect.
-#nclcTipButton {
-  border: none;
-  background-color: inherit;
-  margin-left: 5px;
-  padding: 0;
-}
-
+alter table candidate rename column lang_assessment to english_assessment;
+alter table candidate rename column lang_assessment_score to english_assessment_score_ielts;

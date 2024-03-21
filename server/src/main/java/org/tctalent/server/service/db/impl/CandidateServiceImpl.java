@@ -17,6 +17,33 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -147,34 +174,6 @@ import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
-
-import javax.servlet.http.HttpServletRequest;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * This is the lowest level service relating to managing candidates.
@@ -1516,8 +1515,8 @@ public class CandidateServiceImpl implements CandidateService {
             score = new BigDecimal(ieltsGen.getScore());
         } else if (ieltsAca != null && ieltsAca.getScore() != null) {
             score = new BigDecimal(ieltsAca.getScore());
-        } else if (candidate.getLangAssessmentScore() != null) {
-            score = new BigDecimal(candidate.getLangAssessmentScore());
+        } else if (candidate.getEnglishAssessmentScoreIelts() != null) {
+            score = new BigDecimal(candidate.getEnglishAssessmentScoreIelts());
         } else {
             score = null;
         }
@@ -2273,7 +2272,12 @@ public class CandidateServiceImpl implements CandidateService {
             candidateExam.setOtherExam(data.getOtherExam());
         }
         if (data.getExamScore() != null) {
-            candidateExam.setScore(data.getExamScore());
+            // If the ExamScore is NoResponse set to null in database.
+            if (data.getExamScore().equals("NoResponse")) {
+                candidateExam.setScore(null);
+            } else {
+                candidateExam.setScore(data.getExamScore());
+            }
         }
         if (data.getExamYear() != null) {
             candidateExam.setYear(data.getExamYear());
@@ -2396,20 +2400,30 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getIntRecruitRuralNotes() != null) {
             candidate.setIntRecruitRuralNotes(data.getIntRecruitRuralNotes());
         }
-        if (data.getLangAssessment() != null) {
-            candidate.setLangAssessment(data.getLangAssessment());
+        if (data.getEnglishAssessment() != null) {
+            candidate.setEnglishAssessment(data.getEnglishAssessment());
         }
-
-        if (data.getLangAssessmentScore() != null) {
-            // If the LangAssessmentScore is NoResponse set to null in database.
-            if (data.getLangAssessmentScore().equals("NoResponse")) {
-                candidate.setLangAssessmentScore(null);
+        if (data.getEnglishAssessmentScoreIelts() != null) {
+            // If the EnglishAssessmentScoreIelts is NoResponse set to null in database.
+            if (data.getEnglishAssessmentScoreIelts().equals("NoResponse")) {
+                candidate.setEnglishAssessmentScoreIelts(null);
             } else {
-                candidate.setLangAssessmentScore(data.getLangAssessmentScore());
+                candidate.setEnglishAssessmentScoreIelts(data.getEnglishAssessmentScoreIelts());
             }
             computeIeltsScore(candidate);
         }
-
+        if (data.getFrenchAssessment() != null) {
+            candidate.setFrenchAssessment(data.getFrenchAssessment());
+        }
+        if (data.getFrenchAssessmentScoreNclc() != null) {
+            // If the FrenchAssessmentScoreNclc is 0 (used here as a numerical equivalent to
+            // 'NoResponse', enabling previous answers to be deleted), set to null in database.
+            if (data.getFrenchAssessmentScoreNclc() == 0) {
+                candidate.setFrenchAssessmentScoreNclc(null);
+            } else {
+                candidate.setFrenchAssessmentScoreNclc(data.getFrenchAssessmentScoreNclc());
+            }
+        }
         if (data.getLeftHomeReasons() != null) {
             candidate.setLeftHomeReasons(data.getLeftHomeReasons());
         }

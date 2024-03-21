@@ -70,7 +70,7 @@
         </div>
         <hr *ngIf="i < candidateLanguages?.length - 1">
       </ng-container>
-      <ng-container *ngIf="candidate?.ieltsScore || candidate?.langAssessmentScore">
+      <ng-container *ngIf="candidate?.ieltsScore || candidate?.englishAssessmentScoreIelts">
         <hr>
         <div class="row">
           <div class="col-10 mb-2">
@@ -79,8 +79,8 @@
           <div *ngIf="hasIelts(candidate)" class="col-sm-12 col-md-6">
             <span>Ielts General: <i>{{candidate.ieltsScore}}</i></span>
           </div>
-          <div *ngIf="candidate?.langAssessmentScore" class="col-sm-12 col-md-6">
-            <span>Language Assessment Score: <i>{{candidate.langAssessmentScore}}</i></span>
+          <div *ngIf="candidate?.englishAssessmentScoreIelts" class="col-sm-12 col-md-6">
+            <span>Language Assessment Score: <i>{{candidate.englishAssessmentScoreIelts}}</i></span>
           </div>
         </div>
       </ng-container>
