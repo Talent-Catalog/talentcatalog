@@ -20,7 +20,7 @@
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="maritalStatus">
-      Are you engaged or married?
+      What is your marital status?
     </label>
     <div class="float-end">
       <app-autosave-status
@@ -143,12 +143,20 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label" for="partnerCitizenshipId">
-        What is your partners current country of citizenship?
+      <label class="form-label" for="partnerCitizenship">
+        List any country for which your partner has citizenship
       </label>
-      <ng-select id="partnerCitizenshipId" [formControlName]="'partnerCitizenshipId'"
-                 [items]="nationalities" [clearOnBackspace]="false"
-                 placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
+      <ng-select
+        id="partnerCitizenship"
+        [items]="nationalities"
+        [multiple]="true"
+        [closeOnSelect]="true"
+        [searchable]="true"
+        placeholder="Select or type..."
+        bindLabel="name"
+        bindValue="id"
+        formControlName="partnerCitizenship">
+      </ng-select>
     </div>
 
   </div>
