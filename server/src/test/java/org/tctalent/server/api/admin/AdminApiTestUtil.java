@@ -288,6 +288,8 @@ public class AdminApiTestUtil {
 
     static HelpLink getHelpLink() {
         HelpLink helpLink = new HelpLink();
+        helpLink.setId(99L);
+        helpLink.setLink("https://www.talentbeyondboundaries.org/");
         return helpLink;
     }
 

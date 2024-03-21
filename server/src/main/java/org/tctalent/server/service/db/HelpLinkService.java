@@ -16,11 +16,22 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
+import org.springframework.data.domain.Page;
 import org.tctalent.server.model.db.HelpLink;
+import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
 
 public interface HelpLinkService {
 
 
     HelpLink createHelpLink(UpdateHelpLinkRequest request);
+
+    boolean deleteHelpLink(long id);
+
+    List<HelpLink> search(SearchHelpLinkRequest request);
+
+    Page<HelpLink> searchPaged(SearchHelpLinkRequest request);
+
+    HelpLink updateHelpLink(UpdateHelpLinkRequest request);
 }

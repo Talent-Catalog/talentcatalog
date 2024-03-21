@@ -66,6 +66,8 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
             } else {
                 //It is not a public property - so could be ignored.
 
+                //TODO JC This code needs to be modified to understand recruiter ownership
+
                 //It is ignored if the candidate's partner do not match the given partner, or either
                 //partner is null.
                 Partner candidatePartner = fetchPartner(o);

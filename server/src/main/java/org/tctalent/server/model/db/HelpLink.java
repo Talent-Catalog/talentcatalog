@@ -17,10 +17,15 @@
 package org.tctalent.server.model.db;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
@@ -28,5 +33,37 @@ import lombok.Setter;
 @Table(name = "help_link")
 @SequenceGenerator(name = "seq_gen", sequenceName = "help_link_id_seq", allocationSize = 1)
 public class HelpLink extends AbstractAuditableDomainObject<Long> {
+
+    /**
+     * Country associated with help
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
+
+    /**
+     * Relevant stage, if any
+     */
+    @Nullable
+    private CandidateOpportunityStage caseStage;
+
+    /**
+     * Relevant stage, if any
+     */
+    @Nullable
+    private JobOpportunityStage jobStage;
+
+    /**
+     * Describes this help.
+     */
+    @NonNull
+    private String label;
+
+    /**
+     * Url link to help.
+     */
+    @NonNull
+    private String link;
 
 }

@@ -17,12 +17,15 @@
 package org.tctalent.server.api.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -87,7 +90,11 @@ class HelpLinkAdminApiTest extends ApiTestBase {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            ;
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.id", is(99)))
+            .andExpect(jsonPath("$.link", is("https://www.talentbeyondboundaries.org/")))
+            //TODO JC Adding all checks that DTO is present for all fields
+        ;
 
         verify(helpLinkService).createHelpLink(any(UpdateHelpLinkRequest.class));
 

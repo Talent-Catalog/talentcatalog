@@ -16,11 +16,16 @@
 
 package org.tctalent.server.api.admin;
 
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.EntityReferencedException;
+import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
@@ -41,8 +46,35 @@ public class HelpLinkAdminApi implements
         return helpLinkDto().build(helpLink);
     }
 
+    @Override
+    public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
+        return helpLinkService.deleteHelpLink(id);
+    }
+
+    @Override
+    public List<Map<String, Object>> search(SearchHelpLinkRequest request) {
+        List<HelpLink> helpLinks = helpLinkService.search(request);
+        return helpLinkDto().buildList(helpLinks);
+    }
+
+    @Override
+    public Map<String, Object> searchPaged(SearchHelpLinkRequest request) {
+        Page<HelpLink> helpLinks = helpLinkService.searchPaged(request);
+        return helpLinkDto().buildPage(helpLinks);
+    }
+
+    @Override
+    public Map<String, Object> update(long id, UpdateHelpLinkRequest request)
+        throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+        HelpLink helpLink = helpLinkService.updateHelpLink(request);
+        return helpLinkDto().build(helpLink);
+    }
+
     private DtoBuilder helpLinkDto() {
         return new DtoBuilder()
+            .add("id")
+            .add("link")
+            //TODO JC Other params
             ;
     }
 }

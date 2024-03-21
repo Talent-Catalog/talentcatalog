@@ -24,4 +24,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class UpdateHelpLinkRequest {
+    private String link;
+
 }

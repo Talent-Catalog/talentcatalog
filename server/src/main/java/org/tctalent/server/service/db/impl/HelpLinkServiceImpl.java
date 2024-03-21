@@ -16,11 +16,14 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.repository.db.HelpLinkRepository;
+import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
 import org.tctalent.server.service.db.HelpLinkService;
 
@@ -33,5 +36,29 @@ public class HelpLinkServiceImpl implements HelpLinkService {
     public HelpLink createHelpLink(UpdateHelpLinkRequest request) {
         //TODO JC createHelpLink not implemented in HelpLinkServiceImpl
         throw new NotImplementedException("HelpLinkServiceImpl", "createHelpLink");
+    }
+
+    @Override
+    public boolean deleteHelpLink(long id) {
+        //TODO JC Implement deleteHelpLink
+        throw new UnsupportedOperationException("deleteHelpLink not implemented");
+    }
+
+    @Override
+    public List<HelpLink> search(SearchHelpLinkRequest request) {
+        //TODO JC Implement search
+        throw new UnsupportedOperationException("search not implemented");
+    }
+
+    @Override
+    public Page<HelpLink> searchPaged(SearchHelpLinkRequest request) {
+        //TODO JC Implement searchPaged
+        throw new UnsupportedOperationException("searchPaged not implemented");
+    }
+
+    @Override
+    public HelpLink updateHelpLink(UpdateHelpLinkRequest request) {
+        //TODO JC Implement updateHelpLink
+        throw new UnsupportedOperationException("updateHelpLink not implemented");
     }
 }
