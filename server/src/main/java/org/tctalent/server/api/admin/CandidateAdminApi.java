@@ -93,7 +93,7 @@ public class CandidateAdminApi {
         this.candidateService = candidateService;
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
-        builderSelector = new CandidateBuilderSelector(userService);
+        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
         intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector();
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;

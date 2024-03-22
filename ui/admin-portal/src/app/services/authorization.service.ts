@@ -107,6 +107,11 @@ export class AuthorizationService {
     return result;
   }
 
+  /**
+   * True if the logged-in user work for the source partner that is currently managing the
+   * given candidate
+   * @param candidate
+   */
   isCandidateOurs(candidate: ShortCandidate): boolean {
     let ours = false;
     if (candidate) {
@@ -119,21 +124,21 @@ export class AuthorizationService {
     return ours;
   }
 
+  /**
+   * True if the logged-in user works for the default job creator, or works for the partner who created
+   * the given job.
+   * @param job
+   */
   isJobOurs(job: ShortJob): boolean {
-
-    //For now all jobs belong to just the default partner.
-    return this.isDefaultJobCreator();
-
-    //todo Eventually when we have proper recruiter partner support, the code will look like this:
-    /*
-      let ours = false;
-      const loggedInUser = this.authenticationService.getLoggedInUser()
-      //Must be logged in
-      if (loggedInUser) {
-        ours = job.jobCreator?.id === loggedInUser.partner.id;
+      let ours = this.isDefaultJobCreator();
+      if (!ours) {
+        const loggedInUser = this.authenticationService.getLoggedInUser()
+        //Must be logged in
+        if (loggedInUser) {
+          ours = job.jobCreator?.id === loggedInUser.partner.id;
+        }
       }
       return ours;
-    */
   }
 
   /**
@@ -351,25 +356,7 @@ export class AuthorizationService {
 
     //Can only change stage of jobs that have been published
     if (job.publishedDate != null) {
-      //Todo Temporary fix
       result = this.isPartnerAdminOrGreater();
-
-      //todo Temporary commented out
-      //Current logic is that only a system admin or the contact user, defaulting to the creating user
-      //of the job, can change the stage.
-      // const loggedInUser = this.authenticationService.getLoggedInUser();
-      // if (loggedInUser) {
-      //   if (this.isSystemAdminOnly()) {
-      //     result = true;
-      //   } else {
-      //     const contactUser = job.contactUser;
-      //     const createUser = job.createdBy;
-      //     const owner = contactUser != null ? contactUser : createUser;
-      //     if (owner != null) {
-      //       result = owner.id === loggedInUser.id;
-      //     }
-      //   }
-      // }
     }
     return result
   }
