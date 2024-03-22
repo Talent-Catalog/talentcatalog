@@ -37,6 +37,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
+import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -59,10 +60,10 @@ public class SavedSearchCandidateAdminApi implements
 
     @Autowired
     public SavedSearchCandidateAdminApi(
-            SavedSearchService savedSearchService,
+        CandidateOpportunityService candidateOpportunityService, SavedSearchService savedSearchService,
             UserService userService) {
         this.savedSearchService = savedSearchService;
-        builderSelector = new CandidateBuilderSelector(userService);
+        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
     }
 
     @Override
