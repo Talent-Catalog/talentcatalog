@@ -515,6 +515,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
+    private YesNoUnsure arrestImprison;
+
+    @Nullable
+    private String arrestImprisonNotes;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
     private YesNo conflict;
 
     @Nullable
@@ -1696,6 +1703,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getCrimeConvictNotes() { return crimeConvictNotes; }
 
     public void setCrimeConvictNotes(@Nullable String crimeConvictNotes) { this.crimeConvictNotes = crimeConvictNotes; }
+
+    @Nullable
+    public YesNoUnsure getArrestImprison() { return arrestImprison; }
+
+    public void setArrestImprison(@Nullable YesNoUnsure arrestImprison) { this.arrestImprison = arrestImprison; }
+
+    @Nullable
+    public String getArrestImprisonNotes() { return arrestImprisonNotes; }
+
+    public void setArrestImprisonNotes(@Nullable String arrestImprisonNotes) { this.arrestImprisonNotes = arrestImprisonNotes; }
 
     @Nullable
     public YesNo getConflict() { return conflict; }

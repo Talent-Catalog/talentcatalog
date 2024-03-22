@@ -2288,6 +2288,12 @@ public class CandidateServiceImpl implements CandidateService {
         @Nullable LanguageLevel partnerEnglishLevel,
         @Nullable Country drivingLicenseCountry,
         @Nullable Country birthCountry) {
+        if (data.getArrestImprison() != null) {
+            candidate.setArrestImprison(data.getArrestImprison());
+        }
+        if (data.getArrestImprisonNotes() != null) {
+            candidate.setArrestImprisonNotes(data.getArrestImprisonNotes());
+        }
         if (data.getAsylumYear() != null) {
             candidate.setAsylumYear(data.getAsylumYear());
         }

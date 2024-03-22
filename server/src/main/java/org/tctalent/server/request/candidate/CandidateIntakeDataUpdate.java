@@ -59,6 +59,9 @@ import org.tctalent.server.model.db.YesNoUnsure;
 @ToString
 public class CandidateIntakeDataUpdate {
 
+    private YesNoUnsure arrestImprison;
+    private String arrestImprisonNotes;
+
     private LocalDate asylumYear;
     private YesNoUnsure availImmediate;
     private String availImmediateJobOps;
