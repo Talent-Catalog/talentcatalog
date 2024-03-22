@@ -19,11 +19,16 @@ package org.tctalent.server.request.helplink;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.JobOpportunityStage;
 
 @Getter
 @Setter
 @ToString
 public class UpdateHelpLinkRequest {
+    private Long countryId;
+    private CandidateOpportunityStage caseStage;
+    private JobOpportunityStage jobStage;
+    private String label;
     private String link;
-
 }

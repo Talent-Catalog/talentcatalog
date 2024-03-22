@@ -289,6 +289,10 @@ public class AdminApiTestUtil {
     static HelpLink getHelpLink() {
         HelpLink helpLink = new HelpLink();
         helpLink.setId(99L);
+        helpLink.setCountry(new Country("Jordan", Status.active));
+        helpLink.setCaseStage(CandidateOpportunityStage.cvReview);
+        helpLink.setJobStage(JobOpportunityStage.jobOffer);
+        helpLink.setLabel("Test label");
         helpLink.setLink("https://www.talentbeyondboundaries.org/");
         return helpLink;
     }

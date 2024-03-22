@@ -20,45 +20,80 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.exception.NotImplementedException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.repository.db.HelpLinkRepository;
+import org.tctalent.server.repository.db.HelpLinkSpecification;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.HelpLinkService;
 
 @Service
 @RequiredArgsConstructor
 public class HelpLinkServiceImpl implements HelpLinkService {
     private final HelpLinkRepository helpLinkRepository;
+    private final CountryService countryService;
 
+    //TODO JC Default country help can be set in config
     @Override
-    public HelpLink createHelpLink(UpdateHelpLinkRequest request) {
-        //TODO JC createHelpLink not implemented in HelpLinkServiceImpl
-        throw new NotImplementedException("HelpLinkServiceImpl", "createHelpLink");
+    public HelpLink createHelpLink(UpdateHelpLinkRequest request)  throws NoSuchObjectException {
+        HelpLink helpLink = new HelpLink();
+        populateAttributes(request, helpLink);
+        return helpLinkRepository.save(helpLink);
     }
 
     @Override
     public boolean deleteHelpLink(long id) {
-        //TODO JC Implement deleteHelpLink
-        throw new UnsupportedOperationException("deleteHelpLink not implemented");
+        boolean found = helpLinkRepository.existsById(id);
+        if (found) {
+            helpLinkRepository.deleteById(id);
+        }
+        return found;
     }
 
     @Override
     public List<HelpLink> search(SearchHelpLinkRequest request) {
-        //TODO JC Implement search
-        throw new UnsupportedOperationException("search not implemented");
+        final Long countryId = request.getCountryId();
+        if (countryId == null) {
+            //Set default country - one that currently has best doc
+//todo        request.setCountryId(DEFAULT_COUNTRY_ID);
+        }
+
+        List<HelpLink> helpLinks = helpLinkRepository.findAll(
+            HelpLinkSpecification.buildSearchQuery(request), request.getSort());
+
+        return helpLinks;
     }
 
     @Override
     public Page<HelpLink> searchPaged(SearchHelpLinkRequest request) {
-        //TODO JC Implement searchPaged
-        throw new UnsupportedOperationException("searchPaged not implemented");
+
+        Page<HelpLink> helpLinks = helpLinkRepository.findAll(
+            HelpLinkSpecification.buildSearchQuery(request), request.getPageRequest());
+
+        return helpLinks;
     }
 
     @Override
-    public HelpLink updateHelpLink(UpdateHelpLinkRequest request) {
-        //TODO JC Implement updateHelpLink
-        throw new UnsupportedOperationException("updateHelpLink not implemented");
+    public HelpLink updateHelpLink(long id, UpdateHelpLinkRequest request)
+        throws NoSuchObjectException {
+        HelpLink helpLink = this.helpLinkRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(HelpLink.class, id));
+
+        populateAttributes(request, helpLink);
+        return helpLinkRepository.save(helpLink);
+    }
+
+    private void populateAttributes(UpdateHelpLinkRequest request, HelpLink helpLink)
+        throws NoSuchObjectException {
+
+        Long countryId = request.getCountryId();
+        helpLink.setCountry(countryId == null ? null : countryService.getCountry(countryId));
+
+        helpLink.setCaseStage(request.getCaseStage());
+        helpLink.setJobStage(request.getJobStage());
+        helpLink.setLabel(request.getLabel());
+        helpLink.setLink(request.getLink());
     }
 }

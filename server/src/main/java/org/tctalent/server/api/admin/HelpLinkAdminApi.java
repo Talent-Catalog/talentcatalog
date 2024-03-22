@@ -66,15 +66,25 @@ public class HelpLinkAdminApi implements
     @Override
     public Map<String, Object> update(long id, UpdateHelpLinkRequest request)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
-        HelpLink helpLink = helpLinkService.updateHelpLink(request);
+        HelpLink helpLink = helpLinkService.updateHelpLink(id, request);
         return helpLinkDto().build(helpLink);
     }
 
     private DtoBuilder helpLinkDto() {
         return new DtoBuilder()
             .add("id")
+            .add("caseStage")
+            .add("country", countryDto())
+            .add("jobStage")
+            .add("label")
             .add("link")
-            //TODO JC Other params
             ;
     }
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
+    }
+
 }

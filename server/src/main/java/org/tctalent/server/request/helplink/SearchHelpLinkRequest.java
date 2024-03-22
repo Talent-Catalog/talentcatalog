@@ -18,9 +18,24 @@ package org.tctalent.server.request.helplink;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.request.PagedSearchRequest;
 
 @Getter
 @Setter
 public class SearchHelpLinkRequest extends PagedSearchRequest {
+    @Nullable
+    private Long countryId;
+
+    @Nullable
+    private CandidateOpportunityStage caseStage;
+
+    @Nullable
+    private JobOpportunityStage jobStage;
+
+    @Nullable
+    private String keyword;
+
 }

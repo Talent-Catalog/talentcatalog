@@ -92,8 +92,11 @@ class HelpLinkAdminApiTest extends ApiTestBase {
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.id", is(99)))
+            .andExpect(jsonPath("$.country.name", is("Jordan")))
+            .andExpect(jsonPath("$.caseStage", is("cvReview")))
+            .andExpect(jsonPath("$.jobStage", is("jobOffer")))
+            .andExpect(jsonPath("$.label", is("Test label")))
             .andExpect(jsonPath("$.link", is("https://www.talentbeyondboundaries.org/")))
-            //TODO JC Adding all checks that DTO is present for all fields
         ;
 
         verify(helpLinkService).createHelpLink(any(UpdateHelpLinkRequest.class));
