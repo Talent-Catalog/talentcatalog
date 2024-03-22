@@ -889,7 +889,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return query;
     }
 
-    private BoolQueryBuilder computeElasticQuery(BoolQueryBuilder boolQueryBuilder,
+    private BoolQueryBuilder computeElasticQuery(
         SearchCandidateRequest request, @Nullable String simpleQueryString,
         @Nullable Collection<Candidate> excludedCandidates) {
     /*
@@ -912,6 +912,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      */
 
         User user = userService.getLoggedInUser();
+
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 
         // Not every base search will contain an elastic search term, since we're processing
         // joined regular searches here too — so we need a safe escape here
@@ -1179,11 +1181,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Set<Candidate> excludeCandidates =
             computeCandidatesExcludedFromSearchCandidateRequest(request);
 
-        // Each recursion, if any, builds on the query
-        boolQueryBuilder = computeElasticQuery(boolQueryBuilder, request,
-            simpleStringQuery, excludeCandidates);
+        // Each recursion, if any, is added to the query as an additional must clause
+        boolQueryBuilder.must(
+            computeElasticQuery(request, simpleStringQuery, excludeCandidates)
+        );
 
-        // Like addQuery() this method uses recursion to get every nested SearchJoinRequest
+        // Like addQuery(), this method uses recursion to get every nested SearchJoinRequest
         if (!request.getSearchJoinRequests().isEmpty()) {
             for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
                 boolQueryBuilder = addElasticQuery(boolQueryBuilder, joinRequest, savedSearchIds);
@@ -1655,9 +1658,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             searchIds.add(searchRequest.getSavedSearchId());
         }
 
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-
-        boolQueryBuilder = computeElasticQuery(boolQueryBuilder, searchRequest,
+        BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
             simpleQueryString, excludedCandidates);
 
         // Add any joined searches to the builder

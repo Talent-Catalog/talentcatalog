@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -44,6 +46,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Formula;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -617,10 +620,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Long partnerIeltsYr;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "partner_citizenship_id")
     @Nullable
-    private Country partnerCitizenship;
+    private String partnerCitizenship;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -1924,10 +1925,31 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setPartnerIeltsYr(@Nullable Long partnerIeltsYr) { this.partnerIeltsYr = partnerIeltsYr; }
 
+    /**
+     * Provides a list of country IDs for the candidate's partner's citizenships,
+     * instead of the comma separated string we store on the DB.
+     * Not currently used but left in case of future utility.
+     * @return list of country IDs or null if nothing stored
+     */
     @Nullable
-    public Country getPartnerCitizenship() { return partnerCitizenship; }
+    public List<Long> getPartnerCitizenship() {
+        return partnerCitizenship != null ?
+            Stream.of(partnerCitizenship.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList()) : null;
+    }
 
-    public void setPartnerCitizenship(@Nullable Country partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
+    /**
+     * Converts an array of country IDs to a comma-separated string for DB storage.
+     * @param partnerCitizenshipCountryIds array of country IDs indicating countries of which a
+     *                                     given candidate's partner is a citizen.
+     */
+    public void setPartnerCitizenship(List<Long> partnerCitizenshipCountryIds) {
+        this.partnerCitizenship = !CollectionUtils.isEmpty(partnerCitizenshipCountryIds) ?
+            partnerCitizenshipCountryIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")) : null;
+    }
 
     @Nullable
     public YesNo getMilitaryService() { return militaryService; }

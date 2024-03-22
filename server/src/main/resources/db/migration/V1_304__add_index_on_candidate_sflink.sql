@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-// This file replaces environment.ts during build by using the `fileReplacements` array.
-// `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
-
-export const environment = {
-  production: true,
-  host: document.location.host,
-  publishUrl: document.location.origin + '/published',
-  chatApiUrl: '/api/admin',
-  apiUrl: '/api/portal',
-  systemApiUrl: '/api/system',
-  s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',
-  googleAnalyticsId: 'G-BPDYWB77Y3'
-};
+create index candidate_sflink_index on candidate(sflink);

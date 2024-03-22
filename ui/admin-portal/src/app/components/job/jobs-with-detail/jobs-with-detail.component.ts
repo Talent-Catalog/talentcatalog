@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Router} from "@angular/router";
@@ -6,6 +6,7 @@ import {isStarredByMe, SearchOppsBy} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {BehaviorSubject} from "rxjs";
+import {JobsComponent} from "../jobs/jobs.component";
 
 /**
  * Displays the jobs returned by the given type of search, together with extra details
@@ -37,6 +38,9 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
+  //Pick up reference to child Jobs Component - so we can call methods on it - see below
+  @ViewChild(JobsComponent, { static: false }) jobsComponent: JobsComponent;
+
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
@@ -66,7 +70,8 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
     return isStarredByMe(this.selectedJob?.starringUsers, this.authenticationService);
   }
 
-  onJobUpdated(opp: Job) {
-    //Currently we don't process this event
+  // Refresh the jobs component (list of jobs) so that the new updated details can be displayed.
+  onJobUpdated(job: Job) {
+    this.jobsComponent.search();
   }
 }
