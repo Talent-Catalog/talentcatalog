@@ -20,22 +20,58 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.request.PagedSearchRequest;
 
+/**
+ * Used to search for {@link HelpLink}s.
+ * <p/>
+ * Typically this is used to fetch help links appropriate to a user's context.
+ * <p/>
+ * For example, if a TC destination user operating in a particular country is changing
+ * the stage of a job opportunity, the TC will use this search request to fetch links to help
+ * for that country (setting countryId) and stage (setting jobStage).
+ * <p/>
+ * The other kind of search is where keyword is set. That is only used in the usual way for
+ * managing the HelpLink table entries defined in TC settings.
+ */
 @Getter
 @Setter
 public class SearchHelpLinkRequest extends PagedSearchRequest {
+
+    /**
+     * Used to select country specific help. Different countries can have different processes and
+     * therefore different help documentation.
+     */
     @Nullable
     private Long countryId;
 
+    /**
+     * It only makes sense to specify at most one non-null stage in a request: caseStage or jobStage
+     */
     @Nullable
     private CandidateOpportunityStage caseStage;
 
+    /**
+     * It only makes sense to specify at most one non-null stage in a request: caseStage or jobStage
+     */
     @Nullable
     private JobOpportunityStage jobStage;
 
+    /**
+     * This search term is only used to filter HelpLinks in the TC settings.
+     * It is not used to select help links based on a user's current context.
+     * <p/>
+     * If keyword is specified, other fields should be null (they are ignored anyway).
+     */
     @Nullable
     private String keyword;
+
+    /**
+     * This is only used in the context of a non-null stage: caseStage or jobStage.
+     */
+    @Nullable
+    private String nextStepName;
 
 }

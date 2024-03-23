@@ -16,6 +16,7 @@
 
 package org.tctalent.server.model.db;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -66,4 +67,10 @@ public class HelpLink extends AbstractAuditableDomainObject<Long> {
     @NonNull
     private String link;
 
+    /**
+     * Information about Next step associated with help
+     */
+    @Nullable
+    @Embedded
+    private NextStepInfo nextStepInfo;
 }

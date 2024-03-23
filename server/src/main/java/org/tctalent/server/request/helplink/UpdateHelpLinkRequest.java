@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.JobOpportunityStage;
+import org.tctalent.server.model.db.NextStepInfo;
 
 @Getter
 @Setter
@@ -31,4 +32,5 @@ public class UpdateHelpLinkRequest {
     private JobOpportunityStage jobStage;
     private String label;
     private String link;
+    private NextStepInfo nextStepInfo;
 }
