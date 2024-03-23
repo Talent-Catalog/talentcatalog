@@ -535,29 +535,37 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch = savedSearchRepository.save(savedSearch);
         savedSearch = addSearchJoins(request, savedSearch);
 
-        //TODO JC This needs to be replicated in updateSavedSearch
         //Copy across the user's selections (including context notes)
         //of the default saved search.
-        if (loggedInUser != null) {
-            Long savedSearchId = defaultSavedSearch.getId();
+        copySelectionsAndContextNotes(defaultSavedSearch, savedSearch, true);
 
-            //Get the default selection list.
-            SavedList defaultSelectionList =
-                    getSelectionList(savedSearchId, loggedInUser.getId());
+        return savedSearch;
+    }
+
+    private void copySelectionsAndContextNotes(SavedSearch fromSavedSearch,
+        SavedSearch toSavedSearch, boolean clearFromSavedSearch) {
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser != null) {
+            Long fromSavedSearchId = fromSavedSearch.getId();
+
+            //Get the original selection list.
+            SavedList fromSelectionList =
+                getSelectionList(fromSavedSearchId, loggedInUser.getId());
 
             //Get the selection list of the new saved search
-            SavedList newSelectionList =
-                    getSelectionList(savedSearch.getId(), loggedInUser.getId());
+            SavedList toSelectionList =
+                getSelectionList(toSavedSearch.getId(), loggedInUser.getId());
 
-            //Copy default list to the selection list of the new saved search.
+            //Copy the contents of the original selection list to the selection list of the
+            //destination search.
             candidateSavedListService.copyContents(
-                    defaultSelectionList, newSelectionList, false);
+                fromSelectionList, toSelectionList, false);
 
-            //Clear search attributes and selections of default saved search
-            clearSavedSearch(defaultSavedSearch, loggedInUser);
-
+            if (clearFromSavedSearch) {
+                //Clear search attributes and selections of original saved search
+                clearSavedSearch(fromSavedSearch, loggedInUser);
+            }
         }
-        return savedSearch;
     }
 
     @Override
@@ -588,17 +596,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         }
 
-        savedSearch = convertToSavedSearch(savedSearch, request);
+        SavedSearch newSavedSearch = convertToSavedSearch(savedSearch, request);
 
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
 
-        savedSearch.setId(id);
-        savedSearch = addSearchJoins(request, savedSearch);
+        newSavedSearch.setId(id);
+        newSavedSearch = addSearchJoins(request, newSavedSearch);
 
-        savedSearch.setAuditFields(loggedInUser);
+        newSavedSearch.setAuditFields(loggedInUser);
         checkDuplicates(id, request.getName(), loggedInUser.getId());
-        return savedSearchRepository.save(savedSearch);
+        return savedSearchRepository.save(newSavedSearch);
     }
 
     @Override
@@ -826,8 +834,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidateIds.isEmpty();
     }
 
-    //TODO JC context notes get lost in standard UpdateSearch. See code in createSavedSearch for
-    //copying context
     @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
