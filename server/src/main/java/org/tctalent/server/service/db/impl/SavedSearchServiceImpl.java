@@ -535,6 +535,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch = savedSearchRepository.save(savedSearch);
         savedSearch = addSearchJoins(request, savedSearch);
 
+        //TODO JC This needs to be replicated in updateSavedSearch
         //Copy across the user's selections (including context notes)
         //of the default saved search.
         if (loggedInUser != null) {
@@ -825,7 +826,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidateIds.isEmpty();
     }
 
-    //TODO JC context notes get lost in standard UpdateSearch
+    //TODO JC context notes get lost in standard UpdateSearch. See code in createSavedSearch for
+    //copying context
     @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
