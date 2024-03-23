@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
+import java.util.HashSet;
 import java.util.Set;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -26,7 +27,7 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.util.dto.DtoPropertyFilter;
 
 /**
- * Filters out properties in a DtoBuilder based on a user's role and associated partner.
+ * Filters out a candidate's properties in a DtoBuilder based on a user's role and associated partner.
  * <p/>
  * Broadly, a user can only see public properties of candidates who do not belong to the user's
  * partner. The one exception is users with role systemadmin - they can always see everything.
@@ -36,18 +37,39 @@ import org.tctalent.server.util.dto.DtoPropertyFilter;
  * @author John Cameron
  */
 public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
+
+    @Nullable private Set<Candidate> fullyVisibleCandidates;
+    @Nullable private Set<User> fullyVisibleUsers; //Computed from fullyVisibleCandidates
+    @Nullable
     private final Partner partner;
+
+    @NonNull
     private final Role role;
 
+    @Nullable
     private final Set<String> publicProperties;
+
+    @Nullable
     private final Set<String> semiLimitedExtraProperties;
 
+    /**
+     * Filters out non-public Candidate properties according the given parameters
+     * @param partner Partner associated with the user requesting the candidate data.
+     * @param role Role of user requesting the candidate data
+     * @param fullyVisibleCandidates If present, this specifies the candidates that we can return
+     *                               all data for (ie no filtering)
+     * @param publicProperties Names of properties that are always returned (ie never filtered out)
+     * @param semiLimitedExtraProperties Names of properties that may be filtered out.
+     */
     public PartnerAndRoleBasedDtoPropertyFilter(@Nullable Partner partner, @NonNull Role role,
+        @Nullable Set<Candidate> fullyVisibleCandidates,
         @Nullable Set<String> publicProperties, @Nullable Set<String> semiLimitedExtraProperties) {
         this.partner = partner;
         this.role = role;
         this.publicProperties = publicProperties;
         this.semiLimitedExtraProperties = semiLimitedExtraProperties;
+
+        setFullyVisibleCandidates(fullyVisibleCandidates);
     }
 
     @Override
@@ -57,6 +79,7 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         if (role == Role.systemadmin
             //Allows default partner (eg TBB) admins to see everything.
             || isDefaultPartner(partner) && (role == Role.admin || role == Role.partneradmin)
+            || isInFullyVisibleCandidates(o)
         ) {
             ignore = false;
         } else {
@@ -116,6 +139,18 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         return res;
     }
 
+    private boolean isInFullyVisibleCandidates(Object o) {
+        boolean inFullyVisibleCandidates = false;
+            if (o instanceof Candidate) {
+                inFullyVisibleCandidates =
+                    fullyVisibleCandidates != null && fullyVisibleCandidates.contains(o);
+            } else if (o instanceof User) {
+                inFullyVisibleCandidates =
+                    fullyVisibleUsers != null && fullyVisibleUsers.contains(o);
+            }
+        return inFullyVisibleCandidates;
+    }
+
     /**
      * Fetches the source partner associated with the given object
      * @param o Object - should be a Candidate or a User
@@ -131,6 +166,21 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         }
 
         return user == null ? null : user.getPartner();
+    }
+
+    private void setFullyVisibleCandidates(@Nullable Set<Candidate> fullyVisibleCandidates) {
+        this.fullyVisibleCandidates = fullyVisibleCandidates;
+
+        //Construct matching fullyVisibleUsers from the users associated with each fully visible
+        //candidate.
+        if (fullyVisibleCandidates == null) {
+            fullyVisibleUsers = null;
+        } else {
+            fullyVisibleUsers = new HashSet<>();
+            for (Candidate candidate : fullyVisibleCandidates) {
+                fullyVisibleUsers.add(candidate.getUser());
+            }
+        }
     }
 }
 
