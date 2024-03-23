@@ -524,7 +524,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
             throws EntityExistsException {
-        SavedSearch savedSearch = convertToSavedSearch(request);
+        SavedSearch defaultSavedSearch = getDefaultSavedSearch();
+        SavedSearch savedSearch = convertToSavedSearch(defaultSavedSearch, request);
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
@@ -537,7 +538,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Copy across the user's selections (including context notes)
         //of the default saved search.
         if (loggedInUser != null) {
-            SavedSearch defaultSavedSearch = getDefaultSavedSearch();
             Long savedSearchId = defaultSavedSearch.getId();
 
             //Get the default selection list.
@@ -568,9 +568,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             throw new InvalidSessionException("Not logged in");
         }
 
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
         if(request.getSearchCandidateRequest() == null){
-            SavedSearch savedSearch = savedSearchRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
             // If a saved search isn't global and belongs to loggedInUser, allow changes
             if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
                 savedSearch.setName(request.getName());
@@ -587,7 +587,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         }
 
-        SavedSearch savedSearch = convertToSavedSearch(request);
+        savedSearch = convertToSavedSearch(savedSearch, request);
 
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
@@ -825,6 +825,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidateIds.isEmpty();
     }
 
+    //TODO JC context notes get lost in standard UpdateSearch
     @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
@@ -1239,14 +1240,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
 
     //---------------------------------------------------------------------------------------------------
-    private SavedSearch convertToSavedSearch(UpdateSavedSearchRequest request) {
-
+    private SavedSearch convertToSavedSearch(
+        SavedSearch origSavedSearch, UpdateSavedSearchRequest request) {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
         savedSearch.setFixed(request.getFixed());
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
+        savedSearch.setDescription(origSavedSearch.getDescription());
+        savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
+        savedSearch.setDisplayedFieldsShort(origSavedSearch.getDisplayedFieldsShort());
         savedSearch.setSfJobOpp(
             salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
 
