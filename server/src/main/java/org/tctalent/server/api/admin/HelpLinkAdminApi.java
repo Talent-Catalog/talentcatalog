@@ -74,16 +74,25 @@ public class HelpLinkAdminApi implements
         return new DtoBuilder()
             .add("id")
             .add("caseStage")
+            .add("focus")
             .add("country", countryDto())
             .add("jobStage")
             .add("label")
             .add("link")
+            .add("nextStepInfo", nextStepInfoDto())
             ;
     }
     private DtoBuilder countryDto() {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            ;
+    }
+    private DtoBuilder nextStepInfoDto() {
+        return new DtoBuilder()
+            .add("nextStepDays")
+            .add("nextStepName")
+            .add("nextStepText")
             ;
     }
 

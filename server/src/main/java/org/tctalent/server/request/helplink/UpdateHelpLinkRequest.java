@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.HelpFocus;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.NextStepInfo;
 
@@ -29,6 +30,7 @@ import org.tctalent.server.model.db.NextStepInfo;
 public class UpdateHelpLinkRequest {
     private Long countryId;
     private CandidateOpportunityStage caseStage;
+    private HelpFocus focus;
     private JobOpportunityStage jobStage;
     private String label;
     private String link;

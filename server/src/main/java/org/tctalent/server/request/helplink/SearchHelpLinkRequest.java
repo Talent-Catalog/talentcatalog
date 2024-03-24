@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.HelpFocus;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -52,6 +53,12 @@ public class SearchHelpLinkRequest extends PagedSearchRequest {
      */
     @Nullable
     private CandidateOpportunityStage caseStage;
+
+    /**
+     * Current user focus
+     */
+    @Nullable
+    private HelpFocus focus;
 
     /**
      * It only makes sense to specify at most one non-null stage in a request: caseStage or jobStage
