@@ -781,6 +781,9 @@ import {PickerModule} from "@ctrl/ngx-emoji-mart";
 import {
   NclcScoreValidationComponent
 } from './components/util/nclc-score-validation/nclc-score-validation.component';
+import {
+  ArrestImprisonComponent
+} from './components/candidates/intake/arrest-imprison/arrest-imprison.component';
 
 @NgModule({
   declarations: [
@@ -1097,7 +1100,8 @@ import {
     MonitoringEvaluationConsentComponent,
     ResetPasswordComponent,
     UserChangePasswordComponent,
-    NclcScoreValidationComponent
+    NclcScoreValidationComponent,
+    ArrestImprisonComponent
   ],
   imports: [
     BrowserModule,
