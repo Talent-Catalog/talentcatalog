@@ -18,6 +18,8 @@ package org.tctalent.server.model.db;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -48,6 +50,13 @@ public class HelpLink extends AbstractAuditableDomainObject<Long> {
      */
     @Nullable
     private CandidateOpportunityStage caseStage;
+
+    /**
+     * Current user focus - ie what is the user wanting to do
+     */
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private HelpFocus focus;
 
     /**
      * Relevant stage, if any
