@@ -54,6 +54,8 @@ public class HelpLinkServiceImpl implements HelpLinkService {
 
     @Override
     public List<HelpLink> search(SearchHelpLinkRequest request) {
+        //TODO JC This should be common to searchPaged.
+        //TODO JC Enrich request with context based on user.
         final Long countryId = request.getCountryId();
         if (countryId == null) {
             //Set default country - one that currently has best doc

@@ -81,4 +81,12 @@ public class SearchHelpLinkRequest extends PagedSearchRequest {
     @Nullable
     private String nextStepName;
 
+    /**
+     * Can be used to provide user related context (eg source or destination, jobCreator etc)
+     * for other than the currently logged in user (which can be supplied automatically).
+     * <p/>
+     * Probably only used to help with testing.
+     */
+    @Nullable
+    private Long userId;
 }
