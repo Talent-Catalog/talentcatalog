@@ -17,6 +17,7 @@
 package org.tctalent.server.request.helplink;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
@@ -39,7 +40,18 @@ import org.tctalent.server.request.PagedSearchRequest;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class SearchHelpLinkRequest extends PagedSearchRequest {
+
+    public SearchHelpLinkRequest(SearchHelpLinkRequest request) {
+        this.countryId = request.countryId;
+        this.caseStage = request.caseStage;
+        this.focus = request.focus;
+        this.jobStage = request.jobStage;
+        this.keyword = request.keyword;
+        this.nextStepName = request.nextStepName;
+        this.userId = request.userId;
+    }
 
     /**
      * Used to select country specific help. Different countries can have different processes and

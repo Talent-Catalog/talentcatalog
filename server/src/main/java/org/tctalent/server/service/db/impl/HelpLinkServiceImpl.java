@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.tctalent.server.util.HelpLinkHelper.generateRequestSequence;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -57,10 +59,11 @@ public class HelpLinkServiceImpl implements HelpLinkService {
     @Override
     public @NonNull List<HelpLink> fetchHelp(SearchHelpLinkRequest request) {
         //TODO JC Enrich request with context based on user.
-        //todo jc - multiple searches falling back from best match
 
         List<SearchHelpLinkRequest> requests = generateRequestSequence(request);
 
+        //Cycle through the generated requests returning the results of the first one that finds
+        //help.
         List<HelpLink> helpLinks = new ArrayList<>();
         for (SearchHelpLinkRequest childRequest : requests) {
             helpLinks = helpLinkRepository.findAll(
@@ -70,25 +73,11 @@ public class HelpLinkServiceImpl implements HelpLinkService {
             }
         }
 
-        return helpLinks;
-    }
+        if (helpLinks.isEmpty()) {
+            //TODO JC Add in default help link
+        }
 
-    /**
-     * Generates a sequence of requests from the given parent request.
-     * <p/>
-     * We start by looking for links related to all terms in the original request. But if there
-     * are no links matching all terms, we generate another request using fewer terms. If that
-     * request also does not return any links, then we reduce the number of terms again - and so on.
-     * <p/>
-     * The idea is that we will eventually return at least one link - even if that link is
-     * just a link to a "catch all" general help document.
-     * @param request Original "parent" request
-     * @return an ordered list of requests which should be made in order until at least one link is
-     * returned.
-     */
-    private List<SearchHelpLinkRequest> generateRequestSequence(SearchHelpLinkRequest request) {
-        //TODO JC Implement generateRequestSequence
-        throw new UnsupportedOperationException("generateRequestSequence not implemented");
+        return helpLinks;
     }
 
     @Override
