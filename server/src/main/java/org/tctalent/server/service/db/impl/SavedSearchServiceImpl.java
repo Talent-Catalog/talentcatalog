@@ -22,6 +22,7 @@ import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -935,6 +936,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //multiselected values will result in the filter returning true.
         //There is also a TermQuery which takes only one value.
 
+        // AGE
+        // Note that the orders of filters is reversed, since we're using DOB — i.e., min age has
+        // higher DOB-as-a-number than max age (e.g., 19690101 vs 19920101)
+        Integer minAge = request.getMinAge();
+        Integer maxAge = request.getMaxAge();
+        if (minAge != null || maxAge != null) {
+            boolQueryBuilder = addElasticRangeFilter(
+                boolQueryBuilder,
+                "dob",
+                constructAgeFilter(maxAge),
+                constructAgeFilter(minAge));
+        }
+
         //English levels
         Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
         if (minSpokenLevel != null) {
@@ -1102,6 +1116,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     null, "educationMajors.keyword", reqEducations);
         }
         return boolQueryBuilder;
+    }
+
+    /**
+     * Takes a min or max age as specified in candidate search and returns a term for filtering on
+     * the DOB field in elasticsearch.
+     * @param age min or max age as an Integer
+     * @return String term for adding to search query as min or max value for a range filter
+     */
+    private String constructAgeFilter(Integer age) {
+        return age == null ? null : LocalDate.now()
+            .minusYears(age + 1)
+            .toString()
+            .replaceAll("-", "");
     }
 
     private static String constructDefaultSearchName(User user) {
