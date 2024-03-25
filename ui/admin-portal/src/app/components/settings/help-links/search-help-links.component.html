@@ -15,8 +15,8 @@
       </div>
 
       <div class="mb-3 col-4">
-        <ng-select id="countryId" [formControlName]="'countryId'" [clearable]="false" [items]="destinationCountries"
-                   placeholder="Select" bindLabel="name" bindValue="id">
+        <ng-select id="countryId" [formControlName]="'countryId'" [items]="destinationCountries"
+                   placeholder="Filter by country..." bindLabel="name" bindValue="id">
         </ng-select>
       </div>
 
@@ -56,7 +56,9 @@
         <th>Case Stage</th>
         <th>Job Stage</th>
         <th>Focus</th>
-        <th>Next Step Info</th>
+        <th>Next Step Name</th>
+        <th>Next Step Text</th>
+        <th>Next Step Days</th>
       </tr>
       </thead>
 
@@ -74,10 +76,12 @@
              rel="noopener">{{helpLink.link}}</a>
         </td>
         <td>{{helpLink?.country?.name}}</td>
-        <td>{{helpLink?.caseStage}}</td>
-        <td>{{helpLink?.jobStage}}</td>
-        <td>{{helpLink?.focus}}</td>
-        <td>{{helpLink?.nextStepInfo}}</td>
+        <td>{{caseStageKeyToValue(helpLink?.caseStage)}}</td>
+        <td>{{jobStageKeyToValue(helpLink?.jobStage)}}</td>
+        <td>{{focusKeyToValue(helpLink?.focus)}}</td>
+        <td>{{helpLink?.nextStepInfo?.nextStepName}}</td>
+        <td>{{helpLink?.nextStepInfo?.nextStepText}}</td>
+        <td>{{helpLink?.nextStepInfo?.nextStepDays}}</td>
       </tr>
 
       <!-- loading -->

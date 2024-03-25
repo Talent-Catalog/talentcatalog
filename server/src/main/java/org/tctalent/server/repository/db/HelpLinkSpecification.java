@@ -41,18 +41,10 @@ public class HelpLinkSpecification {
                                 builder.like(builder.lower(helpLink.get("label")), likeMatchTerm),
                                 builder.like(builder.lower(helpLink.get("link")), likeMatchTerm)
                         ));
-            } else {
-                //Not a keyword search
+            }
 
-                //Don't process requests without a country
-                if (request.getCountryId() != null) {
-                    if (request.getCaseStage() != null || request.getJobStage() != null) {
-
-                    } else {
-                        //No stage specified. Just look for country help link.
-                        //TODO JC
-                    }
-                }
+            if (request.getCountryId() != null){
+                conjunction.getExpressions().add(builder.equal(helpLink.get("country").get("id"), request.getCountryId()));
             }
 
             return conjunction;

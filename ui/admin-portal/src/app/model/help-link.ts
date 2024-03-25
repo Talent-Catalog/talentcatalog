@@ -31,8 +31,8 @@ export interface HelpLink {
   nextStepInfo?: NextStepInfo,
   createdBy: User;
   createdDate: Date;
-  updatedBy: User
-  updatedDate: Date;
+  updatedBy?: User
+  updatedDate?: Date;
 }
 
 export enum HelpFocus {

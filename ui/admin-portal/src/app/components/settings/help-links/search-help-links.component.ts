@@ -4,14 +4,15 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {User} from "../../../model/user";
-import {HelpLink, SearchHelpLinkRequest} from "../../../model/help-link";
+import {HelpFocus, HelpLink, SearchHelpLinkRequest} from "../../../model/help-link";
 import {HelpLinkService} from "../../../services/help-link.service";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 import {
   CreateUpdateHelpLinkComponent
 } from "./create-update-help-link/create-update-help-link.component";
+import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
+import {JobOpportunityStage} from "../../../model/job";
 
 @Component({
   selector: 'app-search-help-links',
@@ -115,12 +116,15 @@ export class SearchHelpLinksComponent implements OnInit {
     .catch(() => {});
   }
 
-  showContact(user: User): string {
-
-    return user ? user.firstName + " " + user.lastName + "(" + user.email + ")" : "";
+  caseStageKeyToValue(key: string) {
+    return CandidateOpportunityStage[key];
   }
 
-  canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+  jobStageKeyToValue(key: string) {
+    return JobOpportunityStage[key];
+  }
+
+  focusKeyToValue(key: string) {
+    return HelpFocus[key];
   }
 }
