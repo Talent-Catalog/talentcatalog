@@ -35,7 +35,29 @@ public class HelpLinkFetchSpecification {
             query.distinct(true);
 
             if (request.getCountryId() != null){
-                conjunction.getExpressions().add(builder.equal(helpLink.get("country").get("id"), request.getCountryId()));
+                conjunction.getExpressions().add(
+                    builder.equal(helpLink.get("country").get("id"), request.getCountryId()));
+            }
+
+            if (request.getCaseStage() != null){
+                conjunction.getExpressions().add(
+                    builder.equal(helpLink.get("caseStage"), request.getCaseStage()));
+            }
+
+            if (request.getFocus() != null){
+                conjunction.getExpressions().add(
+                    builder.equal(helpLink.get("focus"), request.getFocus()));
+            }
+
+            if (request.getJobStage() != null){
+                conjunction.getExpressions().add(
+                    builder.equal(helpLink.get("jobStage"), request.getJobStage()));
+            }
+
+            if (request.getNextStepName() != null){
+                conjunction.getExpressions().add(
+                    builder.equal(helpLink.get("nextStepInfo").get("nextStepName"),
+                        request.getNextStepName()));
             }
 
             return conjunction;
