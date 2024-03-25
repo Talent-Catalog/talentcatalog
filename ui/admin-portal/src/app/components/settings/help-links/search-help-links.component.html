@@ -53,16 +53,10 @@
         <th>Label</th>
         <th>Link</th>
         <th>Country</th>
-        <th>Email</th>
-        <th>Job Creator?</th>
-        <th>Source Partner?</th>
-        <th>Source countries</th>
-        <th>Autoassignable?</th>
-        <th>Logo</th>
-        <th>Website</th>
-        <th>Rego Landing page</th>
-        <th>Default partner ref?</th>
-        <th>Status</th>
+        <th>Case Stage</th>
+        <th>Job Stage</th>
+        <th>Focus</th>
+        <th>Next Step Info</th>
       </tr>
       </thead>
 
@@ -75,8 +69,15 @@
           </div>
         </td>
         <td>{{helpLink.label}}</td>
-        <td>{{helpLink.link}}</td>
-        <td>{{helpLink.countryId}}</td>
+        <td>
+          <a [href]="helpLink.link" target="_blank"
+             rel="noopener">{{helpLink.link}}</a>
+        </td>
+        <td>{{helpLink?.country?.name}}</td>
+        <td>{{helpLink?.caseStage}}</td>
+        <td>{{helpLink?.jobStage}}</td>
+        <td>{{helpLink?.focus}}</td>
+        <td>{{helpLink?.nextStepInfo}}</td>
       </tr>
 
       <!-- loading -->

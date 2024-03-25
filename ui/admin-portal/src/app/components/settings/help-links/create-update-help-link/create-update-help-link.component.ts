@@ -3,14 +3,15 @@ import {Country} from "../../../../model/country";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {User} from "../../../../model/user";
 import {enumOptions} from "../../../../util/enum";
-import {Status} from "../../../../model/base";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../../services/authorization.service";
 import {CountryService} from "../../../../services/country.service";
 import {UserService} from "../../../../services/user.service";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
-import {HelpLink, UpdateHelpLinkRequest} from "../../../../model/help-link";
+import {HelpFocus, HelpLink, UpdateHelpLinkRequest} from "../../../../model/help-link";
 import {HelpLinkService} from "../../../../services/help-link.service";
+import {CandidateOpportunityStage} from "../../../../model/candidate-opportunity";
+import {JobOpportunityStage} from "../../../../model/job";
 
 @Component({
   selector: 'app-create-update-help-link',
@@ -24,7 +25,9 @@ export class CreateUpdateHelpLinkComponent extends FormComponentBase implements 
   form: FormGroup;
   helpLink: HelpLink;
   partnerUsers: User[];
-  statuses = enumOptions(Status);
+  caseStages = enumOptions(CandidateOpportunityStage);
+  jobStages = enumOptions(JobOpportunityStage);
+  focuses = enumOptions(HelpFocus);
   working: boolean;
 
 
@@ -42,7 +45,7 @@ export class CreateUpdateHelpLinkComponent extends FormComponentBase implements 
     this.form = this.fb.group({
       label: [this.helpLink?.label, Validators.required],
       link: [this.helpLink?.link, Validators.required],
-      countryId: [this.helpLink?.countryId],
+      countryId: [this.helpLink?.country.id],
       caseStage: [this.helpLink?.caseStage],
       jobStage: [this.helpLink?.jobStage],
       focus: [this.helpLink?.focus],

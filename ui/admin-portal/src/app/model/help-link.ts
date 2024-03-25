@@ -18,12 +18,13 @@ import {CandidateOpportunityStage} from "./candidate-opportunity";
 import {JobOpportunityStage} from "./job";
 import {PagedFilteredSearchRequest} from "./base";
 import {User} from "./user";
+import {Country} from "./country";
 
 export interface HelpLink {
   id: number,
   label: string,
   link: string,
-  countryId?: number,
+  country?: Country,
   caseStage?: CandidateOpportunityStage,
   focus?: HelpFocus,
   jobStage?: JobOpportunityStage,
@@ -35,9 +36,9 @@ export interface HelpLink {
 }
 
 export enum HelpFocus {
-  closeOpp,
-  updateNextStep,
-  updateStage
+  closeOpp = "Close opportunity",
+  updateNextStep = "Update Next Step",
+  updateStage = "Update Stage"
 }
 
 export interface NextStepInfo {

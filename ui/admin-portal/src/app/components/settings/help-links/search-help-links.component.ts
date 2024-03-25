@@ -1,21 +1,20 @@
 import {Component, OnInit} from '@angular/core';
 import {SearchResults} from "../../../model/search-results";
-import {Partner, sourceCountriesAsString} from "../../../model/partner";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {
-  CreateUpdatePartnerComponent
-} from "../partners/create-update-partner/create-update-partner.component";
 import {User} from "../../../model/user";
 import {HelpLink, SearchHelpLinkRequest} from "../../../model/help-link";
 import {HelpLinkService} from "../../../services/help-link.service";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
+import {
+  CreateUpdateHelpLinkComponent
+} from "./create-update-help-link/create-update-help-link.component";
 
 @Component({
-  selector: 'app-help-links',
+  selector: 'app-search-help-links',
   templateUrl: './search-help-links.component.html',
   styleUrls: ['./search-help-links.component.scss']
 })
@@ -90,10 +89,12 @@ export class SearchHelpLinksComponent implements OnInit {
   }
 
   addHelpLink() {
-    const addHelpLinkModal = this.modalService.open(CreateUpdatePartnerComponent, {
+    const addHelpLinkModal = this.modalService.open(CreateUpdateHelpLinkComponent, {
       centered: true,
       backdrop: 'static'
     });
+
+    addHelpLinkModal.componentInstance.destinationCountries = this.destinationCountries;
 
     addHelpLinkModal.result
     .then((result) => this.search())
@@ -101,20 +102,17 @@ export class SearchHelpLinksComponent implements OnInit {
   }
 
   editHelpLink(helpLink: HelpLink) {
-    const editHelpLinkModal = this.modalService.open(CreateUpdatePartnerComponent, {
+    const editHelpLinkModal = this.modalService.open(CreateUpdateHelpLinkComponent, {
       centered: true,
       backdrop: 'static'
     });
 
     editHelpLinkModal.componentInstance.helpLink = helpLink;
+    editHelpLinkModal.componentInstance.destinationCountries = this.destinationCountries;
 
     editHelpLinkModal.result
     .then((result) => this.search())
     .catch(() => {});
-  }
-
-  sourceCountries(partner: Partner) {
-    return sourceCountriesAsString(partner);
   }
 
   showContact(user: User): string {
@@ -125,5 +123,4 @@ export class SearchHelpLinksComponent implements OnInit {
   canAccessSalesforce(): boolean {
     return this.authService.canAccessSalesforce();
   }
-
 }
