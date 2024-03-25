@@ -117,6 +117,7 @@ public class HelpLinkServiceImpl implements HelpLinkService {
         helpLink.setJobStage(request.getJobStage());
         helpLink.setLabel(request.getLabel());
         helpLink.setLink(request.getLink());
+        helpLink.setFocus(request.getFocus());
         helpLink.setNextStepInfo(request.getNextStepInfo());
     }
 }
