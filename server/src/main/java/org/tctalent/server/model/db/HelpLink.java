@@ -50,6 +50,7 @@ public class HelpLink extends AbstractAuditableDomainObject<Long> {
      * <p/>
      * Only one kind of stage can be present: case or job - not both
      */
+    @Enumerated(EnumType.STRING)
     @Nullable
     private CandidateOpportunityStage caseStage;
 
@@ -65,6 +66,7 @@ public class HelpLink extends AbstractAuditableDomainObject<Long> {
      * <p/>
      * Only one kind of stage can be present: case or job - not both
      */
+    @Enumerated(EnumType.STRING)
     @Nullable
     private JobOpportunityStage jobStage;
 

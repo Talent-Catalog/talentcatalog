@@ -13,6 +13,10 @@ export class HelpLinkService {
 
   constructor(private http: HttpClient) { }
 
+  fetch(request: SearchHelpLinkRequest) {
+    return this.http.post<HelpLink[]>(`${this.apiUrl}/fetch`, request);
+  }
+
   search(request: SearchHelpLinkRequest): Observable<HelpLink[]> {
     return this.http.post<HelpLink[]>(`${this.apiUrl}/search`, request);
   }

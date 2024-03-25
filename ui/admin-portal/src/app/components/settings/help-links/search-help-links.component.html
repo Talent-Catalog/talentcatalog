@@ -50,7 +50,12 @@
       <thead class="table-primary">
       <tr>
         <th *ngIf="!readOnly"></th>
-        <th>Label</th>
+        <th>Label
+<!--    todo Debugging get rid of this      -->
+          <button class="search-tip-button" (click)="testHelpLink()">
+            <i class="fa-regular fa-circle-question fa-xs"></i>
+          </button>
+        </th>
         <th>Link</th>
         <th>Country</th>
         <th>Case Stage</th>
