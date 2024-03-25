@@ -1,0 +1,134 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">{{title}}</h4>
+
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
+
+</div>
+
+<div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+  <form [formGroup]="form">
+    <div class="mb-3">
+      <div class="mb-3">
+        <label class="form-label" for="name">Name *</label>
+        <input class="form-control" id="name" formControlName="name">
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="jobCreator" formControlName="jobCreator">
+        <label class="form-check-label" for="jobCreator">Job creator?</label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="sourcePartner" formControlName="sourcePartner">
+        <label class="form-check-label" for="sourcePartner">Source Partner?</label>
+      </div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="employerPartner" formControlName="employerPartner">
+        <label class="form-check-label" for="employerPartner">Employer Partner?</label>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Status? *</label>
+        <ng-select
+          id="status"
+          [items]="statuses"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="stringValue"
+          bindValue="key"
+          [formControlName]="'status'">
+        </ng-select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="name">Abbreviated name *</label>
+        <input class="form-control" id="abbreviation" formControlName="abbreviation">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="defaultContact">Default contact</label>
+        <ng-select id="defaultContact" [formControlName]="'defaultContact'"
+                   [items]="partnerUsers"
+                   bindLabel="name"
+                   placeholder="Select" [clearable]="true">
+        </ng-select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="sflink">Salesforce account link</label>
+        <input class="form-control" id="sflink" formControlName="sflink">
+        <div *ngIf="isInvalid(form.controls.sflink)" class="alert alert-danger">
+          This doesn't look like a Salesforce link to me!
+          <br/>
+          Copy and paste from Salesforce.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="notificationEmail">Email</label>
+        <input class="form-control" id="notificationEmail" formControlName="notificationEmail">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="logo">Logo</label>
+        <input class="form-control" id="logo" formControlName="logo">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="websiteUrl">Website Url</label>
+        <input class="form-control" id="websiteUrl" formControlName="websiteUrl">
+      </div>
+
+      <div *ngIf="isSourcePartner()">
+        <div class="mb-3">
+          <label class="form-label" for="registrationLandingPage">Registration Landing Page (url)</label>
+          <input class="form-control" id="registrationLandingPage" formControlName="registrationLandingPage">
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="autoAssignable" formControlName="autoAssignable">
+          <label class="form-check-label" for="autoAssignable">Auto assignable by country?</label>
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="defaultPartnerRef" formControlName="defaultPartnerRef">
+          <label class="form-check-label" for="defaultPartnerRef">Default partner ref?</label>
+        </div>
+
+        <!-- SOURCE COUNTRIES  -->
+        <div class="mb-3">
+          <label class="form-label">Source Country</label>
+          <ng-select
+            id="sourceCountry"
+            [items]="countries"
+            [multiple]="true"
+            [closeOnSelect]="false"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="name"
+            [formControlName]="'sourceCountries'">
+          </ng-select>
+          <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
+        </div>
+      </div>
+
+    </div>
+    <hr/>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="save()"
+          [disabled]="form?.invalid || working">
+    <i class="fas fa-spinner fa-spin" *ngIf="working"></i>
+    Save
+  </button>
+</div>
