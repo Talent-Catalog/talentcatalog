@@ -62,7 +62,6 @@ public class HelpLinkAdminApi implements
         return helpLinkDto().buildList(helpLinks);
     }
 
-
     @Override
     @NotNull
     public List<Map<String, Object>> search(SearchHelpLinkRequest request) {

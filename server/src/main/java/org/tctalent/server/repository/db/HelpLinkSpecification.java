@@ -22,11 +22,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 
+/**
+ * This is used in the standard HelpLinkAPI search methods for managing the TC Settings HelpLinks page.
+ */
 public class HelpLinkSpecification {
 
-    //TODO JC Really need multiple queries dropping bak until something found
-    //todo Maybe use specification for keyword - managing settings,
-    // then use normal queries for finding best help for given context.
     public static Specification<HelpLink> buildSearchQuery(final SearchHelpLinkRequest request) {
         return (helpLink, query, builder) -> {
             Predicate conjunction = builder.conjunction();
