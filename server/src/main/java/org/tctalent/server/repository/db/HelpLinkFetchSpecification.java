@@ -17,31 +17,22 @@
 package org.tctalent.server.repository.db;
 
 import javax.persistence.criteria.Predicate;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 
 /**
- * This is used in the standard HelpLinkAPI search methods for managing the TC Settings HelpLinks page.
+ * This is used in the HelpLinkAPI fetch method for fetching help for a user.
+ * <p/>
+ * It does not process the keyword field of {@link SearchHelpLinkRequest}.
+ * That is only used by {@link HelpLinkSettingsSpecification}
  */
-public class HelpLinkSpecification {
+public class HelpLinkFetchSpecification {
 
     public static Specification<HelpLink> buildSearchQuery(final SearchHelpLinkRequest request) {
         return (helpLink, query, builder) -> {
             Predicate conjunction = builder.conjunction();
             query.distinct(true);
-
-            // KEYWORD SEARCH
-            if (!StringUtils.isBlank(request.getKeyword())){
-                String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
-                String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(helpLink.get("label")), likeMatchTerm),
-                                builder.like(builder.lower(helpLink.get("link")), likeMatchTerm)
-                        ));
-            }
 
             if (request.getCountryId() != null){
                 conjunction.getExpressions().add(builder.equal(helpLink.get("country").get("id"), request.getCountryId()));

@@ -27,8 +27,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.HelpLink;
+import org.tctalent.server.repository.db.HelpLinkFetchSpecification;
 import org.tctalent.server.repository.db.HelpLinkRepository;
-import org.tctalent.server.repository.db.HelpLinkSpecification;
+import org.tctalent.server.repository.db.HelpLinkSettingsSpecification;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
 import org.tctalent.server.service.db.CountryService;
@@ -58,7 +59,8 @@ public class HelpLinkServiceImpl implements HelpLinkService {
 
     @Override
     public @NonNull List<HelpLink> fetchHelp(SearchHelpLinkRequest request) {
-        //TODO JC Enrich request with context based on user.
+        //TODO JC Enrich request with context based on user. Probably a HelpLinkHelper method taking
+        //a user as input.
 
         List<SearchHelpLinkRequest> requests = generateRequestSequence(request);
 
@@ -67,7 +69,7 @@ public class HelpLinkServiceImpl implements HelpLinkService {
         List<HelpLink> helpLinks = new ArrayList<>();
         for (SearchHelpLinkRequest childRequest : requests) {
             helpLinks = helpLinkRepository.findAll(
-                HelpLinkSpecification.buildSearchQuery(childRequest), request.getSort());
+                HelpLinkFetchSpecification.buildSearchQuery(childRequest), request.getSort());
             if (!helpLinks.isEmpty()) {
                 break;
             }
@@ -83,7 +85,7 @@ public class HelpLinkServiceImpl implements HelpLinkService {
     @Override
     public @NonNull List<HelpLink> search(SearchHelpLinkRequest request) {
         List<HelpLink> helpLinks = helpLinkRepository.findAll(
-            HelpLinkSpecification.buildSearchQuery(request), request.getSort());
+            HelpLinkSettingsSpecification.buildSearchQuery(request), request.getSort());
 
         return helpLinks;
     }
@@ -92,7 +94,7 @@ public class HelpLinkServiceImpl implements HelpLinkService {
     public @NonNull Page<HelpLink> searchPaged(SearchHelpLinkRequest request) {
 
         Page<HelpLink> helpLinks = helpLinkRepository.findAll(
-            HelpLinkSpecification.buildSearchQuery(request), request.getPageRequest());
+            HelpLinkSettingsSpecification.buildSearchQuery(request), request.getPageRequest());
 
         return helpLinks;
     }
