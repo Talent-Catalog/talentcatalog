@@ -16,9 +16,12 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.HelpLink;
@@ -35,9 +38,8 @@ public class HelpLinkServiceImpl implements HelpLinkService {
     private final HelpLinkRepository helpLinkRepository;
     private final CountryService countryService;
 
-    //TODO JC Default country help can be set in config
     @Override
-    public HelpLink createHelpLink(UpdateHelpLinkRequest request)  throws NoSuchObjectException {
+    public @NotNull HelpLink createHelpLink(UpdateHelpLinkRequest request)  throws NoSuchObjectException {
         HelpLink helpLink = new HelpLink();
         populateAttributes(request, helpLink);
         return helpLinkRepository.save(helpLink);
@@ -53,15 +55,44 @@ public class HelpLinkServiceImpl implements HelpLinkService {
     }
 
     @Override
-    public List<HelpLink> search(SearchHelpLinkRequest request) {
-        //TODO JC This should be common to searchPaged.
+    public @NonNull List<HelpLink> fetchHelp(SearchHelpLinkRequest request) {
         //TODO JC Enrich request with context based on user.
-        final Long countryId = request.getCountryId();
-        if (countryId == null) {
-            //Set default country - one that currently has best doc
-//todo        request.setCountryId(DEFAULT_COUNTRY_ID);
+        //todo jc - multiple searches falling back from best match
+
+        List<SearchHelpLinkRequest> requests = generateRequestSequence(request);
+
+        List<HelpLink> helpLinks = new ArrayList<>();
+        for (SearchHelpLinkRequest childRequest : requests) {
+            helpLinks = helpLinkRepository.findAll(
+                HelpLinkSpecification.buildSearchQuery(childRequest), request.getSort());
+            if (!helpLinks.isEmpty()) {
+                break;
+            }
         }
 
+        return helpLinks;
+    }
+
+    /**
+     * Generates a sequence of requests from the given parent request.
+     * <p/>
+     * We start by looking for links related to all terms in the original request. But if there
+     * are no links matching all terms, we generate another request using fewer terms. If that
+     * request also does not return any links, then we reduce the number of terms again - and so on.
+     * <p/>
+     * The idea is that we will eventually return at least one link - even if that link is
+     * just a link to a "catch all" general help document.
+     * @param request Original "parent" request
+     * @return an ordered list of requests which should be made in order until at least one link is
+     * returned.
+     */
+    private List<SearchHelpLinkRequest> generateRequestSequence(SearchHelpLinkRequest request) {
+        //TODO JC Implement generateRequestSequence
+        throw new UnsupportedOperationException("generateRequestSequence not implemented");
+    }
+
+    @Override
+    public @NonNull List<HelpLink> search(SearchHelpLinkRequest request) {
         List<HelpLink> helpLinks = helpLinkRepository.findAll(
             HelpLinkSpecification.buildSearchQuery(request), request.getSort());
 
@@ -69,7 +100,7 @@ public class HelpLinkServiceImpl implements HelpLinkService {
     }
 
     @Override
-    public Page<HelpLink> searchPaged(SearchHelpLinkRequest request) {
+    public @NonNull Page<HelpLink> searchPaged(SearchHelpLinkRequest request) {
 
         Page<HelpLink> helpLinks = helpLinkRepository.findAll(
             HelpLinkSpecification.buildSearchQuery(request), request.getPageRequest());
@@ -78,7 +109,7 @@ public class HelpLinkServiceImpl implements HelpLinkService {
     }
 
     @Override
-    public HelpLink updateHelpLink(long id, UpdateHelpLinkRequest request)
+    public @NotNull HelpLink updateHelpLink(long id, UpdateHelpLinkRequest request)
         throws NoSuchObjectException {
         HelpLink helpLink = this.helpLinkRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(HelpLink.class, id));
