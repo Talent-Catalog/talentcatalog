@@ -163,6 +163,9 @@ export interface CandidateIntakeData {
   crimeConvict?: YesNoUnsure;
   crimeConvictNotes?: string;
 
+  arrestImprison?: YesNoUnsure;
+  arrestImprisonNotes?: string;
+
   destLimit?: YesNo;
   destLimitNotes?: string;
 

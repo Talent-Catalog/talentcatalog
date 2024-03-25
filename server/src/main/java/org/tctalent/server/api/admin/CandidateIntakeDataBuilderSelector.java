@@ -36,6 +36,9 @@ public class CandidateIntakeDataBuilderSelector {
 
     private DtoBuilder candidateIntakeDto() {
         return new DtoBuilder()
+
+                .add("arrestImprison")
+                .add("arrestImprisonNotes")
                 .add("asylumYear")
                 .add("availImmediate")
                 .add("availImmediateJobOps")
