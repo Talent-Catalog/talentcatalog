@@ -47,6 +47,8 @@ public class HelpLink extends AbstractAuditableDomainObject<Long> {
 
     /**
      * Relevant stage, if any
+     * <p/>
+     * Only one kind of stage can be present: case or job - not both
      */
     @Nullable
     private CandidateOpportunityStage caseStage;
@@ -59,7 +61,9 @@ public class HelpLink extends AbstractAuditableDomainObject<Long> {
     private HelpFocus focus;
 
     /**
-     * Relevant stage, if any
+     * Relevant stage, if any.
+     * <p/>
+     * Only one kind of stage can be present: case or job - not both
      */
     @Nullable
     private JobOpportunityStage jobStage;
