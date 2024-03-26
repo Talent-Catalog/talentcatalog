@@ -1006,15 +1006,27 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Occupations
         final List<Long> occupationIds = request.getOccupationIds();
-        if (occupationIds != null) {
+        final Integer minYrs = request.getMinYrs();
+        final Integer maxYrs = request.getMaxYrs();
+        if (!Collections.isEmpty(occupationIds)) {
             //Look up names from ids.
             List<Object> reqOccupations = new ArrayList<>();
             for (Long id : occupationIds) {
                 final Occupation occupation = occupationService.getOccupation(id);
                 reqOccupations.add(occupation.getName());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                    null,"occupations.keyword", reqOccupations);
+            if (reqOccupations.size() > 0) {
+                BoolQueryBuilder nestedQueryBuilder = new BoolQueryBuilder();
+                nestedQueryBuilder = addElasticTermFilter(
+                    nestedQueryBuilder, SearchType.or, "esOccupations.name.keyword", reqOccupations);
+                if (minYrs != null || maxYrs != null) {
+                    nestedQueryBuilder = addElasticRangeFilter(
+                        nestedQueryBuilder, "esOccupations.yearsExperience", minYrs, maxYrs);
+                }
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.nestedQuery(
+                        "esOccupations", nestedQueryBuilder, ScoreMode.Avg));
+            }
         }
 
         //Countries - need to take account of source country restrictions
@@ -1115,6 +1127,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
                     null, "educationMajors.keyword", reqEducations);
         }
+
+        //Mini Intake
+        final Boolean miniIntakeCompleted = request.getMiniIntakeCompleted();
+        if (miniIntakeCompleted != null) {
+            boolQueryBuilder = boolQueryBuilder.filter(
+                QueryBuilders.existsQuery("miniIntakeCompletedDate"));
+        }
+
+        //Full Intake
+        final Boolean fullIntakeCompleted = request.getFullIntakeCompleted();
+        if (fullIntakeCompleted != null) {
+            boolQueryBuilder = boolQueryBuilder.filter(
+                QueryBuilders.existsQuery("fullIntakeCompletedDate"));
+        }
+
         return boolQueryBuilder;
     }
 

@@ -194,7 +194,7 @@ public class CandidateSpecification {
                         occupation.get("id").in(request.getOccupationIds())
                 );
 
-                //Min / Max Age
+                //Min / Max Years Experience in Occupation
                 if (request.getMinYrs() != null) {
                     Integer minYrs = request.getMinYrs();
                     conjunction.getExpressions().add(builder.and(

@@ -18,6 +18,7 @@ package org.tctalent.server.model.es;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -181,7 +182,17 @@ public class CandidateEs {
 
     private String partner;
 
-    private List<String> occupations;
+    @Field(type = FieldType.Nested)
+    private List<Occupation> esOccupations;
+
+    @Getter
+    @Setter
+    static class Occupation {
+        private String name;
+
+        @Field(type = FieldType.Long)
+        private Long yearsExperience;
+    }
 
     @Field(type = FieldType.Text)
     private String migrationOccupation;
@@ -202,6 +213,12 @@ public class CandidateEs {
 
     @Field(type = FieldType.Long)
     private Long numberDependants;
+
+    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second_millis)
+    private OffsetDateTime fullIntakeCompletedDate;
+
+    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second_millis)
+    private OffsetDateTime miniIntakeCompletedDate;
 
     public CandidateEs() {
     }
@@ -343,21 +360,32 @@ public class CandidateEs {
             }
         }
 
-        this.occupations = new ArrayList<>();
+        this.esOccupations = new ArrayList<>();
         this.migrationOccupation = null;
         List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
         if (occupations != null) {
             for (CandidateOccupation occupation : occupations) {
                 if (occupation != null && occupation.getOccupation() != null) {
-                    String text = occupation.getOccupation().getName();
-                    if (text != null) {
-                        this.occupations.add(text);
+                    Occupation esOccupation = new Occupation();
+                    String name = occupation.getOccupation().getName();
+                    Long yearsExperience = occupation.getYearsExperience();
+                    if (name != null) {
+                        esOccupation.setName(name);
+                        if (yearsExperience != null) {
+                            esOccupation.setYearsExperience(yearsExperience);
+                        }
+                        esOccupations.add(esOccupation);
                     }
+
                     if (occupation.getMigrationOccupation() != null) {
                         this.migrationOccupation = occupation.getMigrationOccupation();
                     }
                 }
             }
+            this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
+                null : candidate.getMiniIntakeCompletedDate();
+            this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
+                null : candidate.getFullIntakeCompletedDate();
         }
 
         this.skills = new ArrayList<>();
