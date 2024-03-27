@@ -18,8 +18,8 @@ fields. So for example at the Visa Eligibility job stage, context-sensitive help
 relevant to that stage.
 
 In an upcoming release we will add help icons to the Talent Catalog in the appropriate places, so 
-that users can click on these icons and see the context-sensitive help links right where they need
-it, and navigate directly to the help they need.
+that users can click on these icons and see the context-sensitive help right where they need
+it, navigating directly to the process documentation they need.
 
-You're welcome to start adding your context-sensitive help links via Settings, like those already 
-shown for Canada - that's where this idea came from!
+You're welcome to start adding your context-sensitive documentation via Help Links, like those 
+already shown for Canada - that's where this idea came from!
