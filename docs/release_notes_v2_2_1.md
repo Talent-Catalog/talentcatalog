@@ -19,7 +19,7 @@ summer.
 - **Google Analytics** GA4 support for candidate registration journey tracking
 
 ## Data Improvements
-- For **improved audit** purposes, next steps are now automatically appended with the username who made the change and the date when they did.
+- For **improved audit**, next steps are now automatically appended with the username who made the change and the date when they did.
 - Analysed duplicate candidate data registrations - **less than 3% of 104,000 reported registrations were detected as duplicates**.
 
 

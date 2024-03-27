@@ -21,5 +21,7 @@ In an upcoming release we will add help icons to the Talent Catalog in the appro
 that users can click on these icons and see the context-sensitive help right where they need
 it, navigating directly to the process documentation they need.
 
-You're welcome to start adding your context-sensitive documentation via Help Links, like those 
-already shown for Canada - that's where this idea came from!
+We're going to be asking you to share your country specific process documentation on the TC Slack
+channel for us to review and map onto context help links. Thanks to the Canada team for the 
+inspiration for this idea! 
+
