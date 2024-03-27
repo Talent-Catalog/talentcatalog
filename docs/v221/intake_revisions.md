@@ -4,7 +4,15 @@ sass:
   style: compressed
 ---
 
-# Mini Intake Revisions
+This release contains part one of two in a series of revisions to the intake process. Part two will
+follow in an interim release v2.2.2.
+
+<div class="card-image-container">
+  <img src="./../assets/images/v221/IntakeChanges.png" 
+        alt="Intake Changes" class="card-image">
+</div>
+
+# Mini Intake
 
 ## Confirm General Information
 
