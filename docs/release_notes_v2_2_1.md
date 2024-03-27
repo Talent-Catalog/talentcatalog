@@ -27,7 +27,7 @@ summer.
 # UI / UX Enhancements
 - Extended notification support and quick filtering for Chat messages - [details here](v221/extended_chat_notifications.md)
 - Support for context sensitive help linking directly to existing process documents. This help can be country specific and can be updated by TC admin users as new help becomes available. (Help Links).
-- Filtering of unverified candidates from reviewable search results
+- Filtering of unverified candidates from reviewable search results - [details here](v221/unverified_review_filter.md)
 - Keep url even if a login is required
 - Remember "show closed cases" user preferences on submission lists
 
