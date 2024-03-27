@@ -11,7 +11,7 @@ not included in the previous release. The next major TC feature release will be 
 summer.
 
 ## General Improvements
-- Intake revisions - details here.
+- Intake revisions - [details here](v221/intake_revisions.md).
 - Users can now build Elasticsearch queries on any base search, enabling the creation of reusable candidate searches. This
   saves time by allowing pre-filtering based on criteria like organizational countries of operation and immigration pathway eligibility.
 - Password reset available to all users from the login screen - no longer needing an admin to do this.
