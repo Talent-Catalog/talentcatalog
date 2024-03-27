@@ -42,6 +42,17 @@
     </ngb-pagination>
   </div>
 </div>
+
+<!--    todo Debugging get rid of this eventually      -->
+<ng-template #testTip>
+  <div *ngIf="testHelpLinks">
+    <div *ngFor="let helpLink of testHelpLinks">
+      <a target="_blank" [href]="helpLink.link">{{helpLink.label}}</a>
+
+    </div>
+  </div>
+</ng-template>
+
 <div class="section">
   <div class="table-responsive">
 
@@ -50,11 +61,16 @@
       <thead class="table-primary">
       <tr>
         <th *ngIf="!readOnly"></th>
-        <th>Label
-<!--    todo Debugging get rid of this      -->
-          <button class="search-tip-button" (click)="testHelpLink()">
+
+        <th>
+          Label
+          <!--    todo Debugging get rid of this eventually      -->
+          <button class="search-tip-button" [ngbTooltip]="testTip" placement=""
+                  (click)="testHelpLink()"
+                  triggers="click" tooltipClass="search-tips">
             <i class="fa-regular fa-circle-question fa-xs"></i>
           </button>
+
         </th>
         <th>Link</th>
         <th>Country</th>

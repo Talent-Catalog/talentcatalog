@@ -29,6 +29,8 @@ export class SearchHelpLinksComponent implements OnInit {
   searchForm: FormGroup;
   destinationCountries: Country[];
 
+  testHelpLinks: HelpLink[];
+
   constructor(
     private helpLinkService: HelpLinkService,
     private countryService: CountryService,
@@ -128,16 +130,17 @@ export class SearchHelpLinksComponent implements OnInit {
     return HelpFocus[key];
   }
 
-  //todo Debugging get rid of this
+  //todo Debugging get rid of this eventually
   testHelpLink() {
     this.error = null;
     this.loading = true;
     const request: SearchHelpLinkRequest =  {
-      jobStage: 'jobOffer'
+      jobStage: 'recruitmentProcess'
     };
 
     this.helpLinkService.fetch(request).subscribe(
       helpLinks => {
+        this.testHelpLinks = helpLinks;
         console.log("Found " + helpLinks.length + " help links");
         if (helpLinks.length > 0) {
           for (const helpLink of helpLinks) {
