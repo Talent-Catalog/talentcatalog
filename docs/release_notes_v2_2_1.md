@@ -11,9 +11,9 @@ not included in the previous release. The next major TC feature release will be 
 summer.
 
 ## General Improvements
-- Intake revisions [details here](v221/intake_revisions.md)
+- Intake revisions - [details here](v221/intake_revisions.md)
 - Elasticsearch can now be built on regular base search - [details here](v221/elastic_base_searches.md)
-- Password reset available to all users from the login screen - no longer needing an admin to do this.
+- Password reset - [details here](v221/password_reset.md)
 - New search filter for mini and/or full intake completion ([link to video](https://app.screencastify.com/v3/watch/7oAheV8qgbgrbMlhQTvO))
 - New 'Latest intake' column to display the latest intake completed. Hover over to see the date of completion for both mini and full intakes.
 - New 'Latest intake date' column to display the date of completion of the latest intake.
