@@ -6,24 +6,24 @@ sass:
 
 ## Version 2.2.1
 
-Check out the newest features and enhancements.
-
-# New Features
-- Intake revisions
+This is an interim release broadly focussed on improving data and functionality requests that were 
+not include in the previous release. The next major TC feature release will be version 2.3.0 in the 
+summer.
 
 ## General Improvements
-- Added a new search filter for identifying records by mini and/or full intake completion status. Watch the tutorial.
+- Intake revisions - details here.
+- New search filter for mini and/or full intake completion ([link to video](https://app.screencastify.com/v3/watch/7oAheV8qgbgrbMlhQTvO))
 - New 'Latest intake' column to display the latest intake completed. Hover over to see the date of completion for both mini and full intakes.
 - New 'Latest intake date' column to display the date of completion of the latest intake.
 - Users can now build Elasticsearch queries on any base search, enabling the creation of reusable candidate searches. This
   saves time by allowing pre-filtering based on criteria like organizational countries of operation and immigration pathway eligibility.
 - Password reset available to all users from the login screen - no longer needing an admin to do this
 
-
 ## Data Improvements
 - Analysed duplicate candidate data registrations - less than 3% out of 104,000 reported candidate
 - registrations identified as duplicates
 - Next steps are now automatically appended with the username who made the change and the date when they did.
+
 
 # UI / UX Enhancements
 - Extended notification support (asterisks) for Chat messages
@@ -32,7 +32,6 @@ Check out the newest features and enhancements.
 - Filtering of unverified candidates from reviewable search results
 - Keep url even if a login is required
 - Remember "show closed cases" user preferences on submission lists
-
 
 ## Other UI / UX Enhancements
 - Google Analytics GA4 tags for candidate journey tracking
@@ -43,7 +42,8 @@ Check out the newest features and enhancements.
 - System keeps track of last active stage - even if case is closed.
 - Added help to referer search field highlighting that wild card % can be used
 
-# Security Fixes
+
+# Security Updates
 - Password reset available to all users from the login screen
 - User URLs maintained across re-authorisation
 
@@ -55,7 +55,7 @@ Check out the newest features and enhancements.
 - Fixed bug where overdue cases only was not saving. Added cases icon to fix problem of users not being able to quickly go to case
 - Fixed bug where candidate was seeing certain chats prematurely - eg before they had a job offer
 - Added submissionList icon to fix problem of users not being able to quickly go to submission list
-- Fixed bug where two identical chats were auto-created (Hanine's bug issue #692) - resulting an exception when fetching a chat because two were found instead of one.
+- Fixed bug where two identical chats were auto-created - resulting in an exception when fetching a chat because two were found instead of one.
 - Fixed bug where the wrong type of opportunity was displaying when updating a job's progress.
 - When adding a job description or interview guidance document or link to a job it wasn't appearing until page reload. This now appears straight after adding to job.
 - Uploaded images on posts were appearing as broken links, fixed to display preview thumbnail of image.
