@@ -4,9 +4,8 @@ sass:
   style: compressed
 ---
 
-We now have support for context-sensitive help linking directly to existing process documents. This 
-help can be country specific and can be updated by TC admin users as new help documentation becomes 
-available.
+Create context-sensitive help linking directly to existing process documents. This help can be 
+country specific and can be updated by TC admin users as new help documentation becomes available.
 
 <div class="card-image-container">
   <img src="./../assets/images/v221/ContextHelp.png" 
@@ -20,7 +19,7 @@ relevant to that stage.
 
 In an upcoming release we will add help icons to the Talent Catalog in the appropriate places, so 
 that users can click on these icons and see the context-sensitive help links right where they need
-it and navigate to the shown links for help.
+it, and navigate directly to the help they need.
 
 You're welcome to start adding your context-sensitive help links via Settings, like those already 
 shown for Canada - that's where this idea came from!
