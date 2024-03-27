@@ -15,31 +15,30 @@ summer.
 - Elasticsearch can now be built on regular base search - [details here](v221/elastic_base_searches.md)
 - Password reset - [details here](v221/password_reset.md)
 - New search filter for mini and/or full intake completion ([link to video](https://app.screencastify.com/v3/watch/7oAheV8qgbgrbMlhQTvO))
-- New 'Latest intake' column to display the latest intake completed. Hover over to see the date of completion for both mini and full intakes.
-- New 'Latest intake date' column to display the date of completion of the latest intake.
-
+- Extended notification support and quick filtering for Chat messages - [details here](v221/extended_chat_notifications.md)
+- **Google Analytics** GA4 support for candidate registration journey tracking
 
 ## Data Improvements
-- Next steps are now automatically appended with the username who made the change and the date when they did.
+- For **improved audit** purposes, next steps are now automatically appended with the username who made the change and the date when they did.
 - Analysed duplicate candidate data registrations - **less than 3% of 104,000 reported registrations were detected as duplicates**.
 
 
 # UI / UX Enhancements
-- Extended notification support and quick filtering for Chat messages - [details here](v221/extended_chat_notifications.md)
 - More complete display of selected job information in right hand side panel - [details here](v221/job_side_panel.md)
 - Filtering of unverified candidates from reviewable search results - [details here](v221/unverified_review_filter.md)
 - Context Sensitive Help - [details here](v221/context_sensitive_help.md)
 - Job chat emojis - [details here](v221/job_chat_emojis.md)
-- Keep url even if a login is required
+- The url that the user was trying to open is maintained even if a new login is required
 - Remember "show closed cases" user preferences on submission lists
 
 ## Other UI / UX Enhancements
-- **Google Analytics** GA4 tags for candidate journey tracking
 - Moved 'New Search' tab to front of the 'Searches' page tab group
 - Fixed right hand side panel when browsing jobs & candidate opportunities, so that the top of the panel is still viewable when scrolling down the left hand side.
 - Employer recruiters can only see candidate names after the candidate has reached the CV Review stage
 - System keeps track of last active stage - even if case is closed.
 - Added help to referer search field highlighting that wild card % can be used
+- New 'Latest intake' column to display the latest intake completed. Hover over to see the date of completion for both mini and full intakes.
+- New 'Latest intake date' column to display the date of completion of the latest intake.
 
 # Fixed and Updated
 
