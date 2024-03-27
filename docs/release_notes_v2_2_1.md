@@ -28,6 +28,7 @@ summer.
 - Extended notification support and quick filtering for Chat messages - [details here](v221/extended_chat_notifications.md)
 - Support for context sensitive help linking directly to existing process documents. This help can be country specific and can be updated by TC admin users as new help becomes available. (Help Links).
 - Filtering of unverified candidates from reviewable search results - [details here](v221/unverified_review_filter.md)
+- More complete display of selected job information in right hand side panel - [details here](v221/job_side_panel.md)
 - Keep url even if a login is required
 - Remember "show closed cases" user preferences on submission lists
 
@@ -35,7 +36,6 @@ summer.
 - Google Analytics GA4 tags for candidate journey tracking
 - Moved 'New Search' tab to front of the 'Searches' page tab group
 - Fixed right hand side panel when browsing jobs & candidate opportunities, so that the top of the panel is still viewable when scrolling down the left hand side.
-- More complete display of selected job information in right hand side panel
 - Employer recruiters can only see candidate names after the candidate has reached the CV Review stage
 - System keeps track of last active stage - even if case is closed.
 - Added help to referer search field highlighting that wild card % can be used
