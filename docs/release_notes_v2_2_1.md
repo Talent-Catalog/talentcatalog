@@ -65,7 +65,7 @@ summer.
 # Developer Notes
 
 ## Code Refactoring
-- Resolved deprecated configuration in application YAML file
+- Resolved deprecated configuration in application YAML file.
 
 
 ---
