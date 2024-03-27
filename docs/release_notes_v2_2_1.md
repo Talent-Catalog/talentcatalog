@@ -34,7 +34,7 @@ summer.
 - Remember "show closed cases" user preferences on submission lists
 
 ## Other UI / UX Enhancements
-- Google Analytics GA4 tags for candidate journey tracking
+- **Google Analytics** GA4 tags for candidate journey tracking
 - Moved 'New Search' tab to front of the 'Searches' page tab group
 - Fixed right hand side panel when browsing jobs & candidate opportunities, so that the top of the panel is still viewable when scrolling down the left hand side.
 - Employer recruiters can only see candidate names after the candidate has reached the CV Review stage
