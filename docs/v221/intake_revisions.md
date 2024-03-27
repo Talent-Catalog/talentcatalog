@@ -53,11 +53,42 @@ been expanded to allow multiple citizenships.
 
 ## Language Assessment
 
-Renamed this section from "English Assessment". French second language ability assessment is added.
+Renamed this section from "English Assessment" with support for French second language ability 
+assessment.
 
 <div class="card-image-container">
   <img src="./../assets/images/v221/LanguageAssessment.png" 
         alt="LanguageAssessment" class="card-image">
 </div>
 
+# Full Intake
+
+## Family Members / Dependants
+
+The Dependants section has been renamed to Family Members / Dependants.
+
+## Host Country Status
+
+Switched the order of the "Do you feel it is safe question" moving it lower as requested.
+
+<div class="card-image-container">
+  <img src="./../assets/images/v221/HostCountry.png" 
+        alt="Host Country" class="card-image">
+</div>
+
+Added a new question:
+
+<div class="card-image-container">
+  <img src="./../assets/images/v221/ThirdCountry.png" 
+        alt="Third Country" class="card-image">
+</div>
+
+## Additional Eligibility
+
+Moved this question to the mini-intake.
+
+<div class="card-image-container">
+  <img src="./../assets/images/v221/Health.png" 
+        alt="Health" class="card-image">
+</div>
 
