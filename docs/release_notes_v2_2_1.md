@@ -10,7 +10,7 @@ This is an interim release broadly focussed on improving data and functionality 
 not include in the previous release. The next major TC feature release will be version 2.3.0 in the 
 summer.
 
-## General Improvements
+# General Improvements
 - Intake revisions - details here.
 - New search filter for mini and/or full intake completion ([link to video](https://app.screencastify.com/v3/watch/7oAheV8qgbgrbMlhQTvO))
 - New 'Latest intake' column to display the latest intake completed. Hover over to see the date of completion for both mini and full intakes.
@@ -20,9 +20,8 @@ summer.
 - Password reset available to all users from the login screen - no longer needing an admin to do this
 
 ## Data Improvements
-- Analysed duplicate candidate data registrations - less than 3% out of 104,000 reported candidate
-- registrations identified as duplicates
 - Next steps are now automatically appended with the username who made the change and the date when they did.
+- Analysed duplicate candidate data registrations - less than 3% out of 104,000 reported registrations were identified as duplicates.
 
 
 # UI / UX Enhancements
@@ -42,7 +41,7 @@ summer.
 - System keeps track of last active stage - even if case is closed.
 - Added help to referer search field highlighting that wild card % can be used
 
-# Fixed and Updates
+# Fixed and Updated
 
 ## Security Updates
 - Password reset available to all users from the login screen
@@ -65,14 +64,8 @@ summer.
 
 # Developer Notes
 
-## Test Coverage
-
 ## Code Refactoring
 - Resolved deprecated configuration in application YAML file
-
-## Continuous Integration & Deployment
-
-## Cloud Enhancements
 
 
 ---
