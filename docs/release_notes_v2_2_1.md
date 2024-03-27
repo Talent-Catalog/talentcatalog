@@ -25,8 +25,7 @@ summer.
 
 
 # UI / UX Enhancements
-- Extended notification support (asterisks) for Chat messages - [details here](v221/extended_chat_notifications.md)
-- Filtering of cases and jobs by unread messages
+- Extended notification support and quick filtering for Chat messages - [details here](v221/extended_chat_notifications.md)
 - Support for context sensitive help linking directly to existing process documents. This help can be country specific and can be updated by TC admin users as new help becomes available. (Help Links).
 - Filtering of unverified candidates from reviewable search results
 - Keep url even if a login is required
