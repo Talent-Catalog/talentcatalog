@@ -5,7 +5,7 @@ sass:
 ---
 
 All users can reset their passwords directly from the login screen themselves. Removing the
-need to request an admin user to reset it for them. Adding convenience and improved security/
+need to request an admin user to reset it for them. Adding convenience and improved security.
 
 Click the Forgot Password? link:
 
