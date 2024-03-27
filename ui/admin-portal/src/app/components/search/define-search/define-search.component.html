@@ -444,6 +444,14 @@
             <!-- REFERRER -->
             <div class="col-md-4">
               <label class="form-label" for="referrer">Referrer</label>
+              <button class="search-tip-button"
+                      ngbTooltip="Search ignores upper or lower case so don't worry about case.
+                      Also % can be used as a wild card. So 'ab%' will find any referers which
+                      begin with 'ab'. Or '%irc%' will find any referers with irc appearing
+                      anywhere in the name."
+                      placement="" triggers="click" tooltipClass="search-tips">
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </button>
               <input id="referrer" class="form-control"
                      name="referrer" [formControlName]="'regoReferrerParam'" appLowercase>
             </div>
@@ -464,8 +472,13 @@
 
             <!-- EXCLUSION LIST -->
             <div class="col-md-4">
-              <label class="form-label" for="exclusion">Exclusion list</label><button class="search-tip-button" ngbTooltip="Select from lists you created, global lists (e.g. job lists) or lists that you have
-                starred." placement="" triggers="click" tooltipClass="search-tips"><i class="fa-regular fa-circle-question fa-xs"></i></button>
+              <label class="form-label" for="exclusion">Exclusion list</label>
+              <button class="search-tip-button"
+                      ngbTooltip="Select from lists you created, global lists (e.g. job lists) or
+                      lists that you have starred."
+                      placement="" triggers="click" tooltipClass="search-tips">
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </button>
               <ng-select
                 id="exclusion"
                 [items]="lists"
