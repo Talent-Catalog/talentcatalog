@@ -13,4 +13,3 @@ partner or green-lit countries, or pathway requirements laborious to reenter for
         alt="Elasticsearch on Base Search" class="card-image">
 </div>
 
-
