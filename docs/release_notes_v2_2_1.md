@@ -42,12 +42,13 @@ summer.
 - System keeps track of last active stage - even if case is closed.
 - Added help to referer search field highlighting that wild card % can be used
 
+# Fixed and Updates
 
-# Security Updates
+## Security Updates
 - Password reset available to all users from the login screen
 - User URLs maintained across re-authorisation
 
-# Bug Fixes
+## Fixes
 - Remove button was not behaving correctly for submission lists - was not closing cases
 - Fixed bug where closed cases were sometimes being published in lists even when show closed cases
   was not checked
