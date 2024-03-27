@@ -6,9 +6,9 @@ sass:
 
 # Release Notes
 
-- [Version 2.2.1](release_notes_v2.2.1.md)
+- [Version 2.2.1](release_notes_v2_2_1.md)
 - [Version 2.2.0](release_notes_v2_2_0.md)
-- [Version 2.1.0](release_notes_v2.1.0.md)
+- [Version 2.1.0](release_notes_v2_1_0.md)
 
 
 ---
