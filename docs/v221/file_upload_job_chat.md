@@ -5,8 +5,8 @@ sass:
 ---
 
 Job chats support file uploads which are a convenient mechanism for sharing documents. For instance, 
-candidates can upload passports images via chat messages, with the uploaded file automatically 
-saved in the candidate's Google Drive folder.
+candidates, admins, and employers can upload passport images via chat messages, with the uploaded 
+file automatically saved in the candidate's Google Drive folder.
 
 1) Click on the file upload icon here:
 

@@ -15,8 +15,8 @@ chats and navigate down to jobs and cases with pending unread chats.
 An asterisk in the relevant tabs indicates an unread chat. With filters to zoom in on Jobs and Cases
 with unread chats.
 
-Candidates will be notified via email about unread chats received in the candidate portal within the 
-last 24 hours:
+Additionally, candidates will be notified via email about unread chats received in the candidate 
+portal within the last 24 hours:
 
 <div class="card-image-container">
   <img src="./../assets/images/v221/Email.png" 
