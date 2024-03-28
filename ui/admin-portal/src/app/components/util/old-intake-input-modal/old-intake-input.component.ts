@@ -43,12 +43,13 @@ export class OldIntakeInputComponent implements OnInit {
     this.candidateService.completeIntake(this.candidate.id, request).subscribe(
       (candidate)=> {
         this.candidate = candidate;
+        this.createNote();
       }, (error) => {
         this.error = error;
         this.saving = false;
       }
     )
-    this.createNote()
+
   }
 
   createNote() {
@@ -62,12 +63,13 @@ export class OldIntakeInputComponent implements OnInit {
     this.candidateNoteService.create(noteRequest).subscribe(
       (candidateNote) => {
         this.saving = false;
+        this.activeModal.close(this.candidate);
+
       },
       (error) => {
         this.error = error;
         this.saving = false;
       });
-    this.activeModal.close(this.candidate);
   }
 
   dismiss() {
