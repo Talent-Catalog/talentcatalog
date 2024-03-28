@@ -49,11 +49,7 @@ export class CreateUpdatePostComponent implements OnInit {
     this.chatPostService.uploadFile(this.chat.id, formData).subscribe(
       urlDto => {
         const index: number = this.quillEditorRef.selection.savedRange.index;
-        if (file.type.startsWith("image")) {
-          this.quillEditorRef.insertEmbed(index, 'image', urlDto.url, 'user');
-        } else {
-          this.quillEditorRef.insertText(index, 'link to file', 'link', urlDto.url, 'user');
-        }
+        this.quillEditorRef.insertText(index, 'link to file', 'link', urlDto.url, 'user');
         this.saving = false;
       },
       (error) => {
