@@ -17,7 +17,6 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -41,7 +40,6 @@ import {AuthenticationService} from "../../../../../services/authentication.serv
   styleUrls: ['./candidate-intake-tab.component.scss']
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
-  clickedOldIntake: boolean;
 
   constructor(candidateService: CandidateService,
               countryService: CountryService,
@@ -57,25 +55,20 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService, modalService)
   }
 
-  public inputOldIntakeNote(formName: string, button) {
-    this.clickedOldIntake = true;
-    // Popup modal to gather who and when.
-    const oldIntakeInputModal = this.modalService.open(OldIntakeInputComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    oldIntakeInputModal.componentInstance.candidateId = this.candidate.id;
-    oldIntakeInputModal.componentInstance.formName = formName;
-
-    oldIntakeInputModal.result
-      .then((country) => button.textContent = 'Note created!')
-      .catch(() => { /* Isn't possible */
-      });
-  }
-
   get fullIntakeComplete() {
     return this.candidate.fullIntakeCompletedDate != null;
+  }
+
+  get fullIntakeCompletedBy() {
+    let user: string = null;
+    if (this.fullIntakeComplete) {
+      if (this.candidate.fullIntakeCompletedBy != null) {
+        user = this.candidate?.fullIntakeCompletedBy.firstName + " " + this.candidate?.fullIntakeCompletedBy.lastName;
+      } else {
+        user = "external intake input, see notes for more details."
+      }
+    }
+    return user;
   }
 
   isPalestinian(): boolean {

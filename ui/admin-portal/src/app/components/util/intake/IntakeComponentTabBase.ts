@@ -17,7 +17,7 @@
 import {Directive, Input, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
-import {CandidateService} from '../../../services/candidate.service';
+import {CandidateService, IntakeAuditRequest} from '../../../services/candidate.service';
 import {CountryService} from '../../../services/country.service';
 import {Country} from '../../../model/country';
 import {EducationLevel} from '../../../model/education-level';
@@ -35,6 +35,7 @@ import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ConfirmationComponent} from "../confirm/confirmation.component";
+import {OldIntakeInputComponent} from "../old-intake-input-modal/old-intake-input.component";
 
 /**
  * Base class for all candidate intake tab components.
@@ -274,11 +275,17 @@ export abstract class IntakeComponentTabBase implements OnInit {
       "Once completed, updates can be made to the intakes anytime, just click the Update Intake " +
       "button to keep track of who/when completed the update.";
 
+    // Completed date is null, as this is a new intake and it will be set server side.
+    let request: IntakeAuditRequest = {
+      completedDate: null,
+      fullIntake: full
+    }
+
     completeIntakeModal.result
     .then((result) => {
       if (result == true) {
         this.saving = true;
-        this.candidateService.completeIntake(this.candidate.id, full).subscribe(
+        this.candidateService.completeIntake(this.candidate.id, request).subscribe(
           (candidate)=> {
             this.candidate = candidate;
             this.refreshIntakeData();
@@ -294,6 +301,29 @@ export abstract class IntakeComponentTabBase implements OnInit {
       }
     })
     .catch(() => {});
+  }
+
+  public inputOldIntake(full: boolean) {
+    // Popup modal to gather who and when.
+    const oldIntakeInputModal = this.modalService.open(OldIntakeInputComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    oldIntakeInputModal.componentInstance.fullIntake = full;
+    oldIntakeInputModal.componentInstance.candidate = this.candidate;
+
+    oldIntakeInputModal.result
+      .then((candidate) => {
+        this.candidate = candidate;
+        this.refreshIntakeData();
+        this.saving = false;
+      }, (error) => {
+        this.error = error;
+        this.saving = false;
+      })
+      .catch(() => { /* Isn't possible */
+      });
   }
 
 }
