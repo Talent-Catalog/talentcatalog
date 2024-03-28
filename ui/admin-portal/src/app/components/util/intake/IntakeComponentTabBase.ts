@@ -35,6 +35,7 @@ import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ConfirmationComponent} from "../confirm/confirmation.component";
+import {OldIntakeInputComponent} from "../old-intake-input-modal/old-intake-input.component";
 
 /**
  * Base class for all candidate intake tab components.
@@ -294,6 +295,44 @@ export abstract class IntakeComponentTabBase implements OnInit {
       }
     })
     .catch(() => {});
+  }
+
+  public inputOldIntake(full: boolean) {
+    // Popup modal to gather who and when.
+    const oldIntakeInputModal = this.modalService.open(OldIntakeInputComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    let intakeType: string = full ? 'Full Intake' : 'Mini Intake'
+    oldIntakeInputModal.componentInstance.formName = intakeType;
+    oldIntakeInputModal.componentInstance.candidateId = this.candidate.id;
+
+    oldIntakeInputModal.result
+      .then((noteRequest) => {
+        this.saving = true;
+        // Save the candidate's intake audit fields
+        this.candidateService.completeIntake(this.candidate.id, full).subscribe(
+          (candidate)=> {
+            this.candidate = candidate;
+            // If intake audit save successful, create the corresponding candidate note.
+            this.noteService.create(noteRequest).subscribe(
+              (candidateNote) => {
+                this.saving = false;
+              },
+              (error) => {
+                this.error = error;
+                this.saving = false;
+              });
+            this.refreshIntakeData();
+          }, (error) => {
+            this.error = error;
+            this.saving = false;
+          }
+        )
+      })
+      .catch(() => { /* Isn't possible */
+      });
   }
 
 }

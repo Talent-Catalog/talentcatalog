@@ -38,19 +38,7 @@ export class OldIntakeInputComponent implements OnInit {
       title: 'Original intake data entered: ' + this.formName + ' took place on ' + this.form.value.oldIntakeDate + ' by ' + this.form.value.oldIntakeAdmin + '.',
       comment: 'See details below on who/when this data was entered into the TC. Can find original document in candidates Google drive.'
     };
-    this.candidateNoteService.create(noteRequest).subscribe(
-      (candidateNote) => {
-        this.closeModal();
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      });
-  }
-
-  closeModal() {
-    this.activeModal.close();
+    this.activeModal.close(noteRequest);
   }
 
   dismiss() {

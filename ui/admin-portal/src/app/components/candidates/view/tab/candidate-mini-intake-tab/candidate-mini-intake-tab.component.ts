@@ -17,19 +17,13 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  OldIntakeInputComponent
-} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
 import {OccupationService} from "../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
-import {
-  CandidateExamService,
-  CreateCandidateExamRequest
-} from "../../../../../services/candidate-exam.service";
+import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
 import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
@@ -62,23 +56,6 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
 
   get miniIntakeComplete() {
     return this.candidate.miniIntakeCompletedDate != null;
-  }
-
-  public inputOldIntakeNote(formName: string, button) {
-    this.clickedOldIntake = true;
-    // Popup modal to gather who and when.
-    const oldIntakeInputModal = this.modalService.open(OldIntakeInputComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    oldIntakeInputModal.componentInstance.candidateId = this.candidate.id;
-    oldIntakeInputModal.componentInstance.formName = formName;
-
-    oldIntakeInputModal.result
-      .then((country) => button.textContent = 'Note created!')
-      .catch(() => { /* Isn't possible */
-      });
   }
 
   isPalestinian(): boolean {
