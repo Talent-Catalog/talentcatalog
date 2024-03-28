@@ -30,6 +30,7 @@ export class SearchHelpLinksComponent implements OnInit {
   destinationCountries: Country[];
 
   testHelpLinks: HelpLink[];
+  labelHelpRequest: SearchHelpLinkRequest = {jobStage: 'recruitmentProcess'};
 
   constructor(
     private helpLinkService: HelpLinkService,
@@ -128,31 +129,5 @@ export class SearchHelpLinksComponent implements OnInit {
 
   focusKeyToValue(key: string) {
     return HelpFocus[key];
-  }
-
-  //todo Debugging get rid of this eventually
-  testHelpLink() {
-    this.error = null;
-    this.loading = true;
-    const request: SearchHelpLinkRequest =  {
-      jobStage: 'recruitmentProcess'
-    };
-
-    this.helpLinkService.fetch(request).subscribe(
-      helpLinks => {
-        this.testHelpLinks = helpLinks;
-        console.log("Found " + helpLinks.length + " help links");
-        if (helpLinks.length > 0) {
-          for (const helpLink of helpLinks) {
-            console.log(helpLink.label + ": " + helpLink.link)
-          }
-        }
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      });
-
   }
 }
