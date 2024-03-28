@@ -25,7 +25,8 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 /**
- * TODO CC doc
+ * Request for the intake fields on the TC (completedBy & completedDate), these are either set at the time of intake
+ * completion, or when entering a previously completed external intake.
  *
  * @author Caroline Cameron
  */
@@ -42,5 +43,5 @@ public class CandidateIntakeAuditRequest {
     private LocalDate completedDate;
 
     @NotNull
-    private Boolean fullIntake;
+    private boolean fullIntake;
 }
