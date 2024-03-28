@@ -8,7 +8,7 @@ sass:
 
 This is an interim release broadly focussed on Employer Access readiness for Iress and improving data 
 and functionality requests that were not included in the previous release. The next major TC feature 
-release will be version 2.3.0 in the summer.
+release will be version 2.3.0 in the next few months.
 
 ## General Improvements
 - Intake revisions - [details here](v221/intake_revisions.md)
