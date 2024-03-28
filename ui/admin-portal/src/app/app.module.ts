@@ -784,6 +784,7 @@ import {
 import {
   ArrestImprisonComponent
 } from './components/candidates/intake/arrest-imprison/arrest-imprison.component';
+import { HelpComponent } from './components/help/help.component';
 
 @NgModule({
   declarations: [
@@ -1101,7 +1102,8 @@ import {
     ResetPasswordComponent,
     UserChangePasswordComponent,
     NclcScoreValidationComponent,
-    ArrestImprisonComponent
+    ArrestImprisonComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,
