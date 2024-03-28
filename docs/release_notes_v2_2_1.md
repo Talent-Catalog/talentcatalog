@@ -16,6 +16,7 @@ release will be version 2.3.0 in the next few months.
 - Password reset - [details here](v221/password_reset.md)
 - New search filter for mini and/or full intake completion ([link to video](https://app.screencastify.com/v3/watch/7oAheV8qgbgrbMlhQTvO))
 - Extended notification support and quick filtering for Chat messages - [details here](v221/extended_chat_notifications.md)
+- File uploads via job chats for easy document sharing - [details here](v221/file_upload_job_chat.md)
 - **Google Analytics** GA4 support for candidate registration journey tracking
 
 ## Data Improvements
