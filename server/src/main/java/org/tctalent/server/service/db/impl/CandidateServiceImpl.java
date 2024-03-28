@@ -2217,14 +2217,14 @@ public class CandidateServiceImpl implements CandidateService {
         LocalDate externalIntakeDate = request.getCompletedDate();
         // Check if this is an external intake, if so we just set the intake date as provided.
         if (externalIntakeDate != null) {
-            if (request.getFullIntake()) {
+            if (request.isFullIntake()) {
                 candidate.setFullIntakeCompletedDate(OffsetDateTime.of(externalIntakeDate, LocalTime.NOON, ZoneOffset.UTC));
             } else {
                 candidate.setMiniIntakeCompletedDate(OffsetDateTime.of(externalIntakeDate, LocalTime.NOON, ZoneOffset.UTC));
             }
         } else {
         // Not an external intake, so set fields using current audit data.
-            if (request.getFullIntake()) {
+            if (request.isFullIntake()) {
                 // set full intake fields
                 candidate.setFullIntakeCompletedBy(loggedInUser);
                 candidate.setFullIntakeCompletedDate(OffsetDateTime.now());
