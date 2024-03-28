@@ -130,6 +130,15 @@
     </ng-container>
   </ng-container>
 
+  <!-- Helps Links -->
+  <ng-container ngbNavItem="help-links">
+    <a ngbNavLink>Help Links</a>
+    <ng-template ngbNavContent>
+      <app-search-help-links>
+      </app-search-help-links>
+    </ng-template>
+  </ng-container>
+
 </nav>
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
