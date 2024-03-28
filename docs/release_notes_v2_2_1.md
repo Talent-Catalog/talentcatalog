@@ -17,8 +17,8 @@ release will be version 2.3.0 in the next few months.
 - New search filter for mini and/or full intake completion ([link to video](https://app.screencastify.com/v3/watch/7oAheV8qgbgrbMlhQTvO))
 - Extended notification support and quick filtering for Chat messages - [details here](v221/extended_chat_notifications.md)
 - File uploads via job chats for easy document sharing - [details here](v221/file_upload_job_chat.md)
-- Search terms highlighted in search results - [details here](v221/search_highlight.md)
-- **Google Analytics** GA4 support for candidate registration journey tracking
+- Highlighted search terms in search results - [details here](v221/search_highlight.md)
+- **Google Analytics** migrated to GA4 for candidate registration journey tracking
 
 ## Data Improvements
 - For **improved audit**, next steps are now automatically appended with the username who made the change and the date when they did.
