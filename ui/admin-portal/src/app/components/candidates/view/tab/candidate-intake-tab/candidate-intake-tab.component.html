@@ -25,8 +25,8 @@
   <div class="d-flex justify-content-between mb-3 ms-2 align-items-end">
     <div class="d-flex flex-column justify-content-between">
       <div class="mb-3 d-flex">
-        <h4>Full Intake</h4><h6 *ngIf="fullIntakeComplete" class="ms-2 mb-1 text-success align-self-center">Completed by {{candidate?.fullIntakeCompletedBy.firstName}} {{candidate?.fullIntakeCompletedBy.lastName}}
-        on {{candidate?.fullIntakeCompletedDate | date}}</h6>
+        <h4>Full Intake</h4><h6 *ngIf="fullIntakeComplete" class="ms-2 mb-1 text-success align-self-center">Completed
+        on {{candidate?.fullIntakeCompletedDate | date}} by {{fullIntakeCompletedBy}}</h6>
       </div>
       <div class="d-flex">
         <app-export-pdf [candidate]="candidate" [idToExport]="'FullIntakeForm'"></app-export-pdf>
@@ -47,7 +47,7 @@
         </button>
       </div>
       <ng-template #notComplete>
-        <button class="btn btn-secondary"
+        <button class="btn btn-warning me-3"
                 (click)="inputOldIntake(true)"
                 [disabled]="saving">
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
@@ -326,13 +326,6 @@
         Update
       </button>
     </div>
-    <ng-template #notComplete>
-      <button class="btn btn-success"
-              (click)="completeIntake(true)"
-              [disabled]="candidate.fullIntakeCompletedDate != null">
-        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-        Complete
-      </button>
-    </ng-template>
+    <ng-template #notComplete></ng-template>
   </div>
 </div>

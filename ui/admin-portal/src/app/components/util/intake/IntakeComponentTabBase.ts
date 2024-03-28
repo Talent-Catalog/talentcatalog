@@ -17,7 +17,7 @@
 import {Directive, Input, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
-import {CandidateService} from '../../../services/candidate.service';
+import {CandidateService, IntakeAuditRequest} from '../../../services/candidate.service';
 import {CountryService} from '../../../services/country.service';
 import {Country} from '../../../model/country';
 import {EducationLevel} from '../../../model/education-level';
@@ -275,11 +275,17 @@ export abstract class IntakeComponentTabBase implements OnInit {
       "Once completed, updates can be made to the intakes anytime, just click the Update Intake " +
       "button to keep track of who/when completed the update.";
 
+    // Completed date is null, as this is a new intake and it will be set server side.
+    let request: IntakeAuditRequest = {
+      completedDate: null,
+      fullIntake: full
+    }
+
     completeIntakeModal.result
     .then((result) => {
       if (result == true) {
         this.saving = true;
-        this.candidateService.completeIntake(this.candidate.id, full).subscribe(
+        this.candidateService.completeIntake(this.candidate.id, request).subscribe(
           (candidate)=> {
             this.candidate = candidate;
             this.refreshIntakeData();
@@ -304,32 +310,17 @@ export abstract class IntakeComponentTabBase implements OnInit {
       backdrop: 'static'
     });
 
-    let intakeType: string = full ? 'Full Intake' : 'Mini Intake'
-    oldIntakeInputModal.componentInstance.formName = intakeType;
-    oldIntakeInputModal.componentInstance.candidateId = this.candidate.id;
+    oldIntakeInputModal.componentInstance.fullIntake = full;
+    oldIntakeInputModal.componentInstance.candidate = this.candidate;
 
     oldIntakeInputModal.result
-      .then((noteRequest) => {
-        this.saving = true;
-        // Save the candidate's intake audit fields
-        this.candidateService.completeIntake(this.candidate.id, full).subscribe(
-          (candidate)=> {
-            this.candidate = candidate;
-            // If intake audit save successful, create the corresponding candidate note.
-            this.noteService.create(noteRequest).subscribe(
-              (candidateNote) => {
-                this.saving = false;
-              },
-              (error) => {
-                this.error = error;
-                this.saving = false;
-              });
-            this.refreshIntakeData();
-          }, (error) => {
-            this.error = error;
-            this.saving = false;
-          }
-        )
+      .then((candidate) => {
+        this.candidate = candidate;
+        this.refreshIntakeData();
+        this.saving = false;
+      }, (error) => {
+        this.error = error;
+        this.saving = false;
       })
       .catch(() => { /* Isn't possible */
       });

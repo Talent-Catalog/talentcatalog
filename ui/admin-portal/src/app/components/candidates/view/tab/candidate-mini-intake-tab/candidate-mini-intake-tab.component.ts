@@ -58,6 +58,18 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     return this.candidate.miniIntakeCompletedDate != null;
   }
 
+  get miniIntakeCompletedBy() {
+    let user: string = null;
+    if (this.miniIntakeComplete) {
+      if (this.candidate.fullIntakeCompletedBy != null) {
+        user = this.candidate?.fullIntakeCompletedBy.firstName + " " + this.candidate?.fullIntakeCompletedBy.lastName;
+      } else {
+        user = "input as external intake, see notes for more details."
+      }
+    }
+    return user;
+  }
+
   isPalestinian(): boolean {
     return this.countryService.isPalestine(this.candidate?.nationality)
   }

@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateNoteService, CreateCandidateNoteRequest} from "../../../services/candidate-note.service";
+import {CandidateService, IntakeAuditRequest} from "../../../services/candidate.service";
+import {Candidate} from "../../../model/candidate";
 
 @Component({
   selector: 'app-old-intake-input',
@@ -10,8 +12,8 @@ import {CandidateNoteService, CreateCandidateNoteRequest} from "../../../service
 })
 export class OldIntakeInputComponent implements OnInit {
 
-  candidateId: number;
-  formName: string;
+  fullIntake: boolean;
+  candidate: Candidate;
 
   form: FormGroup;
 
@@ -21,24 +23,51 @@ export class OldIntakeInputComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private candidateNoteService: CandidateNoteService) {
+              private candidateNoteService: CandidateNoteService,
+              private candidateService: CandidateService) {
   }
 
   ngOnInit() {
     this.form = this.fb.group({
-      oldIntakeDate: [null],
-      oldIntakeAdmin: [null],
+      oldIntakeCompletedDate: [null],
+      oldIntakeCompletedBy: [null],
     });
   }
 
   onSave() {
     this.saving = true;
+    let request: IntakeAuditRequest = {
+      completedDate: this.form.value.oldIntakeCompletedDate,
+      fullIntake: this.fullIntake
+    }
+    this.candidateService.completeIntake(this.candidate.id, request).subscribe(
+      (candidate)=> {
+        this.candidate = candidate;
+      }, (error) => {
+        this.error = error;
+        this.saving = false;
+      }
+    )
+    this.createNote()
+  }
+
+  createNote() {
+    let intakeType: string = this.fullIntake ? 'Full Intake' : 'Mini Intake'
     const noteRequest: CreateCandidateNoteRequest = {
-      candidateId: this.candidateId,
-      title: 'Original intake data entered: ' + this.formName + ' took place on ' + this.form.value.oldIntakeDate + ' by ' + this.form.value.oldIntakeAdmin + '.',
+      candidateId: this.candidate.id,
+      title: 'Original intake data entered: ' + intakeType + ' took place on ' + this.form.value.oldIntakeCompletedDate + ' by ' + this.form.value.oldIntakeCompletedBy + '.',
       comment: 'See details below on who/when this data was entered into the TC. Can find original document in candidates Google drive.'
     };
-    this.activeModal.close(noteRequest);
+    // If intake audit save successful, create the corresponding candidate note.
+    this.candidateNoteService.create(noteRequest).subscribe(
+      (candidateNote) => {
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
+    this.activeModal.close(this.candidate);
   }
 
   dismiss() {

@@ -59,6 +59,18 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
     return this.candidate.fullIntakeCompletedDate != null;
   }
 
+  get fullIntakeCompletedBy() {
+    let user: string = null;
+    if (this.fullIntakeComplete) {
+      if (this.candidate.fullIntakeCompletedBy != null) {
+        user = this.candidate?.fullIntakeCompletedBy.firstName + " " + this.candidate?.fullIntakeCompletedBy.lastName;
+      } else {
+        user = "input as external intake, see notes for more details."
+      }
+    }
+    return user;
+  }
+
   isPalestinian(): boolean {
     return this.countryService.isPalestine(this.candidate?.nationality)
   }

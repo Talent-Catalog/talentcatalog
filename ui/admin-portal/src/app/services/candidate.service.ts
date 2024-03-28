@@ -39,6 +39,12 @@ export interface DownloadCVRequest {
   showContact: boolean
 }
 
+// If a completed date is provided, this intake is an external intake entered to the TC at a later date.
+export interface IntakeAuditRequest {
+  completedDate: Date,
+  fullIntake: boolean
+}
+
 @Injectable({providedIn: 'root'})
 export class CandidateService implements IntakeService {
 
@@ -177,8 +183,8 @@ export class CandidateService implements IntakeService {
     return this.http.put<void>(`${this.apiUrl}/${candidateId}/intake`, formData);
   }
 
-  completeIntake(candidateId: number, full: boolean): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/${candidateId}/intake`, full);
+  completeIntake(candidateId: number, request: IntakeAuditRequest): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/${candidateId}/intake`, request);
   }
 
   resolveOutstandingTasks(details): Observable<void>  {
