@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
-import javax.security.auth.login.AccountLockedException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,6 +45,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.tctalent.server.exception.AccountLockedException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.exception.ServiceException;

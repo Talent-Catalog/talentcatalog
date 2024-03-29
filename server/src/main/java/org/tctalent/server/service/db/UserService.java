@@ -18,9 +18,9 @@ package org.tctalent.server.service.db;
 
 import java.util.List;
 import java.util.Set;
-import javax.security.auth.login.AccountLockedException;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.exception.AccountLockedException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UsernameTakenException;
