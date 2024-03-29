@@ -784,6 +784,7 @@ import {
 import {
   ArrestImprisonComponent
 } from './components/candidates/intake/arrest-imprison/arrest-imprison.component';
+import { HelpComponent } from './components/help/help.component';
 import {
   SearchHelpLinksComponent
 } from './components/settings/help-links/search-help-links.component';
@@ -1108,6 +1109,7 @@ import {
     UserChangePasswordComponent,
     NclcScoreValidationComponent,
     ArrestImprisonComponent,
+    HelpComponent,
     SearchHelpLinksComponent,
     CreateUpdateHelpLinkComponent
   ],
