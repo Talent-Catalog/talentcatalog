@@ -25,7 +25,9 @@
   </div>
 
   <div class="card-body">
-    <p>{{candidate?.additionalInfo}}</p>
+    <p [innerHtml]="candidate?.additionalInfo"
+       appHighlightSearch>
+    </p>
   </div>
 
 </div>
