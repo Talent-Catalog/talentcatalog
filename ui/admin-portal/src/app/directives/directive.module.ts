@@ -14,13 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { NgModule } from "@angular/core";
-import { LowercaseDirective } from "./lowercase.directive";
-import { CommonModule } from "@angular/common";
+import {NgModule} from "@angular/core";
+import {LowercaseDirective} from "./lowercase.directive";
+import {CommonModule} from "@angular/common";
+import {HighlightSearchDirective} from './highlight-search.directive';
 
 @NgModule({
-  declarations: [LowercaseDirective],
-  exports: [LowercaseDirective],
+  declarations: [LowercaseDirective, HighlightSearchDirective],
+  exports: [LowercaseDirective, HighlightSearchDirective],
   imports: [CommonModule],
 })
 export class DirectiveModule {}
