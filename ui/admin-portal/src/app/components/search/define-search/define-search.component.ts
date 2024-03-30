@@ -19,6 +19,7 @@ import {
   ElementRef,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild
@@ -37,7 +38,7 @@ import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
 import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
 import {EducationLevel} from '../../../model/education-level';
 import {EducationLevelService} from '../../../services/education-level.service';
@@ -80,13 +81,16 @@ import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {SearchQueryService} from "../../../services/search-query.service";
+import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-define-search',
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges {
+export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
@@ -152,6 +156,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
               private savedListService: SavedListService,
               private authService: AuthorizationService,
               private authenticationService: AuthenticationService,
+              private searchQueryService: SearchQueryService
               ) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -210,6 +215,14 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     this.loading = true;
     this.error = null;
 
+    this.searchForm.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.searchQueryService.changeSearchQuery(value.simpleQueryString || '');
+    });
+
     const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
     const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
@@ -253,6 +266,11 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       this.loading = false;
       this.error = error;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get simpleQueryString(): string {

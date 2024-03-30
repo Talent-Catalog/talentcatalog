@@ -1,29 +1,15 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from "rxjs";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {BehaviorSubject, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchQueryService {
-
-  private searchQueryUpdate = new Subject<string>();
   private searchTermsSource = new BehaviorSubject<string[]>([]);
 
-  constructor() {
-    this.searchQueryUpdate.pipe(
-      debounceTime(300), // Adjust time based on user experience
-      distinctUntilChanged()
-    ).subscribe(query => {
-      this.processSearchQuery(query);
-    });
-  }
+  constructor() {}
 
   changeSearchQuery(query: string) {
-    this.searchQueryUpdate.next(query);
-  }
-
-  private processSearchQuery(query: string) {
     if (query && query.length > 0) {
       try {
         const queryArray = this.parseSearchQuery(query);
