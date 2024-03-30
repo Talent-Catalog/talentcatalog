@@ -35,8 +35,14 @@
       </div>
     </div>
     <div class="row" *ngFor="let skill of candidateSkills">
-      <div class="col-6">{{skill.skill}}</div>
-      <div class="col-6">{{skill.timePeriod}} years</div>
+      <div class="col-6"
+           [innerHtml]="skill.skill"
+           appHighlightSearch>
+      </div>
+      <div class="col-6"
+           [innerHtml]="skill.timePeriod + ' years'"
+           appHighlightSearch>
+      </div>
     </div>
   </div>
 </div>
