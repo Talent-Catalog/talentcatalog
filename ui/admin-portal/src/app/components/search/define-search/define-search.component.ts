@@ -82,7 +82,7 @@ import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
-import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
+import {first} from "rxjs/operators";
 
 @Component({
   selector: 'app-define-search',
@@ -215,12 +215,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    this.searchForm.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(value => {
-      this.searchQueryService.changeSearchQuery(value.simpleQueryString || '');
+    this.searchForm.get('simpleQueryString').valueChanges.pipe(
+        first()
+    ).subscribe(initialValue => {
+      this.searchQueryService.changeSearchQuery(initialValue || '');
     });
 
     const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
@@ -337,6 +335,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     //See the html of this component, for which <app-show-candidates takes
     //searchRequest as an input.
     this.searchRequest = request;
+
+    this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
   }
 
   getIdsMultiSelect(request): SearchCandidateRequestPaged {
