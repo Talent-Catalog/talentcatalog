@@ -19,7 +19,6 @@ import {
   ElementRef,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild
@@ -38,7 +37,7 @@ import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {forkJoin, Subject} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
 import {EducationLevel} from '../../../model/education-level';
 import {EducationLevelService} from '../../../services/education-level.service';
@@ -89,9 +88,7 @@ import {first} from "rxjs/operators";
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
-  private destroy$ = new Subject<void>();
-
+export class DefineSearchComponent implements OnInit, OnChanges {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -264,11 +261,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.loading = false;
       this.error = error;
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   get simpleQueryString(): string {
