@@ -1,20 +1,20 @@
-import {Directive, ElementRef, OnDestroy, OnInit} from '@angular/core';
+import {AfterContentChecked, Directive, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {SearchQueryService} from "../services/search-query.service";
 import {Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 
 /**
- * Use this directive to dynamically highlight current elastic search terms within an element's
- * text content.
+ * Use this directive to highlight current elastic search terms within an element's text content.
  *
  * @author sadatmalik
  */
 @Directive({
   selector: '[appHighlightSearch]'
 })
-export class HighlightSearchDirective implements OnInit, OnDestroy {
+export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContentChecked {
   private destroy$ = new Subject<void>();
   private currentSearchTerms = [];
+  private lastHighlight = '';
 
   constructor(
     private el: ElementRef,
@@ -26,8 +26,17 @@ export class HighlightSearchDirective implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(terms => {
       this.currentSearchTerms = terms;
+      this.removeHighlighting(); // Clear existing highlights when search term changes
       this.applyHighlighting();
     });
+  }
+
+  ngAfterContentChecked(): void {
+    const currentContent = this.el.nativeElement.innerHTML;
+    if (this.lastHighlight !== currentContent) {
+      this.lastHighlight = currentContent;
+      this.applyHighlighting();
+    }
   }
 
   ngOnDestroy(): void {
@@ -45,7 +54,6 @@ export class HighlightSearchDirective implements OnInit, OnDestroy {
   }
 
   private applyHighlighting(): void {
-    this.removeHighlighting(); // Clear existing highlights
     if (!this.currentSearchTerms || this.currentSearchTerms.length === 0) {
       return;
     }
@@ -55,9 +63,12 @@ export class HighlightSearchDirective implements OnInit, OnDestroy {
     const walk = document.createTreeWalker(this.el.nativeElement, NodeFilter.SHOW_TEXT, null);
     let node: Node;
 
-    // First, collect all text nodes
+    // First, collect all text nodes that contain the term
     while (node = walk.nextNode()) {
-      textNodes.push(node);
+      if (regex.test(node.nodeValue)) {
+        textNodes.push(node);
+      }
+      regex.lastIndex = 0; // Reset regex lastIndex
     }
 
     // Then, process each text node for highlighting
@@ -71,21 +82,20 @@ export class HighlightSearchDirective implements OnInit, OnDestroy {
     const termsRegex = searchTerms.map(term =>
         term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
     ).join('|');
-    // Return a regex to find any of the terms
+
+    // Return a regex that finds any of the terms
     return new RegExp(`(${termsRegex})`, 'gi');
   }
 
   private highlightInTextNode(node: Node, regex: RegExp): void {
-    if (!regex.test(node.nodeValue))
-      return; // Skip nodes that don't contain the term
+    if (node.parentNode && (node.parentNode as Element).classList.contains('highlight')) {
+      return; // Skip this node, as it's already part of a highlighted element
+    }
 
     const docFrag = document.createDocumentFragment();
     let text = node.nodeValue;
     let startIndex = 0;
     let match: RegExpExecArray;
-
-    // Reset the lastIndex of the regex to start from the beginning
-    regex.lastIndex = 0;
 
     try {
       // Process matches in the text node
