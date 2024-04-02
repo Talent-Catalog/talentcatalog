@@ -72,10 +72,10 @@ public class HelpLinkServiceImpl implements HelpLinkService {
 
         final CandidateOpportunityStage caseStage = request.getCaseStage();
         final JobOpportunityStage jobStage = request.getJobStage();
+        HelpLink standardDocLink = null;
         if (jobStage != null || caseStage != null) {
             //If it is a stage related request, always add the link associated with our standard
             //stage doc.
-            HelpLink standardDocLink;
             if (caseStage != null) {
                 standardDocLink = helpLinkRepository.findFirstByCaseStageAndCountry(
                     caseStage, null);
@@ -101,6 +101,11 @@ public class HelpLinkServiceImpl implements HelpLinkService {
             final List<HelpLink> searchResults = helpLinkRepository.findAll(
                 HelpLinkFetchSpecification.buildSearchQuery(childRequest), request.getSort());
             if (!searchResults.isEmpty()) {
+                if (standardDocLink != null) {
+                    //Remove standardDocLink if it was found - because that is already there. 
+                    //Don't want it twice.
+                    searchResults.remove(standardDocLink);
+                }
                 helpLinks.addAll(searchResults);
                 break;
             }
