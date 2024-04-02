@@ -80,6 +80,8 @@ import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {SearchQueryService} from "../../../services/search-query.service";
+import {first} from "rxjs/operators";
 
 @Component({
   selector: 'app-define-search',
@@ -87,7 +89,6 @@ import {AuthenticationService} from "../../../services/authentication.service";
   styleUrls: ['./define-search.component.scss']
 })
 export class DefineSearchComponent implements OnInit, OnChanges {
-
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -152,6 +153,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
               private savedListService: SavedListService,
               private authService: AuthorizationService,
               private authenticationService: AuthenticationService,
+              private searchQueryService: SearchQueryService
               ) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -209,6 +211,12 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     }
     this.loading = true;
     this.error = null;
+
+    this.searchForm.get('simpleQueryString').valueChanges.pipe(
+        first()
+    ).subscribe(initialValue => {
+      this.searchQueryService.changeSearchQuery(initialValue || '');
+    });
 
     const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
     const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
@@ -319,6 +327,8 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     //See the html of this component, for which <app-show-candidates takes
     //searchRequest as an input.
     this.searchRequest = request;
+
+    this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
   }
 
   getIdsMultiSelect(request): SearchCandidateRequestPaged {

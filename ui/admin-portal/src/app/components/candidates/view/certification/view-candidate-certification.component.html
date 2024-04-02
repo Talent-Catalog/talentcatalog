@@ -42,7 +42,10 @@
     <div *ngFor="let candidateCertification of candidateCertifications">
       <div class="row">
         <div class="col-6">
-          <span class="card-title">{{candidateCertification.name}}</span>
+          <span class="card-title"
+                [innerHtml]="candidateCertification.name"
+                appHighlightSearch>
+          </span>
         </div>
 
         <div class="col-6">
@@ -58,7 +61,10 @@
 
       <div class="row">
         <div class="col-sm-12 col-md-6">
-          <label class="col-form-label text-muted card-subtitle">{{candidateCertification.institution}}</label>
+          <label class="col-form-label text-muted card-subtitle"
+                 [innerHtml]="candidateCertification.institution"
+                 appHighlightSearch>
+          </label>
         </div>
       </div>
       <div class="row">

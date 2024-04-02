@@ -9,7 +9,9 @@
   </div>
 
   <div class="card-body">
-    <p>{{candidate?.mediaWillingness}}</p>
+    <p [innerHtml]="candidate?.mediaWillingness"
+       appHighlightSearch>
+    </p>
   </div>
 
 </div>
