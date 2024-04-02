@@ -18,12 +18,12 @@ package org.tctalent.server.model.db;
 
 class JobOpportunityStageTest {
 
-//    @Test
 
     /**
      * Not really a test - but just run this to generate the DB Insert statements for all
      * stages.
      */
+//    @Test
     void generateDBInserts() {
         final JobOpportunityStage[] jobValues = JobOpportunityStage.values();
         for (JobOpportunityStage value : jobValues) {
@@ -52,12 +52,14 @@ class JobOpportunityStageTest {
     
     private String generateInsertStatement(String name, String sfName, boolean job) {
 
-        String sb = "INSERT INTO help_link(label,case_stage,link) VALUES ("
+        String sb = "INSERT INTO help_link(label," 
+            + (job ? "job_stage" : "case_stage") 
+            + ",link) VALUES ("
             + "'"
             + sfName
             + " ("
             + (job ? "Job" : "Case")
-            + ") Doc','"
+            + ")','"
             + name
             + "','"
             + "https://tchelp.tettra.site/pages/"
