@@ -44,19 +44,6 @@
           (click)="onClickEmojiBtn()">
           <fa-icon icon="face-smile" size="xs"></fa-icon>
         </button>
-
-        <span #editorPickerSpan>
-          <emoji-mart
-            id="editorPicker"
-            *ngIf="emojiPickerVisible"
-            (emojiClick)="onSelectEmoji($event)"
-            emoji="point_up"
-            title="Add emoji..."
-            [autoFocus]="true"
-            [perLine]="8"
-            [emojisToShowFilter]="emojisToShowFilter"
-          ></emoji-mart>
-        </span>
       </div>
     </quill-editor>
   </div>
@@ -68,3 +55,16 @@
     </button>
   </div>
 </form>
+
+<emoji-mart
+  id="editorPicker"
+  *ngIf="emojiPickerVisible"
+  (emojiClick)="onSelectEmoji($event)"
+  emoji="point_up"
+  title="Add emoji..."
+  [autoFocus]="true"
+  [perLine]="8"
+  [emojisToShowFilter]="emojisToShowFilter"
+></emoji-mart>
+
+<div *ngIf="emojiPickerVisible" class="overlay"></div>
