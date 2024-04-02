@@ -35,13 +35,13 @@
 
     <form [formGroup]="form">
       <div class="mb-3">
-        <label class="form-label" for="oldIntakeDate">What date was this intake completed</label>
-        <app-date-picker id="oldIntakeDate" [control]="form.controls.oldIntakeDate"></app-date-picker>
+        <label class="form-label" for="oldIntakeCompletedDate">What date was this intake completed</label>
+        <app-date-picker id="oldIntakeCompletedDate" [control]="form.controls.oldIntakeCompletedDate"></app-date-picker>
       </div>
 
       <div class="mb-3">
-        <label class="form-label" for="oldIntakeAdmin">Who completed this intake</label>
-        <input type="text" class="form-control" id="oldIntakeAdmin" placeholder="" [formControlName]="'oldIntakeAdmin'">
+        <label class="form-label" for="oldIntakeCompletedBy">Who completed this intake</label>
+        <input type="text" class="form-control" id="oldIntakeCompletedBy" placeholder="" [formControlName]="'oldIntakeCompletedBy'">
       </div>
 
       <div class="modal-footer">
