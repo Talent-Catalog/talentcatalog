@@ -73,19 +73,20 @@ export class ViewPostComponent implements OnInit, OnChanges {
     return UserService.userToString(user, false, false);
   }
 
-  // Toggles the picker on and off, situating it appropriately
-  // The picker's height is 425px, so using that here to calculate where it should appear
+  // Toggles the picker on and off, situating it appropriately in relation to the button
+  // The picker's height is 353 x 425 px, navbar is 85px
   public onClickReactionBtn(event) {
     if (event.clientY < 510 && window.innerHeight - event.clientY < 425) {
       // Won't fit above, won't fit below - place halfway
-      this.reactionPickerYPos = event.clientY -213
+      this.reactionPickerYPos = event.clientY - 213;
     } else if (window.innerHeight - event.clientY < 425 && event.clientY > 510) {
       // Won't fit below, will fit above - place above
       this.reactionPickerYPos = event.clientY - 425;
     } else {
-      // Will fit below, won't fit above - place below
+      // Will fit below, won't fit above OR will fit either side - place below
       this.reactionPickerYPos = event.clientY;
     }
+    // Always place to the left of the button without concealing it
     this.reactionPickerXPos = event.clientX - 370;
     this.reactionPickerVisible = !this.reactionPickerVisible;
   }
