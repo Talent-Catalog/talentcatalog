@@ -74,12 +74,12 @@ export class ViewPostComponent implements OnInit, OnChanges {
   }
 
   // Toggles the picker on and off, situating it appropriately
+  // The picker's height is 425px, so using that here to calculate where it should appear
   public onClickReactionBtn(event) {
-    console.log(event.clientY)
-    if (event.clientY < 510 && window.screen.availHeight - event.clientY < 480) {
+    if (event.clientY < 510 && window.innerHeight - event.clientY < 425) {
       // Won't fit above, won't fit below - place halfway
       this.reactionPickerYPos = event.clientY -213
-    } else if (window.screen.availHeight - event.clientY < 480 && event.clientY > 510) {
+    } else if (window.innerHeight - event.clientY < 425 && event.clientY > 510) {
       // Won't fit below, will fit above - place above
       this.reactionPickerYPos = event.clientY - 425;
     } else {
