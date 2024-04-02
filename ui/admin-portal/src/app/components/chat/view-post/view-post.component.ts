@@ -113,11 +113,6 @@ export class ViewPostComponent implements OnInit, OnChanges {
                           })
   }
 
-  // These emojis don't work for some reason — this function excludes them from the picker.
-  emojisToShowFilter = (emoji: any) => {
-    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
-  }
-
   private setIsCurrentPostClosePickerIfFalse(currentPost: ChatPost) {
     this.isCurrentPost = currentPost === this.post;
     if (!this.isCurrentPost) {
