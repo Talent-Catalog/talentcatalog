@@ -166,10 +166,10 @@
         <ng-template ngbPanelTitle let-opened="opened">
           <div class="container-fluid gx-0">
             <div class="row">
-              <div class="col-3">
+              <div class="col-3 border-end">
                 <span>Family Members / Dependants</span>
               </div>
-              <div class="col border-start">
+              <div class="col ms-4">
                 <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
                   <span [class]="'fw-bold'"
                         [ngClass]="{'text-male': getGender(dep.gender) === 'M',
