@@ -16,10 +16,15 @@
 
 package org.tctalent.server.exception;
 
-public class InvalidCredentialsException extends RuntimeException {
+public class InvalidCredentialsException extends ServiceException {
 
-    public InvalidCredentialsException(String message) {
-        super(message);
-    }
+  private static final String DEFAULT_MSG = "Invalid credentials provided.";
 
+  public InvalidCredentialsException() {
+    this(DEFAULT_MSG);
+  }
+
+  public InvalidCredentialsException(String message) {
+    super("invalid_credentials", message);
+  }
 }
