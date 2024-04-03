@@ -1,4 +1,7 @@
-// ::ng-deep is used here since the NgbTooltip directive is outside this component's encapsulation scope
+// ::ng-deep is used here since the NgbTooltip directive is outside this component's encapsulation
+// scope.
+//Without ng-deep it is not possible to use this styling to format the display of the tool tip
+//displayed contents.
 ::ng-deep .help-tips .tooltip-inner {
   text-align: left;
   font-size: small;
