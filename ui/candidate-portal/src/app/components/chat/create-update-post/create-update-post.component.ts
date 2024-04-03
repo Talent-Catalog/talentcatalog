@@ -134,9 +134,4 @@ export class CreateUpdatePostComponent implements OnInit {
     }
   }
 
-  // These emojis didn't work for some reason — this function excludes them from the picker.
-  emojisToShowFilter = (emoji: any) => {
-    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
-  }
-
 }
