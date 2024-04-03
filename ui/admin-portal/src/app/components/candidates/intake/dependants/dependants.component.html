@@ -25,7 +25,9 @@
     [editable]="editable"
     [candidateIntakeData]="candidateIntakeData"
     [myRecordIndex]="i"
-    (delete)="deleteRecord(i)">
+    (delete)="deleteRecord(i)"
+    (dependantDob)="updateDependantDob($event, i)"
+    (dependantGender)="updateDependantGender($event, i)">
   </app-dependants-card>
   <hr/>
 </div>

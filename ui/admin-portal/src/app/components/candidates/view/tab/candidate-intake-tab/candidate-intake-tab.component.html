@@ -166,8 +166,17 @@
         <ng-template ngbPanelTitle let-opened="opened">
           <div class="container-fluid gx-0">
             <div class="row">
-              <div class="col">
+              <div class="col-3">
                 <span>Family Members / Dependants</span>
+              </div>
+              <div class="col border-start">
+                <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
+                  <span [class]="'fw-bold'"
+                        [ngClass]="{'text-male': getGender(dep.gender) === 'M',
+                        'text-female': getGender(dep.gender) === 'F'}">
+                    {{getAge(dep.dob)}}{{getGender(dep.gender)}},
+                  </span>
+                </ng-container>
               </div>
               <div class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addDependantRecord($event)">

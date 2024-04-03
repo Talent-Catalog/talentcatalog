@@ -33,6 +33,7 @@ import {
   CreateCandidateDependantRequest
 } from "../../../../../services/candidate-dependant.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
+import {calculateAge} from "../../../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -118,5 +119,18 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
         this.error = error;
         this.saving = false;
       });
+  }
+
+  getAge(dob: string) {
+    let dobDate = new Date(dob);
+    if (!Number.isNaN(dobDate.getTime())) {
+      return calculateAge(dobDate);
+    } else {
+      return 'no DOB'
+    }
+  }
+
+  getGender(gender: string) {
+    return gender ? gender.slice(0,1).toUpperCase() : "";
   }
 }

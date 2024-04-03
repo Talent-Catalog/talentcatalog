@@ -16,13 +16,7 @@
 
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {
-  CandidateDependant,
-  DependantRelations,
-  Gender,
-  Registrations,
-  YesNo
-} from '../../../../../model/candidate';
+import {CandidateDependant, DependantRelations, Gender, Registrations, YesNo} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
@@ -36,6 +30,8 @@ import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 export class DependantsCardComponent extends IntakeComponentBase implements OnInit {
 
   @Output() delete = new EventEmitter();
+  @Output() dependantDob = new EventEmitter<string>();
+  @Output() dependantGender = new EventEmitter<string>();
   public age: number;
 
   //Drop down values for enumeration
@@ -63,6 +59,18 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantHealthConcerns: [this.myRecord?.healthConcern],
       dependantHealthNotes: [this.myRecord?.healthNotes],
     });
+
+    this.form.controls['dependantDob']?.valueChanges.subscribe(
+      dob => {
+        this.dependantDob.emit(dob);
+      }
+    );
+
+    this.form.controls['dependantGender']?.valueChanges.subscribe(
+      gender => {
+        this.dependantGender.emit(gender);
+      }
+    );
   }
 
   get hasHealthConcern(): string {

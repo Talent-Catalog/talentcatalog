@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
+import {Candidate, CandidateIntakeData, Gender} from '../../../../model/candidate';
 import {CandidateDependantService} from '../../../../services/candidate-dependant.service';
 import {Country} from "../../../../model/country";
 
@@ -43,6 +43,18 @@ export class DependantsComponent implements OnInit {
 
   deleteRecord(i: number) {
     this.candidateIntakeData?.candidateDependants.splice(i, 1);
+  }
+
+  updateDependantDob(dob: string, i: number) {
+    if (this.candidateIntakeData) {
+      this.candidateIntakeData.candidateDependants[i].dob = dob;
+    }
+  }
+
+  updateDependantGender(gender: string, i: number) {
+    if (this.candidateIntakeData) {
+      this.candidateIntakeData.candidateDependants[i].gender = Gender[gender];
+    }
   }
 
 }
