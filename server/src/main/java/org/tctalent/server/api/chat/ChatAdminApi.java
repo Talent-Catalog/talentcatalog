@@ -78,7 +78,7 @@ public class ChatAdminApi implements
         final Long candidateId = request.getCandidateId();
         Candidate candidate = candidateId == null ? null : candidateService.getCandidate(candidateId);
 
-        JobChat chat = chatService.createJobChat(request.getType(),
+        JobChat chat = chatService.getOrCreateJobChat(request.getType(),
             jobOpp, sourcePartner, candidate);
         return chatService.getJobChatDtoBuilder().build(chat);
     }
