@@ -171,10 +171,10 @@
               </div>
               <div class="col ms-4">
                 <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
-                  <span [class]="'fw-bold'"
+                  <span [class]="'fw-bold me-2'"
                         [ngClass]="{'text-male': getGender(dep.gender) === 'M',
                         'text-female': getGender(dep.gender) === 'F'}">
-                    {{getAge(dep.dob)}}{{getGender(dep.gender)}},
+                    {{getAge(dep.dob)}}{{getGender(dep.gender)}}
                   </span>
                 </ng-container>
               </div>
