@@ -1148,7 +1148,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         final Boolean fullIntakeCompleted = request.getFullIntakeCompleted();
         if (fullIntakeCompleted != null) {
             boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.existsQuery("fullIntakeCompletedDate"));
+                QueryBuilders.existsQuery("fullIntakeCompletedDate"
+                ));
+        }
+
+        // Last Modified Between (updatedDate)
+        LocalDate lastModifiedFrom = request.getLastModifiedFrom();
+        LocalDate lastModifiedTo = request.getLastModifiedTo();
+        if (lastModifiedFrom != null) {
+            boolQueryBuilder = addElasticRangeFilter(
+                boolQueryBuilder,
+                "dateUpdated",
+                lastModifiedFrom,
+                lastModifiedTo
+            );
         }
 
         return boolQueryBuilder;

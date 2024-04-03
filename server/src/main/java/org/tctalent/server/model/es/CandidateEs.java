@@ -214,11 +214,14 @@ public class CandidateEs {
     @Field(type = FieldType.Long)
     private Long numberDependants;
 
-    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second_millis)
+    @Field(type = FieldType.Date, format=DateFormat.date_optional_time)
     private OffsetDateTime fullIntakeCompletedDate;
 
-    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second_millis)
+    @Field(type = FieldType.Date, format=DateFormat.date_optional_time)
     private OffsetDateTime miniIntakeCompletedDate;
+
+    @Field(type = FieldType.Date, format=DateFormat.date_optional_time)
+    private OffsetDateTime updatedDate;
 
     public CandidateEs() {
     }
@@ -386,6 +389,7 @@ public class CandidateEs {
                 null : candidate.getMiniIntakeCompletedDate();
             this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
                 null : candidate.getFullIntakeCompletedDate();
+            this.updatedDate = candidate.getUpdatedDate();
         }
 
         this.skills = new ArrayList<>();
