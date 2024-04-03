@@ -5,7 +5,7 @@
   {{error}}
 </div>
 
-<div class="container">
+<div class="container my-lg-5">
   <div id="posts" *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
     <div *ngFor="let post of posts"
        (click)="selectCurrent(post)"
@@ -17,7 +17,7 @@
     </div>
   </div>
   <ng-template #noPosts>
-    <p class="mb-0 text-muted py-3 fw-light text-center fs-6">Send a message below to begin chat.</p>
+    <p class="mb-lg-5 text-muted py-3 fw-light text-center fs-6">Send a message below to begin chat.</p>
   </ng-template>
   <div>
     <app-create-update-post

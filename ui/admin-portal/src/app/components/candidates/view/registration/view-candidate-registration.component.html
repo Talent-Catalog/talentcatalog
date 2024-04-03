@@ -39,8 +39,9 @@
 
         <div class="form-control-plaintext">
           <span>
-            <a target="_blank" [href]="candidate.user.partner.websiteUrl">
-            {{candidate.user.partner.name}} ({{candidate.user.partner.abbreviation}})
+            <a target="_blank" [href]="candidate.user.partner.websiteUrl"
+               [innerHtml]="candidate.user.partner.name + ' ' + candidate.user.partner.abbreviation"
+               appHighlightSearch>
             </a>
           </span>
         </div>
@@ -50,7 +51,10 @@
         <label class="col-form-label"><i class="fas fa-id-badge"></i>Partner's id for candidate</label>
 
         <div class="form-control-plaintext">
-          <span *ngIf="candidate.partnerRef">{{candidate.partnerRef}}</span>
+          <span *ngIf="candidate.partnerRef"
+                [innerHtml]="candidate.partnerRef"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -58,7 +62,13 @@
         <label class="col-form-label"><i class="fas fa-id-badge"></i>External Id</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.externalId}}</span><span *ngIf="candidate.externalIdSource">: {{candidate.externalIdSource}}</span>
+          <span
+              [innerHtml]="candidate.externalId"
+              appHighlightSearch>
+          </span>
+          <span *ngIf="candidate.externalIdSource"
+                [innerHtml]="': ' + candidate.externalIdSource"
+                appHighlightSearch></span>
         </div>
       </div>
 
@@ -66,7 +76,11 @@
         <label class="col-form-label"><i class="far fa-registered"></i>UNHCR Registered</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.unhcrRegistered}}</span><span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"> - #{{candidate.unhcrNumber}}</span>
+          <span>{{candidate.unhcrRegistered}}</span>
+          <span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"
+                [innerHtml]="' - #' + candidate.unhcrNumber"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -74,7 +88,11 @@
         <label class="col-form-label"><i class="far fa-registered"></i>UNRWA Registered</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.unrwaRegistered}}</span><span *ngIf="candidate.unrwaNumber && candidate.unrwaRegistered === 'Yes'"> - #{{candidate.unrwaNumber}}</span>
+          <span>{{candidate.unrwaRegistered}}</span>
+          <span *ngIf="candidate.unrwaNumber && candidate.unrwaRegistered === 'Yes'"
+                [innerHtml]="' - #' + candidate.unrwaNumber"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -98,7 +116,9 @@
         <label class="col-form-label"><i class="fas fa-question"></i>Partner Query Parameter</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.regoPartnerParam}}</span>
+          <span [innerHtml]="candidate.regoPartnerParam"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -106,7 +126,9 @@
         <label class="col-form-label"><i class="fas fa-question"></i>Referrer Query Parameter</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.regoReferrerParam}}</span>
+          <span [innerHtml]="candidate.regoReferrerParam"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -114,7 +136,9 @@
         <label class="col-form-label"><i class="fas fa-question"></i>UTM Campaign</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.regoUtmCampaign}}</span>
+          <span [innerHtml]="candidate.regoUtmCampaign"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -122,7 +146,9 @@
         <label class="col-form-label"><i class="fas fa-question"></i>UTM Content</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.regoUtmContent}}</span>
+          <span [innerHtml]="candidate.regoUtmContent"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -130,7 +156,9 @@
         <label class="col-form-label"><i class="fas fa-question"></i>UTM Medium</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.regoUtmMedium}}</span>
+          <span [innerHtml]="candidate.regoUtmMedium"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -138,7 +166,9 @@
         <label class="col-form-label"><i class="fas fa-question"></i>UTM Source</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.regoUtmSource}}</span>
+          <span [innerHtml]="candidate.regoUtmSource"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -146,7 +176,9 @@
         <label class="col-form-label"><i class="fas fa-question"></i>UTM Term</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.regoUtmTerm}}</span>
+          <span [innerHtml]="candidate.regoUtmTerm"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 

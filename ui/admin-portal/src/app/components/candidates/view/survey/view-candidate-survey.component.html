@@ -29,13 +29,19 @@
       <div class="mb-3 col-sm-12 col-md-6">
         <label class="col-form-label">Source:</label>
         <div >
-          <span class="form-control-plaintext">{{candidate?.surveyType?.name}}</span>
+          <span class="form-control-plaintext"
+                [innerHtml]="candidate?.surveyType?.name"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
       <div class="mb-3 col-sm-12 col-md-6">
         <label class="col-form-label">Comment:</label>
         <div >
-          <span class="form-control-plaintext">{{candidate?.surveyComment}}</span>
+          <span class="form-control-plaintext"
+                [innerHtml]="candidate?.surveyComment"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
