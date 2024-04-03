@@ -40,8 +40,9 @@
       <!-- LANGUAGE CARDS -->
       <ng-container *ngFor="let language of candidateLanguages; let i = index;">
         <div class="row">
-          <div class="col-10 mb-2">
-            {{language.language.name}}
+          <div class="col-10 mb-2"
+               [innerHtml]="language.language.name"
+               appHighlightSearch>
           </div>
           <div class="col-2" *ngIf="editable">
             <div class="btn-group float-end">
@@ -58,14 +59,19 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-12" *ngIf="language.migrationLanguage">
-            Migrated Language: {{language.migrationLanguage}}
+          <div class="col-12" *ngIf="language.migrationLanguage"
+               [innerHtml]="'Migrated Language:' + language.migrationLanguage"
+               appHighlightSearch>
           </div>
           <div class="col-sm-12 col-md-6">
-            <span>Speaking: <i>{{language.spokenLevel.name}}</i></span>
+            <span>Speaking:
+              <i [innerHtml]="language.spokenLevel.name" appHighlightSearch></i>
+            </span>
           </div>
           <div class="col-sm-12 col-md-6">
-            <span>Reading and Writing: <i>{{language.writtenLevel.name}}</i></span>
+            <span>Reading and Writing:
+              <i [innerHtml]="language.writtenLevel.name" appHighlightSearch></i>
+            </span>
           </div>
         </div>
         <hr *ngIf="i < candidateLanguages?.length - 1">
@@ -94,17 +100,23 @@
   </p>
   <ng-container *ngFor="let language of candidateLanguages; let i = index;">
     <div class="row">
-      <div class="col-sm-11">
-        {{language.language.name}}
+      <div class="col-sm-11"
+           [innerHtml]="language.language.name"
+           appHighlightSearch>
       </div>
-      <div class="col-12" *ngIf="language.migrationLanguage">
-        Migrated Language: {{language.migrationLanguage}}
+      <div class="col-12" *ngIf="language.migrationLanguage"
+           [innerHtml]="'Migrated Language: ' + language.migrationLanguage"
+           appHighlightSearch>
       </div>
       <div class="col-sm-12 col-md-6">
-        <span>Speaking: <i>{{language.spokenLevel.name}}</i></span>
+        <span>Speaking:
+          <i [innerHtml]="language.spokenLevel.name" appHighlightSearch></i>
+        </span>
       </div>
       <div class="col-sm-12 col-md-6">
-        <span>Reading and Writing: <i>{{language.writtenLevel.name}}</i></span>
+        <span>Reading and Writing:
+          <i [innerHtml]="language.writtenLevel.name" appHighlightSearch></i>
+        </span>
       </div>
     </div>
     <hr *ngIf="i < candidateLanguages?.length - 1">

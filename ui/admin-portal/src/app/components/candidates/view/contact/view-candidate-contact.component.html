@@ -42,19 +42,31 @@
 
         <div class="form-control-plaintext address">
 
-          <span class="field" *ngIf="candidate.address1">{{candidate.address1}}</span>
+          <span class="field" *ngIf="candidate.address1"
+                [innerHtml]="candidate.address1"
+                appHighlightSearch>
+          </span>
 
           <span class="comma"></span>
 
-          <span class="field" *ngIf="candidate.city">{{candidate.city}}</span>
+          <span class="field" *ngIf="candidate.city"
+                [innerHtml]="candidate.city"
+                appHighlightSearch>
+          </span>
 
           <span class="comma"></span>
 
-          <span class="field" *ngIf="candidate.state">{{candidate.state}}</span>
+          <span class="field" *ngIf="candidate.state"
+                [innerHtml]="candidate.state"
+                appHighlightSearch>
+          </span>
 
           <span class="comma"></span>
 
-          <span class="field" *ngIf="candidate.country">{{candidate.country?.name}}</span>
+          <span class="field" *ngIf="candidate.country"
+                [innerHtml]="candidate.country?.name"
+                appHighlightSearch>
+          </span>
 
         </div>
       </div>
@@ -63,7 +75,9 @@
         <label class="col-form-label"><i class="fas fa-user"></i>Gender</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.gender}}</span>
+          <span [innerHtml]="candidate.gender"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -79,7 +93,9 @@
         <label class="col-form-label"><i class="fas fa-phone"></i>Phone</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.phone}}</span>
+          <span [innerHtml]="candidate.phone"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -87,7 +103,9 @@
         <label class="col-form-label"><i class="fab fa-whatsapp"></i>Whatsapp</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.whatsapp}}</span>
+          <span [innerHtml]="candidate.whatsapp"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -95,7 +113,9 @@
         <label class="col-form-label"><i class="fas fa-globe"></i>Country of Nationality</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.nationality?.name}}</span>
+          <span [innerHtml]="candidate.nationality?.name"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
@@ -112,7 +132,9 @@
         <label class="col-form-label"><i class="fas fa-envelope"></i>Email</label>
 
         <div class="form-control-plaintext">
-          <span>{{candidate.user.email}}</span>
+          <span [innerHtml]="candidate.user.email"
+                appHighlightSearch>
+          </span>
         </div>
       </div>
 
