@@ -4,7 +4,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
-import {JobChat, JobChatType} from "../../../model/chat";
+import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {forkJoin} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 
@@ -18,6 +18,8 @@ export class ViewCandidateComponent implements OnInit {
   private lastTabKey: string = 'CandidateLastTab';
   activeTabId: string;
   chatsForAllJobs: JobChat[];
+  sourceChat: JobChat;
+  sourceChatHasPosts: boolean = false;
 
   error: any;
   loading: boolean;
@@ -63,7 +65,23 @@ export class ViewCandidateComponent implements OnInit {
 
   private setCandidate(candidate: Candidate) {
     this.candidate = candidate;
+    this.fetchSourceChat();
     this.fetchAllOpportunityChats();
+  }
+
+  private fetchSourceChat() {
+    const sourceChatRequest: CreateChatRequest =
+      {type: JobChatType.CandidateProspect, candidateId: this.candidate.id}
+    this.chatService.getOrCreate(sourceChatRequest).subscribe({
+      next: chat => this.setSourceChat(chat)
+    })
+  }
+
+  private setSourceChat(chat:JobChat) {
+    this.sourceChat = chat;
+    //todo Get chat info
+    //todo If chat info is not empty, set sourceChatHasPosts to true, otherwise subscribe to posts
+    //todo If post comes in, set sourceChatHasPosts to true and unsubscribe from posts
   }
 
   private fetchAllOpportunityChats() {
@@ -101,5 +119,9 @@ export class ViewCandidateComponent implements OnInit {
         this.loading = false;
       }
     )
+  }
+
+  onMarkChatAsRead() {
+    this.chatService.markChatAsRead(this.sourceChat);
   }
 }
