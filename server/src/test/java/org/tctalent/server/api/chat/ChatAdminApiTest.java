@@ -121,7 +121,7 @@ class ChatAdminApiTest extends ApiTestBase {
     void create() throws Exception {
         CreateChatRequest request = new CreateChatRequest();
 
-        given(chatService.createJobChat(
+        given(chatService.getOrCreateJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
             nullable(Candidate.class)))
             .willReturn(chat);
@@ -138,7 +138,7 @@ class ChatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.id", is(chat.getId().intValue())));
 
-        verify(chatService).createJobChat(
+        verify(chatService).getOrCreateJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
             nullable(Candidate.class)
         );
