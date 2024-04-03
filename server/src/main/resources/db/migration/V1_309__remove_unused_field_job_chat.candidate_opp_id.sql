@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,15 +13,5 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+alter table job_chat drop column candidate_opp_id;
 
-import {NgModule} from "@angular/core";
-import {LowercaseDirective} from "./lowercase.directive";
-import {CommonModule} from "@angular/common";
-import {HighlightSearchDirective} from './highlight-search.directive';
-
-@NgModule({
-  declarations: [LowercaseDirective, HighlightSearchDirective],
-  exports: [LowercaseDirective, HighlightSearchDirective],
-  imports: [CommonModule],
-})
-export class DirectiveModule {}

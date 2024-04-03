@@ -104,6 +104,10 @@ tr.selected {
   color: $accent2;
 }
 
+.highlight {
+  background-color: $highlight;
+}
+
 /* FONT AWESOME */
 label,a > {
   i.fas,i.fa-solid,i.fab,i.far {

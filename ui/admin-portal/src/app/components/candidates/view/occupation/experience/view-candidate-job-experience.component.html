@@ -58,8 +58,14 @@
       <div class="row">
 
         <div class="col-10">
-          <h6 class="card-title">{{experience.role}}</h6>
-          <p *ngIf="experience.description" [ngClass]="isHtml(experience?.description)?'html':'text'" [innerHtml]="experience.description"></p>
+          <h6 class="card-title"
+              [innerHtml]="experience.role"
+              appHighlightSearch>
+          </h6>
+          <p *ngIf="experience.description" [ngClass]="isHtml(experience?.description)?'html':'text'"
+             [innerHtml]="experience.description"
+             appHighlightSearch>
+          </p>
           <small class="text-muted">
             {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
           </small>
@@ -83,7 +89,10 @@
 
 
         <div class="col-12">
-          <span class="font-italic">{{experience.companyName}}, {{experience.country.name}}</span>
+          <span class="font-italic"
+                [innerHtml]="experience.companyName + ', ' + experience.country.name"
+                appHighlightSearch>
+          </span>
         </div>
 
         <div class="col-12">

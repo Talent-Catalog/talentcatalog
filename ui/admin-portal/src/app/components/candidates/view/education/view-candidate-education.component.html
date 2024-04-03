@@ -51,9 +51,15 @@
       <div class="row">
 
         <div class="col-6">
-          <span class="card-title">{{edu.educationType}} in {{edu.educationMajor?.name}} : {{edu.courseName}}</span>
+          <span class="card-title"
+                [innerHtml]="edu.educationType + ' in ' + edu.educationMajor?.name + ' : ' + edu.courseName"
+                appHighlightSearch>
+          </span>
           <div class="col-12">
-            <span class="text-muted">{{edu.institution}}, {{edu.country.name}}</span>
+            <span class="text-muted"
+                  [innerHtml]="edu.institution + ', ' + edu.country.name"
+                  appHighlightSearch>
+            </span>
           </div>
 
           <div class="col-12">
@@ -85,7 +91,10 @@
 
   </div>
   <div *ngIf="candidate.migrationEducationMajor" class="card-footer">
-      <span class="text-muted">Migrated Major: {{candidate.migrationEducationMajor.name}}</span>
+      <span class="text-muted"
+            [innerHtml]="'Migrated Major: ' +candidate.migrationEducationMajor.name"
+            appHighlightSearch>
+      </span>
   </div>
 
 </div>
