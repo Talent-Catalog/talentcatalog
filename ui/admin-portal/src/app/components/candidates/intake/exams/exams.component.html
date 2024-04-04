@@ -28,7 +28,8 @@
     [myRecordIndex]="i"
     (delete)="deleteRecord(i)"
     (examScoreUpdated)="updateExamScore($event, i)"
-    (examTypeUpdated)="updateExamType($event, i)">
+    (examTypeUpdated)="updateExamType($event, i)"
+    (otherExamUpdated)="updateOtherExam($event, i)">
   </app-candidate-exam-card>
   <hr/>
 </div>

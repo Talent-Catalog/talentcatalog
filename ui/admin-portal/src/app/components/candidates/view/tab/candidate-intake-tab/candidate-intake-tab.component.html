@@ -125,12 +125,18 @@
                 <span>Language Exams</span>
               </div>
               <div class="col">
-                <div class="tag-light">
+                <div class="tag-light fw-600">
                   <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">
-                  <span [class]="'fw-600'"
-                        [ngClass]="{'me-4': exam.exam != null}">
-                    {{exam.exam}} <span class="text-info">{{exam.score}}</span>
-                  </span>
+                    <span *ngIf="exam.exam != 'Other'; else otherExam"
+                          [ngClass]="{'me-4': exam.exam != null}">
+                      {{exam.exam}}
+                      <span class="text-info">{{exam.score}}</span>
+                    </span>
+                    <ng-template #otherExam>
+                      <span>{{exam.otherExam}}
+                        <span class="text-info">{{exam.score}}</span>
+                      </span>
+                    </ng-template>
                   </ng-container>
                 </div>
 

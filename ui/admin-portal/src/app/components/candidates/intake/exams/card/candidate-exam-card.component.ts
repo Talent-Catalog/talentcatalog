@@ -34,6 +34,7 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
   @Output() delete = new EventEmitter();
   @Output() examScoreUpdated = new EventEmitter<string>();
   @Output() examTypeUpdated = new EventEmitter<string>();
+  @Output() otherExamUpdated = new EventEmitter<string>();
 
   //Drop down values for enumeration
   examOptions: EnumOption[] = enumOptions(Exam);
@@ -70,6 +71,12 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
     this.form.controls['examType']?.valueChanges.subscribe(
       type => {
         this.examTypeUpdated.emit(type);
+      }
+    );
+
+    this.form.controls['otherExam']?.valueChanges.subscribe(
+      other => {
+        this.otherExamUpdated.emit(other);
       }
     );
 

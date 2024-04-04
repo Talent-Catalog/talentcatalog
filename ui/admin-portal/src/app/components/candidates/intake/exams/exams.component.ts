@@ -55,4 +55,10 @@ export class ExamsComponent implements OnInit {
     }
   }
 
+  updateOtherExam(other: string, i: number) {
+    if (this.candidateIntakeData) {
+      this.candidateIntakeData.candidateExams[i].otherExam = other;
+    }
+  }
+
 }
