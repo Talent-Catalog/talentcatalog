@@ -9,11 +9,14 @@ import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
 import {isJob, JobOpportunityStage} from "../../../model/job";
-import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
+import {
+  CandidateSourceCandidateService
+} from "../../../services/candidate-source-candidate.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {switchMap} from "rxjs/operators";
 import {SearchCandidateSourcesRequest} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
+import {SearchHelpLinkRequest} from "../../../model/help-link";
 
 @Component({
   selector: 'app-edit-opp',
@@ -38,6 +41,8 @@ export class EditOppComponent implements OnInit {
 
   error;
 
+  stageHelpRequest: SearchHelpLinkRequest;
+
   constructor(
     private activeModal: NgbActiveModal,
     private savedListService: SavedListService,
@@ -52,11 +57,13 @@ export class EditOppComponent implements OnInit {
       if (isCandidateOpportunity(this.opp)) {
         this.opportunityStageOptions = enumOptions(CandidateOpportunityStage);
         this.checkOpenCases(this.opp);
-        this.oppType = 'Candidate Opportunity'
+        this.oppType = 'Candidate Opportunity';
+        this.stageHelpRequest = {caseOppId: this.opp.id, caseStage: this.opp.stage}
       }
       if (isJob(this.opp)) {
         this.opportunityStageOptions = enumOptions(JobOpportunityStage);
         this.oppType = 'Job'
+        this.stageHelpRequest = {jobOppId: this.opp.id, jobStage: this.opp.stage}
       }
     }
 
@@ -126,4 +133,13 @@ export class EditOppComponent implements OnInit {
       }
     }
 
+  onStageSelectionChange(stage: any) {
+    if (isCandidateOpportunity(this.opp)) {
+      this.stageHelpRequest = {caseOppId: this.opp.id, caseStage: stage.key}
+    }
+    if (isJob(this.opp)) {
+      this.stageHelpRequest = {jobOppId: this.opp.id, jobStage: stage.key}
+    }
+
+  }
 }

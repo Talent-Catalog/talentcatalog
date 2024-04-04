@@ -3,7 +3,11 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateOpportunity, CandidateOpportunityStage} from "../../../model/candidate-opportunity";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage
+} from "../../../model/candidate-opportunity";
+import {SearchHelpLinkRequest} from "../../../model/help-link";
 
 @Component({
   selector: 'app-edit-candidate-opp',
@@ -30,6 +34,8 @@ export class EditCandidateOppComponent implements OnInit {
 
   closing = false;
 
+  stageHelpRequest: SearchHelpLinkRequest;
+
   constructor(
     private activeModal: NgbActiveModal,
     private fb: FormBuilder) { }
@@ -47,6 +53,10 @@ export class EditCandidateOppComponent implements OnInit {
     if (this.closing) {
       this.candidateOpportunityStageOptions = this.candidateOpportunityStageOptions
          .filter(en=>en.stringValue.startsWith('Closed') )
+    }
+
+    if (this.opp) {
+      this.stageHelpRequest = {caseStage: this.opp.stage}
     }
   }
 
@@ -71,5 +81,9 @@ export class EditCandidateOppComponent implements OnInit {
       employerFeedback: this.employerFeedback
     }
     this.activeModal.close(info)
+  }
+
+  onStageSelectionChange(stage: any) {
+    this.stageHelpRequest = {caseStage: stage.key}
   }
 }
