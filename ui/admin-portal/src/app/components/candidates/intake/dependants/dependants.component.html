@@ -26,8 +26,9 @@
     [candidateIntakeData]="candidateIntakeData"
     [myRecordIndex]="i"
     (delete)="deleteRecord(i)"
-    (dependantDob)="updateDependantDob($event, i)"
-    (dependantGender)="updateDependantGender($event, i)">
+    (dependantDobUpdated)="updateDependantDob($event, i)"
+    (dependantGenderUpdated)="updateDependantGender($event, i)"
+    (dependantHealthUpdated)="updateDependantHealth($event, i)">
   </app-dependants-card>
   <hr/>
 </div>

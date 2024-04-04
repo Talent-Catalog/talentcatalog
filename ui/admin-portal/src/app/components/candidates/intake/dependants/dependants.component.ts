@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData, Gender} from '../../../../model/candidate';
+import {Candidate, CandidateIntakeData, Gender, YesNo} from '../../../../model/candidate';
 import {CandidateDependantService} from '../../../../services/candidate-dependant.service';
 import {Country} from "../../../../model/country";
 
@@ -54,6 +54,12 @@ export class DependantsComponent implements OnInit {
   updateDependantGender(gender: string, i: number) {
     if (this.candidateIntakeData) {
       this.candidateIntakeData.candidateDependants[i].gender = Gender[gender];
+    }
+  }
+
+  updateDependantHealth(health: string, i: number) {
+    if (this.candidateIntakeData) {
+      this.candidateIntakeData.candidateDependants[i].healthConcern = YesNo[health];
     }
   }
 

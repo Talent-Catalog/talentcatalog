@@ -198,7 +198,7 @@
               <div class="col-3 border-end">
                 <span>Family Members / Dependants</span>
               </div>
-              <div class="col">
+              <div class="col d-flex justify-content-between">
                 <div class="tag">
                   <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
                   <span [class]="'fw-600 me-2'"
@@ -207,6 +207,10 @@
                     {{getAge(dep.dob)}}{{getGender(dep.gender)}}
                   </span>
                   </ng-container>
+                </div>
+                <div *ngIf="hasDependantHealthIssues()" class="tag bg-opacity-25 bg-danger">
+                  <i class="fa-solid fa-circle-exclamation text-danger"></i>
+                  <span class="ms-2">Health Issues</span>
                 </div>
 
               </div>

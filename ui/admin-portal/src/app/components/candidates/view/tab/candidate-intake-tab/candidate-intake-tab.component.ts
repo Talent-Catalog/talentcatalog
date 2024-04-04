@@ -27,7 +27,10 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
@@ -133,4 +136,16 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
   getGender(gender: string) {
     return gender ? gender.slice(0,1).toUpperCase() : "";
   }
+
+  hasDependantHealthIssues() {
+    let health: boolean = false;
+    for (let dep of this.candidateIntakeData?.candidateDependants) {
+      if (dep.healthConcern == "Yes") {
+        health = true;
+        break;
+      }
+    }
+    return health;
+  }
+
 }
