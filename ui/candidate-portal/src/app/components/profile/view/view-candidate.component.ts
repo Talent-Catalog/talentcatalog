@@ -4,8 +4,14 @@ import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
-import {JobChat, JobChatType} from "../../../model/chat";
-import {forkJoin} from "rxjs";
+import {
+  ChatPost,
+  CreateChatRequest,
+  JobChat,
+  JobChatType,
+  JobChatUserInfo
+} from "../../../model/chat";
+import {forkJoin, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 
 @Component({
@@ -18,6 +24,14 @@ export class ViewCandidateComponent implements OnInit {
   private lastTabKey: string = 'CandidateLastTab';
   activeTabId: string;
   chatsForAllJobs: JobChat[];
+  sourceChat: JobChat;
+
+  //Candidate only sees source chat if is not empty. That way they can't start posting themselves
+  //until someone else has posted in the chat.
+  sourceChatHasPosts: boolean = false;
+
+  //Used to unsubscribe
+  private sourceChatSubscription: Subscription;
 
   error: any;
   loading: boolean;
@@ -63,7 +77,61 @@ export class ViewCandidateComponent implements OnInit {
 
   private setCandidate(candidate: Candidate) {
     this.candidate = candidate;
+    this.fetchSourceChat();
     this.fetchAllOpportunityChats();
+  }
+
+  private fetchSourceChat() {
+    const sourceChatRequest: CreateChatRequest =
+      {type: JobChatType.CandidateProspect, candidateId: this.candidate.id}
+    this.chatService.getOrCreate(sourceChatRequest).subscribe({
+      next: chat => this.setSourceChat(chat)
+    })
+  }
+
+  private setSourceChat(chat:JobChat) {
+    this.sourceChat = chat;
+
+    //Get chat info to see whether sourceChat has any posts
+    this.chatService.getJobChatUserInfo(this.sourceChat).subscribe({
+        next: info => {
+          this.processChatInfo(info)
+        },
+        error: err => {console.log(err)}
+      }
+    );
+  }
+
+  private processChatInfo(info: JobChatUserInfo) {
+    //Has posts if lastPostId is not null
+    this.sourceChatHasPosts = info.lastPostId != null;
+
+    if (!this.sourceChatHasPosts) {
+      //Empty now, but subscribe in case a post comes in
+
+      //Get rid of any existing subscription.
+      this.unsubscribeSourceChat();
+      //And subscribe for posts
+      this.sourceChatSubscription = this.chatService.getChatPosts$(this.sourceChat).subscribe({
+          next: (post) => this.onNewPost(post)
+        }
+      );
+    }
+  }
+
+  private onNewPost(post: ChatPost) {
+    //Note that sourceChat now has posts.
+    this.sourceChatHasPosts = true;
+
+    //No longer need to subscribe for posts
+    this.unsubscribeSourceChat()
+  }
+
+  private unsubscribeSourceChat() {
+    if (this.sourceChatSubscription) {
+      this.sourceChatSubscription.unsubscribe();
+      this.sourceChatSubscription = null;
+    }
   }
 
   private fetchAllOpportunityChats() {
@@ -101,5 +169,9 @@ export class ViewCandidateComponent implements OnInit {
         this.loading = false;
       }
     )
+  }
+
+  onMarkChatAsRead() {
+    this.chatService.markChatAsRead(this.sourceChat);
   }
 }
