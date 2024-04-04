@@ -125,8 +125,9 @@
                 <span>Language Exams</span>
               </div>
               <div class="col ms-4">
-                <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index">
-                  <span class="fw-600 me-2 text-accent-1">
+                <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">
+                  <span [class]="'fw-600 text-accent-1'"
+                        [ngClass]="{'me-2': exam.exam != null}">
                     {{exam.exam}} <span class="text-primary">{{exam.score}}</span>
                   </span>
                 </ng-container>
