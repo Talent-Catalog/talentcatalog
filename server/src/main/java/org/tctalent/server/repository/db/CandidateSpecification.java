@@ -194,7 +194,7 @@ public class CandidateSpecification {
                         occupation.get("id").in(request.getOccupationIds())
                 );
 
-                //Min / Max Years Experience in Occupation
+                //Min / Max Age
                 if (request.getMinYrs() != null) {
                     Integer minYrs = request.getMinYrs();
                     conjunction.getExpressions().add(builder.and(
@@ -467,8 +467,7 @@ public class CandidateSpecification {
         };
     }
 
-    private static OffsetDateTime getOffsetDateTime(LocalDate localDate, LocalTime time,
-        String timezone) {
+    private static OffsetDateTime getOffsetDateTime(LocalDate localDate, LocalTime time, String timezone) {
         return OffsetDateTime.of(localDate, time, !StringUtils.isBlank(timezone) ? ZoneId.of(timezone).getRules().getOffset(Instant.now()) : ZoneOffset.UTC);
     }
 

@@ -1171,7 +1171,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         // Last Modified
         // updatedDate is converted for the ES field 'updated' to a long denoting no. of
         // milliseconds elapsed since 1970-01-01T00:00:00Z. This enables an ES range query by
-        // converting the dates in the request in the same way.
+        // converting the dates in the request in the same way, as below.
         if (request.getLastModifiedFrom() != null) {
             Long lastModifiedFrom = OffsetDateTime.of(
                 request.getLastModifiedFrom(),
