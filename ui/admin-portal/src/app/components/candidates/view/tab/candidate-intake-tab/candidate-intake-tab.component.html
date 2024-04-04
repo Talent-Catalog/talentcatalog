@@ -124,13 +124,16 @@
               <div class="col-3 border-end">
                 <span>Language Exams</span>
               </div>
-              <div class="col ms-4">
-                <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">
-                  <span [class]="'fw-600 text-accent-1'"
-                        [ngClass]="{'me-2': exam.exam != null}">
-                    {{exam.exam}} <span class="text-primary">{{exam.score}}</span>
+              <div class="col">
+                <div class="tag">
+                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">
+                  <span [class]="'fw-600'"
+                        [ngClass]="{'me-4': exam.exam != null}">
+                    {{exam.exam}} <span class="text-info">{{exam.score}}</span>
                   </span>
-                </ng-container>
+                  </ng-container>
+                </div>
+
               </div>
               <div class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
@@ -149,7 +152,25 @@
       </ngb-panel>
 
       <!-- LANGUAGE ASSESSMENT-->
-      <ngb-panel id="intake-language-assessment" title="Language Assessment">
+      <ngb-panel id="intake-language-assessment">
+        <ng-template ngbPanelTitle let-opened="opened">
+          <div class="container-fluid gx-0">
+            <div class="row">
+              <div class="col-3 border-end">
+                <span>Language Assessment</span>
+              </div>
+              <div class="col">
+                <div class="tag">
+                  <span *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
+                        [class]="'fw-600'">
+                    Est IELTS
+                    <span class="text-info">{{candidateIntakeData.englishAssessmentScoreIelts}}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
         <ng-template ngbPanelContent>
           <app-lang-assessment
             [entity]="candidate"
@@ -177,14 +198,17 @@
               <div class="col-3 border-end">
                 <span>Family Members / Dependants</span>
               </div>
-              <div class="col ms-4">
-                <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
+              <div class="col">
+                <div class="tag">
+                  <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
                   <span [class]="'fw-600 me-2'"
                         [ngClass]="{'text-male': getGender(dep.gender) === 'M',
                         'text-female': getGender(dep.gender) === 'F'}">
                     {{getAge(dep.dob)}}{{getGender(dep.gender)}}
                   </span>
-                </ng-container>
+                  </ng-container>
+                </div>
+
               </div>
               <div class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addDependantRecord($event)">

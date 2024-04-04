@@ -162,6 +162,17 @@ table {
   color: #1973b8;
 }
 
+.tag {
+  width: fit-content;
+  line-height: 30px;
+  padding: 0 40px;
+  font-size: 15px;
+  border-radius: 30px;
+  text-align: center;
+  background-color: #d8d8d8;
+  color: $accent1
+}
+
 .fw-600 {
   font-weight: 600;
 }
