@@ -125,7 +125,7 @@
                 <span>Language Exams</span>
               </div>
               <div class="col">
-                <div class="tag">
+                <div class="tag-light">
                   <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">
                   <span [class]="'fw-600'"
                         [ngClass]="{'me-4': exam.exam != null}">
@@ -160,7 +160,7 @@
                 <span>Language Assessment</span>
               </div>
               <div class="col">
-                <div class="tag">
+                <div class="tag-light">
                   <span *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
                         [class]="'fw-600'">
                     Est IELTS
@@ -199,7 +199,7 @@
                 <span>Family Members / Dependants</span>
               </div>
               <div class="col d-flex justify-content-between">
-                <div class="tag">
+                <div class="tag-light">
                   <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
                   <span [class]="'fw-600 me-2'"
                         [ngClass]="{'text-male': getGender(dep.gender) === 'M',
@@ -208,7 +208,7 @@
                   </span>
                   </ng-container>
                 </div>
-                <div *ngIf="hasDependantHealthIssues()" class="tag bg-opacity-25 bg-danger">
+                <div *ngIf="hasDependantHealthIssues()" class="tag-danger">
                   <i class="fa-solid fa-circle-exclamation text-danger"></i>
                   <span class="ms-2">Health Issues</span>
                 </div>
