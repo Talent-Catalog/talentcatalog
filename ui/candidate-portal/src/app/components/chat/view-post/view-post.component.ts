@@ -85,11 +85,6 @@ export class ViewPostComponent implements OnInit {
                           })
   }
 
-  // These emojis don't work for some reason — this function excludes them from the picker.
-  emojisToShowFilter = (emoji: any) => {
-    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
-  }
-
   // Below commented-out methods and class property were closing unwanted emoji pickers.
   // Leaving them here as they're likely to be useful for future styling and functionality.
   // Used in conjunction with @Input currentPost.

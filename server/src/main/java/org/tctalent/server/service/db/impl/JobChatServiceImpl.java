@@ -47,7 +47,7 @@ public class JobChatServiceImpl implements JobChatService {
     private final UserService userService;
     private final JobChatRepository jobChatRepository;
 
-    public @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
+    private @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
         @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate) {
         JobChat chat = new JobChat();
         chat.setCreatedBy(userService.getLoggedInUser());
@@ -83,26 +83,26 @@ public class JobChatServiceImpl implements JobChatService {
             type != JobChatType.JobCreatorAllSourcePartners) {
             throw new InvalidRequestException("Unsupported type: " + type);
         }
-        return createJobChat(type, job, null, null);
+        return getOrCreateJobChat(type, job, null, null);
     }
 
     @Override
     public @NonNull JobChat createJobCreatorSourcePartnerChat(
         @NonNull SalesforceJobOpp job, @NonNull PartnerImpl sourcePartner) {
-        return createJobChat(
+        return getOrCreateJobChat(
             JobChatType.JobCreatorSourcePartner, job, sourcePartner, null);
     }
 
     @Override
     public @NonNull JobChat createCandidateProspectChat(@NonNull Candidate candidate) {
-        return createJobChat(JobChatType.CandidateProspect, null, null, candidate);
+        return getOrCreateJobChat(JobChatType.CandidateProspect, null, null, candidate);
     }
 
     @NonNull
     @Override
     public JobChat createCandidateRecruitingChat(@NonNull Candidate candidate,
         @NonNull SalesforceJobOpp job) throws InvalidRequestException {
-        return createJobChat(JobChatType.CandidateRecruiting, job, null, candidate);
+        return getOrCreateJobChat(JobChatType.CandidateRecruiting, job, null, candidate);
     }
 
     @Override

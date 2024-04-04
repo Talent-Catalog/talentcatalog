@@ -22,11 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.HelpLink;
+import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.repository.db.HelpLinkFetchSpecification;
 import org.tctalent.server.repository.db.HelpLinkRepository;
 import org.tctalent.server.repository.db.HelpLinkSettingsSpecification;
@@ -40,6 +44,8 @@ import org.tctalent.server.service.db.HelpLinkService;
 public class HelpLinkServiceImpl implements HelpLinkService {
     private final HelpLinkRepository helpLinkRepository;
     private final CountryService countryService;
+
+    private static final Logger log = LoggerFactory.getLogger(HelpLinkServiceImpl.class);
 
     @Override
     public @NotNull HelpLink createHelpLink(UpdateHelpLinkRequest request)  throws NoSuchObjectException {
@@ -62,15 +68,45 @@ public class HelpLinkServiceImpl implements HelpLinkService {
         //TODO JC Enrich request with context based on user. Probably a HelpLinkHelper method taking
         //a user as input.
 
+        List<HelpLink> helpLinks = new ArrayList<>();
+
+        final CandidateOpportunityStage caseStage = request.getCaseStage();
+        final JobOpportunityStage jobStage = request.getJobStage();
+        HelpLink standardDocLink = null;
+        if (jobStage != null || caseStage != null) {
+            //If it is a stage related request, always add the link associated with our standard
+            //stage doc.
+            if (caseStage != null) {
+                standardDocLink = helpLinkRepository.findFirstByCaseStageAndCountry(
+                    caseStage, null);
+            } else {
+                standardDocLink = helpLinkRepository.findFirstByJobStageAndCountry(
+                    jobStage, null);
+            }
+            if (standardDocLink != null) {
+                helpLinks.add(standardDocLink);
+            } else {
+               log.warn("Could not find standard stage doc " +
+                   (caseStage != null ? caseStage : jobStage));
+            }
+        }
+
         List<SearchHelpLinkRequest> requests = generateRequestSequence(request);
 
         //Cycle through the generated requests returning the results of the first one that finds
         //help.
-        List<HelpLink> helpLinks = new ArrayList<>();
         for (SearchHelpLinkRequest childRequest : requests) {
-            helpLinks = helpLinkRepository.findAll(
+
+            //This needs to add links to any preloaded ones.
+            final List<HelpLink> searchResults = helpLinkRepository.findAll(
                 HelpLinkFetchSpecification.buildSearchQuery(childRequest), request.getSort());
-            if (!helpLinks.isEmpty()) {
+            if (!searchResults.isEmpty()) {
+                if (standardDocLink != null) {
+                    //Remove standardDocLink if it was found - because that is already there. 
+                    //Don't want it twice.
+                    searchResults.remove(standardDocLink);
+                }
+                helpLinks.addAll(searchResults);
                 break;
             }
         }

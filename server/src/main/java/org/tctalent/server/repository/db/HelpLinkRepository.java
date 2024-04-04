@@ -18,8 +18,14 @@ package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.HelpLink;
+import org.tctalent.server.model.db.JobOpportunityStage;
 
 public interface HelpLinkRepository extends JpaRepository<HelpLink, Long>,
     JpaSpecificationExecutor<HelpLink> {
+
+    HelpLink findFirstByCaseStageAndCountry(CandidateOpportunityStage stage, Country country);
+    HelpLink findFirstByJobStageAndCountry(JobOpportunityStage stage, Country country);
 }

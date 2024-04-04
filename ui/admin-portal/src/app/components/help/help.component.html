@@ -13,9 +13,9 @@
     </div>
   </ng-template>
 
-  <button class="search-tip-button" [ngbTooltip]="helpTipContent" placement=""
-          (click)="fetchHelp()"
-          triggers="click" tooltipClass="search-tips">
+  <button class="help-tip-button" [ngbTooltip]="helpTipContent"
+          (click)="fetchHelp()" placement="auto"
+          triggers="click" tooltipClass="help-tips">
     <i class="fa-regular fa-circle-question fa-xs"></i>
   </button>
 
