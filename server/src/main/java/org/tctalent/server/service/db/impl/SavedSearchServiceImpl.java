@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.tctalent.server.repository.db.CandidateSpecification.getOffsetDateTime;
 
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
@@ -26,6 +25,7 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -1158,15 +1158,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         // updatedDate is converted for the ES field 'updated' to a long denoting no. of
         // milliseconds elapsed since 1970-01-01T00:00:00Z. This enables an ES range query when the
         // dates in the request are converted in the same way.
-        Long lastModifiedFrom = getOffsetDateTime(
+        Long lastModifiedFrom = OffsetDateTime.of(
             request.getLastModifiedFrom(),
             LocalTime.MIN,
-            request.getTimezone()
+            ZoneOffset.UTC
         ).toInstant().toEpochMilli();
-        Long lastModifiedTo = getOffsetDateTime(
+        Long lastModifiedTo = OffsetDateTime.of(
             request.getLastModifiedTo(),
             LocalTime.MAX,
-            request.getTimezone()
+            ZoneOffset.UTC
         ).toInstant().toEpochMilli();
         if (lastModifiedFrom != null) {
             boolQueryBuilder = addElasticRangeFilter(
