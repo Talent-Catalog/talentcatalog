@@ -121,8 +121,15 @@
         <ng-template ngbPanelTitle let-opened="opened">
           <div class="container-fluid gx-0">
             <div class="row">
-              <div class="col-11">
+              <div class="col-3 border-end">
                 <span>Language Exams</span>
+              </div>
+              <div class="col ms-4">
+                <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index">
+                  <span class="fw-600 me-2 text-accent-1">
+                    {{exam.exam}} <span class="text-primary">{{exam.score}}</span>
+                  </span>
+                </ng-container>
               </div>
               <div class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
@@ -171,7 +178,7 @@
               </div>
               <div class="col ms-4">
                 <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
-                  <span [class]="'fw-bold me-2'"
+                  <span [class]="'fw-600 me-2'"
                         [ngClass]="{'text-male': getGender(dep.gender) === 'M',
                         'text-female': getGender(dep.gender) === 'F'}">
                     {{getAge(dep.dob)}}{{getGender(dep.gender)}}
