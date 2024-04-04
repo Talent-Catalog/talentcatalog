@@ -467,7 +467,8 @@ public class CandidateSpecification {
         };
     }
 
-    private static OffsetDateTime getOffsetDateTime(LocalDate localDate, LocalTime time, String timezone) {
+    public static OffsetDateTime getOffsetDateTime(LocalDate localDate, LocalTime time,
+        String timezone) {
         return OffsetDateTime.of(localDate, time, !StringUtils.isBlank(timezone) ? ZoneId.of(timezone).getRules().getOffset(Instant.now()) : ZoneOffset.UTC);
     }
 

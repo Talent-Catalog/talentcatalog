@@ -18,7 +18,6 @@ package org.tctalent.server.model.es;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -214,14 +213,9 @@ public class CandidateEs {
     @Field(type = FieldType.Long)
     private Long numberDependants;
 
-    @Field(type = FieldType.Date, format=DateFormat.date_optional_time)
-    private OffsetDateTime fullIntakeCompletedDate;
+    private Long fullIntakeCompletedDate;
 
-    @Field(type = FieldType.Date, format=DateFormat.date_optional_time)
-    private OffsetDateTime miniIntakeCompletedDate;
-
-    @Field(type = FieldType.Date, format=DateFormat.date_optional_time)
-    private OffsetDateTime updatedDate;
+    private Long miniIntakeCompletedDate;
 
     public CandidateEs() {
     }
@@ -386,10 +380,9 @@ public class CandidateEs {
                 }
             }
             this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
-                null : candidate.getMiniIntakeCompletedDate();
+                null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();
             this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
-                null : candidate.getFullIntakeCompletedDate();
-            this.updatedDate = candidate.getUpdatedDate();
+                null : candidate.getFullIntakeCompletedDate().toInstant().toEpochMilli();
         }
 
         this.skills = new ArrayList<>();
