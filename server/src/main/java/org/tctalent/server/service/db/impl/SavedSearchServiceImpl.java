@@ -1142,33 +1142,50 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Mini Intake
         final Boolean miniIntakeCompleted = request.getMiniIntakeCompleted();
         if (miniIntakeCompleted != null) {
-            boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.existsQuery("miniIntakeCompletedDate"));
+            if (miniIntakeCompleted) {
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.existsQuery("miniIntakeCompletedDate")
+                );
+            } else {
+                boolQueryBuilder = boolQueryBuilder.mustNot(
+                    QueryBuilders.existsQuery("miniIntakeCompletedDate")
+                );
+            }
         }
 
         //Full Intake
         final Boolean fullIntakeCompleted = request.getFullIntakeCompleted();
         if (fullIntakeCompleted != null) {
-            boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.existsQuery("fullIntakeCompletedDate"
-                ));
+            if (fullIntakeCompleted) {
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.existsQuery("fullIntakeCompletedDate")
+                );
+            } else {
+                boolQueryBuilder = boolQueryBuilder.mustNot(
+                    QueryBuilders.existsQuery("fullIntakeCompletedDate")
+                );
+            }
+
         }
 
         // Last Modified
         // updatedDate is converted for the ES field 'updated' to a long denoting no. of
-        // milliseconds elapsed since 1970-01-01T00:00:00Z. This enables an ES range query when the
-        // dates in the request are converted in the same way.
-        Long lastModifiedFrom = OffsetDateTime.of(
-            request.getLastModifiedFrom(),
-            LocalTime.MIN,
-            ZoneOffset.UTC
-        ).toInstant().toEpochMilli();
-        Long lastModifiedTo = OffsetDateTime.of(
-            request.getLastModifiedTo(),
-            LocalTime.MAX,
-            ZoneOffset.UTC
-        ).toInstant().toEpochMilli();
-        if (lastModifiedFrom != null) {
+        // milliseconds elapsed since 1970-01-01T00:00:00Z. This enables an ES range query by
+        // converting the dates in the request in the same way.
+        if (request.getLastModifiedFrom() != null) {
+            Long lastModifiedFrom = OffsetDateTime.of(
+                request.getLastModifiedFrom(),
+                LocalTime.MIN,
+                ZoneOffset.UTC
+            ).toInstant().toEpochMilli();
+
+            Long lastModifiedTo = request.getLastModifiedTo() == null ?
+                null : OffsetDateTime.of(
+                    request.getLastModifiedTo(),
+                    LocalTime.MAX,
+                    ZoneOffset.UTC
+                ).toInstant().toEpochMilli();
+
             boolQueryBuilder = addElasticRangeFilter(
                 boolQueryBuilder,
                 "updated",
