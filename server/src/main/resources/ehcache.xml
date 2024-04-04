@@ -1,0 +1,37 @@
+<!--
+  ~ Copyright (c) 2024 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<config xmlns="http://www.ehcache.org/v3"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core.xsd">
+
+  <cache alias="default">
+    <expiry>
+      <ttl unit="minutes">10</ttl>
+    </expiry>
+    <heap unit="entries">1000</heap>
+  </cache>
+
+  <!-- Other caches can be defined here -->
+  <cache alias="users">
+    <expiry>
+      <ttl unit="minutes">60</ttl> <!-- 60 minutes time to live -->
+    </expiry>
+    <heap unit="entries">500</heap> <!-- Max 500 entries in heap -->
+  </cache>
+
+</config>
+
