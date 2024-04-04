@@ -41,4 +41,12 @@ export class HelpComponent implements OnInit {
         });
     }
   }
+
+  displayHelpLink(helpLink: HelpLink) {
+    let s = helpLink.label;
+    if (helpLink.country) {
+      s += " (" + helpLink.country.name + ")";
+    }
+    return s;
+  }
 }

@@ -49,7 +49,13 @@ export interface NextStepInfo {
 
 export class SearchHelpLinkRequest extends PagedFilteredSearchRequest {
   countryId?: number;
+  caseOppId?: number;
+  caseStage?: string;
+  focus?: string;
+  jobOppId?: number;
   jobStage?: string;
+  nextStepName?: string;
+  userId?: number;
 }
 
 export class UpdateHelpLinkRequest {
