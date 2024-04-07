@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.HelpLinkHelper.generateRequestSequence;
+import static org.tctalent.server.util.help.HelpLinkHelper.generateRequestSequence;
 
 import java.util.ArrayList;
 import java.util.List;
