@@ -16,15 +16,13 @@
 
 package org.tctalent.server.util.help;
 
-import org.junit.jupiter.api.Test;
-
 class HelpLinkGeneratorFromOppStagesTest {
 
     /**
-     * Not really a test - but just run this to generate the HelpLink DB Insert statements for all
-     * job stages.
+     * Not really a test - but just uncomment @Test annotation to run this to generate the
+     * HelpLink DB Insert statements for all job and candidate opp stages.
      */
-    @Test
+//    @Test
     void generateStandardStageBasedHelp() {
         HelpLinkGeneratorFromOppStages generator = new HelpLinkGeneratorFromOppStages();
         generator.generateHelpLinks();
