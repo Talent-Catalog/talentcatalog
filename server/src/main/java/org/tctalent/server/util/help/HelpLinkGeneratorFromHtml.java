@@ -164,7 +164,11 @@ public class HelpLinkGeneratorFromHtml {
     }
 
     private String getStageRowValue(Element table) {
-        return getRowValue("SF Stage", table);
+        String stageText = getRowValue("SF Stage", table);
+        if (stageText == null) {
+            stageText = getRowValue("TC/SF Stage", table);
+        }
+        return stageText;
     }
 
     private String getRowValue(String name, Element table) {
