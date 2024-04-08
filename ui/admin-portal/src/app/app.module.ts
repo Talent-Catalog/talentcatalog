@@ -784,13 +784,16 @@ import {
 import {
   ArrestImprisonComponent
 } from './components/candidates/intake/arrest-imprison/arrest-imprison.component';
-import { HelpComponent } from './components/help/help.component';
+import {HelpComponent} from './components/help/help.component';
 import {
   SearchHelpLinksComponent
 } from './components/settings/help-links/search-help-links.component';
 import {
   CreateUpdateHelpLinkComponent
 } from './components/settings/help-links/create-update-help-link/create-update-help-link.component';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {LanguageLoader} from "./services/language.loader";
+import {LanguageInterceptor} from "./services/language.interceptor";
 
 @NgModule({
   declarations: [
@@ -1131,11 +1134,19 @@ import {
     }),
     DragulaModule.forRoot(),
     QuillModule.forRoot(),
-    PickerModule
+    PickerModule,
+    TranslateModule.forRoot({
+      defaultLanguage: 'en',
+      loader: {
+        provide: TranslateLoader,
+        useClass: LanguageLoader
+      },
+    }),
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {

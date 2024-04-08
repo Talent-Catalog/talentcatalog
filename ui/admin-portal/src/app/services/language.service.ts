@@ -17,10 +17,11 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Language} from "../model/language";
-import {SystemLanguage} from "../model/language";
+import {Language, SystemLanguage} from "../model/language";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
+import {Subject} from "rxjs/index";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,18 @@ export class LanguageService {
 
   private apiUrl: string = environment.apiUrl + '/language';
 
-  constructor(private http: HttpClient) { }
+  private languageChangedSource = new Subject<string>();
+  languageChanged$ = this.languageChangedSource.asObservable();
+
+  private selectedLanguage: string;
+
+  private languageSelectionDisabled: boolean = false;
+
+  constructor(private http: HttpClient,
+              private localStorage: LocalStorageService) {
+    this.languageSelectionDisabled = (this.localStorage.get('languageSelectionDisabled') as boolean);
+    this.setSelectedLanguage((this.localStorage.get('language') as string) || 'en');
+  }
 
   listLanguages(): Observable<Language[]> {
     return this.http.get<Language[]>(`${this.apiUrl}`);
@@ -61,6 +73,23 @@ export class LanguageService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  getSelectedLanguage(): string {
+    return this.selectedLanguage;
+  }
+
+  private setSelectedLanguage(selectedLanguage: string) {
+    this.selectedLanguage = selectedLanguage;
+  }
+
+  isSelectedLanguageRtl(): boolean {
+    const rtl: boolean =  ['ar', 'fa', 'ps'].indexOf(this.selectedLanguage) >= 0;
+    return rtl;
+  }
+
+  isLanguageSelectionDisabled(): boolean {
+    return this.languageSelectionDisabled;
   }
 
 }

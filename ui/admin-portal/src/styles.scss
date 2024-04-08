@@ -34,6 +34,8 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
 
+@import "scss/rtl";
+
 body {
   padding-top: 6rem;
   background-color: $light;

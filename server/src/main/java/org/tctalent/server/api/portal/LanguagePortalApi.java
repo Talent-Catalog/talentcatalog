@@ -18,7 +18,6 @@ package org.tctalent.server.api.portal;
 
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +32,7 @@ import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
-@RequestMapping("/api/portal/language")
+@RequestMapping({"/api/portal/language", "/api/admin/translate"})
 public class LanguagePortalApi {
 
     private final LanguageService languageService;

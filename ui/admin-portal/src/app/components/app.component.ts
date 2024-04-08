@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, HostBinding, OnInit} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {Title} from "@angular/platform-browser";
 import {filter, map} from "rxjs/operators";
@@ -22,6 +22,9 @@ import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
+import {LanguageLoader} from "../services/language.loader";
+import {LanguageService} from "../services/language.service";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-root',
@@ -30,6 +33,10 @@ import {ChatService} from "../services/chat.service";
 })
 export class AppComponent implements OnInit {
 
+  //This CSS setting is used at the root of the whole app
+  @HostBinding('class.rtl-wrapper') rtl: boolean = false;
+
+  loading: boolean;
   showHeader: boolean;
   private loggedInUserSubcription: Subscription;
 
@@ -38,7 +45,9 @@ export class AppComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private chatService: ChatService,
     private router: Router,
-    private titleService: Title
+    private titleService: Title,
+    private languageService: LanguageService,
+    private translate: TranslateService
   ) {
   }
 
@@ -51,6 +60,29 @@ export class AppComponent implements OnInit {
     )
 
     this.subscribeForTitleChanges()
+
+    //Register for language translation upload start and end events - which
+    //drive the loading status.
+    LanguageLoader.languageLoading$.subscribe(
+      (loading: boolean) => {
+        this.loading = loading;
+      })
+
+    //Register for language change events which are used to set the language and
+    //appropriate Right to Left direction. That can only be set in this
+    //component.
+    this.languageService.languageChanged$.subscribe(
+      () => {
+        this.translate.use(this.languageService.getSelectedLanguage());
+        this.rtl = this.languageService.isSelectedLanguageRtl();
+      }
+    );
+
+    // this language will be used as a fallback when a translation isn't
+    // found in the current language. This forces loading of translations.
+    this.translate.setDefaultLang('en');
+
+    this.translate.use('en');
   }
 
   private onChangedLogin(user: User) {
