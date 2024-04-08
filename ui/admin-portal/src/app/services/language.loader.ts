@@ -46,7 +46,6 @@ export class LanguageLoader implements TranslateLoader {
   //Had to make this static because I could not avoid two LanguageLoader
   //instances being created - JC.
   private static languageLoading = new Subject<boolean>();
-  static languageLoading$ = LanguageLoader.languageLoading.asObservable();
 
   constructor(private http: HttpClient) { }
 
@@ -56,7 +55,9 @@ export class LanguageLoader implements TranslateLoader {
 
     //Publish loading = true to the observable
     LanguageLoader.languageLoading.next(true);
-    const loadLanguage$ = this.http.get(`${environment.apiUrl}/translate/translations/file/${lang}`);
+    const loadLanguage$ = this.http.get(
+      `${environment.apiUrl}/translate/translations/file/${lang}`
+    );
     loadLanguage$.subscribe(
       //Publish loading = false to the observable - language has loaded.
       () => {LanguageLoader.languageLoading.next(false)}

@@ -793,7 +793,6 @@ import {
 } from './components/settings/help-links/create-update-help-link/create-update-help-link.component';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {LanguageLoader} from "./services/language.loader";
-import {LanguageInterceptor} from "./services/language.interceptor";
 
 @NgModule({
   declarations: [
@@ -1146,7 +1145,6 @@ import {LanguageInterceptor} from "./services/language.interceptor";
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {
