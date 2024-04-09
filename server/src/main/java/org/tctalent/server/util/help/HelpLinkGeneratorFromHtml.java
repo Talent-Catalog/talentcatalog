@@ -166,11 +166,11 @@ public class HelpLinkGeneratorFromHtml {
             + (countryId == null ? "null" : countryId)
             + ",'"
             + helpLink.getLabel()
-            + "','"
-            + (helpLink.getJobStage() == null ? null : helpLink.getJobStage().name())
-            + "','"
-            + (helpLink.getCaseStage() == null ? null : helpLink.getCaseStage().name())
-            + "','"
+            + "',"
+            + (helpLink.getJobStage() == null ? null : "'" + helpLink.getJobStage().name() + "'")
+            + ","
+            + (helpLink.getCaseStage() == null ? null : "'" + helpLink.getCaseStage().name() + "'")
+            + ",'"
             + helpLink.getLink()
             + "');"
             ;
