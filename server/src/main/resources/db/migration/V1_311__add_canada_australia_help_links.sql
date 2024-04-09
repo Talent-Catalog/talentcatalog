@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+-- Canada
 INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'Create Salesforce account and employer opportunity','briefing',null,'https://tchelp.tettra.site/canada-1/operations-manual-1#create-salesforce-account-and-employer-opportunity');
 INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'Schedule call with employer','briefing',null,'https://tchelp.tettra.site/canada-1/operations-manual-1#schedule-call-with-employer');
 INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'Pitch to employer','pitching',null,'https://tchelp.tettra.site/canada-1/operations-manual-1#pitch-to-employer');
@@ -99,3 +100,31 @@ INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'
 INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'Monitoring and evaluation: Employer survey','postHireEngagement',null,'https://tchelp.tettra.site/canada-1/operations-manual-1#monitoring-and-evaluation-employer-survey');
 INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'Hiring completed',null,'settled','https://tchelp.tettra.site/canada-1/operations-manual-1#hiring-completed');
 INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'Hiring completed','hiringCompleted',null,'https://tchelp.tettra.site/canada-1/operations-manual-1#hiring-completed');
+
+-- Australia
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'prospect', 'Inbound Leads', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.tyrh7citn3xr');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'pitching', 'Pitching stage', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.a2xubac37boh');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'identifyingRoles', 'Identify role stage', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.ijovwpy6vrh0');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'fullIntake', null, 'Full intake', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.7cvrzkyzduue');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'miniIntake', null, 'Mini intake', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.7cvrzkyzduue');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'prospect', null, 'Add candidates to submission list', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.2yqdyr2ewycd');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'cvPreparation', null, 'CV preparation', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.7cvrzkyzduue');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'cvReview', null, 'CV Review', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.s5eu60km2gn3');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'cvReview', 'CV Review', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.s5eu60km2gn3');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'cvPreparation', 'CV preparation', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.7cvrzkyzduue');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'recruitmentProcess', 'Recruitment process stage', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.depna9bcxau4');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'testing', null, 'Testing', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.depna9bcxau4');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'twoWayPreparation', null, 'Interview preparation', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.rcs9di4rlpn4');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'twoWayReview', null, 'Interview review', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.1mt9ufz50muz');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'offer', null, 'Waiting for job offer', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.ch7x2nwege0');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'acceptance', null, 'IDM Acceptance', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.a9ctbv9yi0x8');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'visaPreparation', 'Visa preparation', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.zbsfdoqcvpvq');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'visaPreparation', null, 'Visa preparation', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.zbsfdoqcvpvq');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'visaProcessing', null, 'Visa processing', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.smff6va0pilm');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'relocating', null, 'Settlement/Relocation Planning', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.ps3tpja69il5');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'relocated', null, 'Arrival & settlement monitoring', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.847skeeajee9');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'postHireEngagement', 'Employment monitoring', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.847skeeajee9');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'settled', null, 'Settled', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.h0puz89c05vq');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'hiringCompleted', 'Hiring completed', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.h0puz89c05vq');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, 'durableSolution', null, 'Durable solution', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.h0puz89c05vq');
+INSERT INTO public.help_link (country_id, case_stage, job_stage, label, link) VALUES (6191, null, 'jobOffer', 'Job offer', 'https://docs.google.com/document/d/1sKktTq_-DEPgMd2rpujKbXbOboAfCXtw/preview#bookmark=id.ch7x2nwege0');
