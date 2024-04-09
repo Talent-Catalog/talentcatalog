@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.configuration;
+package org.tctalent.server.cache;
 
 
 import java.lang.reflect.Method;
@@ -24,19 +24,18 @@ import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.stereotype.Component;
 
 /**
- * Custom key generator for caching based on lowercase usernames. It is designed for
- * repository methods that perform database lookups using a username parameter, such as
+ * Custom key generator for caching based on lowercase usernames. Used by repository methods such as
  * UserRepository.findByUsernameIgnoreCase.
  * <p>
- * If a null username is provided, the generator interrupts the caching process by
- * throwing an IllegalArgumentException, highlighting an improper use or configuration, and should
- * never happen as a username is required for the associated database operations.
+ * If username is null, the generator interrupts the caching process, highlighting an improper use.
+ * This should never happen as username is a required parameter for the associated database
+ * operations.
  *
  * @author sadatmalik
  */
-@Component("userKeyGenerator")
+@Component("usernameKeyGenerator")
 @Slf4j
-public class UserKeyGenerator implements KeyGenerator {
+public class UsernameKeyGenerator implements KeyGenerator {
 
   @NotNull
   @Override
