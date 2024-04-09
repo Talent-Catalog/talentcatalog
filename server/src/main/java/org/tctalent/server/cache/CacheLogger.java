@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.logging;
+package org.tctalent.server.cache;
 
 import lombok.extern.slf4j.Slf4j;
 import org.ehcache.event.CacheEvent;
@@ -31,8 +31,8 @@ public class CacheLogger implements CacheEventListener<Object, Object> {
 
   @Override
   public void onEvent(CacheEvent<?, ?> cacheEvent) {
-    log.info("Key: {} | EventType: {} | Old value: {} | New value: {}",
-        cacheEvent.getKey(), cacheEvent.getType(), cacheEvent.getOldValue(),
+    log.info("Cache event: {} | Key: {} | Old value: {} | New value: {}",
+        cacheEvent.getType(), cacheEvent.getKey(), cacheEvent.getOldValue(),
         cacheEvent.getNewValue());
   }
 
