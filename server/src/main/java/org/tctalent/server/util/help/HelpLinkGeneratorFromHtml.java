@@ -155,14 +155,16 @@ public class HelpLinkGeneratorFromHtml {
 
         System.out.println("Created " + helpLinks.size() + " HelpLinks");
 
+        long CANADA_COUNTRY_ID = 6216;
         for (HelpLink helpLink : helpLinks) {
-            System.out.println(generateDBInsertCommand(helpLink));
+            System.out.println(generateDBInsertCommand(CANADA_COUNTRY_ID, helpLink));
         }
     }
 
-    private String generateDBInsertCommand(HelpLink helpLink) {
-        String s = "INSERT INTO help_link(label,job_stage,case_stage,link) VALUES ("
-            + "'"
+    private String generateDBInsertCommand(Long countryId, HelpLink helpLink) {
+        String s = "INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES ("
+            + (countryId == null ? "null" : countryId)
+            + ",'"
             + helpLink.getLabel()
             + "','"
             + (helpLink.getJobStage() == null ? null : helpLink.getJobStage().name())
@@ -220,7 +222,6 @@ public class HelpLinkGeneratorFromHtml {
         CandidateOpportunityStage caseStage, JobOpportunityStage jobStage,
         String label, String link) {
         HelpLink helpLink = new HelpLink();
-
         helpLink.setCaseStage(caseStage);
         helpLink.setJobStage(jobStage);
         helpLink.setLabel(label);
