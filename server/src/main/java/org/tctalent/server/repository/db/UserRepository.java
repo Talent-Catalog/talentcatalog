@@ -39,7 +39,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
             + " and u.status != 'deleted'")
-    @Cacheable(value = "users", key = "#username.toLowerCase()")
+    @Cacheable(value = "userCache", keyGenerator = "userKeyGenerator")
     User findByUsernameIgnoreCase(@Param("username") String username);
 
     /* Used for candidate authentication */
