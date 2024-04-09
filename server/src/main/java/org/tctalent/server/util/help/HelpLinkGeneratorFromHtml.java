@@ -129,17 +129,17 @@ public class HelpLinkGeneratorFromHtml {
                         String description = getDescriptionRowValue(headingTable);
                         if (description != null) {
                             //Ignore heading without a stage row in the heading table
-                            String stageText = getStageRowValue(headingTable);
-                            if (stageText != null) {
+                            Element stageTextElement = getStageRowValue(headingTable);
+                            if (stageTextElement != null) {
                                 //Decode stage text - may need to generate more than one help link
-                                List<CandidateOpportunityStage> caseStages = extractCaseStages(stageText);
+                                List<CandidateOpportunityStage> caseStages = extractCaseStages(stageTextElement);
                                 for (CandidateOpportunityStage caseStage : caseStages) {
                                     HelpLink helpLink = createHelpLink(
                                         caseStage, null, headingText, url+headingLink, description);
                                     helpLinks.add(helpLink);
                                 }
 
-                                List<JobOpportunityStage> jobStages = extractJobStages(stageText);
+                                List<JobOpportunityStage> jobStages = extractJobStages(stageTextElement);
                                 for (JobOpportunityStage jobStage : jobStages) {
                                     HelpLink helpLink = createHelpLink(
                                         null, jobStage, headingText, url+headingLink, description);
@@ -160,18 +160,45 @@ public class HelpLinkGeneratorFromHtml {
         }
     }
 
-    private List<CandidateOpportunityStage> extractCaseStages(String stageText) {
+    private List<CandidateOpportunityStage> extractCaseStages(Element stageTextElement) {
         List<CandidateOpportunityStage> stages = new ArrayList<>();
-        //TODO JC Implement this
-        stages.add(CandidateOpportunityStage.prospect);
+        List<String> stageNames = extractStageNames(stageTextElement, false);
+        for (String stageName : stageNames) {
+            try {
+                stages.add(CandidateOpportunityStage.textToEnum(stageName));
+            } catch (IllegalArgumentException ex) {
+                System.err.println("Could not decode case stage name: " + stageName);
+            }
+        }
         return stages;
     }
 
-    private List<JobOpportunityStage> extractJobStages(String stageText) {
+    private List<JobOpportunityStage> extractJobStages(Element stageTextElement) {
         List<JobOpportunityStage> stages = new ArrayList<>();
-        //TODO JC Implement this
-        stages.add(JobOpportunityStage.prospect);
+        List<String> stageNames = extractStageNames(stageTextElement, true);
+        for (String stageName : stageNames) {
+            try {
+                stages.add(JobOpportunityStage.textToEnum(stageName));
+            } catch (IllegalArgumentException ex) {
+                System.err.println("Could not decode job stage name: " + stageName);
+            }
+        }
         return stages;
+    }
+
+    private List<String> extractStageNames(Element stageTextElement, boolean jobStages) {
+        List<String> stageNames = new ArrayList<>();
+        Elements lines = stageTextElement.select("p");
+        for (Element line : lines) {
+            boolean jobOpp = line.text().trim().startsWith("Employer opp");
+            if (jobOpp && jobStages || !jobOpp && !jobStages) {
+                Elements names = line.select("strong");
+                for (Element name : names) {
+                    stageNames.add(name.text().trim());
+                }
+            }
+        }
+        return stageNames;
     }
 
     private HelpLink createHelpLink(
@@ -190,24 +217,25 @@ public class HelpLinkGeneratorFromHtml {
     }
 
     private String getDescriptionRowValue(Element table) {
-        return getRowValue("Description", table);
+        final Element element = getRowValue("Description", table);
+        return element == null ? null : element.text();
     }
 
-    private String getStageRowValue(Element table) {
-        String stageText = getRowValue("SF Stage", table);
+    private Element getStageRowValue(Element table) {
+        Element stageText = getRowValue("SF Stage", table);
         if (stageText == null) {
             stageText = getRowValue("TC/SF Stage", table);
         }
         return stageText;
     }
 
-    private String getRowValue(String name, Element table) {
+    private Element getRowValue(String name, Element table) {
         Elements rows = table.children().select("tr");
-        Optional<String> description = rows.stream()
+        Optional<Element> description = rows.stream()
             //Map rows to columns
             .map(row -> row.children().select("td"))
             .filter(columns -> columns.size() == 2 && (name.equals(columns.get(0).text().trim())))
-            .map(columns -> columns.get(1).text())
+            .map(columns -> columns.get(1))
             .findFirst();
         return description.orElse(null);
     }
