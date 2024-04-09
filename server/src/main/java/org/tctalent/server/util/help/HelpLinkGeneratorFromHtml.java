@@ -135,14 +135,14 @@ public class HelpLinkGeneratorFromHtml {
                                 List<CandidateOpportunityStage> caseStages = extractCaseStages(stageTextElement);
                                 for (CandidateOpportunityStage caseStage : caseStages) {
                                     HelpLink helpLink = createHelpLink(
-                                        caseStage, null, headingText, url+headingLink, description);
+                                        caseStage, null, headingText, url+headingLink);
                                     helpLinks.add(helpLink);
                                 }
 
                                 List<JobOpportunityStage> jobStages = extractJobStages(stageTextElement);
                                 for (JobOpportunityStage jobStage : jobStages) {
                                     HelpLink helpLink = createHelpLink(
-                                        null, jobStage, headingText, url+headingLink, description);
+                                        null, jobStage, headingText, url+headingLink);
                                     helpLinks.add(helpLink);
                                 }
 
@@ -154,10 +154,25 @@ public class HelpLinkGeneratorFromHtml {
         }
 
         System.out.println("Created " + helpLinks.size() + " HelpLinks");
+
         for (HelpLink helpLink : helpLinks) {
-            String s = helpLink.getLabel() + " " + helpLink.getLink();
-            System.out.println(s);
+            System.out.println(generateDBInsertCommand(helpLink));
         }
+    }
+
+    private String generateDBInsertCommand(HelpLink helpLink) {
+        String s = "INSERT INTO help_link(label,job_stage,case_stage,link) VALUES ("
+            + "'"
+            + helpLink.getLabel()
+            + "','"
+            + (helpLink.getJobStage() == null ? null : helpLink.getJobStage().name())
+            + "','"
+            + (helpLink.getCaseStage() == null ? null : helpLink.getCaseStage().name())
+            + "','"
+            + helpLink.getLink()
+            + "');"
+            ;
+        return s;
     }
 
     private List<CandidateOpportunityStage> extractCaseStages(Element stageTextElement) {
@@ -203,7 +218,7 @@ public class HelpLinkGeneratorFromHtml {
 
     private HelpLink createHelpLink(
         CandidateOpportunityStage caseStage, JobOpportunityStage jobStage,
-        String label, String link, String nextStepText) {
+        String label, String link) {
         HelpLink helpLink = new HelpLink();
 
         helpLink.setCaseStage(caseStage);
@@ -212,7 +227,6 @@ public class HelpLinkGeneratorFromHtml {
         helpLink.setLink(link);
         NextStepInfo nextStepInfo = new NextStepInfo();
         helpLink.setNextStepInfo(nextStepInfo);
-        nextStepInfo.setNextStepText(nextStepText);
         return helpLink;
     }
 
