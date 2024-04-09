@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
-import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -101,7 +101,7 @@ public class EmailHelper {
             ctx.setVariable("resetUrl", resetUrl + "/reset-password/" + token);
             ctx.setVariable("year", currentYear());
 
-            subject = "Talent Beyond Boundaries - Reset Your Password";
+            subject = "Talent Catalog - Reset Your Password";
             bodyText = textTemplateEngine.process("reset-password", ctx);
             bodyHtml = htmlTemplateEngine.process("reset-password", ctx);
 
