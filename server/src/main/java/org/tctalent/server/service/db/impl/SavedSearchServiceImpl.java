@@ -755,7 +755,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setName(constructDefaultSearchName(loggedInUser));
             request.setSavedSearchType(SavedSearchType.other);
             request.setDefaultSearch(true);
-            savedSearch = createSavedSearch(request);
+            savedSearch = convertToSavedSearch(new SavedSearch(), request);
+            savedSearch.setAuditFields(loggedInUser);
+            savedSearch = savedSearchRepository.save(savedSearch);
         } else {
             savedSearch.parseType();
         }
