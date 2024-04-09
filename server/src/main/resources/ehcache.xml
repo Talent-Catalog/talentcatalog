@@ -25,12 +25,32 @@
     <heap unit="entries">1000</heap>
   </cache>
 
-  <!-- Other caches can be defined here -->
-  <cache alias="users">
+  <!-- Default cache template -->
+  <cache-template name="default">
     <expiry>
-      <ttl unit="minutes">60</ttl> <!-- 60 minutes time to live -->
+      <ttl unit="minutes">10</ttl>
     </expiry>
-    <heap unit="entries">500</heap> <!-- Max 500 entries in heap -->
+
+    <listeners>
+      <listener>
+        <class>org.tctalent.server.logging.CacheLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+        <events-to-fire-on>EVICTED</events-to-fire-on>
+      </listener>
+    </listeners>
+
+    <resources>
+      <heap unit="entries">500</heap>
+    </resources>
+  </cache-template>
+
+  <!-- Other caches can be defined here -->
+  <cache alias="userCache" uses-template="default">
+    <key-type>java.lang.String</key-type>
+    <value-type>org.tctalent.server.model.db.User</value-type>
   </cache>
 
 </config>
