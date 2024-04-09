@@ -24,7 +24,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.HelpLink;
+import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.NextStepInfo;
 
 /**
@@ -129,25 +131,20 @@ public class HelpLinkGeneratorFromHtml {
                             //Ignore heading without a stage row in the heading table
                             String stageText = getStageRowValue(headingTable);
                             if (stageText != null) {
+                                //Decode stage text - may need to generate more than one help link
+                                List<CandidateOpportunityStage> caseStages = extractCaseStages(stageText);
+                                for (CandidateOpportunityStage caseStage : caseStages) {
+                                    HelpLink helpLink = createHelpLink(
+                                        caseStage, null, headingText, url+headingLink, description);
+                                    helpLinks.add(helpLink);
+                                }
 
-                                //Each heading corresponds to a HelpLink
-                                HelpLink helpLink = new HelpLink();
-                                helpLinks.add(helpLink);
-
-                                //Use heading text as the label of the HelpLink
-                                helpLink.setLabel(headingText);
-
-                                //Use the heading link as the link of the HelpLink
-                                helpLink.setLink(url + headingLink);
-
-                                NextStepInfo nextStepInfo = new NextStepInfo();
-                                helpLink.setNextStepInfo(nextStepInfo);
-                                nextStepInfo.setNextStepText(description);
-
-                                //TODO JC Decode stage text
-                                System.out.println(stageText);
-
-                                //TODO JC Need to tidy up ops text. Changes label from SF Stage to TC/SF Stage
+                                List<JobOpportunityStage> jobStages = extractJobStages(stageText);
+                                for (JobOpportunityStage jobStage : jobStages) {
+                                    HelpLink helpLink = createHelpLink(
+                                        null, jobStage, headingText, url+headingLink, description);
+                                    helpLinks.add(helpLink);
+                                }
 
                             }
                         }
@@ -156,7 +153,40 @@ public class HelpLinkGeneratorFromHtml {
             }
         }
 
-        System.out.println(helpLinks.size());
+        System.out.println("Created " + helpLinks.size() + " HelpLinks");
+        for (HelpLink helpLink : helpLinks) {
+            String s = helpLink.getLabel() + " " + helpLink.getLink();
+            System.out.println(s);
+        }
+    }
+
+    private List<CandidateOpportunityStage> extractCaseStages(String stageText) {
+        List<CandidateOpportunityStage> stages = new ArrayList<>();
+        //TODO JC Implement this
+        stages.add(CandidateOpportunityStage.prospect);
+        return stages;
+    }
+
+    private List<JobOpportunityStage> extractJobStages(String stageText) {
+        List<JobOpportunityStage> stages = new ArrayList<>();
+        //TODO JC Implement this
+        stages.add(JobOpportunityStage.prospect);
+        return stages;
+    }
+
+    private HelpLink createHelpLink(
+        CandidateOpportunityStage caseStage, JobOpportunityStage jobStage,
+        String label, String link, String nextStepText) {
+        HelpLink helpLink = new HelpLink();
+
+        helpLink.setCaseStage(caseStage);
+        helpLink.setJobStage(jobStage);
+        helpLink.setLabel(label);
+        helpLink.setLink(link);
+        NextStepInfo nextStepInfo = new NextStepInfo();
+        helpLink.setNextStepInfo(nextStepInfo);
+        nextStepInfo.setNextStepText(nextStepText);
+        return helpLink;
     }
 
     private String getDescriptionRowValue(Element table) {
