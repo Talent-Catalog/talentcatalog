@@ -31,7 +31,7 @@ class HelpLinkGeneratorFromHtmlTest {
     @Test
     void generateCanadaHelpFromHtml() throws IOException {
         generator.generateCanadaHelpFromHtml(
-            "https://tchelp.tettra.site/canada-1/copy-of-operations-manual-1");
+            "https://tchelp.tettra.site/canada-1/operations-manual-1");
 
     }
 }
