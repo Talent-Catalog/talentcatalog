@@ -18,7 +18,6 @@ package org.tctalent.server.util.help;
 
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 class HelpLinkGeneratorFromHtmlTest {
     private HelpLinkGeneratorFromHtml generator;
@@ -28,7 +27,11 @@ class HelpLinkGeneratorFromHtmlTest {
         generator = new HelpLinkGeneratorFromHtml();
     }
 
-    @Test
+    /**
+     * Not really a test - but just uncomment @Test annotation to run this to generate the
+     * HelpLink DB Insert statements.
+     */
+//    @Test
     void generateCanadaHelpFromHtml() throws IOException {
         generator.generateCanadaHelpFromHtml(
             "https://tchelp.tettra.site/canada-1/operations-manual-1");
