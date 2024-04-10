@@ -56,9 +56,7 @@ public class HelpLinkGeneratorFromHtml {
      *         Description row
      *     </li>
      *     <li>
-     *         Stage(s) row - job or case opp stages - or both. This is unstructured and will need
-     *         to be manually converted to correct stages
-     *     </li>
+     *         Stage(s) row - job or case opp stages - or both.
      *     <li>
      *         Responsible row - not used in HelpLink
      *     </li>
