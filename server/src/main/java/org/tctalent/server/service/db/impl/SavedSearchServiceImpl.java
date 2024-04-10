@@ -525,7 +525,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
             throws EntityExistsException {
         SavedSearch defaultSavedSearch = getDefaultSavedSearch();
-        SavedSearch savedSearch = convertToSavedSearch(defaultSavedSearch, request);
+        return createSavedSearchBase(request, defaultSavedSearch);
+    }
+
+    private SavedSearch createDefaultSavedSearch(User user) {
+        UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
+        request.setName(constructDefaultSearchName(user));
+        request.setSavedSearchType(SavedSearchType.other);
+        request.setDefaultSearch(true);
+        return createSavedSearchBase(request, null);
+    }
+
+    private SavedSearch createSavedSearchBase(
+        UpdateSavedSearchRequest request, @Nullable SavedSearch template) {
+        SavedSearch savedSearch = convertToSavedSearch(template, request);
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
@@ -533,16 +546,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         savedSearch = savedSearchRepository.save(savedSearch);
-        savedSearch = addSearchJoins(request, savedSearch);
+        addSearchJoins(request, savedSearch);
 
-        //Copy across the user's selections (including context notes)
-        //of the default saved search.
-        copySelectionsAndContextNotes(defaultSavedSearch, savedSearch, true);
+        if (template != null) {
+            //Copy across the user's selections (including context notes)
+            //of the template saved search.
+            copySelectionsAndContextNotes(template, savedSearch, true);
+        }
 
         return savedSearch;
     }
 
-    private void copySelectionsAndContextNotes(SavedSearch fromSavedSearch,
+    private void copySelectionsAndContextNotes(@NonNull SavedSearch fromSavedSearch,
         SavedSearch toSavedSearch, boolean clearFromSavedSearch) {
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
@@ -751,13 +766,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .orElse(null);
         if (savedSearch == null) {
             //Create a default saved search for logged in user
-            UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
-            request.setName(constructDefaultSearchName(loggedInUser));
-            request.setSavedSearchType(SavedSearchType.other);
-            request.setDefaultSearch(true);
-            savedSearch = convertToSavedSearch(new SavedSearch(), request);
-            savedSearch.setAuditFields(loggedInUser);
-            savedSearch = savedSearchRepository.save(savedSearch);
+            savedSearch = createDefaultSavedSearch(loggedInUser);
         } else {
             savedSearch.parseType();
         }
@@ -1251,16 +1260,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     //---------------------------------------------------------------------------------------------------
     private SavedSearch convertToSavedSearch(
-        SavedSearch origSavedSearch, UpdateSavedSearchRequest request) {
+        @Nullable SavedSearch origSavedSearch, UpdateSavedSearchRequest request) {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
         savedSearch.setFixed(request.getFixed());
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
-        savedSearch.setDescription(origSavedSearch.getDescription());
-        savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
-        savedSearch.setDisplayedFieldsShort(origSavedSearch.getDisplayedFieldsShort());
+        if (origSavedSearch != null) {
+            savedSearch.setDescription(origSavedSearch.getDescription());
+            savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
+            savedSearch.setDisplayedFieldsShort(origSavedSearch.getDisplayedFieldsShort());
+        }
         savedSearch.setSfJobOpp(
             salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
 
