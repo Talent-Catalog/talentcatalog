@@ -20,7 +20,7 @@
     </ng-template>
   </ng-container>
 
-  <ng-container ngbNavItem="PublicLists">
+  <ng-container *ngIf="seesPublicLists()" ngbNavItem="PublicLists">
     <a ngbNavLink title="Lists associated with a public web link">Lists With External Links</a>
     <ng-template ngbNavContent>
       <app-browse-candidate-sources

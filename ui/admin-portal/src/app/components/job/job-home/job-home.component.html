@@ -4,7 +4,7 @@
 
 <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-  <ng-container ngbNavItem="LiveJobs">
+  <ng-container *ngIf="seesAllLiveJobs()" ngbNavItem="LiveJobs">
     <a ngbNavLink
        title="Jobs associated with active opportunities which have been published on the TC">
       Live Jobs <i class="fa-solid fa-briefcase"></i></a>

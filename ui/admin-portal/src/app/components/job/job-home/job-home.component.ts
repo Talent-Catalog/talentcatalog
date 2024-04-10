@@ -41,10 +41,10 @@ export class JobHomeComponent extends HomeComponent {
     private jobService: JobService,
     protected localStorageService: LocalStorageService,
     protected savedSearchService: SavedSearchService,
-    protected authService: AuthorizationService,
+    protected authorizationService: AuthorizationService,
     protected authenticationService: AuthenticationService
   ) {
-    super(localStorageService, savedSearchService, authService, authenticationService);
+    super(localStorageService, savedSearchService, authorizationService, authenticationService);
     this.lastTabKey = 'JobsHomeLastTab';
     this.lastCategoryTabKey = 'JobsHomeLastCategoryTab';
     this.defaultTabId = 'LiveJobs';
@@ -115,5 +115,11 @@ export class JobHomeComponent extends HomeComponent {
       tabName = partnerName + " Cases"
     }
     return tabName;
+  }
+
+  seesAllLiveJobs() {
+    //Every sees public live jobs - except for employers with direct access. They are only
+    //interested in their own jobs.
+    return !this.authorizationService.isEmployerPartner();
   }
 }
