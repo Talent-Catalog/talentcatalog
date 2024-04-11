@@ -129,7 +129,7 @@ export class ChatService implements OnDestroy {
    * chat.
    * @param chat
    */
-  private getJobChatUserInfo(chat: JobChat): Observable<JobChatUserInfo> {
+  public getJobChatUserInfo(chat: JobChat): Observable<JobChatUserInfo> {
     // console.log('Browser requests server for status of chat ' + chat.id);
     const user = this.authenticationService.getLoggedInUser();
     return this.http.get<JobChatUserInfo>(

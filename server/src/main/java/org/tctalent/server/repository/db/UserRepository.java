@@ -17,6 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,6 +39,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
             + " and u.status != 'deleted'")
+    @Cacheable(value = "users", key = "#username.toLowerCase()")
     User findByUsernameIgnoreCase(@Param("username") String username);
 
     /* Used for candidate authentication */

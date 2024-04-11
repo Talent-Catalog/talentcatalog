@@ -708,6 +708,7 @@ const ALL_FIELDS = {
     },
   },
   "CHAT": {
+      "HEADER": null,
       "POST-HEADER": null,
       "POST-SEND": null,
       "NO-POSTS": null,

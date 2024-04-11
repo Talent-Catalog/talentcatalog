@@ -3,7 +3,9 @@ import {
   ElementRef,
   HostListener,
   Input,
+  OnChanges,
   OnInit,
+  SimpleChanges,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -21,9 +23,13 @@ import {Reaction} from "../../../model/reaction";
   // See here: https://stackoverflow.com/a/44215795
   encapsulation: ViewEncapsulation.None
 })
-export class ViewPostComponent implements OnInit {
+export class ViewPostComponent implements OnInit, OnChanges {
 
   public reactionPickerVisible: boolean = false;
+  isCurrentPost: boolean = false;
+  public reactionPickerXPos: number;
+  public reactionPickerYPos: number;
+
 
   // Currently ngx-quill just inserts the url into an <img> tag, this is then saved as innerHTML.
   // Adding this event listener allows us to make the images clickable and open the src attribute in a new tab.
@@ -44,6 +50,20 @@ export class ViewPostComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    for (const propName in changes) {
+      if (changes.hasOwnProperty(propName)) {
+        switch (propName) {
+          case 'currentPost': {
+            this.setIsCurrentPostClosePickerIfFalse(
+              changes.currentPost.currentValue
+            )
+          }
+        }
+      }
+    }
+  }
+
   get isHtml() {
     return isHtml;
   }
@@ -53,14 +73,22 @@ export class ViewPostComponent implements OnInit {
     return UserService.userToString(user, false, false);
   }
 
-  // Toggles the picker on and off — if on, focuses the scroll bar on its post
-  public onClickReactionBtn() {
-    this.reactionPickerVisible = !this.reactionPickerVisible;
-    if(this.reactionPickerVisible) {
-      setTimeout(() => {
-        this.thisPost.nativeElement.scrollIntoView({behavior: 'smooth'});
-      });
+  // Toggles the picker on and off, situating it appropriately in relation to the button
+  // The picker's height is 353 x 425 px, navbar is 85px
+  public onClickReactionBtn(event) {
+    if (event.clientY < 510 && window.innerHeight - event.clientY < 425) {
+      // Won't fit above, won't fit below - place halfway
+      this.reactionPickerYPos = event.clientY - 213;
+    } else if (window.innerHeight - event.clientY < 425 && event.clientY > 510) {
+      // Won't fit below, will fit above - place above
+      this.reactionPickerYPos = event.clientY - 425;
+    } else {
+      // Will fit below, won't fit above OR will fit either side - place below
+      this.reactionPickerYPos = event.clientY;
     }
+    // Always place to the left of the button without concealing it
+    this.reactionPickerXPos = event.clientX - 370;
+    this.reactionPickerVisible = !this.reactionPickerVisible;
   }
 
   // This method may also update or even delete a reaction, if the user submits an emoji already
@@ -85,33 +113,11 @@ export class ViewPostComponent implements OnInit {
                           })
   }
 
-  // These emojis don't work for some reason — this function excludes them from the picker.
-  emojisToShowFilter = (emoji: any) => {
-    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
+  private setIsCurrentPostClosePickerIfFalse(currentPost: ChatPost) {
+    this.isCurrentPost = currentPost === this.post;
+    if (!this.isCurrentPost) {
+      this.reactionPickerVisible = false;
+    }
   }
-
-  // Below commented-out methods and class property were closing unwanted emoji pickers.
-  // Leaving them here as they're likely to be useful for future styling and functionality.
-  // Used in conjunction with @Input currentPost.
-
-  // isCurrentPost: boolean = false;
-
-  // ngOnChanges(changes: SimpleChanges) {
-  //   for (const propName in changes) {
-  //     if (changes.hasOwnProperty(propName)) {
-  //       switch (propName) {
-  //         case 'currentPost': {
-  //           this.setIsCurrentPost(
-  //             changes.currentPost.currentValue
-  //           )
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // private setIsCurrentPost(currentPost: ChatPost) {
-  //   this.isCurrentPost = currentPost === this.post;
-  // }
 
 }

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,45 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-button.reaction-btn {
-  border: none;
-  background-color: inherit;
-  color: #444;
-}
+-- To speed up look ups of lowercase usernames
+create index user_lower_username_idx on users (lower(username));
 
-button.reaction-btn:hover {
-  color: #0066cc;
-}
-
-button.reaction-btn-selected {
-  border: none;
-  background-color: inherit;
-  color: #0066cc;
-}
-
-button.update-reaction-btn {
-  background-color: #a8c4d6;
-  border: 0.1em solid #444;
-  margin: 0.2em;
-  text-align: center;
-  color: #444;
-  display: inline-block;
-  border-radius: 8em;
-  font-size: small;
-}
-
-button.update-reaction-btn:hover {
-  border-color: #0066cc;
-  color: #0066cc;
-}
-
-emoji-mart#reactionPicker {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1050;
-}
-
-div#reactionTooltipEmoji {
-  font-size: xx-large;
-}

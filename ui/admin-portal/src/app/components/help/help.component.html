@@ -8,14 +8,14 @@
     </div>
     <div *ngIf="helpLinks">
       <div *ngFor="let helpLink of helpLinks">
-        <a target="_blank" [href]="helpLink.link">{{helpLink.label}}</a>
+        <a target="_blank" [href]="helpLink.link">{{displayHelpLink(helpLink)}}</a>
       </div>
     </div>
   </ng-template>
 
-  <button class="search-tip-button" [ngbTooltip]="helpTipContent" placement=""
-          (click)="fetchHelp()"
-          triggers="click" tooltipClass="search-tips">
+  <button class="help-tip-button" [ngbTooltip]="helpTipContent"
+          (click)="fetchHelp()" placement="auto"
+          triggers="click" tooltipClass="help-tips">
     <i class="fa-regular fa-circle-question fa-xs"></i>
   </button>
 

@@ -29,7 +29,6 @@ export class SearchHelpLinksComponent implements OnInit {
   searchForm: FormGroup;
   destinationCountries: Country[];
 
-  testHelpLinks: HelpLink[];
   labelHelpRequest: SearchHelpLinkRequest = {jobStage: 'recruitmentProcess'};
 
   constructor(
