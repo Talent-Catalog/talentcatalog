@@ -55,8 +55,8 @@ body {
   }
 
   .nav-link {
-    color: $dark;
-    background-color: $accent3;
+    color: $light;
+    background-color: $accent1;
     border-color: $light;
     &:hover {
       background-color: $accent2;
@@ -73,10 +73,14 @@ body {
   .nav-link.active,
   .nav-item.show .nav-link {
     color: $light;
-    background-color: $accent1;
+    background-color: $primary;
     border-color: $nav-tabs-link-active-border-color;
   }
 
+}
+
+.card {
+  box-shadow: 6px 6px 7px 2px #78797d;
 }
 
 
