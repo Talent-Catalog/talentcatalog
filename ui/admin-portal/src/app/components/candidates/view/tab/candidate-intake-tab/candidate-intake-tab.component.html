@@ -41,7 +41,7 @@
     <div class="d-flex justify-content-between">
 
       <div *ngIf="fullIntakeComplete; else notComplete">
-        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
+        <button class="btn btn-warning" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Update
         </button>
@@ -205,7 +205,7 @@
                 <span>Family Members / Dependants</span>
               </div>
               <div class="col d-flex justify-content-between">
-                <div class="tag-light">
+                <div *ngIf="candidateIntakeData?.candidateDependants.length > 0" class="tag-light">
                   <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
                   <span [class]="'fw-600 me-2'"
                         [ngClass]="{'text-male': getGender(dep.gender) === 'M',
@@ -373,7 +373,7 @@
 
   <div class="float-end mt-3">
     <div *ngIf="fullIntakeComplete; else notComplete">
-      <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
+      <button class="btn btn-warning" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
         Update
       </button>
     </div>

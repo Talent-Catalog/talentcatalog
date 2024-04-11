@@ -121,6 +121,15 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     editCandidateModal.result
     .then((candidate) => this.candidate = candidate)
     .catch(() => { /* Isn't possible */ });
+  }
 
+  hasIssues() {
+    let issues: string = null;
+    if (this.candidateIntakeData?.healthIssues == "Yes") {
+      issues = "Health Issues";
+    } else if (this.candidateIntakeData?.crimeConvict == "Yes") {
+      issues = "Crime conviction"
+    }
+    return issues;
   }
 }

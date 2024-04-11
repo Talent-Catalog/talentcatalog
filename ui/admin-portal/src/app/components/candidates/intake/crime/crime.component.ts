@@ -39,6 +39,10 @@ export class CrimeComponent extends IntakeComponentBase implements OnInit {
       crimeConvict: [{value: this.candidateIntakeData?.crimeConvict, disabled: !this.editable}],
       crimeConvictNotes: [{value: this.candidateIntakeData?.crimeConvictNotes, disabled: !this.editable}],
     });
+
+    this.form.controls.crimeConvict.valueChanges.subscribe((value) => {
+      this.candidateIntakeData.crimeConvict = value;
+    })
   }
 
   get crime(): string {
