@@ -23,10 +23,7 @@ export class HealthIssuesComponent extends IntakeComponentBase implements OnInit
       healthIssues: [{value: this.candidateIntakeData?.healthIssues, disabled: !this.editable}],
       healthIssuesNotes: [{value: this.candidateIntakeData?.healthIssuesNotes, disabled: !this.editable}],
     });
-
-    this.form.controls.healthIssues.valueChanges.subscribe((value) => {
-      this.candidateIntakeData.healthIssues = value;
-    })
+    this.updateDataOnFieldChange("healthIssues");
   }
 
   get hasNotes(): boolean {

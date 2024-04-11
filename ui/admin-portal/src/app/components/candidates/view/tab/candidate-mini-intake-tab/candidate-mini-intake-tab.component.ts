@@ -124,12 +124,19 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
   }
 
   hasIssues() {
-    let issues: string = null;
+    let issues: String[] = [];
     if (this.candidateIntakeData?.healthIssues == "Yes") {
-      issues = "Health Issues";
-    } else if (this.candidateIntakeData?.crimeConvict == "Yes") {
-      issues = "Crime conviction"
+      issues.push("Health Issues");
     }
-    return issues;
+    if (this.candidateIntakeData?.crimeConvict == "Yes") {
+      issues.push("Crime conviction")
+    }
+    if (this.candidateIntakeData?.arrestImprison == "Yes") {
+      issues.push("Arrest/Imprisoned")
+    }
+    if (this.candidateIntakeData?.conflict == "Yes") {
+      issues.push("Conflict")
+    }
+    return issues.join(", ");
   }
 }

@@ -91,4 +91,15 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
   setNoResponse(formControlName: string) {
     this.form.controls[formControlName].setValue('NoResponse');
   };
+
+  /**
+   * Updates the CandidateIntakeData object with the changed form control value.
+   * This is used to populate the values on the accordion panels.
+   * @param formControlName Name of form control in intake form that we want to track changes of for update.
+   */
+  updateDataOnFieldChange(formControlName: string) {
+    this.form.get(formControlName).valueChanges.subscribe((value) => {
+      this.candidateIntakeData[formControlName] = value;
+    })
+  }
 }
