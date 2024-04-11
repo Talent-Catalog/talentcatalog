@@ -41,7 +41,7 @@
     <div class="d-flex justify-content-between">
 
       <div *ngIf="fullIntakeComplete; else notComplete">
-        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
+        <button class="btn btn-warning" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
           <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
           Update
         </button>
@@ -121,8 +121,23 @@
         <ng-template ngbPanelTitle let-opened="opened">
           <div class="container-fluid gx-0">
             <div class="row">
-              <div class="col-11">
+              <div class="col-3 border-end">
                 <span>Language Exams</span>
+              </div>
+              <div class="col">
+                <div class="tag-light fw-600">
+                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index">
+                    <span *ngIf="exam.exam != 'Other'; else otherExam" [ngClass]="{'me-4': exam.exam != null}">
+                      {{exam.exam}} <span class="text-info">{{exam.score}}</span>
+                    </span>
+                    <ng-template #otherExam>
+                      <span class="me-4">{{exam.otherExam}}
+                        <span class="text-info">{{exam.score}}</span>
+                      </span>
+                    </ng-template>
+                  </ng-container>
+                </div>
+
               </div>
               <div class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
@@ -141,7 +156,25 @@
       </ngb-panel>
 
       <!-- LANGUAGE ASSESSMENT-->
-      <ngb-panel id="intake-language-assessment" title="Language Assessment">
+      <ngb-panel id="intake-language-assessment">
+        <ng-template ngbPanelTitle let-opened="opened">
+          <div class="container-fluid gx-0">
+            <div class="row">
+              <div class="col-3 border-end">
+                <span>Language Assessment</span>
+              </div>
+              <div class="col">
+                <div class="tag-light">
+                  <span *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
+                        [class]="'fw-600'">
+                    Est IELTS
+                    <span class="text-info">{{candidateIntakeData.englishAssessmentScoreIelts}}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
         <ng-template ngbPanelContent>
           <app-lang-assessment
             [entity]="candidate"
@@ -166,8 +199,24 @@
         <ng-template ngbPanelTitle let-opened="opened">
           <div class="container-fluid gx-0">
             <div class="row">
-              <div class="col">
+              <div class="col-3 border-end">
                 <span>Family Members / Dependants</span>
+              </div>
+              <div class="col d-flex justify-content-between">
+                <div *ngIf="candidateIntakeData?.candidateDependants.length > 0" class="tag-light">
+                  <ng-container *ngFor="let dep of candidateIntakeData?.candidateDependants; let i=index">
+                  <span [class]="'fw-600 me-2'"
+                        [ngClass]="{'text-male': getGender(dep.gender) === 'M',
+                        'text-female': getGender(dep.gender) === 'F'}">
+                    {{getAge(dep.dob)}}{{getGender(dep.gender)}}
+                  </span>
+                  </ng-container>
+                </div>
+                <div *ngIf="hasDependantHealthIssues()" class="tag-danger fw-600">
+                  <i class="fa-solid fa-circle-exclamation text-danger"></i>
+                  <span class="ms-2">Health Issues</span>
+                </div>
+
               </div>
               <div class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addDependantRecord($event)">
@@ -322,7 +371,7 @@
 
   <div class="float-end mt-3">
     <div *ngIf="fullIntakeComplete; else notComplete">
-      <button class="btn btn-warning border border-white" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
+      <button class="btn btn-warning" (click)="createIntakeNote('Full Intake', 'update')" [disabled]="saving">
         Update
       </button>
     </div>
