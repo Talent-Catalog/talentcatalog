@@ -39,7 +39,7 @@
     </div>
     <div class="d-flex justify-content-between">
       <div *ngIf="miniIntakeComplete; else notComplete">
-        <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
+        <button class="btn btn-warning" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
           Update
         </button>
       </div>
@@ -291,7 +291,7 @@
   </div>
   <div class="float-end mt-3">
     <div *ngIf="miniIntakeComplete; else notComplete">
-      <button class="btn btn-warning border border-white" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
+      <button class="btn btn-warning" (click)="createIntakeNote('Mini Intake', 'update')" [disabled]="saving || clickedOldIntake">
         Update
       </button>
     </div>
