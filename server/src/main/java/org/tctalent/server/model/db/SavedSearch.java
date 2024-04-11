@@ -46,6 +46,11 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String type;
 
+    /**
+     * Every user has one default search. It is opened every time they use the 'New Search' tab
+     * and overwritten with any different new search they initiate. In effect, this means a user
+     * opening the 'New Search' tab will always see their most recently initiated new search.
+     */
     private Boolean defaultSearch = false;
 
     private String simpleQueryString;
