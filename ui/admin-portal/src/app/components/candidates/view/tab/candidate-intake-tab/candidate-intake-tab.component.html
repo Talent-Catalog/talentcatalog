@@ -126,11 +126,9 @@
               </div>
               <div class="col">
                 <div class="tag-light fw-600">
-                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">
-                    <span *ngIf="exam.exam != 'Other'; else otherExam"
-                          [ngClass]="{'me-4': exam.exam != null}">
-                      {{exam.exam}}
-                      <span class="text-info">{{exam.score}}</span>
+                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index">
+                    <span *ngIf="exam.exam != 'Other'; else otherExam" [ngClass]="{'me-4': exam.exam != null}">
+                      {{exam.exam}} <span class="text-info">{{exam.score}}</span>
                     </span>
                     <ng-template #otherExam>
                       <span class="me-4">{{exam.otherExam}}
@@ -214,7 +212,7 @@
                   </span>
                   </ng-container>
                 </div>
-                <div *ngIf="hasDependantHealthIssues()" class="tag-danger">
+                <div *ngIf="hasDependantHealthIssues()" class="tag-danger fw-600">
                   <i class="fa-solid fa-circle-exclamation text-danger"></i>
                   <span class="ms-2">Health Issues</span>
                 </div>

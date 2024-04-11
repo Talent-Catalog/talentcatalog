@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData, Exam} from '../../../../model/candidate';
+import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
 import {CandidateExamService} from '../../../../services/candidate-exam.service';
 
 @Component({
@@ -41,24 +41,6 @@ export class ExamsComponent implements OnInit {
 
   deleteRecord(i: number) {
     this.candidateIntakeData.candidateExams.splice(i, 1);
-  }
-
-  updateExamScore(score: string, i: number) {
-    if (this.candidateIntakeData) {
-      this.candidateIntakeData.candidateExams[i].score = score;
-    }
-  }
-
-  updateExamType(type: string, i: number) {
-    if (this.candidateIntakeData) {
-      this.candidateIntakeData.candidateExams[i].exam = Exam[type];
-    }
-  }
-
-  updateOtherExam(other: string, i: number) {
-    if (this.candidateIntakeData) {
-      this.candidateIntakeData.candidateExams[i].otherExam = other;
-    }
   }
 
 }

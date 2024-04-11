@@ -16,13 +16,7 @@
 
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {
-  CandidateDependant,
-  DependantRelations,
-  Gender,
-  Registrations,
-  YesNo
-} from '../../../../../model/candidate';
+import {CandidateDependant, DependantRelations, Gender, Registrations, YesNo} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
@@ -36,9 +30,6 @@ import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 export class DependantsCardComponent extends IntakeComponentBase implements OnInit {
 
   @Output() delete = new EventEmitter();
-  @Output() dependantDobUpdated = new EventEmitter<string>();
-  @Output() dependantGenderUpdated = new EventEmitter<string>();
-  @Output() dependantHealthUpdated = new EventEmitter<string>();
   public age: number;
 
   //Drop down values for enumeration
@@ -67,23 +58,17 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantHealthNotes: [this.myRecord?.healthNotes],
     });
 
-    this.form.controls['dependantDob']?.valueChanges.subscribe(
-      dob => {
-        this.dependantDobUpdated.emit(dob);
-      }
-    );
+    this.form.controls['dependantDob']?.valueChanges.subscribe(dob => {
+      this.candidateIntakeData.candidateDependants[this.myRecordIndex].dob = dob;
+    });
 
-    this.form.controls['dependantGender']?.valueChanges.subscribe(
-      gender => {
-        this.dependantGenderUpdated.emit(gender);
-      }
-    );
+    this.form.controls['dependantGender']?.valueChanges.subscribe(gender => {
+      this.candidateIntakeData.candidateDependants[this.myRecordIndex].gender = gender;
+    });
 
-    this.form.controls['dependantHealthConcerns']?.valueChanges.subscribe(
-      health => {
-        this.dependantHealthUpdated.emit(health);
-      }
-    );
+    this.form.controls['dependantHealthConcerns']?.valueChanges.subscribe(health => {
+      this.candidateIntakeData.candidateDependants[this.myRecordIndex].healthConcern = health;
+    });
   }
 
   get hasHealthConcern(): string {

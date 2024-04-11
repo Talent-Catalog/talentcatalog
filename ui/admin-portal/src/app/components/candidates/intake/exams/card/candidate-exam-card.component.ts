@@ -32,9 +32,6 @@ import {generateYearArray} from '../../../../../util/year-helper';
 export class CandidateExamCardComponent extends IntakeComponentBase implements OnInit {
 
   @Output() delete = new EventEmitter();
-  @Output() examScoreUpdated = new EventEmitter<string>();
-  @Output() examTypeUpdated = new EventEmitter<string>();
-  @Output() otherExamUpdated = new EventEmitter<string>();
 
   //Drop down values for enumeration
   examOptions: EnumOption[] = enumOptions(Exam);
@@ -62,23 +59,17 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
     this.regexpIeltsScore = new RegExp('^([0-8](\\.5)?$)|(^9$)');
     this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only.";
 
-    this.form.controls['examScore']?.valueChanges.subscribe(
-      score => {
-        this.examScoreUpdated.emit(score);
-      }
-    );
+    this.form.controls['examScore']?.valueChanges.subscribe(score => {
+        this.candidateIntakeData.candidateExams[this.myRecordIndex].score = score;
+    });
 
-    this.form.controls['examType']?.valueChanges.subscribe(
-      type => {
-        this.examTypeUpdated.emit(type);
-      }
-    );
+    this.form.controls['examType']?.valueChanges.subscribe(type => {
+        this.candidateIntakeData.candidateExams[this.myRecordIndex].exam = type;
+    });
 
-    this.form.controls['otherExam']?.valueChanges.subscribe(
-      other => {
-        this.otherExamUpdated.emit(other);
-      }
-    );
+    this.form.controls['otherExam']?.valueChanges.subscribe(other => {
+        this.candidateIntakeData.candidateExams[this.myRecordIndex].otherExam = other;
+    });
 
   }
 

@@ -26,10 +26,7 @@
     [entity]="candidate"
     [candidateIntakeData]="candidateIntakeData"
     [myRecordIndex]="i"
-    (delete)="deleteRecord(i)"
-    (examScoreUpdated)="updateExamScore($event, i)"
-    (examTypeUpdated)="updateExamType($event, i)"
-    (otherExamUpdated)="updateOtherExam($event, i)">
+    (delete)="deleteRecord(i)">
   </app-candidate-exam-card>
   <hr/>
 </div>

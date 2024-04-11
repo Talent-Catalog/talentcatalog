@@ -43,9 +43,7 @@ export class LangAssessmentComponent extends IntakeComponentBase implements OnIn
     this.regexpIeltsScore = new RegExp('^([0-8](\\.5)?$)|(^9$)');
     this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only.";
 
-    this.form.controls.englishAssessmentScoreIelts.valueChanges.subscribe((value) => {
-      this.candidateIntakeData.englishAssessmentScoreIelts = value;
-    })
+    this.updateDataOnFieldChange("englishAssessmentScoreIelts");
   }
 
 }
