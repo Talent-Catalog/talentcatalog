@@ -166,7 +166,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * - JC
      */
     @Query(" select distinct c from Candidate c "
-            + " where lower(c.candidateNumber) like lower(:candidateNumber) "
+            + " where c.candidateNumber like :candidateNumber "
             + excludeDeleted
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
