@@ -51,6 +51,17 @@
                    for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>
           </div>
         </div>
+<!--        todo Unpublished jobs not always working-->
+<!--        todo Also starredByMe-->
+        <div *ngIf="searchBy===SearchOppsBy.mineAsJobCreator" class="col-md-6">
+          <div class="form-check">
+            <input [title]="showUnpublishedTip" type="checkbox"
+                   formControlName="showUnpublished" id="showUnpublished" class="form-check-input">
+            <label class="form-check-label" [title]="showUnpublishedTip"
+                   for="showUnpublished">{{showUnpublishedLabel}}</label>
+          </div>
+
+        </div>
 
         <div class="col-md-6">
           <button class="btn btn-link" (click)="refresh()">

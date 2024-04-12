@@ -26,6 +26,8 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
   //Override text to replace "opps" text with "jobs"
   myOppsOnlyLabel = "My jobs only";
   myOppsOnlyTip = "Only show jobs that I created or am the contact for";
+  showUnpublishedLabel = "Show unpublished jobs";
+  showUnpublishedTip = "Show jobs that have not yet been published";
   showClosedOppsLabel = "Show closed jobs";
   showClosedOppsTip = "Show jobs that have been closed";
   showInactiveOppsLabel = "Show inactive jobs";
