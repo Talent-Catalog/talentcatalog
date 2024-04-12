@@ -1,4 +1,4 @@
-import {Component, Inject, LOCALE_ID} from '@angular/core';
+import {Component, ElementRef, Inject, LOCALE_ID, ViewChild} from '@angular/core';
 import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {FormBuilder} from "@angular/forms";
@@ -35,10 +35,13 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
   withUnreadMessagesLabel = "Jobs with unread chats only";
   withUnreadMessagesTip = "Only show jobs which have unread chats";
 
+  @ViewChild("searchFilter")
+  searchFilter: ElementRef;
+
   constructor(
     chatService: ChatService,
     fb: FormBuilder,
-    authService: AuthorizationService,
+    authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: JobService,
     salesforceService: SalesforceService,
@@ -46,7 +49,7 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+    super(chatService, fb, authorizationService, localStorageService, oppService, salesforceService,
       countryService, partnerService, locale, "Jobs")
   }
 
@@ -58,9 +61,6 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
         //Don't want to see closed jobs
         req.sfOppClosed = false;
-
-        //Jobs must have been published
-        req.published = true;
 
         //Only want jobs which are accepting candidates. This is equivalent to checking that the
         //job's stage is between candidate search and prior to job offer/acceptance.
@@ -143,5 +143,10 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
       })
     }
     return chatRequests;
+  }
+
+  needsFilterByDestination() {
+    //Employers with direct access know that all jobs are coming to their destination.
+    return !this.authorizationService.isEmployerPartner();
   }
 }

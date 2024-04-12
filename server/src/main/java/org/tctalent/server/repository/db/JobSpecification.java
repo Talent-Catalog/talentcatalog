@@ -95,7 +95,8 @@ public class JobSpecification {
             }
 
             final Boolean showActiveStages = request.getActiveStages();
-            final Boolean showClosed = request.getSfOppClosed();
+            final boolean showClosed = request.getSfOppClosed() != null && request.getSfOppClosed();
+            final boolean showUnpublished = request.getPublished() != null && !request.getPublished();
 
             boolean isStageFilterActive = false;
 
@@ -122,12 +123,23 @@ public class JobSpecification {
                         final Predicate activePredicate = builder.between(job.get("stageOrder"),
                             JobOpportunityStage.candidateSearch.ordinal(),
                             JobOpportunityStage.jobOffer.ordinal());
-                        if (showClosed != null && showClosed) {
-                            //When active stages are requested as well as closed, we need both.
-                            //ie We need to show jobs which are active OR closed
-                            conjunction.getExpressions().add(
-                                builder.or(activePredicate,
-                                    builder.equal(job.get("closed"), true)));
+                        if (showClosed || showUnpublished) {
+                            //When active stages are requested as well as closed or unpublished,
+                            //we need union of all that match active predicate, or that are closed
+                            //or that are unpublished.
+                            //ie The user might want to show jobs which are active OR closed OR
+                            //unpublished
+                            Predicate disjunction = builder.disjunction();
+                            disjunction.getExpressions().add(activePredicate);
+                            if (showClosed) {
+                                disjunction.getExpressions().add(
+                                    builder.equal(job.get("closed"), true));
+                            }
+                            if (showUnpublished) {
+                                disjunction.getExpressions().add(
+                                    builder.isNull(job.get("publishedDate")));
+                            }
+                            conjunction.getExpressions().add(disjunction);
                         } else {
                             conjunction.getExpressions().add(activePredicate);
                         }
@@ -136,23 +148,10 @@ public class JobSpecification {
             }
 
             //CLOSED (ignored if we are doing stage filtering)
-            if (!isStageFilterActive && showClosed != null) {
-                //Only apply filter if we want to exclude closed opps.
-                //Otherwise the filter when true will only show closed opps - which we don't want.
-                if (!showClosed) {
-                    conjunction.getExpressions().add(builder.equal(job.get("closed"), false));
-                }
-            }
-
-            //PUBLISHED
-            if (request.getPublished() != null) {
-                Predicate published;
-                if (request.getPublished()) {
-                    published = builder.isNotNull(job.get("publishedDate"));
-                } else {
-                    published = builder.isNull(job.get("publishedDate"));
-                }
-                conjunction.getExpressions().add(published);
+            //Only apply filter if we want to exclude closed opps.
+            //Otherwise the filter when true will only show closed opps - which we don't want.
+            if (!isStageFilterActive && !showClosed) {
+                conjunction.getExpressions().add(builder.equal(job.get("closed"), false));
             }
 
             //UNREAD MESSAGES

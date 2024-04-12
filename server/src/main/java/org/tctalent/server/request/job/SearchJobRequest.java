@@ -30,12 +30,6 @@ import org.tctalent.server.request.opportunity.SearchOpportunityRequest;
 public class SearchJobRequest extends SearchOpportunityRequest {
 
     /**
-     * If specified, match job opportunities based on whether the job has been published.
-     */
-    @Nullable
-    private Boolean published;
-
-    /**
      * If specified, match job opportunities if they match any of the stages
      */
     @Nullable

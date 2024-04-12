@@ -118,7 +118,7 @@ export class JobHomeComponent extends HomeComponent {
   }
 
   seesAllLiveJobs() {
-    //Every sees public live jobs - except for employers with direct access. They are only
+    //Everyone sees public live jobs - except for employers with direct access. They are only
     //interested in their own jobs.
     return !this.authorizationService.isEmployerPartner();
   }

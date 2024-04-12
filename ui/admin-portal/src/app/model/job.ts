@@ -100,7 +100,6 @@ export enum JobOpportunityStage {
  * Adds extra job opportunity specific fields to standard SearchOpportunityRequest
  */
 export class SearchJobRequest extends SearchOpportunityRequest {
-  published?: boolean;
   starred?: boolean;
 }
 
