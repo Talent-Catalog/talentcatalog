@@ -54,6 +54,10 @@ spring:
       repositories:
         enabled: false
 
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+
   thymeleaf:
     prefix: classpath:/mail/
 
