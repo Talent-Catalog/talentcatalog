@@ -21,7 +21,7 @@
 
 .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-info, .btn-warning, .btn-accent-1, .btn-accent-2 {
   color: $white;
-  box-shadow: 0 2px 4px $accent1;
+  box-shadow: 2px 2px 2px #6a6b6c;
   &:hover {
     color: $light;
   }
