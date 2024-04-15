@@ -174,8 +174,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                           Pageable pageable);
 
     @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(u.email) like lower(:emailOrPhone) "
-            + " or lower(c.phone) like lower(:emailOrPhone) "
+            + " where (lower(c.phone) like lower(:emailOrPhone) "
+            + " or lower(u.email) like lower(:emailOrPhone)) "
             + excludeDeleted
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
