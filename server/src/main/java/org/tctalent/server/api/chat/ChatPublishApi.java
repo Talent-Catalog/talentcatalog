@@ -59,7 +59,7 @@ public class ChatPublishApi {
      * @return Recorded post which is sent to all current subscribers of the chat with that id
      */
     @MessageMapping("/chat/{chatId}")
-    @SendTo("/topic/chat/{chatId}")
+    @SendTo(ChatPostService.CHAT_PUBLISH_ROOT + "/{chatId}")
     public Map<String, Object> sendPost(Post post, @DestinationVariable Long chatId) {
         JobChat jobChat = jobChatService.getJobChat(chatId);
         ChatPost chatPost = chatPostService.createPost(post, jobChat);
