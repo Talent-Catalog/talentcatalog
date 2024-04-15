@@ -784,6 +784,24 @@ export function getDestinationOccupationSubcatLink(countryId: number): string {
   }
 }
 
+export function calculateAge(dob: Date): number {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const currentDay = currentDate.getDate();
+
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth();
+  const birthDay = dob.getDate();
+
+  let age = currentYear - birthYear;
+  if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+    age--;
+  }
+
+  return age;
+}
+
 export class SendResetPasswordEmailRequest {
   email: string;
 }

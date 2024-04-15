@@ -54,6 +54,10 @@ spring:
       repositories:
         enabled: false
 
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+
   thymeleaf:
     prefix: classpath:/mail/
 
@@ -65,6 +69,7 @@ spring:
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
+      max-lifetime: ${SPRING_DBPOOL_MAX_LIFETIME:1800000} # 30 minutes
 
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193

@@ -16,6 +16,8 @@
 
 package org.tctalent.server.configuration;
 
+import static org.tctalent.server.service.db.ChatPostService.TOPIC_PREFIX;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker(TOPIC_PREFIX);
         config.setApplicationDestinationPrefixes("/app");
     }
 

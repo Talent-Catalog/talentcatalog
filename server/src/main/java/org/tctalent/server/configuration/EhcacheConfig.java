@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,23 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-$white: #ffffff;
-$light:      #f3f0e6;
-$dark:       #151f2d;
-$primary: #1c4679;
-$secondary: #0e7688;
-$info: #9b6a0d;
-$accent1:    #383b48;
-$accent2:    #64656d;
-$accent3:    #b2b7bb;
-$success: #03864d;
-$warning: #c7b408;
-$highlight: #ffff00;
-$danger: #a91206;
+package org.tctalent.server.configuration;
 
-$accordion-button-bg: $accent3;
-$accordion-border-color: $light;
-$accordion-button-active-bg: $accent1;
-$accordion-button-active-color: $light;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Configuration;
 
-$offcanvas-horizontal-width: 40vw;
+@Configuration
+@EnableCaching
+public class EhcacheConfig {
+
+}
