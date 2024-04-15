@@ -47,3 +47,5 @@ create index idx_users_email_lower on users (LOWER(email));
 create index idx_candidate_status_country on candidate (status, country_id)
     where status <> 'deleted';
 
+-- for queries that search for candidates by external ID and country, ignoring case, including deletions
+create index idx_candidate_external_id_country on candidate (LOWER(external_id), country_id);
