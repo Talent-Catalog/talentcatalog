@@ -34,6 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -102,6 +103,14 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employer_id")
     private Employer employerEntity;
+
+    /**
+     * True if this an evergreen job - ie a job that automatically replicates when it gets
+     * past the recruitment stage. A new copy of the original job is created so that new
+     * candidates matching the job's requirements can continue to apply.
+     */
+    @Transient //todo Make transient until we have a field in the DB for it.
+    private boolean evergreen;
 
     /**
      * Optional exclusion list associated with job.
