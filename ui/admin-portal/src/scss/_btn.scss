@@ -19,11 +19,17 @@
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/buttons";
 
-.btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-info, .btn-warning {
+.btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-info, .btn-warning, .btn-accent-1, .btn-accent-2 {
   color: $white;
+  box-shadow: 2px 2px 2px #6a6b6c;
   &:hover {
     color: $light;
   }
+}
+
+.btn-outline-primary, .btn-outline-secondary, btn-outline-danger, btn-outline-warning {
+  box-shadow: 0 4px 5px #949494;
+  border-width: 1.5px;
 }
 
 .btn-link {

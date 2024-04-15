@@ -18,19 +18,33 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core.xsd">
 
-  <cache alias="default">
+  <!-- Default cache template -->
+  <cache-template name="default">
     <expiry>
-      <ttl unit="minutes">10</ttl>
+      <ttl unit="minutes">60</ttl>
     </expiry>
-    <heap unit="entries">1000</heap>
-  </cache>
+
+    <listeners>
+      <listener>
+        <class>org.tctalent.server.cache.CacheLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>REMOVED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+        <events-to-fire-on>EVICTED</events-to-fire-on>
+      </listener>
+    </listeners>
+
+    <resources>
+      <heap unit="entries">500</heap>
+    </resources>
+  </cache-template>
 
   <!-- Other caches can be defined here -->
-  <cache alias="users">
-    <expiry>
-      <ttl unit="minutes">60</ttl> <!-- 60 minutes time to live -->
-    </expiry>
-    <heap unit="entries">500</heap> <!-- Max 500 entries in heap -->
+  <cache alias="userCache" uses-template="default">
+    <key-type>java.lang.String</key-type>
+    <value-type>org.tctalent.server.model.db.User</value-type>
   </cache>
 
 </config>
