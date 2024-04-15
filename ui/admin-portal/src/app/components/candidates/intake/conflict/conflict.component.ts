@@ -39,6 +39,8 @@ export class ConflictComponent extends IntakeComponentBase implements OnInit {
       conflict: [this.candidateIntakeData?.conflict],
       conflictNotes: [this.candidateIntakeData?.conflictNotes],
     });
+
+    this.updateDataOnFieldChange("conflict");
   }
 
   get conflict(): string {
