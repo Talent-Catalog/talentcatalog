@@ -27,6 +27,7 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.UserService;
 
 /**
  * This is where websocket connections are handled.
@@ -49,6 +50,7 @@ import org.tctalent.server.service.db.JobChatService;
 public class ChatPublishApi {
     private final ChatPostService chatPostService;
     private final JobChatService jobChatService;
+    private final UserService userService;
 
     /**
      * Receives a post on the given chat from the currently logged in user,
@@ -62,7 +64,7 @@ public class ChatPublishApi {
     @SendTo(ChatPostService.CHAT_PUBLISH_ROOT + "/{chatId}")
     public Map<String, Object> sendPost(Post post, @DestinationVariable Long chatId) {
         JobChat jobChat = jobChatService.getJobChat(chatId);
-        ChatPost chatPost = chatPostService.createPost(post, jobChat);
+        ChatPost chatPost = chatPostService.createPost(post, jobChat, userService.getLoggedInUser());
         return chatPostService.getChatPostDtoBuilder().build(chatPost);
     }
 
