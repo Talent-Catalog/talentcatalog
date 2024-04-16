@@ -40,12 +40,12 @@ export class UserService {
     let s: string;
     if (user == null) {
       s = "";
+    } else if (this.isTalentCatalogSystemAdmin(user)) {
+      s = "Talent Catalog";
     } else {
       const name = useUsername ? user.username : user.firstName + ' ' + user.lastName;
       let extras: string;
-      if (this.isSystemAdmin(user)) {
-        extras = "Talent Catalog"
-      } else if (this.isCandidate(user)) {
+      if (this.isCandidate(user)) {
         extras = user.partner?.abbreviation + " candidate"
       } else {
         extras = user.partner?.abbreviation + (showRole ? " " + user.role : "")
@@ -59,8 +59,8 @@ export class UserService {
     return user.role === "user";
   }
 
-  static isSystemAdmin(user: User): boolean {
-    return user.role === "systemadmin";
+  static isTalentCatalogSystemAdmin(user: User): boolean {
+    return user.firstName === "System" && user.lastName === "Admin" && user.role === "systemadmin";
   }
 
   search(request: SearchUserRequest): Observable<User[]> {
