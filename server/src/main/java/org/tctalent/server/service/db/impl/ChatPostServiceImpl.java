@@ -36,13 +36,13 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -52,7 +52,6 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 @RequiredArgsConstructor
 public class ChatPostServiceImpl implements ChatPostService {
 
-    private final UserService userService;
     private final ChatPostRepository chatPostRepository;
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
@@ -63,12 +62,12 @@ public class ChatPostServiceImpl implements ChatPostService {
     private static final Logger log = LoggerFactory.getLogger(ChatPostServiceImpl.class);
 
     @Override
-    public ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat) {
+    public ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat, User user) {
         ChatPost chatPost = new ChatPost();
         chatPost.setJobChat(jobChat);
         chatPost.setContent(post.getContent());
         chatPost.setCreatedDate(OffsetDateTime.now());
-        chatPost.setCreatedBy(userService.getLoggedInUser());
+        chatPost.setCreatedBy(user);
 
         chatPost = chatPostRepository.save(chatPost);
         return chatPost;
