@@ -25,6 +25,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -40,7 +41,14 @@ public interface ChatPostService {
      */
     String CHAT_PUBLISH_ROOT = TOPIC_PREFIX + "/chat";
 
-    ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat);
+    /**
+     * Creates a new post on the given chat
+     * @param post Content of post
+     * @param jobChat Chat where posted
+     * @param user the user associated with the post - normally the person who made the post
+     * @return The chat post.
+     */
+    ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat, User user);
 
     /**
      * Get the ChatPost with the given id.
