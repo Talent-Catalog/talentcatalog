@@ -159,23 +159,25 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             //Create the chats
             JobChat prospectChat = jobChatService.createCandidateProspectChat(opp.getCandidate());
             jobChatService.createCandidateRecruitingChat(opp.getCandidate(), opp.getJobOpp());
-            
+
             //Automate post to notify that a candidate has been added to a submission list.
             //Create the automated post
-            String candidateName = opp.getCandidate().getUser().getFirstName() + " " 
+            String candidateName = opp.getCandidate().getUser().getFirstName() + " "
                 + opp.getCandidate().getUser().getLastName();
             Post autoPostAddedToSubList = new Post();
-            autoPostAddedToSubList.setContent("The candidate " + candidateName + 
+            autoPostAddedToSubList.setContent("The candidate " + candidateName +
                 " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
             // Create the chat post
-            ChatPost prospectChatPost = chatPostServiceImpl.createPost(autoPostAddedToSubList, prospectChat);
+            ChatPost prospectChatPost = chatPostServiceImpl.createPost(
+                autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
             //publish chat post
             chatPostServiceImpl.publishChatPost(prospectChatPost);
             //Create another auto post to the job creator source partner chat.
-            JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(), 
+            JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
                 candidate.getUser().getPartner(), null);
             // Create the chat post
-            ChatPost jcspChatPost = chatPostServiceImpl.createPost(autoPostAddedToSubList, jcspChat);
+            ChatPost jcspChatPost = chatPostServiceImpl.createPost(
+                autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
             //publish chat post
             chatPostServiceImpl.publishChatPost(jcspChatPost);
         }
