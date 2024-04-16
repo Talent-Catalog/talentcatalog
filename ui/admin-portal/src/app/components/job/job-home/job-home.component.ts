@@ -47,7 +47,7 @@ export class JobHomeComponent extends HomeComponent {
     super(localStorageService, savedSearchService, authorizationService, authenticationService);
     this.lastTabKey = 'JobsHomeLastTab';
     this.lastCategoryTabKey = 'JobsHomeLastCategoryTab';
-    this.defaultTabId = 'LiveJobs';
+    this.defaultTabId = 'StarredJobs';
   }
 
   ngOnInit() {
