@@ -311,10 +311,7 @@ public class JobServiceImpl implements JobService {
         }
 
         //Create submission list
-        UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
-        savedListInfoRequest.setRegisteredJob(true);
-        savedListInfoRequest.setSfJobOpp(job);
-        SavedList submissionList = savedListService.createSavedList(savedListInfoRequest);
+        final SavedList submissionList = createSubmissionListForJob(job);
         job.setSubmissionList(submissionList);
 
         String exclusionListName = submissionList.getName() + EXCLUSION_LIST_SUFFIX;
@@ -345,6 +342,14 @@ public class JobServiceImpl implements JobService {
         }
 
         return job;
+    }
+
+    private SavedList createSubmissionListForJob(SalesforceJobOpp job) {
+        UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
+        savedListInfoRequest.setRegisteredJob(true);
+        savedListInfoRequest.setSfJobOpp(job);
+        SavedList submissionList = savedListService.createSavedList(savedListInfoRequest);
+        return submissionList;
     }
 
     @Override
@@ -804,7 +809,8 @@ public class JobServiceImpl implements JobService {
         child.setExclusionList(job.getExclusionList());
         child.setJobSummary(job.getJobSummary());
 
-        //todo Generate new name from original name
+        //Generate new name from original name
+        child.setName(generateChildName(job));
 
         child.setOwnerId(job.getOwnerId());
         child.setPublishedBy(job.getPublishedBy());
@@ -817,9 +823,6 @@ public class JobServiceImpl implements JobService {
         //Do not copy starring users
         //Do not copy submissionDueDate - typically not used for evergreen jobs
 
-        //TODO JC Need to create new submission list
-        //TODO JC I don't see where submission list gets created in Employer Access new job
-
         //Do not use suggested list
 
         child.setSuggestedSearches(job.getSuggestedSearches());
@@ -830,7 +833,19 @@ public class JobServiceImpl implements JobService {
         child.setOpportunityScore(job.getOpportunityScore());
         child.setEmployerDescription(job.getEmployerDescription());
 
+        //Save child job before setting submission list on it
+        child = salesforceJobOppRepository.save(child);
+
+        //Child has its own new submission list
+        final SavedList submissionList = createSubmissionListForJob(child);
+        child.setSubmissionList(submissionList);
         return salesforceJobOppRepository.save(child);
+    }
+
+    private String generateChildName(SalesforceJobOpp job) {
+        String baseName = job.getName();
+        String name = baseName + "Fred"; //TODO JC
+        return name;
     }
 
     @NonNull
