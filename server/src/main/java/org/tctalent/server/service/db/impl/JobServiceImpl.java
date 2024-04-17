@@ -360,7 +360,7 @@ public class JobServiceImpl implements JobService {
 
         //Check if we already have a job for this Salesforce job opp.
         String sfId = request.getSfId();
-        SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
+        SalesforceJobOpp job = sfId == null ? null : salesforceJobOppService.getJobOppById(sfId);
         boolean create = job == null;
         if (create) {
             //No job exists, create one
@@ -716,14 +716,9 @@ public class JobServiceImpl implements JobService {
     }
 
     private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
-        final JobOpportunityStage stage = request.getStage();
-        if (stage != null) {
-            job.setStage(stage);
-
-            //Do automation logic
-            if (stage.isClosed()) {
-                closeUnclosedCandidateOppsForJob(job, stage);
-            }
+        final Boolean evergreen = request.getEvergreen();
+        if (evergreen != null) {
+            job.setEvergreen(evergreen);
         }
 
         final String nextStep = request.getNextStep();
@@ -754,6 +749,88 @@ public class JobServiceImpl implements JobService {
         if (submissionDueDate != null) {
             job.setSubmissionDueDate(submissionDueDate);
         }
+
+        //Do stage change last - changing stage may spawn a new evergreen opp - and we
+        //want to copy other updated changed fields.
+        final JobOpportunityStage stage = request.getStage();
+        if (stage != null) {
+            changeJobStage(job, stage);
+        }
+    }
+
+    /**
+     * All changes to a job stage should go through here.
+     * <p/>
+     * This allows us to kick off automated actions that are triggered by a stage change.
+     * @param job Job who stage is changing
+     * @param stage New stage
+     */
+    private void changeJobStage(SalesforceJobOpp job, JobOpportunityStage stage) {
+        job.setStage(stage);
+
+        //Do automation logic
+
+        if (job.isEvergreen()) {
+            //Once an evergreen job enters the Recruitment stage, it spawns another copy of the
+            //job in CandidateSearch.
+            if (job.getEvergreenChild() == null) {
+                if (stage.compareTo(JobOpportunityStage.recruitmentProcess) >= 0) {
+                    SalesforceJobOpp evergreenChild = spawnEvergreenChildOpp(job);
+                    job.setEvergreenChild(evergreenChild);
+                }
+            }
+        }
+
+        if (stage.isClosed()) {
+            closeUnclosedCandidateOppsForJob(job, stage);
+        }
+    }
+
+    private SalesforceJobOpp spawnEvergreenChildOpp(SalesforceJobOpp job) {
+        SalesforceJobOpp child = new SalesforceJobOpp();
+        child.setAccountId(job.getAccountId());
+
+        //Do not copy candidate opportunities
+
+        child.setContactUser(job.getContactUser());
+        child.setCountry(job.getCountry());
+        child.setDescription(job.getDescription());
+        child.setEmployer(job.getEmployer());
+        child.setEmployerEntity(job.getEmployerEntity());
+        child.setEvergreen(job.isEvergreen());
+
+        //Do not copy evergreenChild
+
+        child.setExclusionList(job.getExclusionList());
+        child.setJobSummary(job.getJobSummary());
+
+        //todo Generate new name from original name
+
+        child.setOwnerId(job.getOwnerId());
+        child.setPublishedBy(job.getPublishedBy());
+        child.setPublishedDate(job.getPublishedDate());
+        child.setJobCreator(job.getJobCreator());
+
+        //Do not copy stage. Child starts in candidateSearch
+        child.setStage(JobOpportunityStage.candidateSearch);
+
+        //Do not copy starring users
+        //Do not copy submissionDueDate - typically not used for evergreen jobs
+
+        //TODO JC Need to create new submission list
+        //TODO JC I don't see where submission list gets created in Employer Access new job
+
+        //Do not use suggested list
+
+        child.setSuggestedSearches(job.getSuggestedSearches());
+        child.setJobOppIntake(job.getJobOppIntake());
+        child.setHiringCommitment(job.getHiringCommitment());
+        child.setEmployerWebsite(job.getEmployerWebsite());
+        child.setEmployerHiredInternationally(job.getEmployerHiredInternationally());
+        child.setOpportunityScore(job.getOpportunityScore());
+        child.setEmployerDescription(job.getEmployerDescription());
+
+        return salesforceJobOppRepository.save(child);
     }
 
     @NonNull

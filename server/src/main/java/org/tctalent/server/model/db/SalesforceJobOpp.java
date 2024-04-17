@@ -39,7 +39,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This is a copy of an Employer Job Opportunity on Salesforce
+ * This represents an Employer Job Opportunity.
+ * <p/>
+ * They are backed by equivalent Employer Job Opportunity objects on Salesforce.
  * <p/>
  * Job Opps are intended to only be used for the monitoring open job opps.
  * They are not intended to completely duplicate what is on SF - eg history
@@ -111,6 +113,9 @@ public class SalesforceJobOpp extends AbstractOpportunity {
      */
     @Transient //todo Make transient until we have a field in the DB for it.
     private boolean evergreen;
+
+    @Transient //todo Make transient until we have a field in the DB for it.
+    private SalesforceJobOpp evergreenChild;
 
     /**
      * Optional exclusion list associated with job.
