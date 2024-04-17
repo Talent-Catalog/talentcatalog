@@ -28,7 +28,7 @@ import org.tctalent.server.model.db.SavedList;
  * "orphanRemoval"
  * but not sure how well that will work given that ExportColumns table is used for both saved lists
  * and saved searches - so those ids are optional (if saved search export columns are being
- * specified, then savedSearchId will be specified by savedListId won't).
+ * specified, then savedSearchId will be specified but savedListId won't).
  * Simpler and more straightforward to delete the export columns explicitly by SavedList id.
  * <p/>
  * So before each setExportColumns call, you should use this service to clearExportColumns for
