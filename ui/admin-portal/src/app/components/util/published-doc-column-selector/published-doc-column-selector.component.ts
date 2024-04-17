@@ -29,7 +29,10 @@ export class PublishedDocColumnSelectorComponent implements OnInit {
     private activeModal: NgbActiveModal,
     config: NgbDropdownConfig) {
     config.placement = 'bottom-left';
-    dragulaService.createGroup("COLUMNS", {removeOnSpill: true})
+    let group = dragulaService.find(this.dragulaGroupName);
+    if (!group) {
+      dragulaService.createGroup(this.dragulaGroupName, {removeOnSpill: true})
+    }
   }
 
   ngOnInit(): void {
