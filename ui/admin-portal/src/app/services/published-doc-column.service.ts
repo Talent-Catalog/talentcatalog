@@ -88,6 +88,7 @@ export class PublishedDocColumnService {
       .width = PublishedDocColumnWidth.Narrow
 
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
+    this.addColumn("partner", "Partner", new PublishedDocFieldSource("user.partner.abbreviation"));
 
     this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"))
     .width = PublishedDocColumnWidth.Narrow;
@@ -105,6 +106,7 @@ export class PublishedDocColumnService {
     this.addColumn("state", "State", new PublishedDocFieldSource("state"));
     this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
     this.addColumn("nationality", "Nationality", new PublishedDocFieldSource("nationality.name"));
+    this.addColumn("dependants", "Dependants", new PublishedDocFieldSource("numberDependants"));
 
     // Summary fields
     this.addColumn("occupations", "Occupations", new PublishedDocFieldSource("occupationSummary"));
