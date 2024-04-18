@@ -19,8 +19,8 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="unhcrRegistered">
-      Are you registered with UNHCR?
+    <label class="form-label" for="unhcrStatus">
+      What is your registration status with UNHCR?
     </label>
     <div class="float-end">
       <app-autosave-status
@@ -28,21 +28,13 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="unhcrRegistered" [formControlName]="'unhcrRegistered'" (clear)="setNoResponse('unhcrRegistered')"
-               [items]="unhcrRegisteredOptions" [clearOnBackspace]="false"
+    <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'" (clear)="setNoResponse('unhcrStatus')"
+               [items]="unhcrStatusOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div *ngIf="showAll">
-    <div *ngIf="unhcrRegistered == 'Yes'">
-      <div class="mb-3">
-        <label class="form-label" for="unhcrStatus">
-          What is your registration status with UNHCR?
-        </label>
-        <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'" (clear)="setNoResponse('unhcrStatus')"
-                   [items]="unhcrStatusOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-      </div>
+    <div *ngIf="isRegistered">
       <div class="mb-3">
         <label class="form-label" for="unhcrNumber">What is your UNHCR ID number?</label>
         <input type="text" class="form-control" id="unhcrNumber" [formControlName]="'unhcrNumber'">
@@ -61,7 +53,7 @@
       </div>
     </div>
 
-    <div *ngIf="unhcrRegistered == 'No'">
+    <div *ngIf="isNotRegistered">
       <div class="mb-3">
         <label class="form-label" for="unhcrNotRegStatus">
           What best describes your status not being registered?
