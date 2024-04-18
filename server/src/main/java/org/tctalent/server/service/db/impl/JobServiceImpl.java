@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import lombok.AllArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
+@AllArgsConstructor
 public class JobServiceImpl implements JobService {
 
     /**
@@ -128,6 +130,7 @@ public class JobServiceImpl implements JobService {
     private final GoogleDriveConfig googleDriveConfig;
 
     private final JobChatService jobChatService;
+    private final JobServiceHelper jobServiceHelper;
     private final PartnerService partnerService;
     private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceConfig salesforceConfig;
@@ -139,36 +142,6 @@ public class JobServiceImpl implements JobService {
     private final JobOppIntakeService jobOppIntakeService;
 
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
-
-    public JobServiceImpl(
-            AuthService authService, CandidateOpportunityService candidateOpportunityService,
-            CandidateSavedListService candidateSavedListService, EmailHelper emailHelper,
-        EmployerService employerService,
-        UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
-        JobChatService jobChatService, PartnerService partnerService, SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
-            SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
-            SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService) {
-        this.authService = authService;
-        this.candidateOpportunityService = candidateOpportunityService;
-        this.candidateSavedListService = candidateSavedListService;
-        this.emailHelper = emailHelper;
-        this.employerService = employerService;
-        this.userService = userService;
-        this.fileSystemService = fileSystemService;
-        this.googleDriveConfig = googleDriveConfig;
-        this.jobChatService = jobChatService;
-        this.partnerService = partnerService;
-        this.salesforceBridgeService = salesforceBridgeService;
-        this.salesforceConfig = salesforceConfig;
-        this.salesforceService = salesforceService;
-        this.salesforceJobOppRepository = salesforceJobOppRepository;
-        this.salesforceJobOppService = salesforceJobOppService;
-        this.savedListService = savedListService;
-        this.savedSearchService = savedSearchService;
-        this.jobOppIntakeService = jobOppIntakeService;
-
-        initialiseClosingCandidateStageLogic();
-    }
 
     /**
      * Updates the closing logic to say tha when a job is closed in the given stage, then any
@@ -810,7 +783,7 @@ public class JobServiceImpl implements JobService {
         child.setJobSummary(job.getJobSummary());
 
         //Generate new name from original name
-        child.setName(generateChildName(job));
+        child.setName(generateChildName(job.getName()));
 
         child.setOwnerId(job.getOwnerId());
         child.setPublishedBy(job.getPublishedBy());
@@ -842,10 +815,8 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.save(child);
     }
 
-    private String generateChildName(SalesforceJobOpp job) {
-        String baseName = job.getName();
-        String name = baseName + "Fred"; //TODO JC
-        return name;
+    String generateChildName(String parentJobName) {
+        return jobServiceHelper.generateNextEvergreenJobName(parentJobName);
     }
 
     @NonNull
