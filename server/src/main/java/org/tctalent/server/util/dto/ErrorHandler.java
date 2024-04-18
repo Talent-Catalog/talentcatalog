@@ -27,14 +27,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.tctalent.server.exception.AccountLockedException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.service.db.email.EmailHelper;
-
-import javax.security.auth.login.AccountLockedException;
 
 
 @ControllerAdvice

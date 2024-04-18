@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.security.auth.login.AccountLockedException;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -51,6 +50,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
+import org.tctalent.server.exception.AccountLockedException;
 import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.exception.InvalidCredentialsException;
@@ -469,7 +469,7 @@ public class UserServiceImpl implements UserService {
             // map spring exception to a service exception for better handling
             throw new InvalidCredentialsException("Invalid credentials for user");
         } catch (LockedException e) {
-            throw new AccountLockedException("Account locked");
+            throw new AccountLockedException();
         } catch (DisabledException e) {
             throw new UserDeactivatedException();
         } catch (CredentialsExpiredException e) {

@@ -17,7 +17,6 @@
 package org.tctalent.server.api.portal;
 
 import java.util.Map;
-import javax.security.auth.login.AccountLockedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.configuration.TranslationConfig;
+import org.tctalent.server.exception.AccountLockedException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidPasswordFormatException;
 import org.tctalent.server.exception.PasswordExpiredException;
