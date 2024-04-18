@@ -22,13 +22,16 @@ const { SpecReporter } = require('jasmine-spec-reporter');
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
-    './src/**/*.e2e-spec.ts'
+    './src/components/login/login.e2e-spec.ts',
+    './src/components/job/jobs/jobs.e2e-spec.ts',
+    './src/components/job/jobs/jobhome.e2e.spec.ts'
   ],
+
   capabilities: {
     'browserName': 'chrome'
   },
   directConnect: true,
-  baseUrl: 'http://localhost:4200/',
+  baseUrl: 'http://localhost:4201/',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
@@ -36,6 +39,7 @@ exports.config = {
     print: function() {}
   },
   onPrepare() {
+     browser.waitForAngularEnabled(false);
     require('ts-node').register({
       project: require('path').join(__dirname, './tsconfig.e2e.json')
     });
