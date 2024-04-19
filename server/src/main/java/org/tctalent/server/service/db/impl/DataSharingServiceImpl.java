@@ -107,8 +107,8 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
-    @Scheduled(cron = "0 30 23 * * ?", zone = "GMT")
-    @SchedulerLock(name = "DataSharingService_dbCopy", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+//    @Scheduled(cron = "0 30 23 * * ?", zone = "GMT")
+//    @SchedulerLock(name = "DataSharingService_dbCopy", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void dbCopy() throws Exception {
 //        reportError("dbCopy has been started. Pull this out once emails are working", null);
         performCopies();

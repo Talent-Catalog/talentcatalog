@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.repository.db;
+package org.tctalent.server.util.help;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.tctalent.server.model.db.ExportColumn;
-import org.tctalent.server.model.db.SavedList;
+class HelpLinkGeneratorFromOppStagesTest {
 
-public interface ExportColumnRepository
-        extends JpaRepository<ExportColumn, Long> {
-  void deleteBySavedList(SavedList savedList);
+    /**
+     * Not really a test - but just uncomment @Test annotation to run this to generate the
+     * HelpLink DB Insert statements for all job and candidate opp stages.
+     */
+//    @Test
+    void generateStandardStageBasedHelp() {
+        HelpLinkGeneratorFromOppStages generator = new HelpLinkGeneratorFromOppStages();
+        generator.generateHelpLinks();
+    }
 }

@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/index';
+import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
@@ -40,6 +40,8 @@ export class UserService {
     let s: string;
     if (user == null) {
       s = "";
+    } else if (this.isTalentCatalogSystemAdmin(user)) {
+      s = "Talent Catalog";
     } else {
       const name = useUsername ? user.username : user.firstName + ' ' + user.lastName;
       let extras: string;
@@ -55,6 +57,10 @@ export class UserService {
 
   static isCandidate(user: User): boolean {
     return user.role === "user";
+  }
+
+  static isTalentCatalogSystemAdmin(user: User): boolean {
+    return user.firstName === "System" && user.lastName === "Admin" && user.role === "systemadmin";
   }
 
   search(request: SearchUserRequest): Observable<User[]> {

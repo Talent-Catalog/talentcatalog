@@ -14,17 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.util.help;
 
-class JobOpportunityStageTest {
+import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.JobOpportunityStage;
 
+/**
+ * Generates HelpLinks (as database insert commands) from our opportunity stages
+ *
+ * @author John Cameron
+ */
+public class HelpLinkGeneratorFromOppStages {
 
     /**
-     * Not really a test - but just run this to generate the DB Insert statements for all
-     * stages.
+     * Sends database insert commands for help links to standard output.
      */
-//    @Test
-    void generateDBInserts() {
+    public void generateHelpLinks() {
         final JobOpportunityStage[] jobValues = JobOpportunityStage.values();
         for (JobOpportunityStage value : jobValues) {
             String s = generateJobInsertStatement(value);
@@ -49,11 +54,11 @@ class JobOpportunityStageTest {
         String sfName = value.getSalesforceStageName();
         return generateInsertStatement(name, sfName, true);
     }
-    
+
     private String generateInsertStatement(String name, String sfName, boolean job) {
 
-        String sb = "INSERT INTO help_link(label," 
-            + (job ? "job_stage" : "case_stage") 
+        String sb = "INSERT INTO help_link(label,"
+            + (job ? "job_stage" : "case_stage")
             + ",link) VALUES ("
             + "'"
             + sfName
@@ -68,7 +73,7 @@ class JobOpportunityStageTest {
             + "#"
             + convertStageNameToLinkAnchor(sfName)
             + "');";
-      return sb;  
+        return sb;
     }
 
     private String convertStageNameToLinkAnchor(String sfName) {
