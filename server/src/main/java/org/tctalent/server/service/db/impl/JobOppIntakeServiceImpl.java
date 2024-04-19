@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.repository.db.JobOppIntakeRepository;
 import org.tctalent.server.request.job.JobIntakeData;
@@ -45,12 +46,18 @@ public class JobOppIntakeServiceImpl implements JobOppIntakeService {
     }
 
     @Override
-    public JobOppIntake create(JobIntakeData data) throws NoSuchObjectException {
+    public JobOppIntake create(JobIntakeData data) {
         JobOppIntake joi = new JobOppIntake();
 
         populateIntakeData(joi, data);
 
         return jobOppIntakeRepository.save(joi);
+    }
+
+    @Override
+    public JobOppIntake create(JobOppIntake intake) {
+        //TODO JC create not implemented in JobOppIntakeServiceImpl
+        throw new NotImplementedException("JobOppIntakeServiceImpl", "create");
     }
 
     @Override

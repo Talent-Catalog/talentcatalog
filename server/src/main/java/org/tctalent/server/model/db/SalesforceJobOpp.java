@@ -75,7 +75,7 @@ public class SalesforceJobOpp extends AbstractOpportunity {
      * TC user responsible for this job - will normally be "destination" staff located in the same
      * region as the {@link #employer}
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_user_id")
     private User contactUser;
 
@@ -164,7 +164,7 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     /**
      * Partner responsible for this job.
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_partner_id")
     private PartnerImpl jobCreator;
 

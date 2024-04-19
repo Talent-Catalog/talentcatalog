@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -165,6 +166,7 @@ public class JobServiceImpl implements JobService {
 
     }
 
+    //TODO JC This used to be called from constructor - needs to be called elsewhere
     /**
      * Constructs the closing logic in {@link #closingStageLogic}.
      */
@@ -363,7 +365,12 @@ public class JobServiceImpl implements JobService {
         job = salesforceJobOppRepository.save(job);
 
         //Update SF - set sfId.
-        sfId = salesforceService.createOrUpdateJobOpportunity(job);
+        return updateJobOnSalesforce(job);
+    }
+
+    private SalesforceJobOpp updateJobOnSalesforce(SalesforceJobOpp job) {
+        //Update SF - set sfId.
+        String sfId = salesforceService.createOrUpdateJobOpportunity(job);
         job.setSfId(sfId);
 
         return salesforceJobOppRepository.save(job);
@@ -748,16 +755,18 @@ public class JobServiceImpl implements JobService {
 
         //Do automation logic
 
-        if (job.isEvergreen()) {
-            //Once an evergreen job enters the Recruitment stage, it spawns another copy of the
-            //job in CandidateSearch.
-            if (job.getEvergreenChild() == null) {
+
+//todo debug        if (job.isEvergreen()) {
+//            //Once an evergreen job enters the Recruitment stage, it spawns another copy of the
+//            //job in CandidateSearch.
+//            if (job.getEvergreenChild() == null) {
                 if (stage.compareTo(JobOpportunityStage.recruitmentProcess) >= 0) {
                     SalesforceJobOpp evergreenChild = spawnEvergreenChildOpp(job);
                     job.setEvergreenChild(evergreenChild);
+                    //TODO JC Need to save to SF?
                 }
-            }
-        }
+//            }
+//        }
 
         if (stage.isClosed()) {
             closeUnclosedCandidateOppsForJob(job, stage);
@@ -798,8 +807,12 @@ public class JobServiceImpl implements JobService {
 
         //Do not use suggested list
 
-        child.setSuggestedSearches(job.getSuggestedSearches());
-        child.setJobOppIntake(job.getJobOppIntake());
+        //Copy across suggested searches
+        child.setSuggestedSearches(new HashSet<>(job.getSuggestedSearches()));
+
+        //Need to duplicate jobOppIntake - 1-1 can't be shared, may change
+        child.setJobOppIntake(jobOppIntakeService.create(job.getJobOppIntake()));
+
         child.setHiringCommitment(job.getHiringCommitment());
         child.setEmployerWebsite(job.getEmployerWebsite());
         child.setEmployerHiredInternationally(job.getEmployerHiredInternationally());
@@ -812,7 +825,8 @@ public class JobServiceImpl implements JobService {
         //Child has its own new submission list
         final SavedList submissionList = createSubmissionListForJob(child);
         child.setSubmissionList(submissionList);
-        return salesforceJobOppRepository.save(child);
+
+        return updateJobOnSalesforce(child);
     }
 
     String generateChildName(String parentJobName) {
