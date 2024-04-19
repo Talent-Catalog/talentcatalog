@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * TODO JC Doc
+ * Detail about a job.
  *
  * @author John Cameron
  */
