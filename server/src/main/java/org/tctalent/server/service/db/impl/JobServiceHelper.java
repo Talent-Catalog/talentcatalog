@@ -26,6 +26,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class JobServiceHelper {
     final private static String REVISION_PREFIX = "-R";
+
+    /**
+     * Given an evergreen job name, generate the name of the child job.
+     * @param currentJobName Evergreen job name
+     * @return Child name
+     */
     public String generateNextEvergreenJobName(String currentJobName) {
         String name;
         int revisionNumber = extractRevisionNumber(currentJobName);
@@ -37,14 +43,19 @@ public class JobServiceHelper {
        return name;
     }
 
-    private int extractRevisionNumber(String currentJobName) {
-        int startRevision = findRevisionStart(currentJobName);
+    /**
+     * Searches for evergreen revision number in given job name
+     * @param jobName Job name
+     * @return 0 if no revision text was found, otherwise returns revision number
+     */
+    private int extractRevisionNumber(String jobName) {
+        int startRevision = findRevisionStart(jobName);
         int revisionNumber;
         if (startRevision < 0) {
             revisionNumber = 0;
         } else {
             try {
-                String revision = currentJobName.substring(
+                String revision = jobName.substring(
                     startRevision + REVISION_PREFIX.length());
                 revisionNumber = Integer.parseInt(revision);
             } catch (Exception ex) {
@@ -54,16 +65,28 @@ public class JobServiceHelper {
         return revisionNumber;
     }
 
-    private String stripRevision(String currentJobName) {
-        String stripped = currentJobName;
-        int startRevision = findRevisionStart(currentJobName);
+    /**
+     * Returns an evergreen job name stripped of its revision suffix (if any).
+     * @param jobName Job name
+     * @return Job name minus any revision suffix
+     */
+    private String stripRevision(String jobName) {
+        String stripped = jobName;
+        int startRevision = findRevisionStart(jobName);
         if (startRevision >= 0) {
-            stripped = currentJobName.substring(0, startRevision);
+            stripped = jobName.substring(0, startRevision);
         }
         return stripped;
     }
 
+    /**
+     * Searches for valid evergreen revision present in given job name
+     * @param jobName Job name
+     * @return -1 if no revision text was found, otherwise returns start of revision
+     */
     private int findRevisionStart(String jobName) {
+        //Revision is located at end of name - starting with the revision prefix, followed by a
+        //positive number
         int startRevision = jobName.lastIndexOf(REVISION_PREFIX);
         if (startRevision >= 0) {
             String revision = jobName.substring(startRevision);
@@ -74,7 +97,7 @@ public class JobServiceHelper {
             } catch (Exception ex) {
                 revisionNumber = 0;
             }
-            if (revisionNumber == 0) {
+            if (revisionNumber <= 0) {
                 startRevision = -1;
             }
         }

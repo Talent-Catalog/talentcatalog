@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +34,7 @@ class JobServiceHelperTest {
 
     @Test
     void firstEvergreenChildName() {
+        //Original name has no revision on it
         String childName = helper.generateNextEvergreenJobName(baseJobName);
         assertEquals(baseJobName + "-R1", childName);
     }
@@ -45,6 +46,7 @@ class JobServiceHelperTest {
         String childName = helper.generateNextEvergreenJobName(jobName);
         assertEquals(baseJobName + "-R" + (revision+1), childName);
 
+        //Test multi digit revisions
         revision = 100;
         jobName = baseJobName + "-R" + revision;
         childName = helper.generateNextEvergreenJobName(jobName);
@@ -53,18 +55,33 @@ class JobServiceHelperTest {
 
     @Test
     void ignoreInvalidRevisions() {
+        //Ignore non numeric revisions
         String jobName = baseJobName + "-Rx";
         String childName = helper.generateNextEvergreenJobName(jobName);
         assertEquals(jobName + "-R1", childName);
 
+        //Revision number can't be 0
+        jobName = baseJobName + "-R0";
+        childName = helper.generateNextEvergreenJobName(jobName);
+        assertEquals(jobName + "-R1", childName);
+
+        //Revision number must be > 0
+        jobName = baseJobName + "-R-1";
+        childName = helper.generateNextEvergreenJobName(jobName);
+        assertEquals(jobName + "-R1", childName);
+
+        //Ignore valid revision at start of name
         jobName = "-R9 " + baseJobName;
         childName = helper.generateNextEvergreenJobName(jobName);
         assertEquals(jobName + "-R1", childName);
 
+        //Ignore valid revisions in the middle of the name
         baseJobName = "Fred -R10-R9";
         int revision = 3;
         jobName = baseJobName + "-R" + revision;
         childName = helper.generateNextEvergreenJobName(jobName);
         assertEquals(baseJobName + "-R" + (revision+1), childName);
+
+
     }
 }
