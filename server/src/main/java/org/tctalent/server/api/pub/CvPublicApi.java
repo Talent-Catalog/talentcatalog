@@ -71,7 +71,7 @@ public class CvPublicApi {
         }
     }
 
-    private class CvBuilder {
+    private static class CvBuilder {
         private final Candidate candidate;
         private final HashSet<Long> includeIds;
         private final DtoCollectionItemFilter<CandidateOccupation> candidateOccupationFilter;

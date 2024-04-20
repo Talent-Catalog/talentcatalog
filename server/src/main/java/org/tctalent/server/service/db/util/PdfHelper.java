@@ -54,7 +54,7 @@ public class PdfHelper {
     @Value("${server.url}")
     private String serverUrl;
 
-    private static final String UTF_8 = "UTF-8";
+//    private static final String UTF_8 = "UTF-8";
     private final TemplateEngine pdfTemplateEngine;
 
     @Autowired
@@ -95,13 +95,13 @@ public class PdfHelper {
 
     private static String convertToXhtml(String html) throws UnsupportedEncodingException {
         Tidy tidy = new Tidy();
-        tidy.setInputEncoding(UTF_8);
-        tidy.setOutputEncoding(UTF_8);
+        tidy.setInputEncoding(StandardCharsets.UTF_8.name());
+        tidy.setOutputEncoding(StandardCharsets.UTF_8.name());
         tidy.setXHTML(true);
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(UTF_8));
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8.name()));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         tidy.parseDOM(inputStream, outputStream);
-        return outputStream.toString(UTF_8);
+        return outputStream.toString(StandardCharsets.UTF_8.name());
     }
 
 }

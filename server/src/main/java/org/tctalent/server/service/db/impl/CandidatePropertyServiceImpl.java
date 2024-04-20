@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.CandidatePropertyKey;
-import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.task.TaskAssignment;
 import org.tctalent.server.repository.db.CandidatePropertyRepository;
 import org.tctalent.server.service.db.CandidatePropertyService;
@@ -55,16 +54,12 @@ public class CandidatePropertyServiceImpl implements CandidatePropertyService {
         @NonNull String name, @Nullable String value, @Nullable TaskAssignment taskAssignment) {
 
         CandidateProperty property = findProperty(candidate, name);
-        if (property != null) {
-            property.setValue(value);
-            property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
-        } else {
+        if (property == null) {
             property = new CandidateProperty();
             property.setCandidateId(candidate.getId());
             property.setName(name);
-            property.setValue(value);
-            property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
         }
+
         return candidatePropertyRepository.save(property);
     }
 

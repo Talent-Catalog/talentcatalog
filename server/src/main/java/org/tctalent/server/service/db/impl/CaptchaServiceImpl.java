@@ -56,6 +56,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         attemptsCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .build(new CacheLoader<String, Integer>() {
+            @NotNull
             @Override
             public Integer load(final @NonNull String key) {
                 return 0;

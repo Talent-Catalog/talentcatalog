@@ -37,7 +37,7 @@ public class GetCandidateSavedListsQuery implements Specification<SavedList> {
     private final long candidateId;
 
     @Override
-    public Predicate toPredicate(Root<SavedList> savedList,
+    public Predicate toPredicate(@NotNull Root<SavedList> savedList,
                                  CriteriaQuery<?> query, CriteriaBuilder cb) {
 
         //Now construct the actual query

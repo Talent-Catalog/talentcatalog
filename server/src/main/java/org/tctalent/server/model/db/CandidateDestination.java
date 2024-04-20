@@ -26,6 +26,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 
@@ -60,7 +61,7 @@ public class CandidateDestination extends AbstractDomainObject<Long>
     private String notes;
 
     @Override
-    public int compareTo(CandidateDestination o) {
+    public int compareTo(@NotNull CandidateDestination o) {
         if (country == null) {
             return o.country == null ? 0 : -1;
         }

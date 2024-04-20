@@ -68,13 +68,14 @@ public class SystemUploadApi {
         Encoder encoder = Base64.getEncoder();
 
         StringBuilder policyDocument = new StringBuilder();
-        policyDocument.append("{\"expiration\": \"" + getExpirationTimestamp() + "Z\",");
+        policyDocument.append("{\"expiration\": \"").append(getExpirationTimestamp())
+            .append("Z\",");
         policyDocument.append(" \"conditions\": [ ");
-        policyDocument.append("      [\"starts-with\", \"$key\", \"" + s3Key + "\"],");
+        policyDocument.append("      [\"starts-with\", \"$key\", \"").append(s3Key).append("\"],");
         policyDocument.append("      {\"acl\": \"private\"},");
-        policyDocument.append("      {\"bucket\": \"" + bucket + "\"},");
+        policyDocument.append("      {\"bucket\": \"").append(bucket).append("\"},");
         policyDocument.append("      [\"starts-with\", \"$Content-Type\", \"\"],");
-        policyDocument.append("      [\"content-length-range\", 0, " + maxSize + "]");
+        policyDocument.append("      [\"content-length-range\", 0, ").append(maxSize).append("]");
         policyDocument.append("   ]");
         policyDocument.append("}");
 
@@ -96,7 +97,7 @@ public class SystemUploadApi {
     }
 
     // --------------------------
-    final class S3UploadData {
+    final static class S3UploadData {
         private String policy;
         private String signature;
         private String key;

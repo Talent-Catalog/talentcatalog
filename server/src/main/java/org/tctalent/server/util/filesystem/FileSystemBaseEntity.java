@@ -33,7 +33,7 @@ import lombok.ToString;
 @ToString
 public abstract class FileSystemBaseEntity {
 
-    public FileSystemBaseEntity(String url) {
+    public FileSystemBaseEntity(@NotNull String url) {
         this.url = url;
     }
 

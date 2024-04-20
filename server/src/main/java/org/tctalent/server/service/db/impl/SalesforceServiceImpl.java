@@ -1674,7 +1674,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
-    class EmployerOppStageUpdateRequest extends LinkedHashMap<String, Object> {
+    static class EmployerOppStageUpdateRequest extends LinkedHashMap<String, Object> {
 
         public EmployerOppStageUpdateRequest(
             @Nullable JobOpportunityStage stage, @Nullable String nextStep, @Nullable LocalDate dueDate) {
@@ -1695,7 +1695,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Getter
     @Setter
     @ToString
-    class RecordTypeField {
+    static class RecordTypeField {
 
         public String Name;
 

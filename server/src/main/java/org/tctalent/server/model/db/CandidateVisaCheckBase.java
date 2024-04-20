@@ -85,7 +85,7 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateVisaCheck", cascade = CascadeType.MERGE)
     private Set<CandidateVisaJobCheck> candidateVisaJobChecks = new HashSet<>();
 
-    public int compareTo(CandidateVisaCheck o) {
+    public int compareTo(@NotNull CandidateVisaCheck o) {
         if (country == null) {
             return o.getCountry() == null ? 0 : -1;
         }

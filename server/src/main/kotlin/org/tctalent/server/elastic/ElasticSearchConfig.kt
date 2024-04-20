@@ -33,7 +33,7 @@ open class ElasticSearchConfig : ElasticsearchConfiguration() {
         val uri = URI(uris[0])
         val hostAndPort = uri.authority
 
-        log.info("Connecting to Elasticsearch at $hostAndPort");
+        log.info("Connecting to Elasticsearch at $hostAndPort")
 
         var builder = ClientConfiguration.builder()
             .connectedTo(hostAndPort)

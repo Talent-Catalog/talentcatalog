@@ -25,6 +25,10 @@ logging:
             # Enable HTTP request logging by setting this to DEBUG
             CommonsRequestLoggingFilter: INFO
         data:
+          elasticsearch:
+            deprecation:
+              level:
+                INFO
           convert:
             #Gets rid of registering converter warnings at start up
             #See https://stackoverflow.com/questions/60001034/how-to-remove-spring-data-customconversions-warnings-from-application-startup

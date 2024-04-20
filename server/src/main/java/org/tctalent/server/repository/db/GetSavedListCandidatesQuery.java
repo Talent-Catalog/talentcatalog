@@ -73,8 +73,8 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
     private final SavedListGetRequest request;
 
     @Override
-    public Predicate toPredicate(Root<Candidate> candidate,
-                                 CriteriaQuery<?> query, CriteriaBuilder cb) {
+    public Predicate toPredicate(@NotNull Root<Candidate> candidate,
+                                 CriteriaQuery<?> query, @NotNull CriteriaBuilder cb) {
 
         //Start by adding fetches and Order by
         boolean isCountQuery = query.getResultType().equals(Long.class);

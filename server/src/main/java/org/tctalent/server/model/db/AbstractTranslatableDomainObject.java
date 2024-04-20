@@ -16,6 +16,7 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import jakarta.persistence.MappedSuperclass;
@@ -53,7 +54,7 @@ public abstract class AbstractTranslatableDomainObject<IdType extends Serializab
      * anything with a name.
      */
     @Override
-    public int compareTo(AbstractTranslatableDomainObject<IdType> other) {
+    public int compareTo(@NotNull AbstractTranslatableDomainObject<IdType> other) {
         if (this.name == null) {
             return other.getName() == null ? 0 : -1;
         }

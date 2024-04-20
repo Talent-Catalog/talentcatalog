@@ -35,7 +35,7 @@ public class CreateCandidateEducationRequest {
 
     public Long getCandidateId() { return candidateId; }
 
-    public void setCandidateId(Long candidateId) { this.candidateId = candidateId; }
+    public void setCandidateId(@org.jetbrains.annotations.Nullable Long candidateId) { this.candidateId = candidateId; }
 
     public EducationType getEducationType() {
         return educationType;
