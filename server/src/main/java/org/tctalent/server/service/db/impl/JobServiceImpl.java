@@ -166,7 +166,6 @@ public class JobServiceImpl implements JobService {
 
     }
 
-    //TODO JC This used to be called from constructor - needs to be called elsewhere
     /**
      * Constructs the closing logic in {@link #closingStageLogic}.
      */
@@ -185,6 +184,17 @@ public class JobServiceImpl implements JobService {
                     addClosingLogic(JobOpportunityStage.noJobOffer,
                         s, CandidateOpportunityStage.notFitForRole);
                     addClosingLogic(JobOpportunityStage.noVisa,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.hiringCompleted,
+                        s, CandidateOpportunityStage.notFitForRole);
+
+                    //It is unlikely that there will be any candidate opps if the job stage
+                    //closes in the following stages - but if there are mark them as notFitForRole
+                    addClosingLogic(JobOpportunityStage.tooExpensive,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.tooHighWage,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.tooLong,
                         s, CandidateOpportunityStage.notFitForRole);
                 });
 
