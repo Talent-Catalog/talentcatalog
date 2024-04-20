@@ -27,7 +27,6 @@
 
 ### END John Camerons extra changes
 
-
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -352,3 +351,8 @@ terraform.rc
 
 # Exclude binary files
 server/bin/
+.idea/scala_compiler.xml
+.idea/scala_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.sdkmanrc
+/performance-tests/bin/
