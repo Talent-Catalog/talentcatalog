@@ -38,7 +38,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JobServiceImpl implements JobService {
 
     /**
@@ -115,8 +115,8 @@ public class JobServiceImpl implements JobService {
      * drives selecting the appropriate candidate opp closing stage to be selected when the
      * associated job opp is closed with the given stage.
      */
-    private final EnumMap<JobOpportunityStage, EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>>
-        closingStageLogic = new EnumMap<>(JobOpportunityStage.class);
+    private EnumMap<JobOpportunityStage,
+        EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>> closingStageLogic;
 
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
 
@@ -171,6 +171,7 @@ public class JobServiceImpl implements JobService {
      * Constructs the closing logic in {@link #closingStageLogic}.
      */
     private void initialiseClosingCandidateStageLogic() {
+        closingStageLogic = new EnumMap<>(JobOpportunityStage.class);
 
         //Candidates who have not got to an employed stage before job is closed for any reason
         //are closed with notFitForRole
@@ -862,6 +863,9 @@ public class JobServiceImpl implements JobService {
         Map<CandidateOpportunityStage, List<Candidate>> closingStageCandidatesMap = new HashMap<>();
 
         if (!activeOpps.isEmpty()) {
+            if (closingStageLogic == null) {
+                initialiseClosingCandidateStageLogic();
+            }
             final EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>
                 currentToClosingStageMap = closingStageLogic.get(jobCloseStage);
 
