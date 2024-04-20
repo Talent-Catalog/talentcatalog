@@ -36,7 +36,7 @@ import org.tctalent.server.repository.db.TaskSpecification;
 import org.tctalent.server.request.task.SearchTaskRequest;
 import org.tctalent.server.request.task.UpdateTaskRequest;
 import org.tctalent.server.service.db.TaskService;
-import org.tctalent.server.util.BeanHelper;
+import org.tctalent.server.utils.BeanHelper;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

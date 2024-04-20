@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.request.education.level.SearchEducationLevelRequest;
 
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 
 public class EducationLevelSpecification {
 

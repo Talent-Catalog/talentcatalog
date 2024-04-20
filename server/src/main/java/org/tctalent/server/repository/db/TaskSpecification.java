@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.request.task.SearchTaskRequest;
 
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 
 public class TaskSpecification {
 

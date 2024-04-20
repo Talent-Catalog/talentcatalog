@@ -16,7 +16,7 @@
 
 package org.tctalent.server.request.translation;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.tctalent.server.request.PagedSearchRequest;
 

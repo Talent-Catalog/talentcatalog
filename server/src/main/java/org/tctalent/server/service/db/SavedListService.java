@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;

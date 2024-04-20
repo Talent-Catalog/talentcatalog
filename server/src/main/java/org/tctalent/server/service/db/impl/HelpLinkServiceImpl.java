@@ -20,7 +20,7 @@ import static org.tctalent.server.util.HelpLinkHelper.generateRequestSequence;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
