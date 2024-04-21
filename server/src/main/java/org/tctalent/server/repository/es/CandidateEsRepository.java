@@ -41,7 +41,7 @@ public interface CandidateEsRepository
 
     /**
      * Supports Elasticsearch Simple Query String Query as described here:
-     * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html">...</a>
      * <p/>
      * Uses Query annotation as described here:
      * https://docs.spring.io/spring-data/elasticsearch/docs/current-SNAPSHOT/reference/html/#elasticsearch.query-methods.at-query
@@ -50,7 +50,7 @@ public interface CandidateEsRepository
      * @return Requested page of results matching the query
      * @deprecated Easier to use {@link NativeSearchQueryBuilder} -
      * see {@link CandidateServiceImpl}, as described here
-     * https://www.baeldung.com/spring-data-elasticsearch-tutorial
+     * <a href="https://www.baeldung.com/spring-data-elasticsearch-tutorial">...</a>
      */
     @Query("{\"simple_query_string\": {\"query\": \"?0\"}}")
     Page<CandidateEs> simpleQueryString(String searchQuery, Pageable pageable);

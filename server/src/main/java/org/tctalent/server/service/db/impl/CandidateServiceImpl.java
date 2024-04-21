@@ -1510,6 +1510,12 @@ public class CandidateServiceImpl implements CandidateService {
             .filter(ce -> Objects.nonNull(ce.getExam()) && ce.getExam().equals(Exam.IELTSAca))
             .findAny().orElse(null);
 
+        BigDecimal score = getScore(candidate, ieltsGen, ieltsAca);
+        candidate.setIeltsScore(score);
+    }
+
+    private static @Nullable BigDecimal getScore(Candidate candidate,
+        CandidateExam ieltsGen, CandidateExam ieltsAca) {
         BigDecimal score;
         // Setting Ielts Score in order of Ielts General, Ielts Academic, Ielts Estimated.
         if (ieltsGen != null && ieltsGen.getScore() != null) {
@@ -1521,7 +1527,7 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             score = null;
         }
-        candidate.setIeltsScore(score);
+        return score;
     }
 
     @Override
