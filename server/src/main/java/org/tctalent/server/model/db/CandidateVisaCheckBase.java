@@ -28,6 +28,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 
 @Getter
 @Setter
@@ -85,7 +86,7 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateVisaCheck", cascade = CascadeType.MERGE)
     private Set<CandidateVisaJobCheck> candidateVisaJobChecks = new HashSet<>();
 
-    public int compareTo(@NotNull CandidateVisaCheck o) {
+    public int compareTo(@NonNull CandidateVisaCheck o) {
         if (country == null) {
             return o.getCountry() == null ? 0 : -1;
         }

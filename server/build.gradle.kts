@@ -170,16 +170,16 @@ tasks.bootJar {
 }
 
 tasks {
-    val ENABLE_PREVIEW = "--enable-preview"
+//    val ENABLE_PREVIEW = "--enable-preview"
     withType<JavaCompile>() {
-        options.compilerArgs.add(ENABLE_PREVIEW)
-        options.compilerArgs.add("-Xlint:preview")
+//        options.compilerArgs.add(ENABLE_PREVIEW)
+//        options.compilerArgs.add("-Xlint:preview")
     }
     withType<Test>() {
         useJUnitPlatform()
-        jvmArgs(ENABLE_PREVIEW)
+//        jvmArgs(ENABLE_PREVIEW)
     }
     withType<JavaExec>() {
-        jvmArgs(ENABLE_PREVIEW)
+//        jvmArgs(ENABLE_PREVIEW)
     }
 }

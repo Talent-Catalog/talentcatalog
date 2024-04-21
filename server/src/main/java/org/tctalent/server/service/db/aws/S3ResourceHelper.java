@@ -295,10 +295,10 @@ public class S3ResourceHelper {
     }
 
     public List<S3ObjectSummary> getObjectSummaries() {
-        List<S3ObjectSummary> objectSummaries = new ArrayList<S3ObjectSummary>();
-        ObjectListing objects = amazonS3.listObjects
+      ObjectListing objects = amazonS3.listObjects
                 (s3Bucket, "candidate/");
-        objectSummaries.addAll(objects.getObjectSummaries());
+      List<S3ObjectSummary> objectSummaries = new ArrayList<>(
+          objects.getObjectSummaries());
         while (objects.isTruncated()) {
             objects = amazonS3.listNextBatchOfObjects(objects);
             objectSummaries.addAll(objects.getObjectSummaries());

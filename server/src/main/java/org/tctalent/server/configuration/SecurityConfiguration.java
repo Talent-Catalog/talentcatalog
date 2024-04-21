@@ -30,7 +30,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -51,7 +51,7 @@ import org.tctalent.server.security.TcUserDetailsService;
 /**
  * Talent Catalog security configuration.
  * <p/>
- * See https://docs.spring.io/spring-security/site/docs/3.2.0.RC2/reference/htmlsingle/#jc also
+ * See <a href="https://docs.spring.io/spring-security/site/docs/3.2.0.RC2/reference/htmlsingle/#jc">...</a> also
  * https://www.marcobehler.com/guides/spring-security
  * <p/>
  * Summary of TBB Talent Catalog security:
@@ -63,7 +63,7 @@ import org.tctalent.server.security.TcUserDetailsService;
  *     <li>
  *         At login we issue JSON Web Tokens (JWTs) which appear on each HTTP request in the
  *         Authorization header as a Bearer token.
- *         See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
+ *         See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization">...</a>
  *         and https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes.
  *         This is OAUTH 2.0 with us acting as the Authorization server -
  *         see https://www.marcobehler.com/guides/spring-security-oauth2
@@ -92,10 +92,10 @@ import org.tctalent.server.security.TcUserDetailsService;
 @Configuration
 @ConfigurationProperties("tbb.cors")
 @EnableWebSecurity()
-@EnableGlobalMethodSecurity(
+@EnableMethodSecurity(
     securedEnabled = true,
-    jsr250Enabled = true,
-    prePostEnabled = true)
+    jsr250Enabled = true
+)
 public class SecurityConfiguration {
 
   String urls;

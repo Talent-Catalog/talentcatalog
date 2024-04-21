@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.util;
 
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,12 +50,9 @@ import java.util.regex.Pattern;
 @Service
 public class PdfHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(PdfHelper.class);
-
     @Value("${server.url}")
     private String serverUrl;
 
-//    private static final String UTF_8 = "UTF-8";
     private final TemplateEngine pdfTemplateEngine;
 
     @Autowired
@@ -98,10 +96,11 @@ public class PdfHelper {
         tidy.setInputEncoding(StandardCharsets.UTF_8.name());
         tidy.setOutputEncoding(StandardCharsets.UTF_8.name());
         tidy.setXHTML(true);
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8.name()));
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(
+            StandardCharsets.UTF_8));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         tidy.parseDOM(inputStream, outputStream);
-        return outputStream.toString(StandardCharsets.UTF_8.name());
+        return outputStream.toString(StandardCharsets.UTF_8);
     }
 
 }

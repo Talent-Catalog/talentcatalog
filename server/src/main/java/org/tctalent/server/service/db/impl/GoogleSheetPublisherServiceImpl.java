@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -223,7 +224,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         //Add in extra properties. These go into the named cells whose names are given by the map keys.
         //This is the data that ends up in the sheet's Data tab.
         for (Entry<String, Object> prop : props.entrySet()) {
-            List<List<Object>> cell = Arrays.asList(Arrays.asList(prop.getValue()));
+            List<List<Object>> cell = List.of(Collections.singletonList(prop.getValue()));
             data.add(new ValueRange().setRange(prop.getKey()).setValues(cell));
         }
         BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()

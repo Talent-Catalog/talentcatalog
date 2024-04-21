@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateSavedList;
@@ -73,8 +74,8 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
     private final SavedListGetRequest request;
 
     @Override
-    public Predicate toPredicate(@NotNull Root<Candidate> candidate,
-                                 CriteriaQuery<?> query, @NotNull CriteriaBuilder cb) {
+    public Predicate toPredicate(@NonNull Root<Candidate> candidate,
+                                 CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
 
         //Start by adding fetches and Order by
         boolean isCountQuery = query.getResultType().equals(Long.class);

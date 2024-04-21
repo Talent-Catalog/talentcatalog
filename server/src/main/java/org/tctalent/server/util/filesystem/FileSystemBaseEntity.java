@@ -17,9 +17,9 @@
 package org.tctalent.server.util.filesystem;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.NonNull;
 
 
 /**
@@ -33,7 +33,7 @@ import lombok.ToString;
 @ToString
 public abstract class FileSystemBaseEntity {
 
-    public FileSystemBaseEntity(@NotNull String url) {
+    public FileSystemBaseEntity(@NonNull String url) {
         this.url = url;
     }
 

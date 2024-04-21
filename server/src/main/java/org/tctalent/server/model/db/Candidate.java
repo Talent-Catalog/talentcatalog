@@ -916,7 +916,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getOccupationSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateOccupation occupation : candidateOccupations) {
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 s.append(", ");
             }
             s.append(occupation.getOccupation().getName());
@@ -927,7 +927,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getEnglishExamsSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateExam exam : candidateExams) {
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 s.append(", ");
             }
             String examType = exam.getExam().equals(Exam.Other) ? exam.getOtherExam() : exam.getExam().toString();
@@ -947,7 +947,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getEducationsSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateEducation edu : candidateEducations) {
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 s.append(", ");
             }
             String eduString;
@@ -972,7 +972,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getCertificationsSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateCertification cert : candidateCertifications) {
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 s.append(", ");
             }
             String certString = cert.getName() + ": " + cert.getInstitution() + " " + cert.getDateCompleted().getYear();
@@ -1584,20 +1584,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             //ie if the current status is null, noResponse or unsure
             if (status == null ||
                 Arrays.asList(UnhcrStatus.NoResponse, UnhcrStatus.Unsure).contains(status) ) {
-                switch (unhcrRegistered) {
-                    case Yes:
-                        newStatus = UnhcrStatus.RegisteredStatusUnknown;
-                        break;
-                    case No:
-                        newStatus = UnhcrStatus.NotRegistered;
-                        break;
-                    case NoResponse:
-                        newStatus = UnhcrStatus.NoResponse;
-                        break;
-                    case Unsure:
-                        newStatus = UnhcrStatus.Unsure;
-                        break;
-                }
+              newStatus = switch (unhcrRegistered) {
+                case Yes -> UnhcrStatus.RegisteredStatusUnknown;
+                case No -> UnhcrStatus.NotRegistered;
+                case NoResponse -> UnhcrStatus.NoResponse;
+                case Unsure -> UnhcrStatus.Unsure;
+              };
             }
         }
         if (newStatus != null) {

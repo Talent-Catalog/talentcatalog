@@ -109,7 +109,7 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Override
     @Scheduled(cron = "0 30 23 * * ?", zone = "GMT")
     @SchedulerLock(name = "DataSharingService_dbCopy", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
-    public void dbCopy() throws Exception {
+    public void dbCopy() {
 //        reportError("dbCopy has been started. Pull this out once emails are working", null);
         performCopies();
     }
@@ -311,14 +311,12 @@ public class DataSharingServiceImpl implements DataSharingService {
 
             Element databaseEl = destinationEl.getChild("database");
 
-            List<PartnerTableDefinition> tableDefs = new ArrayList<>();
-
-
-            //Process the candidate tables
+          //Process the candidate tables
             Element filterEl = databaseEl.getChild("filter");
             String filter = getValue(filterEl);
             Element tablesEl = databaseEl.getChild("tables");
-            tableDefs.addAll(processTableElements(filter, tablesEl));
+          List<PartnerTableDefinition> tableDefs = new ArrayList<>(
+              processTableElements(filter, tablesEl));
 
 
             //Process the String tables

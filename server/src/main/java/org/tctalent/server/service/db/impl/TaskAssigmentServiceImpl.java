@@ -73,19 +73,11 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         TaskAssignmentImpl taskAssignment;
 
         TaskType taskType = task.getTaskType();
-        switch (taskType) {
-            case Question:
-                taskAssignment = new QuestionTaskAssignmentImpl();
-                break;
-
-            case Upload:
-                taskAssignment = new UploadTaskAssignmentImpl();
-                break;
-
-            default:
-                taskAssignment = new TaskAssignmentImpl();
-                break;
-        }
+      taskAssignment = switch (taskType) {
+        case Question -> new QuestionTaskAssignmentImpl();
+        case Upload -> new UploadTaskAssignmentImpl();
+        default -> new TaskAssignmentImpl();
+      };
 
         taskAssignment.setTask(task);
         taskAssignment.setActivatedBy(user);

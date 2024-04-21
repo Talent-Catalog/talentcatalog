@@ -23,6 +23,7 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.SavedList;
 
@@ -37,7 +38,7 @@ public class GetCandidateSavedListsQuery implements Specification<SavedList> {
     private final long candidateId;
 
     @Override
-    public Predicate toPredicate(@NotNull Root<SavedList> savedList,
+    public Predicate toPredicate(@NonNull Root<SavedList> savedList,
                                  CriteriaQuery<?> query, CriteriaBuilder cb) {
 
         //Now construct the actual query

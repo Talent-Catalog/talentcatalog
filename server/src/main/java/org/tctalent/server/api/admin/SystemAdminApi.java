@@ -1840,52 +1840,24 @@ public class SystemAdminApi {
         10=Active
         11=Active but action needed to improve profile
         */
-        switch (status) {
-            case 0:
-                return Status.inactive.name();
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-                return Status.active.name();
-        }
-        return Status.deleted.name();
+      return switch (status) {
+        case 0 -> Status.inactive.name();
+        case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 -> Status.active.name();
+        default -> Status.deleted.name();
+      };
     }
 
     private String getCandidateStatus(Integer status, Integer nationalityId, Integer countryId) {
         if (nationalityId == null || nationalityId == 0 || countryId == null || countryId == 0){
             return CandidateStatus.draft.name();
         }
-        switch (status) {
-            case 0:
-                return CandidateStatus.deleted.name();
-            case 1:
-                return CandidateStatus.incomplete.name();
-            case 2:
-                return CandidateStatus.pending.name();
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-                return CandidateStatus.unreachable.name();
-            case 7:
-                return CandidateStatus.incomplete.name();
-            case 8:
-                return CandidateStatus.unreachable.name();
-            case 9:
-                return CandidateStatus.pending.name();
-            case 10:
-            case 11:
-                return CandidateStatus.active.name();
-        }
-        return CandidateStatus.deleted.name();
+      return switch (status) {
+        case 1, 7 -> CandidateStatus.incomplete.name();
+        case 2, 9 -> CandidateStatus.pending.name();
+        case 3, 4, 5, 6, 8 -> CandidateStatus.unreachable.name();
+        case 10, 11 -> CandidateStatus.active.name();
+        default -> CandidateStatus.deleted.name();
+      };
     }
 
     private String getGender(String gender) {
@@ -1928,12 +1900,11 @@ public class SystemAdminApi {
     private String getEducationType(String name) {
         if (name != null) {
             switch (name) {
-                case "Bachelor's Degree": return EducationType.Bachelor.name();
+                case "Bachelor's Degree", "Some University": return EducationType.Bachelor.name();
                 case "Master's Degree": return EducationType.Masters.name();
                 case "Doctoral Degree": return EducationType.Doctoral.name();
                 case "Associate Degree": return EducationType.Associate.name();
                 case "Vocational Degree": return EducationType.Vocational.name();
-                case "Some University": return EducationType.Bachelor.name();
             }
         }
         return null;
@@ -1979,7 +1950,7 @@ public class SystemAdminApi {
 
     private Long whackyExtraCountryLookup(Integer origCountryId) {
         Integer val = countryForGeneralCountry.get(origCountryId);
-        if (val != null) return new Long(val);
+        if (val != null) return Long.valueOf(val);
         return null;
     }
 
