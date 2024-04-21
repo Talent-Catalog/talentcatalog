@@ -16,8 +16,9 @@
 
 package org.tctalent.util
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 class StubTest {
     @Test
@@ -26,5 +27,13 @@ class StubTest {
         val twentyOne = 21
         val strToTest = "I expect this string with Java $twentyOne in it."
         assertEquals(expect, strToTest)
+    }
+
+    @Test
+    fun testBearerToken() {
+        val bearer = "Bearer 12345"
+        val result = bearer.substring(7, bearer)
+        println(result)
+        fail("failed.")
     }
 }

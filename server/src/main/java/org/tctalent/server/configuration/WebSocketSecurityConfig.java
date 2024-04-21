@@ -20,32 +20,33 @@ import static org.springframework.messaging.simp.SimpMessageType.CONNECT;
 import static org.springframework.messaging.simp.SimpMessageType.DISCONNECT;
 import static org.springframework.messaging.simp.SimpMessageType.UNSUBSCRIBE;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
-import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
+import org.springframework.messaging.Message;
+import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
+import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
+
 /**
  * Websocket security set up.
- * <p/>
- * Taken from: <a href="https://developer.okta.com/blog/2019/10/09/java-spring-websocket-tutorial">here</a>
- * and <a href="https://docs.spring.io/spring-security/reference/5.7/servlet/integrations/websocket.html">
- *     here</a>
+ * <a href="https://docs.spring.io/spring-security/reference/servlet/integrations/websocket.html#page-title">
+ *   Instructions for Spring 3 websocket config. </a>
  * @author John Cameron
+ * @author Andrew Todd
  */
 @Configuration
-public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+@EnableWebSocketSecurity
+public class WebSocketSecurityConfig {
 
-    @Override
-    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-        messages
-            .simpTypeMatchers(CONNECT, UNSUBSCRIBE, DISCONNECT).permitAll()
+    @Bean
+    public AuthorizationManager<Message<?>> messageAuthorizationManager(
+        MessageMatcherDelegatingAuthorizationManager.Builder messages) {
+
+        messages.simpTypeMatchers(CONNECT, UNSUBSCRIBE, DISCONNECT).permitAll()
             .simpDestMatchers("/app/**").authenticated()
             .simpSubscribeDestMatchers("/topic/**").authenticated()
             .anyMessage().authenticated();
-    }
 
-    @Override
-    protected boolean sameOriginDisabled() {
-        return true;
+        return messages.build();
     }
-
 }

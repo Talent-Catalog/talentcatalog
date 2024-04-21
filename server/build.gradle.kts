@@ -147,9 +147,9 @@ sourceSets {
 }
 
 application {
-    val ENABLE_PREVIEW = "--enable-preview"
+//    val ENABLE_PREVIEW = "--enable-preview"
+//    applicationDefaultJvmArgs = listOf(ENABLE_PREVIEW)
     mainClass = "org.tctalent.server.TcTalentApplication"
-    applicationDefaultJvmArgs = listOf(ENABLE_PREVIEW)
 }
 
 jib {
