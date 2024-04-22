@@ -19,7 +19,6 @@ package org.tctalent.server.repository.es;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.impl.CandidateServiceImpl;
@@ -48,7 +47,6 @@ public interface CandidateEsRepository
      * @param searchQuery Query string
      * @param pageable Paging and sorting
      * @return Requested page of results matching the query
-     * @deprecated Easier to use {@link NativeSearchQueryBuilder} -
      * see {@link CandidateServiceImpl}, as described here
      * <a href="https://www.baeldung.com/spring-data-elasticsearch-tutorial">...</a>
      */
