@@ -43,9 +43,9 @@ public class WebSocketSecurityConfig {
         MessageMatcherDelegatingAuthorizationManager.Builder messages) {
 
         messages.simpTypeMatchers(CONNECT, UNSUBSCRIBE, DISCONNECT).permitAll()
-            .simpDestMatchers("/app/**").authenticated()
-            .simpSubscribeDestMatchers("/topic/**").authenticated()
-            .anyMessage().authenticated();
+            .simpDestMatchers("/app/**").permitAll()
+            .simpSubscribeDestMatchers("/topic/**").permitAll()
+            .anyMessage().denyAll();
 
         return messages.build();
     }
