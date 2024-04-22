@@ -175,6 +175,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.tctalent.server.utils.BeanHelper;
 
 /**
  * This is the lowest level service relating to managing candidates.
