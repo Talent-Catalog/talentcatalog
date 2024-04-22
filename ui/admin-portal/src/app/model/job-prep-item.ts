@@ -97,7 +97,7 @@ export class JobPrepJOI extends JobPrepItem {
     const joi = this.job?.jobOppIntake;
     let completed = false;
     if (joi != null) {
-      completed = joi.employerCostCommitment != null;
+      completed = joi.employerCostCommitment != null && joi.employerCostCommitment.trim().length > 0;
     }
     return completed;
   }
