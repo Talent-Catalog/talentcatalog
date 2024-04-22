@@ -63,11 +63,7 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
   }
 
   get hasNotes(): boolean {
-    if (this.unhcrStatus == null || this.unhcrStatus === 'NoResponse') {
-      return false;
-    } else {
-      return true;
-    }
+    return !(this.unhcrStatus == null || this.unhcrStatus === 'NoResponse');
   }
 
 }

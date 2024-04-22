@@ -31,6 +31,7 @@
     <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'" (clear)="setNoResponse('unhcrStatus')"
                [items]="unhcrStatusOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    <div class="form-text">If registered but no status provided select 'Registered with UNHCR but status unknown'</div>
   </div>
 
   <div *ngIf="showAll">
