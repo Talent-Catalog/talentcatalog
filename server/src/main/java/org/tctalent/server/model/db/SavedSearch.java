@@ -164,9 +164,6 @@ public class SavedSearch extends AbstractCandidateSource {
     @Transient private SavedSearchType savedSearchType;
     @Transient private SavedSearchSubtype savedSearchSubtype;
 
-    public SavedSearch() {
-    }
-
     @Nullable
     public List<ExportColumn> getExportColumns() {
         return exportColumns;
@@ -544,8 +541,8 @@ public class SavedSearch extends AbstractCandidateSource {
         setSavedSearchType(savedSearchType);
         setSavedSearchSubtype(subtype);
 
-        String type = makeStringSavedSearchType(savedSearchType, subtype);
-        setType(type);
+        String tmpType = makeStringSavedSearchType(savedSearchType, subtype);
+        setType(tmpType);
     }
 
     public static String makeStringSavedSearchType(
@@ -577,7 +574,7 @@ public class SavedSearch extends AbstractCandidateSource {
     }
 
     public void parseType() {
-        if (!StringUtils.isEmpty(type)) {
+        if (!type.isEmpty()) {
             String[] parts = type.split("/");
             try {
                 SavedSearchType savedSearchType = SavedSearchType.valueOf(parts[0]);
