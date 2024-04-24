@@ -19,10 +19,9 @@ package org.tctalent.server.service.db.impl;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.repository.db.JobOppIntakeRepository;
-import org.tctalent.server.request.job.JobIntakeData;
+import org.tctalent.server.request.job.IJobIntakeData;
 import org.tctalent.server.service.db.JobOppIntakeService;
 
 /**
@@ -46,7 +45,7 @@ public class JobOppIntakeServiceImpl implements JobOppIntakeService {
     }
 
     @Override
-    public JobOppIntake create(JobIntakeData data) {
+    public JobOppIntake create(IJobIntakeData data) {
         JobOppIntake joi = new JobOppIntake();
 
         populateIntakeData(joi, data);
@@ -55,13 +54,7 @@ public class JobOppIntakeServiceImpl implements JobOppIntakeService {
     }
 
     @Override
-    public JobOppIntake create(JobOppIntake intake) {
-        //TODO JC create not implemented in JobOppIntakeServiceImpl
-        throw new NotImplementedException("JobOppIntakeServiceImpl", "create");
-    }
-
-    @Override
-    public void update(long id, JobIntakeData data) throws NoSuchObjectException {
+    public void update(long id, IJobIntakeData data) throws NoSuchObjectException {
         JobOppIntake joi = jobOppIntakeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(JobOppIntake.class, id));
 
@@ -70,7 +63,7 @@ public class JobOppIntakeServiceImpl implements JobOppIntakeService {
         jobOppIntakeRepository.save(joi);
     }
 
-    private void populateIntakeData(JobOppIntake joi, JobIntakeData data) {
+    private void populateIntakeData(JobOppIntake joi, IJobIntakeData data) {
         if (data.getSalaryRange() != null) {
             joi.setSalaryRange(data.getSalaryRange());
         }

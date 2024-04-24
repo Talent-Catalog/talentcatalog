@@ -36,8 +36,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class JobIntakeData {
-    @Nullable Long jobOppIntakeId;
+public class JobIntakeData implements IJobIntakeData {
+    @Nullable Long Id;
     private String salaryRange;
     private String recruitmentProcess;
     private String employerCostCommitment;
