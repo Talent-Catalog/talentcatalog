@@ -19,6 +19,7 @@
   <ng-container ngbNavItem="StarredJobs">
     <a ngbNavLink title="Starred jobs (eg those I am working with)">
       <app-chat-read-status
+        class="me-1"
         [observable]="starredJobChatsRead$"
       ></app-chat-read-status>
       <i class="fas fa-star"></i>Jobs <i class="fa-solid fa-briefcase"></i></a>
