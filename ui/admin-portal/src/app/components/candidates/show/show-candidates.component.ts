@@ -275,7 +275,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get pluralType() {
-     return isSavedSearch(this.candidateSource) ? "searches" : "lists";
+    return isSavedSearch(this.candidateSource) ? "searches" : "lists";
   }
 
   get keyword(): string {
@@ -297,15 +297,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   subscribeToFilterChanges(): void {
     this.searchForm.valueChanges
-      .pipe(
-        debounceTime(800),
-        distinctUntilChanged()
-      )
-      .subscribe(() => {
-        this.filterSearch = true;
-        this.saveShowClosedOpps();
-        this.doSearch(true);
-      });
+    .pipe(
+      debounceTime(800),
+      distinctUntilChanged()
+    )
+    .subscribe(() => {
+      this.filterSearch = true;
+      this.saveShowClosedOpps();
+      this.doSearch(true);
+    });
   }
 
   private saveShowClosedOpps(): void {
@@ -372,7 +372,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private loadSelectedFields() {
     this.selectedFields = this.candidateFieldService
-      .getCandidateSourceFields(this.candidateSource, true);
+    .getCandidateSourceFields(this.candidateSource, true);
   }
 
   ngOnDestroy(): void {
@@ -536,14 +536,14 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (this.isCacheable() && !this.filterSearch) {
       this.candidateSourceResultsCacheService.cache(this.candidateSource,
         {
-        id: this.candidateSource.id,
-        pageNumber: this.pageNumber,
-        pageSize: this.pageSize,
-        sortFields: [this.sortField],
-        sortDirection: this.sortDirection,
-        results: this.results,
-        timestamp: this.timestamp
-      });
+          id: this.candidateSource.id,
+          pageNumber: this.pageNumber,
+          pageSize: this.pageSize,
+          sortFields: [this.sortField],
+          sortDirection: this.sortDirection,
+          results: this.results,
+          timestamp: this.timestamp
+        });
     }
   }
 
@@ -659,10 +659,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
             _this.error = JSON.parse(reader.result);
             const modalRef = _this.modalService.open(_this.downloadCsvErrorModal);
             modalRef.result
-              .then(() => {
-              })
-              .catch(() => {
-              });
+            .then(() => {
+            })
+            .catch(() => {
+            });
           }
         });
         reader.readAsText(err.error);
@@ -742,13 +742,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     modal.componentInstance.selectedColumns =  this.publishedDocColumnService.getColumnConfigFromExportColumns(this.candidateSource.exportColumns);
 
     modal.result
-      .then((request: PublishedDocColumnConfig[]) => {
-          this.publishCandidates(request);
+    .then((request: PublishedDocColumnConfig[]) => {
+        this.publishCandidates(request);
 
-        },
-        error => this.error = error
-      )
-      .catch();
+      },
+      error => this.error = error
+    )
+    .catch();
   }
 
   createAndDownloadBlobFile(body, options, filename) {
@@ -780,7 +780,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         tab.location.href = fileUrl;
       },
       error => {
-          this.error = error;
+        this.error = error;
       }
     )
   }
@@ -849,10 +849,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     //Is shareable with me if it is not created by me.
     if (this.candidateSource) {
-        //was it created by me?
-        if (!isMine(this.candidateSource, this.authenticationService)) {
-          shareable = true;
-        }
+      //was it created by me?
+      if (!isMine(this.candidateSource, this.authenticationService)) {
+        shareable = true;
+      }
     }
     return shareable;
   }
@@ -906,27 +906,27 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           'You will lose the context note for ' + candidate.user.firstName +
           ' if you deselect this. Are you sure?';
         confirmation.result
-          .then((confirmed: boolean) => {
-            if (confirmed) {
-              //Clear local copy of note
-              //Note that this does not trigger an update through to the
-              //contextNote component.
-              //That is why we use the savedSearchSelectionChange variable
-              //which is passed down as an input to the contextNote component
-              //and can trigger an action which updates the local contextNote
-              //form field.
-              candidate.contextNote = null;
-              this.savedSearchSelectionChange = false;
-              this.doSavedSearchSelection(candidate, selected);
-            } else {
-              //Unconfirmed, reinstate as selected
-              candidate.selected = true;
-            }
-          })
-          .catch(() => {
+        .then((confirmed: boolean) => {
+          if (confirmed) {
+            //Clear local copy of note
+            //Note that this does not trigger an update through to the
+            //contextNote component.
+            //That is why we use the savedSearchSelectionChange variable
+            //which is passed down as an input to the contextNote component
+            //and can trigger an action which updates the local contextNote
+            //form field.
+            candidate.contextNote = null;
+            this.savedSearchSelectionChange = false;
+            this.doSavedSearchSelection(candidate, selected);
+          } else {
             //Unconfirmed, reinstate as selected
             candidate.selected = true;
-          });
+          }
+        })
+        .catch(() => {
+          //Unconfirmed, reinstate as selected
+          candidate.selected = true;
+        });
       } else {
         this.savedSearchSelectionChange = selected;
         this.doSavedSearchSelection(candidate, selected);
@@ -1163,35 +1163,35 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     }
     this.savedSearchService.saveSelection(savedSearch.id, request)
-      .subscribe(
-        savedListResult => {
-          this.savingSelection = false;
+    .subscribe(
+      savedListResult => {
+        this.savingSelection = false;
 
-          //Save the target list
-          this.targetListId = savedListResult.id;
-          this.targetListName = savedListResult.name;
-          this.targetListReplace = targetChoice.replace;
-          this.savedSelection = true;
+        //Save the target list
+        this.targetListId = savedListResult.id;
+        this.targetListName = savedListResult.name;
+        this.targetListReplace = targetChoice.replace;
+        this.savedSelection = true;
 
-          //Associate current target list with this source.
-          this.cacheTargetList(savedSearch);
+        //Associate current target list with this source.
+        this.cacheTargetList(savedSearch);
 
-          //Invalidate the cache for this list (so that user does not need
-          //to refresh in order to see latest list contents)
-          this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+        //Invalidate the cache for this list (so that user does not need
+        //to refresh in order to see latest list contents)
+        this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
 
-          this.savingSelection = false;
+        this.savingSelection = false;
 
-          if (targetChoice.statusUpdateInfo != null) {
-            //Refresh display to see updated statuses
-            this.doSearch(true);
-          }
+        if (targetChoice.statusUpdateInfo != null) {
+          //Refresh display to see updated statuses
+          this.doSearch(true);
+        }
 
-        },
-        err => {
-          this.error = err;
-          this.savingSelection = false;
-        });
+      },
+      err => {
+        this.error = err;
+        this.savingSelection = false;
+      });
   }
 
   private replaceOrMergeList(savedListId: number, request: UpdateExplicitSavedListContentsRequest) {
@@ -1293,7 +1293,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
    */
   private restoreTargetListFromCache() {
     const cachedTargetList: CachedTargetList =
-       this.localStorageService.get(this.savedTargetListKey());
+      this.localStorageService.get(this.savedTargetListKey());
     this.targetListId = cachedTargetList ? cachedTargetList.listID : null;
     this.targetListName = cachedTargetList ? cachedTargetList.name : null;
     this.targetListReplace = cachedTargetList ? cachedTargetList.replace : null;
@@ -1321,8 +1321,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     editModal.componentInstance.savedSearch = this.candidateSource as SavedSearch;
 
     editModal.result
-      .then(() => this.onReviewStatusChange())
-      .catch(() => { /* Isn't possible */ });
+    .then(() => this.onReviewStatusChange())
+    .catch(() => { /* Isn't possible */ });
 
   }
 
@@ -1419,7 +1419,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         applyToWholeListQuery.result
         .then((confirmed) => {if (confirmed === true) {
           this.doCreateUpdateSalesforceOnList(false);
-          }})
+        }})
         .catch(() => { });
       } else {
         this.doCreateUpdateSalesforceOnList(true);
@@ -1439,7 +1439,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       })
       .catch(() => { });
     }
-}
+  }
 
   private doCreateUpdateSalesforceOnList2(info: CandidateOpportunityParams, selectedCandidatesOnly: boolean) {
     this.error = null;
@@ -1478,7 +1478,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (isSavedSearch(this.candidateSource)) {
       return this.candidateSource?.defaultSearch;
     } else {
-     return false;
+      return false;
     }
   }
 
@@ -1511,8 +1511,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   doShowSalesforceLink() {
     const joblink = this.salesforceService.joblink(this.candidateSource);
     if (joblink != null) {
-        //Open link in new window
-        window.open(joblink, "_blank");
+      //Open link in new window
+      window.open(joblink, "_blank");
     }
   }
 
@@ -1559,11 +1559,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     modal.componentInstance.setSourceAndFormat(this.candidateSource, true);
 
     modal.result
-      .then(
-        () => this.loadSelectedFields(),
-        error => this.error = error
-      )
-      .catch();
+    .then(
+      () => this.loadSelectedFields(),
+      error => this.error = error
+    )
+    .catch();
   }
 
   isCandidateNameViewable() {
@@ -1651,16 +1651,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     modal.result.then(
-        (result) => {
-          if (result != null) {
-            this.monitoredTask = result;
-            this.doSearch(true);
-          } else {
-            this.doSearch(true);
-          }
+      (result) => {
+        if (result != null) {
+          this.monitoredTask = result;
+          this.doSearch(true);
+        } else {
+          this.doSearch(true);
         }
-      )
-      .catch();
+      }
+    )
+    .catch();
   }
 
   hasTaskAssignments(candidate: Candidate): boolean {
@@ -1676,37 +1676,37 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     modal.componentInstance.excludeList = this.candidateSource;
 
     modal.result
-      .then((selection: TargetListSelection) => {
-        this.loading = true;
-        const request: CopySourceContentsRequest = {
-          savedListId: selection.savedListId,
-          newListName: selection.newListName,
-          sourceListId: this.candidateSource.id,
-          statusUpdateInfo: selection.statusUpdateInfo,
-          updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-          sfJoblink: this.salesforceService.joblink(this.candidateSource)
+    .then((selection: TargetListSelection) => {
+      this.loading = true;
+      const request: CopySourceContentsRequest = {
+        savedListId: selection.savedListId,
+        newListName: selection.newListName,
+        sourceListId: this.candidateSource.id,
+        statusUpdateInfo: selection.statusUpdateInfo,
+        updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
+        sfJoblink: this.salesforceService.joblink(this.candidateSource)
 
+      }
+      this.candidateSourceService.copy(this.candidateSource, request).subscribe(
+        (targetSource) => {
+          this.targetListId = targetSource.id;
+          this.targetListName = targetSource.name;
+          // Set to false, to allow display of copied message in html. Otherwise it will display the saved message.
+          this.savedSelection = false;
+
+          //Clear cache for target list as its contents will have changed.
+          this.candidateSourceResultsCacheService.removeFromCache(targetSource);
+
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
         }
-        this.candidateSourceService.copy(this.candidateSource, request).subscribe(
-          (targetSource) => {
-            this.targetListId = targetSource.id;
-            this.targetListName = targetSource.name;
-            // Set to false, to allow display of copied message in html. Otherwise it will display the saved message.
-            this.savedSelection = false;
-
-            //Clear cache for target list as its contents will have changed.
-            this.candidateSourceResultsCacheService.removeFromCache(targetSource);
-
-            this.loading = false;
-          },
-          error => {
-            this.error = error;
-            this.loading = false;
-          }
-        );
-      })
-      .catch(() => { /* Isn't possible */
-      });
+      );
+    })
+    .catch(() => { /* Isn't possible */
+    });
   }
 
   // When admins want to resolve outstanding tasks to bring the task count to all completed.
@@ -1814,7 +1814,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * Get candidate stage in opportunity matching current job
-    * @param candidate Candidate who opportunities we need to search
+   * @param candidate Candidate who opportunities we need to search
    */
   getStage(candidate: Candidate): string {
     let stage = null;

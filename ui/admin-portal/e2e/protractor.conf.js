@@ -22,13 +22,14 @@ const { SpecReporter } = require('jasmine-spec-reporter');
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
-    './src/components/login/login.e2e-spec.ts',
-    './src/components/job/jobs/jobs.e2e-spec.ts',
-    './src/components/job/jobs/jobhome.e2e.spec.ts'
+     './src/components/login/login.e2e-spec.ts',
+    // './src/components/job/jobs/jobs.e2e.spec.ts',
+    // './src/components/job/jobs/jobs-home.e2e.spec.ts'
+    './src/components/job/jobs/jobs-with-detail.e2e.spec.ts'
   ],
 
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'firefox'
   },
   directConnect: true,
   baseUrl: 'http://localhost:4201/',
