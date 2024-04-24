@@ -34,7 +34,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -111,10 +110,21 @@ public class SalesforceJobOpp extends AbstractOpportunity {
      * past the recruitment stage. A new copy of the original job is created so that new
      * candidates matching the job's requirements can continue to apply.
      */
-    @Transient //todo Make transient until we have a field in the DB for it.
     private boolean evergreen;
 
-    @Transient //todo Make transient until we have a field in the DB for it.
+    /**
+     * Evergreen child of this job.
+     * <p/>
+     * A job can only have one child. The primary purpose of this field is just as a flag
+     * indicating that this job already has a child. This can be used to avoid a job spawning
+     * more than one child - if, for example, a job's stage is set to Recruitment, spawning a
+     * child, then the stage is set back to Prospect, then back to Recruitment again. That second
+     * time it is moved to Recruitment will not spawn another child because this field indicates
+     * that a child already exists.
+     */
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "evergreen_child_id")
     private SalesforceJobOpp evergreenChild;
 
     /**
