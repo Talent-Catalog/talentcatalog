@@ -786,6 +786,10 @@ public class JobServiceImpl implements JobService {
 
     private SalesforceJobOpp spawnEvergreenChildOpp(SalesforceJobOpp job) {
         SalesforceJobOpp child = new SalesforceJobOpp();
+
+        //Set audit fields using creating user
+        child.setAuditFields(job.getCreatedBy());
+
         child.setAccountId(job.getAccountId());
 
         //Do not copy candidate opportunities
