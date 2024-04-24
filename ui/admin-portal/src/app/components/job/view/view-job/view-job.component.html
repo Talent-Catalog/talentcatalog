@@ -119,7 +119,9 @@
           <a ngbNavLink>Job Intake (JOI)</a>
           <ng-template ngbNavContent>
             <app-job-intake-tab
-              [job]="job">
+              [job]="job"
+              (intakeChanged)="onIntakeChanged($event)"
+            >
             </app-job-intake-tab>
           </ng-template>
         </ng-container>
