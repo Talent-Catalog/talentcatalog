@@ -25,6 +25,11 @@
   &:hover {
     color: $light;
   }
+  &:disabled {
+    background-color: $accent3;
+    color: $accent1;
+    border-color: $accent3;
+  }
 }
 
 .btn-outline-primary, .btn-outline-secondary, btn-outline-danger, btn-outline-warning {
