@@ -106,6 +106,7 @@ export class SearchJobRequest extends SearchOpportunityRequest {
 
 export interface UpdateJobRequest extends OpportunityProgressParams {
   contactUserId?: number;
+  evergreen?: boolean;
   roleName?: string;
   sfId?: string;
   sfJoblink?: string;
