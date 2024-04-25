@@ -20,12 +20,15 @@
       </div>
 
       <div *ngIf="selectedChat">
-        <strong>{{selectedChatDisplayName}}</strong>
-
-        <div class="d-flex justify-content-end">
-          <button type="button" class="btn btn-success " (click)="onMarkChatAsRead()">
-            Mark as Read <i class="fa-solid"></i>
-          </button>
+        <div class="row">
+          <div class="col-10">
+            <strong>{{selectedChatDisplayName}}</strong>
+          </div>
+          <div class="col-2">
+            <button [ngbTooltip]="'Mark chat as read'" type="button" class="btn btn-sm btn-warning" (click)="onMarkChatAsRead()">
+              <i class="fa-solid fa-envelope-circle-check ms-1"></i>
+            </button>
+          </div>
         </div>
 
         <div class="alert alert-danger" *ngIf="error">
