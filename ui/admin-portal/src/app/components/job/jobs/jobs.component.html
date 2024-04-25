@@ -14,7 +14,7 @@
                id="keyword">
       </div>
       <div class="col-2">
-        <button class="btn btn-sm btn-primary" (click)="refresh()">
+        <button class="btn btn-sm btn-secondary" (click)="refresh()">
           Refresh
           <i class="fas fa-sync" title="Refresh data"></i>
         </button>
@@ -23,9 +23,9 @@
 
     <div *ngIf="searchBy === SearchOppsBy.mineAsJobCreator ||
                 searchBy === SearchOppsBy.mineAsSourcePartner ||
-                searchBy === SearchOppsBy.starredByMe" class="mt-2 mb-3">
+                searchBy === SearchOppsBy.starredByMe" class="my-2">
       <div class="row justify-content-center mb-2">
-        <div class="col-md-4">
+        <div class="col-md-5">
           <div class="form-check form-check-reverse">
             <label class="form-check-label" [title]="myOppsOnlyTip"
                    for="myOppsOnly">{{myOppsOnlyLabel}}</label>
@@ -33,7 +33,7 @@
                    formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-5">
           <div class="form-check form-check-reverse">
             <input [title]="showClosedOppsTip" type="checkbox"
                    formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="row justify-content-center">
-        <div class="col-md-4">
+        <div class="col-md-5">
           <div class="form-check form-check-reverse">
             <input [title]="showInactiveOppsTip" type="checkbox"
                    formControlName="showInactiveOpps" id="showInactiveOpps" class="form-check-input">
@@ -51,7 +51,7 @@
                    for="showInactiveOpps">{{showInactiveOppsLabel}}</label>
           </div>
       </div>
-        <div class="col-md-auto">
+        <div class="col-md-5">
           <div class="form-check form-check-reverse">
             <input [title]="withUnreadMessagesTip" type="checkbox"
                    formControlName="withUnreadMessages" id="withUnreadMessages" class="form-check-input">
