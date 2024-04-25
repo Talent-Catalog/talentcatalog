@@ -838,8 +838,19 @@ public class JobServiceImpl implements JobService {
         child = salesforceJobOppRepository.save(child);
 
         //Child has its own new submission list
-        final SavedList submissionList = createSubmissionListForJob(child);
-        child.setSubmissionList(submissionList);
+        final SavedList childSubmissionList = createSubmissionListForJob(child);
+
+        //Copy Job Description and interview guidance fields across from existing submission list
+        SavedList jobSubmissionList = job.getSubmissionList();
+        if (jobSubmissionList != null) {
+            childSubmissionList.setFileJdLink(jobSubmissionList.getFileJdLink());
+            childSubmissionList.setFileJdName(jobSubmissionList.getFileJdName());
+            childSubmissionList.setFileInterviewGuidanceLink(
+                jobSubmissionList.getFileInterviewGuidanceLink());
+            childSubmissionList.setFileInterviewGuidanceName(
+                jobSubmissionList.getFileInterviewGuidanceName());
+        }
+        child.setSubmissionList(childSubmissionList);
 
         return updateJobOnSalesforce(child);
     }
