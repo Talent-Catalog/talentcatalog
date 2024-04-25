@@ -1728,22 +1728,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     } else {
       return joinsReqs.stream()
           .reduce(new BoolQuery.Builder(), (curBqb, joinReq) ->
-                  addQuery(curBqb, joinReq, searchIds), (acc1, acc2) -> acc2);
+              addQuery(curBqb, joinReq, searchIds), (acc1, acc2) -> acc2);
     }
   }
 
   /**
-   * Current replacement for computeElasticQuery.
-   * Not every request will actually be an elastic query, so this will handle both
-   * elastic and other search types.
-   * It will add a load of filters. The filters are unlike the "must" score - they don't
-   * affect the elastic score.
+   * Current replacement for computeElasticQuery. Not every request will actually be an elastic
+   * query, so this will handle both elastic and other search types. It will add a load of filters.
+   * The filters are unlike the "must" score - they don't affect the elastic score.
    */
   private BoolQuery.Builder buildElasticQuery(
       SearchCandidateRequest req,
       @Nullable String simpleQueryString,
       @Nullable List<Candidate> excludedCandidates
-      ) {
+  ) {
 
     BoolQuery.Builder boolBuilder = QueryBuilders.bool();
     if (simpleQueryStringExists(simpleQueryString)) {
@@ -1769,14 +1767,39 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     return boolBuilder;
   }
 
+  /* Gets education majors. If not on the request it will go to db, so unfortunately
+  it calls out to the member variable educationMajorService making it less than self-sufficient.
+   */
+  private Query addEducation(SearchCandidateRequest req) {
+    List<Long> ids = req.getEducationMajorIds();
+    if (ids == null || ids.isEmpty()) {
+      return null;
+    }
+
+    // There are some ids so look them up to get the name.
+    List<String> majors = new ArrayList<>();
+    ids.forEach(c -> {
+          EducationMajor major = educationMajorService.getEducationMajor(c);
+          majors.add(major.getName());
+        }
+    );
+    // Probably needs to be term queries, not query (for sending a list).
+    return getIntTermQuery("educationMajors.keyword", majors);
+  }
+
   private boolean simpleQueryStringExists(String qryString) {
     return qryString != null && !qryString.isEmpty();
   }
+
   private Builder addSimpleQryString(String qryString) {
     return QueryBuilders.bool().must(getSimpleStringAsQuery(qryString));
   }
-  /** Current replacement for addElasticQuery */
-  private BoolQuery.Builder addQuery(BoolQuery.Builder bqb, SearchJoinRequest sjr, List<Long> searchIds) {
+
+  /**
+   * Current replacement for addElasticQuery
+   */
+  private BoolQuery.Builder addQuery(BoolQuery.Builder bqb, SearchJoinRequest sjr,
+      List<Long> searchIds) {
 
     // We don't want searches built on themselves - this is also guarded against in frontend
     if (searchIds.contains(sjr.getSavedSearchId())) {
