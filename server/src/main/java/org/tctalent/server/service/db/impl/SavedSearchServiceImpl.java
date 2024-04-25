@@ -20,14 +20,17 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery.Builder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.SimpleQueryStringQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
+import io.micrometer.core.instrument.search.Search;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -241,27 +244,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       long savedSearchId, SavedSearchGetRequest request)
       throws NoSuchObjectException {
 
-    SearchCandidateRequest searchRequest =
-        loadSavedSearch(savedSearchId);
-
-    //Merge the SavedSearchGetRequest - notably the page request - in to
-    //the standard saved search request.
+    // Get saved searches and merge requested into it (notably the page request)
+    SearchCandidateRequest searchRequest = loadSavedSearch(savedSearchId);
     searchRequest.merge(request);
 
     //If user filters on unverified statuses we bypass performing a full search
     //Simply return candidates that the user has already reviewed as verified and/or rejected
-    if (request.getReviewStatusFilter() != null &&
-        request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
+    if (unverifiedCandidates(request)) {
       return reviewedCandidates(searchRequest);
     }
 
-    //Do the search
+    // Do the search and add in any selections.
     final Page<Candidate> candidates = doSearchCandidates(searchRequest);
-
-    //Add in any selections
     markUserSelectedCandidates(savedSearchId, candidates);
 
     return candidates;
+  }
+
+  /**
+   * Determines if the status filter is unverified.
+   */
+  private boolean unverifiedCandidates(SavedSearchGetRequest req) {
+    List<ReviewStatus> l = req.getReviewStatusFilter();
+    return l != null && l.contains(ReviewStatus.unverified);
   }
 
   private Page<Candidate> reviewedCandidates(SearchCandidateRequest request) {
@@ -321,7 +326,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   /**
    * Added @Transactional to this method as it is calling another method (updateSavedSearch) which
    * requires the @Transactional annotation. Transaction needs to wrap the database modifying
-   * operation (searchJoinRepository.deleteBySearchId(id)) or else an exception will be thrown. See:
+   * operation (searchJoinRepository.deleteBySearchId(id)) or else an exception will be thrown.
+   * See:
    * <a href="https://www.baeldung.com/jpa-transaction-required-exception">...</a>
    */
   @Override
@@ -993,7 +999,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         BoolQueryBuilder nestedQueryBuilder = QueryBuilders.boolQuery().must(
             QueryBuilders.termQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
 
-            // done
+        // done
         Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
         if (minOtherSpokenLevel != null) {
           nestedQueryBuilder =
@@ -1001,7 +1007,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                   "otherLanguages.minSpokenLevel",
                   minOtherSpokenLevel, null);
         }
-            // done
+        // done
         Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
         if (minOtherWrittenLevel != null) {
           nestedQueryBuilder =
@@ -1285,7 +1291,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       }
       if (selectionList != null) {
         Set<Candidate> selectedCandidates = selectionList.getCandidates();
-        if (selectedCandidates.size() > 0) {
+        if (!selectedCandidates.isEmpty()) {
           for (Candidate candidate : candidates) {
             if (selectedCandidates.contains(candidate)) {
               candidate.setSelected(true);
@@ -1665,6 +1671,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
   }
 
+  // done (handleElasticRequest)
   private BoolQueryBuilder processElasticRequest(SearchCandidateRequest searchRequest,
       String simpleQueryString, Set<Candidate> excludedCandidates) {
     // If saved search, add to searchIds to guard against circular dependencies
@@ -1690,15 +1697,100 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   NEW FUNCTIONS POST UPGRADE
   -----------------------------------------------------------------------------------------------
    */
-  private StringQuery getSimpleStringAsQuery(String simpleQueryString) {
+
+  /**
+   * Current replacement for the processelasticrequest function.
+   */
+  private BoolQuery.Builder handleElasticRequest(SearchCandidateRequest searchRequest,
+      String simpleQueryString, Set<Candidate> excludedCandidates) {
+
+    // Avoid circular dependencies by adding search id's in to check.
+    List<Long> searchIds = new ArrayList<>();
+    Long savedSearchId = searchRequest.getSavedSearchId();
+    if (savedSearchId != null) {
+      searchIds.add(savedSearchId);
+    }
+
+    // Build up the search query.
+    BoolQuery.Builder boolBuilder = buildElasticQuery();
+
+    // Add join searches in and return the boolQueryBuilder
+    return addJoinRequests(searchRequest.getSearchJoinRequests(), boolBuilder, searchIds);
+  }
+
+  /* If there are requests to join process them and add to builder. */
+  private BoolQuery.Builder addJoinRequests(List<SearchJoinRequest> joinsReqs,
+      BoolQuery.Builder boolQryBuilder, List<Long> searchIds) {
+
+    if (joinsReqs.isEmpty()) {
+      return boolQryBuilder;
+    } else {
+      return joinsReqs.stream()
+          .reduce(new BoolQuery.Builder(), (curBqb, joinReq) ->
+                  addQuery(curBqb, joinReq, searchIds), (acc1, acc2) -> acc2);
+    }
+  }
+
+  /**
+   * Current replacement for computeElasticQuery.
+   * Not every request will actually be an elastic query, so this will handle both
+   * elastic and other search types.
+   * It will add a load of filters. The filters are unlike the "must" score - they don't
+   * affect the elastic score.
+   */
+  private BoolQuery.Builder buildElasticQuery(
+      SearchCandidateRequest req,
+      @Nullable String simpleQueryString,
+      @Nullable List<Candidate> excludedCandidates
+      ) {
+
+    BoolQuery.Builder boolBuilder = addSimpleQryString(simpleQueryString);
+
+    Query q = addMinSpokenLevel(req);
+
+
+    return boolBuilder;
+  }
+
+  private Builder addSimpleQryString(String qryString) {
+    BoolQuery.Builder boolBuilder = QueryBuilders.bool();
+    if (qryString == null || qryString.isEmpty()) return boolBuilder;
+
+    return boolBuilder.must(getSimpleStringAsQuery(qryString));
+  }
+
+  /** Current replacement for addElasticQuery */
+  private BoolQuery.Builder addQuery(BoolQuery.Builder bqb, SearchJoinRequest sjr, List<Long> searchIds) {
+
+    // We don't want searches built on themselves - this is also guarded against in frontend
+    if (searchIds.contains(sjr.getSavedSearchId())) {
+      throw new CircularReferencedException(sjr.getSavedSearchId());
+    }
+    List<Long> newSearchIds = new ArrayList<>(searchIds);
+    newSearchIds.add(sjr.getSavedSearchId());
+
+    SearchCandidateRequest scr = loadSavedSearch(sjr.getSavedSearchId());
+    // Get the keyword search term, if any and get excluded candidates.
+    String sqs = scr.getSimpleQueryString();
+    Set<Candidate> exclCandidates = computeCandidatesExcludedFromSearchCandidateRequest(scr);
+
+    // Each time through this is added to the "must" of the query.
+    BoolQuery.Builder newBqb = bqb;
+    bqb.must(buildElasticQuery(scr, sqs, exclCandidates.stream().toList())
+        .build()
+        ._toQuery());
+
+    return addJoinRequests(scr.getSearchJoinRequests(), bqb, newSearchIds);
+  }
+
+  private Query getSimpleStringAsQuery(String simpleQueryString) {
     if (simpleQueryString == null || simpleQueryString.isEmpty()) {
       return null;
     }
-    return new StringQuery(simpleQueryString);
+    return QueryBuilders.simpleQueryString().query(simpleQueryString).build()._toQuery();
   }
 
   private Query getRangeFilter(String field, Object min, Object max) {
-
 
     return RangeQuery.of(r -> r.field(field).from(min).to(max))._toQuery();
   }
@@ -1722,7 +1814,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 //        .query(q -> q
 //            .terms(t -> t
 //                .terms(tt -> tt.value(list.stream().map(FieldValue::of).toList())))));
-
 
     BoolQuery.Builder builder = QueryBuilders.bool();
     if (searchType == SearchType.not) {
@@ -1758,31 +1849,34 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     return min == null ? null : getIntTermQuery("minEnglishWrittenLevel", min);
   }
 
-  private Query getMinOtherSpokenLevel(SearchCandidateRequest req) {
+  private Query addMinOtherSpokenLevel(SearchCandidateRequest req) {
     Integer min = req.getOtherMinSpokenLevel();
     return min == null ? null : getIntTermQuery("otherLanguages.minSpokenLevel", min);
   }
 
-  private Query getMinOtherWrittenLevel(SearchCandidateRequest req) {
+  private Query addMinOtherWrittenLevel(SearchCandidateRequest req) {
     Integer min = req.getOtherMinWrittenLevel();
     return min == null ? null : getIntTermQuery("otherLanguages.minWrittenLevel", min);
   }
+
   // Todo( complete this - requires consideration of logic. )
-  private Query getOtherLanguageName(SearchCandidateRequest req) {
+  private Query addOtherLanguageName(SearchCandidateRequest req) {
     return new Query.Builder().build();
   }
 
-  private Query getStatuses(SearchCandidateRequest req) {
+  private Query addStatuses(SearchCandidateRequest req) {
 
   }
 
-  private Query getReferrer(SearchCandidateRequest req) {
+  private Query addReferrer(SearchCandidateRequest req) {
     String referrer = req.getRegoReferrerParam();
     return referrer == null ? null : getStringTermQuery("regoReferrerParam", referrer);
   }
+
   private Query getStringTermQuery(String field, String term) {
     return QueryBuilders.term().field(field).value(term).build()._toQuery();
   }
+
   private Query getIntTermQuery(String field, Integer term) {
     return QueryBuilders.term().field(field).value(term).build()._toQuery();
   }
