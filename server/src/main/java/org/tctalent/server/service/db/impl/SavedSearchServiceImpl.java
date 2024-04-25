@@ -24,13 +24,10 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery.Builder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.SimpleQueryStringQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
-import io.micrometer.core.instrument.search.Search;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -60,7 +57,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -1024,6 +1020,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     //Exclude given candidates
+    // done.
     if (excludedCandidates != null && excludedCandidates.size() > 0) {
       List<Object> candidateIds = excludedCandidates.stream()
           .map(Candidate::getId).collect(Collectors.toList());
@@ -1032,6 +1029,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     //Occupations
+    // done
     final List<Long> occupationIds = request.getOccupationIds();
     if (occupationIds != null) {
       //Look up names from ids.
@@ -1045,6 +1043,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     //Countries - need to take account of source country restrictions
+    // done
     final List<Long> countryIds = request.getCountryIds();
     List<Object> reqCountries = new ArrayList<>();
     // If countryIds is NOT EMPTY we can just accept them because the options
@@ -1066,6 +1065,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     //Partners
+    //done
     final List<Long> partnerIds = request.getPartnerIds();
     if (partnerIds != null) {
       //Look up names from ids.
@@ -1079,6 +1079,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     //Nationalities
+    //done
     final List<Long> nationalityIds = request.getNationalityIds();
     if (nationalityIds != null) {
       //Look up names from ids.
@@ -1093,6 +1094,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     //Statuses
+    //done
     List<CandidateStatus> statuses = request.getStatuses();
     if (statuses != null) {
       List<String> reqStatuses = statuses.stream()
@@ -1131,6 +1133,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     //Educations
+    // done
     final List<Long> educationMajorIds = request.getEducationMajorIds();
     if (educationMajorIds != null) {
       //Look up names from ids.
@@ -1748,23 +1751,95 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       boolBuilder = addSimpleQryString(simpleQueryString);
     }
 
-    return addFilters(boolBuilder, req);
+    return addFilters(boolBuilder, req, excludedCandidates);
   }
 
-  private BoolQuery.Builder addFilters(BoolQuery.Builder boolBuilder, SearchCandidateRequest req) {
+  // todo (need to check with the use of null returning in the filters/queries here)
+  private BoolQuery.Builder addFilters(Builder boolBuilder, SearchCandidateRequest req,
+      List<Candidate> excludedCandidates) {
     BoolQuery.Builder bBuilder = boolBuilder;
-    boolBuilder.filter(addMinSpokenLevel(req));
-    boolBuilder.filter(addMinWrittenLevel(req));
+    User user = userService.getLoggedInUser();
 
-    // More in here..
+    bBuilder.filter(addMinSpokenLevel(req));
+    bBuilder.filter(addMinWrittenLevel(req));
 
-    boolBuilder.filter(addReferrer(req));
-    boolBuilder.filter(addGender(req));
-    boolBuilder.filter(addMinEducationLevel(req));
+    bBuilder.filter(excludeProvidedCandidates(excludedCandidates));
+    bBuilder.filter(addOccupations(req));
+    bBuilder.filter(addCountries(req, user));
+    bBuilder.filter(addPartners(req));
+    bBuilder.filter(addNationalities(req));
+    bBuilder.filter(addStatuses(req));
+    bBuilder.filter(addReferrer(req));
+    bBuilder.filter(addGender(req));
+    bBuilder.filter(addMinEducationLevel(req));
+    bBuilder.filter(addEducation(req));
+    return bBuilder;
+  }
 
-    // more here...
+  // todo (need to have an overloaded one to set a term - see below)..
+  // i think create the term query and then use must not in a bool...
+  private Query excludeProvidedCandidates(List<Candidate> excludedCandidates) {
+    if (excludedCandidates == null || excludedCandidates.isEmpty()) return null;
 
-    return boolBuilder;
+    List<Long> ids = getCandidateIds(excludedCandidates);
+    return getStringTermsQuery(SearchType.not, "masterId", ids);
+  }
+
+  private List<Long> getCandidateIds(List<Candidate> candidates) {
+    return candidates.stream().map(Candidate::getId).toList();
+  }
+
+  private Query addOccupations(SearchCandidateRequest req) {
+    List<Long> ids = req.getOccupationIds();
+    if (ids == null || ids.isEmpty()) return null;
+
+    List<String> occupations = getOccupationNames(ids);
+    return getStringTermsQuery("occupations.keyword", occupations);
+  }
+
+  private List<String> getOccupationNames(List<Long> ids) {
+    return getValues(ids, id -> occupationService.getOccupation(id).getName());
+  }
+
+  private Query addCountries(SearchCandidateRequest req, User user) {
+    List<Long> countryIds = req.getCountryIds();
+    List<String> countries = new ArrayList<>();
+
+    if (countryIds == null || countryIds.isEmpty()) {
+      countries = user.getSourceCountries().stream().map(Country::getName).toList();
+    } else {
+      countries = getCountryNames(countryIds);
+    }
+
+    return countries == null ? null : getStringTermsQuery("country.keyword", countries);
+  }
+
+  private List<String> getCountryNames(List<Long> ids) {
+    return getValues(ids, id -> countryService.getCountry(id).getName());
+  }
+
+  private Query addPartners(SearchCandidateRequest req) {
+    List<Long> ids = req.getPartnerIds();
+    if (ids == null || ids.isEmpty()) return null;
+
+    List<String> partners = getPartnerAbbreviations(ids);
+    return getStringTermsQuery("partner.keyword", partners);
+  }
+
+  private List<String> getPartnerAbbreviations(List<Long> ids) {
+    return getValues(ids, id -> partnerService.getPartner(id).getAbbreviation());
+  }
+
+  private Query addNationalities(SearchCandidateRequest req) {
+    List<Long> ids = req.getNationalityIds();
+    if (ids == null || ids.isEmpty()) return null;
+
+    List<String> nationalities = getNationalityNames(ids);
+    return getStringTermsQuery("nationality.keyword", nationalities);
+  }
+
+  private @NotNull List<String> getNationalityNames(List<Long> ids) {
+    return getValues(ids, id -> countryService.getCountry(id).getName());
   }
 
   /* Gets education majors. If not on the request it will go to db, so unfortunately
@@ -1772,19 +1847,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
    */
   private Query addEducation(SearchCandidateRequest req) {
     List<Long> ids = req.getEducationMajorIds();
-    if (ids == null || ids.isEmpty()) {
-      return null;
-    }
+    if (ids == null || ids.isEmpty()) return null;
 
     // There are some ids so look them up to get the name.
-    List<String> majors = new ArrayList<>();
-    ids.forEach(c -> {
-          EducationMajor major = educationMajorService.getEducationMajor(c);
-          majors.add(major.getName());
-        }
-    );
-    // Probably needs to be term queries, not query (for sending a list).
-    return getIntTermQuery("educationMajors.keyword", majors);
+    List<String> majors = getMajorNames(ids);
+    return getStringTermsQuery("educationMajors.keyword", majors);
+  }
+
+  private @NotNull List<String> getMajorNames(List<Long> ids) {
+    return getValues(ids, id -> educationMajorService.getEducationMajor(id).getName());
   }
 
   private boolean simpleQueryStringExists(String qryString) {
@@ -1903,7 +1974,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   private Query addStatuses(SearchCandidateRequest req) {
+    List<CandidateStatus> statuses = req.getStatuses();
+    if (statuses == null) return null;
+    List<String> names = getStatusNames(statuses);
+    return getStringTermsQuery("status.keyword", names);
+  }
 
+  private @NotNull List<String> getStatusNames(List<CandidateStatus> statuses) {
+     return statuses.stream()
+        .map(CandidateStatus::name)
+         .toList();
   }
 
   private Query addReferrer(SearchCandidateRequest req) {
@@ -1917,5 +1997,25 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
   private Query getIntTermQuery(String field, Integer term) {
     return QueryBuilders.term().field(field).value(term).build()._toQuery();
+  }
+
+  private Query getStringTermsQuery(String field, List<String> terms) {
+    return TermsQuery.of(t -> t
+        .field(field)
+        .terms(tt -> tt
+            .value(terms.stream().map(FieldValue::of).toList())))._toQuery();
+  }
+
+//  private Query getStringTermsQuery(SearchType searchType, String field, List<String> terms) {
+//    TermsQuery.of(t -> t
+//        .field(field)
+//        .terms(tt -> tt
+//            .value(terms.stream().map(FieldValue::of).toList())))._toQuery();
+//  }
+
+  private List<String> getValues(List<Long> ids, Function<Long, String> valueRetriever) {
+    return ids.stream()
+        .map(valueRetriever)
+        .toList();
   }
 }
