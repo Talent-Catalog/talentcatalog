@@ -43,6 +43,7 @@ export interface Job extends Opportunity {
   contactUser: User;
   country: Country;
   employerEntity: Employer;
+  evergreen: boolean;
   exclusionList: SavedList;
   jobSummary: string;
   publishedBy: User;
