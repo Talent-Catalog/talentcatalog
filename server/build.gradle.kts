@@ -16,7 +16,7 @@
 
 val kotlinVersion: String by project
 val lombokVersion: String by project
-val apachePoiVersion: String = "4.1.2"
+val apachePoiVersion: String = "5.2.5"
 val jwtVersion: String = "0.11.5"
 val shedlockVersion: String = "5.10.0"
 val javaTargetVersion = JavaVersion.VERSION_21
