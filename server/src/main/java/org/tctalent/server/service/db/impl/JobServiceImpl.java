@@ -770,18 +770,16 @@ public class JobServiceImpl implements JobService {
 
         //Do automation logic
 
-
-//todo debug        if (job.isEvergreen()) {
-//            //Once an evergreen job enters the Recruitment stage, it spawns another copy of the
-//            //job in CandidateSearch.
-//            if (job.getEvergreenChild() == null) {
+        if (job.isEvergreen()) {
+            //Once an evergreen job enters the Recruitment stage, it spawns another copy of the
+            //job in CandidateSearch.
+            if (job.getEvergreenChild() == null) {
                 if (stage.compareTo(JobOpportunityStage.recruitmentProcess) >= 0) {
                     SalesforceJobOpp evergreenChild = spawnEvergreenChildOpp(job);
                     job.setEvergreenChild(evergreenChild);
-                    //TODO JC Need to save to SF?
                 }
-//            }
-//        }
+            }
+        }
 
         if (stage.isClosed()) {
             closeUnclosedCandidateOppsForJob(job, stage);
