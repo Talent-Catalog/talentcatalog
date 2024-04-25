@@ -7,25 +7,34 @@
 
 <div class="searches" *ngIf="searchBy">
   <form [formGroup]="searchForm" (ngSubmit)="search()">
-    <div class="mb-3">
-      <input #searchFilter type="text" class="form-control" placeholder="Search..."
-             aria-label="Search" formControlName="keyword"
-             id="keyword">
+    <div class="row mb-3">
+      <div class="col-10">
+        <input #searchFilter type="text" class="form-control" placeholder="Search..."
+               aria-label="Search" formControlName="keyword"
+               id="keyword">
+      </div>
+      <div class="col-2">
+        <button class="btn btn-sm btn-primary" (click)="refresh()">
+          Refresh
+          <i class="fas fa-sync" title="Refresh data"></i>
+        </button>
+      </div>
+
     </div>
 
     <div *ngIf="searchBy === SearchOppsBy.mineAsSourcePartner ||
     searchBy === SearchOppsBy.mineAsJobCreator " class="mt-2 mb-3">
-      <div class="row">
-        <div class="col-md-4">
-          <div class="form-check">
-            <input [title]="myOppsOnlyTip" type="checkbox"
-                   formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
+      <div class="row justify-content-center mb-2">
+        <div class="col-md-3">
+          <div class="form-check form-check-reverse">
             <label class="form-check-label" [title]="myOppsOnlyTip"
                    for="myOppsOnly">{{ myOppsOnlyLabel }}</label>
+            <input [title]="myOppsOnlyTip" type="checkbox"
+                   formControlName="myOppsOnly" id="myOppsOnly" class="form-check-input">
           </div>
         </div>
         <div class="col-md-4">
-          <div class="form-check">
+          <div class="form-check form-check-reverse">
             <input [title]="showClosedOppsTip" type="checkbox"
                    formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
             <label class="form-check-label" [title]="showClosedOppsTip"
@@ -33,7 +42,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="form-check">
+          <div class="form-check form-check-reverse">
             <input [title]="showInactiveOppsTip" type="checkbox"
                    formControlName="showInactiveOpps" id="showInactiveOpps"
                    class="form-check-input">
@@ -42,17 +51,17 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="form-check">
+      <div class="row justify-content-center">
+        <div class="col-md-5">
+          <div class="form-check form-check-reverse">
             <input [title]="overdueOppsOnlyTip" type="checkbox"
                    formControlName="overdueOppsOnly" id="overdueOppsOnly" class="form-check-input">
             <label class="form-check-label" [title]="overdueOppsOnlyTip"
                    for="overdueOppsOnly">{{ overdueOppsOnlyLabel }}</label>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="form-check">
+        <div class="col-md-6">
+          <div class="form-check form-check-reverse">
             <input [title]="withUnreadMessagesTip"
                    type="checkbox"
                    formControlName="withUnreadMessages" id="withUnreadMessages"
@@ -60,11 +69,6 @@
             <label class="form-check-label" [title]="withUnreadMessagesTip"
                    for="withUnreadMessages">{{ withUnreadMessagesLabel }}</label>
           </div>
-        </div>
-        <div class="col-md-4">
-          <button class="btn btn-link" (click)="refresh()">
-            <i class="fas fa-sync" title="Refresh data"></i>
-          </button>
         </div>
       </div>
     </div>
