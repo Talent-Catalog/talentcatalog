@@ -32,6 +32,12 @@
   }
 }
 
+.btn-accent-1, .btn-accent-2, .btn-accent-3 {
+  &:hover {
+    background-color: fade-out($accent2, 0.3);
+  }
+}
+
 .btn-outline-primary, .btn-outline-secondary, btn-outline-danger, btn-outline-warning {
   box-shadow: 1px 1px 3px #8b8c93;
   border-width: 1.5px;
