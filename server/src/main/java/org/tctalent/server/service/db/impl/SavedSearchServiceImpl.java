@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -1744,21 +1745,36 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       @Nullable List<Candidate> excludedCandidates
       ) {
 
-    BoolQuery.Builder boolBuilder = addSimpleQryString(simpleQueryString);
+    BoolQuery.Builder boolBuilder = QueryBuilders.bool();
+    if (simpleQueryStringExists(simpleQueryString)) {
+      boolBuilder = addSimpleQryString(simpleQueryString);
+    }
 
-    Query q = addMinSpokenLevel(req);
+    return addFilters(boolBuilder, req);
+  }
 
+  private BoolQuery.Builder addFilters(BoolQuery.Builder boolBuilder, SearchCandidateRequest req) {
+    BoolQuery.Builder bBuilder = boolBuilder;
+    boolBuilder.filter(addMinSpokenLevel(req));
+    boolBuilder.filter(addMinWrittenLevel(req));
+
+    // More in here..
+
+    boolBuilder.filter(addReferrer(req));
+    boolBuilder.filter(addGender(req));
+    boolBuilder.filter(addMinEducationLevel(req));
+
+    // more here...
 
     return boolBuilder;
   }
 
-  private Builder addSimpleQryString(String qryString) {
-    BoolQuery.Builder boolBuilder = QueryBuilders.bool();
-    if (qryString == null || qryString.isEmpty()) return boolBuilder;
-
-    return boolBuilder.must(getSimpleStringAsQuery(qryString));
+  private boolean simpleQueryStringExists(String qryString) {
+    return qryString != null && !qryString.isEmpty();
   }
-
+  private Builder addSimpleQryString(String qryString) {
+    return QueryBuilders.bool().must(getSimpleStringAsQuery(qryString));
+  }
   /** Current replacement for addElasticQuery */
   private BoolQuery.Builder addQuery(BoolQuery.Builder bqb, SearchJoinRequest sjr, List<Long> searchIds) {
 
@@ -1791,7 +1807,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   private Query getRangeFilter(String field, Object min, Object max) {
-
     return RangeQuery.of(r -> r.field(field).from(min).to(max))._toQuery();
   }
 
