@@ -318,6 +318,12 @@ public class JobServiceImpl implements JobService {
         job = salesforceJobOppRepository.save(job);
 
         //Create the chats associated with this job
+        createJobChats(job);
+
+        return job;
+    }
+
+    private void createJobChats(SalesforceJobOpp job) {
         jobChatService.createJobCreatorChat(JobChatType.AllJobCandidates, job);
         jobChatService.createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, job);
 
@@ -326,8 +332,6 @@ public class JobServiceImpl implements JobService {
         for (PartnerImpl sourcePartner : sourcePartners) {
             jobChatService.createJobCreatorSourcePartnerChat(job, sourcePartner);
         }
-
-        return job;
     }
 
     private SavedList createSubmissionListForJob(SalesforceJobOpp job) {
@@ -852,7 +856,11 @@ public class JobServiceImpl implements JobService {
         }
         child.setSubmissionList(childSubmissionList);
 
-        return updateJobOnSalesforce(child);
+        child = updateJobOnSalesforce(child);
+
+        createJobChats(child);
+
+        return child;
     }
 
     String generateChildName(String parentJobName) {
