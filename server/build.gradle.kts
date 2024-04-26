@@ -124,7 +124,7 @@ dependencies {
     implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
 
     implementation("org.flywaydb:flyway-core")
-    implementation("jakarta.mail:jakarta.mail-api:2.0.1")
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
     runtimeOnly("org.postgresql:postgresql")
 
     /* Test dependencies */
