@@ -82,7 +82,7 @@ dependencies {
     implementation("com.google.apis:google-api-services-drive:v3-rev20210725-1.32.1")
 
     /* Spring deps */
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -95,7 +95,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-web")
     implementation("org.springframework.security:spring-security-messaging")
     implementation("org.springframework.data:spring-data-elasticsearch")
-    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+//    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 
     /* Apache */
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")

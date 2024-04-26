@@ -1,6 +1,6 @@
 tbb:
   cors:
-    urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
+    urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202,http://localhost:8080}
 
   destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
   partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
@@ -20,6 +20,7 @@ logging:
             #See notes in that class
             InFlightMetadataCollectorImpl: ERROR
       springframework:
+        security: INFO
         web:
           filter:
             # Enable HTTP request logging by setting this to DEBUG
@@ -91,6 +92,10 @@ spring:
           use_jdbc_metadata_defaults: false
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
   health:
     elasticsearch:
       enabled: false

@@ -109,13 +109,13 @@ public class UserServiceImpl implements UserService {
 
     //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
     //tools
-    @Autowired
+//    @Autowired
     private SecretGenerator totpSecretGenerator;
-    @Autowired
+//    @Autowired
     private QrDataFactory totpQrDataFactory;
-    @Autowired
+//    @Autowired
     private QrGenerator totpQrGenerator;
-    @Autowired
+//    @Autowired
     private CodeVerifier totpVerifier;
 
 
