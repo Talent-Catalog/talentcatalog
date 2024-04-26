@@ -16,11 +16,6 @@
 
 package org.tctalent.server.service.db.email;
 
-import java.io.IOException;
-import java.util.Properties;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.Address;
 import jakarta.mail.Authenticator;
@@ -37,7 +32,10 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
-
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

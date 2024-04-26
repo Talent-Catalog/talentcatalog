@@ -69,9 +69,7 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
-import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
@@ -96,7 +94,6 @@ public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
-    private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
@@ -104,7 +101,6 @@ public class UserServiceImpl implements UserService {
     private final AuthService authService;
     private final EmailHelper emailHelper;
     private final PartnerService partnerService;
-    private final SavedSearchRepository savedSearchRepository;
 
     @Value("${web.portal}")
     private String portalUrl;
@@ -125,18 +121,14 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-        CandidateRepository candidateRepository,
         CountryRepository countryRepository,
-        SavedSearchRepository savedSearchRepository,
         PasswordHelper passwordHelper,
         AuthenticationManager authenticationManager,
         JwtTokenProvider tokenProvider,
         AuthService authService,
         EmailHelper emailHelper, PartnerService partnerService) {
         this.userRepository = userRepository;
-        this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
-        this.savedSearchRepository = savedSearchRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;

@@ -19,8 +19,9 @@ package org.tctalent.server.service.db.impl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import java.util.concurrent.TimeUnit;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +33,12 @@ import org.tctalent.server.service.db.CaptchaService;
 /**
  * Captcha service implementation
  * <p/>
- * See https://developers.google.com/recaptcha/docs/v3
+ * See <a href="https://developers.google.com/recaptcha/docs/v3">...</a>
  * and
- * https://www.baeldung.com/spring-security-registration-captcha
+ * <a href="https://www.baeldung.com/spring-security-registration-captcha">...</a>
  * <p/>
  * Our reCaptcha is under the john@cameronfoundation.org Google account
- * at https://www.google.com/recaptcha/admin
+ * at <a href="https://www.google.com/recaptcha/admin">...</a>
  * @author John Cameron
  */
 @Service
@@ -56,6 +57,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         attemptsCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .build(new CacheLoader<String, Integer>() {
+            @org.jetbrains.annotations.NotNull
             @NotNull
             @Override
             public Integer load(final @NonNull String key) {
