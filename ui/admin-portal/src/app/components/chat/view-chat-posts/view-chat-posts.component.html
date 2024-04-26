@@ -5,6 +5,12 @@
   {{error}}
 </div>
 
+<div *ngIf="!chatIsRead" class="d-flex justify-content-end">
+  <button type="button" class="btn btn-success " (click)="onMarkChatAsRead()">
+    {{'CHAT.MARK-AS-READ' | translate}}
+  </button>
+</div>
+
 <div class="container my-lg-5">
   <div id="posts" *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
     <div *ngFor="let post of posts"
