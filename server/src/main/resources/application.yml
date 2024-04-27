@@ -74,8 +74,6 @@ spring:
 
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193
-  mvc:
-    throw-exception-if-no-handler-found: true
 
   web:
     resources:
@@ -85,6 +83,7 @@ spring:
   jpa:
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
     properties:
       hibernate:
         order_by.default_null_ordering: last

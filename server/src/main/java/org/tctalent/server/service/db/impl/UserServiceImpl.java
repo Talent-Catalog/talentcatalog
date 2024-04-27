@@ -24,6 +24,7 @@ import dev.samstevens.totp.qr.QrData;
 import dev.samstevens.totp.qr.QrDataFactory;
 import dev.samstevens.totp.qr.QrGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
+import dev.samstevens.totp.spring.autoconfigure.TotpAutoConfiguration;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -89,6 +91,8 @@ import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
 @Service
+// This is needed as spring is no longer loading in.
+@Import(value = TotpAutoConfiguration.class)
 public class UserServiceImpl implements UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -109,13 +113,13 @@ public class UserServiceImpl implements UserService {
 
     //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password)
     //tools
-//    @Autowired
+   @Autowired
     private SecretGenerator totpSecretGenerator;
-//    @Autowired
+   @Autowired
     private QrDataFactory totpQrDataFactory;
-//    @Autowired
+   @Autowired
     private QrGenerator totpQrGenerator;
-//    @Autowired
+   @Autowired
     private CodeVerifier totpVerifier;
 
 
@@ -668,7 +672,7 @@ public class UserServiceImpl implements UserService {
     public void mfaVerify(String mfaCode) throws InvalidCredentialsException {
         User user = fetchLoggedInUser();
         if (user.getUsingMfa()) {
-            if (mfaCode == null || mfaCode.length() == 0) {
+            if (mfaCode == null || mfaCode.isEmpty()) {
                 throw new InvalidCredentialsException("You need to enter an authentication code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
@@ -687,7 +691,7 @@ public class UserServiceImpl implements UserService {
     @SchedulerLock(name = "UserService_searchStaffNotUsingMfa", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void checkMfaUsers() {
         List<User> users = searchStaffNotUsingMfa();
-        if (users.size() > 0) {
+        if (!users.isEmpty()) {
             String s = users.stream()
                 .map(User::getUsername)
                 .collect(Collectors.joining(","));

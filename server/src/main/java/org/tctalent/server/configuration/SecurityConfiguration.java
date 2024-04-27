@@ -56,8 +56,7 @@ import org.tctalent.server.security.TcUserDetailsService;
 /**
  * Talent Catalog security configuration.
  * <p/>
- * See <a
- * href=
+ * See <a href=
  * "https://docs.spring.io/spring-security/site/docs/3.2.0.RC2/reference/htmlsingle/#jc">...</a>
  * also https://www.marcobehler.com/guides/spring-security
  * <p/>
@@ -106,10 +105,10 @@ import org.tctalent.server.security.TcUserDetailsService;
  */
 @Configuration
 @EnableWebSecurity
-// @EnableMethodSecurity(
-// securedEnabled = true,
-// jsr250Enabled = true
-// )
+@EnableMethodSecurity(
+    securedEnabled = true,
+    jsr250Enabled = true
+)
 @Slf4j
 public class SecurityConfiguration {
 
@@ -129,20 +128,13 @@ public class SecurityConfiguration {
     if (StringUtils.isNotBlank(urls)) {
       Collections.addAll(corsUrls, urls.split(","));
     }
-    log.info("CORS CORS CORS CORS CORS");
-    log.info("CORS CORS CORS CORS CORS");
-    log.info("CORS CORS CORS CORS CORS");
-    log.info("CORS CORS CORS CORS CORS");
-    corsUrls.forEach(log::info);
-    log.info(corsUrls.getFirst());
-    log.info("-----------------------------------");
     configuration.setAllowedOrigins(corsUrls);
     configuration.setAllowCredentials(true);
     configuration.setAllowedMethods(Collections.singletonList("*"));
     configuration.setAllowedHeaders(Collections.singletonList("*"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
-
+    log.info("Cors configuration loaded");
     return source;
   }
 
@@ -176,16 +168,13 @@ public class SecurityConfiguration {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    log.info("Security Filter Chain");
-    log.info("--------------------------------------------------------");
-    log.info("what the hell is going on...");
-    log.info("--------------------------------------------------------");
     http
         .cors(cors -> corsConfigurationSource())
-        .csrf(csrf -> csrf.disable())
-        .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
-            .sessionCreationPolicy(
-                SessionCreationPolicy.STATELESS))
+       .csrf(csrf -> csrf.disable())
+        .sessionManagement(
+            httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
+                .sessionCreationPolicy(
+                    SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests((authz) -> authz
             .requestMatchers("/backend/jobseeker").permitAll()
             .requestMatchers("/api/portal/auth").permitAll()
@@ -207,9 +196,7 @@ public class SecurityConfiguration {
             .requestMatchers("/published/**").permitAll()
 
             .requestMatchers("/websocket", "/websocket/**").permitAll()
-
-            // TODO (AT)
-            // .requestMatchers("/app/**", "/app/**").permitAll()
+            .requestMatchers("/app/**", "/app/**").permitAll()
             .requestMatchers("/topic", "/topic/**").permitAll()
             .requestMatchers("/status", "/status/**").permitAll()
 
@@ -501,6 +488,8 @@ public class SecurityConfiguration {
 
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     http.addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class);
+
+    log.info("Security configuration filter chain loaded.");
     return http.build();
   }
 }
