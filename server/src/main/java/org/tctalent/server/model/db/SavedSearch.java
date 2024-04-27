@@ -36,7 +36,6 @@ import jakarta.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "saved_search")

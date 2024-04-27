@@ -250,7 +250,7 @@ public class CandidateSpecification {
             // PARTNER SEARCH
             if (!Collections.isEmpty(request.getPartnerIds())) {
                 conjunction.getExpressions().add(
-                    builder.isTrue(user.get("partner").in(request.getPartnerIds()))
+                    builder.isTrue(user.get("partner").get("id").in(request.getPartnerIds()))
                 );
             }
 
