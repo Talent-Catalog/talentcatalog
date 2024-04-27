@@ -56,6 +56,10 @@ repositories {
 }
 
 dependencies {
+    /* This is required as many transient deps trying to call in at runtime */
+    configurations.all {
+        exclude("commons-logging", "commons-logging")
+    }
     /* Some kotlin functional nice libs */
     implementation(platform("io.arrow-kt:arrow-stack:1.2.0"))
     implementation("io.arrow-kt:arrow-core")
