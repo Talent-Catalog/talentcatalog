@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
@@ -38,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,66 +54,74 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CandidateExamAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"USER", "ADMIN"})
 class CandidateExamAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/candidate-exam";
-    private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateExam candidateExam = AdminApiTestUtil.getCandidateExam();
+  private static final String BASE_PATH = "/api/admin/candidate-exam";
+  private static final long CANDIDATE_ID = 99L;
 
-    @MockBean CandidateExamService candidateExamService;
-    @MockBean CandidateService candidateService;
+  private final CandidateExam candidateExam = AdminApiTestUtil.getCandidateExam();
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateExamAdminApi candidateExamAdminApi;
+  @MockBean
+  CandidateExamService candidateExamService;
+  @MockBean
+  CandidateService candidateService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateExamAdminApi candidateExamAdminApi;
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateExamAdminApi).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    @DisplayName("create candidate exam succeeds")
-    void createExamSucceeds() throws Exception {
-        CreateCandidateExamRequest request = new CreateCandidateExamRequest();
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateExamAdminApi).isNotNull();
+  }
 
-        given(candidateExamService
-                .createExam(anyLong(), any(CreateCandidateExamRequest.class)))
-                .willReturn(candidateExam);
+  @Test
+  @DisplayName("create candidate exam succeeds")
+  void createExamSucceeds() throws Exception {
+    CreateCandidateExamRequest request = new CreateCandidateExamRequest();
 
-        mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateExamService
+        .createExam(anyLong(), any(CreateCandidateExamRequest.class)))
+        .willReturn(candidateExam);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.exam", is("IELTSGen")))
-                .andExpect(jsonPath("$.score", is("100")))
-                .andExpect(jsonPath("$.otherExam", is("IELTS")))
-                .andExpect(jsonPath("$.notes", is("Some exam notes")));
+    mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateExamService).createExam(anyLong(), any(CreateCandidateExamRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.exam", is("IELTSGen")))
+        .andExpect(jsonPath("$.score", is("100")))
+        .andExpect(jsonPath("$.otherExam", is("IELTS")))
+        .andExpect(jsonPath("$.notes", is("Some exam notes")));
 
-    @Test
-    @DisplayName("delete candidate exam by id succeeds")
-    void deleteExamByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+    verify(candidateExamService).createExam(anyLong(), any(CreateCandidateExamRequest.class));
+  }
 
-                .andDo(print())
-                .andExpect(status().isOk());
+  @Test
+  @DisplayName("delete candidate exam by id succeeds")
+  void deleteExamByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-        verify(candidateService).deleteCandidateExam(CANDIDATE_ID);
-    }
+        .andDo(print())
+        .andExpect(status().isOk());
 
+    verify(candidateService).deleteCandidateExam(CANDIDATE_ID);
+  }
 }

@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateCitizenship;
 import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
@@ -38,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,65 +54,72 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CandidateCitizenshipAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"USER", "ADMIN"})
 class CandidateCitizenshipAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/candidate-citizenship";
 
-    private static final long CANDIDATE_ID = 99L;
+  private static final String BASE_PATH = "/api/admin/candidate-citizenship";
 
-    private final CandidateCitizenship candidateCitizenship = AdminApiTestUtil.getCandidateCitizenship();
+  private static final long CANDIDATE_ID = 99L;
 
+  private final CandidateCitizenship candidateCitizenship = AdminApiTestUtil.getCandidateCitizenship();
 
-    @MockBean
-    CandidateCitizenshipService candidateCitizenshipService;
+  @MockBean
+  CandidateCitizenshipService candidateCitizenshipService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateCitizenshipAdminApi candidateCitizenshipAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateCitizenshipAdminApi candidateCitizenshipAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateCitizenshipAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateCitizenshipAdminApi).isNotNull();
+  }
 
-    @Test
-    @DisplayName("create candidate citizenship succeeds")
-    void createCitizenshipSucceeds() throws Exception {
-        CreateCandidateCitizenshipRequest request = new CreateCandidateCitizenshipRequest();
+  @Test
+  @DisplayName("create candidate citizenship succeeds")
+  void createCitizenshipSucceeds() throws Exception {
+    CreateCandidateCitizenshipRequest request = new CreateCandidateCitizenshipRequest();
 
-        given(candidateCitizenshipService
-                .createCitizenship(anyLong(), any(CreateCandidateCitizenshipRequest.class)))
-                .willReturn(candidateCitizenship);
+    given(candidateCitizenshipService
+        .createCitizenship(anyLong(), any(CreateCandidateCitizenshipRequest.class)))
+        .willReturn(candidateCitizenship);
 
-        mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.nationality.name", is("Pakistan")))
-                .andExpect(jsonPath("$.hasPassport", is("ValidPassport")))
-                .andExpect(jsonPath("$.notes", is("Some example citizenship notes")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.nationality.name", is("Pakistan")))
+        .andExpect(jsonPath("$.hasPassport", is("ValidPassport")))
+        .andExpect(jsonPath("$.notes", is("Some example citizenship notes")));
 
-        verify(candidateCitizenshipService).createCitizenship(anyLong(), any(CreateCandidateCitizenshipRequest.class));
-    }
+    verify(candidateCitizenshipService).createCitizenship(anyLong(),
+        any(CreateCandidateCitizenshipRequest.class));
+  }
 
-    @Test
-    @DisplayName("delete candidate citizenship succeeds")
-    void deleteCitizenshipByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+  @Test
+  @DisplayName("delete candidate citizenship succeeds")
+  void deleteCitizenshipByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-                .andExpect(status().isOk());
+        .andExpect(status().isOk());
 
-        verify(candidateCitizenshipService).deleteCitizenship(anyLong());
-    }
+    verify(candidateCitizenshipService).deleteCitizenship(anyLong());
+  }
 }
