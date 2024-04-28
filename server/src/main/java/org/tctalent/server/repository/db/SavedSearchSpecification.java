@@ -131,7 +131,7 @@ public class SavedSearchSpecification {
       //If owned by this user (ie by logged in user)
       if (request.getOwned() != null && request.getOwned() && (loggedInUser != null)) {
         ors.getExpressions().add(
-            builder.equal(savedSearch.get("createdBy"), loggedInUser.getId())
+            builder.equal(savedSearch.get("createdBy").get("id"), loggedInUser.getId())
         );
       }
 
