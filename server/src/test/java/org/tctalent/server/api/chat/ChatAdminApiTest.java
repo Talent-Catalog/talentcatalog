@@ -126,7 +126,6 @@ class ChatAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @WithMockUser
   void create() throws Exception {
     CreateChatRequest request = new CreateChatRequest();
 
@@ -155,7 +154,6 @@ class ChatAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @WithMockUser
   void list() throws Exception {
     given(chatService.listJobChats())
         .willReturn(chatList);
@@ -177,7 +175,6 @@ class ChatAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @WithMockUser
   void getOrCreate() throws Exception {
     CreateChatRequest request = new CreateChatRequest();
 
@@ -206,7 +203,6 @@ class ChatAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @WithMockUser
   void markAsReadUpto() throws Exception {
 
     given(chatService.getJobChat(anyLong()))
@@ -234,7 +230,6 @@ class ChatAdminApiTest extends ApiTestBase {
   }
 
   @Test
-  @WithMockUser
   void getJobChatUserInfo() throws Exception {
 
     given(chatService.getJobChat(anyLong()))

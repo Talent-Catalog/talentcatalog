@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.security.JwtAuthenticationEntryPoint;
@@ -33,6 +34,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
  *
  * @author smalik
  */
+@WithMockUser(roles = { "USER","ADMIN" } )
 public class ApiTestBase {
     private static final String USER_NAME = "test_user";
     private static final String FIRST_NAME = "test";
