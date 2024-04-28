@@ -136,6 +136,7 @@ dependencies {
         exclude("org.junit.vintage:junit-vintage-engine")
     }
     testImplementation(kotlin("test"))
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.ninja-squad:springmockk:3.0.1")
 }
 

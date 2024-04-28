@@ -115,6 +115,7 @@ public class JobChatServiceImpl implements JobChatService {
     public JobChat getOrCreateJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
         @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate)
         throws InvalidRequestException {
+
         if (type == null) {
             throw new InvalidRequestException("Missing JobChatType");
         }
