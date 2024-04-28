@@ -16,3 +16,14 @@
 
 package org.tctalent.server.elastic
 
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery
+import co.elastic.clients.elasticsearch._types.query_dsl.Query
+
+// Create an extension function for Query to filter not null.
+fun filterIfNotNull(builder: BoolQuery.Builder, qry: Query?): BoolQuery.Builder {
+    return if (qry != null) {
+        return builder.filter(qry)
+    } else {
+        builder
+    }
+}
