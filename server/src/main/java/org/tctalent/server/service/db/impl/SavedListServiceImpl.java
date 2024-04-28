@@ -229,7 +229,7 @@ public class SavedListServiceImpl implements SavedListService {
 
             deactivateIncompleteCandidateListTasks(savedList, candidate);
         } catch (Exception ex) {
-            log.warn("Could not delete candidate saved list " + csl.getId(), ex);
+          log.warn("Could not delete candidate saved list {}", csl.getId(), ex);
         }
     }
 
@@ -558,7 +558,7 @@ public class SavedListServiceImpl implements SavedListService {
             while ((tokens = reader.readNext()) != null) {
                 //tokens[] is an array of values from the line
                 //Ignore empty tokens
-                if (tokens.length > 0 && tokens[0].length() > 0) {
+                if (tokens.length > 0 && !tokens[0].isEmpty()) {
                     //A bit of logic to skip any header. Only checks once.
                     boolean skip = possibleHeader && !StringUtils.isNumeric(tokens[0]);
                     possibleHeader = false;
@@ -867,7 +867,7 @@ public class SavedListServiceImpl implements SavedListService {
         List<PublishedDocColumnDef> columnInfos = request.getConfiguredColumns();
 
         //Create the doc in the list folder.
-        GoogleFileSystemDrive drive = googleDriveConfig.getListFoldersDrive();
+        googleDriveConfig.getListFoldersDrive();
         GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
 
         //Set other data to publish.

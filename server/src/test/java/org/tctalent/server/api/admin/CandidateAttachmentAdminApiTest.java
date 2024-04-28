@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -51,6 +52,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.model.db.AttachmentType;
@@ -70,281 +72,305 @@ import org.tctalent.server.service.db.CandidateAttachmentService;
  */
 @WebMvcTest(CandidateAttachmentAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"USER", "ADMIN"})
 class CandidateAttachmentAdminApiTest extends ApiTestBase {
-    private static final long CANDIDATE_ID = 99L;
-    private static final String BASE_PATH = "/api/admin/candidate-attachment";
-    private static final String SEARCH_PATH = "/search";
-    private static final String SEARCH_PAGED_PATH = "/search-paged";
-    private static final String DOWNLOAD_BY_ID_PATH = "/{id}/download";
-    private static final String UPLOAD_BY_ID_PATH = "/{id}/upload";
-    private static final String LIST_BY_TYPE_PATH = "/list-by-type";
 
-    private static final CandidateAttachment candidateAttachmentsCvOnly = getCandidateAttachments(true);
-    private static final CandidateAttachment candidateAttachments = getCandidateAttachments(false);
+  private static final long CANDIDATE_ID = 99L;
+  private static final String BASE_PATH = "/api/admin/candidate-attachment";
+  private static final String SEARCH_PATH = "/search";
+  private static final String SEARCH_PAGED_PATH = "/search-paged";
+  private static final String DOWNLOAD_BY_ID_PATH = "/{id}/download";
+  private static final String UPLOAD_BY_ID_PATH = "/{id}/upload";
+  private static final String LIST_BY_TYPE_PATH = "/list-by-type";
 
-    private final Page<CandidateAttachment> pageCandidateAttachments =
-            new PageImpl<>(
-                    List.of(candidateAttachments, candidateAttachmentsCvOnly),
-                    PageRequest.of(0,10, Sort.unsorted()),
-                    2
-            );
+  private static final CandidateAttachment candidateAttachmentsCvOnly = getCandidateAttachments(
+      true);
+  private static final CandidateAttachment candidateAttachments = getCandidateAttachments(false);
 
-    @MockBean CandidateAttachmentService candidateAttachmentService;
-    @MockBean
-    AuthService authService;
+  private final Page<CandidateAttachment> pageCandidateAttachments =
+      new PageImpl<>(
+          List.of(candidateAttachments, candidateAttachmentsCvOnly),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          2
+      );
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateAttachmentAdminApi candidateAttachmentAdminApi;
+  @MockBean
+  CandidateAttachmentService candidateAttachmentService;
+  @MockBean
+  AuthService authService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateAttachmentAdminApi candidateAttachmentAdminApi;
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateAttachmentAdminApi).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    @DisplayName("search succeeds")
-    void searchSucceeds() throws Exception {
-        SearchByIdCandidateAttachmentRequest request = new SearchByIdCandidateAttachmentRequest();
-        request.setCandidateId(1L);
-        request.setCvOnly(false);
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateAttachmentAdminApi).isNotNull();
+  }
 
-        given(candidateAttachmentService
-                .listCandidateAttachments(anyLong()))
-                .willReturn(List.of(candidateAttachments));
+  @Test
+  @DisplayName("search succeeds")
+  void searchSucceeds() throws Exception {
+    SearchByIdCandidateAttachmentRequest request = new SearchByIdCandidateAttachmentRequest();
+    request.setCandidateId(1L);
+    request.setCvOnly(false);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateAttachmentService
+        .listCandidateAttachments(anyLong()))
+        .willReturn(List.of(candidateAttachments));
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.[0].cv", is(false)));
+    mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateAttachmentService).listCandidateAttachments(anyLong());
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$.[0].cv", is(false)));
 
-    @Test
-    @DisplayName("search cv only succeeds")
-    void searchCvOnlySucceeds() throws Exception {
-        SearchByIdCandidateAttachmentRequest request = new SearchByIdCandidateAttachmentRequest();
-        request.setCandidateId(CANDIDATE_ID);
-        request.setCvOnly(true);
+    verify(candidateAttachmentService).listCandidateAttachments(anyLong());
+  }
 
-        given(candidateAttachmentService
-                .listCandidateCvs(anyLong()))
-                .willReturn(List.of(candidateAttachmentsCvOnly));
+  @Test
+  @DisplayName("search cv only succeeds")
+  void searchCvOnlySucceeds() throws Exception {
+    SearchByIdCandidateAttachmentRequest request = new SearchByIdCandidateAttachmentRequest();
+    request.setCandidateId(CANDIDATE_ID);
+    request.setCvOnly(true);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateAttachmentService
+        .listCandidateCvs(anyLong()))
+        .willReturn(List.of(candidateAttachmentsCvOnly));
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.[0].cv", is(true)));
+    mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateAttachmentService).listCandidateCvs(anyLong());
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$.[0].cv", is(true)));
 
-    @Test
-    @DisplayName("search paged succeeds")
-    void searchPagedSucceeds() throws Exception {
-        SearchCandidateAttachmentsRequest request = new SearchCandidateAttachmentsRequest();
-        request.setCandidateId(CANDIDATE_ID);
+    verify(candidateAttachmentService).listCandidateCvs(anyLong());
+  }
 
-        given(candidateAttachmentService
-                .searchCandidateAttachments(any(SearchCandidateAttachmentsRequest.class)))
-                .willReturn(pageCandidateAttachments);
+  @Test
+  @DisplayName("search paged succeeds")
+  void searchPagedSucceeds() throws Exception {
+    SearchCandidateAttachmentsRequest request = new SearchCandidateAttachmentsRequest();
+    request.setCandidateId(CANDIDATE_ID);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateAttachmentService
+        .searchCandidateAttachments(any(SearchCandidateAttachmentsRequest.class)))
+        .willReturn(pageCandidateAttachments);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.totalElements", is(2)))
-                .andExpect(jsonPath("$.totalPages", is(1)))
-                .andExpect(jsonPath("$.number", is(0)))
-                .andExpect(jsonPath("$.hasNext", is(false)))
-                .andExpect(jsonPath("$.hasPrevious", is(false)))
-                .andExpect(jsonPath("$.content", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].cv", is(false)))
-                .andExpect(jsonPath("$.content.[1].cv", is(true)));
+    mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateAttachmentService).searchCandidateAttachments(any(SearchCandidateAttachmentsRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(2)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].cv", is(false)))
+        .andExpect(jsonPath("$.content.[1].cv", is(true)));
 
-    @Test
-    @DisplayName("create candidate attachment succeeds")
-    void createAttachmentSucceeds() throws Exception {
-        CreateCandidateAttachmentRequest request = new CreateCandidateAttachmentRequest();
+    verify(candidateAttachmentService).searchCandidateAttachments(
+        any(SearchCandidateAttachmentsRequest.class));
+  }
 
-        given(candidateAttachmentService
-                .createCandidateAttachment(any(CreateCandidateAttachmentRequest.class)))
-                .willReturn(candidateAttachments);
+  @Test
+  @DisplayName("create candidate attachment succeeds")
+  void createAttachmentSucceeds() throws Exception {
+    CreateCandidateAttachmentRequest request = new CreateCandidateAttachmentRequest();
 
-        mockMvc.perform(post(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+    given(candidateAttachmentService
+        .createCandidateAttachment(any(CreateCandidateAttachmentRequest.class)))
+        .willReturn(candidateAttachments);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.cv", is(false)));
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
 
-        verify(candidateAttachmentService).createCandidateAttachment(any(CreateCandidateAttachmentRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.cv", is(false)));
 
-    @Test
-    @DisplayName("download by id succeeds")
-    void downloadByIdSucceeds() throws Exception {
-        CandidateAttachment googleDoc = getCandidateAttachments(true);
-        googleDoc.setType(AttachmentType.googlefile);
+    verify(candidateAttachmentService).createCandidateAttachment(
+        any(CreateCandidateAttachmentRequest.class));
+  }
 
-        given(candidateAttachmentService
-                .getCandidateAttachment(anyLong()))
-                .willReturn(googleDoc);
+  @Test
+  @DisplayName("download by id succeeds")
+  void downloadByIdSucceeds() throws Exception {
+    CandidateAttachment googleDoc = getCandidateAttachments(true);
+    googleDoc.setType(AttachmentType.googlefile);
 
-        mockMvc.perform(get(BASE_PATH + DOWNLOAD_BY_ID_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateAttachmentService
+        .getCandidateAttachment(anyLong()))
+        .willReturn(googleDoc);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM));
+    mockMvc.perform(
+            get(BASE_PATH + DOWNLOAD_BY_ID_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateAttachmentService).getCandidateAttachment(anyLong());
-        verify(candidateAttachmentService).downloadCandidateAttachment(any(CandidateAttachment.class), any(OutputStream.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM));
 
-    @Test
-    @DisplayName("download by id fails - not a google file type")
-    void downloadByIdFailsForNonGoogleFileType() throws Exception {
-        given(candidateAttachmentService
-                .getCandidateAttachment(anyLong()))
-                .willReturn(candidateAttachments);
+    verify(candidateAttachmentService).getCandidateAttachment(anyLong());
+    verify(candidateAttachmentService).downloadCandidateAttachment(any(CandidateAttachment.class),
+        any(OutputStream.class));
+  }
 
-        mockMvc.perform(get(BASE_PATH + DOWNLOAD_BY_ID_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .accept(MediaType.APPLICATION_JSON))
+  @Test
+  @DisplayName("download by id fails - not a google file type")
+  void downloadByIdFailsForNonGoogleFileType() throws Exception {
+    given(candidateAttachmentService
+        .getCandidateAttachment(anyLong()))
+        .willReturn(candidateAttachments);
 
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code", is("missing_object")))
-                .andExpect(jsonPath("$.message", is("Missing FileSystemService with ID 99")));
+    mockMvc.perform(
+            get(BASE_PATH + DOWNLOAD_BY_ID_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateAttachmentService).getCandidateAttachment(anyLong());
-        verify(candidateAttachmentService, never()).downloadCandidateAttachment(any(CandidateAttachment.class), any(OutputStream.class));
-    }
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.code", is("missing_object")))
+        .andExpect(jsonPath("$.message", is("Missing FileSystemService with ID 99")));
 
-    @Test
-    @DisplayName("upload candidate attachment succeeds")
-    void uploadAttachmentSucceeds() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("cv", "cv.txt", "text/plain", "some cv text".getBytes());
+    verify(candidateAttachmentService).getCandidateAttachment(anyLong());
+    verify(candidateAttachmentService, never()).downloadCandidateAttachment(
+        any(CandidateAttachment.class), any(OutputStream.class));
+  }
 
-        given(candidateAttachmentService
-                .uploadAttachment(anyLong(), anyBoolean(), any(MultipartFile.class)))
-                .willReturn(candidateAttachmentsCvOnly);
+  @Test
+  @DisplayName("upload candidate attachment succeeds")
+  void uploadAttachmentSucceeds() throws Exception {
+    MockMultipartFile file = new MockMultipartFile("cv", "cv.txt", "text/plain",
+        "some cv text".getBytes());
 
-        mockMvc.perform(multipart(BASE_PATH + UPLOAD_BY_ID_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
-                        .file("file", file.getBytes())
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .param("cv", "true"))
+    given(candidateAttachmentService
+        .uploadAttachment(anyLong(), anyBoolean(), any(MultipartFile.class)))
+        .willReturn(candidateAttachmentsCvOnly);
 
+    mockMvc.perform(
+            multipart(BASE_PATH + UPLOAD_BY_ID_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
+                .file("file", file.getBytes())
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .param("cv", "true"))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.cv", is(true)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.cv", is(true)));
 
-        verify(candidateAttachmentService).uploadAttachment(anyLong(), anyBoolean(), any(MultipartFile.class));
-    }
+    verify(candidateAttachmentService).uploadAttachment(anyLong(), anyBoolean(),
+        any(MultipartFile.class));
+  }
 
-    @Test
-    @DisplayName("update candidate attachment succeeds")
-    void updateAttachmentSucceeds() throws Exception {
-        UpdateCandidateAttachmentRequest request = new UpdateCandidateAttachmentRequest();
+  @Test
+  @DisplayName("update candidate attachment succeeds")
+  void updateAttachmentSucceeds() throws Exception {
+    UpdateCandidateAttachmentRequest request = new UpdateCandidateAttachmentRequest();
 
-        given(candidateAttachmentService
-                .updateCandidateAttachment(anyLong(), any(UpdateCandidateAttachmentRequest.class)))
-                .willReturn(candidateAttachments);
+    given(candidateAttachmentService
+        .updateCandidateAttachment(anyLong(), any(UpdateCandidateAttachmentRequest.class)))
+        .willReturn(candidateAttachments);
 
-        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+    mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.cv", is(false)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.cv", is(false)));
 
-        verify(candidateAttachmentService).updateCandidateAttachment(anyLong(), any(UpdateCandidateAttachmentRequest.class));
-    }
+    verify(candidateAttachmentService).updateCandidateAttachment(anyLong(),
+        any(UpdateCandidateAttachmentRequest.class));
+  }
 
-    @Test
-    @DisplayName("list by upload type succeeds")
-    void listByUploadTypeSucceeds() throws Exception {
-        ListByUploadTypeRequest request = new ListByUploadTypeRequest();
+  @Test
+  @DisplayName("list by upload type succeeds")
+  void listByUploadTypeSucceeds() throws Exception {
+    ListByUploadTypeRequest request = new ListByUploadTypeRequest();
 
-        given(candidateAttachmentService
-                .listCandidateAttachmentsByType(any(ListByUploadTypeRequest.class)))
-                .willReturn(List.of(candidateAttachments));
+    given(candidateAttachmentService
+        .listCandidateAttachmentsByType(any(ListByUploadTypeRequest.class)))
+        .willReturn(List.of(candidateAttachments));
 
-        mockMvc.perform(post(BASE_PATH + LIST_BY_TYPE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+    mockMvc.perform(post(BASE_PATH + LIST_BY_TYPE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.[0].cv", is(false)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$.[0].cv", is(false)));
 
-        verify(candidateAttachmentService).listCandidateAttachmentsByType(any(ListByUploadTypeRequest.class));
-    }
+    verify(candidateAttachmentService).listCandidateAttachmentsByType(
+        any(ListByUploadTypeRequest.class));
+  }
 
-    @Test
-    @DisplayName("delete attachment by id succeeds")
-    void deleteByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+  @Test
+  @DisplayName("delete attachment by id succeeds")
+  void deleteByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-                .andDo(print())
-                .andExpect(status().isOk());
+        .andDo(print())
+        .andExpect(status().isOk());
 
-        verify(candidateAttachmentService).deleteCandidateAttachment(CANDIDATE_ID);
-    }
+    verify(candidateAttachmentService).deleteCandidateAttachment(CANDIDATE_ID);
+  }
 
-    private static CandidateAttachment getCandidateAttachments(boolean isCvOnly) {
-        CandidateAttachment candidateAttachment = new CandidateAttachment();
-        candidateAttachment.setCv(isCvOnly);
-        return candidateAttachment;
-    }
-
+  private static CandidateAttachment getCandidateAttachments(boolean isCvOnly) {
+    CandidateAttachment candidateAttachment = new CandidateAttachment();
+    candidateAttachment.setCv(isCvOnly);
+    return candidateAttachment;
+  }
 }

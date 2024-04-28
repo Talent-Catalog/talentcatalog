@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.service.db.BrandingService;
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(BrandingAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = { "USER","ADMIN" } )
 class BrandingAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/branding";
     private static final String LOGO = "https://images.squarespace-cdn.com/content/v1/my-logo";
@@ -74,6 +77,7 @@ class BrandingAdminApiTest extends ApiTestBase {
         given(brandingService.getBrandingInfo(any())).willReturn(brandingInfo);
 
         mockMvc.perform(get(BASE_PATH)
+                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON))
 
                 .andExpect(status().isOk())
