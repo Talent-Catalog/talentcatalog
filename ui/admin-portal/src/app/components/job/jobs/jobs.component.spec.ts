@@ -1,47 +1,75 @@
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {JobsComponent} from './jobs.component';
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
-import {SortedByComponent} from "../../util/sort/sorted-by.component";
-import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
-import {NgSelectModule} from "@ng-select/ng-select";
-import {SearchOppsBy} from "../../../model/base";
-import {SearchJobRequest} from "../../../model/job";
-// Import necessary modules and components for testing
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { JobsComponent } from './jobs.component';
+import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
+import { SortedByComponent } from "../../util/sort/sorted-by.component";
+import { NgbPaginationModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgSelectModule } from "@ng-select/ng-select";
+import { SearchOppsBy } from "../../../model/base";
+import {Job, SearchJobRequest} from "../../../model/job";
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { Observable, of } from 'rxjs';
+import {JobService} from "../../../services/job.service";
+import {ChatService} from "../../../services/chat.service";
+import {AuthorizationService} from "../../../services/authorization.service";
+import {SalesforceService} from "../../../services/salesforce.service";
+import {CountryService} from "../../../services/country.service";
+import {PartnerService} from "../../../services/partner.service";
+import {LOCALE_ID} from "@angular/core";
 
-fdescribe('JobsComponent', () => { // Focused describe block for JobsComponent
+// Subclass of JobsComponent to expose createSearchRequest method for testing
+class TestJobsComponent extends JobsComponent {
+  // Expose createSearchRequest method
+  public exposeCreateSearchRequest(): SearchJobRequest {
+    return this.createSearchRequest();
+  }
+}
+fdescribe('JobsComponent', () => {
+  let jobsComponent: TestJobsComponent;
+  let fixture: ComponentFixture<TestJobsComponent>;
+  let formBuilder: FormBuilder;
 
-  let component: JobsComponent; // Declare component variable
-  let fixture: ComponentFixture<JobsComponent>; // Declare fixture variable
-
-  let formBuilder: FormBuilder; // Declare formBuilder variable
-
-  beforeEach(waitForAsync(() => { // Perform async setup before each test
-
+  // Setup for the test suite
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [JobsComponent, SortedByComponent], // Declare component and its dependencies
+      declarations: [TestJobsComponent, SortedByComponent],
       imports: [
-        HttpClientTestingModule, // Import HttpClientTestingModule for HTTP testing
-        ReactiveFormsModule, // Import ReactiveFormsModule for form handling
-        NgbPaginationModule, // Import NgbPaginationModule for pagination
-        LocalStorageModule.forRoot({}), // Import LocalStorageModule for local storage
-        NgSelectModule // Import NgSelectModule for dropdown select
+        HttpClientTestingModule,
+        ReactiveFormsModule,
+        NgbPaginationModule,
+        LocalStorageModule.forRoot({}),
+        NgSelectModule
       ],
-    })
-    .compileComponents(); // Compile component and its dependencies asynchronously
+      providers: [
+        // Mock providers
+          { provide: FormBuilder, useClass: FormBuilder },
+      ]
+    }).compileComponents();
+    // Inject dependencies and spies
+    formBuilder = TestBed.inject(FormBuilder);
+   }));
 
-    formBuilder = TestBed.inject(FormBuilder); // Inject FormBuilder
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TestJobsComponent);
+    jobsComponent = fixture.componentInstance;
+    // Create an instance of TestJobsComponent with provided dependencies
+    jobsComponent = new TestJobsComponent(
+      TestBed.inject(ChatService),
+      TestBed.inject(FormBuilder),
+      TestBed.inject(AuthorizationService),
+      TestBed.inject(LocalStorageService),
+      TestBed.inject(JobService),
+      TestBed.inject(SalesforceService),
+      TestBed.inject(CountryService),
+      TestBed.inject(PartnerService),
+      TestBed.inject(LOCALE_ID)
+    );
 
-  }));
-
-  beforeEach(() => { // Perform setup before each test
-
-    fixture = TestBed.createComponent(JobsComponent); // Create component fixture
-    component = fixture.componentInstance; // Get component instance
-
-    component.searchForm = formBuilder.group({ // Initialize searchForm with formBuilder
-      keyword: [''], // Add form controls as per your component's searchForm structure
+    jobsComponent = fixture.componentInstance;
+    jobsComponent.searchForm = formBuilder.group({
+      keyword: [''],
       myOppsOnly: [false],
       showClosedOpps: [false],
       showInactiveOpps: [false],
@@ -49,21 +77,37 @@ fdescribe('JobsComponent', () => { // Focused describe block for JobsComponent
       selectedStages: [[]],
       destinationIds: [[]]
     });
-    component.searchBy = SearchOppsBy.live;
 
-    fixture.detectChanges(); // Detect changes to the component
+    // Set searchBy to live
+    jobsComponent.searchBy = SearchOppsBy.live;
 
+    // Detect changes
+    fixture.detectChanges();
   });
 
-  it('should create', () => { // Test if component is created successfully
-    expect(component).toBeTruthy(); // Expect component to be truthy
+  // Test cases
+  it('should create', () => {
+    expect(jobsComponent).toBeTruthy();
   });
 
-  it('should call search function when the search form is submitted',   (() => {
-    spyOn(component, 'search'); // Spy on the search function
-    const form = fixture.nativeElement.querySelector('form'); // Get form element from fixture
-    form.dispatchEvent(new Event('submit')); // Dispatch submit event on form
+  it('should call search function when the search form is submitted', () => {
+    spyOn(jobsComponent, 'search');
+    const form = fixture.nativeElement.querySelector('form');
+    form.dispatchEvent(new Event('submit'));
+    expect(jobsComponent.search).toHaveBeenCalled();
+  });
 
-    expect(component.search).toHaveBeenCalled(); // Expect that search function is called
-  }));
+  it('should generate correct search request for live search', () => {
+    const searchRequest = jobsComponent.exposeCreateSearchRequest();
+    expect(searchRequest.sfOppClosed).toBe(false);
+    expect((searchRequest as any).published).toBe(true); // Cast to 'any' to avoid TypeScript error
+    expect(searchRequest.activeStages).toBe(true);
+  });
+
+  it('should generate correct search request for starredByMe search', () => {
+    jobsComponent.searchBy = SearchOppsBy.starredByMe;
+    const searchRequest = jobsComponent.exposeCreateSearchRequest();
+    expect(searchRequest.starred).toBe(true);
+  });
+
 });
