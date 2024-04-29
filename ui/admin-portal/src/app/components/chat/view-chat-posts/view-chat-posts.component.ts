@@ -91,7 +91,9 @@ export class ViewChatPostsComponent extends PostsComponentBase
               event.target.closest('section').classList[0] : "";
 
       // Generate value to check if click was on an emoji picker toggle button (smiley emoji icon)
-      const clickedElementId: string = event.target.id;
+      const clickedElementId: string =
+        event.target.closest('button') ?
+          event.target.closest('button').id : "";
 
       if (clickedElementId.includes('reactionBtn') && this.editor.emojiPickerVisible) {
         // If click was on reaction picker toggle button, close the editor picker

@@ -98,7 +98,11 @@ export class ViewChatPostsComponent extends PostsComponentBase
       if (clickedElementId.includes('reactionBtn') && this.editor.emojiPickerVisible) {
         // If click was on reaction picker toggle button, close the editor picker
         this.editor.emojiPickerVisible = false
-      } else if (!sectionClass.includes('emoji') &&
+      } else if (clickedElementId.includes('emojiBtn') && postWithOpenPicker != null) {
+        // If click was on editor picker toggle button, close the post reaction picker
+        postWithOpenPicker.reactionPickerVisible = false;
+      }
+      else if (!sectionClass.includes('emoji') &&
           !clickedElementId.includes('reactionBtn') &&
           !clickedElementId.includes('emojiBtn')) {
         // If click was not on any emoji picker toggle button or emoji picker, close any open picker
