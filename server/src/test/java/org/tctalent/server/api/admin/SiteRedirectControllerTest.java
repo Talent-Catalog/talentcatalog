@@ -57,7 +57,7 @@ class SiteRedirectControllerTest extends ApiTestBase {
   void redirectOldResumeUrl() throws Exception {
     String testCandidateNumber = "12345";
 
-    mockMvc.perform(get(BASE_PATH + VIEW_RESUME_PATH + "/?id=" + testCandidateNumber)
+    mockMvc.perform(get(BASE_PATH + VIEW_RESUME_PATH + "?id=" + testCandidateNumber)
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_OCTET_STREAM))
 
