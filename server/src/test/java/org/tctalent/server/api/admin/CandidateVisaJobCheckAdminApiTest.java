@@ -61,8 +61,10 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
   private static final String BASE_PATH = "/api/admin/candidate-visa-job";
   private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
 
-  private static final CandidateVisaJobCheck candidateVisaJobCheck = getCandidateVisaJobCheck(false);
-  private static final CandidateVisaJobCheck candidateVisaJobCheckComplete = getCandidateVisaJobCheck(true);
+  private static final CandidateVisaJobCheck candidateVisaJobCheck = getCandidateVisaJobCheck(
+      false);
+  private static final CandidateVisaJobCheck candidateVisaJobCheckComplete = getCandidateVisaJobCheck(
+      true);
 
   @MockBean
   CandidateVisaJobCheckService candidateVisaJobCheckService;
@@ -111,18 +113,22 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.salaryTsmit", is("Yes")))
         .andExpect(jsonPath("$.qualification", is("Yes")))
         .andExpect(jsonPath("$.eligible_494", is("No")))
-        .andExpect(jsonPath("$.eligible_494_Notes", is("These are some eligible for visa 494 notes.")))
+        .andExpect(
+            jsonPath("$.eligible_494_Notes", is("These are some eligible for visa 494 notes.")))
         .andExpect(jsonPath("$.eligible_186", is("Yes")))
-        .andExpect(jsonPath("$.eligible_186_Notes", is("These are some eligible for visa 186 notes.")))
+        .andExpect(
+            jsonPath("$.eligible_186_Notes", is("These are some eligible for visa 186 notes.")))
         .andExpect(jsonPath("$.eligibleOther", is("SpecialHum")))
-        .andExpect(jsonPath("$.eligibleOtherNotes", is("These are some eligible for other visa notes.")))
+        .andExpect(
+            jsonPath("$.eligibleOtherNotes", is("These are some eligible for other visa notes.")))
         .andExpect(jsonPath("$.putForward", is("DiscussFurther")))
         .andExpect(jsonPath("$.tbbEligibility", is("Discuss")))
         .andExpect(jsonPath("$.notes", is("These are some notes.")))
         .andExpect(jsonPath("$.occupation", notNullValue()))
         .andExpect(jsonPath("$.occupationNotes", is("These are some occupation notes.")))
         .andExpect(jsonPath("$.qualificationNotes", is("These are some qualification notes.")))
-        .andExpect(jsonPath("$.relevantWorkExp", is("These are some relevant work experience notes.")))
+        .andExpect(
+            jsonPath("$.relevantWorkExp", is("These are some relevant work experience notes.")))
         .andExpect(jsonPath("$.ageRequirement", is("There are some age requirements.")))
         .andExpect(jsonPath("$.preferredPathways", is("These are some preferred pathways.")))
         .andExpect(jsonPath("$.ineligiblePathways", is("These are some ineligible pathways.")))
@@ -132,7 +138,8 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.englishThreshold", is("Yes")))
         .andExpect(jsonPath("$.languagesRequired.[0]", is(342)))
         .andExpect(jsonPath("$.languagesThresholdMet", is("Yes")))
-        .andExpect(jsonPath("$.languagesThresholdNotes", is("These are some language threshold notes.")));
+        .andExpect(
+            jsonPath("$.languagesThresholdNotes", is("These are some language threshold notes.")));
 
     verify(candidateVisaJobCheckService).getVisaJobCheck(anyLong());
   }
@@ -147,7 +154,7 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
         .createVisaJobCheck(anyLong(), any(CreateCandidateVisaJobCheckRequest.class)))
         .willReturn(candidateVisaJobCheck);
 
-    mockMvc.perform(post(BASE_PATH + "/" + anyLong())
+    mockMvc.perform(post(BASE_PATH + "/" + 99L)
             .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
@@ -160,7 +167,8 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.jobOpp.id", is(99)));
 
-    verify(candidateVisaJobCheckService).createVisaJobCheck(anyLong(), any(CreateCandidateVisaJobCheckRequest.class));
+    verify(candidateVisaJobCheckService).createVisaJobCheck(anyLong(),
+        any(CreateCandidateVisaJobCheckRequest.class));
   }
 
   @Test
