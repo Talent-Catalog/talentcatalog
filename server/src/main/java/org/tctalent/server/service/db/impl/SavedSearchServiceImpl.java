@@ -164,8 +164,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   private final EducationLevelRepository educationLevelRepository;
 
   /**
-   * These are the default candidate statuses to included in searches when no statuses are specified. Basically all "inactive" statuses such
-   * as draft, deleted, employed and ineligible.
+   * These are the default candidate statuses to included in searches when no statuses are
+   * specified. Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
    */
   private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>(
       EnumSet.complementOf(EnumSet.of(
@@ -298,11 +298,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 //          .setPageable(Pageable.unpaged());
 
       // TODO (the first area of replacement) -
-      BoolQuery.Builder boolQueryBuilder = handleElasticRequest(searchRequest, simpleQueryString, excludedCandidates);
-      NativeQuery query = NativeQuery.builder()
-          .withQuery(boolQueryBuilder.build()._toQuery())
-          .withPageable(Pageable.unpaged())
-          .build();
+      BoolQuery.Builder boolQueryBuilder = handleElasticRequest(searchRequest, simpleQueryString,
+          excludedCandidates);
+      NativeQuery query = new NativeQuery(boolQueryBuilder.build()._toQuery());
+//      NativeQuery query = NativeQuery.builder()
+//          .withQuery(boolQueryBuilder.build()._toQuery())
+//          .withPageable(Pageable.unpaged())
+//          .build();
 
       SearchHits<CandidateEs> hits = elasticsearchOperations.search(
           query, CandidateEs.class, IndexCoordinates.of("candidates"));
@@ -326,9 +328,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   /**
-   * Added @Transactional to this method as it is calling another method (updateSavedSearch) which requires the @Transactional annotation.
-   * Transaction needs to wrap the database modifying operation (searchJoinRepository.deleteBySearchId(id)) or else an exception will be
-   * thrown. See:
+   * Added @Transactional to this method as it is calling another method (updateSavedSearch) which
+   * requires the @Transactional annotation. Transaction needs to wrap the database modifying
+   * operation (searchJoinRepository.deleteBySearchId(id)) or else an exception will be thrown.
+   * See:
    * <a href="https://www.baeldung.com/jpa-transaction-required-exception">...</a>
    */
   @Override
@@ -372,8 +375,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   /**
-   * Mark the Candidate objects with any context associated with the selection list of the saved search. This means that context fields (ie
-   * ContextNote) associated with the saved search will be returned through the DtoBuilder if present.
+   * Mark the Candidate objects with any context associated with the selection list of the saved
+   * search. This means that context fields (ie ContextNote) associated with the saved search will
+   * be returned through the DtoBuilder if present.
    */
   @Override
   public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
@@ -1161,7 +1165,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   /**
-   * Checks whether the given user already has another saved search with this name - throwing exception if it does
+   * Checks whether the given user already has another saved search with this name - throwing
+   * exception if it does
    *
    * @param savedSearchId Existing saved search - or null if none
    * @param name          Saved search name
@@ -1310,11 +1315,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   /**
    * Sends emails to any users watching searches who had new results over night.
    * <p/>
-   * Has to be annotated as Transactional in order to create the "persistence context" (what the underlying Hibernate calls a Session). This
-   * context is used to fetch lazily loaded attributes (by auto generating other SQL calls on the database).
+   * Has to be annotated as Transactional in order to create the "persistence context" (what the
+   * underlying Hibernate calls a Session). This context is used to fetch lazily loaded attributes
+   * (by auto generating other SQL calls on the database).
    * <p/>
-   * When running searches from requests through the REST API, Spring automatically creates this context - so you don't have to annotate all
-   * your REST API methods as Transactional. - JC
+   * When running searches from requests through the REST API, Spring automatically creates this
+   * context - so you don't have to annotate all your REST API methods as Transactional. - JC
    */
   //Midnight GMT
   @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
@@ -1572,7 +1578,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       // Combine any joined searches (which will all be processed as elastic)
 //      BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
 //          simpleQueryString, excludedCandidates);
-      BoolQuery.Builder boolQueryBuilder = handleElasticRequest(searchRequest, simpleQueryString, excludedCandidates);
+      BoolQuery.Builder boolQueryBuilder = handleElasticRequest(searchRequest, simpleQueryString,
+          excludedCandidates);
 
       //Define sort from request
       PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
@@ -1580,26 +1587,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 //            log.info("Elasticsearch query:\n" + boolQueryBuilder.build()._toQuery().toString());
       log.info("Elasticsearch sort:\n" + req);
 
-            NativeQuery query = NativeQuery.builder()
-                    .withQuery(boolQueryBuilder.build()._toQuery())
-                    .withPageable(Pageable.unpaged())
-                    .build();
+      NativeQuery query = new NativeQuery(boolQueryBuilder.build()._toQuery());
 
-
-          NativeQuery.builder()
-              .withQuery(boolQueryBuilder.build()._toQuery())
-              .withPageable(Pageable.unpaged())
-              .build();
-
-
-//      NativeSearchQuery query = new NativeSearchQueryBuilder()
-//          .withQuery(boolQueryBuilder)
-//          .withPageable(req)
-//          .build();
       log.info("***************************************");
       log.info("***************************************");
       log.info("***************************************");
-      log.debug(query.toString());
+      log.debug("Query: " + query);
       log.info("***************************************");
       log.info("***************************************");
       log.info("***************************************");
@@ -1736,7 +1729,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     // Build up the search query.
-    BoolQuery.Builder boolBuilder = buildElasticQuery(searchRequest, simpleQueryString, excludedCandidates.stream().toList());
+    BoolQuery.Builder boolBuilder = buildElasticQuery(searchRequest, simpleQueryString,
+        excludedCandidates.stream().toList());
 
     // Add join searches in and return the boolQueryBuilder
     return addJoinRequests(searchRequest.getSearchJoinRequests(), boolBuilder, searchIds);
@@ -1756,8 +1750,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   /**
-   * Current replacement for computeElasticQuery. Not every request will actually be an elastic query, so this will handle both elastic and
-   * other search types. It will add a load of filters. The filters are unlike the "must" score - they don't affect the elastic score.
+   * Current replacement for computeElasticQuery. Not every request will actually be an elastic
+   * query, so this will handle both elastic and other search types. It will add a load of filters.
+   * The filters are unlike the "must" score - they don't affect the elastic score.
    */
   private BoolQuery.Builder buildElasticQuery(
       SearchCandidateRequest req,
@@ -1826,6 +1821,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
    * If the countries are not empty, accept them because what was presented to the
    * user was already limited to the allowed source countries. Otherwise, need to restrict.
    */
+  // TODO (this needs fixing. if getSourceCountries() is empty, should it return null?)
   private Query addCountries(SearchCandidateRequest req, User user) {
     List<Long> countryIds = req.getCountryIds();
     List<String> countries;
@@ -1836,7 +1832,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       countries = getCountryNames(countryIds);
     }
 
-    return countries == null ? null : getStringTermsQuery("country.keyword", countries);
+    return (countries == null || countries.isEmpty())
+        ? null
+        : getStringTermsQuery("country.keyword", countries);
   }
 
   private List<String> getCountryNames(List<Long> ids) {
@@ -1966,12 +1964,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
   private Query addMinOtherSpokenLevel(SearchCandidateRequest req) {
     Integer min = req.getOtherMinSpokenLevel();
-    return min == null ? null : getRangeFilter("otherLanguages.minSpokenLevel", String.valueOf(min), null);
+    return min == null ? null
+        : getRangeFilter("otherLanguages.minSpokenLevel", String.valueOf(min), null);
   }
 
   private Query addMinOtherWrittenLevel(SearchCandidateRequest req) {
     Integer min = req.getOtherMinWrittenLevel();
-    return min == null ? null : getRangeFilter("otherLanguages.minWrittenLevel", String.valueOf(min), null);
+    return min == null ? null
+        : getRangeFilter("otherLanguages.minWrittenLevel", String.valueOf(min), null);
   }
 
   /* Will determine if there are other languages. If there are, adds spoken and written levels.
@@ -1983,7 +1983,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       return null;
     }
 
-    BoolQuery.Builder bool = QueryBuilders.bool().must(getStringTermQuery("otherLanguages.name.keyword", otherLang.getName()));
+    BoolQuery.Builder bool = QueryBuilders.bool()
+        .must(getStringTermQuery("otherLanguages.name.keyword", otherLang.getName()));
     bool.filter(addMinOtherSpokenLevel(req));
     bool.filter(addMinOtherWrittenLevel(req));
 
