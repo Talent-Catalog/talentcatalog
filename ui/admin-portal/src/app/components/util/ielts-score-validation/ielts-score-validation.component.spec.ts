@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FormControlConditionalComponent} from './ielts-score-validation.component';
+import {IeltsScoreValidationComponent} from './ielts-score-validation.component';
 
 describe('FormControlConditionalComponent', () => {
-  let component: FormControlConditionalComponent;
-  let fixture: ComponentFixture<FormControlConditionalComponent>;
+  let component: IeltsScoreValidationComponent;
+  let fixture: ComponentFixture<IeltsScoreValidationComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FormControlConditionalComponent ]
+      declarations: [ IeltsScoreValidationComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FormControlConditionalComponent);
+    fixture = TestBed.createComponent(IeltsScoreValidationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

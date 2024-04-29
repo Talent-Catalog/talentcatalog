@@ -16,7 +16,7 @@
 
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {VisaAssessmentComponent} from './visa-check-card.component';
+import {VisaAssessmentComponent} from './visa-assessment.component';
 
 describe('VisaCheckCardComponent', () => {
   let component: VisaAssessmentComponent;
