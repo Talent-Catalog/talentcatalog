@@ -175,6 +175,10 @@ tasks.bootJar {
     }
 }
 
+tasks.withType<JavaCompile>() {
+    options.compilerArgs.add("-parameters")
+}
+
 tasks {
 //    val ENABLE_PREVIEW = "--enable-preview"
     withType<JavaCompile>() {
