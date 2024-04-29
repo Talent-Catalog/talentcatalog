@@ -16,6 +16,22 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,21 +48,6 @@ import org.tctalent.server.request.reviewstatus.CreateCandidateReviewStatusReque
 import org.tctalent.server.request.reviewstatus.UpdateCandidateReviewStatusRequest;
 import org.tctalent.server.service.db.CandidateReviewStatusService;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 /**
  * Unit tests for Candidate Review Status Admin Api endpoints.
  *
@@ -56,102 +57,107 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class CandidateReviewStatusAdminApiTest extends ApiTestBase {
 
-    private static final long CANDIDATE_ID = 99L;
+  private static final long CANDIDATE_ID = 99L;
 
-    private static final String BASE_PATH = "/api/admin/candidate-reviewstatus";
+  private static final String BASE_PATH = "/api/admin/candidate-reviewstatus";
 
-    private static final CandidateReviewStatusItem reviewStatusItem = AdminApiTestUtil.getCandidateReviewStatusItem();
+  private static final CandidateReviewStatusItem reviewStatusItem = AdminApiTestUtil.getCandidateReviewStatusItem();
 
-    @MockBean CandidateReviewStatusService candidateReviewStatusService;
+  @MockBean
+  CandidateReviewStatusService candidateReviewStatusService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateReviewStatusAdminApi candidateReviewStatusAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateReviewStatusAdminApi candidateReviewStatusAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateReviewStatusAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateReviewStatusAdminApi).isNotNull();
+  }
 
-    @Test
-    @DisplayName("get candidate review status succeeds")
-    void getCandidateReviewStatusSucceeds() throws Exception {
-        given(candidateReviewStatusService
-                .getCandidateReviewStatusItem(anyLong()))
-                .willReturn(reviewStatusItem);
+  @Test
+  @DisplayName("get candidate review status succeeds")
+  void getCandidateReviewStatusSucceeds() throws Exception {
+    given(candidateReviewStatusService
+        .getCandidateReviewStatusItem(anyLong()))
+        .willReturn(reviewStatusItem);
 
-        mockMvc.perform(get(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH + "/" + CANDIDATE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.reviewStatus", is("verified")))
-                .andExpect(jsonPath("$.comment", is("A review comment")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.reviewStatus", is("verified")))
+        .andExpect(jsonPath("$.comment", is("A review comment")));
 
-        verify(candidateReviewStatusService).getCandidateReviewStatusItem(CANDIDATE_ID);
-    }
+    verify(candidateReviewStatusService).getCandidateReviewStatusItem(CANDIDATE_ID);
+  }
 
-    @Test
-    @DisplayName("create candidate review status succeeds")
-    void createCandidateReviewStatusSucceeds() throws Exception {
-        CreateCandidateReviewStatusRequest request = new CreateCandidateReviewStatusRequest();
-        request.setCandidateId(1L);
-        request.setSavedSearchId(2L);
-        request.setReviewStatus(ReviewStatus.verified);
+  @Test
+  @DisplayName("create candidate review status succeeds")
+  void createCandidateReviewStatusSucceeds() throws Exception {
+    CreateCandidateReviewStatusRequest request = new CreateCandidateReviewStatusRequest();
+    request.setCandidateId(1L);
+    request.setSavedSearchId(2L);
+    request.setReviewStatus(ReviewStatus.verified);
 
-        given(candidateReviewStatusService
-                .createCandidateReviewStatusItem(any(CreateCandidateReviewStatusRequest.class)))
-                .willReturn(reviewStatusItem);
+    given(candidateReviewStatusService
+        .createCandidateReviewStatusItem(any(CreateCandidateReviewStatusRequest.class)))
+        .willReturn(reviewStatusItem);
 
-        mockMvc.perform(post(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.reviewStatus", is("verified")))
-                .andExpect(jsonPath("$.comment", is("A review comment")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.reviewStatus", is("verified")))
+        .andExpect(jsonPath("$.comment", is("A review comment")));
 
-        verify(candidateReviewStatusService).createCandidateReviewStatusItem(any(CreateCandidateReviewStatusRequest.class));
-    }
+    verify(candidateReviewStatusService).createCandidateReviewStatusItem(any(CreateCandidateReviewStatusRequest.class));
+  }
 
-    @Test
-    @DisplayName("update candidate review status by id succeeds")
-    void updateCandidateReviewStatusByIdSucceeds() throws Exception {
-        UpdateCandidateReviewStatusRequest request = new UpdateCandidateReviewStatusRequest();
-        request.setCandidateReviewStatusId(1L);
-        request.setReviewStatus(ReviewStatus.verified);
+  @Test
+  @DisplayName("update candidate review status by id succeeds")
+  void updateCandidateReviewStatusByIdSucceeds() throws Exception {
+    UpdateCandidateReviewStatusRequest request = new UpdateCandidateReviewStatusRequest();
+    request.setCandidateReviewStatusId(1L);
+    request.setReviewStatus(ReviewStatus.verified);
 
-        given(candidateReviewStatusService
-                .updateCandidateReviewStatusItem(anyLong(), any(UpdateCandidateReviewStatusRequest.class)))
-                .willReturn(reviewStatusItem);
+    given(candidateReviewStatusService
+        .updateCandidateReviewStatusItem(anyLong(), any(UpdateCandidateReviewStatusRequest.class)))
+        .willReturn(reviewStatusItem);
 
-        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.reviewStatus", is("verified")))
-                .andExpect(jsonPath("$.comment", is("A review comment")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.reviewStatus", is("verified")))
+        .andExpect(jsonPath("$.comment", is("A review comment")));
 
-        verify(candidateReviewStatusService).updateCandidateReviewStatusItem(anyLong(), any(UpdateCandidateReviewStatusRequest.class));
-    }
-
+    verify(candidateReviewStatusService).updateCandidateReviewStatusItem(anyLong(), any(UpdateCandidateReviewStatusRequest.class));
+  }
 }

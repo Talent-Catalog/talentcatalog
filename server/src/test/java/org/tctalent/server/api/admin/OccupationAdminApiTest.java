@@ -16,7 +16,29 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,28 +62,6 @@ import org.tctalent.server.request.occupation.UpdateOccupationRequest;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.OccupationService;
 
-import java.io.InputStream;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 /**
  * Unit tests for Candidate Occupation Admin Api endpoints.
  *
@@ -71,213 +71,223 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class OccupationAdminApiTest extends ApiTestBase {
 
-    private static final long OCCUPATION_ID = 99L;
+  private static final long OCCUPATION_ID = 99L;
 
-    private static final String BASE_PATH = "/api/admin/occupation";
-    private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
-    private static final String SEARCH_PATH = "/search";
+  private static final String BASE_PATH = "/api/admin/occupation";
+  private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
+  private static final String SEARCH_PATH = "/search";
 
-    private static final List<Occupation> occupationList = AdminApiTestUtil.getListOfOccupations();
-    private static final Occupation occupation = AdminApiTestUtil.getOccupation();
-    private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
+  private static final List<Occupation> occupationList = AdminApiTestUtil.getListOfOccupations();
+  private static final Occupation occupation = AdminApiTestUtil.getOccupation();
+  private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
 
-    private final Page<Occupation> occupationPage =
-            new PageImpl<>(
-                    List.of(occupation),
-                    PageRequest.of(0,10, Sort.unsorted()),
-                    1
-            );
+  private final Page<Occupation> occupationPage =
+      new PageImpl<>(
+          List.of(occupation),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
 
-    @MockBean OccupationService occupationService;
-    @MockBean LanguageService languageService;
+  @MockBean
+  OccupationService occupationService;
+  @MockBean
+  LanguageService languageService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired OccupationAdminApi occupationAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  OccupationAdminApi occupationAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(occupationAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(occupationAdminApi).isNotNull();
+  }
 
-    @Test
-    @DisplayName("add system language translation succeeds")
-    void addSystemLanguageTranslationsSucceeds() throws Exception {
-        String langCode = "Spanish";
-        MockMultipartFile file = new MockMultipartFile("trans", "trans.txt", "text/plain", "some translations".getBytes());
+  @Test
+  @DisplayName("add system language translation succeeds")
+  void addSystemLanguageTranslationsSucceeds() throws Exception {
+    String langCode = "Spanish";
+    MockMultipartFile file = new MockMultipartFile("trans", "trans.txt", "text/plain", "some translations".getBytes());
 
-        given(languageService
-                .addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class)))
-                .willReturn(systemLanguage);
+    given(languageService
+        .addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class)))
+        .willReturn(systemLanguage);
 
-        mockMvc.perform(multipart(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
-                        .file("file", file.getBytes())
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(multipart(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
+            .file("file", file.getBytes())
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.language", is("Spanish")))
-                .andExpect(jsonPath("$.label", is("spanish")))
-                .andExpect(jsonPath("$.rtl", is(false)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(1)))
+        .andExpect(jsonPath("$.language", is("Spanish")))
+        .andExpect(jsonPath("$.label", is("spanish")))
+        .andExpect(jsonPath("$.rtl", is(false)));
 
-        verify(languageService).addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class));
-    }
+    verify(languageService).addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class));
+  }
 
-    @Test
-    @DisplayName("list all occupations succeeds")
-    void listAllOccupationsSucceeds() throws Exception {
+  @Test
+  @DisplayName("list all occupations succeeds")
+  void listAllOccupationsSucceeds() throws Exception {
 
-        given(occupationService
-                .listOccupations())
-                .willReturn(occupationList);
+    given(occupationService
+        .listOccupations())
+        .willReturn(occupationList);
 
-        mockMvc.perform(get(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$.[0].name", is("Builder")))
-                .andExpect(jsonPath("$.[0].status", is("active")))
-                .andExpect(jsonPath("$.[1].name", is("Baker")))
-                .andExpect(jsonPath("$.[1].status", is("active")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$.[0].name", is("Builder")))
+        .andExpect(jsonPath("$.[0].status", is("active")))
+        .andExpect(jsonPath("$.[1].name", is("Baker")))
+        .andExpect(jsonPath("$.[1].status", is("active")));
 
-        verify(occupationService).listOccupations();
-    }
+    verify(occupationService).listOccupations();
+  }
 
-    @Test
-    @DisplayName("search paged occupations succeeds")
-    void searchPagedSucceeds() throws Exception {
-        SearchOccupationRequest request = new SearchOccupationRequest();
-        request.setKeyword("nur");
-        request.setStatus(Status.active);
-        request.setLanguage("english");
+  @Test
+  @DisplayName("search paged occupations succeeds")
+  void searchPagedSucceeds() throws Exception {
+    SearchOccupationRequest request = new SearchOccupationRequest();
+    request.setKeyword("nur");
+    request.setStatus(Status.active);
+    request.setLanguage("english");
 
-        given(occupationService
-                .searchOccupations(any(SearchOccupationRequest.class)))
-                .willReturn(occupationPage);
+    given(occupationService
+        .searchOccupations(any(SearchOccupationRequest.class)))
+        .willReturn(occupationPage);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.totalElements", is(1)))
-                .andExpect(jsonPath("$.totalPages", is(1)))
-                .andExpect(jsonPath("$.number", is(0)))
-                .andExpect(jsonPath("$.hasNext", is(false)))
-                .andExpect(jsonPath("$.hasPrevious", is(false)))
-                .andExpect(jsonPath("$.content", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].id", is(1)))
-                .andExpect(jsonPath("$.content.[0].name", is("Nurse")))
-                .andExpect(jsonPath("$.content.[0].status", is("active")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].id", is(1)))
+        .andExpect(jsonPath("$.content.[0].name", is("Nurse")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")));
 
-        verify(occupationService).searchOccupations(any(SearchOccupationRequest.class));
-    }
+    verify(occupationService).searchOccupations(any(SearchOccupationRequest.class));
+  }
 
-    @Test
-    @DisplayName("get occupation by id succeeds")
-    void getOccupationByIdSucceeds() throws Exception {
+  @Test
+  @DisplayName("get occupation by id succeeds")
+  void getOccupationByIdSucceeds() throws Exception {
 
-        given(occupationService
-                .getOccupation(anyLong()))
-                .willReturn(occupation);
+    given(occupationService
+        .getOccupation(anyLong()))
+        .willReturn(occupation);
 
-        mockMvc.perform(get(BASE_PATH + "/" + OCCUPATION_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH + "/" + OCCUPATION_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("Nurse")))
-                .andExpect(jsonPath("$.status", is("active")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(1)))
+        .andExpect(jsonPath("$.name", is("Nurse")))
+        .andExpect(jsonPath("$.status", is("active")));
 
-        verify(occupationService).getOccupation(anyLong());
-    }
+    verify(occupationService).getOccupation(anyLong());
+  }
 
-    @Test
-    @DisplayName("create occupation succeeds")
-    void createOccupationSucceeds() throws Exception {
-        CreateOccupationRequest request = new CreateOccupationRequest();
-        request.setName("Nurse");
-        request.setStatus(Status.active);
+  @Test
+  @DisplayName("create occupation succeeds")
+  void createOccupationSucceeds() throws Exception {
+    CreateOccupationRequest request = new CreateOccupationRequest();
+    request.setName("Nurse");
+    request.setStatus(Status.active);
 
-        given(occupationService
-                .createOccupation(any(CreateOccupationRequest.class)))
-                .willReturn(occupation);
+    given(occupationService
+        .createOccupation(any(CreateOccupationRequest.class)))
+        .willReturn(occupation);
 
-        mockMvc.perform(post(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("Nurse")))
-                .andExpect(jsonPath("$.status", is("active")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(1)))
+        .andExpect(jsonPath("$.name", is("Nurse")))
+        .andExpect(jsonPath("$.status", is("active")));
 
-        verify(occupationService).createOccupation(any(CreateOccupationRequest.class));
-    }
+    verify(occupationService).createOccupation(any(CreateOccupationRequest.class));
+  }
 
-    @Test
-    @DisplayName("update occupation by id succeeds")
-    void updateOccupationByIdSucceeds() throws Exception {
-        UpdateOccupationRequest request = new UpdateOccupationRequest();
-        request.setName("Nurse");
-        request.setStatus(Status.active);
+  @Test
+  @DisplayName("update occupation by id succeeds")
+  void updateOccupationByIdSucceeds() throws Exception {
+    UpdateOccupationRequest request = new UpdateOccupationRequest();
+    request.setName("Nurse");
+    request.setStatus(Status.active);
 
-        given(occupationService
-                .updateOccupation(anyLong(), any(UpdateOccupationRequest.class)))
-                .willReturn(occupation);
+    given(occupationService
+        .updateOccupation(anyLong(), any(UpdateOccupationRequest.class)))
+        .willReturn(occupation);
 
-        mockMvc.perform(put(BASE_PATH + "/" + OCCUPATION_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(put(BASE_PATH + "/" + OCCUPATION_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("Nurse")))
-                .andExpect(jsonPath("$.status", is("active")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(1)))
+        .andExpect(jsonPath("$.name", is("Nurse")))
+        .andExpect(jsonPath("$.status", is("active")));
 
-        verify(occupationService).updateOccupation(anyLong(), any(UpdateOccupationRequest.class));
-    }
+    verify(occupationService).updateOccupation(anyLong(), any(UpdateOccupationRequest.class));
+  }
 
-    @Test
-    @DisplayName("delete occupation by id succeeds")
-    void deleteOccupationByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + OCCUPATION_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+  @Test
+  @DisplayName("delete occupation by id succeeds")
+  void deleteOccupationByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + OCCUPATION_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-                .andExpect(status().isOk());
+        .andExpect(status().isOk());
 
-        verify(occupationService).deleteOccupation(anyLong());
-    }
+    verify(occupationService).deleteOccupation(anyLong());
+  }
 }

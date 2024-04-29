@@ -36,33 +36,34 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(SiteRedirectController.class)
 @AutoConfigureMockMvc
 class SiteRedirectControllerTest extends ApiTestBase {
-    private static final String BASE_PATH = "/backend/jobseeker";
-    private static final String VIEW_RESUME_PATH = "/view-resume";
+
+  private static final String BASE_PATH = "/backend/jobseeker";
+  private static final String VIEW_RESUME_PATH = "/view-resume";
 
 
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper objectMapper;
-    @Autowired
-    SiteRedirectController siteRedirectController;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  SiteRedirectController siteRedirectController;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    void redirectOldResumeUrl() throws Exception {
-        String testCandidateNumber = "12345";
+  @Test
+  void redirectOldResumeUrl() throws Exception {
+    String testCandidateNumber = "12345";
 
-        mockMvc.perform(get(BASE_PATH + VIEW_RESUME_PATH + "/?id=" + testCandidateNumber)
+    mockMvc.perform(get(BASE_PATH + VIEW_RESUME_PATH + "/?id=" + testCandidateNumber)
             .header("Authorization", "Bearer " + "jwt-token")
-                .accept(MediaType.APPLICATION_OCTET_STREAM))
+            .accept(MediaType.APPLICATION_OCTET_STREAM))
 
-            .andDo(print())
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl(
-                "https://tctalent.org/admin-portal/candidate/" + testCandidateNumber));
-    }
+        .andDo(print())
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl(
+            "https://tctalent.org/admin-portal/candidate/" + testCandidateNumber));
+  }
 }

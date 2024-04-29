@@ -34,7 +34,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
  *
  * @author smalik
  */
-//@WithMockUser(roles = { "USER","ADMIN" } )
+@WithMockUser(roles = { "USER","ADMIN" } )
 public class ApiTestBase {
     private static final String USER_NAME = "test_user";
     private static final String FIRST_NAME = "test";

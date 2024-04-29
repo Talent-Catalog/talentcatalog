@@ -17,4 +17,5 @@
 package org.tctalent.server.configuration
 
 class SavedSearchServiceTest {
+    
 }

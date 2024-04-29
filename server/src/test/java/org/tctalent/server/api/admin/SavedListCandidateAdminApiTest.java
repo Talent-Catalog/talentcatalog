@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -70,322 +71,330 @@ import org.tctalent.server.service.db.UserService;
 @AutoConfigureMockMvc
 class SavedListCandidateAdminApiTest extends ApiTestBase {
 
-    private static final String BASE_PATH = "/api/admin/saved-list-candidate";
-    private static final String IS_EMPTY_PATH = "/is-empty";
-    private static final String LIST_PATH = "/list";
-    private static final String MERGE_PATH = "/merge";
-    private static final String MERGE_FROM_FILE_PATH = "/merge-from-file";
-    private static final String REMOVE_PATH = "/remove";
-    private static final String REPLACE_PATH = "/replace";
-    private static final String SEARCH_PATH = "/search";
-    private static final String SEARCH_PAGED_PATH = "/search-paged";
-    private static final String EXPORT_CSV_PATH = "/export/csv";
-    private static final String CREATE_FOLDERS_PATH = "/create-folders";
-    private static final String SAVE_SELECTION_PATH = "/save-selection";
-    private static final SavedList savedList = AdminApiTestUtil.getSavedListWithCandidates();
+  private static final String BASE_PATH = "/api/admin/saved-list-candidate";
+  private static final String IS_EMPTY_PATH = "/is-empty";
+  private static final String LIST_PATH = "/list";
+  private static final String MERGE_PATH = "/merge";
+  private static final String MERGE_FROM_FILE_PATH = "/merge-from-file";
+  private static final String REMOVE_PATH = "/remove";
+  private static final String REPLACE_PATH = "/replace";
+  private static final String SEARCH_PATH = "/search";
+  private static final String SEARCH_PAGED_PATH = "/search-paged";
+  private static final String EXPORT_CSV_PATH = "/export/csv";
+  private static final String CREATE_FOLDERS_PATH = "/create-folders";
+  private static final String SAVE_SELECTION_PATH = "/save-selection";
+  private static final SavedList savedList = AdminApiTestUtil.getSavedListWithCandidates();
 
-    private static final List<Candidate> savedListCandidates = new ArrayList<>(savedList.getCandidates());
-    private static final Page<Candidate> savedListCandidatesPage =
-        new PageImpl<>(
-            savedListCandidates,
-            PageRequest.of(0,10, Sort.unsorted()),
-            1
-        );
+  private static final List<Candidate> savedListCandidates = new ArrayList<>(savedList.getCandidates());
+  private static final Page<Candidate> savedListCandidatesPage =
+      new PageImpl<>(
+          savedListCandidates,
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
 
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper objectMapper;
-    @Autowired
-    SavedListCandidateAdminApi savedListCandidateAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  SavedListCandidateAdminApi savedListCandidateAdminApi;
 
-    @MockBean
-    CandidateOpportunityService candidateOpportunityService;
-    @MockBean
-    SavedListService savedListService;
-    @MockBean
-    CandidateSavedListService candidateSavedListService;
-    @MockBean
-    CandidateService candidateService;
-    @MockBean
-    UserService userService;
+  @MockBean
+  CandidateOpportunityService candidateOpportunityService;
+  @MockBean
+  SavedListService savedListService;
+  @MockBean
+  CandidateSavedListService candidateSavedListService;
+  @MockBean
+  CandidateService candidateService;
+  @MockBean
+  UserService userService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    void isEmpty() throws Exception {
-        boolean testEmptyCheck = true;
+  @Test
+  void isEmpty() throws Exception {
+    boolean testEmptyCheck = true;
 
-        given(savedListService.isEmpty(anyLong()))
-            .willReturn(testEmptyCheck);
+    given(savedListService.isEmpty(anyLong()))
+        .willReturn(testEmptyCheck);
 
-        mockMvc.perform(
-                get(BASE_PATH + "/" + 123 + IS_EMPTY_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-            )
+    mockMvc.perform(
+            get(BASE_PATH + "/" + 123 + IS_EMPTY_PATH)
+                .header("Authorization", "Bearer " + "jwt-token")
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().string(testEmptyCheck ? "true" : "false"));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string(testEmptyCheck ? "true" : "false"));
 
-        verify(savedListService).isEmpty(anyLong());
-    }
+    verify(savedListService).isEmpty(anyLong());
+  }
 
-    @Test
-    void list() throws Exception {
-        given(savedListService.get(anyLong()))
-            .willReturn(savedList);
+  @Test
+  void list() throws Exception {
+    given(savedListService.get(anyLong()))
+        .willReturn(savedList);
 
-        mockMvc.perform(
-                get(BASE_PATH + "/123" + LIST_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .accept(MediaType.APPLICATION_JSON)
-            )
+    mockMvc.perform(
+            get(BASE_PATH + "/123" + LIST_PATH)
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON)
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$", hasSize(3)))
-            .andExpect(jsonPath("$.[0].nationality.name", is("Pakistan")))
-             ;
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(3)))
+        .andExpect(jsonPath("$.[0].nationality.name", is("Pakistan")))
+    ;
 
-        verify(savedListService).get(anyLong());
+    verify(savedListService).get(anyLong());
 
-    }
+  }
 
-    @Test
-    void merge() throws Exception {
-        UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
+  @Test
+  void merge() throws Exception {
+    UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
 
-        mockMvc.perform(
-                put(BASE_PATH + "/123" + MERGE_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+    mockMvc.perform(
+            put(BASE_PATH + "/123" + MERGE_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+    ;
 
-        verify(savedListService).mergeSavedList(anyLong(),
-            any(UpdateExplicitSavedListContentsRequest.class));
-    }
+    verify(savedListService).mergeSavedList(anyLong(),
+        any(UpdateExplicitSavedListContentsRequest.class));
+  }
 
-    @Test
-    void mergeFromFile() throws Exception {
-        MockMultipartFile testFile = new MockMultipartFile(
-            "file", "hello.txt", MediaType.TEXT_PLAIN_VALUE,
-            "some content".getBytes()
-        );
+  @Test
+  void mergeFromFile() throws Exception {
+    MockMultipartFile testFile = new MockMultipartFile(
+        "file", "hello.txt", MediaType.TEXT_PLAIN_VALUE,
+        "some content".getBytes()
+    );
 
-        mockMvc.perform(
-                multipart(HttpMethod.PUT, BASE_PATH + "/123" + MERGE_FROM_FILE_PATH)
-                    .file(testFile)
-                    .header("Authorization", "Bearer " + "jwt-token")
-            )
+    mockMvc.perform(
+            multipart(HttpMethod.PUT, BASE_PATH + "/123" + MERGE_FROM_FILE_PATH)
+                .file(testFile)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+    ;
 
-        verify(savedListService).mergeSavedListFromInputStream(anyLong(), any(InputStream.class));
-    }
+    verify(savedListService).mergeSavedListFromInputStream(anyLong(), any(InputStream.class));
+  }
 
-    @Test
-    void remove() throws Exception {
-        UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
+  @Test
+  void remove() throws Exception {
+    UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
 
-        mockMvc.perform(
-                put(BASE_PATH + "/123" + REMOVE_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+    mockMvc.perform(
+            put(BASE_PATH + "/123" + REMOVE_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+    ;
 
-        verify(savedListService).removeCandidateFromList(anyLong(),
-            any(UpdateExplicitSavedListContentsRequest.class));
-    }
+    verify(savedListService).removeCandidateFromList(anyLong(),
+        any(UpdateExplicitSavedListContentsRequest.class));
+  }
 
-    @Test
-    void replace() throws Exception {
-        UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
+  @Test
+  void replace() throws Exception {
+    UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
 
-        mockMvc.perform(
-                put(BASE_PATH + "/123" + REPLACE_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+    mockMvc.perform(
+            put(BASE_PATH + "/123" + REPLACE_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+    ;
 
-        verify(candidateSavedListService).clearSavedList(anyLong());
+    verify(candidateSavedListService).clearSavedList(anyLong());
 
-        verify(savedListService).mergeSavedList(anyLong(),
-            any(UpdateExplicitSavedListContentsRequest.class));
-    }
+    verify(savedListService).mergeSavedList(anyLong(),
+        any(UpdateExplicitSavedListContentsRequest.class));
+  }
 
-    @Test
-    void search() throws Exception {
-        SavedListGetRequest request = new SavedListGetRequest();
+  @Test
+  void search() throws Exception {
+    SavedListGetRequest request = new SavedListGetRequest();
 
-        given(savedListService.get(anyLong()))
-            .willReturn(savedList);
-        given(candidateService.getSavedListCandidatesUnpaged(any(SavedList.class), any(
-            SavedListGetRequest.class)))
-            .willReturn(savedListCandidates);
+    given(savedListService.get(anyLong()))
+        .willReturn(savedList);
+    given(candidateService.getSavedListCandidatesUnpaged(any(SavedList.class), any(
+        SavedListGetRequest.class)))
+        .willReturn(savedListCandidates);
 
-        mockMvc.perform(
-                post(BASE_PATH + "/123" + SEARCH_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON)
-            )
+    mockMvc.perform(
+            post(BASE_PATH + "/123" + SEARCH_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON)
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$", hasSize(3)))
-            .andExpect(jsonPath("$.[0].nationality.name", is("Pakistan")))
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(3)))
+        .andExpect(jsonPath("$.[0].nationality.name", is("Pakistan")))
+    ;
 
-        verify(savedListService).get(anyLong());
-        verify(candidateService).getSavedListCandidatesUnpaged(any(SavedList.class),
-            any(SavedListGetRequest.class));
-    }
+    verify(savedListService).get(anyLong());
+    verify(candidateService).getSavedListCandidatesUnpaged(any(SavedList.class),
+        any(SavedListGetRequest.class));
+  }
 
-    @Test
-    void searchPaged() throws Exception {
-        SavedListGetRequest request = new SavedListGetRequest();
+  @Test
+  void searchPaged() throws Exception {
+    SavedListGetRequest request = new SavedListGetRequest();
 
-        given(savedListService.get(anyLong()))
-            .willReturn(savedList);
-        given(candidateService.getSavedListCandidates(any(SavedList.class), any(
-            SavedListGetRequest.class)))
-            .willReturn(savedListCandidatesPage);
+    given(savedListService.get(anyLong()))
+        .willReturn(savedList);
+    given(candidateService.getSavedListCandidates(any(SavedList.class), any(
+        SavedListGetRequest.class)))
+        .willReturn(savedListCandidatesPage);
 
-        mockMvc.perform(
-                post(BASE_PATH + "/123" + SEARCH_PAGED_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON)
-            )
+    mockMvc.perform(
+            post(BASE_PATH + "/123" + SEARCH_PAGED_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON)
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.totalElements", is(3)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content[0].nationality.name", is("Pakistan")))
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.totalElements", is(3)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content[0].nationality.name", is("Pakistan")))
+    ;
 
-        verify(savedListService).get(anyLong());
-        verify(candidateService).getSavedListCandidates(any(SavedList.class),
-            any(SavedListGetRequest.class));
-    }
+    verify(savedListService).get(anyLong());
+    verify(candidateService).getSavedListCandidates(any(SavedList.class),
+        any(SavedListGetRequest.class));
+  }
 
-    @Test
-    void create() throws Exception {
-        UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
+  @Test
+  void create() throws Exception {
+    UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
 
-        given(savedListService.createSavedList(any(UpdateExplicitSavedListContentsRequest.class)))
-            .willReturn(savedList);
+    given(savedListService.createSavedList(any(UpdateExplicitSavedListContentsRequest.class)))
+        .willReturn(savedList);
 
-        mockMvc.perform(
-                post(BASE_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+    mockMvc.perform(
+            post(BASE_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.id", is(1)))
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(1)))
+    ;
 
-        verify(savedListService).createSavedList(any(UpdateExplicitSavedListContentsRequest.class));
-    }
+    verify(savedListService).createSavedList(any(UpdateExplicitSavedListContentsRequest.class));
+  }
 
-    @Test
-    void export() throws Exception {
-        SavedListGetRequest request = new SavedListGetRequest();
+  @Test
+  void export() throws Exception {
+    SavedListGetRequest request = new SavedListGetRequest();
 
-        given(savedListService.get(anyLong()))
-            .willReturn(savedList);
-        given(candidateService.getSavedListCandidatesUnpaged(any(SavedList.class), any(
-            SavedListGetRequest.class)))
-            .willReturn(savedListCandidates);
+    given(savedListService.get(anyLong()))
+        .willReturn(savedList);
+    given(candidateService.getSavedListCandidatesUnpaged(any(SavedList.class), any(
+        SavedListGetRequest.class)))
+        .willReturn(savedListCandidates);
 
-        mockMvc.perform(
-                post(BASE_PATH + "/123" + EXPORT_CSV_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.TEXT_PLAIN_VALUE)
-            )
+    mockMvc.perform(
+            post(BASE_PATH + "/123" + EXPORT_CSV_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.TEXT_PLAIN_VALUE)
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(header().string("Content-Disposition",
-                "attachment; filename=\"" + "candidates.csv\""))
-            .andExpect(content().contentType("text/csv; charset=utf-8"))
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(header().string("Content-Disposition",
+            "attachment; filename=\"" + "candidates.csv\""))
+        .andExpect(content().contentType("text/csv; charset=utf-8"))
+    ;
 
-        verify(savedListService).get(anyLong());
-        verify(candidateService).exportToCsv(any(SavedList.class),
-            any(SavedListGetRequest.class), any(PrintWriter.class));
-    }
+    verify(savedListService).get(anyLong());
+    verify(candidateService).exportToCsv(any(SavedList.class),
+        any(SavedListGetRequest.class), any(PrintWriter.class));
+  }
 
-    @Test
-    void createCandidateFolders() throws Exception {
-        given(savedListService.get(anyLong()))
-            .willReturn(savedList);
+  @Test
+  void createCandidateFolders() throws Exception {
+    given(savedListService.get(anyLong()))
+        .willReturn(savedList);
 
-        mockMvc.perform(
-                put(BASE_PATH + "/123" + CREATE_FOLDERS_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-            )
+    mockMvc.perform(
+            put(BASE_PATH + "/123" + CREATE_FOLDERS_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+        )
 
-            .andDo(print())
-            .andExpect(status().isOk())
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+    ;
 
-        verify(savedListService).get(anyLong());
-        verify(candidateService).createCandidateFolder(any(Collection.class));
-    }
+    verify(savedListService).get(anyLong());
+    verify(candidateService).createCandidateFolder(any(Collection.class));
+  }
 
-    @Test
-    void saveSelection() throws Exception {
-        UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
+  @Test
+  void saveSelection() throws Exception {
+    UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
 
-        mockMvc.perform(
-                put(BASE_PATH + "/123" + SAVE_SELECTION_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+    mockMvc.perform(put(BASE_PATH + "/123" + SAVE_SELECTION_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+    ;
 
-        verify(savedListService).mergeSavedList(anyLong(),
-            any(UpdateExplicitSavedListContentsRequest.class));
-    }
+    verify(savedListService).mergeSavedList(anyLong(),
+        any(UpdateExplicitSavedListContentsRequest.class));
+  }
 }

@@ -16,7 +16,26 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +45,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.*;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.TaskAssignmentImpl;
+import org.tctalent.server.model.db.TaskImpl;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.task.CreateTaskAssignmentRequest;
 import org.tctalent.server.request.task.TaskListRequest;
 import org.tctalent.server.request.task.UpdateTaskAssignmentRequestAdmin;
@@ -35,19 +58,6 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.TaskService;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Unit tests for Task Assignment Admin Api endpoints.
@@ -71,15 +81,23 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
   private static final TaskAssignmentImpl completedTaskAssignment = AdminApiTestUtil.getCompletedTaskAssignment();
   private static final List<TaskAssignmentImpl> taskAssignments = AdminApiTestUtil.getTaskAssignments();
 
-  @MockBean AuthService authService;
-  @MockBean CandidateService candidateService;
-  @MockBean SavedListService savedListService;
-  @MockBean TaskAssignmentService taskAssignmentService;
-  @MockBean TaskService taskService;
+  @MockBean
+  AuthService authService;
+  @MockBean
+  CandidateService candidateService;
+  @MockBean
+  SavedListService savedListService;
+  @MockBean
+  TaskAssignmentService taskAssignmentService;
+  @MockBean
+  TaskService taskService;
 
-  @Autowired MockMvc mockMvc;
-  @Autowired ObjectMapper objectMapper;
-  @Autowired TaskAssignmentAdminApi taskAssignmentAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  TaskAssignmentAdminApi taskAssignmentAdminApi;
 
   @BeforeEach
   void setUp() {
@@ -101,6 +119,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .willReturn(taskAssignments);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -142,6 +161,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .willReturn(taskAssignment);
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -149,7 +169,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
 
         .andDo(print())
         .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.id", is(99)))
         .andExpect(jsonPath("$.task.id", is(148)))
@@ -181,6 +201,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .willReturn(completedTaskAssignment);
 
     mockMvc.perform(put(BASE_PATH + "/" + TASK_ASSIGNMENT_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -188,7 +209,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
 
         .andDo(print())
         .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.id", is(99)))
         .andExpect(jsonPath("$.task.id", is(148)))
@@ -207,7 +228,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
 
     verify(taskAssignmentService).get(anyLong());
     verify(taskAssignmentService).update(
-            taskAssignment, request.isCompleted(), request.isAbandoned(), request.getCandidateNotes(), request.getDueDate());
+        taskAssignment, request.isCompleted(), request.isAbandoned(), request.getCandidateNotes(), request.getDueDate());
   }
 
   @Test
@@ -219,6 +240,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + TASK_ASSIGNMENT_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 
@@ -241,13 +263,14 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
     given(savedListService.get(anyLong())).willReturn(savedList);
 
     mockMvc.perform(put(BASE_PATH + ASSIGN_TO_LIST_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk());
+        .andDo(print())
+        .andExpect(status().isOk());
 
     verify(taskService).get(anyLong());
     verify(savedListService).get(anyLong());
@@ -264,19 +287,19 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
     given(savedListService.get(anyLong())).willReturn(savedList);
 
     mockMvc.perform(put(BASE_PATH + REMOVE_FROM_LIST_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk());
+        .andDo(print())
+        .andExpect(status().isOk());
 
     verify(taskService).get(anyLong());
     verify(savedListService).get(anyLong());
     verify(savedListService).deassociateTaskFromList(user, task, savedList);
   }
-
 
 
 }
