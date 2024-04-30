@@ -211,7 +211,7 @@ public class CandidateSpecification {
             }
 
             // EXCLUDED CANDIDATES (eg from Review Status)
-            if (excludedCandidates != null && excludedCandidates.size() > 0) {
+            if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
                 conjunction.getExpressions().add(candidate.in(excludedCandidates).not()
                     );
             }
@@ -220,10 +220,10 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getNationalityIds())) {
                 if (request.getNationalitySearchType() == null || SearchType.or.equals(request.getNationalitySearchType())) {
                     conjunction.getExpressions().add(
-                            builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
+                            builder.isTrue(candidate.get("nationality").get("id").in(request.getNationalityIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("nationality").in(request.getNationalityIds()).not()
+                    conjunction.getExpressions().add(candidate.get("nationality").get("id").in(request.getNationalityIds()).not()
                     );
                 }
             }
@@ -234,10 +234,10 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getCountryIds())) {
                 if (request.getCountrySearchType() == null || SearchType.or.equals(request.getCountrySearchType())) {
                     conjunction.getExpressions().add(
-                        builder.isTrue(candidate.get("country").in(request.getCountryIds()))
+                        builder.isTrue(candidate.get("country").get("id").in(request.getCountryIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("country").in(request.getCountryIds()).not());
+                    conjunction.getExpressions().add(candidate.get("country").get("id").in(request.getCountryIds()).not());
                 }
             // If request ids IS EMPTY only show source countries
             } else if (loggedInUser != null &&
@@ -284,12 +284,13 @@ public class CandidateSpecification {
             // SURVEY TYPE SEARCH
             if (!Collections.isEmpty(request.getSurveyTypeIds())) {
                 conjunction.getExpressions().add(
-                        builder.isTrue(candidate.get("surveyType").in(request.getSurveyTypeIds()))
+                        builder.isTrue(candidate.get("surveyType").get("id").in(request.getSurveyTypeIds()))
                 );
             }
 
             // REFERRER
-            if (request.getRegoReferrerParam() != null && request.getRegoReferrerParam().trim().length() != 0) {
+            if (request.getRegoReferrerParam() != null && !request.getRegoReferrerParam().trim()
+                .isEmpty()) {
                 conjunction.getExpressions().add(
                         builder.like(builder.lower(candidate.get("regoReferrerParam")), request.getRegoReferrerParam().toLowerCase())
                 );

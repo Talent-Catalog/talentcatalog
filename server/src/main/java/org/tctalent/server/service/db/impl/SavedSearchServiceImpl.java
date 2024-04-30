@@ -51,8 +51,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -300,7 +300,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       // TODO (the first area of replacement) -
       BoolQuery.Builder boolQueryBuilder = handleElasticRequest(searchRequest, simpleQueryString,
           excludedCandidates);
-      NativeQuery query = new NativeQuery(boolQueryBuilder.build()._toQuery());
+
+      NativeQuery query = new NativeQueryBuilder()
+          .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
+          .withPageable(req)
+          .build();
+
+      log.info("-----------------------------------");
+      log.info("-----------------------------------");
+      log.info("search candidates");
+      log.info("query");
+      log.info(query.toString());
+      log.info("-----------------------------------");
+      log.info("-----------------------------------");
+      log.info("-----------------------------------");
+      log.info("-----------------------------------");
 //      NativeQuery query = NativeQuery.builder()
 //          .withQuery(boolQueryBuilder.build()._toQuery())
 //          .withPageable(Pageable.unpaged())
@@ -1584,15 +1598,23 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       //Define sort from request
       PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-//            log.info("Elasticsearch query:\n" + boolQueryBuilder.build()._toQuery().toString());
-      log.info("Elasticsearch sort:\n" + req);
+//            NativeSearchQuery query = new NativeSearchQueryBuilder()
+//          .withQuery(boolQueryBuilder)
+//          .withPageable(req)
+//          .build();
 
-      NativeQuery query = new NativeQuery(boolQueryBuilder.build()._toQuery());
+      NativeQuery query = new NativeQueryBuilder()
+          .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
+          .withPageable(req)
+          .build();
+
+      log.info("Elasticsearch query:\n" + query);
+      log.info("Elasticsearch sort:\n{}", req);
 
       log.info("***************************************");
       log.info("***************************************");
       log.info("***************************************");
-      log.debug("Query: " + query);
+      log.debug("Query: " + query.getQuery());
       log.info("***************************************");
       log.info("***************************************");
       log.info("***************************************");
@@ -1768,7 +1790,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     return addFilters(boolBuilder, req, excludedCandidates);
   }
 
-  // todo (need to check with the use of null returning in the filters/queries here)
   private BoolQuery.Builder addFilters(Builder boolBuilder, SearchCandidateRequest req,
       List<Candidate> excludedCandidates) {
     User user = userService.getLoggedInUser();
@@ -1821,7 +1842,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
    * If the countries are not empty, accept them because what was presented to the
    * user was already limited to the allowed source countries. Otherwise, need to restrict.
    */
-  // TODO (this needs fixing. if getSourceCountries() is empty, should it return null?)
   private Query addCountries(SearchCandidateRequest req, User user) {
     List<Long> countryIds = req.getCountryIds();
     List<String> countries;
