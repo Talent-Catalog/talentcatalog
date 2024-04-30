@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -303,7 +304,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
       NativeQuery query = new NativeQueryBuilder()
           .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
-          .withPageable(req)
+          .withPageable(Pageable.unpaged())
           .build();
 
       log.info("-----------------------------------");
