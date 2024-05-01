@@ -14,26 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.cache;
+package org.tctalent.server.configuration;
 
-import lombok.extern.slf4j.Slf4j;
-import org.ehcache.event.CacheEvent;
-import org.ehcache.event.CacheEventListener;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * Listens for cache events and logs them. The event types that will be logged are defined in
- * ehcache.xml in /resources.
- *
- * @author sadatmalik
- */
-@Slf4j
-public class CacheLogger implements CacheEventListener<Object, Object> {
-
-  @Override
-  public void onEvent(CacheEvent<?, ?> cacheEvent) {
-    log.info("Cache event: {} | Key: {} | Old value: {} | New value: {}",
-        cacheEvent.getType(), cacheEvent.getKey(), cacheEvent.getOldValue(),
-        cacheEvent.getNewValue());
-  }
+@Configuration
+@EnableCaching
+public class CacheConfig {
 
 }
