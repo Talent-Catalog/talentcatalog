@@ -45,8 +45,6 @@ spring:
     uris: ${ELASTICSEARCH_URL:http://localhost:9200}
     username: ${ELASTICSEARCH_USERNAME:}
     password: ${ELASTICSEARCH_PASSWORD:}
-    # If Redis requires a password, uncomment the next line
-    # password: yourPassword
 
   cache:
     type: redis
