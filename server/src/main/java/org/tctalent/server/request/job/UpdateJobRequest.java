@@ -33,6 +33,12 @@ public class UpdateJobRequest extends OpportunityParams {
     private Long contactUserId;
 
     /**
+     * If present indicates that this job is an evergreen job.
+     */
+    @Nullable
+    private Boolean evergreen;
+
+    /**
      * Name of the role associated with the job - for example "Senior programmer"
      */
     @Nullable
