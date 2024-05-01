@@ -172,19 +172,15 @@
           <a ngbNavLink>Submission List</a>
           <ng-template ngbNavContent>
             <div *ngIf= "job.submissionList">
-              <div class="form-control-plaintext">
-              <span>Click to open submission list:
-                <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>
-              </span>
+              <div *ngIf="showBreadcrumb" class="fw-light my-3">
+                <span>Click to open submission list:
+                  <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>
+                </span>
               </div>
               <div *ngIf="!showBreadcrumb">
-                <div class="mt-4">
-                  <h6><small class="fst-italic">
-                    Candidate opportunities ("cases") going for this job </small>
-                    <a [routerLink]="['/list',job.submissionList.id]">
-                      <i class="fas fa-expand link-info" title="Open full submission list"></i>
-                    </a>
-                  </h6>
+                <div class="fw-light my-3">
+                  Candidate opportunities ("cases") going for this job:
+                  <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>
                 </div>
                 <app-candidate-source-results
                   [candidateSource]="job.submissionList"
