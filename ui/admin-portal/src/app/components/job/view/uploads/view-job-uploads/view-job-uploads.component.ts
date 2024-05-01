@@ -61,8 +61,8 @@ export class ViewJobUploadsComponent implements OnInit {
         break;
 
       case "mou":
-        // initialValue.url = this.job.submissionList?.fileMouLink;
-        // initialValue.name = this.job.submissionList?.fileMouName
+        initialValue.url = this.job.submissionList?.fileMouLink;
+        initialValue.name = this.job.submissionList?.fileMouName
     }
     inputLinkModal.componentInstance.initialValue = initialValue;
     inputLinkModal.result.then(

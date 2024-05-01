@@ -16,27 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +82,28 @@ import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -901,6 +902,13 @@ public class JobServiceImpl implements JobService {
         savedListService.saveIt(submissionList);
     }
 
+    private void setJobMouLink(SalesforceJobOpp job, String name, String url) {
+        SavedList submissionList = job.getSubmissionList();
+        submissionList.setFileMouLink(url);
+        submissionList.setFileMouName(name);
+        savedListService.saveIt(submissionList);
+    }
+
     private GoogleFileSystemFile uploadFile(String folderLink, String fileName,
         MultipartFile file) throws IOException {
 
@@ -981,6 +989,19 @@ public class JobServiceImpl implements JobService {
         }
         GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
         setJobInterviewGuidanceLink(job, uploadedFile.getName(), uploadedFile.getUrl());
+        return job;
+    }
+
+    @Override
+    public SalesforceJobOpp uploadMou(long id, MultipartFile file)
+            throws InvalidRequestException, NoSuchObjectException, IOException {
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+        setJobMouLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
     }
 }
