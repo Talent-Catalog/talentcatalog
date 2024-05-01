@@ -61,4 +61,5 @@ export interface SearchCandidateRequest {
   candidateFilterByOpps?: CandidateFilterByOpps;
   miniIntakeCompleted?: boolean;
   fullIntakeCompleted?: boolean;
+  unhcrStatuses?: string[];
 }

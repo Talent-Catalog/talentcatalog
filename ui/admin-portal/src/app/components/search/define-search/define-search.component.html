@@ -232,7 +232,7 @@
 
               <div class="row gy-3 pb-3">
                 <!-- AGE -->
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <!-- MIN AGE -->
                   <div class="row">
                     <div class="col-6">
@@ -249,9 +249,37 @@
                   </div>
                 </div>
 
+                <!-- UNHCR STATUS -->
+                <div class="col-md-6">
+                  <label class="form-label">UNHCR Status</label>
+                  <ng-select
+                    id="unhcrStatusOptions"
+                    [items]="unhcrStatusOptions"
+                    [multiple]="true"
+                    [searchable]="false"
+                    [closeOnSelect]="false"
+                    placeholder="Select"
+                    bindLabel="stringValue"
+                    [formControlName]="'unhcrStatusesDisplay'">
+                    <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                      <div *ngFor="let item of items | slice:0:2" class="ng-value">
+                        <span class="ng-value-label">{{item.stringValue}}</span>
+                        <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                      </div>
+                      <div *ngIf="items.length > 2"
+                           [ngbPopover]="getTooltip('unhcrStatusesDisplay')"
+                           popoverTitle="UNHCR Statuses"
+                           triggers="mouseenter:mouseleave"
+                           container="body"
+                           class="ng-value">
+                        <span class="ng-value-label">{{items.length - 2}} more...</span>
+                      </div>
+                    </ng-template>
+                  </ng-select>
+                </div>
 
                 <!-- MODIFIED BETWEEN -->
-                <div class="col-md-6">
+                <div class="col-md-3">
                   <label class="form-label">Last Modified</label>
                   <app-date-range-picker [readonly]="elastic()"
                                          #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
