@@ -152,6 +152,14 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PutMapping("{id}/mou-link")
+    public @NotNull Map<String, Object> updateMouLink(
+            @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateMouLink(id, updateLinkRequest);
+        return jobDto().build(job);
+    }
+
     @PutMapping("{id}/starred")
     public @NotNull Map<String, Object> updateStarred(
         @PathVariable("id") long id, @Valid @RequestBody boolean starred)

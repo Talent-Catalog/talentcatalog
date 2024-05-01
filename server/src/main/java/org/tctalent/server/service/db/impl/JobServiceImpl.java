@@ -704,6 +704,23 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @NonNull
+    public SalesforceJobOpp updateMouLink(long id, UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException {
+        User loggedInUser = getLoggedInUser("update interview guidance file");
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        setJobMouLink(job, updateLinkRequest.getName(), updateLinkRequest.getUrl());
+
+        job.setAuditFields(loggedInUser);
+
+        return salesforceJobOppRepository.save(job);
+    }
+
+    @Override
     public void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException {
         SalesforceJobOpp job = getJob(id);
          JobOppIntake intake = job.getJobOppIntake();

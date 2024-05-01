@@ -228,6 +228,18 @@ public interface JobService {
         throws InvalidRequestException, NoSuchObjectException;
 
     /**
+     * Updates the signed MOU file link of the job with the given id
+     * @param id ID of job
+     * @param updateLinkRequest Details of link (name and url)
+     * @return Updated job
+     * @throws InvalidRequestException if the job does not have a submission list
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateMouLink(long id, UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException;
+
+    /**
      * Updates whether or not the job wth the given id is starred by the current user
      * @param id ID of job
      * @param starred True if job should be starred, false if not
