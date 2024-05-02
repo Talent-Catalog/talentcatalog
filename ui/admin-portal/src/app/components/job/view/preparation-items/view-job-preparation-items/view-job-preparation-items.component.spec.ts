@@ -1,19 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 import { ViewJobPreparationItemsComponent } from "./view-job-preparation-items.component";
 import { JobPrepItem } from "../../../../../model/job-prep-item";
+import {MockJobPrepItem} from "../../../MockData/JobPrepItem";
 
-class MockJobPrepItem extends JobPrepItem {
-  private _isCompleted: boolean;
 
-  constructor(description: string, tabId: string, isCompleted: boolean) {
-    super(description, tabId);
-    this._isCompleted = isCompleted;
-  }
-
-  isCompleted(): boolean {
-    return this._isCompleted;
-  }
-}
 
 fdescribe('ViewJobPreparationItemsComponent', () => {
   let component: ViewJobPreparationItemsComponent;
