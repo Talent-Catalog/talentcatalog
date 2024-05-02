@@ -22,11 +22,11 @@ import { LocalStorageModule } from "angular-2-local-storage";
 import { ActivatedRoute, Router } from "@angular/router";
  import { of, Subject } from "rxjs";
 import { User } from "../model/user";
+import {MockUser} from "../MockData/MockUser";
 
 // Stub class for AuthenticationService
 class AuthenticationServiceStub {
   loggedInUser$ = new Subject<User>();
-
   // Method to set the logged-in user
   setLoggedInUser(user: User) {
     this.loggedInUser$.next(user);
@@ -41,9 +41,6 @@ fdescribe('AppComponent', () => {
 
   // Async setup before each test
   beforeEach(waitForAsync(() => {
-    // Creating a spy object for AuthenticationService
-    const authServiceSpy = jasmine.createSpyObj('AuthenticationService', ['loggedInUser$']);
-
     // TestBed configuration
     TestBed.configureTestingModule({
       imports: [
@@ -78,27 +75,7 @@ fdescribe('AppComponent', () => {
   // Test case: should set showHeader to true when a user is logged in
   it('should set showHeader to true when a user is logged in', () => {
     /* mock user object */
-    const user: User = {
-      approver: undefined,
-      createdBy: undefined,
-      createdDate: Date.now(),
-      email: "test@gmail.com",
-      firstName: "",
-      id: 2131,
-      jobCreator: false,
-      lastLogin: Date.now(),
-      lastName: "Ahmady",
-      mfaConfigured: false,
-      name: "",
-      partner: undefined,
-      purpose: "",
-      readOnly: false,
-      role: "",
-      sourceCountries: [],
-      status: "",
-      updatedDate: 0,
-      username: "test@gmail.com",
-      usingMfa: false  };
+    const user: User = new MockUser();
     authService.setLoggedInUser(user);
     expect(component.showHeader).toBeTrue();
   });
