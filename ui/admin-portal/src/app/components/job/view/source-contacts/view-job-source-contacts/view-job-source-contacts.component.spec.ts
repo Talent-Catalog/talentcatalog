@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ViewJobSourceContactsComponent } from './view-job-source-contacts.component';
-import { EventEmitter } from '@angular/core';
-import { Partner } from '../../../../../model/partner';
 import {MockPartner} from "../../../MockData/MockPartner";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
@@ -15,7 +13,7 @@ fdescribe('ViewJobSourceContactsComponent', () => {
       declarations: [ViewJobSourceContactsComponent],
       imports: [HttpClientTestingModule,
         LocalStorageModule.forRoot({}),
-      ] 
+      ]
     })
     .compileComponents();
   }));
