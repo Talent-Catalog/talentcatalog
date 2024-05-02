@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ViewJobSourceContactsComponent } from './view-job-source-contacts.component';
-import {MockPartner} from "../../../MockData/MockPartner";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
+import {MockPartner} from "../../../../../MockData/MockPartner";
 
 fdescribe('ViewJobSourceContactsComponent', () => {
   let component: ViewJobSourceContactsComponent;

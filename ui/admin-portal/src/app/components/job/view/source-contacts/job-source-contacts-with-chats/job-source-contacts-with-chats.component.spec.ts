@@ -7,15 +7,12 @@ import { Partner } from '../../../../../model/partner';
 import {JobChatType, CreateChatRequest, JobChat} from '../../../../../model/chat';
 import { Job } from '../../../../../model/job';
 import { of } from 'rxjs';
-import {MockUser} from "../../../MockData/MockUser";
-import {MockJob} from "../../../MockData/MockJob";
-import {
+ import {
   ViewJobSourceContactsComponent
 } from "../view-job-source-contacts/view-job-source-contacts.component";
 import {PartnerService} from "../../../../../services/partner.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {MockPartner} from "../../../MockData/MockPartner";
-import {ViewPostComponent} from "../../../../chat/view-post/view-post.component";
+ import {ViewPostComponent} from "../../../../chat/view-post/view-post.component";
 import {ViewChatPostsComponent} from "../../../../chat/view-chat-posts/view-chat-posts.component";
 import {
   CreateUpdatePostComponent
@@ -28,7 +25,9 @@ import {
   ReactiveFormsModule
 } from "@angular/forms";
 import {QuillModule} from "ngx-quill";
-import {MockJobChat} from "../../../MockData/MockJobChat";
+import {MockPartner} from "../../../../../MockData/MockPartner";
+import {MockJobChat} from "../../../../../MockData/MockJobChat";
+import {MockJob} from "../../../../../MockData/MockJob";
 
 fdescribe('JobSourceContactsWithChatsComponent', () => {
   let component: JobSourceContactsWithChatsComponent;
@@ -107,7 +106,7 @@ fdescribe('JobSourceContactsWithChatsComponent', () => {
   });
 
   it('should mark chat as read when requested', () => {
-    const mockChat:JobChat = MockJobChat; // Mock chat object
+    const mockChat:JobChat = new MockJobChat(); // Mock chat object
     component.selectedSourcePartnerChat = mockChat;
 
     component.onMarkChatAsRead();

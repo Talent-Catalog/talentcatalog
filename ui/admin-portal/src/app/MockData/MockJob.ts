@@ -20,6 +20,7 @@ import {Job, JobOpportunityStage} from "../model/job";
 import {TaskType, UploadType} from "../model/task";
 
 export const MockJob: Job = {
+  evergreen: false,
   closed: false,
   name: "XYZ",
   submissionList: {
