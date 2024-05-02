@@ -21,7 +21,8 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { UserService } from '../../../services/user.service';
 import { of } from 'rxjs';
-import { User } from '../../../model/user';
+import {config_test} from "../../../../config-test";
+import {MockUser} from "../../../MockData/MockUser";
 
 fdescribe('ChangePasswordComponent', () => {
   let component: ChangePasswordComponent;
@@ -55,29 +56,7 @@ fdescribe('ChangePasswordComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ChangePasswordComponent);
     component = fixture.componentInstance;
-    const user: User = {
-      approver: undefined,
-      createdBy: undefined,
-      createdDate: 0,
-      email: "",
-      firstName: "",
-      id: 21221,
-      jobCreator: false,
-      lastLogin: 0,
-      lastName: "",
-      mfaConfigured: false,
-      name: "",
-      partner: undefined,
-      purpose: "",
-      readOnly: false,
-      role: "",
-      sourceCountries: [],
-      status: "",
-      updatedDate: 0,
-      username: "",
-      usingMfa: false
-    };
-    component.user = user;
+    component.user = new MockUser();
     fixture.detectChanges();
   });
 
@@ -90,24 +69,23 @@ fdescribe('ChangePasswordComponent', () => {
   it('should call updatePassword() function and close modal on successful password update', () => {
     // Arrange
     component.form.patchValue({
-      password: 'newPassword',
-      passwordConfirmation: 'newPassword'
+      password: config_test.credentials.password,
+      passwordConfirmation: config_test.credentials.password
     });
 
-    userService.updatePassword.and.returnValue(of(null));
+    userService.updatePassword.and.returnValue(of(true));
 
     // Act
     component.updatePassword();
 
     // Assert
-    expect(userService.updatePassword).toHaveBeenCalledWith(21221, { password: 'newPassword', passwordConfirmation: 'newPassword' } as any);
+    expect(userService.updatePassword).toHaveBeenCalledWith(1, { password: config_test.credentials.password, passwordConfirmation: config_test.credentials.password } as any);
     expect(activeModal.close).toHaveBeenCalledWith(component.user);
   });
 
   it('should dismiss modal without changes when closeModal() is called', () => {
     // Act
     component.dismiss();
-
     // Assert
     expect(activeModal.dismiss).toHaveBeenCalledWith(false);
   });
