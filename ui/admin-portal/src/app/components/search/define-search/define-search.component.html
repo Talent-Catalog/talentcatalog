@@ -110,7 +110,7 @@
               element in a suitable direction for the viewport - adding the keydown.enter event
               stops the tooltip from being triggered by pressing enter while using the input field -->
               <label class="form-label" for="simpleQueryString">Keyword Search</label>
-              <button class="search-tip-button" [ngbTooltip]="keywordSearchTip" placement=""
+              <button class="tool-tip-button" [ngbTooltip]="keywordSearchTip" placement=""
                       triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
@@ -123,7 +123,7 @@
 
             <!-- STATUS -->
             <div class="mb-3 col-md-3">
-              <label class="form-label">Status</label><button class="search-tip-button" ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips"><i class="fa-regular fa-circle-question fa-xs"></i></button>
+              <label class="form-label">Status</label><button class="tool-tip-button" ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips"><i class="fa-regular fa-circle-question fa-xs"></i></button>
               <ng-select
                 id="statuses"
                 [items]="candidateStatusOptions"
@@ -444,7 +444,7 @@
             <!-- REFERRER -->
             <div class="col-md-4">
               <label class="form-label" for="referrer">Referrer</label>
-              <button class="search-tip-button"
+              <button class="tool-tip-button"
                       ngbTooltip="Search ignores upper or lower case so don't worry about case.
                       Also % can be used as a wild card. So 'ab%' will find any referers which
                       begin with 'ab'. Or '%irc%' will find any referers with irc appearing
@@ -473,7 +473,7 @@
             <!-- EXCLUSION LIST -->
             <div class="col-md-4">
               <label class="form-label" for="exclusion">Exclusion list</label>
-              <button class="search-tip-button"
+              <button class="tool-tip-button"
                       ngbTooltip="Select from lists you created, global lists (e.g. job lists) or
                       lists that you have starred."
                       placement="" triggers="click" tooltipClass="search-tips">
@@ -494,7 +494,7 @@
 
             <!-- PARTNERS  -->
             <div class="col-md-4">
-              <label class="form-label">Partners</label><button class="search-tip-button" ngbTooltip="{{getPartnerDefaultMessage()}}" placement="" triggers="click" tooltipClass="search-tips"><i class="fa-regular fa-circle-question fa-xs"></i></button>
+              <label class="form-label">Partners</label><button class="tool-tip-button" ngbTooltip="{{getPartnerDefaultMessage()}}" placement="" triggers="click" tooltipClass="search-tips"><i class="fa-regular fa-circle-question fa-xs"></i></button>
               <ng-select
                 id="partner"
                 [items]="partners"

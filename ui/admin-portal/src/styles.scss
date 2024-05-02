@@ -206,4 +206,14 @@ ngx-wig {
   background-color: $white;
 }
 
+// Making the tool tip icon a button enables it to be keyboard-focusable,
+// per Bootstrap doc advice https://getbootstrap.com/docs/5.0/components/tooltips/#markup -
+// overriding the native button style fixes the visual aspect
+.tool-tip-button {
+  border: none;
+  background-color: inherit;
+  margin-left: 5px;
+  padding: 0;
+}
+
 
