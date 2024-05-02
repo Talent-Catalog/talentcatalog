@@ -5,13 +5,12 @@
   {{error}}
 </div>
 
-<div *ngIf="!chatIsRead" class="d-flex justify-content-end">
-  <button type="button" class="btn btn-success " (click)="onMarkChatAsRead()">
-    {{'CHAT.MARK-AS-READ' | translate}}
-  </button>
-</div>
-
 <div class="container my-lg-5">
+  <div *ngIf="!chatIsRead" class="d-flex justify-content-end mb-2">
+    <button type="button" class="btn btn-sm btn-warning" (click)="onMarkChatAsRead()">
+      {{'CHAT.MARK-AS-READ' | translate}} <i class="fa-solid fa-envelope-circle-check ms-1"></i>
+    </button>
+  </div>
   <div id="posts" *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
     <div *ngFor="let post of posts"
          (click)="selectCurrent(post)"
