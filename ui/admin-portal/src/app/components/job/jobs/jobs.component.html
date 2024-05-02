@@ -22,8 +22,7 @@
     </div>
 
     <div *ngIf="searchBy === SearchOppsBy.mineAsJobCreator ||
-                searchBy === SearchOppsBy.mineAsSourcePartner ||
-                searchBy === SearchOppsBy.starredByMe" class="my-2">
+                searchBy === SearchOppsBy.mineAsSourcePartner" class="my-2">
       <div class="row justify-content-center mb-2">
         <div class="col-md-5">
           <div class="form-check form-check-reverse">
@@ -59,6 +58,21 @@
                    for="withUnreadMessages">{{withUnreadMessagesLabel}}</label>
           </div>
         </div>
+        <div *ngIf="searchBy===SearchOppsBy.mineAsJobCreator" class="col-md-4">
+          <div class="form-check">
+            <input [title]="showUnpublishedTip" type="checkbox"
+                   formControlName="showUnpublishedOpps" id="showUnpublished" class="form-check-input">
+            <label class="form-check-label" [title]="showUnpublishedTip"
+                   for="showUnpublished">{{showUnpublishedLabel}}</label>
+          </div>
+
+        </div>
+
+        <div class="col-md-4">
+          <button class="btn btn-link" (click)="refresh()">
+            <i class="fas fa-sync" title="Refresh data"></i>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -77,7 +91,7 @@
       </ng-select>
     </div>
 
-<div class="mb-3">
+<div *ngIf="needsFilterByDestination()" class="mb-3">
       <label class="form-label">Destination Country</label>
       <ng-select
         id="destinations"

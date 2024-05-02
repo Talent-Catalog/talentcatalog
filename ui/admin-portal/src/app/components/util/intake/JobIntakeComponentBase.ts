@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit} from '@angular/core';
+import {Directive, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {Job} from "../../../model/job";
@@ -42,6 +42,9 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
   @Input() myRecordIndex: number;
 
   @Input() editable: boolean = true;
+
+  @Output() intakeChanged = new EventEmitter<JobOppIntake>();
+
 
   /**
    * Inject in a FormBuilder to create the form and an IntakeService to perform the saves.

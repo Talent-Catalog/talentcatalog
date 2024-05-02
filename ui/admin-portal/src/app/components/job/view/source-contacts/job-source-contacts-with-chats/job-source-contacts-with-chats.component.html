@@ -17,17 +17,7 @@
     <div class="detail-panel side-panel-color h-100 d-flex flex-column" [ngClass]="selectedSourcePartner != null ? 'justify-content-between':'justify-content-center'">
 
       <div *ngIf="selectedSourcePartner; else noSelectedChat">
-        <div class="row row-cols-auto">
-          <div class="col-10">
-            <h5 class="text-center text-accent-1 mb-3">{{chatHeader}}</h5>
-          </div>
-          <div class="col-2">
-            <button [ngbTooltip]="'Mark chat as read'" type="button" class="btn btn-sm btn-warning" (click)="onMarkChatAsRead()">
-              <i class="fa-solid fa-envelope-circle-check ms-1"></i>
-            </button>
-          </div>
-        </div>
-
+        <h5 class="text-center text-accent-1 mb-3">{{chatHeader}}</h5>
 
         <div class="alert alert-danger" *ngIf="error">
           {{error}}

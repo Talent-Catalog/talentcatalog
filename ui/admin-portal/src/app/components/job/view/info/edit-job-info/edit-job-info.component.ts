@@ -19,7 +19,6 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
 import {Job, UpdateJobRequest} from "../../../../../model/job";
-import {PartnerService} from "../../../../../services/partner.service";
 import {SearchUserRequest} from "../../../../../model/base";
 import {UserService} from "../../../../../services/user.service";
 import {User} from "../../../../../model/user";
@@ -42,11 +41,12 @@ export class EditJobInfoComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
+  evergreenTip = "An evergreen job is always looking for candidates";
+
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private authService: AuthorizationService,
               private jobService: JobService,
-              private partnerService: PartnerService,
               private userService: UserService
   ) { }
 
@@ -73,11 +73,16 @@ export class EditJobInfoComponent implements OnInit {
     this.jobForm = this.fb.group({
       submissionDueDate: [this.job.submissionDueDate],
       contactUser: [this.job.contactUser?.id],
+      evergreen: [this.job.evergreen]
     });
   }
 
   get contactUser(): number {
     return this.jobForm?.value.contactUser;
+  }
+
+  get evergreen(): boolean {
+    return this.jobForm?.value.evergreen;
   }
 
   get submissionDueDate(): Date {
@@ -90,6 +95,7 @@ export class EditJobInfoComponent implements OnInit {
     const request: UpdateJobRequest = {
       sfId: this.job.sfId,
       contactUserId: this.contactUser,
+      evergreen: this.evergreen,
       submissionDueDate: this.submissionDueDate
     }
 

@@ -58,7 +58,7 @@ export abstract class JobPrepItem {
 
 export class JobPrepDueDate extends JobPrepItem {
   constructor() {
-    super("Submission due date", "General");
+    super("Submission due date (optional)", "General");
   }
 
   isCompleted(): boolean {
@@ -97,7 +97,7 @@ export class JobPrepJOI extends JobPrepItem {
     const joi = this.job?.jobOppIntake;
     let completed = false;
     if (joi != null) {
-      completed = joi.employerCostCommitment != null;
+      completed = joi.employerCostCommitment != null && joi.employerCostCommitment.trim().length > 0;
     }
     return completed;
   }
@@ -107,7 +107,7 @@ export class JobPrepSuggestedCandidates extends JobPrepItem {
   private _empty = true;
 
   constructor() {
-    super("Suggested candidate(s)", "General");
+    super("Suggested candidate(s) (optional)", "General");
   }
 
   isCompleted(): boolean {
@@ -121,7 +121,7 @@ export class JobPrepSuggestedCandidates extends JobPrepItem {
 
 export class JobPrepSuggestedSearches extends JobPrepItem {
   constructor() {
-    super("Suggested search(es)", "Searches");
+    super("Suggested search(es) (optional)", "Searches");
   }
 
   isCompleted(): boolean {
