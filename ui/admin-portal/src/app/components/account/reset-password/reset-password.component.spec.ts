@@ -20,6 +20,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from "../../../services/user.service";
 import { of } from 'rxjs';
 import { SendResetPasswordEmailRequest } from "../../../model/candidate";
+import {config_test} from "../../../../config-test";
 
 fdescribe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
@@ -45,28 +46,22 @@ fdescribe('ResetPasswordComponent', () => {
   it('should initialize the form with an empty email field', () => {
     expect(component.resetPasswordForm.value.email).toEqual('');
   });
-
   it('should clear email field and mark form controls as pristine when resetForm() is called', () => {
     // Arrange
-    component.resetPasswordForm.patchValue({ email: 'test@example.com' });
-
+    component.resetPasswordForm.patchValue({ email: config_test.credentials.email });
     // Act
     component.resetForm();
-
     // Assert
     expect(component.resetPasswordForm.value.email).toEqual('');
     expect(component.resetPasswordForm.controls['email'].pristine).toBeTrue();
   });
-
   it('should call sendResetEmail() function when "Email Me" button is clicked with a valid email', () => {
     // Arrange
-    component.resetPasswordForm.patchValue({ email: 'test@example.com' });
-    userService.sendResetPassword.and.returnValue(of(null));
-
+    component.resetPasswordForm.patchValue({ email: config_test.credentials.email});
+    userService.sendResetPassword.and.returnValue(of(true));
     // Act
     component.sendResetEmail();
-
     // Assert
-    expect(userService.sendResetPassword).toHaveBeenCalledWith(jasmine.objectContaining({ email: 'test@example.com' } as SendResetPasswordEmailRequest));
+    expect(userService.sendResetPassword).toHaveBeenCalledWith(jasmine.objectContaining({ email: config_test.credentials.email } as SendResetPasswordEmailRequest));
   });
 });

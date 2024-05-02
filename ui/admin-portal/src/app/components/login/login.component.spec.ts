@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { LoginComponent } from './login.component';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from "../../services/authentication.service";
 import { LocalStorageModule } from "angular-2-local-storage";
 import { of } from "rxjs";
-import { CommonModule } from "@angular/common";
 
 import { Directive, Input } from '@angular/core';
+import {config_test} from "../../../config-test";
 
 @Directive({
   selector: "[routerLink]", // Stub directive for routerLink
@@ -21,7 +21,6 @@ fdescribe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let authenticationService: AuthenticationService;
-  let router: Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -47,8 +46,6 @@ fdescribe('LoginComponent', () => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     authenticationService = TestBed.inject(AuthenticationService);
-    router = TestBed.inject(Router);
-    component.ngOnInit(); // Initialize the form
     fixture.detectChanges(); // Trigger change detection
   });
 
@@ -71,9 +68,9 @@ fdescribe('LoginComponent', () => {
     const loginSpy = spyOn(component, 'login').and.callThrough();
     // Set up valid form data
     component.loginForm.patchValue({
-      username: 'testuser',
-      password: 'testpassword',
-      totpToken: 'testtoken'
+      username: config_test.credentials.username,
+      password: config_test.credentials.password,
+      totpToken: config_test.credentials.totpToken
     });
     // Simulate form submission
     const form = fixture.nativeElement.querySelector('form');
@@ -88,8 +85,8 @@ fdescribe('LoginComponent', () => {
     // Set up invalid form data (empty username)
     component.loginForm.patchValue({
       username: '',  // Empty username (required field)
-      password: '',  // Empty password (required field)
-      totpToken: ''
+      password: config_test.credentials.password,  // Empty password (required field)
+      totpToken: config_test.credentials.totpToken
     });
     // Simulate form submission
     const form = fixture.nativeElement.querySelector('form');

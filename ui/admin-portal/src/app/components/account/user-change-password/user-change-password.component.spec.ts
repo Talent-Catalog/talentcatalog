@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { UserService } from '../../../services/user.service';
+import {config_test} from "../../../../config-test";
 
 fdescribe('UserChangePasswordComponent', () => {
   let component: UserChangePasswordComponent;
@@ -16,7 +17,7 @@ fdescribe('UserChangePasswordComponent', () => {
     mockUserService = jasmine.createSpyObj('UserService', ['checkPasswordResetToken', 'resetPassword']);
 
     mockActivatedRoute = {
-      paramMap: of({ get: () => 'mockToken' })
+      paramMap: of({ get: () => config_test.credentials.totpToken })
     };
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
      // Mock implementation for checkPasswordResetToken
@@ -49,7 +50,7 @@ fdescribe('UserChangePasswordComponent', () => {
 
   it('should initialize form based on token', () => {
     expect(component.changePasswordForm).toBeDefined();
-    expect(component.token).toBe('mockToken');
+    expect(component.token).toBe(config_test.credentials.totpToken);
   });
   //
   it('should initialize form without token', () => {
@@ -64,17 +65,17 @@ fdescribe('UserChangePasswordComponent', () => {
   it('should update password successfully', fakeAsync(() => {
     component.reset = true;
     component.changePasswordForm.setValue({
-      token: 'mockToken',
-      password: 'newPassword',
-      passwordConfirmation: 'newPassword'
+      token: config_test.credentials.totpToken,
+      password: config_test.credentials.password,
+      passwordConfirmation: config_test.credentials.password
     });
     mockUserService.resetPassword.and.returnValue(of(null));
     component.updatePassword();
     tick(2100);
      expect(mockUserService.resetPassword).toHaveBeenCalledWith({
-      token: 'mockToken',
-      password: 'newPassword',
-      passwordConfirmation: 'newPassword'
+       token: config_test.credentials.totpToken,
+       password: config_test.credentials.password,
+       passwordConfirmation: config_test.credentials.password
     });
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
     expect(component.updated).toBeTruthy();
@@ -83,17 +84,17 @@ fdescribe('UserChangePasswordComponent', () => {
   it('should handle error during password update', () => {
     component.reset = true;
     component.changePasswordForm.setValue({
-      token: 'mockToken',
-      password: 'newPassword',
-      passwordConfirmation: 'newPassword'
+      token: config_test.credentials.totpToken,
+      password: config_test.credentials.password,
+      passwordConfirmation: config_test.credentials.password
     });
     const errorMessage = 'Password update failed';
     mockUserService.resetPassword.and.returnValue(throwError(errorMessage));
     component.updatePassword();
     expect(mockUserService.resetPassword).toHaveBeenCalledWith({
-      token: 'mockToken',
-      password: 'newPassword',
-      passwordConfirmation: 'newPassword'
+      token: config_test.credentials.totpToken,
+      password: config_test.credentials.password,
+      passwordConfirmation: config_test.credentials.password
     });
     expect(component.error).toBe(errorMessage);
   });
@@ -101,9 +102,9 @@ fdescribe('UserChangePasswordComponent', () => {
   it('should reset form', () => {
     component.reset = true;
     component.changePasswordForm.setValue({
-      token: 'mockToken',
-      password: 'newPassword',
-      passwordConfirmation: 'newPassword'
+      token: config_test.credentials.totpToken,
+      password: config_test.credentials.password,
+      passwordConfirmation: config_test.credentials.password
     });
     component.resetForm();
     expect(component.changePasswordForm.value).toEqual({
