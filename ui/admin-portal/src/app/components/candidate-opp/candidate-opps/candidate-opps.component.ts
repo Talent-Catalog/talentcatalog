@@ -1,4 +1,12 @@
-import {Component, Inject, Input, LOCALE_ID, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Inject,
+  Input,
+  LOCALE_ID,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import {
   CandidateOpportunity,
   CandidateOpportunityStage,
@@ -57,6 +65,8 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   withUnreadMessagesLabel = "Cases with unread chat messages only";
   withUnreadMessagesTip = "Only show cases which have unread chat messages";
 
+  @ViewChild("searchFilter")
+  searchFilter: ElementRef;
 
   constructor(
     chatService: ChatService,
