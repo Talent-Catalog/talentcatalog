@@ -13,126 +13,18 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {Router} from "@angular/router";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {ChatReadStatusComponent} from "../../chat/chat-read-status/chat-read-status.component";
-import {User} from "../../../model/user";
+import {MockJob} from "../../../MockData/MockJob";
+import {MockUser} from "../../../MockData/MockUser";
 
-// Mocked Users
-const currentUser: User = {
-  approver: undefined,
-  createdBy: undefined,
-  createdDate: 0,
-  jobCreator: false,
-  lastLogin: 0,
-  mfaConfigured: false,
-  name: "",
-  partner: undefined,
-  purpose: "",
-  readOnly: false,
-  role: "",
-  sourceCountries: [],
-  status: "",
-  updatedDate: 0,
-  usingMfa: false,
-  id: 1, username: 'testuser', firstName: 'Test', lastName: 'User', email: 'test@example.com' };
-const otherUser1: User = {
-  approver: undefined,
-  createdBy: undefined,
-  createdDate: 0,
-  jobCreator: false,
-  lastLogin: 0,
-  mfaConfigured: false,
-  name: "",
-  partner: undefined,
-  purpose: "",
-  readOnly: false,
-  role: "",
-  sourceCountries: [],
-  status: "",
-  updatedDate: 0,
-  usingMfa: false,
-  id: 2, username: 'user2', firstName: 'User', lastName: 'Two', email: 'user2@example.com' };
-const otherUser2: User = {
-  approver: undefined,
-  createdBy: undefined,
-  createdDate: 0,
-  jobCreator: false,
-  lastLogin: 0,
-  mfaConfigured: false,
-  name: "",
-  partner: undefined,
-  purpose: "",
-  readOnly: false,
-  role: "",
-  sourceCountries: [],
-  status: "",
-  updatedDate: 0,
-  usingMfa: false,
-  id: 3, username: 'user3', firstName: 'User', lastName: 'Three', email: 'user3@example.com' };
-const otherUser3: User = {
-  approver: undefined,
-  createdBy: undefined,
-  createdDate: 0,
-  jobCreator: false,
-  lastLogin: 0,
-  mfaConfigured: false,
-  name: "",
-  partner: undefined,
-  purpose: "",
-  readOnly: false,
-  role: "",
-  sourceCountries: [],
-  status: "",
-  updatedDate: 0,
-  usingMfa: false,
-  id: 4, username: 'user3', firstName: 'User', lastName: 'Three', email: 'user3@example.com' };
-
-// Set up job objects with different scenarios
-const jobWithCurrentUser: Job = {
-  closed: false,
-  contactUser: undefined,
-  country: undefined,
-  employerEntity: undefined,
-  exclusionList: undefined,
-  hiringCommitment: "",
-  jobCreator: undefined,
-  jobOppIntake: undefined,
-  jobSummary: "",
-  opportunityScore: "",
-  publishedBy: undefined,
-  publishedDate: undefined,
-  stage: undefined,
-  submissionDueDate: undefined,
-  submissionList: undefined,
-  suggestedList: undefined,
-  suggestedSearches: [],
-  won: false,
-  id: 1, name: 'Test Job', starringUsers: [currentUser, otherUser1] };
-const jobWithoutCurrentUser: Job = {
-  closed: false,
-  contactUser: undefined,
-  country: undefined,
-  employerEntity: undefined,
-  exclusionList: undefined,
-  hiringCommitment: "",
-  jobCreator: undefined,
-  jobOppIntake: undefined,
-  jobSummary: "",
-  opportunityScore: "",
-  publishedBy: undefined,
-  publishedDate: undefined,
-  stage: undefined,
-  submissionDueDate: undefined,
-  submissionList: undefined,
-  suggestedList: undefined,
-  suggestedSearches: [],
-  won: false,
-  id: 2, name: 'Test Job 2', starringUsers: [otherUser2, otherUser3] };
 fdescribe('JobsWithDetailComponent', () => {
   let component: JobsWithDetailComponent;
   let fixture: ComponentFixture<JobsWithDetailComponent>;
   let jobService: jasmine.SpyObj<JobService>;
   let authService: jasmine.SpyObj<AuthenticationService>;
-
+  let jobWithUser = MockJob;
+  let mockedUser = new MockUser();
   beforeEach(waitForAsync(() => {
+    jobWithUser.starringUsers[0].id=1; //Set the first Starring User index to 1
     const jobServiceSpy = jasmine.createSpyObj('JobService', ['checkUnreadChats','updateStarred','searchPaged']);
     const authServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser'], { currentUser: { id: 1 } });
     TestBed.configureTestingModule({
@@ -148,7 +40,6 @@ fdescribe('JobsWithDetailComponent', () => {
         { provide: JobService, useValue: jobServiceSpy },
         { provide: AuthenticationService, useValue: authServiceSpy },
         { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') } },
-
       ]
     })
     .compileComponents();
@@ -178,8 +69,8 @@ fdescribe('JobsWithDetailComponent', () => {
   });
 
   it('should select a job', () => {
-    component.onJobSelected(jobWithCurrentUser);
-    expect(component.selectedJob).toEqual(jobWithCurrentUser);
+    component.onJobSelected(jobWithUser);
+    expect(component.selectedJob).toEqual(jobWithUser);
   });
   it('should refresh jobs component when job is updated', () => {
     const jobsComponentSpy = jasmine.createSpyObj('JobsComponent', ['search']);
@@ -190,23 +81,22 @@ fdescribe('JobsWithDetailComponent', () => {
   });
   it('should correctly identify whether the authenticated user has starred the job', () => {
     // Mock the authentication service to return a mock user ID
-    authService.getLoggedInUser.and.returnValue(currentUser);
-
+    authService.getLoggedInUser.and.returnValue(mockedUser);
     // Test when the authenticated user has starred the job
-    component.selectedJob = jobWithCurrentUser;
+    component.selectedJob = jobWithUser;
     let starred = component.isStarred();
     expect(starred).toBeTruthy();
 
+    jobWithUser.starringUsers[0].id=2;
     // Test when the authenticated user has not starred the job
-    component.selectedJob = jobWithoutCurrentUser;
+    component.selectedJob = jobWithUser;
     starred = component.isStarred();
     expect(starred).toBeFalsy();
   });
   it('should handle error when toggling starred status', fakeAsync(() => {
     const error = 'Error toggling starred status';
     jobService.updateStarred.and.returnValue(throwError(error));
-
-    component.selectedJob = jobWithoutCurrentUser;
+    component.selectedJob = jobWithUser;
     component.doToggleStarred();
     tick(); // Wait for observable to resolve
     expect(component.loading).toBeFalsy();

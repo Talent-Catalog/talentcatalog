@@ -9,42 +9,17 @@ import { JobService } from '../../../services/job.service';
  import { SavedListService } from '../../../services/saved-list.service';
 import { SlackService } from '../../../services/slack.service';
  import { of} from 'rxjs';
-import {UpdateJobRequest, Job} from "../../../model/job";
- import {User} from "../../../model/user";
+import {UpdateJobRequest} from "../../../model/job";
 import {Progress} from "../../../model/base";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {Router} from "@angular/router";
 import { Directive, Input} from "@angular/core";
-import {SavedList} from "../../../model/saved-list";
 import {Location} from "@angular/common";
- import {Employer} from "../../../model/partner";
+import {MockJob} from "../../../MockData/MockJob";
+import {MockEmployer} from "../../../MockData/MockEmployer";
+import {MockSavedList} from "../../../MockData/MockSavedList";
 
-const mockSavedList: SavedList = { id: 123, fixed: false, global: false, name: "Test SavedList" };
-const currentUser:User = {
-  approver: undefined,
-  createdBy: undefined,
-  createdDate: 0,
-  jobCreator: false,
-  lastLogin: 1,
-  mfaConfigured: false,
-  name: "",
-  partner: undefined,
-  purpose: "",
-  readOnly: false,
-  role: "",
-  sourceCountries: [],
-  status: "",
-  updatedDate: 0,
-  usingMfa: false,
-  id: 1, username: 'testuser', firstName: 'Test', lastName: 'User', email: 'test@example.com'
-};
-// Define a mock Employer object
-const mockEmployer: Employer = {
-  description: "Test", hasHiredInternationally: false, id: 0, sfId: "", website: "",
-  // Define properties as needed for your tests
-  name: 'Test Employer'
-  // Add other properties if required
-};
+
  @Directive({
   selector: '[routerLink]'
 })
@@ -54,7 +29,6 @@ export class RouterLinkDirectiveStub {
 fdescribe('NewJobComponent', () => {
   let component: NewJobComponent;
   let fixture: ComponentFixture<NewJobComponent>;
-  let jobService: jasmine.SpyObj<JobService>;
 
   let mockJobService: any;
   let mockSavedListService: any;
@@ -62,7 +36,6 @@ fdescribe('NewJobComponent', () => {
   let mockSlackService: any;
   let location: Location;
   let fb: FormBuilder;
-
   let fbSpy : any;
   let router: Router; // Add Router dependency here
 
@@ -112,7 +85,6 @@ fdescribe('NewJobComponent', () => {
       ]
     }).compileComponents();
 
-    jobService = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;
     router = TestBed.inject(Router);
     mockJobService = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;
     mockSavedListService = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
@@ -128,68 +100,37 @@ fdescribe('NewJobComponent', () => {
   });
   it('should create a new job successfully', () => {
     // Mock necessary dependencies and services
-    const mockJob:Job = {
-      id:12,
-      closed: false,
-      contactUser: currentUser,
-      country: undefined,
-      employerEntity: undefined,
-      exclusionList: undefined,
-      hiringCommitment: "",
-      jobCreator: undefined,
-      jobOppIntake: undefined,
-      jobSummary: "Test ",
-      name: "Test",
-      opportunityScore: "",
-      publishedBy: undefined,
-      publishedDate: undefined,
-      stage: undefined,
-      starringUsers: [],
-      submissionDueDate: undefined,
-      submissionList: mockSavedList,
-      suggestedList: undefined,
-      suggestedSearches: [],
-      won: false/* Mock Job data */};
-    // const mockSavedList:SavedList = {id:12,fixed: false, global: false, name: ""/* Mock SavedList data */};
-    mockJobService.create.and.returnValue(of(mockJob));
-    mockSavedListService.createFolder.and.returnValue(of(mockSavedList));
-    mockSalesforceService.updateEmployerOpportunity.and.returnValue(of(null));
-    mockSlackService.postJob.and.returnValue(of(null));
-
-
+    mockJobService.create.and.returnValue(of(MockJob));
+    mockSavedListService.createFolder.and.returnValue(of(MockSavedList));
+    mockSalesforceService.updateEmployerOpportunity.and.returnValue(of(true));
     component.doRegistration();
-
-    // Invoke the method under test
-
     // // Assert that the job creation process completes successfully
     expect(component.creatingJob).toBe(Progress.Finished);
     expect(component.errorCreatingJob).toBeNull();
     expect(component.errorCreatingFolders).toBeNull();
     expect(component.errorCreatingSFLinks).toBeNull();
     expect(component.errorPostingToSlack).toBeNull();
-    expect(component.job).toEqual(mockJob);
-    expect(component.savedList).toEqual(mockSavedList);
+    expect(component.job).toEqual(MockJob);
+    expect(component.savedList).toEqual(MockSavedList);
   });
   it('should start job creation process when a valid job link is provided', () => {
     // Arrange
     const sfJoblink = 'valid_job_link';
-    const jobName = 'Test Job';
     const request: UpdateJobRequest = { roleName: null, sfJoblink };
-    jobService.create.and.returnValue(of());
+    mockJobService.create.and.returnValue(of());
     // // Act
-    component.onJoblinkValidation({ valid: true, sfJoblink, jobname: jobName });
+    component.onJoblinkValidation({ valid: true, sfJoblink, jobname: MockJob.name });
     component.doRegistration();
     // Assert
-    expect(jobService.create).toHaveBeenCalledWith(request);
+    expect(mockJobService.create).toHaveBeenCalledWith(request);
   });
   it('should update job name when job form changes', fakeAsync(() => {
 
     const roleName = 'Test Role';
-    component.employer = mockEmployer;
+    component.employer = new MockEmployer();
     component.jobForm = fb.group({
       role: [roleName] // Initialize with an empty string or any default value
      });
-
     const spyOnMethod = spyOn<any>(component, 'subscribeToJobFormChanges').and.callThrough();
     component['subscribeToJobFormChanges']();
     component.jobForm.patchValue({ role: roleName });
@@ -198,6 +139,4 @@ fdescribe('NewJobComponent', () => {
     expect(component.roleName).toEqual(roleName);
     expect(component.jobName).toEqual(`${component.employer.name}-${(new Date()).getFullYear()}-${roleName}`);
   }));
-
-
 });

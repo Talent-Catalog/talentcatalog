@@ -8,7 +8,7 @@ import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {JobsWithDetailComponent} from "../jobs-with-detail/jobs-with-detail.component";
-import {ActivatedRoute, Router} from "@angular/router";
+import { Router} from "@angular/router";
 import {JobsComponent} from "../jobs/jobs.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
@@ -62,28 +62,20 @@ fdescribe('JobHomeComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should call checkUnreadChats methods of both services on initialization', () => {
-    // Mock return values for the service methods
-    candidateOpportunityService.checkUnreadChats.and.returnValue(of({ numberUnreadChats: 0 }));
-    jobService.checkUnreadChats.and.returnValue(of({ numberUnreadChats: 0 }));
-
-    // Trigger ngOnInit
-    component.ngOnInit();
-
-    // Expectations to ensure service methods were called
+    // Expectations to ensure service methods were called on initialization
     expect(candidateOpportunityService.checkUnreadChats).toHaveBeenCalled();
     expect(jobService.checkUnreadChats).toHaveBeenCalled();
   });
 
   it('should load chat read statuses on initialization', () => {
     // Setting up mock data for the services
-    const mockJobChatUserInfo = { numberUnreadChats: 2 }; // Mock data for job chat user info
+    const mockJobChatUserInfo = { numberUnreadChats: 1 }; // Mock data for job chat user info
     const mockOpportunityRequest = jasmine.any(Object); // Mock search opportunity request
 
     // Mocking the return values of the service methods
     candidateOpportunityService.checkUnreadChats.and.returnValue(of(mockJobChatUserInfo));
     jobService.checkUnreadChats.and.returnValue(of(mockJobChatUserInfo));
-
-    // Triggering ngOnInit
+     // Triggering ngOnInit
     component.ngOnInit();
 
     // Expectations to ensure the service methods were called with correct arguments
@@ -91,10 +83,10 @@ fdescribe('JobHomeComponent', () => {
     expect(jobService.checkUnreadChats).toHaveBeenCalledWith(mockOpportunityRequest);
 
     // Expectations to ensure the chat read statuses were loaded correctly
-    expect(component.jobCreatorChatsRead$.getValue()).toBeFalse(); // Assuming numberUnreadChats is 0
-    expect(component.sourcePartnerChatsRead$.getValue()).toBeFalse(); // Assuming numberUnreadChats is 0
-    expect(component.partnerJobChatsRead$.getValue()).toBeFalse(); // Assuming numberUnreadChats is 0
-    expect(component.starredJobChatsRead$.getValue()).toBeFalse(); // Assuming numberUnreadChats is 0
+    expect(component.jobCreatorChatsRead$.getValue()).toBeFalse();
+    expect(component.sourcePartnerChatsRead$.getValue()).toBeFalse();
+    expect(component.partnerJobChatsRead$.getValue()).toBeFalse();
+    expect(component.starredJobChatsRead$.getValue()).toBeFalse();
   });
   it('should handle errors when checkUnreadChats methods of services throw errors', () => {
     // Mocking service methods to throw errors
