@@ -34,9 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
@@ -74,7 +72,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final FileSystemService fileSystemService;
-    private final GoogleDriveConfig googleDriveConfig;
     private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
@@ -82,21 +79,16 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Value("${aws.s3.bucketName}")
     String s3Bucket;
 
-    @Value("${spring.servlet.multipart.max-file-size}")
-    String maxFileSizeStr;
-
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
                                            CandidateService candidateService,
                                            CandidateAttachmentRepository candidateAttachmentRepository,
                                            FileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
-                                           GoogleDriveConfig googleDriveConfig,
                                            AuthService authService) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.fileSystemService = fileSystemService;
-        this.googleDriveConfig = googleDriveConfig;
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
         this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
@@ -431,14 +423,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     public CandidateAttachment uploadAttachment(@NonNull Candidate candidate,
         String uploadedFileName, @Nullable String subfolderName, MultipartFile file,
         UploadType uploadType) throws IOException, NoSuchObjectException {
-
-        //todo Theoretically this check should not be needed.
-        long maxFileSize = DataSize.parse(maxFileSizeStr).toBytes();
-        long fileSize = file.getSize();
-        if (fileSize > maxFileSize) {
-            throw new InvalidRequestException(
-                "File is too big. Size = " + fileSize + ". Max size = " + maxFileSize);
-        }
 
         //Save to a temporary file
         InputStream is = file.getInputStream();
