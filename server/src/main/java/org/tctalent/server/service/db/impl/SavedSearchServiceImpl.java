@@ -1370,13 +1370,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Short page is all we need - we are only going to look at first element
         searchCandidateRequest.setPageSize(1);
 
-        Page<Candidate> candidates =
-            doSearchCandidates(searchCandidateRequest);
+        Page<Candidate> candidates = doSearchCandidates(searchCandidateRequest);
 
         boolean newCandidates = false;
         if (candidates.getNumberOfElements() > 0) {
           //Get first (latest) candidate
-          Candidate candidate = candidates.getContent().get(0);
+          Candidate candidate = candidates.getContent().getFirst();
           OffsetDateTime createdDate = candidate.getCreatedDate();
           newCandidates = createdDate.isAfter(yesterday);
         }
