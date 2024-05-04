@@ -65,7 +65,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.tctalent.server.exception.CircularReferencedException;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityExistsException;
@@ -165,8 +164,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   private final EducationLevelRepository educationLevelRepository;
 
   /**
-   * These are the default candidate statuses to included in searches when no statuses are
-   * specified. Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
+   * These are the default candidate statuses to included in searches when no statuses are specified. Basically all "inactive" statuses such
+   * as draft, deleted, employed and ineligible.
    */
   private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>(
       EnumSet.complementOf(EnumSet.of(
@@ -286,20 +285,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     Set<Long> candidateIds = new HashSet<>();
     String simpleQueryString = searchRequest.getSimpleQueryString();
+
+    // If there is a query string, then elastic search query, else normal.
     if (simpleQueryString != null && !simpleQueryString.isEmpty()) {
-      // This is an elasticsearch request
-
-      // Combine any joined searches (which will all be processed as elastic)
-//      BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
-//          simpleQueryString, excludedCandidates);
-
-//      NativeSearchQuery query = new NativeSearchQueryBuilder()
-//          .withQuery(boolQueryBuilder)
-//          .build()
-//          .setPageable(Pageable.unpaged());
-
-      // TODO (the first area of replacement) -
-      BoolQuery.Builder boolQueryBuilder = handleElasticRequest(searchRequest, simpleQueryString,
+      BoolQuery.Builder boolQueryBuilder = handleElasticRequest(
+          searchRequest,
+          simpleQueryString,
           excludedCandidates);
 
       NativeQuery query = new NativeQueryBuilder()
@@ -316,10 +307,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       log.info("-----------------------------------");
       log.info("-----------------------------------");
       log.info("-----------------------------------");
-//      NativeQuery query = NativeQuery.builder()
-//          .withQuery(boolQueryBuilder.build()._toQuery())
-//          .withPageable(Pageable.unpaged())
-//          .build();
 
       SearchHits<CandidateEs> hits = elasticsearchOperations.search(
           query, CandidateEs.class, IndexCoordinates.of("candidates"));
@@ -343,10 +330,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   /**
-   * Added @Transactional to this method as it is calling another method (updateSavedSearch) which
-   * requires the @Transactional annotation. Transaction needs to wrap the database modifying
-   * operation (searchJoinRepository.deleteBySearchId(id)) or else an exception will be thrown.
-   * See:
+   * Added @Transactional to this method as it is calling another method (updateSavedSearch) which requires the @Transactional annotation.
+   * Transaction needs to wrap the database modifying operation (searchJoinRepository.deleteBySearchId(id)) or else an exception will be
+   * thrown. See:
    * <a href="https://www.baeldung.com/jpa-transaction-required-exception">...</a>
    */
   @Override
@@ -390,9 +376,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   /**
-   * Mark the Candidate objects with any context associated with the selection list of the saved
-   * search. This means that context fields (ie ContextNote) associated with the saved search will
-   * be returned through the DtoBuilder if present.
+   * Mark the Candidate objects with any context associated with the selection list of the saved search. This means that context fields (ie
+   * ContextNote) associated with the saved search will be returned through the DtoBuilder if present.
    */
   @Override
   public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
@@ -437,27 +422,27 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         .collect(
             Collectors.toMap(EducationLevel::getLevel, EducationLevel::getName, (l1, l2) -> l1));
 
-    if (!StringUtils.isEmpty(savedSearch.getCountryIds())) {
+    if (!savedSearch.getCountryIds().isEmpty()) {
       savedSearch.setCountryNames(
           countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
     }
-    if (!StringUtils.isEmpty(savedSearch.getPartnerIds())) {
+    if (!savedSearch.getPartnerIds().isEmpty()) {
       savedSearch.setPartnerNames(
           partnerRepository.getNamesForIds(getIdsFromString(savedSearch.getPartnerIds())));
     }
-    if (!StringUtils.isEmpty(savedSearch.getNationalityIds())) {
+    if (!savedSearch.getNationalityIds().isEmpty()) {
       savedSearch.setNationalityNames(
           countryRepository.getNamesForIds(getIdsFromString(savedSearch.getNationalityIds())));
     }
-    if (!StringUtils.isEmpty(savedSearch.getOccupationIds())) {
+    if (!savedSearch.getOccupationIds().isEmpty()) {
       savedSearch.setOccupationNames(
           occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getOccupationIds())));
     }
-    if (!StringUtils.isEmpty(savedSearch.getEducationMajorIds())) {
+    if (!savedSearch.getEducationMajorIds().isEmpty()) {
       savedSearch.setEducationMajors(educationMajorRepository.getNamesForIds(
           getIdsFromString(savedSearch.getEducationMajorIds())));
     }
-    if (!StringUtils.isEmpty(savedSearch.getSurveyTypeIds())) {
+    if (!savedSearch.getSurveyTypeIds().isEmpty()){
       savedSearch.setSurveyTypeNames(
           surveyTypeRepository.getNamesForIds(getIdsFromString(savedSearch.getSurveyTypeIds())));
     }
@@ -585,35 +570,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     if (template != null) {
       //Copy across the user's selections (including context notes)
       //of the template saved search.
-      copySelectionsAndContextNotes(template, savedSearch, true);
+      copySelectionsAndContextNotes(template, savedSearch);
     }
 
     return savedSearch;
   }
 
-  private void copySelectionsAndContextNotes(@NonNull SavedSearch fromSavedSearch,
-      SavedSearch toSavedSearch, boolean clearFromSavedSearch) {
+  private void copySelectionsAndContextNotes(@NonNull SavedSearch fromSavedSearch, SavedSearch toSavedSearch) {
     final User loggedInUser = userService.getLoggedInUser();
     if (loggedInUser != null) {
       Long fromSavedSearchId = fromSavedSearch.getId();
 
       //Get the original selection list.
-      SavedList fromSelectionList =
-          getSelectionList(fromSavedSearchId, loggedInUser.getId());
+      SavedList fromSelectionList = getSelectionList(fromSavedSearchId, loggedInUser.getId());
 
       //Get the selection list of the new saved search
-      SavedList toSelectionList =
-          getSelectionList(toSavedSearch.getId(), loggedInUser.getId());
+      SavedList toSelectionList = getSelectionList(toSavedSearch.getId(), loggedInUser.getId());
 
       //Copy the contents of the original selection list to the selection list of the
       //destination search.
-      candidateSavedListService.copyContents(
-          fromSelectionList, toSelectionList, false);
+      candidateSavedListService.copyContents(fromSelectionList, toSelectionList, false);
 
-      if (clearFromSavedSearch) {
-        //Clear search attributes and selections of original saved search
-        clearSavedSearch(fromSavedSearch, loggedInUser);
-      }
+      //Clear search attributes and selections of original saved search
+      clearSavedSearch(fromSavedSearch, loggedInUser);
     }
   }
 
@@ -945,230 +924,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     return query;
   }
 
-//  private BoolQueryBuilder computeElasticQuery(
-//      SearchCandidateRequest request, @Nullable String simpleQueryString,
-//      @Nullable Collection<Candidate> excludedCandidates) {
-//    /*
-//       Constructing a filtered simple query that looks like this:
-//
-//       GET /candidates/_search
-//        {
-//          "query": {
-//            "bool": {
-//              "must": [
-//                { "simple_query_string": {"query":"the +jet+ engine"}}
-//              ],
-//              "filter": [
-//                { "term":  { "status": "pending" }},
-//                { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
-//              ]
-//            }
-//          }
-//        }
-//     */
-//
-//    User user = userService.getLoggedInUser();
-//
-//    BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-//
-//    // Not every base search will contain an elastic search term, since we're processing
-//    // joined regular searches here too — so we need a safe escape here
-//    if (simpleQueryString != null && simpleQueryString.length() > 0) {
-//      // Create a simple query string builder from the given string
-//      SimpleQueryStringBuilder simpleQueryStringBuilder =
-//          QueryBuilders.simpleQueryStringQuery(simpleQueryString);
-//
-//      // The simple query will be part of a composite query containing filters
-//      boolQueryBuilder.must(simpleQueryStringBuilder);
-//    }
-//
-//    //Add filters - each filter must return true for a hit
-//    //(Note: Filters are different from "Must" entries only in that
-//    //they don't affect the Elasticsearch score)
-//
-//    //Add a TermsQuery filter for each multiselect request - eg
-//    //countries and nationalities. A match against any one of the
-//    //multiselected values will result in the filter returning true.
-//    //There is also a TermQuery which takes only one value.
-//
-//    //English levels
-//    // done
-//    Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
-//    if (minSpokenLevel != null) {
-//      boolQueryBuilder =
-//          addElasticRangeFilter(boolQueryBuilder,
-//              "minEnglishSpokenLevel",
-//              minSpokenLevel, null);
-//    }
-//    // done
-//    Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
-//    if (minWrittenLevel != null) {
-//      boolQueryBuilder =
-//          addElasticRangeFilter(boolQueryBuilder,
-//              "minEnglishWrittenLevel",
-//              minWrittenLevel, null);
-//    }
-//
-//    //Other languages
-//    Long otherLanguageId = request.getOtherLanguageId();
-//    if (otherLanguageId != null) {
-//      Optional<Language> otherLanguage = languageRepository.findById(request.getOtherLanguageId());
-//      if (otherLanguage.isPresent()) {
-//
-//        BoolQueryBuilder nestedQueryBuilder = QueryBuilders.boolQuery().must(
-//            QueryBuilders.termQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
-//
-//        // done
-//        Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
-//        if (minOtherSpokenLevel != null) {
-//          nestedQueryBuilder =
-//              addElasticRangeFilter(nestedQueryBuilder,
-//                  "otherLanguages.minSpokenLevel",
-//                  minOtherSpokenLevel, null);
-//        }
-//        // done
-//        Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
-//        if (minOtherWrittenLevel != null) {
-//          nestedQueryBuilder =
-//              addElasticRangeFilter(nestedQueryBuilder,
-//                  "otherLanguages.minWrittenLevel",
-//                  minOtherWrittenLevel, null);
-//        }
-//
-//        boolQueryBuilder = boolQueryBuilder.filter(
-//            QueryBuilders.nestedQuery("otherLanguages", nestedQueryBuilder, ScoreMode.Avg));
-//      }
-//
-//    }
-//
-//    //Exclude given candidates
-//    // done.
-//    if (excludedCandidates != null && excludedCandidates.size() > 0) {
-//      List<Object> candidateIds = excludedCandidates.stream()
-//          .map(Candidate::getId).collect(Collectors.toList());
-//      boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-//          SearchType.not, "masterId", candidateIds);
-//    }
-//
-//    //Occupations
-//    // done
-//    final List<Long> occupationIds = request.getOccupationIds();
-//    if (occupationIds != null) {
-//      //Look up names from ids.
-//      List<Object> reqOccupations = new ArrayList<>();
-//      for (Long id : occupationIds) {
-//        final Occupation occupation = occupationService.getOccupation(id);
-//        reqOccupations.add(occupation.getName());
-//      }
-//      boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-//          null, "occupations.keyword", reqOccupations);
-//    }
-//
-//    //Countries - need to take account of source country restrictions
-//    // done
-//    final List<Long> countryIds = request.getCountryIds();
-//    List<Object> reqCountries = new ArrayList<>();
-//    // If countryIds is NOT EMPTY we can just accept them because the options
-//    // presented to the user will be limited to the allowed source countries
-//    if (!Collections.isEmpty(countryIds)) {
-//      //Look up country names from ids.
-//      for (Long countryId : countryIds) {
-//        final Country country = countryService.getCountry(countryId);
-//        reqCountries.add(country.getName());
-//      }
-//    } else if (user != null && !Collections.isEmpty(user.getSourceCountries())) {
-//      user.getSourceCountries().forEach(c -> reqCountries.add(c.getName()));
-//    }
-//
-//    if (!reqCountries.isEmpty()) {
-//      boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-//          request.getCountrySearchType(),
-//          "country.keyword", reqCountries);
-//    }
-//
-//    //Partners
-//    //done
-//    final List<Long> partnerIds = request.getPartnerIds();
-//    if (partnerIds != null) {
-//      //Look up names from ids.
-//      List<Object> reqPartners = new ArrayList<>();
-//      for (Long id : partnerIds) {
-//        final Partner partner = partnerService.getPartner(id);
-//        reqPartners.add(partner.getAbbreviation());
-//      }
-//      boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-//          null, "partner.keyword", reqPartners);
-//    }
-//
-//    //Nationalities
-//    //done
-//    final List<Long> nationalityIds = request.getNationalityIds();
-//    if (nationalityIds != null) {
-//      //Look up names from ids.
-//      List<Object> reqNationalities = new ArrayList<>();
-//      for (Long id : nationalityIds) {
-//        final Country nationality = countryService.getCountry(id);
-//        reqNationalities.add(nationality.getName());
-//      }
-//      boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-//          request.getNationalitySearchType(),
-//          "nationality.keyword", reqNationalities);
-//    }
-//
-//    //Statuses
-//    //done
-//    List<CandidateStatus> statuses = request.getStatuses();
-//    if (statuses != null) {
-//      List<String> reqStatuses = statuses.stream()
-//          .map(CandidateStatus::name)
-//          .toList();
-//
-//      boolQueryBuilder =
-//          addElasticTermFilter(boolQueryBuilder,
-//              null, "status.keyword", reqStatuses);
-//    }
-//
-//    //Referrer
-//    // done
-//    String referrer = request.getRegoReferrerParam();
-//    if (referrer != null) {
-//      boolQueryBuilder = boolQueryBuilder.filter(
-//          QueryBuilders.termQuery("regoReferrerParam", referrer));
-//    }
-//
-//    //Gender
-//    // done
-//    Gender gender = request.getGender();
-//    if (gender != null) {
-//      boolQueryBuilder = boolQueryBuilder.filter(
-//          QueryBuilders.termQuery("gender", gender.name()));
-//    }
-//
-//    //Education Level (minimum)
-//    Integer minEducationLevel = request.getMinEducationLevel();
-//    if (minEducationLevel != null) {
-//      boolQueryBuilder =
-//          addElasticRangeFilter(boolQueryBuilder,
-//              "maxEducationLevel",
-//              minEducationLevel, null);
-//    }
-//
-//    //Educations
-//    // done
-//    final List<Long> educationMajorIds = request.getEducationMajorIds();
-//    if (educationMajorIds != null) {
-//      //Look up names from ids.
-//      List<Object> reqEducations = new ArrayList<>();
-//      for (Long id : educationMajorIds) {
-//        final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
-//        reqEducations.add(educationMajor.getName());
-//      }
-//      boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-//          null, "educationMajors.keyword", reqEducations);
-//    }
-//    return boolQueryBuilder;
-//  }
-
   private static String constructDefaultSearchName(User user) {
     return "_DefaultSavedSearchForUser" + user.getId();
   }
@@ -1180,8 +935,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   /**
-   * Checks whether the given user already has another saved search with this name - throwing
-   * exception if it does
+   * Checks whether the given user already has another saved search with this name - throwing exception if it does
    *
    * @param savedSearchId Existing saved search - or null if none
    * @param name          Saved search name
@@ -1198,37 +952,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       }
     }
   }
-
-//  private BoolQueryBuilder addElasticQuery(BoolQueryBuilder boolQueryBuilder,
-//      SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
-//    // We don't want searches built on themselves - this is also guarded against in frontend
-//    if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
-//      throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
-//    }
-//    savedSearchIds.add(searchJoinRequest.getSavedSearchId());
-//
-//    SearchCandidateRequest request = loadSavedSearch(searchJoinRequest.getSavedSearchId());
-//
-//    // Get the keyword search term, if any
-//    String simpleStringQuery = request.getSimpleQueryString();
-//
-//    // Compute the candidates that should be excluded from search
-//    Set<Candidate> excludeCandidates =
-//        computeCandidatesExcludedFromSearchCandidateRequest(request);
-//
-//    // Each recursion, if any, is added to the query as an additional must clause
-//    boolQueryBuilder.must(
-//        computeElasticQuery(request, simpleStringQuery, excludeCandidates)
-//    );
-//
-//    // Like addQuery(), this method uses recursion to get every nested SearchJoinRequest
-//    if (!request.getSearchJoinRequests().isEmpty()) {
-//      for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
-//        boolQueryBuilder = addElasticQuery(boolQueryBuilder, joinRequest, savedSearchIds);
-//      }
-//    }
-//    return boolQueryBuilder;
-//  }
 
   private Specification<Candidate> addQuery(Specification<Candidate> query,
       SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
@@ -1253,7 +976,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       }
     }
     return query;
-
   }
 
   private SavedSearch addSearchJoins(UpdateSavedSearchRequest request, SavedSearch savedSearch) {
@@ -1330,12 +1052,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   /**
    * Sends emails to any users watching searches who had new results over night.
    * <p/>
-   * Has to be annotated as Transactional in order to create the "persistence context" (what the
-   * underlying Hibernate calls a Session). This context is used to fetch lazily loaded attributes
-   * (by auto generating other SQL calls on the database).
+   * Has to be annotated as Transactional in order to create the "persistence context" (what the underlying Hibernate calls a Session). This
+   * context is used to fetch lazily loaded attributes (by auto generating other SQL calls on the database).
    * <p/>
-   * When running searches from requests through the REST API, Spring automatically creates this
-   * context - so you don't have to annotate all your REST API methods as Transactional. - JC
+   * When running searches from requests through the REST API, Spring automatically creates this context - so you don't have to annotate all
+   * your REST API methods as Transactional. - JC
    */
   //Midnight GMT
   @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
@@ -1438,24 +1159,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
           request.getOtherLanguageId() != null ?
               languageRepository.findById(
                   request.getOtherLanguageId()) : Optional.empty();
-      if (language.isPresent()) {
-        savedSearch.setOtherLanguage(language.get());
-      }
+      language.ifPresent(savedSearch::setOtherLanguage);
 
       Optional<SavedList> exclusionList =
           request.getExclusionListId() != null ?
               savedListRepository.findById(
                   request.getExclusionListId()) : Optional.empty();
-      if (exclusionList.isPresent()) {
-        savedSearch.setExclusionList(exclusionList.get());
-      }
+      exclusionList.ifPresent(savedSearch::setExclusionList);
 
       savedSearch.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
       savedSearch.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
       savedSearch.setLastModifiedFrom(request.getLastModifiedFrom());
       savedSearch.setLastModifiedTo(request.getLastModifiedTo());
-//        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getRegisteredFrom());
-//        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getRegisteredTo());
       savedSearch.setMinAge(request.getMinAge());
       savedSearch.setMaxAge(request.getMaxAge());
       savedSearch.setMinEducationLevel(request.getMinEducationLevel());
@@ -1502,7 +1217,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     // if a user has source country restrictions AND IF the request has countries selected
     if (user != null
-        && user.getSourceCountries().size() > 0
+        && !user.getSourceCountries().isEmpty()
         && search.getCountryIds() != null) {
       List<Long> sourceCountries = user.getSourceCountries().stream()
           .map(Country::getId)
@@ -1527,8 +1242,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     searchCandidateRequest.setOtherMinWrittenLevel(search.getOtherMinWrittenLevel());
     searchCandidateRequest.setLastModifiedFrom(search.getLastModifiedFrom());
     searchCandidateRequest.setLastModifiedTo(search.getLastModifiedTo());
-//        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
-//        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
     searchCandidateRequest.setMinAge(search.getMinAge());
     searchCandidateRequest.setMaxAge(search.getMaxAge());
     searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
@@ -1587,21 +1300,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     String simpleQueryString = searchRequest.getSimpleQueryString();
     if (simpleQueryString != null && !simpleQueryString.isEmpty()) {
-      // This is an elasticsearch request
 
-      // Combine any joined searches (which will all be processed as elastic)
-//      BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
-//          simpleQueryString, excludedCandidates);
       BoolQuery.Builder boolQueryBuilder = handleElasticRequest(searchRequest, simpleQueryString,
           excludedCandidates);
 
       //Define sort from request
       PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
-
-//            NativeSearchQuery query = new NativeSearchQueryBuilder()
-//          .withQuery(boolQueryBuilder)
-//          .withPageable(req)
-//          .build();
 
       NativeQuery query = new NativeQueryBuilder()
           .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
@@ -1614,7 +1318,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       log.info("***************************************");
       log.info("***************************************");
       log.info("***************************************");
-      log.debug("Query: " + query.getQuery());
+      log.info("Query: " + query.getQuery());
       log.info("***************************************");
       log.info("***************************************");
       log.info("***************************************");
@@ -1655,6 +1359,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     logFoundSearches(candidates.getTotalElements() + " candidates");
     return candidates;
   }
+
+  /*
+-----------------------------------------------------------------------------------------------
+NEW FUNCTIONS POST UPGRADE
+-----------------------------------------------------------------------------------------------
+ */
 
   @NonNull
   private Set<Candidate> computeCandidatesExcludedFromSearchCandidateRequest(
@@ -1710,32 +1420,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
   }
 
-  // done (handleElasticRequest)
-//  private BoolQueryBuilder processElasticRequest(SearchCandidateRequest searchRequest,
-//      String simpleQueryString, Set<Candidate> excludedCandidates) {
-//    // If saved search, add to searchIds to guard against circular dependencies
-//    List<Long> searchIds = new ArrayList<>();
-//    if (searchRequest.getSavedSearchId() != null) {
-//      searchIds.add(searchRequest.getSavedSearchId());
-//    }
-//
-//    BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
-//        simpleQueryString, excludedCandidates);
-//
-//    // Add any joined searches to the builder
-//    if (!searchRequest.getSearchJoinRequests().isEmpty()) {
-//      for (SearchJoinRequest searchJoinRequest : searchRequest.getSearchJoinRequests()) {
-//        boolQueryBuilder = addElasticQuery(boolQueryBuilder, searchJoinRequest, searchIds);
-//      }
-//    }
-//    return boolQueryBuilder;
-//  }
-
-  /*
-  -----------------------------------------------------------------------------------------------
-  NEW FUNCTIONS POST UPGRADE
-  -----------------------------------------------------------------------------------------------
-   */
 
   /**
    * Current replacement for the processelasticrequest function.
@@ -1772,9 +1456,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
   }
 
   /**
-   * Current replacement for computeElasticQuery. Not every request will actually be an elastic
-   * query, so this will handle both elastic and other search types. It will add a load of filters.
-   * The filters are unlike the "must" score - they don't affect the elastic score.
+   * Current replacement for computeElasticQuery. Not every request will actually be an elastic query, so this will handle both elastic and
+   * other search types. It will add a load of filters. The filters are unlike the "must" score - they don't affect the elastic score.
    */
   private BoolQuery.Builder buildElasticQuery(
       SearchCandidateRequest req,
@@ -2047,22 +1730,30 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     return QueryBuilders.term().field(field).value(term).build()._toQuery();
   }
 
-  private Query getIntTermQuery(String field, Integer term) {
+  private Query getLongTermQuery(String field, Long term) {
     return QueryBuilders.term().field(field).value(term).build()._toQuery();
   }
 
   private Query getLongTermsQuery(String field, List<Long> terms) {
-    return TermsQuery.of(t -> t
-        .field(field)
-        .terms(tt -> tt
-            .value(terms.stream().map(FieldValue::of).toList())))._toQuery();
+    if (terms.size() > 1) {
+      return TermsQuery.of(t -> t
+          .field(field)
+          .terms(tt -> tt
+              .value(terms.stream().map(FieldValue::of).toList())))._toQuery();
+    } else {
+      return getLongTermQuery(field, terms.getFirst());
+    }
   }
 
   private Query getStringTermsQuery(String field, List<String> terms) {
-    return TermsQuery.of(t -> t
-        .field(field)
-        .terms(tt -> tt
-            .value(terms.stream().map(FieldValue::of).toList())))._toQuery();
+    if (terms.size() > 1) {
+      return TermsQuery.of(t -> t
+          .field(field)
+          .terms(tt -> tt
+              .value(terms.stream().map(FieldValue::of).toList())))._toQuery();
+    } else {
+      return getStringTermQuery(field, terms.getFirst());
+    }
   }
 
   private Query getLongTermsQuery(SearchType searchType, String field, List<Long> terms) {
