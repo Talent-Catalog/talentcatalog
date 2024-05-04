@@ -68,10 +68,10 @@ fdescribe('NewJobComponent', () => {
         NgSelectModule
       ],
       providers: [
-        { provide: JobService, useValue: mockJobService }, // Use jobServiceSpy instead of jobService
-        { provide: SavedListService, useValue: mockSavedListService }, // Use jobServiceSpy instead of jobService
-        { provide: SalesforceService, useValue: mockSalesforceService }, // Use jobServiceSpy instead of jobService
-        { provide: SlackService, useValue: mockSlackService }, // Use jobServiceSpy instead of jobService
+        { provide: JobService, useValue: mockJobService },
+        { provide: SavedListService, useValue: mockSavedListService },
+        { provide: SalesforceService, useValue: mockSalesforceService },
+        { provide: SlackService, useValue: mockSlackService },
         { provide: FormBuilder },
         {
           provide: Router,

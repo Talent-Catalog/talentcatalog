@@ -9,6 +9,7 @@ import {JobService} from "../../../../../services/job.service";
 import {Directive, Input} from "@angular/core";
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {Observable} from "rxjs";
+import {MockJob} from "../../../../../MockData/MockJob";
 
 @Directive({
   selector: '[routerLink]'
@@ -38,22 +39,7 @@ fdescribe('ViewJobInfoComponent', () => {
 
     component.editable = true;
     // Provide a mock Job object
-    component.job = {
-      country: { name: 'Mock Country' },
-      employerEntity: { name: 'Mock Employer', website: 'https://example.com' },
-      submissionList: { id: 1, name: 'Mock Submission List' },
-      suggestedList: { id: 2, name: 'Mock Suggested List' },
-      exclusionList: { id: 3, name: 'Mock Exclusion List' },
-      jobCreator: { name: 'Mock Recruiter', websiteUrl: 'https://recruiter.com' },
-      contactUser: { name: 'Mock Contact', email: 'contact@example.com' },
-      submissionDueDate: new Date('2024-05-01'),
-      createdDate: new Date('2024-04-01'),
-      updatedDate: new Date('2024-04-02'),
-      publishedDate: new Date('2024-04-03'),
-      createdBy: { name: 'Mock Creator', email: 'creator@example.com' },
-      updatedBy: { name: 'Mock Updater', email: 'updater@example.com' },
-      publishedBy: { name: 'Mock Publisher', email: 'publisher@example.com' }
-    } as Job;
+    component.job = MockJob;
 
     fixture.detectChanges();
   });
@@ -63,7 +49,7 @@ fdescribe('ViewJobInfoComponent', () => {
   it('should display job information correctly', () => {
     const compiled = fixture.nativeElement;
     expect(compiled.querySelector('.card-header').textContent).toContain('Job Information');
-    expect(compiled.querySelector('.form-control-plaintext').textContent).toContain('Mock Country');
+    expect(compiled.querySelector('.form-control-plaintext').textContent).toContain('USA');
    });
 
   it('should open edit modal when edit button is clicked', () => {

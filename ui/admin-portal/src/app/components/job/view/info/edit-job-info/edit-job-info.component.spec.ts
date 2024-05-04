@@ -11,6 +11,7 @@ import {Observable} from "rxjs";
 import {FormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
+import {MockJob} from "../../../../../MockData/MockJob";
 
 @Directive({
   selector: '[routerLink]'
@@ -48,22 +49,7 @@ fdescribe('EditJobInfoComponent', () => {
     component = fixture.componentInstance;
 
      // Provide a mock Job object
-    component.job = {
-      country: { name: 'Mock Country' },
-      employerEntity: { name: 'Mock Employer', website: 'https://example.com' },
-      submissionList: { id: 1, name: 'Mock Submission List' },
-      suggestedList: { id: 2, name: 'Mock Suggested List' },
-      exclusionList: { id: 3, name: 'Mock Exclusion List' },
-      jobCreator: { name: 'Mock Recruiter', websiteUrl: 'https://recruiter.com' },
-      contactUser: {id:2, name: 'Mock Contact', email: 'contact@example.com' },
-      submissionDueDate: new Date('2024-05-01'),
-      createdDate: new Date('2024-04-01'),
-      updatedDate: new Date('2024-04-02'),
-      publishedDate: new Date('2024-04-03'),
-      createdBy: { name: 'Mock Creator', email: 'creator@example.com' },
-      updatedBy: { name: 'Mock Updater', email: 'updater@example.com' },
-      publishedBy: { name: 'Mock Publisher', email: 'publisher@example.com' }
-    } as Job;
+    component.job = MockJob;
 
     fixture.detectChanges();
   });
@@ -72,22 +58,7 @@ fdescribe('EditJobInfoComponent', () => {
   });
 
   it('should initialize jobForm with correct values', () => {
-    component.jobForm = new FormBuilder().group({
-      country: { name: 'Mock Country' },
-      employerEntity: { name: 'Mock Employer', website: 'https://example.com' },
-      submissionList: { id: 1, name: 'Mock Submission List' },
-      suggestedList: { id: 2, name: 'Mock Suggested List' },
-      exclusionList: { id: 3, name: 'Mock Exclusion List' },
-      jobCreator: { name: 'Mock Recruiter', websiteUrl: 'https://recruiter.com' },
-      contactUser: {id:2, name: 'Mock Contact', email: 'contact@example.com' },
-      submissionDueDate: new Date('2024-05-01'),
-      createdDate: new Date('2024-04-01'),
-      updatedDate: new Date('2024-04-02'),
-      publishedDate: new Date('2024-04-03'),
-      createdBy: { name: 'Mock Creator', email: 'creator@example.com' },
-      updatedBy: { name: 'Mock Updater', email: 'updater@example.com' },
-      publishedBy: { name: 'Mock Publisher', email: 'publisher@example.com' }
-    });
+    component.jobForm = new FormBuilder().group(MockJob);
     // Access the form controls
     const submissionDueDateControl = component.jobForm.get('submissionDueDate');
     const contactUserControl = component.jobForm.get('contactUser');
