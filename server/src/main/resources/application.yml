@@ -25,6 +25,7 @@ logging:
             InFlightMetadataCollectorImpl: ERROR
       springframework:
         security: INFO
+
         web:
           filter:
             # Enable HTTP request logging by setting this to DEBUG
@@ -40,11 +41,11 @@ logging:
             CustomConversions: ERROR
 
 spring:
-  devtools:
-    restart:
-      enabled: true
-      poll-interval: "2s"
-      additional-paths: "src/main/java"
+#  devtools:
+#    restart:
+#      enabled: true
+#      poll-interval: "2s"
+#      additional-paths: "src/main/java"
   servlet:
     multipart:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}

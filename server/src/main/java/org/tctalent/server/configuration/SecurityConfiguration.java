@@ -32,6 +32,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -164,8 +166,8 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .cors(cors -> corsConfigurationSource())
-        .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-//        .csrf(CsrfConfigurer::disable)
+//        .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+        .csrf(CsrfConfigurer::disable)
         .sessionManagement(
             httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                 .sessionCreationPolicy(
@@ -303,9 +305,8 @@ public class SecurityConfiguration {
                 "READONLY")
 
             // // GET: LOAD SAVE SEARCHES
-            // .requestMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load")
-            // .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
-            // "READONLY")
+             .requestMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load")
+             .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
             // PUT: SELECT CANDIDATE SAVED SEARCHES
             .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/select-candidate/*")
@@ -331,24 +332,21 @@ public class SecurityConfiguration {
             .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
                 "READONLY")
 
-            // // POST: EXPORT SAVE SELECTION SAVED SEARCHES
-            // .requestMatchers(HttpMethod.POST,
-            // "/api/admin/saved-search-candidate/*/export/csv")
-            // .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
-            // "READONLY")
-            //
-            // /*
-            // * SEARCH ENDPOINTS
-            // */
-            // // POST: ALL SEARCHES
-            // .requestMatchers(HttpMethod.POST, "/api/admin/**/search")
-            // .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
-            // "READONLY")
-            //
-            // // POST: ALL PAGED SEARCHES
-            // .requestMatchers(HttpMethod.POST, "/api/admin/**/search-paged")
-            // .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
-            // "READONLY")
+             // POST: EXPORT SAVE SELECTION SAVED SEARCHES
+             .requestMatchers(HttpMethod.POST,
+             "/api/admin/saved-search-candidate/*/export/csv")
+             .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+             /*
+             * SEARCH ENDPOINTS
+             */
+//             // POST: ALL SEARCHES
+//             .requestMatchers(HttpMethod.POST, "/api/admin/**/search")
+//             .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+//
+//             // POST: ALL PAGED SEARCHES
+//             .requestMatchers(HttpMethod.POST, "/api/admin/**/search-paged")
+//             .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
             // POST: SEARCH BY NUMBER/NAME
             .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbynumberorname")

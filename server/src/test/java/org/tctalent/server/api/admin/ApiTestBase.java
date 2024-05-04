@@ -62,6 +62,4 @@ public class ApiTestBase {
         when(tcUserDetailsService.loadUserByUsername(anyString()))
                 .thenReturn(new TcUserDetails(user));
     }
-
-
 }
