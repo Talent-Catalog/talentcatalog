@@ -29,7 +29,13 @@ export abstract class PostsComponentBase implements OnDestroy{
   @Input() chat: JobChat;
   @Output() fetchedChat = new EventEmitter<JobChat>();
 
+  /**
+   * True if chat is read
+   */
+  chatIsRead: boolean;
+
   private chatSubscription: Subscription;
+  private chatIsReadSubscription: Subscription;
 
   currentPost: ChatPost;
 
@@ -82,6 +88,12 @@ export abstract class PostsComponentBase implements OnDestroy{
 
       //Fetch all existing posts for this chat
       this.loadPosts();
+
+      //Listen for chat is read events, setting local variable reflecting current state.
+      this.chatIsReadSubscription = this.chatService.getChatIsRead$(this.chat).subscribe({
+          next: chatIsRead => this.chatIsRead = chatIsRead
+        }
+      )
     }
   }
 
@@ -128,6 +140,10 @@ export abstract class PostsComponentBase implements OnDestroy{
     if (this.chatSubscription) {
       this.chatSubscription.unsubscribe();
       this.chatSubscription = null;
+    }
+    if (this.chatIsReadSubscription) {
+      this.chatIsReadSubscription.unsubscribe();
+      this.chatIsReadSubscription = null;
     }
   }
 }

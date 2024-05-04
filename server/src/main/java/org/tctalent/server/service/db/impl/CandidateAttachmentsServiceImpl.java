@@ -35,7 +35,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
@@ -73,12 +72,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final FileSystemService fileSystemService;
-    private final GoogleDriveConfig googleDriveConfig;
     private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
 
-    @Value("{aws.s3.bucketName}")
+    @Value("${aws.s3.bucketName}")
     String s3Bucket;
 
     @Autowired
@@ -86,13 +84,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                                            CandidateService candidateService,
                                            CandidateAttachmentRepository candidateAttachmentRepository,
                                            FileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
-                                           GoogleDriveConfig googleDriveConfig,
                                            AuthService authService) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.fileSystemService = fileSystemService;
-        this.googleDriveConfig = googleDriveConfig;
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
         this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);

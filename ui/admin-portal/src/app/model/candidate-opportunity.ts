@@ -82,6 +82,7 @@ export class SearchOpportunityRequest extends PagedSearchRequest {
   ownershipType?: OpportunityOwnershipType;
   ownedByMe?: boolean;
   ownedByMyPartner?: boolean;
+  published?: boolean;
   sfOppClosed?: boolean;
   stages?: string[];
   destinationIds?: number[];

@@ -31,10 +31,10 @@ import org.tctalent.server.model.db.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
-    @Override
     @NotNull
-    @CacheEvict(value = "userCache", keyGenerator = "userKeyGenerator")
-    User save(@NotNull User user);
+    @Override
+    @CacheEvict(value = "users", key = "#p0.username")
+    <T extends User> T save(@NotNull T user);
 
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
@@ -46,7 +46,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
             + " and u.status != 'deleted'")
-    @Cacheable(value = "userCache", keyGenerator = "usernameKeyGenerator")
+    @Cacheable(value = "users", key = "#p0")
     User findByUsernameIgnoreCase(@Param("username") String username);
 
     /* Used for candidate authentication */

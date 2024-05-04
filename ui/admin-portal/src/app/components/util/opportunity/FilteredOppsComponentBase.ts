@@ -104,15 +104,14 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   withUnreadMessagesTip = "Only show opps which have unread chat messages";
 
   loading: boolean;
-  error;
+  error: string;
   pageNumber: number;
   pageSize: number;
 
   results: SearchResults<T>;
 
   //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
-  @ViewChild("searchFilter")
-  searchFilter: ElementRef;
+  protected searchFilter: ElementRef;
 
   searchForm: FormGroup;
 
@@ -131,14 +130,15 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private savedStateKeyPrefix: string = 'BrowseKey';
   private showClosedOppsSuffix: string = 'ShowClosedOpps';
   private showInactiveOppsSuffix: string = 'ShowInactiveOpps';
+  private showUnpublishedOppsSuffix: string = 'ShowUnpublishedOpps';
   private sortDirectionSuffix: string = 'SortDir';
   private sortFieldSuffix: string = 'Sort';
   private withUnreadMessagesSuffix: string = 'WithUnreadMessages';
 
-  constructor(
+  protected constructor(
     protected chatService: ChatService,
     private fb: FormBuilder,
-    private authService: AuthorizationService,
+    protected authorizationService: AuthorizationService,
     private localStorageService: LocalStorageService,
     protected oppService: OpportunityService<T>,
     private salesforceService: SalesforceService,
@@ -193,6 +193,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     const previousWithUnreadMessages: string = this.localStorageService.get(this.savedStateKey() + this.withUnreadMessagesSuffix);
     const previousShowClosedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showClosedOppsSuffix);
     const previousShowInactiveOpps: string = this.localStorageService.get(this.savedStateKey() + this.showInactiveOppsSuffix);
+    const previousShowUnpublishedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showUnpublishedOppsSuffix);
 
     this.searchForm = this.fb.group({
       destinationIds: [],
@@ -202,6 +203,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       selectedStages: [[]],
       showClosedOpps: [previousShowClosedOpps ? previousShowClosedOpps : false],
       showInactiveOpps: [previousShowInactiveOpps ? previousShowInactiveOpps : false],
+      showUnpublishedOpps: [previousShowUnpublishedOpps ? previousShowUnpublishedOpps : false],
       withUnreadMessages: [previousWithUnreadMessages ? previousWithUnreadMessages : false]
     });
 
@@ -222,6 +224,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected get showInactiveOpps(): boolean {
     return this.searchForm ? this.searchForm.value.showInactiveOpps : false;
+  }
+
+  protected get showUnpublishedOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showUnpublishedOpps : false;
   }
 
   protected get myOppsOnly(): boolean {
@@ -289,6 +295,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.localStorageService.set(this.savedStateKey()+this.overdueOppsOnlySuffix, this.overdueOppsOnly);
     this.localStorageService.set(this.savedStateKey()+this.showClosedOppsSuffix, this.showClosedOpps);
     this.localStorageService.set(this.savedStateKey()+this.showInactiveOppsSuffix, this.showInactiveOpps);
+    this.localStorageService.set(this.savedStateKey()+this.showUnpublishedOppsSuffix, this.showUnpublishedOpps);
     this.localStorageService.set(this.savedStateKey()+this.withUnreadMessagesSuffix, this.withUnreadMessages);
 
     let req = this.createSearchRequest();
@@ -358,6 +365,14 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       req.activeStages = false;
     }
 
+    if (this.showUnpublishedOpps) {
+      //Normally we don't care about published. Published jobs will be displayed or not
+      //based on the activeStages or oppClosed filters.
+      //However, an owner may want to force unpublished opps to display so that they can see
+      //if there are any that they still need to publish.
+      req.published = false;
+    }
+
     if (this.overdueOppsOnly) {
       //Only show overdue opps
       req.overdue = true;
@@ -415,7 +430,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   get getCandidateOpportunityStageName() {
@@ -442,8 +457,9 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   }
 
   /**
-   * Disable/enable the checkboxes depending on if there are stages selected. We don't search by these fields AND a stage,
-   * so want to disable (and set to false) when a stage is added. Re-enable once the stages are removed.
+   * Disable/enable the checkboxes depending on if there are stages selected.
+   * We don't search by these fields AND a stage, so want to disable (and set to false)
+   * when a stage is added. Re-enable once the stages are removed.
    */
   private subscribeToStagesChanges() {
     this.searchForm.get('selectedStages').valueChanges.subscribe(
@@ -451,11 +467,13 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
           if (stages.length > 0) {
             this.searchForm.get('showClosedOpps').reset({value: false, disabled: true});
             this.searchForm.get('showInactiveOpps').reset({value: false, disabled: true});
+            this.searchForm.get('showUnpublishedOpps').reset({value: false, disabled: true});
             this.searchForm.get('overdueOppsOnly').reset({value: false, disabled: true});
             this.searchForm.get('withUnreadMessages').reset({value: false, disabled: true});
           } else {
             this.searchForm.get('showClosedOpps').enable()
             this.searchForm.get('showInactiveOpps').enable()
+            this.searchForm.get('showUnpublishedOpps').enable()
             this.searchForm.get('overdueOppsOnly').enable()
             this.searchForm.get('withUnreadMessages').enable()
           }
@@ -547,7 +565,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
         this.chatsRead$.next(false);
       } else if (!this.chatsRead$.value && chatsRead) {
         //All chats are showing not read, but all chats for visible opps are now read.
-        //Fetch from server again to see if there are still some non visible opps with unread chats.
+        //Fetch from server again to see if there are still some non-visible opps with unread chats.
         //Don't redo the search - we just want to see if there are any unread chats left in the full
         //search results.
         this.search(false);
