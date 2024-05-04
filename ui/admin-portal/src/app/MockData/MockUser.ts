@@ -21,26 +21,34 @@ import {User} from "../model/user";
  import {MockPartner} from "./MockPartner";
 
  export class MockUser implements User {
-  id: number = 1;
-  username: string = "mockuser";
-  firstName: string = "John";
-  lastName: string = "Doe";
-  email: string = "john.doe@example.com";
-  role: string = "Limited";
-  jobCreator: boolean = true;
-  approver: User | undefined;
-  purpose: string = "Mock purpose";
-  readOnly: boolean = false;
-  sourceCountries: Country[] = [{ id: 1, name: "Mock Country", status: "Active", translatedName: "Mock Country" }];
-  status: string = "Active";
-  createdDate: number = Date.now();
-  createdBy: User | undefined;
-  updatedDate: number = Date.now();
-  lastLogin: number = Date.now();
-  usingMfa: boolean = false;
-  mfaConfigured: boolean = false;
-  partner: MockPartner  | undefined;
-  name: string = "Mock User";
-}
+   id: number = 1;
+   username: string = "mockuser";
+   firstName: string = "John";
+   lastName: string = "Doe";
+   email: string = "john.doe@example.com";
+   role: string = "Limited";
+   jobCreator: boolean = true;
+   approver: User | undefined;
+   purpose: string = "Mock purpose";
+   readOnly: boolean = false;
+   sourceCountries: Country[] = [{ id: 1, name: "Mock Country", status: "Active", translatedName: "Mock Country" }];
+   status: string = "Active";
+   createdDate: number;
+   createdBy: User | undefined;
+   updatedDate: number;
+   lastLogin: number;
+   usingMfa: boolean = false;
+   mfaConfigured: boolean = false;
+   partner: MockPartner | undefined;
+   name: string = "Mock User";
+
+   constructor() {
+     // Set the date properties to a specific date value
+     const staticDate = new Date("2024-05-01").getTime(); // Change the date as needed
+     this.createdDate = staticDate;
+     this.updatedDate = staticDate;
+     this.lastLogin = staticDate;
+   }
+ }
 
 

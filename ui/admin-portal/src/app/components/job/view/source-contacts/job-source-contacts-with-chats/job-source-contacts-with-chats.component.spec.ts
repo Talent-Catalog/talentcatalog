@@ -19,9 +19,6 @@ import {
 } from "../../../../chat/create-update-post/create-update-post.component";
 import {
   FormBuilder,
-  FormControl,
-  FormsModule,
-  NgControl,
   ReactiveFormsModule
 } from "@angular/forms";
 import {QuillModule} from "ngx-quill";
@@ -46,8 +43,8 @@ fdescribe('JobSourceContactsWithChatsComponent', () => {
     const chatSpy = jasmine.createSpyObj('ChatService', ['getOrCreate','getChatIsRead$','getChatPosts$', 'markChatAsRead']);
     chatSpy.getOrCreate.and.returnValue(of(MockJobChat)); // Mock chat service response
     chatSpy.getChatPosts$.and.returnValue(of(MockJobChat)); // Mock chat service response
-    chatSpy.getChatIsRead$.and.returnValue(of(MockJobChat)); // Mock chat service response
-      partnerService = jasmine.createSpyObj('PartnerService',['listSourcePartners']);
+    chatSpy.getChatIsRead$.and.returnValue(of(MockJobChat));
+    partnerService = jasmine.createSpyObj('PartnerService',['listSourcePartners']);
     partnerService.listSourcePartners.and.returnValue(of([])); // Mock listSourcePartners response
 
      // partnerService.listSourcePartners.and.returnValue();
