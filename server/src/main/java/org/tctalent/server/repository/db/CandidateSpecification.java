@@ -223,7 +223,7 @@ public class CandidateSpecification {
                             builder.isTrue(candidate.get("nationality").get("id").in(request.getNationalityIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("nationality").get("id").in(request.getNationalityIds()).not()
+                    conjunction.getExpressions().add(candidate.get("nationality").get("nationality_id").in(request.getNationalityIds()).not()
                     );
                 }
             }
@@ -234,10 +234,10 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getCountryIds())) {
                 if (request.getCountrySearchType() == null || SearchType.or.equals(request.getCountrySearchType())) {
                     conjunction.getExpressions().add(
-                        builder.isTrue(candidate.get("country").get("id").in(request.getCountryIds()))
+                        builder.isTrue(candidate.get("country").get("country_id").in(request.getCountryIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("country").get("id").in(request.getCountryIds()).not());
+                    conjunction.getExpressions().add(candidate.get("country").get("country_id").in(request.getCountryIds()).not());
                 }
             // If request ids IS EMPTY only show source countries
             } else if (loggedInUser != null &&

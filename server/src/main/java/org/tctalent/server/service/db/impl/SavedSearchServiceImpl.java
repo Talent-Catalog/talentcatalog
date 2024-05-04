@@ -363,6 +363,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
   private static UpdateSavedSearchRequest getUpdateSavedSearchRequest(
       SearchCandidateRequest request, SavedSearch defaultSavedSearch) {
+
     UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
     updateRequest.setSearchCandidateRequest(request);
     //Set other fields - no changes there
@@ -442,7 +443,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
       savedSearch.setEducationMajors(educationMajorRepository.getNamesForIds(
           getIdsFromString(savedSearch.getEducationMajorIds())));
     }
-    if (!savedSearch.getSurveyTypeIds().isEmpty()){
+    if (!savedSearch.getSurveyTypeIds().isEmpty()) {
       savedSearch.setSurveyTypeNames(
           surveyTypeRepository.getNamesForIds(getIdsFromString(savedSearch.getSurveyTypeIds())));
     }
@@ -607,6 +608,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     SavedSearch savedSearch = savedSearchRepository.findById(id)
         .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
     if (request.getSearchCandidateRequest() == null) {
       // If a saved search isn't global and belongs to loggedInUser, allow changes
       if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId()
@@ -620,8 +622,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
         return savedSearchRepository.save(savedSearch);
       } else {
-        log.warn(
-            "Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName());
+        log.warn("Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName());
         return savedSearch;
       }
     }
@@ -915,8 +916,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     Specification<Candidate> query = CandidateSpecification
         .buildSearchQuery(request, user, excludedCandidates);
-    if (org.apache.commons.collections.CollectionUtils.isNotEmpty(
-        request.getSearchJoinRequests())) {
+    if (!request.getSearchJoinRequests().isEmpty()) {
       for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
         query = addQuery(query, searchJoinRequest, searchIds);
       }
