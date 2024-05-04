@@ -77,7 +77,7 @@ public class SavedSearchSpecification {
       );
 
       // Filter by keyword if present
-      if (!StringUtils.isBlank(request.getKeyword())) {
+      if (request.getKeyword() != null && request.getKeyword().isEmpty()) {
         String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
         String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
         conjunction.getExpressions().add(
