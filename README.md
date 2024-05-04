@@ -64,6 +64,7 @@ Download and install the latest of the following tools.
     - Setting the -parameter flag on the compiler is also required. **IntelliJ > Settings /
       Build,Execution,Deployment / Compiler / Java Compiler** then add `-parameters` to the "
       Additional command line parameters" textbox.
+    - Make sure the **GradleJVM** drop list (on the same page as above) is set to use the Project SDK.
 
 - Code Style
     - Download the intellij-java-google-style.xml file from the google/styleguide repository
