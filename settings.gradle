@@ -16,8 +16,4 @@
 
 rootProject.name = 'talentcatalog'
 
-include ':ui:admin-portal'
-include ':ui:candidate-portal'
-include ':ui:public-portal'
-include ':server'
-include ':performance-tests'
+include(":ui:admin-portal", ":ui:candidate-portal", ":ui:public-portal", ":server", ":performance-tests" )
