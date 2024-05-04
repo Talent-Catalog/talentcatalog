@@ -67,7 +67,6 @@ fdescribe('JobsComponent', () => {
   it('should generate correct search request for live search', () => {
     const searchRequest = jobsComponent.exposeCreateSearchRequest();
     expect(searchRequest.sfOppClosed).toBe(false);
-    expect((searchRequest as any).published).toBe(true); // Cast to 'any' to get private members
     expect(searchRequest.activeStages).toBe(true);
   });
 

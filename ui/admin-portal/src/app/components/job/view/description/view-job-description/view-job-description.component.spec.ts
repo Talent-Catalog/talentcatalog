@@ -4,6 +4,7 @@ import { Job } from '../../../../../model/job';
 import {SafePipe} from "../../../../../pipes/safe.pipe";
 import {NgModule} from "@angular/core";
 import {BrowserDynamicTestingModule} from "@angular/platform-browser-dynamic/testing";
+import {MockJob} from "../../../../../MockData/MockJob";
  fdescribe('ViewJobDescriptionComponent', () => {
   let component: ViewJobDescriptionComponent;
   let fixture: ComponentFixture<ViewJobDescriptionComponent>;
@@ -26,31 +27,8 @@ import {BrowserDynamicTestingModule} from "@angular/platform-browser-dynamic/tes
   });
 
   it('should safely load job description URL into iframe', () => {
-    const job: Job = {
-      closed: false,
-      contactUser: undefined,
-      country: undefined,
-      employerEntity: undefined,
-      exclusionList: undefined,
-      hiringCommitment: "",
-      jobCreator: undefined,
-      jobOppIntake: undefined,
-      jobSummary: "",
-      name: "",
-      opportunityScore: "",
-      publishedBy: undefined,
-      publishedDate: undefined,
-      stage: undefined,
-      starringUsers: [],
-      submissionDueDate: undefined,
-      submissionList: undefined,
-      suggestedList: undefined,
-      suggestedSearches: [],
-      won: false
-      // mock job data
-    };
 
-    component.job = job;
+    component.job = MockJob;
 
     fixture.detectChanges();
 
