@@ -125,7 +125,7 @@ fdescribe('ViewJobSuggestedSearchesComponent', () => {
   it('should highlight searches correctly', () => {
     // Create a mock job object with suggested searches
     const mockJob = MockJob;
-    mockJob.suggestedSearches = [new MockSavedSearch(), new MockSavedSearch()]; // Mock data for suggested searches
+    mockJob.suggestedSearches = [new MockSavedSearch()]; // Mock data for suggested searches
 
     // Set the highlightItem to be a JobPrepSuggestedSearches instance
     component.highlightItem = new JobPrepSuggestedSearches();
