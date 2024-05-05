@@ -16,6 +16,14 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,15 +69,6 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 public interface CandidateService {
 
@@ -521,14 +520,14 @@ public interface CandidateService {
 
     /**
      * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
-     * Scheduled for 1800 GMT every Sunday as it's quite time-consuming.
-     * Shedlock is used to avoid duplicate method call.
-     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates(), which can be called from 12 hours
-     * past the original scheduled call (to give it plenty of time to complete).
+     * @param pageSize no. of results per page
+     * @param firstPageIndex index of first page (begins from 0)
+     * @param noOfPages no. of pages to process
+     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates()
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
-    void syncCandidatesToSf();
+    void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPages);
 
     /**
      * Upserts candidates to SF contacts and updates their TC profile SF links

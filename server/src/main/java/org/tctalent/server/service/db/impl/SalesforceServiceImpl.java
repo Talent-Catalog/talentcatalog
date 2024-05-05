@@ -1393,8 +1393,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             final String country = candidate.getCountry().getName();
             setMailingCountry(country);
 
-            final String countryOfNationality = candidate.getNationality().getName();
-            setNationality(countryOfNationality);
+            final Country countryOfNationality = candidate.getNationality();
+            if (countryOfNationality != null) {
+                setNationality(countryOfNationality.getName());
+            }
 
             //Set account id based on candidate's country
             switch (country) {
