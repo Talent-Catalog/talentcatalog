@@ -32,7 +32,7 @@ public class PropertiesStringConverter
         String s = null;
         if (props != null) {
             s = props.toString();
-            if (s.trim().length() == 0) {
+            if (s.trim().isEmpty()) {
                 //Don't store empty strings, replace with null.
                 s = null;
             }

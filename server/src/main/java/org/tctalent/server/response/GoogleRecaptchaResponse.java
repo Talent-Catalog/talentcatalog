@@ -59,7 +59,7 @@ public class GoogleRecaptchaResponse {
     enum ErrorCode {
         MissingSecret, InvalidSecret, MissingResponse, InvalidResponse, BadRequest, TimeoutOrDuplicate;
 
-        private static Map<String, ErrorCode> errorsMap = new HashMap<>(6);
+        private static final Map<String, ErrorCode> errorsMap = new HashMap<>(6);
 
         static {
             errorsMap.put("missing-input-secret", MissingSecret);

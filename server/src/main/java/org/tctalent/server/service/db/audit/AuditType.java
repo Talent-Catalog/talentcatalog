@@ -21,9 +21,9 @@ public enum AuditType {
 
     ;
 
-    private String name;
+    private final String name;
 
-    private AuditType(String name) {
+    AuditType(String name) {
         this.name = name;
     }
 

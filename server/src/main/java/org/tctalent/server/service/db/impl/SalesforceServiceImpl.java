@@ -515,7 +515,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         if (opportunities.size() > 1) {
             log.error("Multiple SF candidate opportunities for externalId " + externalId);
         }
-        return opportunities.size() == 0 ? null : opportunities.get(0);
+        return opportunities.isEmpty() ? null : opportunities.get(0);
     }
 
     @NonNull
@@ -589,7 +589,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     public List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds) {
         List<Opportunity> opps = new ArrayList<>();
-        if (sfIds.size() > 0) {
+        if (!sfIds.isEmpty()) {
             //Construct the String of ids for the WHERE clause
             final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
                 .collect(Collectors.joining(","));
@@ -1674,7 +1674,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
-    class EmployerOppStageUpdateRequest extends LinkedHashMap<String, Object> {
+    static class EmployerOppStageUpdateRequest extends LinkedHashMap<String, Object> {
 
         public EmployerOppStageUpdateRequest(
             @Nullable JobOpportunityStage stage, @Nullable String nextStep, @Nullable LocalDate dueDate) {
@@ -1695,6 +1695,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Getter
     @Setter
     @ToString
+    static
     class RecordTypeField {
 
         public String Name;

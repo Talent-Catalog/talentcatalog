@@ -55,7 +55,7 @@ public class EnumHelper {
     @Nullable
     public static <T extends Enum<T>> List<T> fromString(
             Class<T> enumType, @Nullable String csv) {
-        return csv == null || csv.trim().length() == 0 ? null :
+        return csv == null || csv.trim().isEmpty() ? null :
                 Stream.of(csv.split(","))
                 .map(s -> Enum.valueOf(enumType, s))
                 .collect(Collectors.toList());

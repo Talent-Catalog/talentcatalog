@@ -40,7 +40,7 @@ public class DelimitedIdConverter
 
     @Override
     public List<Long> convertToEntityAttribute(String delimitedString) {
-        return delimitedString == null || delimitedString.trim().length() == 0
+        return delimitedString == null || delimitedString.trim().isEmpty()
                 ? null
                 : Stream.of(delimitedString.split(DELIMITER))
                 .map(Long::parseLong)

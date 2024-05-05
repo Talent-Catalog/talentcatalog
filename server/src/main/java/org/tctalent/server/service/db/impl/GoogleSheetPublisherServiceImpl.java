@@ -44,7 +44,6 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -223,7 +222,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         //Add in extra properties. These go into the named cells whose names are given by the map keys.
         //This is the data that ends up in the sheet's Data tab.
         for (Entry<String, Object> prop : props.entrySet()) {
-            List<List<Object>> cell = Arrays.asList(Arrays.asList(prop.getValue()));
+            List<List<Object>> cell = List.of(List.of(prop.getValue()));
             data.add(new ValueRange().setRange(prop.getKey()).setValues(cell));
         }
         BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()
@@ -320,7 +319,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
                 feedbackColumns.put(columnRangeNamesInSheet.get(rangeIndex++), colVals);
                 if (vals != null) {
                     for (List<Object> val : vals) {
-                        if (val.size() > 0) {
+                        if (!val.isEmpty()) {
                             colVals.add(val.get(0));
                         } else {
                             colVals.add(null);

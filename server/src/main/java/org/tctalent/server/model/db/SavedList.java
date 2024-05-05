@@ -264,7 +264,7 @@ public class SavedList extends AbstractCandidateSource {
      */
     public boolean isSfOppIsClosed() {
         final SalesforceJobOpp sfJobOpp = getSfJobOpp();
-        return sfJobOpp == null ? false : sfJobOpp.isClosed();
+        return sfJobOpp != null && sfJobOpp.isClosed();
     }
 
     /**

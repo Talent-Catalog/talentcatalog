@@ -676,7 +676,7 @@ public class UserServiceImpl implements UserService {
     public void mfaVerify(String mfaCode) throws InvalidCredentialsException {
         User user = fetchLoggedInUser();
         if (user.getUsingMfa()) {
-            if (mfaCode == null || mfaCode.length() == 0) {
+            if (mfaCode == null || mfaCode.isEmpty()) {
                 throw new InvalidCredentialsException("You need to enter an authentication code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
@@ -695,7 +695,7 @@ public class UserServiceImpl implements UserService {
     @SchedulerLock(name = "UserService_searchStaffNotUsingMfa", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void checkMfaUsers() {
         List<User> users = searchStaffNotUsingMfa();
-        if (users.size() > 0) {
+        if (!users.isEmpty()) {
             String s = users.stream()
                 .map(User::getUsername)
                 .collect(Collectors.joining(","));

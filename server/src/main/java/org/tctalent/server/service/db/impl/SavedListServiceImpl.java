@@ -558,7 +558,7 @@ public class SavedListServiceImpl implements SavedListService {
             while ((tokens = reader.readNext()) != null) {
                 //tokens[] is an array of values from the line
                 //Ignore empty tokens
-                if (tokens.length > 0 && tokens[0].length() > 0) {
+                if (tokens.length > 0 && !tokens[0].isEmpty()) {
                     //A bit of logic to skip any header. Only checks once.
                     boolean skip = possibleHeader && !StringUtils.isNumeric(tokens[0]);
                     possibleHeader = false;
