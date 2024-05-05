@@ -106,6 +106,8 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String regoReferrerParam;
 
+    private String unhcrStatuses;
+
     /**
      * If specified, requests display of candidates who have any candidate opportunities
      * (anyOpps = true) or who have no candidate opportunities (anyOpps = false)
@@ -614,6 +616,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public Set<User> getUsers() {
         return users;
+    }
+
+    public String getUnhcrStatuses() {
+        return unhcrStatuses;
+    }
+
+    public void setUnhcrStatuses(String unhcrStatuses) {
+        this.unhcrStatuses = unhcrStatuses;
     }
 
     @Override
