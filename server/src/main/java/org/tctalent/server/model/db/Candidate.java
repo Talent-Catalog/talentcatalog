@@ -916,7 +916,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getOccupationSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateOccupation occupation : candidateOccupations) {
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 s.append(", ");
             }
             s.append(occupation.getOccupation().getName());
@@ -927,7 +927,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getEnglishExamsSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateExam exam : candidateExams) {
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 s.append(", ");
             }
             String examType = exam.getExam().equals(Exam.Other) ? exam.getOtherExam() : exam.getExam().toString();
@@ -947,16 +947,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getEducationsSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateEducation edu : candidateEducations) {
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 s.append(", ");
             }
             String eduString;
             if (edu.getEducationType() != null) {
                 if (edu.getEducationMajor() != null) {
-                    eduString = edu.getEducationType().toString() + " in " + edu.getEducationMajor().getName();
+                    eduString = edu.getEducationType() + " in " + edu.getEducationMajor().getName();
                 } else {
                     if (edu.getCourseName() != null) {
-                        eduString = edu.getEducationType().toString() + " in " + edu.getCourseName();
+                        eduString = edu.getEducationType() + " in " + edu.getCourseName();
                     } else {
                         eduString = edu.getEducationType().toString();
                     }
@@ -972,7 +972,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getCertificationsSummary() {
         StringBuilder s = new StringBuilder();
         for (CandidateCertification cert : candidateCertifications) {
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 s.append(", ");
             }
             String certString = cert.getName() + ": " + cert.getInstitution() + " " + cert.getDateCompleted().getYear();
@@ -1296,7 +1296,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setFolderlink(@Nullable String folderlink) {
         //Treat empty string links like nulls.
-        if (folderlink != null && folderlink.trim().length() == 0) {
+        if (folderlink != null && folderlink.trim().isEmpty()) {
             folderlink = null;
         }
         this.folderlink = folderlink;

@@ -34,10 +34,7 @@ public class TcAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
     public boolean supports( Class<?> authentication ) {
-        if (authentication.isAssignableFrom(TcAuthorizationToken.class)) {
-            return true;
-        }
-        return false;
+      return authentication.isAssignableFrom(TcAuthorizationToken.class);
     }
 
 }

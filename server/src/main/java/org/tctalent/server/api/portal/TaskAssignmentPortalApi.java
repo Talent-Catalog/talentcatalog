@@ -147,13 +147,10 @@ public class TaskAssignmentPortalApi {
 
         //If the request has not been abandoned, we expect a non empty answer
         if (!abandoned) {
-            if (answer == null || answer.trim().length() == 0) {
+            if (answer == null || answer.trim().isEmpty()) {
                 throw new InvalidRequestException("Missing answer to question");
             }
             completed = true;
-        } else {
-            // If the request has been abandoned, we want to set the completed value as false.
-            completed = false;
         }
 
         QuestionTaskAssignmentImpl ta = (QuestionTaskAssignmentImpl) taskAssignmentService.get(id);

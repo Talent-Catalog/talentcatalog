@@ -177,22 +177,22 @@ tasks.bootJar {
     }
 }
 
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
 }
 
 // The items below enable preview functions to be available when required.
 tasks {
 //    val ENABLE_PREVIEW = "--enable-preview"
-    withType<JavaCompile>() {
+    withType<JavaCompile> {
 //        options.compilerArgs.add(ENABLE_PREVIEW)
 //        options.compilerArgs.add("-Xlint:preview")
     }
-    withType<Test>() {
+    withType<Test> {
         useJUnitPlatform()
 //        jvmArgs(ENABLE_PREVIEW)
     }
-    withType<JavaExec>() {
+    withType<JavaExec> {
 //        jvmArgs(ENABLE_PREVIEW)
     }
 }

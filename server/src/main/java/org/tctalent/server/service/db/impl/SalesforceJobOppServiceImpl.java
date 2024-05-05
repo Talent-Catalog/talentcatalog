@@ -84,7 +84,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     @Override
     public SalesforceJobOpp getOrCreateJobOppFromId(String sfId) {
         SalesforceJobOpp jobOpp;
-        if (sfId == null || sfId.trim().length() == 0) {
+        if (sfId == null || sfId.trim().isEmpty()) {
             jobOpp = null;
         } else {
             //Search for existing SalesforceJobOpp associated with this Salesforce record
@@ -102,7 +102,7 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     @Nullable
     public SalesforceJobOpp getOrCreateJobOppFromLink(String sfJoblink) {
         SalesforceJobOpp jobOpp;
-        if (sfJoblink == null || sfJoblink.trim().length() == 0) {
+        if (sfJoblink == null || sfJoblink.trim().isEmpty()) {
             jobOpp = null;
         } else {
             String sfId = SalesforceHelper.extractIdFromSfUrl(sfJoblink);

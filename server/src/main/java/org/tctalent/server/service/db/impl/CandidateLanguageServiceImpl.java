@@ -175,10 +175,9 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
     @Override
     public List<CandidateLanguage> updateCandidateLanguages(UpdateCandidateLanguagesRequest request) {
         Candidate candidate = authService.getLoggedInCandidate();
-        List<CandidateLanguage> updatedLanguages = new ArrayList<>();
         List<Long> updatedLanguageIds = new ArrayList<>();
 
-        List<CandidateLanguage> candidateLanguages = candidateLanguageRepository.findByCandidateId(candidate.getId());
+      List<CandidateLanguage> candidateLanguages = candidateLanguageRepository.findByCandidateId(candidate.getId());
 
         /* map contains the existing candidate's candidate languages that are currently saved in the database. */
         Map<Long, CandidateLanguage> map = candidateLanguages.stream().collect( Collectors.toMap(CandidateLanguage::getId,
@@ -210,7 +209,6 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
                         languageLevels.get(update.getSpokenLevelId())
                 );
             }
-            updatedLanguages.add(candidateLanguageRepository.save(candidateLanguage));
             updatedLanguageIds.add(candidateLanguage.getId());
         }
 

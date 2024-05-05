@@ -56,7 +56,7 @@ public class TaskDtoHelper {
 
             return ignore;
         }
-    };
+    }
 
     public static DtoBuilder getTaskAssignmentDto() {
         return new DtoBuilder(new TaskDtoPropertyFilter())

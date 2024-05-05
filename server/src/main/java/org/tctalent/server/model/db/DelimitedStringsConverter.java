@@ -39,7 +39,7 @@ public class DelimitedStringsConverter
 
     @Override
     public List<String> convertToEntityAttribute(String delimitedString) {
-        return delimitedString == null || delimitedString.trim().length() == 0
+        return delimitedString == null || delimitedString.trim().isEmpty()
                 ? null
                 : Stream.of(delimitedString.split(DELIMITER))
                         .collect(Collectors.toList());

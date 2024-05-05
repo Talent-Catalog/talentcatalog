@@ -279,7 +279,7 @@ public class GoogleDriveConfig {
   }
 
   private GoogleCredential computeCredential(NetHttpTransport HTTP_TRANSPORT) throws IOException {
-    if (privateKey == null || privateKey.trim().length() == 0) {
+    if (privateKey == null || privateKey.trim().isEmpty()) {
       throw new IOException("Missing critical configuration data. "
           + "If you are running in development, have you requested and installed the secrets file?"
           + " See the README.");

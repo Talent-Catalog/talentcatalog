@@ -1117,7 +1117,7 @@ public class SystemAdminApi {
         int count = 0;
         while (result.next()) {
             int i = 1;
-            Long id = result.getLong("id");
+            long id = result.getLong("id");
             optionInsert.setLong(i++, id);
             String name = result.getString("name");
             optionInsert.setString(i++, name);
@@ -1863,29 +1863,13 @@ public class SystemAdminApi {
         if (nationalityId == null || nationalityId == 0 || countryId == null || countryId == 0){
             return CandidateStatus.draft.name();
         }
-        switch (status) {
-            case 0:
-                return CandidateStatus.deleted.name();
-            case 1:
-                return CandidateStatus.incomplete.name();
-            case 2:
-                return CandidateStatus.pending.name();
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-                return CandidateStatus.unreachable.name();
-            case 7:
-                return CandidateStatus.incomplete.name();
-            case 8:
-                return CandidateStatus.unreachable.name();
-            case 9:
-                return CandidateStatus.pending.name();
-            case 10:
-            case 11:
-                return CandidateStatus.active.name();
-        }
-        return CandidateStatus.deleted.name();
+      return switch (status) {
+        case 1, 7 -> CandidateStatus.incomplete.name();
+        case 2, 9 -> CandidateStatus.pending.name();
+        case 3, 4, 5, 6, 8 -> CandidateStatus.unreachable.name();
+        case 10, 11 -> CandidateStatus.active.name();
+        default -> CandidateStatus.deleted.name();
+      };
     }
 
     private String getGender(String gender) {
@@ -1928,12 +1912,11 @@ public class SystemAdminApi {
     private String getEducationType(String name) {
         if (name != null) {
             switch (name) {
-                case "Bachelor's Degree": return EducationType.Bachelor.name();
+                case "Bachelor's Degree", "Some University": return EducationType.Bachelor.name();
                 case "Master's Degree": return EducationType.Masters.name();
                 case "Doctoral Degree": return EducationType.Doctoral.name();
                 case "Associate Degree": return EducationType.Associate.name();
                 case "Vocational Degree": return EducationType.Vocational.name();
-                case "Some University": return EducationType.Bachelor.name();
             }
         }
         return null;
@@ -1979,7 +1962,7 @@ public class SystemAdminApi {
 
     private Long whackyExtraCountryLookup(Integer origCountryId) {
         Integer val = countryForGeneralCountry.get(origCountryId);
-        if (val != null) return new Long(val);
+        if (val != null) return Long.valueOf(val);
         return null;
     }
 
@@ -2008,7 +1991,7 @@ public class SystemAdminApi {
             String formattedDate = new SimpleDateFormat(DATE_FORMAT).format(date);
             if (isDateValid(formattedDate)){
                 return Timestamp.from(Instant.ofEpochMilli(epoch));
-            };
+            }
         }
         return null;
     }

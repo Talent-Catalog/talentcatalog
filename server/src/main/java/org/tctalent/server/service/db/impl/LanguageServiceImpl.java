@@ -301,7 +301,7 @@ public class LanguageServiceImpl implements LanguageService {
             final String name = language.getName().trim();
             String code = nameToCode.get(name);
             if (code == null) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     sb.append(",");
                 }
                 sb.append(name);

@@ -23,9 +23,9 @@ public enum AuditAction {
     VERIFY("verified"),
     ;
 
-    private String name;
+    private final String name;
 
-    private AuditAction(String name) {
+    AuditAction(String name) {
         this.name = name;
     }
 

@@ -19,7 +19,6 @@ package org.tctalent.server.configuration;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +32,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import org.springframework.lang.NonNull;
 
 /**
- * Based on
- * https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#elasticsearch.clients.rest
- * and
+ * Based on https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#elasticsearch.clients.rest and
  * https://www.baeldung.com/spring-data-elasticsearch-tutorial
  *
  * @author John Cameron
@@ -44,47 +41,52 @@ import org.springframework.lang.NonNull;
 @EnableElasticsearchRepositories(basePackages = "org.tctalent.server.repository.es")
 public class ElasticsearchConfiguration extends AbstractElasticsearchConfiguration {
 
-    @Value("${spring.elasticsearch.uris}")
-    private List<String> uris;
-    @Value("${spring.elasticsearch.username}")
-    private String username;
-    @Value("${spring.elasticsearch.password}")
-    private String password;
+  @Value("${spring.elasticsearch.uris}")
+  private List<String> uris;
+  @Value("${spring.elasticsearch.username}")
+  private String username;
+  @Value("${spring.elasticsearch.password}")
+  private String password;
 
-    private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
+  private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
 
-    @Override
-    @Bean
-    public @NonNull RestHighLevelClient elasticsearchClient() {
-        try {
-            if (uris != null && uris.size() > 0) {
-                URI uri = new URI(uris.get(0));
-                String hostAndPort = uri.getAuthority();
-                String protocol = uri.getScheme();
-                boolean useSsl = "https".equals(protocol);
+  @Override
+  @Bean
+  public @NonNull RestHighLevelClient elasticsearchClient() {
+    try {
+      if (uris != null && !uris.isEmpty()) {
+        URI uri = new URI(uris.get(0));
+        String hostAndPort = uri.getAuthority();
+        String protocol = uri.getScheme();
+        boolean useSsl = "https".equals(protocol);
 
-                log.info("Connecting to Elasticsearch at " + hostAndPort);
+        log.info("Connecting to Elasticsearch at " + hostAndPort);
 
-                ClientConfiguration.MaybeSecureClientConfigurationBuilder x
-                        = ClientConfiguration.builder().connectedTo(hostAndPort);
+        ClientConfiguration.MaybeSecureClientConfigurationBuilder x
+            = ClientConfiguration.builder().connectedTo(hostAndPort);
 
-                if (useSsl) {
-                    x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
-                            x.usingSsl();
-                }
-
-                if (username != null && username.length() > 0) {
-                    x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
-                            x.withBasicAuth(username, password);
-                }
-                ClientConfiguration clientConfiguration = x.build();
-
-                return RestClients.create(clientConfiguration).rest();
-            } else {
-                throw new RuntimeException("Missing Elasticsearch URL");
-            }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Badly formatted Elasticsearch URL: " + uris, e);
+        if (useSsl) {
+          x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
+              x.usingSsl();
         }
+
+        if (username != null && !username.isEmpty()) {
+          x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
+              x.withBasicAuth(username, password);
+        }
+        ClientConfiguration clientConfiguration = x.build();
+
+        try {
+
+          return RestClients.create(clientConfiguration).rest();
+        } catch (Exception e) {
+          throw new RuntimeException("Error connecting to Elasticsearch", e);
+        }
+      } else {
+        throw new RuntimeException("Missing Elasticsearch URL");
+      }
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Badly formatted Elasticsearch URL: " + uris, e);
     }
+  }
 }

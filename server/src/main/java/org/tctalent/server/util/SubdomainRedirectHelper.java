@@ -52,7 +52,7 @@ public class SubdomainRedirectHelper {
             String ourDomain = InternetDomainName.from(url).topPrivateDomain().toString();
             String suffix = "." + ourDomain;
             String subdomain = url.substring(0, url.indexOf(suffix));
-            if (subdomain.length() > 0) {
+            if (!subdomain.isEmpty()) {
                 redirectUrl = "https://" + ourDomain + "?p=" + subdomain;
             }
         }

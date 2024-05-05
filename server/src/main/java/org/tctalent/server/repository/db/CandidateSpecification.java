@@ -211,7 +211,7 @@ public class CandidateSpecification {
             }
 
             // EXCLUDED CANDIDATES (eg from Review Status)
-            if (excludedCandidates != null && excludedCandidates.size() > 0) {
+            if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
                 conjunction.getExpressions().add(candidate.in(excludedCandidates).not()
                     );
             }
@@ -289,7 +289,7 @@ public class CandidateSpecification {
             }
 
             // REFERRER
-            if (request.getRegoReferrerParam() != null && request.getRegoReferrerParam().trim().length() != 0) {
+            if (request.getRegoReferrerParam() != null && !request.getRegoReferrerParam().trim().isEmpty()) {
                 conjunction.getExpressions().add(
                         builder.like(builder.lower(candidate.get("regoReferrerParam")), request.getRegoReferrerParam().toLowerCase())
                 );

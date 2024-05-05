@@ -111,7 +111,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
         if (restricted) {
             // Restrict access if there are source countries associated to admin user
-            if(user != null && user.getSourceCountries().size() > 0 ){
+            if(user != null && !user.getSourceCountries().isEmpty()){
                 countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
             } else {
                 //Note: Can't use cache because translationService modifies it adding
@@ -218,7 +218,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
             final String name = country.getName().trim();
             String code = nameToCode.get(name);
             if (code == null) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                    sb.append(",");
                 }
                 sb.append(name);

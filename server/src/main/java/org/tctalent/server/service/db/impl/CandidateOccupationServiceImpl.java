@@ -175,7 +175,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
         }
-        List<CandidateOccupation> updatedOccupations = new ArrayList<>();
         List<Long> updatedOccupationIds = new ArrayList<>();
 
         List<CandidateOccupation> candidateOccupations = candidateOccupationRepository.findByCandidateId(candidate.getId());
@@ -223,7 +222,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 }
 
             }
-            updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
             log.info("Saved candidate " + candidate.getId() + " occupation " + candidateOccupation.getOccupation().getName());
             updatedOccupationIds.add(candidateOccupation.getId());
         }

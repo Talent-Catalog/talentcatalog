@@ -35,41 +35,39 @@ import org.tctalent.server.service.db.CandidatePropertyService;
  */
 @Service
 public class CandidatePropertyServiceImpl implements CandidatePropertyService {
-    private final CandidatePropertyRepository candidatePropertyRepository;
 
-    public CandidatePropertyServiceImpl(CandidatePropertyRepository candidatePropertyRepository) {
-        this.candidatePropertyRepository = candidatePropertyRepository;
+  private final CandidatePropertyRepository candidatePropertyRepository;
+
+  public CandidatePropertyServiceImpl(CandidatePropertyRepository candidatePropertyRepository) {
+    this.candidatePropertyRepository = candidatePropertyRepository;
+  }
+
+  @Nullable
+  public CandidateProperty findProperty(@NonNull Candidate candidate, @NonNull String name) {
+
+    CandidatePropertyKey key = new CandidatePropertyKey(candidate.getId(), name);
+    final Optional<CandidateProperty> oProp = candidatePropertyRepository.findById(key);
+
+    return oProp.orElse(null);
+  }
+
+  @Override
+  public CandidateProperty createOrUpdateProperty(@NonNull Candidate candidate,
+      @NonNull String name, @Nullable String value, @Nullable TaskAssignment taskAssignment) {
+
+    CandidateProperty property = findProperty(candidate, name);
+    if (property == null) {
+      property = new CandidateProperty();
+      property.setCandidateId(candidate.getId());
+      property.setName(name);
     }
+    property.setValue(value);
+    property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
+    return candidatePropertyRepository.save(property);
+  }
 
-    @Nullable
-    public CandidateProperty findProperty(@NonNull Candidate candidate, @NonNull String name) {
-
-        CandidatePropertyKey key = new CandidatePropertyKey(candidate.getId(), name);
-        final Optional<CandidateProperty> oProp = candidatePropertyRepository.findById(key);
-
-        return oProp.orElse(null);
-    }
-
-    @Override
-    public CandidateProperty createOrUpdateProperty(@NonNull Candidate candidate,
-        @NonNull String name, @Nullable String value, @Nullable TaskAssignment taskAssignment) {
-
-        CandidateProperty property = findProperty(candidate, name);
-        if (property != null) {
-            property.setValue(value);
-            property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
-        } else {
-            property = new CandidateProperty();
-            property.setCandidateId(candidate.getId());
-            property.setName(name);
-            property.setValue(value);
-            property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
-        }
-        return candidatePropertyRepository.save(property);
-    }
-
-    @Override
-    public void deleteProperty(@NonNull Candidate candidate, @NonNull String name) {
-        candidatePropertyRepository.deleteById(new CandidatePropertyKey(candidate.getId(), name));
-    }
+  @Override
+  public void deleteProperty(@NonNull Candidate candidate, @NonNull String name) {
+    candidatePropertyRepository.deleteById(new CandidatePropertyKey(candidate.getId(), name));
+  }
 }
