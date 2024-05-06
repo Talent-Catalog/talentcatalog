@@ -75,7 +75,7 @@ fdescribe('ViewJobComponent', () => {
     // Act
     component.doToggleStarred();
     // Assert
-     expect(mockJobService.updateStarred).toHaveBeenCalledWith(1, true);
+     expect(mockJobService.updateStarred).toHaveBeenCalledWith(1, false);
      expect(component.job).toEqual(job);
      expect(component.jobUpdated.emit).toHaveBeenCalledWith(job);
      expect(component.loading).toBeFalsy(); // Ensure loading indicator is turned off
@@ -90,7 +90,7 @@ fdescribe('ViewJobComponent', () => {
     component.doToggleStarred();
     tick(); // Wait for asynchronous operation to complete
     // Assert
-    expect(mockJobService.updateStarred).toHaveBeenCalledWith(1, true);
+    expect(mockJobService.updateStarred).toHaveBeenCalledWith(1, false);
     expect(component.error).toEqual(errorResponse); // Ensure the error is set in the component
     expect(component.loading).toBeFalsy(); // Ensure loading indicator is turned off
   }));

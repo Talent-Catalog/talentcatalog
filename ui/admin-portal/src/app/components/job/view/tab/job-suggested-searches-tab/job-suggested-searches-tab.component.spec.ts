@@ -12,7 +12,7 @@ import {LocalStorageModule} from "angular-2-local-storage";
 import {
   RouterLinkDirectiveStub
 } from "../../submission-list/view-job-submission-list/view-job-submission-list.component.spec";
-import {MockJobPrepItem} from "../../../../../MockData/JobPrepItem";
+import {MockJobPrepItem} from "../../../../../MockData/MockJobPrepItem";
 import {
   ViewJobSourceContactsComponent
 } from "../../source-contacts/view-job-source-contacts/view-job-source-contacts.component"; // Import the job prep item data

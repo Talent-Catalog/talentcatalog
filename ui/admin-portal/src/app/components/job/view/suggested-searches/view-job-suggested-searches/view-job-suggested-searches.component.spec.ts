@@ -1,23 +1,17 @@
-import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {NgbModal, NgbModalModule, NgbModalRef, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {ComponentFixture,TestBed, waitForAsync} from '@angular/core/testing';
+import {NgbModal,  NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import { InputTextComponent } from '../../../../util/input/input-text/input-text.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ViewJobSuggestedSearchesComponent } from './view-job-suggested-searches.component';
 import { JobService } from '../../../../../services/job.service';
 import {SavedSearch} from "../../../../../model/saved-search";
-
-// Preload the module
-
 import { Job } from '../../../../../model/job';
-
 import {MockJob} from "../../../../../MockData/MockJob";
 import {Directive, Input} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {of} from "rxjs";
-import {MockUser} from "../../../../../MockData/MockUser";
 import {MockSavedSearch} from "../../../../../MockData/MockSavedSearch";
 import {JobPrepSuggestedSearches} from "../../../../../model/job-prep-item";
-import {MockJobPrepItem} from "../../../../../MockData/JobPrepItem";
 
 @Directive({
   selector: "[routerLink]", // Stub directive for routerLink
