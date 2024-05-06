@@ -15,11 +15,12 @@
  */
 
 
- import {MockUser} from "./MockUser";
+import {MockUser} from "./MockUser";
 import {Job, JobOpportunityStage} from "../model/job";
 import {TaskType, UploadType} from "../model/task";
 
 export const MockJob: Job = {
+  evergreen: false,
   closed: false,
   name: "XYZ",
   submissionList: {
@@ -88,7 +89,6 @@ export const MockJob: Job = {
     partner: null,
     name: 'John Doe'
   },
-  evergreen: false,
   country: { id: 1, name: 'USA', status: 'Active', translatedName: 'United States' },
   employerEntity: { id: 1, name: 'ABC Company', description: 'Some description', hasHiredInternationally: true, sfId: '123', website: 'https://example.com' },
   exclusionList: {
