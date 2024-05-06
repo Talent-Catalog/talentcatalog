@@ -61,7 +61,9 @@ import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Employer;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -71,6 +73,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.JobSpecification;
@@ -141,6 +144,7 @@ public class JobServiceImpl implements JobService {
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final JobOppIntakeService jobOppIntakeService;
+    private final ChatPostServiceImpl chatPostServiceImpl;
 
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
@@ -873,6 +877,29 @@ public class JobServiceImpl implements JobService {
         SalesforceJobOpp job = getJob(id);
 
         final JobOpportunityStage stage = request.getStage();
+        // If stage changing, send automated chat post to JobCreatorAllSourcePartners chat
+        if (job.getStage() != stage) {
+            // Find the relevant job chat
+            JobChat jcaspChat = jobChatService.getOrCreateJobChat(
+                JobChatType.JobCreatorAllSourcePartners,
+                job,
+                null,
+                null
+            );
+
+            // Set the chat post content
+            Post autoPostJobOppStageChange = new Post();
+            autoPostJobOppStageChange.setContent("💼🪜 The job opportunity '" + job.getName() +
+                "' has changed stage from '" + job.getStage() + "' to '" + stage + "'.");
+
+            // Create the chat post
+            ChatPost jobOppStageChangeChatPost = chatPostServiceImpl.createPost(
+                autoPostJobOppStageChange, jcaspChat, userService.getSystemAdminUser());
+
+            // Publish the chat post
+            chatPostServiceImpl.publishChatPost(jobOppStageChangeChatPost);
+        }
+
         final String nextStep = request.getNextStep();
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
         salesforceService.updateEmployerOpportunityStage(

@@ -149,6 +149,32 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     + candidate.getCandidateNumber() + " job " + jobOpp.getId());
             }
             opp.setSfId(sfId);
+        } else {
+            // If this is an update request
+            if (opp.getStage() != oppParams.getStage()) {
+                // Update includes a stage change? Automate post to JobCreatorSourcePartner chat.
+                // Find the relevant job chat
+                JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                    JobChatType.JobCreatorSourcePartner,
+                    opp.getJobOpp(),
+                    candidate.getUser().getPartner(),
+                    candidate
+                );
+
+                // Set the chat post content
+                Post autoPostCandidateOppStageChange = new Post();
+                autoPostCandidateOppStageChange.setContent("💼🪜 The case for candidate " +
+                    candidate.getUser().getFirstName() + " " + candidate.getUser().getLastName() +
+                    " (" + candidate.getCandidateNumber() + ") has changed stage from '" +
+                    opp.getStage() + "' to '" + oppParams.getStage() + "'.");
+
+                // Create the chat post
+                ChatPost candidateOppStageChangeChatPost = chatPostServiceImpl.createPost(
+                    autoPostCandidateOppStageChange, jcspChat, userService.getSystemAdminUser());
+
+                // Publish the chat post
+                chatPostServiceImpl.publishChatPost(candidateOppStageChangeChatPost);
+            }
         }
 
         opp.setAuditFields(loggedInUser);
