@@ -16,15 +16,17 @@
 
 package org.tctalent.server.model.db;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.request.job.IJobIntakeData;
+
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
- * TODO JC Doc
+ * Detail about a job.
  *
  * @author John Cameron
  */
@@ -33,7 +35,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "job_opp_intake")
 @SequenceGenerator(name = "seq_gen", sequenceName = "job_opp_intake_id_seq", allocationSize = 1)
-public class JobOppIntake extends AbstractDomainObject<Long> {
+public class JobOppIntake extends AbstractDomainObject<Long> implements IJobIntakeData {
     @OneToOne(mappedBy = "jobOppIntake")
     private SalesforceJobOpp jobOpp;
     private String salaryRange;

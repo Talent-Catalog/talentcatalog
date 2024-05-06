@@ -43,6 +43,7 @@ export interface Job extends Opportunity {
   contactUser: User;
   country: Country;
   employerEntity: Employer;
+  evergreen: boolean;
   exclusionList: SavedList;
   jobSummary: string;
   publishedBy: User;
@@ -100,12 +101,12 @@ export enum JobOpportunityStage {
  * Adds extra job opportunity specific fields to standard SearchOpportunityRequest
  */
 export class SearchJobRequest extends SearchOpportunityRequest {
-  published?: boolean;
   starred?: boolean;
 }
 
 export interface UpdateJobRequest extends OpportunityProgressParams {
   contactUserId?: number;
+  evergreen?: boolean;
   roleName?: string;
   sfId?: string;
   sfJoblink?: string;

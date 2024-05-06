@@ -521,14 +521,14 @@ public interface CandidateService {
 
     /**
      * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
-     * Scheduled for 1800 GMT every Sunday as it's quite time-consuming.
-     * Shedlock is used to avoid duplicate method call.
-     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates(), which can be called from 12 hours
-     * past the original scheduled call (to give it plenty of time to complete).
+     * @param pageSize no. of results per page
+     * @param firstPageIndex index of first page (begins from 0)
+     * @param noOfPages no. of pages to process
+     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates()
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
-    void syncCandidatesToSf();
+    void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPages);
 
     /**
      * Upserts candidates to SF contacts and updates their TC profile SF links

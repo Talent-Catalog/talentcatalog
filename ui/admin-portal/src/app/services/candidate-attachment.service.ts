@@ -15,14 +15,13 @@
  */
 
 import {Injectable} from '@angular/core';
-import {forkJoin, Observable, throwError} from 'rxjs';
+import {forkJoin, Observable, Subject, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {catchError, map} from "rxjs/operators";
 import {AttachmentType, CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
 import {saveBlob} from "../util/file";
-import {Subject} from "rxjs/index";
 import {Candidate} from "../model/candidate";
 
 export interface UpdateCandidateAttachmentRequest {
@@ -129,5 +128,9 @@ export class CandidateAttachmentService {
 
   listByType(request: ListByUploadTypeRequest): Observable<CandidateAttachment[]> {
     return this.http.post<CandidateAttachment[]>(`${this.apiUrl}/list-by-type`, request);
+  }
+
+  getMaxUploadFileSize() {
+    return 10 * (1<<20); //10 Mb
   }
 }

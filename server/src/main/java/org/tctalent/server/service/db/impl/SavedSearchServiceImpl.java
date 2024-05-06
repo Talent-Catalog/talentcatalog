@@ -16,26 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.lucene.search.join.ScoreMode;
@@ -90,6 +72,7 @@ import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.SearchJoin;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.es.CandidateEs;
@@ -132,6 +115,25 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -1402,6 +1404,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
             savedSearch.setKeyword(request.getKeyword());
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
+            savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
             savedSearch.setMinYrs(request.getMinYrs());
@@ -1467,6 +1470,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
         searchCandidateRequest.setKeyword(search.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
+        searchCandidateRequest.setUnhcrStatuses(getUnhcrStatusListFromString(search.getUnhcrStatuses()));
         searchCandidateRequest.setGender(search.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
         searchCandidateRequest.setMinYrs(search.getMinYrs());
@@ -1553,6 +1557,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return statusList != null ? Stream.of(statusList.split(","))
                 .map(s -> CandidateStatus.valueOf(s))
                 .collect(Collectors.toList()) : null;
+    }
+
+    String getUnhcrStatusListAsString(List<UnhcrStatus> unhcrStatuses){
+        return !CollectionUtils.isEmpty(unhcrStatuses) ? unhcrStatuses.stream().map(
+                status -> status.name())
+            .collect(Collectors.joining(",")) : null;
+    }
+
+    List<UnhcrStatus> getUnhcrStatusListFromString(String unhcrStatusList){
+        return unhcrStatusList != null ? Stream.of(unhcrStatusList.split(","))
+            .map(s -> UnhcrStatus.valueOf(s))
+            .collect(Collectors.toList()) : null;
     }
 
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest searchRequest) {

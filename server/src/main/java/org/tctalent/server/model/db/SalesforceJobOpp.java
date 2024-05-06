@@ -16,10 +16,9 @@
 
 package org.tctalent.server.model.db;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.annotation.Nullable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -34,11 +33,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * This is a copy of an Employer Job Opportunity on Salesforce
+ * This represents an Employer Job Opportunity.
+ * <p/>
+ * They are backed by equivalent Employer Job Opportunity objects on Salesforce.
  * <p/>
  * Job Opps are intended to only be used for the monitoring open job opps.
  * They are not intended to completely duplicate what is on SF - eg history
@@ -72,7 +75,7 @@ public class SalesforceJobOpp extends AbstractOpportunity {
      * TC user responsible for this job - will normally be "destination" staff located in the same
      * region as the {@link #employer}
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_user_id")
     private User contactUser;
 
@@ -102,6 +105,28 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employer_id")
     private Employer employerEntity;
+
+    /**
+     * True if this an evergreen job - ie a job that automatically replicates when it gets
+     * past the recruitment stage. A new copy of the original job is created so that new
+     * candidates matching the job's requirements can continue to apply.
+     */
+    private boolean evergreen;
+
+    /**
+     * Evergreen child of this job.
+     * <p/>
+     * A job can only have one child. The primary purpose of this field is just as a flag
+     * indicating that this job already has a child. This can be used to avoid a job spawning
+     * more than one child - if, for example, a job's stage is set to Recruitment, spawning a
+     * child, then the stage is set back to Prospect, then back to Recruitment again. That second
+     * time it is moved to Recruitment will not spawn another child because this field indicates
+     * that a child already exists.
+     */
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "evergreen_child_id")
+    private SalesforceJobOpp evergreenChild;
 
     /**
      * Optional exclusion list associated with job.
@@ -150,7 +175,7 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     /**
      * Partner responsible for this job.
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_partner_id")
     private PartnerImpl jobCreator;
 

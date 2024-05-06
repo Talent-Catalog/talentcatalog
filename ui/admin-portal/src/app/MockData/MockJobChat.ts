@@ -14,13 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.configuration;
+import {JobChat} from "../model/chat";
 
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@EnableCaching
-public class EhcacheConfig {
-
+export class MockJobChat implements JobChat  {
+  id:number =  1;
+  name:string = "John";
 }

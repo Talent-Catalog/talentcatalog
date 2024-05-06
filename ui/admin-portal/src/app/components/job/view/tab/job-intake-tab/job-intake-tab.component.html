@@ -57,7 +57,9 @@
         <app-cost-commit-employer
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
+          [editable]="!loggedInUser.readOnly"
+          (intakeChanged)="onIntakeChanged($event)"
+        >
         </app-cost-commit-employer>
       </ng-template>
     </ngb-panel>

@@ -16,24 +16,19 @@
 
 package org.tctalent.server.request.job;
 
-import java.util.List;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.request.opportunity.SearchOpportunityRequest;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
 public class SearchJobRequest extends SearchOpportunityRequest {
-
-    /**
-     * If specified, match job opportunities based on whether the job has been published.
-     */
-    @Nullable
-    private Boolean published;
 
     /**
      * If specified, match job opportunities if they match any of the stages

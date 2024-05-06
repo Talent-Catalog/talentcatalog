@@ -16,10 +16,11 @@
 
 package org.tctalent.server.model.db;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -33,10 +34,10 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "saved_search")
@@ -105,6 +106,8 @@ public class SavedSearch extends AbstractCandidateSource {
     private Boolean fullIntakeCompleted;
 
     private String regoReferrerParam;
+
+    private String unhcrStatuses;
 
     /**
      * If specified, requests display of candidates who have any candidate opportunities
@@ -614,6 +617,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public Set<User> getUsers() {
         return users;
+    }
+
+    public String getUnhcrStatuses() {
+        return unhcrStatuses;
+    }
+
+    public void setUnhcrStatuses(String unhcrStatuses) {
+        this.unhcrStatuses = unhcrStatuses;
     }
 
     @Override

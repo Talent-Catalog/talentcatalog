@@ -57,6 +57,10 @@ export class CreateUpdateListComponent implements OnInit {
       : "Update existing candidate list";
   }
 
+  get isSubmissionList(): boolean {
+    return this.savedList && this.savedList.registeredJob;
+  }
+
   get fixedControl() { return this.form.get('fixed'); }
   get nameControl() { return this.form.get('name'); }
 

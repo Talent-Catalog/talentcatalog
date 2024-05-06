@@ -17,22 +17,6 @@
 package org.tctalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
@@ -53,8 +37,26 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SearchType;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
+
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CandidateSpecification {
 
@@ -322,6 +324,14 @@ public class CandidateSpecification {
                 LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge() + 1);
 
                 conjunction.getExpressions().add(builder.or(builder.greaterThan(candidate.get("dob"), maxDob), builder.isNull(candidate.get("dob"))));
+            }
+
+            // UNHCR STATUSES
+            if (!Collections.isEmpty(request.getUnhcrStatuses())) {
+                List<UnhcrStatus> statuses = request.getUnhcrStatuses();
+                conjunction.getExpressions().add(
+                    builder.isTrue(candidate.get("unhcrStatus").in(statuses))
+                );
             }
 
             // EDUCATION LEVEL SEARCH

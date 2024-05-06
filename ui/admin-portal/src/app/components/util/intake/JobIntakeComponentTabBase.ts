@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit} from '@angular/core';
+import {Directive, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
 import {Job} from "../../../model/job";
@@ -39,6 +39,9 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
    * This is the job whose intake data we are entering
    */
   @Input() job: Job;
+
+  @Output() intakeChanged = new EventEmitter<JobOppIntake>();
+
 
   /**
    * This is the existing job intake data (if any) which is used to

@@ -16,13 +16,14 @@
 
 package org.tctalent.server.request.job;
 
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.request.candidate.opportunity.OpportunityParams;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -31,6 +32,12 @@ public class UpdateJobRequest extends OpportunityParams {
 
     @Nullable
     private Long contactUserId;
+
+    /**
+     * If present indicates that this job is an evergreen job.
+     */
+    @Nullable
+    private Boolean evergreen;
 
     /**
      * Name of the role associated with the job - for example "Senior programmer"
