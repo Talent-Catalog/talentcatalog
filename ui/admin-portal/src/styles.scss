@@ -192,6 +192,17 @@ ngx-wig {
   color: $white;
 }
 
+.btn-accent-3 {
+  background-color: $accent3;
+  color: $dark;
+  box-shadow: 1px 1px 1px #8b8c93;
+  &:disabled {
+    background-color: $accent3;
+    color: $accent1;
+    border-color: $accent3;
+  }
+}
+
 // ngx-quill : quill-editor custom styles
 .ql-toolbar {
   background-color: $accent3;
