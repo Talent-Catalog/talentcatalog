@@ -35,8 +35,8 @@ import {
   SavedSearchType
 } from '../../../model/saved-search';
 import {SearchCandidateRequest} from '../../../model/search-candidate-request';
-import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
 import {SalesforceService} from "../../../services/salesforce.service";
+import {ShortJob} from "../../../model/job";
 
 @Component({
   selector: 'app-create-update-search',
@@ -234,19 +234,13 @@ export class CreateUpdateSearchComponent implements OnInit {
     }
   }
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
-    if (jobOpportunity.valid) {
-      this.sfJoblink = jobOpportunity.sfJoblink;
-      this.jobName = jobOpportunity.jobname;
+  onJobSelection(jobOpportunity: ShortJob) {
+    this.jobName = jobOpportunity.name;
 
-      //If existing name and search type control are empty, auto copy into them
-      if (!this.nameControl.value) {
-        this.nameControl.patchValue(this.jobName);
-        this.savedSearchTypeControl.patchValue(SavedSearchType.job);
-      }
-    } else {
-      this.sfJoblink = null;
-      this.jobName = null;
+    //If existing name and search type control are empty, auto copy into them
+    if (!this.nameControl.value) {
+      this.nameControl.patchValue(this.jobName);
+      this.savedSearchTypeControl.patchValue(SavedSearchType.job);
     }
   }
 }

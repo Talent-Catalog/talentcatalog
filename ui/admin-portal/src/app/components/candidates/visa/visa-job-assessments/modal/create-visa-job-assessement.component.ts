@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {JoblinkValidationEvent} from '../../../../util/joblink/joblink.component';
+import {ShortJob} from "../../../../../model/job";
 
 @Component({
   selector: 'app-create-visa-job-assessement',
@@ -34,18 +34,12 @@ export class CreateVisaJobAssessementComponent implements OnInit {
 
   get link() { return this.form.value.link; }
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
-    if (jobOpportunity.valid) {
-      this.sfJoblink = jobOpportunity.sfJoblink;
-      this.jobName = jobOpportunity.jobname;
+  onJobSelection(jobOpportunity: ShortJob) {
+    this.jobName = jobOpportunity.name;
 
-      //If existing name is empty, auto copy into them
-      if (!this.nameControl.value) {
-        this.nameControl.patchValue(this.jobName);
-      }
-    } else {
-      this.sfJoblink = null;
-      this.jobName = null;
+    //If existing name is empty, auto copy into them
+    if (!this.nameControl.value) {
+      this.nameControl.patchValue(this.jobName);
     }
   }
 

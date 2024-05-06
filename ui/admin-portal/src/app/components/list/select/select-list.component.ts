@@ -19,8 +19,8 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
-import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
+import {ShortJob} from "../../../model/job";
 
 
 export interface TargetListSelection {
@@ -142,18 +142,12 @@ export class SelectListComponent implements OnInit {
   }
 
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
-    if (jobOpportunity.valid) {
-      this.sfJoblink = jobOpportunity.sfJoblink;
-      this.jobName = jobOpportunity.jobname;
+  onJobSelection(jobOpportunity: ShortJob) {
+    this.jobName = jobOpportunity.name;
 
-      //If existing name is empty, auto copy into them
-      if (!this.newListNameControl.value) {
-        this.newListNameControl.patchValue(this.jobName);
-      }
-    } else {
-      this.sfJoblink = null;
-      this.jobName = null;
+    //If existing name is empty, auto copy into them
+    if (!this.newListNameControl.value) {
+      this.newListNameControl.patchValue(this.jobName);
     }
   }
 

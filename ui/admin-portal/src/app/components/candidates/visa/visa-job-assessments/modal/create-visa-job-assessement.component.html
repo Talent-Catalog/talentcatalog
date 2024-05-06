@@ -28,9 +28,7 @@
       </div>
     </div>
     <div class="mb-3" >
-      <app-joblink [joblink]="link"
-                   (updateError)="error=$event"
-                   (joblinkValidation)="onJoblinkValidation($event)"
+      <app-joblink (jobSelection)="onJobSelection($event)"
       ></app-joblink>
 
       <div *ngIf="jobName">

@@ -23,15 +23,10 @@ MODEL - use of subclassing FormComponentBase to inherit common standard form fun
 <form [formGroup]="form">
 
   <div>
-    <label class="form-label">Link to Salesforce Job Opportunity</label>
+    <label class="form-label">Search for job</label>
     <input type="text" class="form-control" formControlName="sfJoblink">
   </div>
-  <div *ngIf="isInvalid(form.controls.sfJoblink)" class="alert alert-danger">
-    Doesn't look like a Salesforce Job opportunity link to me!
-    <br/>
-    Copy and paste from Salesforce.
-  </div>
-  <div *ngIf="form.controls.sfJoblink.pending">
-    <i class="fas fa-spinner fa-spin"></i>Waiting validation from Salesforce...
+  <div *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>Searching...
   </div>
 </form>
