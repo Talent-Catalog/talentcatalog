@@ -152,7 +152,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         } else {
             // If this is an update request
             if (opp.getStage() != oppParams.getStage()) {
-                // Update includes a stage change? Automate post to JobCreatorSourcePartner chat.
+                // If update includes a stage change, automate post to JobCreatorSourcePartner chat
+                // NB: Intellij warns here of potential NullPointerException, but getStage() will
+                // only be null for new opp creation, which wouldn't pass preceding condition check
                 // Find the relevant job chat
                 JobChat jcspChat = jobChatService.getOrCreateJobChat(
                     JobChatType.JobCreatorSourcePartner,
