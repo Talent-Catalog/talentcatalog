@@ -53,6 +53,7 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SearchType;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 
@@ -322,6 +323,14 @@ public class CandidateSpecification {
                 LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge() + 1);
 
                 conjunction.getExpressions().add(builder.or(builder.greaterThan(candidate.get("dob"), maxDob), builder.isNull(candidate.get("dob"))));
+            }
+
+            // UNHCR STATUSES
+            if (!Collections.isEmpty(request.getUnhcrStatuses())) {
+                List<UnhcrStatus> statuses = request.getUnhcrStatuses();
+                conjunction.getExpressions().add(
+                    builder.isTrue(candidate.get("unhcrStatus").in(statuses))
+                );
             }
 
             // EDUCATION LEVEL SEARCH

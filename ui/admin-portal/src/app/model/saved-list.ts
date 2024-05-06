@@ -54,6 +54,7 @@ export interface SavedList extends CandidateSource {
   sfJobCountry?: string;
   sfJobStage?: string;
   tasks?: Task[];
+  registeredJob?: boolean;
 }
 
 export interface ShortSavedList {

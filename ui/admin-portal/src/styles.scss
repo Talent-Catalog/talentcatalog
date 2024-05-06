@@ -82,7 +82,7 @@ body {
 }
 
 .card {
-  box-shadow: 0px 0px 1px 0 #969799;
+  box-shadow: 0 0 1px 0 #969799;
   .card-header {
     border: 1px solid $accent3;
   }
@@ -192,6 +192,17 @@ ngx-wig {
   color: $white;
 }
 
+.btn-accent-3 {
+  background-color: $accent3;
+  color: $dark;
+  box-shadow: 1px 1px 1px #8b8c93;
+  &:disabled {
+    background-color: $accent3;
+    color: $accent1;
+    border-color: $accent3;
+  }
+}
+
 // ngx-quill : quill-editor custom styles
 .ql-toolbar {
   background-color: $accent3;
@@ -204,6 +215,16 @@ ngx-wig {
 
 .ql-container {
   background-color: $white;
+}
+
+// Making the tool tip icon a button enables it to be keyboard-focusable,
+// per Bootstrap doc advice https://getbootstrap.com/docs/5.0/components/tooltips/#markup -
+// overriding the native button style fixes the visual aspect
+.tool-tip-button {
+  border: none;
+  background-color: inherit;
+  margin-left: 5px;
+  padding: 0;
 }
 
 
