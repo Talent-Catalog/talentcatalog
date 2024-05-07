@@ -52,13 +52,9 @@
       </div>
     </div>
 
-    <app-joblink [jobId]="savedList.sfJobOpp.id"
+    <app-joblink [jobId]="savedList?.sfJobOpp?.id"
                  (jobSelection)="onJobSelection($event)"
     ></app-joblink>
-
-    <div *ngIf="jobName">
-      {{jobName}}
-    </div>
 
     <div *ngIf="savedList">
       <!--todo-->

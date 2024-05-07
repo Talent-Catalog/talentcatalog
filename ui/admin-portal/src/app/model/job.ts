@@ -105,6 +105,7 @@ export enum JobOpportunityStage {
  */
 export class SearchJobRequest extends SearchOpportunityRequest {
   starred?: boolean;
+  jobNameAndIdOnly?: boolean;
 }
 
 export interface UpdateJobRequest extends OpportunityProgressParams {

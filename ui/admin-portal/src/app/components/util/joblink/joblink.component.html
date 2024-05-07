@@ -14,8 +14,6 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<form [formGroup]="form">
-  <div class="me-3">
     <input id="jobSearch"
            type="text" class="form-control" #input
            [ngbTypeahead]="doJobSearch"
@@ -27,10 +25,3 @@
     <ng-template #rt let-r="result">
       <ngb-highlight [result]="renderJobRow(r)"></ngb-highlight>
     </ng-template>
-  </div>
-
-  <div>
-    <label class="form-label">Search for job</label>
-    <input type="text" class="form-control" formControlName="sfJoblink">
-  </div>
-</form>

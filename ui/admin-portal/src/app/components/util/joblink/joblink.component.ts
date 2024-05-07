@@ -36,6 +36,11 @@ export class JoblinkComponent extends FormComponentBase implements OnInit {
   @Input() jobId: number;
   @Output() jobSelection =  new EventEmitter<JobNameAndId>();
 
+  //This is set in ngOnInit to the function called from the html input ngbTypeahead.
+  //(Note that calling a method does not work because "this" is undefined - instead of referring
+  //to this component instance - meaning that you can't access properties of this component - JC)
+  doJobSearch;
+
   searching: boolean;
 
   constructor(fb: FormBuilder, private jobService: JobService) {
@@ -43,22 +48,16 @@ export class JoblinkComponent extends FormComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
-
-    this.form = this.fb.group({
-      sfJoblink: [null],
-    });
-  }
-
-  doJobSearch(text$: Observable<string>): Observable<JobNameAndId[]> {
-    return text$.pipe(
+    this.doJobSearch = (text$: Observable<string>) =>
+    text$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       tap(() => {
         this.searching = true;
       }),
       switchMap(text =>
-        //todo need call that just returns ShortJob's
-        this.jobService.searchPaged({keyword: text, pageSize: 10}).pipe(
+        this.jobService.searchPaged(
+          {keyword: text, jobNameAndIdOnly: true, pageSize: 10}).pipe(
           map(result => result.content),
           catchError(() => {
             return of([]);

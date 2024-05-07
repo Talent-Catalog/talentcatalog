@@ -51,10 +51,6 @@
         <app-joblink [jobId]="savedSearch.sfJobOpp.id"
                      (jobSelection)="onJobSelection($event)"
         ></app-joblink>
-
-        <div *ngIf="jobName">
-          {{jobName}}
-        </div>
       </div>
 
     <div *ngIf="(savedSearch && !savedSearch.defaultSearch) || copy ">

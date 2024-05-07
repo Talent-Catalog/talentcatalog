@@ -115,7 +115,9 @@ public class JobAdminApi implements
     @PostMapping("search-paged")
     public @NotNull Map<String, Object> searchPaged(@Valid SearchJobRequest request) {
         Page<SalesforceJobOpp> jobs = jobService.searchJobs(request);
-        final Map<String, Object> objectMap = jobDto().buildPage(jobs);
+        final DtoBuilder builder =
+            Boolean.TRUE.equals(request.getJobNameAndIdOnly()) ? jobNameAndIdDto() : jobDto();
+        final Map<String, Object> objectMap = builder.buildPage(jobs);
         return objectMap;
     }
 
@@ -189,6 +191,13 @@ public class JobAdminApi implements
             throws InvalidRequestException, IOException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.uploadInterviewGuidance(id, file);
         return jobDto().build(job);
+    }
+
+    private DtoBuilder jobNameAndIdDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
     }
 
     private DtoBuilder jobDto() {
