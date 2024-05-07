@@ -889,8 +889,11 @@ public class JobServiceImpl implements JobService {
 
             // Set the chat post content
             Post autoPostJobOppStageChange = new Post();
-            autoPostJobOppStageChange.setContent("💼🪜 The job opportunity '" + job.getName() +
-                "' has changed stage from '" + job.getStage() + "' to '" + stage + "'.");
+            autoPostJobOppStageChange.setContent(
+                "💼 <b>" + job.getName()
+                    + "</b> 🪜<br> This job opportunity has changed stage from '" + job.getStage()
+                    + "' to '" + stage + "'."
+            );
 
             // Create the chat post
             ChatPost jobOppStageChangeChatPost = chatPostServiceImpl.createPost(

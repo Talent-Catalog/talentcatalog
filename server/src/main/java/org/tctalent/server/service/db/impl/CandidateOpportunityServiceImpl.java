@@ -165,10 +165,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
                 // Set the chat post content
                 Post autoPostCandidateOppStageChange = new Post();
-                autoPostCandidateOppStageChange.setContent("💼🪜 The case for candidate " +
-                    candidate.getUser().getFirstName() + " " + candidate.getUser().getLastName() +
-                    " (" + candidate.getCandidateNumber() + ") has changed stage from '" +
-                    opp.getStage() + "' to '" + oppParams.getStage() + "'.");
+                autoPostCandidateOppStageChange.setContent(
+                    "💼 <b>" + opp.getName() + "</b> 🪜<br> This case for candidate "
+                        + candidate.getUser().getFirstName() + " "
+                        + candidate.getUser().getLastName() + " (" + candidate.getCandidateNumber()
+                        + ") has changed stage from '" + opp.getStage() + "' to '"
+                        + oppParams.getStage() + "'."
+                );
 
                 // Create the chat post
                 ChatPost candidateOppStageChangeChatPost = chatPostServiceImpl.createPost(
