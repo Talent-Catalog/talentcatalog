@@ -16,7 +16,9 @@
 
 import {AppPage} from './app.po';
 
-import { browser, by, element, ElementFinder } from 'protractor';
+import {browser, by, element, ElementFinder, ExpectedConditions} from 'protractor';
+import {config_test} from "../../src/config-test";
+import {login, logout} from "./components/account/login/login.e2e.spec";
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -24,17 +26,16 @@ describe('AppComponent', () => {
   });
 
   it('should display header when user is logged in', async () => {
-    // Simulate user login
-    // This could involve navigating to the login page, filling out the form, and submitting it
+    await login(config_test.credentials.username, config_test.credentials.password, config_test.credentials.totpToken);
     // Assert that header is displayed
     const header = element(by.tagName('app-header'));
-    // Assert to be false because user login has not implemented yet
-    expect(await header.isPresent()).toBeFalsy();
+    await browser.wait(ExpectedConditions.presenceOf(header), 5000);
+    // Assert to be true because user logged in
+    expect(await header.isPresent()).toBeTruthy();
   });
 
   it('should not display header when user is logged out', async () => {
-    // Simulate user logout
-    // Navigate to home page
+    await logout();    // Navigate to home page
     await browser.get('/');
 
     // Assert that header is not displayed
