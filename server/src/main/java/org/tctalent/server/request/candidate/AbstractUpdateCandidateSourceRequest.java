@@ -62,7 +62,7 @@ public abstract class AbstractUpdateCandidateSourceRequest {
      * @see AbstractCandidateSource
      */
     @Nullable
-    private String sfJoblink;
+    private Long jobId;
 
     public void populateFromRequest(AbstractCandidateSource candidateSource) {
         candidateSource.setName(name);

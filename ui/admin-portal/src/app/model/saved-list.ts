@@ -74,7 +74,7 @@ export interface UpdateSavedListInfoRequest {
   name?: string;
   fixed?: boolean;
   registeredJob?: boolean;
-  sfJoblink?: string;
+  jobId?: number;
 }
 
 export interface UpdateSavedListContentsRequest extends UpdateSavedListInfoRequest {

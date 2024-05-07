@@ -448,9 +448,9 @@ public class SavedListServiceImpl implements SavedListService {
 
         SalesforceJobOpp sfJobOpp = request.getSfJobOpp();
         if (sfJobOpp == null) {
-            final String sfJoblink = request.getSfJoblink();
-            if (sfJoblink != null) {
-                sfJobOpp = salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
+            final Long jobId = request.getJobId();
+            if (jobId != null) {
+                sfJobOpp = salesforceJobOppService.getJobOpp(jobId);
             }
         }
 
@@ -648,7 +648,10 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = get(savedListId);
         request.populateFromRequest(savedList);
 
-        savedList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+        final Long jobId = request.getJobId();
+        if (jobId != null) {
+            savedList.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+        }
 
         return saveIt(savedList);
     }

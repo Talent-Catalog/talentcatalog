@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {JobNameAndId, ShortJob} from "../../../../../model/job";
+import {JobNameAndId} from "../../../../../model/job";
 
 @Component({
   selector: 'app-create-visa-job-assessement',
@@ -15,7 +15,7 @@ export class CreateVisaJobAssessementComponent implements OnInit {
   saving: boolean;
 
   jobName: string;
-  sfJoblink: string;
+  jobId: number;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder) {
@@ -36,6 +36,7 @@ export class CreateVisaJobAssessementComponent implements OnInit {
 
   onJobSelection(job: JobNameAndId) {
     this.jobName = job.name;
+    this.jobId = job.id;
 
     //If existing name is empty, auto copy into them
     if (!this.nameControl.value) {
