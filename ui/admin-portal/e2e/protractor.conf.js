@@ -22,8 +22,9 @@ const httpMock = require('protractor-http-mock/lib/httpMock');
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
-    './src/**/*.e2e-spec.ts',
     './src/components/account/login/login.e2e.spec.ts',
+    './src/**/*.e2e-spec.ts',
+    './src/components/account/change-password/change-password.e2e.spec.ts',
   ],
   capabilities: {
     'browserName': 'firefox'

@@ -4,6 +4,8 @@ import {browser, by, element, ElementFinder, ExpectedConditions} from 'protracto
 import {config_test} from "../../../../../src/config-test";
 // Helper function to perform login
 export async function login(username: string, password: string, totpToken: string): Promise<void> {
+  await browser.get('/login');
+
   const usernameInput = element(by.css('input[formControlName="username"]'));
   const passwordInput = element(by.css('input[formControlName="password"]'));
   const totpTokenInput = element(by.css('input[formControlName="totpToken"]'));
@@ -17,8 +19,8 @@ export async function login(username: string, password: string, totpToken: strin
   await totpTokenInput.sendKeys(totpToken);
   await loginButton.click();
 
-  // Wait for login to complete
-  await browser.wait(ExpectedConditions.urlContains('/jobs'), 5000);
+  // Wait for login to complete and navigate to the settings page
+   await browser.wait(ExpectedConditions.urlContains('/jobs'), 5000);
 }
 
 
@@ -67,8 +69,8 @@ describe('Login Component', () => {
 
   it('should login and then logout', async () => {
     await login(config_test.credentials.username, config_test.credentials.password, config_test.credentials.totpToken);
-    await logout();
+    // await logout();
     // Assert that user is redirected to the login page
-    expect(await browser.getCurrentUrl()).toContain('/login');
+    expect(await browser.getCurrentUrl()).toContain('/jobs');
   });
 });

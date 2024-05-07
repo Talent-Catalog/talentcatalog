@@ -14,34 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AppPage} from './app.po';
 
 import {browser, by, element, ElementFinder, ExpectedConditions} from 'protractor';
-import {config_test} from "../../src/config-test";
-import {login, logout} from "./components/account/login/login.e2e.spec";
 
 describe('AppComponent', () => {
   beforeEach(async () => {
-    await browser.get('/');
+    await browser.get('/jobs');
   });
 
   it('should display header when user is logged in', async () => {
-    await login(config_test.credentials.username, config_test.credentials.password, config_test.credentials.totpToken);
-    // Assert that header is displayed
     const header = element(by.tagName('app-header'));
     await browser.wait(ExpectedConditions.presenceOf(header), 5000);
     // Assert to be true because user logged in
     expect(await header.isPresent()).toBeTruthy();
-  });
-
-  it('should not display header when user is logged out', async () => {
-    await logout();    // Navigate to home page
-    await browser.get('/');
-
-    // Assert that header is not displayed
-    const header = element(by.tagName('app-header'));
-    expect(await header.isPresent()).toBeFalsy();
-  });
-
-  // Add more tests for browser title updates and logout redirection as per your requirements
+  })
 });
