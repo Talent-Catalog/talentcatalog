@@ -156,23 +156,26 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         opp = updateCandidateOpportunity(opp, oppParams);
 
         if (create) {
-            //Create the chats
-            JobChat prospectChat = jobChatService.createCandidateProspectChat(opp.getCandidate());
+            // todo we aren't sending post to recruiting chat even though we are creating it below-do we need to do one?
             jobChatService.createCandidateRecruitingChat(opp.getCandidate(), opp.getJobOpp());
 
-            //Automate post to notify that a candidate has been added to a submission list.
-            //Create the automated post
+            //Create the automated post to notify that a candidate has been added to a submission list.
             String candidateName = opp.getCandidate().getUser().getFirstName() + " "
                 + opp.getCandidate().getUser().getLastName();
             Post autoPostAddedToSubList = new Post();
             autoPostAddedToSubList.setContent("The candidate " + candidateName +
                 " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
+
+            // AUTO CHAT TO PROSPECT CHAT
+            JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                    null, candidate);
             // Create the chat post
             ChatPost prospectChatPost = chatPostServiceImpl.createPost(
                 autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
             //publish chat post
             chatPostServiceImpl.publishChatPost(prospectChatPost);
-            //Create another auto post to the job creator source partner chat.
+
+            // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
             JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
                 candidate.getUser().getPartner(), null);
             // Create the chat post
