@@ -13,20 +13,24 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-<!--
-MODEL - use of subclassing FormComponentBase to inherit common standard form functionality
-
-- shows how to check for invalid control values using inherited isInvalid method.
-- use of "pending" control attribute when waiting on async validation
--->
 
 <form [formGroup]="form">
+  <div class="me-3">
+    <input id="jobSearch"
+           type="text" class="form-control" #input
+           [ngbTypeahead]="doJobSearch"
+           [resultTemplate]="rt"
+           [inputFormatter]="renderJobRow"
+           [editable]="false"
+           (selectItem)="selectSearchResult($event, input)"
+           placeholder="Job name..."/>
+    <ng-template #rt let-r="result">
+      <ngb-highlight [result]="renderJobRow(r)"></ngb-highlight>
+    </ng-template>
+  </div>
 
   <div>
     <label class="form-label">Search for job</label>
     <input type="text" class="form-control" formControlName="sfJoblink">
-  </div>
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>Searching...
   </div>
 </form>

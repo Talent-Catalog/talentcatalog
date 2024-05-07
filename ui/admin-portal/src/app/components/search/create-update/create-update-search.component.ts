@@ -36,7 +36,7 @@ import {
 } from '../../../model/saved-search';
 import {SearchCandidateRequest} from '../../../model/search-candidate-request';
 import {SalesforceService} from "../../../services/salesforce.service";
-import {ShortJob} from "../../../model/job";
+import {JobNameAndId, ShortJob} from "../../../model/job";
 
 @Component({
   selector: 'app-create-update-search',
@@ -234,8 +234,8 @@ export class CreateUpdateSearchComponent implements OnInit {
     }
   }
 
-  onJobSelection(jobOpportunity: ShortJob) {
-    this.jobName = jobOpportunity.name;
+  onJobSelection(job: JobNameAndId) {
+    this.jobName = job.name;
 
     //If existing name and search type control are empty, auto copy into them
     if (!this.nameControl.value) {

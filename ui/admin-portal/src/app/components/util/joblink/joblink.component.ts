@@ -20,6 +20,11 @@ import {
   FormGroup,
 } from '@angular/forms';
 import {FormComponentBase} from "../form/FormComponentBase";
+import {Observable, of} from "rxjs";
+import {JobNameAndId} from "../../../model/job";
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {JobService} from "../../../services/job.service";
+import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-joblink',
@@ -29,11 +34,11 @@ import {FormComponentBase} from "../form/FormComponentBase";
 export class JoblinkComponent extends FormComponentBase implements OnInit {
   form: FormGroup;
   @Input() jobId: number;
-  @Output() jobSelection =  new EventEmitter();
+  @Output() jobSelection =  new EventEmitter<JobNameAndId>();
 
-  loading: boolean;
+  searching: boolean;
 
-  constructor(fb: FormBuilder) {
+  constructor(fb: FormBuilder, private jobService: JobService) {
     super(fb);
   }
 
@@ -44,4 +49,33 @@ export class JoblinkComponent extends FormComponentBase implements OnInit {
     });
   }
 
+  doJobSearch(text$: Observable<string>): Observable<JobNameAndId[]> {
+    return text$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => {
+        this.searching = true;
+      }),
+      switchMap(text =>
+        //todo need call that just returns ShortJob's
+        this.jobService.searchPaged({keyword: text, pageSize: 10}).pipe(
+          map(result => result.content),
+          catchError(() => {
+            return of([]);
+          }))
+      ),
+      tap(() => this.searching = false)
+    );
+  }
+
+  renderJobRow(job: JobNameAndId) {
+    return job.name;
+  }
+
+  selectSearchResult($event: NgbTypeaheadSelectItemEvent<any>, input: HTMLInputElement) {
+      $event.preventDefault();
+      const job: JobNameAndId = $event.item;
+      input.value = this.renderJobRow(job)
+      this.jobSelection.emit(job);
+  }
 }

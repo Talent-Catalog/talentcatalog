@@ -20,7 +20,7 @@ import {SavedList, UpdateSavedListInfoRequest} from '../../../model/saved-list';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {SavedListService} from '../../../services/saved-list.service';
 import {SalesforceService} from "../../../services/salesforce.service";
-import {ShortJob} from "../../../model/job";
+import {JobNameAndId, ShortJob} from "../../../model/job";
 
 @Component({
   selector: 'app-create-update-list',
@@ -106,8 +106,8 @@ export class CreateUpdateListComponent implements OnInit {
     this.activeModal.dismiss(false);
   }
 
-  onJobSelection(jobOpportunity: ShortJob) {
-    this.jobName = jobOpportunity.name;
+  onJobSelection(job: JobNameAndId) {
+    this.jobName = job.name;
 
     //If existing name is empty, auto copy into them
     if (!this.nameControl.value) {

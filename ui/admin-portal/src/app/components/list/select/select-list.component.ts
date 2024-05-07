@@ -20,7 +20,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
-import {ShortJob} from "../../../model/job";
+import {JobNameAndId, ShortJob} from "../../../model/job";
 
 
 export interface TargetListSelection {
@@ -142,8 +142,8 @@ export class SelectListComponent implements OnInit {
   }
 
 
-  onJobSelection(jobOpportunity: ShortJob) {
-    this.jobName = jobOpportunity.name;
+  onJobSelection(job: JobNameAndId) {
+    this.jobName = job.name;
 
     //If existing name is empty, auto copy into them
     if (!this.newListNameControl.value) {
