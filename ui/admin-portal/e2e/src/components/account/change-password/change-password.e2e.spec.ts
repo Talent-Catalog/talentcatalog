@@ -1,12 +1,6 @@
-import { browser, by, element, ElementFinder, ExpectedConditions } from 'protractor';
-
-// Helper function to open change password modal
-async function openChangePasswordModal() {
-  const dropdownToggle = element.all(by.css('div.dropdown button.dropdown-toggle')).first();
-  await dropdownToggle.click();
-  const changePasswordElement = element(by.xpath('/html/body/div/ul/li[4]'));
-  await changePasswordElement.click();
-}
+import { browser, by, element, ExpectedConditions } from 'protractor';
+import {config_test} from "../../../../../src/config-test";
+import {searchByInput} from "../../settings/users/cleanup.e2e.spec";
 
 // Helper function to wait for modal to close
 async function waitForModalToClose() {
@@ -18,12 +12,13 @@ async function waitForModalToClose() {
 
 describe('Change Password Component', () => {
   beforeEach(async () => {
-    browser.get('/settings');
+    browser.get(config_test.baseUrl+'/settings');
     await browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.fa-spinner'))), 5000);
   });
 
   it('should display error with invalid fields', async () => {
-    await openChangePasswordModal();
+    await searchByInput('4','keyword','test@example.com')
+
     const updateButton = element(by.css('app-change-password button.btn-primary'));
     await browser.wait(ExpectedConditions.visibilityOf(updateButton), 5000);
     await updateButton.click();
@@ -32,7 +27,7 @@ describe('Change Password Component', () => {
   });
 
   it('should update password successfully with valid input', async () => {
-    await openChangePasswordModal();
+    await searchByInput('4','keyword','test@example.com')
     const passwordInput = element(by.css('input#password'));
     const passwordConfirmationInput = element(by.css('input#passwordConfirmation'));
     const updateButton = element(by.css('app-change-password button.btn-primary'));
@@ -45,7 +40,7 @@ describe('Change Password Component', () => {
   });
 
   it('should close modal without updating password when dismissed', async () => {
-    await openChangePasswordModal();
+    await searchByInput('4','keyword','test@example.com')
     const closeButton = element(by.css('button.btn-close'));
     await closeButton.click();
     await waitForModalToClose();

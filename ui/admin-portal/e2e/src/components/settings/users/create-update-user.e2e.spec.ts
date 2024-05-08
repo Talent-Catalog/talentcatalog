@@ -14,6 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {browser, by, element, ExpectedConditions} from "protractor";
+import {searchByInput} from "./cleanup.e2e.spec";
+import {config_test} from "../../../../../src/config-test";
 
 
 async function openNewUserModal() {
@@ -23,11 +25,11 @@ async function openNewUserModal() {
 }
 describe('User Creation Test Suite', () => {
   beforeEach(async () => {
-    browser.get('/settings');
+    browser.get(config_test.baseUrl+'/settings');
     await browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.fa-spinner'))), 5000);
   });
 
-  it('should fill out the form and submit', async () => {
+  it('should fill out the form and submit to create new user', async () => {
     const addBtn = element(by.css('app-search-users button.btn.btn-primary'));
     await browser.wait(ExpectedConditions.visibilityOf(addBtn), 5000);
     addBtn.click();
@@ -84,4 +86,39 @@ describe('User Creation Test Suite', () => {
       console.error('Modal did not close after user registration');
     });
   });
+
+  it('should update user data successfully', async () => {
+    // Open the modal for updating user data
+    await searchByInput('1','keyword','test@example.com');
+
+    // Update user data in the modal
+    await updateUserData();
+
+    // You can add assertions here to verify that the user data was updated successfully,
+    // such as checking if the updated values are displayed correctly on the page.
+  });
 });
+
+// Helper function to update user data in the modal
+async function updateUserData() {
+  // Wait for the form fields to load
+  await browser.wait(ExpectedConditions.visibilityOf(element(by.id('email'))), 5000);
+
+  // Locate the input fields for updating user data
+  const firstNameInput = element(by.id('firstName'));
+  const lastNameInput = element(by.id('lastName'));
+
+
+  await firstNameInput.clear();
+  await firstNameInput.sendKeys('New First Name');
+
+  await lastNameInput.clear();
+  await lastNameInput.sendKeys('New Last Name');
+
+  // Locate and click the Save button
+  const saveButton = element(by.buttonText('Save'));
+  await saveButton.click();
+
+  // Wait for the modal to close (assuming it disappears after saving)
+  await browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.modal'))), 5000);
+}

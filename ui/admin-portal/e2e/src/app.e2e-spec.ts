@@ -16,10 +16,11 @@
 
 
 import {browser, by, element, ElementFinder, ExpectedConditions} from 'protractor';
+import {config_test} from "../../src/config-test";
 
 describe('AppComponent', () => {
   beforeEach(async () => {
-    await browser.get('/jobs');
+    await browser.get(config_test.baseUrl+'/jobs');
   });
 
   it('should display header when user is logged in', async () => {

@@ -16,6 +16,8 @@
 
 // config-test.ts
 
+import {environment} from "./environments/environment.prod";
+
 export const config_test = {
   production: false,
   credentials: {
@@ -24,6 +26,7 @@ export const config_test = {
     password: 'password',
     totpToken:'test_totpToken'
   },
+  baseUrl:'', // Production False
   apiKeys: {
     apiKey: 'api_key'
   }

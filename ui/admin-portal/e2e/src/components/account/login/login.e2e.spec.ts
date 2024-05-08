@@ -1,10 +1,7 @@
-// login.e2e.spec.ts
-
 import {browser, by, element, ElementFinder, ExpectedConditions} from 'protractor';
 import {config_test} from "../../../../../src/config-test";
-// Helper function to perform login
 export async function login(username: string, password: string, totpToken: string): Promise<void> {
-  await browser.get('/login');
+  await browser.get(config_test.baseUrl+'/login');
 
   const usernameInput = element(by.css('input[formControlName="username"]'));
   const passwordInput = element(by.css('input[formControlName="password"]'));
@@ -48,7 +45,7 @@ describe('Login Component', () => {
   let dropdownToggle: ElementFinder;
 
   beforeAll(async () => {
-    await browser.get('/login');
+    await browser.get(config_test.baseUrl+'/login');
     usernameInput = element(by.css('input[formControlName="username"]'));
     passwordInput = element(by.css('input[formControlName="password"]'));
     totpTokenInput = element(by.css('input[formControlName="totpToken"]'));

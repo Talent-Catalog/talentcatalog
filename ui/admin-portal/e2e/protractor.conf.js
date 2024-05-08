@@ -18,20 +18,23 @@
 // https://github.com/angular/protractor/blob/master/lib/config.ts
 const { SpecReporter } = require('jasmine-spec-reporter');
 const httpMock = require('protractor-http-mock/lib/httpMock');
-
-exports.config = {
-  allScriptsTimeout: 11000,
-  specs: [
+  exports.config = {
+    allScriptsTimeout: 11000,
+    specs: [
     './src/components/account/login/login.e2e.spec.ts',
     './src/**/*.e2e-spec.ts',
-    // './src/components/account/change-password/change-password.e2e.spec.ts',
+    './src/components/account/reset-password/reset-password.e2e.spec.ts',
     './src/components/settings/users/create-update-user.e2e.spec.ts',
+    './src/components/account/change-password/change-password.e2e.spec.ts',
+    './src/components/settings/users/cleanup.e2e.spec.ts',
   ],
+    // Define Firefox as the default browser
   capabilities: {
-    'browserName': 'firefox'
+    'browserName': 'chrome'
   },
   directConnect: true,
-  baseUrl: 'http://localhost:4201/',
+  // baseUrl: 'https://tctalent.org/', // Production
+  baseUrl: 'http://localhost:4201', // Local
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
