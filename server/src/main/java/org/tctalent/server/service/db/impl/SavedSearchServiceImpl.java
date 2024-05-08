@@ -306,7 +306,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .setPageable(Pageable.unpaged());
 
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+                query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
 
             //Get candidate ids from the returned results
             for (SearchHit<CandidateEs> hit : hits) {
@@ -1601,7 +1601,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .build();
 
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+                query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
