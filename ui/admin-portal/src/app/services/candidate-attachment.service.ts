@@ -22,7 +22,7 @@ import {SearchResults} from '../model/search-results';
 import {catchError, map} from "rxjs/operators";
 import {AttachmentType, CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
 import {saveBlob} from "../util/file";
-import {Subject} from "rxjs/index";
+import {Subject} from "rxjs";
 import {Candidate} from "../model/candidate";
 
 export interface UpdateCandidateAttachmentRequest {
@@ -129,5 +129,9 @@ export class CandidateAttachmentService {
 
   listByType(request: ListByUploadTypeRequest): Observable<CandidateAttachment[]> {
     return this.http.post<CandidateAttachment[]>(`${this.apiUrl}/list-by-type`, request);
+  }
+
+  getMaxUploadFileSize() {
+    return 10 * (1<<20); //10 Mb
   }
 }
