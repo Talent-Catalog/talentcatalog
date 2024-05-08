@@ -16,8 +16,26 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.lucene.search.join.ScoreMode;
@@ -115,25 +133,6 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Service
 @RequiredArgsConstructor

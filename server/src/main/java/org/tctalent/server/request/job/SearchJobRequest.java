@@ -16,14 +16,13 @@
 
 package org.tctalent.server.request.job;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.request.opportunity.SearchOpportunityRequest;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 @Getter
 @Setter

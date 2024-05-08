@@ -16,14 +16,13 @@
 
 package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.request.job.IJobIntakeData;
-
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.request.job.IJobIntakeData;
 
 /**
  * Detail about a job.

@@ -16,12 +16,11 @@
 
 package org.tctalent.server.request.opportunity;
 
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.tctalent.server.request.PagedSearchRequest;
-
-import javax.annotation.Nullable;
 
 /**
  * Base class for search requests of either Job or Candidate opportunities (cases)

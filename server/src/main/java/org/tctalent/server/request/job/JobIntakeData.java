@@ -16,11 +16,10 @@
 
 package org.tctalent.server.request.job;
 
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import javax.annotation.Nullable;
 
 /**
  * Has fields for all candidate intake fields.

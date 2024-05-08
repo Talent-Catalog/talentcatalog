@@ -16,14 +16,13 @@
 
 package org.tctalent.server.request.job;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.request.candidate.opportunity.OpportunityParams;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
