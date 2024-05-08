@@ -185,6 +185,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             chatPostServiceImpl.publishChatPost(jcspChatPost);
         }
 
+        if (opp.isClosed()) {
+            // todo add auto posts here
+
+        }
+
         return opp;
     }
 
