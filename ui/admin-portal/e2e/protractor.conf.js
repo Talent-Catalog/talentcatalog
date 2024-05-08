@@ -28,13 +28,11 @@ const httpMock = require('protractor-http-mock/lib/httpMock');
     './src/components/account/change-password/change-password.e2e.spec.ts',
     './src/components/settings/users/cleanup.e2e.spec.ts',
   ],
-    // Define Firefox as the default browser
   capabilities: {
     'browserName': 'chrome'
   },
   directConnect: true,
-  // baseUrl: 'https://tctalent.org/', // Production
-  baseUrl: 'http://localhost:4201', // Local
+  baseUrl: 'http://localhost:4201',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
