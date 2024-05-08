@@ -24,6 +24,53 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program. If not, see https://www.gnu.org/licenses/.
 
+import configparser
+import os
+from elasticsearch import Elasticsearch
+from getpass import getpass
+
+# Configuration File Path
+es_config = './config.ini'
+
+
+def connect_to_es():
+    return load_es_config(es_config)
+
+
+def load_es_config(config_path):
+    config = configparser.ConfigParser()
+    print("Current Working Directory:", os.getcwd())
+    if os.path.exists(config_path):
+        config.read(config_path)
+        cloud_id = config.get('Elasticsearch', 'cloud_id', fallback=None)
+        if cloud_id:
+            es = Elasticsearch(
+                cloud_id=cloud_id,
+            )
+            if not es.ping():
+                print("Failed to connect, requesting credentials...")
+                username, password = get_credentials()
+                es = Elasticsearch(
+                    cloud_id=cloud_id,
+                    http_auth=(username, password)
+                )
+            if es.ping():
+                return es
+            else:
+                print("Failed to connect to Elasticsearch. Exiting.")
+                exit(1)
+        else:
+            return Elasticsearch([f"http://localhost:9200"])
+    else:
+        # Default to localhost if configuration file does not exist
+        return Elasticsearch(["http://localhost:9200"])
+
+
+def get_credentials():
+    username = input("Enter your Elasticsearch username: ")
+    password = getpass("Enter your Elasticsearch password: ")
+    return username, password
+
 
 def create_index_if_not_exists(es, index_name, mappings):
     """

@@ -24,17 +24,11 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program. If not, see https://www.gnu.org/licenses/.
 
-from elasticsearch import Elasticsearch
+from elasticsearch_utils import create_index_if_not_exists, connect_to_es
 
-from elasticsearch_utils import create_index_if_not_exists
 
 # Define the index names
 index_name = "candidates_v1"
-
-
-# Connect to elastic search
-es = Elasticsearch(["http://localhost:9200"])
-# es = Elasticsearch(cloud_id="Your_Cloud_ID")
 
 
 # Define the mappings and settings for the new index
@@ -90,4 +84,5 @@ mappings = {
 
 
 if __name__ == "__main__":
+    es = connect_to_es()
     create_index_if_not_exists(es, index_name, mappings)

@@ -24,19 +24,13 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program. If not, see https://www.gnu.org/licenses/.
 
-from elasticsearch import Elasticsearch
-
-from elasticsearch_utils import reindex_data
+from elasticsearch_utils import reindex_data, connect_to_es
 
 # Define the source and destination index names
 src_index_name = "candidates"
 dest_index_name = "candidates_v1"
 
 
-# Connect to elastic search
-es = Elasticsearch(["http://localhost:9200"])
-# es = Elasticsearch(cloud_id="Your_Cloud_ID")
-
-
 if __name__ == "__main__":
+    es = connect_to_es()
     reindex_data(es, src_index_name, dest_index_name)
