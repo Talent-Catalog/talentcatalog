@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -256,6 +257,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
+    private final ElasticsearchService elasticsearchService;
 
     @Transactional
     @Override
@@ -423,9 +425,11 @@ public class CandidateServiceImpl implements CandidateService {
                     request.getPageRequestWithoutSort());
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                candidates = candidateRepository.searchCandidateName(
-                        '%' + s + '%', sourceCountries,
-                        request.getPageRequestWithoutSort());
+                // Get candidate ids from Elasticsearch then fetch and return from the database
+                Set<Long> candidateIds = elasticsearchService.findByName(s);
+                List<Candidate> unsorted = findByIds(candidateIds);
+                candidates = new PageImpl<>(unsorted, request.getPageRequestWithoutSort(),
+                    candidateIds.size());
             } else {
                 return null;
             }
