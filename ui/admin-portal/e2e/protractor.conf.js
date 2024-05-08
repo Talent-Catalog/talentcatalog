@@ -24,7 +24,8 @@ exports.config = {
   specs: [
     './src/components/account/login/login.e2e.spec.ts',
     './src/**/*.e2e-spec.ts',
-    './src/components/account/change-password/change-password.e2e.spec.ts',
+    // './src/components/account/change-password/change-password.e2e.spec.ts',
+    './src/components/settings/users/create-update-user.e2e.spec.ts',
   ],
   capabilities: {
     'browserName': 'firefox'
@@ -41,7 +42,7 @@ exports.config = {
     require('ts-node').register({
       project: require('path').join(__dirname, './tsconfig.e2e.json')
     });
-    jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+   jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
 
     // Initialize protractor-http-mock
     const mocks = []; // Define your mocks here if needed

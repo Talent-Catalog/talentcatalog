@@ -1,13 +1,4 @@
 import { browser, by, element, ElementFinder, ExpectedConditions } from 'protractor';
-import { UserService } from "../../../../../src/app/services/user.service";
-import { login } from "../login/login.e2e.spec";
-import { config_test } from "../../../../../src/config-test";
-
-// Perform login before any test cases in any describe block
-beforeAll(async () => {
-  // await login(config_test.credentials.username, config_test.credentials.password, config_test.credentials.totpToken);
-  // Now you can proceed with other actions after login
-});
 
 // Helper function to open change password modal
 async function openChangePasswordModal() {
@@ -31,7 +22,7 @@ describe('Change Password Component', () => {
     await browser.wait(ExpectedConditions.invisibilityOf(element(by.css('.fa-spinner'))), 5000);
   });
 
-  it('should change the password', async () => {
+  it('should display error with invalid fields', async () => {
     await openChangePasswordModal();
     const updateButton = element(by.css('app-change-password button.btn-primary'));
     await browser.wait(ExpectedConditions.visibilityOf(updateButton), 5000);
