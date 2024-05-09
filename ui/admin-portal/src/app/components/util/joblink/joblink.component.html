@@ -14,14 +14,27 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-    <input id="jobSearch"
-           type="text" class="form-control" #input
-           [ngbTypeahead]="doJobSearch"
-           [resultTemplate]="rt"
-           [inputFormatter]="renderJobRow"
-           [editable]="false"
-           (selectItem)="selectSearchResult($event, input)"
-           placeholder="Job name..."/>
-    <ng-template #rt let-r="result">
-      <ngb-highlight [result]="renderJobRow(r)"></ngb-highlight>
-    </ng-template>
+<form [formGroup]="form">
+  <div *ngIf="jobName">
+    Associated with {{jobName}}
+  </div>
+  <div *ngIf="jobName" class="form-check mb-3">
+    <label class="form-label" for="remove-job">Remove job association?</label>
+    <input (click)="removeJob()" class="form-check-input" formControlName="removeJob" id="remove-job"
+           type="checkbox">
+  </div>
+  <div>
+    Optional job association
+    <span *ngIf="searching">
+      <i class="fas fa-spinner fa-spin"></i> Searching...
+    </span>
+  </div>
+  <input (selectItem)="selectSearchResult($event)"
+         [editable]="false" [inputFormatter]="renderJobRow" [ngbTypeahead]="doJobSearch"
+         [resultFormatter]="renderJobRow"
+         class="form-control"
+         formControlName="keyword"
+         id="jobSearch"
+         placeholder="Search job name..."
+         type="text"/>
+</form>

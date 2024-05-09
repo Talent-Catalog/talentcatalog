@@ -59,7 +59,9 @@ public abstract class AbstractUpdateCandidateSourceRequest {
     private SalesforceJobOpp sfJobOpp;
 
     /**
-     * @see AbstractCandidateSource
+     * If non null and > 0, this is the id of job associated with candidate source.
+     * If non null and <= 0, this indicates that the candidate source is not associated with a job.
+     * If null, this field is ignored.
      */
     @Nullable
     private Long jobId;

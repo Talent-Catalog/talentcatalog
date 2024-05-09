@@ -143,8 +143,8 @@ export class SelectListComponent implements OnInit {
 
 
   onJobSelection(job: JobNameAndId) {
-    this.jobName = job.name;
-    this.jobId = job.id;
+    this.jobName = job?.name;
+    this.jobId = job?.id;
 
     //If existing name is empty, auto copy into them
     if (!this.newListNameControl.value) {

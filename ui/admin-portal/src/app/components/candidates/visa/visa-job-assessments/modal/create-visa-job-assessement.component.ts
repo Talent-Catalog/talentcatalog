@@ -35,8 +35,8 @@ export class CreateVisaJobAssessementComponent implements OnInit {
   get link() { return this.form.value.link; }
 
   onJobSelection(job: JobNameAndId) {
-    this.jobName = job.name;
-    this.jobId = job.id;
+    this.jobName = job?.name;
+    this.jobId = job?.id;
 
     //If existing name is empty, auto copy into them
     if (!this.nameControl.value) {

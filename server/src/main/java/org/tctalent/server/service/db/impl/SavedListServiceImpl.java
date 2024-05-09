@@ -650,7 +650,9 @@ public class SavedListServiceImpl implements SavedListService {
 
         final Long jobId = request.getJobId();
         if (jobId != null) {
-            savedList.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+            final SalesforceJobOpp jobOpp =
+                jobId < 0 ? null : salesforceJobOppService.getJobOpp(jobId);
+            savedList.setSfJobOpp(jobOpp);
         }
 
         return saveIt(savedList);

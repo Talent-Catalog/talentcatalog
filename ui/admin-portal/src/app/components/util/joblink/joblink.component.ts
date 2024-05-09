@@ -14,7 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -26,15 +34,20 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 import {JobService} from "../../../services/job.service";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
+//See https://ng-bootstrap.github.io/#/components/typeahead/examples
 @Component({
   selector: 'app-joblink',
   templateUrl: './joblink.component.html',
   styleUrls: ['./joblink.component.scss']
 })
-export class JoblinkComponent extends FormComponentBase implements OnInit {
+export class JoblinkComponent extends FormComponentBase implements OnInit, OnChanges {
   form: FormGroup;
+
   @Input() jobId: number;
   @Output() jobSelection =  new EventEmitter<JobNameAndId>();
+
+  //Name matching current jobId
+  jobName: string;
 
   //This is set in ngOnInit to the function called from the html input ngbTypeahead.
   //(Note that calling a method does not work because "this" is undefined - instead of referring
@@ -48,6 +61,11 @@ export class JoblinkComponent extends FormComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
+    this.form = this.fb.group({
+      removeJob: [false],
+      keyword: [null],
+    });
+
     this.doJobSearch = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(300),
@@ -67,14 +85,24 @@ export class JoblinkComponent extends FormComponentBase implements OnInit {
     );
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.jobId) {
+      this.jobService.get(this.jobId).subscribe({
+        next: job => this.jobName = job.name
+      });
+    }
+  }
+
   renderJobRow(job: JobNameAndId) {
     return job.name;
   }
 
-  selectSearchResult($event: NgbTypeaheadSelectItemEvent<any>, input: HTMLInputElement) {
-      $event.preventDefault();
+  removeJob() {
+    this.jobSelection.emit(null);
+  }
+
+  selectSearchResult($event: NgbTypeaheadSelectItemEvent<any>) {
       const job: JobNameAndId = $event.item;
-      input.value = this.renderJobRow(job)
       this.jobSelection.emit(job);
   }
 }

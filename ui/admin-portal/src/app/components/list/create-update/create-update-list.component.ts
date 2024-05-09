@@ -107,10 +107,11 @@ export class CreateUpdateListComponent implements OnInit {
   }
 
   onJobSelection(job: JobNameAndId) {
-    this.jobName = job.name;
-    this.jobId = job.id;
+    //Null job translates to request to remove associated job (jobId < 0).
+    this.jobName = job ? job.name : "";
+    this.jobId = job ? job.id : -1;
 
-    //If existing name is empty, auto copy into them
+    //If existing name is empty, auto copy job name to it
     if (!this.nameControl.value) {
       this.nameControl.patchValue(this.jobName);
     }
