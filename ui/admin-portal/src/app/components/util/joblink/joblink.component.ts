@@ -29,7 +29,6 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 import {JobService} from "../../../services/job.service";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
-//See https://ng-bootstrap.github.io/#/components/typeahead/examples
 @Component({
   selector: 'app-joblink',
   templateUrl: './joblink.component.html',
@@ -54,6 +53,8 @@ export class JoblinkComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+
+    //See https://ng-bootstrap.github.io/#/components/typeahead/examples
     this.doJobSearch = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(300),
