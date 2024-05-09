@@ -15,6 +15,7 @@
  */
 
 import { browser, by, element, ExpectedConditions } from 'protractor';
+import {clickTabAndWait} from "../job-home/job-home.e2e.spec";
 
 // Test suite for the JobsComponent
 describe('JobsComponent', () => {
@@ -27,6 +28,16 @@ describe('JobsComponent', () => {
   });
 
   // Test cases for UI elements and basic functionality
+  it('should display live jobs with associated details', async () => {
+    const liveJobsContainer = await clickTabAndWait(0);
+
+    const liveJobEntries = element.all(by.css('app-jobs-with-detail'));
+    expect(await liveJobEntries.count()).toBeGreaterThan(0);
+
+    await liveJobEntries.each(async (jobEntry) => {
+      expect(await jobEntry.element(by.css('.detail-panel')).isPresent()).toBeTruthy();
+    });
+  });
 
   it('should display loading spinner initially', () => {
     const loadingSpinner = element(by.css('.fa-spinner'));

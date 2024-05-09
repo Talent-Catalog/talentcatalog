@@ -15,20 +15,18 @@
  */
 
 import { browser, by, element, ExpectedConditions } from 'protractor';
-
+export async function clickTabAndWait(tabIndex: number) {
+  const tabElement = element(by.id(`ngb-nav-${tabIndex}`));
+  await browser.wait(ExpectedConditions.elementToBeClickable(tabElement), 5000);
+  await tabElement.click();
+  const isActive = await tabElement.getAttribute('class').then(classes => classes.includes('active'));
+  expect(isActive).toBe(true);
+  return element(by.id(`ngb-nav-${tabIndex}-panel`));
+}
 describe('Dashboard - Viewing Live Jobs', () => {
   beforeEach(() => {
     browser.get('/jobs');
   });
-
-  async function clickTabAndWait(tabIndex: number) {
-    const tabElement = element(by.id(`ngb-nav-${tabIndex}`));
-    await browser.wait(ExpectedConditions.elementToBeClickable(tabElement), 5000);
-    await tabElement.click();
-    const isActive = await tabElement.getAttribute('class').then(classes => classes.includes('active'));
-    expect(isActive).toBe(true);
-    return element(by.id(`ngb-nav-${tabIndex}-panel`));
-  }
 
   it('should display live jobs with associated details', async () => {
     const liveJobsContainer = await clickTabAndWait(0);
