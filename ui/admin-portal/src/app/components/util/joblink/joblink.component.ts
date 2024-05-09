@@ -23,11 +23,6 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-} from '@angular/forms';
-import {FormComponentBase} from "../form/FormComponentBase";
 import {Observable, of} from "rxjs";
 import {JobNameAndId} from "../../../model/job";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
@@ -40,8 +35,7 @@ import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
   templateUrl: './joblink.component.html',
   styleUrls: ['./joblink.component.scss']
 })
-export class JoblinkComponent extends FormComponentBase implements OnInit, OnChanges {
-  form: FormGroup;
+export class JoblinkComponent implements OnInit, OnChanges {
 
   @Input() jobId: number;
   @Output() jobSelection =  new EventEmitter<JobNameAndId>();
@@ -56,16 +50,10 @@ export class JoblinkComponent extends FormComponentBase implements OnInit, OnCha
 
   searching: boolean;
 
-  constructor(fb: FormBuilder, private jobService: JobService) {
-    super(fb);
+  constructor(private jobService: JobService) {
   }
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      removeJob: [false],
-      keyword: [null],
-    });
-
     this.doJobSearch = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(300),

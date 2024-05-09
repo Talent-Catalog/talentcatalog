@@ -13,14 +13,13 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-
-<form [formGroup]="form">
+<div>
   <div *ngIf="jobName">
     Associated with {{jobName}}
   </div>
   <div *ngIf="jobName" class="form-check mb-3">
     <label class="form-label" for="remove-job">Remove job association?</label>
-    <input (click)="removeJob()" class="form-check-input" formControlName="removeJob" id="remove-job"
+    <input (click)="removeJob()" class="form-check-input" id="remove-job"
            type="checkbox">
   </div>
   <div>
@@ -37,4 +36,4 @@
          id="jobSearch"
          placeholder="Search job name..."
          type="text"/>
-</form>
+</div>
