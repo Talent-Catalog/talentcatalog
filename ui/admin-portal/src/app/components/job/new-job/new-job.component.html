@@ -31,10 +31,10 @@
   </div>
 
   <div *ngIf="isDefaultJobCreator()" class="d-flex flex-column flex-grow-1">
-    <app-joblink
+    <app-sf-joblink
       (updateError)="onJoblinkError($event)"
-      (joblinkValidation)="onJoblinkValidation($event)">
-    </app-joblink>
+      (sfJoblinkValidation)="onSfJoblinkValidation($event)">
+    </app-sf-joblink>
     <div class="alert alert-danger" *ngIf="errorFindingJob">
       {{errorFindingJob}}
     </div>

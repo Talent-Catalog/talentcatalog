@@ -52,14 +52,9 @@
       </div>
     </div>
 
-    <app-joblink [joblink]="salesforceService.joblink(savedList)"
-                 (updateError)="error=$event"
-                 (joblinkValidation)="onJoblinkValidation($event)"
+    <app-joblink [jobId]="savedList?.sfJobOpp?.id"
+                 (jobSelection)="onJobSelection($event)"
     ></app-joblink>
-
-    <div *ngIf="jobName">
-      {{jobName}}
-    </div>
 
     <div *ngIf="savedList">
       <!--todo-->

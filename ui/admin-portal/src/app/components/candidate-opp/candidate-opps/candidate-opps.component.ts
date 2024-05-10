@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Inject,
-  Input,
-  LOCALE_ID,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, Inject, Input, LOCALE_ID, SimpleChanges, ViewChild} from '@angular/core';
 import {
   CandidateOpportunity,
   CandidateOpportunityStage,

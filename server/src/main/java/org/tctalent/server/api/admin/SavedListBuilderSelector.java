@@ -16,9 +16,10 @@
 
 package org.tctalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting a SavedList DTO builder
@@ -52,6 +53,8 @@ public class SavedListBuilderSelector {
                 .add("fileJoiName")
                 .add("fileInterviewGuidanceLink")
                 .add("fileInterviewGuidanceName")
+                .add("fileMouLink")
+                .add("fileMouName")
                 .add("folderlink")
                 .add("folderjdlink")
                 .add("publishedDocLink")

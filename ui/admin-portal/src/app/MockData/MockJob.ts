@@ -15,7 +15,7 @@
  */
 
 
- import {MockUser} from "./MockUser";
+import {MockUser} from "./MockUser";
 import {Job, JobOpportunityStage} from "../model/job";
 import {TaskType, UploadType} from "../model/task";
 import {MockSavedSearch} from "./MockSavedSearch";

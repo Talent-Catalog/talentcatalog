@@ -653,9 +653,9 @@ public class CandidateServiceImpl implements CandidateService {
         //set some fields to unknown on create as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
         //point to an "Unknown" value.
-        candidate.setCountry(countryRepository.getOne(0L));
-        candidate.setNationality(countryRepository.getOne(0L));
-        candidate.setMaxEducationLevel(educationLevelRepository.getOne(0L));
+        candidate.setCountry(countryRepository.getReferenceById(0L));
+        candidate.setNationality(countryRepository.getReferenceById(0L));
+        candidate.setMaxEducationLevel(educationLevelRepository.getReferenceById(0L));
 
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
