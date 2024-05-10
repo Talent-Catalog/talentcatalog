@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {
@@ -19,6 +18,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {Employer} from "../../../model/partner";
+import {SfJoblinkValidationEvent} from "../../util/sf-joblink/sf-joblink.component";
 
 @Component({
   selector: 'app-new-job',
@@ -112,7 +112,7 @@ export class NewJobComponent implements OnInit {
     return name;
   }
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
+  onSfJoblinkValidation(jobOpportunity: SfJoblinkValidationEvent) {
     this.creatingJob = Progress.NotStarted;
     this.creatingFolders = Progress.NotStarted;
     this.creatingSFLinks = Progress.NotStarted;

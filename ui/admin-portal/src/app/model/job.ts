@@ -29,9 +29,12 @@ export function isJob(opp: Opportunity): opp is Job {
   return !isCandidateOpportunity(opp);
 }
 
-export interface ShortJob {
+export interface JobNameAndId {
   id: number,
   name: string;
+}
+
+export interface ShortJob extends JobNameAndId {
   country?: Country;
   submissionList?: ShortSavedList;
   jobCreator?: ShortPartner;
@@ -102,6 +105,7 @@ export enum JobOpportunityStage {
  */
 export class SearchJobRequest extends SearchOpportunityRequest {
   starred?: boolean;
+  jobNameAndIdOnly?: boolean;
 }
 
 export interface UpdateJobRequest extends OpportunityProgressParams {

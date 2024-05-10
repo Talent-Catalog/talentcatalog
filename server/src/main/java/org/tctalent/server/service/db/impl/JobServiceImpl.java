@@ -466,7 +466,7 @@ public class JobServiceImpl implements JobService {
         UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
         request.setSavedSearchType(SavedSearchType.job);
         request.setName(job.getName() + "*-" + suffix);
-        request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId(), salesforceConfig.getBaseLightningUrl()));
+        request.setJobId(id);
         SavedList exclusionList = job.getExclusionList();
         if (exclusionList != null) {
             //Add job exclusion list to suggested search
@@ -587,7 +587,7 @@ public class JobServiceImpl implements JobService {
             CopySourceContentsRequest request = new CopySourceContentsRequest();
             request.setSavedListId(0L);
             request.setNewListName(submissionList.getName() + "-suggest");
-            request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId(), salesforceConfig.getBaseLightningUrl()));
+            request.setJobId(id);
             //Copy to the target list.
             SavedList suggestedList = candidateSavedListService.copy(submissionList, request);
             job.setSuggestedList(suggestedList);
