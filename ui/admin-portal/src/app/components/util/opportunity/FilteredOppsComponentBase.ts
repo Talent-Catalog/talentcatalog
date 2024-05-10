@@ -24,8 +24,7 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from '@angular/core';
 import {CandidateOpportunity, SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 import {SearchResults} from "../../../model/search-results";

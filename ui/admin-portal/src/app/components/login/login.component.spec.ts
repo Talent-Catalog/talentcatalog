@@ -1,13 +1,13 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { LoginComponent } from './login.component';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthenticationService } from "../../services/authentication.service";
-import { LocalStorageModule } from "angular-2-local-storage";
-import { of } from "rxjs";
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {LoginComponent} from './login.component';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AuthenticationService} from "../../services/authentication.service";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {of} from "rxjs";
 
-import { Directive, Input } from '@angular/core';
+import {Directive, Input} from '@angular/core';
 import {config_test} from "../../../config-test";
 
 @Directive({

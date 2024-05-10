@@ -14,9 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {JobChat} from "../model/chat";
-
-export class MockJobChat implements JobChat  {
-  id:number =  1;
-  name:string = "John";
-}
+alter table saved_list add column file_mou_name text;
+alter table saved_list add column file_mou_link text;
