@@ -90,6 +90,7 @@ import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.SearchJoin;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.es.CandidateEs;
@@ -1402,6 +1403,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
             savedSearch.setKeyword(request.getKeyword());
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
+            savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
             savedSearch.setMinYrs(request.getMinYrs());
@@ -1467,6 +1469,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
         searchCandidateRequest.setKeyword(search.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
+        searchCandidateRequest.setUnhcrStatuses(getUnhcrStatusListFromString(search.getUnhcrStatuses()));
         searchCandidateRequest.setGender(search.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
         searchCandidateRequest.setMinYrs(search.getMinYrs());
@@ -1553,6 +1556,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return statusList != null ? Stream.of(statusList.split(","))
                 .map(s -> CandidateStatus.valueOf(s))
                 .collect(Collectors.toList()) : null;
+    }
+
+    String getUnhcrStatusListAsString(List<UnhcrStatus> unhcrStatuses){
+        return !CollectionUtils.isEmpty(unhcrStatuses) ? unhcrStatuses.stream().map(
+                status -> status.name())
+            .collect(Collectors.joining(",")) : null;
+    }
+
+    List<UnhcrStatus> getUnhcrStatusListFromString(String unhcrStatusList){
+        return unhcrStatusList != null ? Stream.of(unhcrStatusList.split(","))
+            .map(s -> UnhcrStatus.valueOf(s))
+            .collect(Collectors.toList()) : null;
     }
 
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest searchRequest) {

@@ -2077,8 +2077,12 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
-    @GetMapping("sf-update-candidates")
-    public void sfUpdateCandidates() {
-        candidateService.syncCandidatesToSf();
+    @GetMapping("sf-update-candidates/{pageSize}-{firstPageIndex}-{noOfPagesRequested}")
+    public void sfUpdateCandidates(
+        @PathVariable("pageSize") int pageSize,
+        @PathVariable("firstPageIndex") int firstPageIndex,
+        @PathVariable("noOfPagesRequested") int noOfPagesRequested
+    ) {
+        candidateService.syncCandidatesToSf(pageSize, firstPageIndex, noOfPagesRequested);
     }
 }

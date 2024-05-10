@@ -133,6 +133,10 @@ export class EditOppComponent implements OnInit {
       }
     }
 
+  isEvergreenJob(): boolean {
+    return isJob(this.opp) && this.opp.evergreen;
+  }
+
   onStageSelectionChange(stage: any) {
     if (isCandidateOpportunity(this.opp)) {
       this.stageHelpRequest = {caseOppId: this.opp.id, caseStage: stage.key}
