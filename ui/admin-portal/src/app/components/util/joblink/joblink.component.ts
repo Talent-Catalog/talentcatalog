@@ -44,13 +44,16 @@ export class JoblinkComponent implements OnInit, OnChanges {
   //to this component instance - meaning that you can't access properties of this component - JC)
   doJobSearch;
 
+  //Job name associated with jobId
   currentJobName: string;
 
+  //Current update request
   currentJobRequest: JobNameAndId;
 
   //True if removeJob is currently checked.
   removeJobRequest: boolean;
 
+  //True if searching for jobs
   searching: boolean;
 
   constructor(private jobService: JobService) {
