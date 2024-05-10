@@ -53,6 +53,9 @@ export class JoblinkComponent implements OnInit, OnChanges {
   //True if removeJob is currently checked.
   removeJobRequest: boolean;
 
+  //Heading displayed for job search - depends on whether there is already a job associated
+  searchHeading: string;
+
   //True if searching for jobs
   searching: boolean;
 
@@ -82,6 +85,7 @@ export class JoblinkComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.searchHeading = (this.jobId ? "Change" : "Optional") + " job association";
     if (this.jobId) {
       this.jobService.get(this.jobId).subscribe({
         next: job => {
