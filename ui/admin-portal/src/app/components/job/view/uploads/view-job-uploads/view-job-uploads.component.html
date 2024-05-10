@@ -64,6 +64,35 @@
         </button>
       </div>
     </div>
+
+    <hr>
+
+    <div class="row">
+
+      <div class="col-10 col-sm">
+        <label class="col-form-label">
+          <i class="fa-solid fa-pen-clip"></i> Signed MOU
+        </label>
+        <p class="small fst-italic">If applicable upload or link to an signed MOU pdf.</p>
+        <div class="file-link">
+          <div *ngIf="!job.submissionList?.fileMouLink" class="form-control-plaintext">
+            <p class="text-accent-3 mb-0 fw-bolder">No File Uploaded</p>
+          </div>
+          <div *ngIf="job.submissionList?.fileMouLink" class="form-control-plaintext">
+            <a class="link-info" target="_blank" [href]="job.submissionList.fileMouLink">
+              {{job.submissionList.fileMouName ? job.submissionList.fileMouName : job.submissionList.fileMouLink}}</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-2 col-sm-auto" *ngIf="editable">
+        <button title="Enter/change a link to the document" class="btn btn-sm btn-secondary me-2" (click)="editMouLink()">
+          Add/edit link <i class="fa-solid fa-link"></i>
+        </button>
+        <button title="Upload the document from your computer" class="btn btn-sm btn-primary" (click)="uploadMou()">
+          Upload file <i class="fa-solid fa-upload"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
 </div>

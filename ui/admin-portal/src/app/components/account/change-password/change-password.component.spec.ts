@@ -14,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ChangePasswordComponent } from './change-password.component';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { UserService } from '../../../services/user.service';
-import { of } from 'rxjs';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {ChangePasswordComponent} from './change-password.component';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {UserService} from '../../../services/user.service';
+import {of} from 'rxjs';
 import {config_test} from "../../../../config-test";
 import {MockUser} from "../../../MockData/MockUser";
 
