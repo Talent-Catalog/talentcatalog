@@ -47,6 +47,8 @@ export class JoblinkComponent implements OnInit, OnChanges {
   //to this component instance - meaning that you can't access properties of this component - JC)
   doJobSearch;
 
+  removeJobRequest: boolean;
+
   searching: boolean;
 
   constructor(private jobService: JobService) {
@@ -86,8 +88,11 @@ export class JoblinkComponent implements OnInit, OnChanges {
     return job.name;
   }
 
-  removeJob() {
-    this.jobSelection.emit(null);
+  removeJob($event) {
+    this.removeJobRequest = $event.target.checked;
+    if (this.removeJobRequest) {
+      this.jobSelection.emit(null);
+    }
   }
 
   selectSearchResult($event: NgbTypeaheadSelectItemEvent<any>) {

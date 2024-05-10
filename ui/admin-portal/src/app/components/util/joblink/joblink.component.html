@@ -19,20 +19,20 @@
   </div>
   <div *ngIf="jobName" class="form-check mb-3">
     <label class="form-label" for="remove-job">Remove job association?</label>
-    <input (click)="removeJob()" class="form-check-input" id="remove-job"
+    <input (change)="removeJob($event)" class="form-check-input" id="remove-job"
            type="checkbox">
   </div>
-  <div>
+  <div *ngIf="!removeJobRequest">
     Optional job association
     <span *ngIf="searching">
       <i class="fas fa-spinner fa-spin"></i> Searching...
     </span>
+    <input (selectItem)="selectSearchResult($event)"
+           [editable]="false" [inputFormatter]="renderJobRow" [ngbTypeahead]="doJobSearch"
+           [resultFormatter]="renderJobRow"
+           class="form-control"
+           id="jobSearch"
+           placeholder="Search job name..."
+           type="text"/>
   </div>
-  <input (selectItem)="selectSearchResult($event)"
-         [editable]="false" [inputFormatter]="renderJobRow" [ngbTypeahead]="doJobSearch"
-         [resultFormatter]="renderJobRow"
-         class="form-control"
-         id="jobSearch"
-         placeholder="Search job name..."
-         type="text"/>
 </div>
