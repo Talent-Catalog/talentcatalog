@@ -53,18 +53,23 @@ Download and install the latest of the following tools.
       exists when you check out the repository. You can get **sdkman** by running the following:
 
       ```
-      curl -s https://get.sdkman.io
-      source $HOME/.sdkman/bin/sdkman-init.sh
+      curl -s "https://get.sdkman.io" | bash
+      source "$HOME/.sdkman/bin/sdkman-init.sh"
       sdk install java 21.0.2-amzn
       ```
 
     - Intellij will load the JDK through the .sdkmanrc file.
-    - Setting the -parameter flag on the compiler is also required. **IntelliJ > Settings /
-      Build,Execution,Deployment / Compiler / Java Compiler** then add `-parameters` to the 
-      `Additional command line parameters` textbox.
-    - Also on this settings page, ensure the `Project bytecode version` is set to **21**.
-    - Make sure the **GradleJVM** drop list (on the same page as above) is set to use the Project SDK.
+    - Update the Project SDK: 
+      - Go to File / Project Structure / Project and set the SDK to corretto-21
+    - IntelliJ Settings:
+      - Go to IntelliJ / Settings / Build,Execution,Deployment / Compiler / Java Compiler 
+        - Add `-parameters` to the`Additional command line parameters` textbox.
+        - Set the `Project bytecode version` to **20**.
+      - Go to IntelliJ / Settings / Build,Execution,Deployment / Build Tools / Gradle
+        - Set the **GradleJVM** from the drop list to use the Project SDK.
     
+    
+
 - Code Style
   - Download the intellij-java-google-style.xml file from the google/styleguide repository 
 [here](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).
