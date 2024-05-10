@@ -14,10 +14,10 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 <div>
-  <div *ngIf="jobName">
-    Associated with {{jobName}}
+  <div *ngIf="currentJobName">
+    Associated with {{currentJobName}}
   </div>
-  <div *ngIf="jobName" class="form-check mb-3">
+  <div *ngIf="currentJobName" class="form-check mb-3">
     <label class="form-label" for="remove-job">Remove job association?</label>
     <input (change)="removeJob($event)" class="form-check-input" id="remove-job"
            type="checkbox">

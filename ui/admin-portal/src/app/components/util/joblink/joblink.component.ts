@@ -39,14 +39,16 @@ export class JoblinkComponent implements OnInit, OnChanges {
   @Input() jobId: number;
   @Output() jobSelection =  new EventEmitter<JobNameAndId>();
 
-  //Name matching current jobId
-  jobName: string;
-
   //This is set in ngOnInit to the function called from the html input ngbTypeahead.
   //(Note that calling a method does not work because "this" is undefined - instead of referring
   //to this component instance - meaning that you can't access properties of this component - JC)
   doJobSearch;
 
+  currentJobName: string;
+
+  currentJobRequest: JobNameAndId;
+
+  //True if removeJob is currently checked.
   removeJobRequest: boolean;
 
   searching: boolean;
@@ -79,7 +81,13 @@ export class JoblinkComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.jobId) {
       this.jobService.get(this.jobId).subscribe({
-        next: job => this.jobName = job.name
+        next: job => {
+          this.currentJobRequest = {
+            name: job.name,
+            id: job.id
+          }
+          this.currentJobName = job.name;
+        }
       });
     }
   }
@@ -91,12 +99,22 @@ export class JoblinkComponent implements OnInit, OnChanges {
   removeJob($event) {
     this.removeJobRequest = $event.target.checked;
     if (this.removeJobRequest) {
-      this.jobSelection.emit(null);
+      this.currentJobRequest = null;
+    } else {
+      this.currentJobRequest = {
+        name: this.currentJobName,
+        id: this.jobId
+      }
     }
+    this.emitState();
   }
 
   selectSearchResult($event: NgbTypeaheadSelectItemEvent<any>) {
-      const job: JobNameAndId = $event.item;
-      this.jobSelection.emit(job);
+      this.currentJobRequest = $event.item;
+      this.emitState();
+  }
+
+  private emitState() {
+    this.jobSelection.emit(this.currentJobRequest);
   }
 }
