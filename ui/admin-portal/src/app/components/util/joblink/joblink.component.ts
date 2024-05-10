@@ -85,7 +85,11 @@ export class JoblinkComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    //Display appropriate heading for job search
     this.searchHeading = (this.jobId ? "Change" : "Optional") + " job association";
+
+    //If there is already a job associated, get its name and construct the default
+    //job request (ie to retain existing job)
     if (this.jobId) {
       this.jobService.get(this.jobId).subscribe({
         next: job => {
@@ -113,15 +117,15 @@ export class JoblinkComponent implements OnInit, OnChanges {
         id: this.jobId
       }
     }
-    this.emitState();
+    this.emitCurrentJobRequest();
   }
 
   selectSearchResult($event: NgbTypeaheadSelectItemEvent<any>) {
       this.currentJobRequest = $event.item;
-      this.emitState();
+      this.emitCurrentJobRequest();
   }
 
-  private emitState() {
+  private emitCurrentJobRequest() {
     this.jobSelection.emit(this.currentJobRequest);
   }
 }
