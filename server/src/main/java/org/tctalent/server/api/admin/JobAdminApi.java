@@ -16,13 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +37,14 @@ import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
 
 @RestController()
 @RequestMapping("/api/admin/job")
@@ -153,6 +154,14 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PutMapping("{id}/mou-link")
+    public @NotNull Map<String, Object> updateMouLink(
+            @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateMouLink(id, updateLinkRequest);
+        return jobDto().build(job);
+    }
+
     @PutMapping("{id}/starred")
     public @NotNull Map<String, Object> updateStarred(
         @PathVariable("id") long id, @Valid @RequestBody boolean starred)
@@ -190,6 +199,14 @@ public class JobAdminApi implements
             @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
             throws InvalidRequestException, IOException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.uploadInterviewGuidance(id, file);
+        return jobDto().build(job);
+    }
+
+    @PostMapping("{id}/upload/mou")
+    public @NotNull Map<String, Object> uploadMou(
+            @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
+            throws InvalidRequestException, IOException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.uploadMou(id, file);
         return jobDto().build(job);
     }
 

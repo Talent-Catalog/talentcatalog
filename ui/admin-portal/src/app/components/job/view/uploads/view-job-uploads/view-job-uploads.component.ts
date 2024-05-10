@@ -59,6 +59,10 @@ export class ViewJobUploadsComponent implements OnInit {
         initialValue.url = this.job.submissionList?.fileInterviewGuidanceLink;
         initialValue.name = this.job.submissionList?.fileInterviewGuidanceName;
         break;
+
+      case "mou":
+        initialValue.url = this.job.submissionList?.fileMouLink;
+        initialValue.name = this.job.submissionList?.fileMouName
     }
     inputLinkModal.componentInstance.initialValue = initialValue;
     inputLinkModal.result.then(
@@ -132,6 +136,10 @@ export class ViewJobUploadsComponent implements OnInit {
     this.editJobLink("joi")
   }
 
+  editMouLink() {
+    this.editJobLink("mou")
+  }
+
   highlightJD() {
     return this.highlightItem instanceof JobPrepJD;
   }
@@ -150,5 +158,9 @@ export class ViewJobUploadsComponent implements OnInit {
 
   uploadInterviewGuidance() {
     this.uploadJobDoc("interview")
+  }
+
+  uploadMou() {
+    this.uploadJobDoc("mou")
   }
 }
