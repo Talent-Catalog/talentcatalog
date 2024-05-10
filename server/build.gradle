@@ -17,6 +17,8 @@ buildscript {
     ext {
         springBootVersion = '2.7.13'
         isDev = System.properties['env'] == 'dev'
+        javaTargetVersion = JavaVersion.VERSION_21
+        lombokVersion = "1.18.30"
     }
     repositories {
         mavenCentral()
@@ -34,8 +36,13 @@ plugins {
     id 'com.google.cloud.tools.jib' version '3.3.1'
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(javaTargetVersion.toString()))
+    }
+    sourceCompatibility = javaTargetVersion
+    targetCompatibility = javaTargetVersion
+}
 
 //Yes - you do have to declare this again (even though it is declared in the
 //buildscript above)
@@ -53,10 +60,10 @@ dependencies {
     // (in unnamed module @0x3dd0aa6) cannot access class
     // com.sun.tools.javac.processing.JavacProcessingEnvironment (in module jdk.compiler) because
     // module jdk.compiler does not export com.sun.tools.javac.processing to unnamed module @0x3dd0aa6
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    testCompileOnly 'org.projectlombok:lombok:1.18.24'
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
