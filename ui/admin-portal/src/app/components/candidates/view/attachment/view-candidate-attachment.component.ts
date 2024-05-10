@@ -57,12 +57,26 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     return AttachmentType;
   }
 
-  ngOnInit() {  }
+  ngOnInit() {
+    if (this.editable) {
+      console.log("paged searching!!!!!")
+      this.attachments = [];
+      this.doPagedSearch();
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     this.expanded = false;
-    this.attachments = [];
+    // When attachments aren't editable (aka. I am in a list via a search card) I just want to set my attachments to the
+    // candidates attachments that are being passed in from the candidate object.
+    if (!this.editable) {
+      console.log("not paged searching!")
+      this.attachments = this.candidate.candidateAttachments
+    }
+  }
 
+  doPagedSearch(refresh?: boolean) {
+    this.loading = true;
     this.attachmentForm = this.fb.group({
       candidateId: [this.candidate.id],
       pageSize: 10,
@@ -70,14 +84,6 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
       sortDirection: 'DESC',
       sortFields: [['createdDate']]
     });
-
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doPagedSearch();
-    }
-  }
-
-  doPagedSearch(refresh?: boolean) {
-    this.loading = true;
     this.candidateAttachmentService.searchPaged(this.attachmentForm.value).subscribe(
       results => {
         if (refresh) {

@@ -31,6 +31,8 @@ export class CandidateAdditionalInfoTabComponent implements OnInit, OnChanges {
   @Input() canViewPrivateInfo: boolean = false;
   @Output() candidateChanged = new EventEmitter();
 
+  updatedCandidate: Candidate;
+
   loading: boolean;
   error: boolean;
 
@@ -40,9 +42,10 @@ export class CandidateAdditionalInfoTabComponent implements OnInit, OnChanges {
   ngOnInit() {
   }
 
-  // Fetch the updated candidate object when changing the tabs to refresh any changes in data from the tab components.
+  // If this tab has editable components, then we want to fetch the potentially updated candidate data.
+  // If not, we can just use the existing candidate object.
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
+    if (this.editable) {
       this.loading = true;
       this.candidateService.get(this.candidate.id).subscribe(
         candidate => {
