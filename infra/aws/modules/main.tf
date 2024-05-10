@@ -1,6 +1,6 @@
 # The network components (VPC, subnets, Internet gateway, etc..)
 module "network" {
-  source = "network"
+  source = "./network"
   app    = var.app
   env    = var.env
 }
@@ -10,7 +10,7 @@ module "database" {
   depends_on = [
     module.network
   ]
-  source               = "database"
+  source               = "./database"
   app                  = var.app
   env                  = var.env
   db_enable            = var.db_enable
@@ -30,7 +30,7 @@ module "computing" {
     module.parameters,
     module.database
   ]
-  source             = "computing"
+  source             = "./computing"
   app                = var.app
   env                = var.env
   vpc_id             = module.network.vpc_id
@@ -47,7 +47,7 @@ module "dns" {
   depends_on = [
     module.computing
   ]
-  source      = "dns"
+  source      = "./dns"
   env         = var.env
   site_domain = var.site_domain
   lb_dns_name = module.computing.dns_name
@@ -55,7 +55,7 @@ module "dns" {
 }
 
 module "parameters" {
-  source                          = "parameters"
+  source                          = "./parameters"
   app                             = var.app
   env                             = var.env
   aws_access_key                  = var.aws_access_key
