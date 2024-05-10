@@ -57,6 +57,63 @@ operation for index version 2.
 alias from pointing to `candidates_v1` to `candidates_v2`. It is the third operation for index 
 version 2.
 
-This structured approach ensures that each script's purpose and sequence within the indexing 
-lifetime are immediately clear, allowing for systematic maintenance, updates, or rollbacks if 
-necessary.
+Each script's purpose and sequence within the indexing lifetime are immediately clear, allowing for 
+systematic updates, or rollbacks if necessary.
+
+## Setting Up the Python Environment
+Before executing the scripts in this directory, ensure that your Python environment is correctly set
+up. Follow these steps to install Python and the required Python packages.
+
+### Install Python
+If Python is not already installed on your system, you can download and install it from the official 
+[Python website](https://www.python.org/downloads/) or use a package manager for your operating 
+system. For macOS, you can install Python using Homebrew:
+
+```zsh
+brew install python3
+```
+
+This will install Python 3 and its package manager, pip3, which you will use to install Python
+packages.
+
+### Setting Up a Virtual Environment
+It is recommended to use a virtual environment for Python projects to avoid conflicts between
+package versions. You can create and activate a virtual environment named `tc_env`  in your project 
+directory as follows:
+
+```zsh
+cd path/to/your/project/talentcatalog/infra/elasticsearch
+python3 -m venv tc_env
+````
+
+Activate the virtual environment:
+
+On macOS and Linux:
+
+```zsh
+source tc_env/bin/activate
+```
+
+On Windows:
+```dos
+venv\Scripts\activate
+```
+
+### Install Required Python Packages
+The scripts in this directory require the Elasticsearch Python client. To install the necessary 
+Python packages, use the pip3 command:
+
+```zsh
+pip3 install elasticsearch
+```
+
+### Verify Installation
+Check that the installation of the Elasticsearch client was successful by running the following 
+command, which should print the version number of the Elasticsearch package:
+
+```zsh
+python3 -c "import elasticsearch; print(elasticsearch.__version__)"
+
+> (8, 13, 1)
+```
+
