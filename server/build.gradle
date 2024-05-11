@@ -29,19 +29,19 @@ buildscript {
 }
 
 plugins {
-    id "org.springframework.boot" version "$springBootVersion"
+    id "org.springframework.boot" version "${springBootVersion}"
     id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
     id 'idea'
-    id 'com.google.cloud.tools.jib' version '3.3.1'
+    id 'com.google.cloud.tools.jib' version '3.4.0'
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(javaTargetVersion.toString()))
+        languageVersion.set(JavaLanguageVersion.of('21'))
     }
-    sourceCompatibility = javaTargetVersion
-    targetCompatibility = javaTargetVersion
+    sourceCompatibility = 21
+    targetCompatibility = 21
 }
 
 //Yes - you do have to declare this again (even though it is declared in the
@@ -60,10 +60,10 @@ dependencies {
     // (in unnamed module @0x3dd0aa6) cannot access class
     // com.sun.tools.javac.processing.JavacProcessingEnvironment (in module jdk.compiler) because
     // module jdk.compiler does not export com.sun.tools.javac.processing to unnamed module @0x3dd0aa6
-    compileOnly("org.projectlombok:lombok:$lombokVersion")
-    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
-    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
-    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    testCompileOnly("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
@@ -145,6 +145,9 @@ dependencies {
 }
 
 jib {
+    from {
+        image = "eclipse-temurin:21-jre"
+    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
