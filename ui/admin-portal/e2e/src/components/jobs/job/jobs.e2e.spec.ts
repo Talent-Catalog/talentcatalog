@@ -63,7 +63,7 @@ describe('JobsComponent', () => {
     const firstJobRecord = element.all(by.css('table tbody tr')).first();
     firstJobRecord.click();
     browser.getCurrentUrl().then(url => {
-      expect(url).toContain('/list/');
+      expect(url).toContain('/jobs');
     });
   });
 
