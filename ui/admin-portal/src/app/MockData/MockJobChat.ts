@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
- import {JobChat} from "../model/chat";
+import {JobChat} from "../model/chat";
 
 export class MockJobChat implements JobChat  {
   id:number =  1;

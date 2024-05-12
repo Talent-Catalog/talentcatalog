@@ -35,8 +35,8 @@ import {
   SavedSearchType
 } from '../../../model/saved-search';
 import {SearchCandidateRequest} from '../../../model/search-candidate-request';
-import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
 import {SalesforceService} from "../../../services/salesforce.service";
+import {JobNameAndId} from "../../../model/job";
 
 @Component({
   selector: 'app-create-update-search',
@@ -49,12 +49,12 @@ export class CreateUpdateSearchComponent implements OnInit {
   error = null;
   form: FormGroup;
   jobName: string;
+  jobId: number;
   saving: boolean;
   savedSearch: SavedSearch;
   searchCandidateRequest: SearchCandidateRequest;
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
-  sfJoblink: string;
   copy: boolean = false;
   newSavedSearch: SavedSearch;
 
@@ -176,7 +176,7 @@ export class CreateUpdateSearchComponent implements OnInit {
 
     //And create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.create(
-      convertToSavedSearchRequest(this.newSavedSearch, this.sfJoblink, this.searchCandidateRequest)
+      convertToSavedSearchRequest(this.newSavedSearch, this.jobId, this.searchCandidateRequest)
     ).subscribe(
       (savedSearch) => {
         this.activeModal.close(savedSearch);
@@ -208,7 +208,7 @@ export class CreateUpdateSearchComponent implements OnInit {
 
     //Create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.update(
-      convertToSavedSearchRequest(this.savedSearch, this.sfJoblink, this.searchCandidateRequest)
+      convertToSavedSearchRequest(this.savedSearch, this.jobId, this.searchCandidateRequest)
     ).subscribe(
       (savedSearch) => {
         this.activeModal.close(savedSearch);
@@ -234,19 +234,15 @@ export class CreateUpdateSearchComponent implements OnInit {
     }
   }
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
-    if (jobOpportunity.valid) {
-      this.sfJoblink = jobOpportunity.sfJoblink;
-      this.jobName = jobOpportunity.jobname;
+  onJobSelection(job: JobNameAndId) {
+    //Null job translates to request to remove associated job (jobId < 0)
+    this.jobName = job ? job.name : "";
+    this.jobId = job ? job.id : -1;
 
-      //If existing name and search type control are empty, auto copy into them
-      if (!this.nameControl.value) {
-        this.nameControl.patchValue(this.jobName);
-        this.savedSearchTypeControl.patchValue(SavedSearchType.job);
-      }
-    } else {
-      this.sfJoblink = null;
-      this.jobName = null;
+    //If existing name is empty, auto copy job name to it
+    if (!this.nameControl.value) {
+      this.nameControl.patchValue(this.jobName);
+      this.savedSearchTypeControl.patchValue(SavedSearchType.job);
     }
   }
 }

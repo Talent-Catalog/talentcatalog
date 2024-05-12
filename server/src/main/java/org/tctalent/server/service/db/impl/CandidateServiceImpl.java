@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -169,6 +170,7 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -256,6 +258,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
+    private final ElasticsearchService elasticsearchService;
 
     @Transactional
     @Override
@@ -423,9 +426,11 @@ public class CandidateServiceImpl implements CandidateService {
                     request.getPageRequestWithoutSort());
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                candidates = candidateRepository.searchCandidateName(
-                        '%' + s + '%', sourceCountries,
-                        request.getPageRequestWithoutSort());
+                // Get candidate ids from Elasticsearch then fetch and return from the database
+                Set<Long> candidateIds = elasticsearchService.findByName(s);
+                List<Candidate> unsorted = findByIds(candidateIds);
+                candidates = new PageImpl<>(unsorted, request.getPageRequestWithoutSort(),
+                    candidateIds.size());
             } else {
                 return null;
             }
@@ -648,9 +653,9 @@ public class CandidateServiceImpl implements CandidateService {
         //set some fields to unknown on create as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
         //point to an "Unknown" value.
-        candidate.setCountry(countryRepository.getOne(0L));
-        candidate.setNationality(countryRepository.getOne(0L));
-        candidate.setMaxEducationLevel(educationLevelRepository.getOne(0L));
+        candidate.setCountry(countryRepository.getReferenceById(0L));
+        candidate.setNationality(countryRepository.getReferenceById(0L));
+        candidate.setMaxEducationLevel(educationLevelRepository.getReferenceById(0L));
 
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);

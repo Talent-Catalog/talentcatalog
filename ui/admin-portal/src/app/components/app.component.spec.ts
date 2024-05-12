@@ -13,15 +13,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AppComponent } from './app.component';
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { LocalStorageModule } from "angular-2-local-storage";
- import { AuthenticationService } from "../services/authentication.service";
-import { ActivatedRoute, Router } from "@angular/router";
- import { of, Subject } from "rxjs";
-import { User } from "../model/user";
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
+import {AppComponent} from './app.component';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {AuthenticationService} from "../services/authentication.service";
+import {ActivatedRoute, Router} from "@angular/router";
+import {of, Subject} from "rxjs";
+import {User} from "../model/user";
 import {MockUser} from "../MockData/MockUser";
 
 // Stub class for AuthenticationService

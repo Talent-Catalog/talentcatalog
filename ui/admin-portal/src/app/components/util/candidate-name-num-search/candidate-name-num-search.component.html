@@ -24,5 +24,5 @@
        (selectItem)="selectSearchResult($event, input)"
        [placeholder]="placeholderText"/>
 <ng-template #rt let-r="result" let-t="term">
-  <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+  <ngb-highlight [result]="renderCandidateRow(r)" [term]="t.split(' ')"></ngb-highlight>
 </ng-template>

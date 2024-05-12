@@ -189,15 +189,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                               @Param("userSourceCountries") Set<Country> userSourceCountries,
                                               Pageable pageable);
 
-    @Query(" select distinct c from Candidate c left join c.user u "
-        + " where lower(u.firstName) like lower(:candidateName)"
-        + " or lower(u.lastName) like lower(:candidateName)"
-        + excludeDeleted
-        + sourceCountryRestriction)
-    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
-                                        @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                        Pageable pageable);
-
     @Query(" select c from Candidate c "
             + " join c.user u "
             + " where c.id = :id "

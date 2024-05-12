@@ -58,13 +58,8 @@
         </div>
       </div>
 
-      <app-joblink [joblink]="sfJoblink"
-                   (updateError)="error=$event"
-                   (joblinkValidation)="onJoblinkValidation($event)"
+      <app-joblink (jobSelection)="onJobSelection($event)"
       ></app-joblink>
-      <div *ngIf="jobName">
-        {{jobName}}
-      </div>
 
     </div>
 
