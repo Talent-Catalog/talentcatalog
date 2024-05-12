@@ -18,6 +18,7 @@ package org.tctalent.server.api.admin;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.With;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
@@ -38,6 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,67 +55,76 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CandidateDestinationAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CandidateDestinationAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/candidate-destination";
-    private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateDestination candidateDestination = AdminApiTestUtil.getCandidateDestination();
+  private static final String BASE_PATH = "/api/admin/candidate-destination";
+  private static final long CANDIDATE_ID = 99L;
 
-    @MockBean CandidateDestinationService candidateDestinationService;
+  private final CandidateDestination candidateDestination = AdminApiTestUtil.getCandidateDestination();
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateDestinationAdminApi candidateDestinationAdminApi;
+  @MockBean
+  CandidateDestinationService candidateDestinationService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateDestinationAdminApi candidateDestinationAdminApi;
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateDestinationAdminApi).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    @DisplayName("create candidate destination succeeds")
-    void createDestinationSucceeds() throws Exception {
-        CreateCandidateDestinationRequest request = new CreateCandidateDestinationRequest();
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateDestinationAdminApi).isNotNull();
+  }
 
-        given(candidateDestinationService
-                .createDestination(anyLong(), any(CreateCandidateDestinationRequest.class)))
-                .willReturn(candidateDestination);
+  @Test
+  @DisplayName("create candidate destination succeeds")
+  void createDestinationSucceeds() throws Exception {
+    CreateCandidateDestinationRequest request = new CreateCandidateDestinationRequest();
 
-        mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateDestinationService
+        .createDestination(anyLong(), any(CreateCandidateDestinationRequest.class)))
+        .willReturn(candidateDestination);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.country.name", is("USA")))
-                .andExpect(jsonPath("$.country.status", is("active")))
-                .andExpect(jsonPath("$.location", is("New York")))
-                .andExpect(jsonPath("$.interest", is("Yes")))
-                .andExpect(jsonPath("$.family", is("Cousin")))
-                .andExpect(jsonPath("$.notes", is("Some destination notes")));
+    mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateDestinationService).createDestination(anyLong(), any(CreateCandidateDestinationRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.country.name", is("USA")))
+        .andExpect(jsonPath("$.country.status", is("active")))
+        .andExpect(jsonPath("$.location", is("New York")))
+        .andExpect(jsonPath("$.interest", is("Yes")))
+        .andExpect(jsonPath("$.family", is("Cousin")))
+        .andExpect(jsonPath("$.notes", is("Some destination notes")));
 
-    @Test
-    @DisplayName("delete candidate destination succeeds")
-    void deleteDestinationByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+    verify(candidateDestinationService).createDestination(anyLong(),
+        any(CreateCandidateDestinationRequest.class));
+  }
 
-                .andDo(print())
-                .andExpect(status().isOk());
+  @Test
+  @DisplayName("delete candidate destination succeeds")
+  void deleteDestinationByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-        verify(candidateDestinationService).deleteDestination(anyLong());
-    }
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(candidateDestinationService).deleteDestination(anyLong());
+  }
 
 }

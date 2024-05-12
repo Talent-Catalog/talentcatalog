@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.request.skill.SearchCandidateSkillRequest;
@@ -42,6 +43,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -56,65 +58,71 @@ import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateSkill;
  */
 @WebMvcTest(CandidateSkillAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 public class CandidateSkillAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/candidate-skill";
-    private static final String SEARCH_PATH = "/search";
 
-    private static final CandidateSkill candidateSkill = getCandidateSkill();
+  private static final String BASE_PATH = "/api/admin/candidate-skill";
+  private static final String SEARCH_PATH = "/search";
 
-    private final Page<CandidateSkill> candidateSkillsPage =
-            new PageImpl<>(
-                    List.of(candidateSkill),
-                    PageRequest.of(0,10, Sort.unsorted()),
-                    1
-            );
+  private static final CandidateSkill candidateSkill = getCandidateSkill();
 
-    @MockBean
-    CandidateSkillService candidateSkillService;
+  private final Page<CandidateSkill> candidateSkillsPage =
+      new PageImpl<>(
+          List.of(candidateSkill),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateSkillAdminApi candidateSkillAdminApi;
+  @MockBean
+  CandidateSkillService candidateSkillService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateSkillAdminApi candidateSkillAdminApi;
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateSkillAdminApi).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    @DisplayName("search candidate skill succeeds")
-    void searchCandidateSkillsSucceeds() throws Exception {
-        SearchCandidateSkillRequest request = new SearchCandidateSkillRequest();
-        request.setCandidateId(99L);
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateSkillAdminApi).isNotNull();
+  }
 
-        given(candidateSkillService
-                .searchCandidateSkills(any(SearchCandidateSkillRequest.class)))
-                .willReturn(candidateSkillsPage);
+  @Test
+  @DisplayName("search candidate skill succeeds")
+  void searchCandidateSkillsSucceeds() throws Exception {
+    SearchCandidateSkillRequest request = new SearchCandidateSkillRequest();
+    request.setCandidateId(99L);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateSkillService
+        .searchCandidateSkills(any(SearchCandidateSkillRequest.class)))
+        .willReturn(candidateSkillsPage);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.totalElements", is(1)))
-                .andExpect(jsonPath("$.totalPages", is(1)))
-                .andExpect(jsonPath("$.number", is(0)))
-                .andExpect(jsonPath("$.hasNext", is(false)))
-                .andExpect(jsonPath("$.hasPrevious", is(false)))
-                .andExpect(jsonPath("$.content", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].id", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].skill", is("Adobe Photoshop")))
-                .andExpect(jsonPath("$.content.[0].timePeriod", is("3-5 years")));
+    mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateSkillService).searchCandidateSkills(any(SearchCandidateSkillRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].id", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].skill", is("Adobe Photoshop")))
+        .andExpect(jsonPath("$.content.[0].timePeriod", is("3-5 years")));
+
+    verify(candidateSkillService).searchCandidateSkills(any(SearchCandidateSkillRequest.class));
+  }
 }

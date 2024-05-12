@@ -33,6 +33,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.service.db.SavedListService;
@@ -44,18 +45,24 @@ import org.tctalent.server.service.db.SavedListService;
  */
 @WebMvcTest(PublishedLinkAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class PublishedLinkAdminApiTest extends ApiTestBase {
+
   private static final String SHORT_NAME = "short-name";
 
   private static final String BASE_PATH = "/published";
 
   private final SavedList savedList = new SavedList();
 
-  @MockBean SavedListService savedListService;
+  @MockBean
+  SavedListService savedListService;
 
-  @Autowired MockMvc mockMvc;
-  @Autowired ObjectMapper objectMapper;
-  @Autowired PublishedLinkAdminApi publishedLinkAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  PublishedLinkAdminApi publishedLinkAdminApi;
 
   @BeforeEach
   void setUp() {

@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -51,6 +52,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.Status;
@@ -68,7 +70,9 @@ import org.tctalent.server.service.db.LanguageService;
  */
 @WebMvcTest(EducationLevelAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class EducationLevelAdminApiTest extends ApiTestBase {
+
   private static final String LANG_CODE = "SPANISH_LANG_CODE";
   private static final long EDUCATION_LEVEL_ID = 111L;
 
@@ -82,17 +86,22 @@ class EducationLevelAdminApiTest extends ApiTestBase {
   private final Page<EducationLevel> educationLevelPage =
       new PageImpl<>(
           educationLevels,
-          PageRequest.of(0,10, Sort.unsorted()),
+          PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
 
-  @MockBean EducationLevelService educationLevelService;
-  @MockBean LanguageService languageService;
+  @MockBean
+  EducationLevelService educationLevelService;
+  @MockBean
+  LanguageService languageService;
 
-  @Autowired MockMvc mockMvc;
+  @Autowired
+  MockMvc mockMvc;
 
-  @Autowired ObjectMapper objectMapper;
-  @Autowired EducationLevelAdminApi educationLevelAdminApi;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  EducationLevelAdminApi educationLevelAdminApi;
 
   @BeforeEach
   void setUp() {
@@ -114,9 +123,11 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class)))
         .willReturn(systemLanguage);
 
-    mockMvc.perform(multipart(BASE_PATH + SYSTEM_LANGUAGE_TRANSLATION_PATH.replace("{langCode}", LANG_CODE))
-            .file("file", file.getBytes())
-            .header("Authorization", "Bearer " + "jwt-token"))
+    mockMvc.perform(
+            multipart(BASE_PATH + SYSTEM_LANGUAGE_TRANSLATION_PATH.replace("{langCode}", LANG_CODE))
+                .file("file", file.getBytes())
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token"))
 
         .andDo(print())
         .andExpect(status().isOk())
@@ -126,7 +137,8 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.language", is("Spanish")))
         .andExpect(jsonPath("$.rtl", is(false)));
 
-    verify(languageService).addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class));
+    verify(languageService).addSystemLanguageTranslations(anyString(), anyString(),
+        any(InputStream.class));
   }
 
   @Test
@@ -169,6 +181,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .willReturn(educationLevelPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -231,6 +244,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .willReturn(new EducationLevel("Amazing", Status.active, 0));
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -259,6 +273,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .willReturn(new EducationLevel("Amazing", Status.active, 0));
 
     mockMvc.perform(put(BASE_PATH + "/" + EDUCATION_LEVEL_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -272,7 +287,8 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.status", is("active")))
         .andExpect(jsonPath("$.level", is(0)));
 
-    verify(educationLevelService).updateEducationLevel(anyLong(), any(UpdateEducationLevelRequest.class));
+    verify(educationLevelService).updateEducationLevel(anyLong(),
+        any(UpdateEducationLevelRequest.class));
   }
 
   @Test
@@ -284,6 +300,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + EDUCATION_LEVEL_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 

@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.request.candidate.education.CreateCandidateEducationRequest;
@@ -41,6 +42,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -57,137 +59,149 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CandidateEducationAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CandidateEducationAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/candidate-education";
-    private static final String GET_EDUCATION_LIST_BY_ID_PATH = "/{id}/list";
-    private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateEducation candidateEducation = AdminApiTestUtil.getCandidateEducation();
-    private final List<CandidateEducation> candidateEducationList = AdminApiTestUtil.getListOfCandidateEducations();
+  private static final String BASE_PATH = "/api/admin/candidate-education";
+  private static final String GET_EDUCATION_LIST_BY_ID_PATH = "/{id}/list";
+  private static final long CANDIDATE_ID = 99L;
 
-    @MockBean CandidateEducationService candidateEducationService;
+  private final CandidateEducation candidateEducation = AdminApiTestUtil.getCandidateEducation();
+  private final List<CandidateEducation> candidateEducationList = AdminApiTestUtil.getListOfCandidateEducations();
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateEducationAdminApi candidateEducationAdminApi;
+  @MockBean
+  CandidateEducationService candidateEducationService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateEducationAdminApi candidateEducationAdminApi;
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateEducationAdminApi).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    @DisplayName("get list of educations by id succeeds")
-    void getEducationsListByIdSucceeds() throws Exception {
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateEducationAdminApi).isNotNull();
+  }
 
-        given(candidateEducationService
-                .list(anyLong()))
-                .willReturn(candidateEducationList);
+  @Test
+  @DisplayName("get list of educations by id succeeds")
+  void getEducationsListByIdSucceeds() throws Exception {
 
-        mockMvc.perform(get(BASE_PATH + GET_EDUCATION_LIST_BY_ID_PATH.replace("{id}", String.valueOf(CANDIDATE_ID)))
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateEducationService
+        .list(anyLong()))
+        .willReturn(candidateEducationList);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$.[0].institution", is("Cambridge")))
-                .andExpect(jsonPath("$.[0].courseName", is("Computer Science")))
-                .andExpect(jsonPath("$.[0].educationMajor.name", is("MA")))
-                .andExpect(jsonPath("$.[0].educationMajor.status", is("active")))
-                .andExpect(jsonPath("$.[0].educationType", is("Masters")))
-                .andExpect(jsonPath("$.[0].lengthOfCourseYears", is(4)))
-                .andExpect(jsonPath("$.[0].yearCompleted", is(1998)))
-                .andExpect(jsonPath("$.[0].country.name", is("UK")))
-                .andExpect(jsonPath("$.[0].country.status", is("active")))
-                .andExpect(jsonPath("$.[0].incomplete", is(false)));
+    mockMvc.perform(
+            get(BASE_PATH + GET_EDUCATION_LIST_BY_ID_PATH.replace("{id}", String.valueOf(CANDIDATE_ID)))
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateEducationService).list(CANDIDATE_ID);
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$.[0].institution", is("Cambridge")))
+        .andExpect(jsonPath("$.[0].courseName", is("Computer Science")))
+        .andExpect(jsonPath("$.[0].educationMajor.name", is("MA")))
+        .andExpect(jsonPath("$.[0].educationMajor.status", is("active")))
+        .andExpect(jsonPath("$.[0].educationType", is("Masters")))
+        .andExpect(jsonPath("$.[0].lengthOfCourseYears", is(4)))
+        .andExpect(jsonPath("$.[0].yearCompleted", is(1998)))
+        .andExpect(jsonPath("$.[0].country.name", is("UK")))
+        .andExpect(jsonPath("$.[0].country.status", is("active")))
+        .andExpect(jsonPath("$.[0].incomplete", is(false)));
 
-    @Test
-    @DisplayName("create candidate education succeeds")
-    void createEducationSucceeds() throws Exception {
-        CreateCandidateEducationRequest request = new CreateCandidateEducationRequest();
+    verify(candidateEducationService).list(CANDIDATE_ID);
+  }
 
-        given(candidateEducationService
-                .createCandidateEducation(any(CreateCandidateEducationRequest.class)))
-                .willReturn(candidateEducation);
+  @Test
+  @DisplayName("create candidate education succeeds")
+  void createEducationSucceeds() throws Exception {
+    CreateCandidateEducationRequest request = new CreateCandidateEducationRequest();
 
-        mockMvc.perform(post(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateEducationService
+        .createCandidateEducation(any(CreateCandidateEducationRequest.class)))
+        .willReturn(candidateEducation);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.institution", is("Cambridge")))
-                .andExpect(jsonPath("$.courseName", is("Computer Science")))
-                .andExpect(jsonPath("$.educationMajor.name", is("MA")))
-                .andExpect(jsonPath("$.educationMajor.status", is("active")))
-                .andExpect(jsonPath("$.educationType", is("Masters")))
-                .andExpect(jsonPath("$.lengthOfCourseYears", is(4)))
-                .andExpect(jsonPath("$.yearCompleted", is(1998)))
-                .andExpect(jsonPath("$.country.name", is("UK")))
-                .andExpect(jsonPath("$.country.status", is("active")))
-                .andExpect(jsonPath("$.incomplete", is(false)));
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateEducationService).createCandidateEducation(any(CreateCandidateEducationRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.institution", is("Cambridge")))
+        .andExpect(jsonPath("$.courseName", is("Computer Science")))
+        .andExpect(jsonPath("$.educationMajor.name", is("MA")))
+        .andExpect(jsonPath("$.educationMajor.status", is("active")))
+        .andExpect(jsonPath("$.educationType", is("Masters")))
+        .andExpect(jsonPath("$.lengthOfCourseYears", is(4)))
+        .andExpect(jsonPath("$.yearCompleted", is(1998)))
+        .andExpect(jsonPath("$.country.name", is("UK")))
+        .andExpect(jsonPath("$.country.status", is("active")))
+        .andExpect(jsonPath("$.incomplete", is(false)));
 
-    @Test
-    @DisplayName("update candidate education succeeds")
-    void updateEducationSucceeds() throws Exception {
-        UpdateCandidateEducationRequest request = new UpdateCandidateEducationRequest();
+    verify(candidateEducationService).createCandidateEducation(
+        any(CreateCandidateEducationRequest.class));
+  }
 
-        given(candidateEducationService
-                .updateCandidateEducation(any(UpdateCandidateEducationRequest.class)))
-                .willReturn(candidateEducation);
+  @Test
+  @DisplayName("update candidate education succeeds")
+  void updateEducationSucceeds() throws Exception {
+    UpdateCandidateEducationRequest request = new UpdateCandidateEducationRequest();
 
-        mockMvc.perform(put(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateEducationService
+        .updateCandidateEducation(any(UpdateCandidateEducationRequest.class)))
+        .willReturn(candidateEducation);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.institution", is("Cambridge")))
-                .andExpect(jsonPath("$.courseName", is("Computer Science")))
-                .andExpect(jsonPath("$.educationMajor.name", is("MA")))
-                .andExpect(jsonPath("$.educationMajor.status", is("active")))
-                .andExpect(jsonPath("$.educationType", is("Masters")))
-                .andExpect(jsonPath("$.lengthOfCourseYears", is(4)))
-                .andExpect(jsonPath("$.yearCompleted", is(1998)))
-                .andExpect(jsonPath("$.country.name", is("UK")))
-                .andExpect(jsonPath("$.country.status", is("active")))
-                .andExpect(jsonPath("$.incomplete", is(false)));
+    mockMvc.perform(put(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateEducationService).updateCandidateEducation(any(UpdateCandidateEducationRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.institution", is("Cambridge")))
+        .andExpect(jsonPath("$.courseName", is("Computer Science")))
+        .andExpect(jsonPath("$.educationMajor.name", is("MA")))
+        .andExpect(jsonPath("$.educationMajor.status", is("active")))
+        .andExpect(jsonPath("$.educationType", is("Masters")))
+        .andExpect(jsonPath("$.lengthOfCourseYears", is(4)))
+        .andExpect(jsonPath("$.yearCompleted", is(1998)))
+        .andExpect(jsonPath("$.country.name", is("UK")))
+        .andExpect(jsonPath("$.country.status", is("active")))
+        .andExpect(jsonPath("$.incomplete", is(false)));
 
-    @Test
-    @DisplayName("delete candidate education by id succeeds")
-    void deleteEducationByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+    verify(candidateEducationService).updateCandidateEducation(
+        any(UpdateCandidateEducationRequest.class));
+  }
 
-                .andDo(print())
-                .andExpect(status().isOk());
+  @Test
+  @DisplayName("delete candidate education by id succeeds")
+  void deleteEducationByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-        verify(candidateEducationService).deleteCandidateEducation(CANDIDATE_ID);
-    }
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(candidateEducationService).deleteCandidateEducation(CANDIDATE_ID);
+  }
 
 }

@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,6 +39,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.sf.Opportunity;
@@ -51,6 +53,7 @@ import org.tctalent.server.service.db.SalesforceService;
  */
 @WebMvcTest(SalesforceAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class SalesforceAdminApiTest extends ApiTestBase {
   private static final String SF_OPPORTUNITY_URL
       = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/";
@@ -124,6 +127,7 @@ class SalesforceAdminApiTest extends ApiTestBase {
     UpdateEmployerOpportunityRequest request = new UpdateEmployerOpportunityRequest();
 
     mockMvc.perform(put(BASE_PATH + UPDATE_EMPLOYER_OPPORTUNITY_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -145,6 +149,7 @@ class SalesforceAdminApiTest extends ApiTestBase {
             .updateEmployerOpportunity(any(UpdateEmployerOpportunityRequest.class));
 
     mockMvc.perform(put(BASE_PATH + UPDATE_EMPLOYER_OPPORTUNITY_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))

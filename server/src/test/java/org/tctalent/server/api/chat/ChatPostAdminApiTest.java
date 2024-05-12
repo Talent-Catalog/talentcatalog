@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,6 +42,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.api.admin.AdminApiTestUtil;
@@ -53,6 +55,7 @@ import org.tctalent.server.service.db.impl.ChatPostServiceImpl;
  */
 @WebMvcTest(ChatPostAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class ChatPostAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/chat-post";
     private static final String LIST = "/list";
@@ -116,6 +119,7 @@ class ChatPostAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(multipart(BASE_PATH + "/" + postId + UPLOAD )
                 .file(testFile)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .accept(MediaType.APPLICATION_JSON))
 

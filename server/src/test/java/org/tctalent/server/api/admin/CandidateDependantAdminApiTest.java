@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
@@ -40,6 +41,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -54,77 +56,86 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CandidateDependantAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CandidateDependantAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/candidate-dependant";
-    private static final long CANDIDATE_ID = 99L;
 
-    private final Candidate candidate = AdminApiTestUtil.getCandidate();
-    private final CandidateDependant candidateDependant = AdminApiTestUtil.getCandidateDependant();
+  private static final String BASE_PATH = "/api/admin/candidate-dependant";
+  private static final long CANDIDATE_ID = 99L;
 
-    @MockBean CandidateDependantService candidateDependantService;
-    @MockBean CandidateService candidateService;
+  private final Candidate candidate = AdminApiTestUtil.getCandidate();
+  private final CandidateDependant candidateDependant = AdminApiTestUtil.getCandidateDependant();
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateDependantAdminApi candidateDependantAdminApi;
+  @MockBean
+  CandidateDependantService candidateDependantService;
+  @MockBean
+  CandidateService candidateService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateDependantAdminApi candidateDependantAdminApi;
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateDependantAdminApi).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    @DisplayName("create candidate dependant succeeds")
-    void createDependantSucceeds() throws Exception {
-        CreateCandidateDependantRequest request = new CreateCandidateDependantRequest();
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateDependantAdminApi).isNotNull();
+  }
 
-        given(candidateDependantService
-                .createDependant(anyLong(), any(CreateCandidateDependantRequest.class)))
-                .willReturn(candidateDependant);
+  @Test
+  @DisplayName("create candidate dependant succeeds")
+  void createDependantSucceeds() throws Exception {
+    CreateCandidateDependantRequest request = new CreateCandidateDependantRequest();
 
-        mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateDependantService
+        .createDependant(anyLong(), any(CreateCandidateDependantRequest.class)))
+        .willReturn(candidateDependant);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Ahmad Fatah")))
-                .andExpect(jsonPath("$.dob", is("1998-01-01")))
-                .andExpect(jsonPath("$.relation", is("Partner")))
-                .andExpect(jsonPath("$.relationOther", is("Husband")))
-                .andExpect(jsonPath("$.registered", is("UNHCR")))
-                .andExpect(jsonPath("$.registeredNumber", is("123456")))
-                .andExpect(jsonPath("$.registeredNotes", is("Some dependant registration notes")))
-                .andExpect(jsonPath("$.healthConcern", is("No")))
-                .andExpect(jsonPath("$.healthNotes", is("Some dependant health notes")));
+    mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateDependantService).createDependant(anyLong(), any(CreateCandidateDependantRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.name", is("Ahmad Fatah")))
+        .andExpect(jsonPath("$.dob", is("1998-01-01")))
+        .andExpect(jsonPath("$.relation", is("Partner")))
+        .andExpect(jsonPath("$.relationOther", is("Husband")))
+        .andExpect(jsonPath("$.registered", is("UNHCR")))
+        .andExpect(jsonPath("$.registeredNumber", is("123456")))
+        .andExpect(jsonPath("$.registeredNotes", is("Some dependant registration notes")))
+        .andExpect(jsonPath("$.healthConcern", is("No")))
+        .andExpect(jsonPath("$.healthNotes", is("Some dependant health notes")));
 
-    @Test
-    @DisplayName("delete candidate citizenship succeeds")
-    void deleteCitizenshipByIdSucceeds() throws Exception {
-        given(candidateDependantService
-                .deleteDependant(anyLong()))
-                .willReturn(candidate);
+    verify(candidateDependantService).createDependant(anyLong(),
+        any(CreateCandidateDependantRequest.class));
+  }
 
-        mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+  @Test
+  @DisplayName("delete candidate citizenship succeeds")
+  void deleteCitizenshipByIdSucceeds() throws Exception {
+    given(candidateDependantService
+        .deleteDependant(anyLong()))
+        .willReturn(candidate);
 
-                .andDo(print())
-                .andExpect(status().isOk());
+    mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-        verify(candidateDependantService).deleteDependant(anyLong());
-        verify(candidateService).save(candidate, true);
-    }
+        .andDo(print())
+        .andExpect(status().isOk());
 
+    verify(candidateDependantService).deleteDependant(anyLong());
+    verify(candidateService).save(candidate, true);
+  }
 }

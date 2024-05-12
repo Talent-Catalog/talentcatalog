@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Occupation;
@@ -42,6 +43,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -73,140 +75,152 @@ import org.springframework.test.web.servlet.MockMvc;
  */
 @WebMvcTest(CandidateOccupationAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CandidateOccupationAdminApiTest extends ApiTestBase {
 
-    private static final long CANDIDATE_ID = 99L;
+  private static final long CANDIDATE_ID = 99L;
 
-    private static final String BASE_PATH = "/api/admin/candidate-occupation";
-    private static final String GET_ALL_OCCUPATIONS_PATH = "/occupation";
-    private static final String GET_CANDIDATE_OCCUPATIONS_BY_ID_PATH = "/{id}/list";
+  private static final String BASE_PATH = "/api/admin/candidate-occupation";
+  private static final String GET_ALL_OCCUPATIONS_PATH = "/occupation";
+  private static final String GET_CANDIDATE_OCCUPATIONS_BY_ID_PATH = "/{id}/list";
 
-    private static final List<Occupation> occupationsList = AdminApiTestUtil.getListOfOccupations();
-    private static final CandidateOccupation candidateOccupation = AdminApiTestUtil.getCandidateOccupation();
-    private static final List<CandidateOccupation> candidateOccupationsList = AdminApiTestUtil.getListOfCandidateOccupations();
+  private static final List<Occupation> occupationsList = AdminApiTestUtil.getListOfOccupations();
+  private static final CandidateOccupation candidateOccupation = AdminApiTestUtil.getCandidateOccupation();
+  private static final List<CandidateOccupation> candidateOccupationsList = AdminApiTestUtil.getListOfCandidateOccupations();
 
-    @MockBean CandidateOccupationService candidateOccupationService;
+  @MockBean
+  CandidateOccupationService candidateOccupationService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateOccupationAdminApi candidateOccupationAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateOccupationAdminApi candidateOccupationAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateOccupationAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateOccupationAdminApi).isNotNull();
+  }
 
-    @Test
-    @DisplayName("get all occupations succeeds")
-    void getAllOccupationsSucceeds() throws Exception {
+  @Test
+  @DisplayName("get all occupations succeeds")
+  void getAllOccupationsSucceeds() throws Exception {
 
-        given(candidateOccupationService
-                .listOccupations())
-                .willReturn(occupationsList);
+    given(candidateOccupationService
+        .listOccupations())
+        .willReturn(occupationsList);
 
-        mockMvc.perform(get(BASE_PATH + GET_ALL_OCCUPATIONS_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH + GET_ALL_OCCUPATIONS_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$.[0].name", is("Builder")))
-                .andExpect(jsonPath("$.[1].name", is("Baker")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$.[0].name", is("Builder")))
+        .andExpect(jsonPath("$.[1].name", is("Baker")));
 
-        verify(candidateOccupationService).listOccupations();
-    }
+    verify(candidateOccupationService).listOccupations();
+  }
 
-    @Test
-    @DisplayName("get candidate occupations by id succeeds")
-    void getCandidateOccupationsByIdSucceeds() throws Exception {
+  @Test
+  @DisplayName("get candidate occupations by id succeeds")
+  void getCandidateOccupationsByIdSucceeds() throws Exception {
 
-        given(candidateOccupationService
-                .listCandidateOccupations(anyLong()))
-                .willReturn(candidateOccupationsList);
+    given(candidateOccupationService
+        .listCandidateOccupations(anyLong()))
+        .willReturn(candidateOccupationsList);
 
-        mockMvc.perform(get(BASE_PATH + GET_CANDIDATE_OCCUPATIONS_BY_ID_PATH.replace("{id}", String.valueOf(CANDIDATE_ID)))
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH + GET_CANDIDATE_OCCUPATIONS_BY_ID_PATH.replace("{id}",
+            String.valueOf(CANDIDATE_ID)))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$.[0].occupation.name", is("Software Engineer")))
-                .andExpect(jsonPath("$.[0].yearsExperience", is(10)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$.[0].occupation.name", is("Software Engineer")))
+        .andExpect(jsonPath("$.[0].yearsExperience", is(10)));
 
-        verify(candidateOccupationService).listCandidateOccupations(anyLong());
-    }
+    verify(candidateOccupationService).listCandidateOccupations(anyLong());
+  }
 
-    @Test
-    @DisplayName("create candidate occupation by candidate id succeeds")
-    void createCandidateOccupationByCandidateIdSucceeds() throws Exception {
-        CreateCandidateOccupationRequest request = new CreateCandidateOccupationRequest();
-        request.setOccupationId(1L);
-        request.setYearsExperience(10L);
+  @Test
+  @DisplayName("create candidate occupation by candidate id succeeds")
+  void createCandidateOccupationByCandidateIdSucceeds() throws Exception {
+    CreateCandidateOccupationRequest request = new CreateCandidateOccupationRequest();
+    request.setOccupationId(1L);
+    request.setYearsExperience(10L);
 
-        given(candidateOccupationService
-                .createCandidateOccupation(any(CreateCandidateOccupationRequest.class)))
-                .willReturn(candidateOccupation);
+    given(candidateOccupationService
+        .createCandidateOccupation(any(CreateCandidateOccupationRequest.class)))
+        .willReturn(candidateOccupation);
 
-        mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.occupation.name", is("Software Engineer")))
-                .andExpect(jsonPath("$.yearsExperience", is(10)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.occupation.name", is("Software Engineer")))
+        .andExpect(jsonPath("$.yearsExperience", is(10)));
 
-        verify(candidateOccupationService).createCandidateOccupation(any(CreateCandidateOccupationRequest.class));
-    }
+    verify(candidateOccupationService).createCandidateOccupation(
+        any(CreateCandidateOccupationRequest.class));
+  }
 
-    @Test
-    @DisplayName("update candidate occupation by id succeeds")
-    void updateCandidateOccupationByIdSucceeds() throws Exception {
-        UpdateCandidateOccupationRequest request = new UpdateCandidateOccupationRequest();
+  @Test
+  @DisplayName("update candidate occupation by id succeeds")
+  void updateCandidateOccupationByIdSucceeds() throws Exception {
+    UpdateCandidateOccupationRequest request = new UpdateCandidateOccupationRequest();
 
-        given(candidateOccupationService
-                .updateCandidateOccupation(any(UpdateCandidateOccupationRequest.class)))
-                .willReturn(candidateOccupation);
+    given(candidateOccupationService
+        .updateCandidateOccupation(any(UpdateCandidateOccupationRequest.class)))
+        .willReturn(candidateOccupation);
 
-        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.occupation.name", is("Software Engineer")))
-                .andExpect(jsonPath("$.yearsExperience", is(10)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.occupation.name", is("Software Engineer")))
+        .andExpect(jsonPath("$.yearsExperience", is(10)));
 
-        verify(candidateOccupationService).updateCandidateOccupation(any(UpdateCandidateOccupationRequest.class));
-    }
+    verify(candidateOccupationService).updateCandidateOccupation(
+        any(UpdateCandidateOccupationRequest.class));
+  }
 
-    @Test
-    @DisplayName("delete candidate occupation by id succeeds")
-    void deleteCandidateOccupationByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+  @Test
+  @DisplayName("delete candidate occupation by id succeeds")
+  void deleteCandidateOccupationByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-                .andExpect(status().isOk());
+        .andExpect(status().isOk());
 
-        verify(candidateOccupationService).deleteCandidateOccupation(CANDIDATE_ID);
-    }
+    verify(candidateOccupationService).deleteCandidateOccupation(CANDIDATE_ID);
+  }
 }

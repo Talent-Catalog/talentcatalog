@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateNote;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
@@ -45,6 +46,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -59,122 +61,131 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CandidateNoteAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CandidateNoteAdminApiTest extends ApiTestBase {
 
-    private static final long CANDIDATE_ID = 99L;
-    private static final String BASE_PATH = "/api/admin/candidate-note";
-    private static final String SEARCH_PATH = "/search";
+  private static final long CANDIDATE_ID = 99L;
+  private static final String BASE_PATH = "/api/admin/candidate-note";
+  private static final String SEARCH_PATH = "/search";
 
-    private static final CandidateNote candidateNote = AdminApiTestUtil.getCandidateNote();
+  private static final CandidateNote candidateNote = AdminApiTestUtil.getCandidateNote();
 
-    private final Page<CandidateNote> candidateNotesPage =
-            new PageImpl<>(
-                    List.of(candidateNote),
-                    PageRequest.of(0,10, Sort.unsorted()),
-                    1
-            );
+  private final Page<CandidateNote> candidateNotesPage =
+      new PageImpl<>(
+          List.of(candidateNote),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
 
-    @MockBean CandidateNoteService candidateNoteService;
+  @MockBean
+  CandidateNoteService candidateNoteService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateNoteAdminApi candidateNoteAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateNoteAdminApi candidateNoteAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateNoteAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateNoteAdminApi).isNotNull();
+  }
 
-    @Test
-    @DisplayName("search candidate notes succeeds")
-    void searchCandidateNotesSucceeds() throws Exception {
-        SearchCandidateNotesRequest request = new SearchCandidateNotesRequest();
+  @Test
+  @DisplayName("search candidate notes succeeds")
+  void searchCandidateNotesSucceeds() throws Exception {
+    SearchCandidateNotesRequest request = new SearchCandidateNotesRequest();
 
-        given(candidateNoteService
-                .searchCandidateNotes(any(SearchCandidateNotesRequest.class)))
-                .willReturn(candidateNotesPage);
+    given(candidateNoteService
+        .searchCandidateNotes(any(SearchCandidateNotesRequest.class)))
+        .willReturn(candidateNotesPage);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.totalElements", is(1)))
-                .andExpect(jsonPath("$.totalPages", is(1)))
-                .andExpect(jsonPath("$.number", is(0)))
-                .andExpect(jsonPath("$.hasNext", is(false)))
-                .andExpect(jsonPath("$.hasPrevious", is(false)))
-                .andExpect(jsonPath("$.content", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].noteType", is("candidate")))
-                .andExpect(jsonPath("$.content.[0].comment", is("Some comments")))
-                .andExpect(jsonPath("$.content.[0].title", is("A title")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].noteType", is("candidate")))
+        .andExpect(jsonPath("$.content.[0].comment", is("Some comments")))
+        .andExpect(jsonPath("$.content.[0].title", is("A title")));
 
-        verify(candidateNoteService).searchCandidateNotes(any(SearchCandidateNotesRequest.class));
-    }
+    verify(candidateNoteService).searchCandidateNotes(any(SearchCandidateNotesRequest.class));
+  }
 
-    @Test
-    @DisplayName("create candidate note succeeds")
-    void createCandidateNoteSucceeds() throws Exception {
-        CreateCandidateNoteRequest request = new CreateCandidateNoteRequest(
-                CANDIDATE_ID, "A title", "Some Comments"
-        );
+  @Test
+  @DisplayName("create candidate note succeeds")
+  void createCandidateNoteSucceeds() throws Exception {
+    CreateCandidateNoteRequest request = new CreateCandidateNoteRequest(
+        CANDIDATE_ID, "A title", "Some Comments"
+    );
 
-        given(candidateNoteService
-                .createCandidateNote(any(CreateCandidateNoteRequest.class)))
-                .willReturn(candidateNote);
+    given(candidateNoteService
+        .createCandidateNote(any(CreateCandidateNoteRequest.class)))
+        .willReturn(candidateNote);
 
-        mockMvc.perform(post(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.noteType", is("candidate")))
-                .andExpect(jsonPath("$.comment", is("Some comments")))
-                .andExpect(jsonPath("$.title", is("A title")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.noteType", is("candidate")))
+        .andExpect(jsonPath("$.comment", is("Some comments")))
+        .andExpect(jsonPath("$.title", is("A title")));
 
-        verify(candidateNoteService).createCandidateNote(any(CreateCandidateNoteRequest.class));
-    }
+    verify(candidateNoteService).createCandidateNote(any(CreateCandidateNoteRequest.class));
+  }
 
-    @Test
-    @DisplayName("update candidate note by id succeeds")
-    void updateCandidateNoteByIdSucceeds() throws Exception {
-        UpdateCandidateNoteRequest request = new UpdateCandidateNoteRequest();
-        request.setTitle("A title");
-        request.setComment("A comment");
+  @Test
+  @DisplayName("update candidate note by id succeeds")
+  void updateCandidateNoteByIdSucceeds() throws Exception {
+    UpdateCandidateNoteRequest request = new UpdateCandidateNoteRequest();
+    request.setTitle("A title");
+    request.setComment("A comment");
 
-        given(candidateNoteService
-                .updateCandidateNote(anyLong(), any(UpdateCandidateNoteRequest.class)))
-                .willReturn(candidateNote);
+    given(candidateNoteService
+        .updateCandidateNote(anyLong(), any(UpdateCandidateNoteRequest.class)))
+        .willReturn(candidateNote);
 
-        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.noteType", is("candidate")))
-                .andExpect(jsonPath("$.comment", is("Some comments")))
-                .andExpect(jsonPath("$.title", is("A title")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.noteType", is("candidate")))
+        .andExpect(jsonPath("$.comment", is("Some comments")))
+        .andExpect(jsonPath("$.title", is("A title")));
 
-        verify(candidateNoteService).updateCandidateNote(anyLong(), any(UpdateCandidateNoteRequest.class));
-    }
+    verify(candidateNoteService).updateCandidateNote(anyLong(),
+        any(UpdateCandidateNoteRequest.class));
+  }
 
 }

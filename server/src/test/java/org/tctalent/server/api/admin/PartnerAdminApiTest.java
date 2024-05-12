@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -49,6 +50,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -69,7 +71,9 @@ import org.tctalent.server.service.db.UserService;
  */
 @WebMvcTest(PartnerAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class PartnerAdminApiTest extends ApiTestBase {
+
   private static final long PARTNER_ID = 1L;
 
   private static final String BASE_PATH = "/api/admin/partner";
@@ -82,18 +86,25 @@ class PartnerAdminApiTest extends ApiTestBase {
   private final Page<PartnerImpl> partnerPage =
       new PageImpl<>(
           partnerList,
-          PageRequest.of(0,10, Sort.unsorted()),
+          PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
 
-  @MockBean EmployerService employerService;
-  @MockBean PartnerService partnerService;
-  @MockBean JobService jobService;
-  @MockBean UserService userService;
+  @MockBean
+  EmployerService employerService;
+  @MockBean
+  PartnerService partnerService;
+  @MockBean
+  JobService jobService;
+  @MockBean
+  UserService userService;
 
-  @Autowired MockMvc mockMvc;
-  @Autowired ObjectMapper objectMapper;
-  @Autowired PartnerAdminApi partnerAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  PartnerAdminApi partnerAdminApi;
 
   @BeforeEach
   void setUp() {
@@ -117,6 +128,7 @@ class PartnerAdminApiTest extends ApiTestBase {
         .willReturn(partner);
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -226,6 +238,7 @@ class PartnerAdminApiTest extends ApiTestBase {
         .willReturn(partnerPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -246,7 +259,8 @@ class PartnerAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.content[0].sourcePartner", is(true)))
         .andExpect(jsonPath("$.content[0].logo", is("logo_url")))
         .andExpect(jsonPath("$.content[0].websiteUrl", is("website_url")))
-        .andExpect(jsonPath("$.content[0].registrationLandingPage", is("registration_landing_page")))
+        .andExpect(
+            jsonPath("$.content[0].registrationLandingPage", is("registration_landing_page")))
         .andExpect(jsonPath("$.content[0].notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.content[0].status", is("active")))
         .andExpect(jsonPath("$.content[1].name", is("TC Partner 2")))
@@ -255,7 +269,8 @@ class PartnerAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.content[1].sourcePartner", is(true)))
         .andExpect(jsonPath("$.content[1].logo", is("logo_url")))
         .andExpect(jsonPath("$.content[1].websiteUrl", is("website_url")))
-        .andExpect(jsonPath("$.content[1].registrationLandingPage", is("registration_landing_page")))
+        .andExpect(
+            jsonPath("$.content[1].registrationLandingPage", is("registration_landing_page")))
         .andExpect(jsonPath("$.content[1].notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.content[1].status", is("active")))
         .andExpect(jsonPath("$.content[2].name", is("TC Partner 3")))
@@ -264,7 +279,8 @@ class PartnerAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.content[2].sourcePartner", is(true)))
         .andExpect(jsonPath("$.content[2].logo", is("logo_url")))
         .andExpect(jsonPath("$.content[2].websiteUrl", is("website_url")))
-        .andExpect(jsonPath("$.content[2].registrationLandingPage", is("registration_landing_page")))
+        .andExpect(
+            jsonPath("$.content[2].registrationLandingPage", is("registration_landing_page")))
         .andExpect(jsonPath("$.content[2].notificationEmail", is("notification@email.address")))
         .andExpect(jsonPath("$.content[2].status", is("active")));
 
@@ -286,6 +302,7 @@ class PartnerAdminApiTest extends ApiTestBase {
         .willReturn(partner);
 
     mockMvc.perform(put(BASE_PATH + "/" + PARTNER_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -333,6 +350,7 @@ class PartnerAdminApiTest extends ApiTestBase {
         .willReturn(getUser());
 
     mockMvc.perform(put(BASE_PATH + "/" + partnerId + UPDATE_JOB_CONTACT_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -355,7 +373,8 @@ class PartnerAdminApiTest extends ApiTestBase {
     verify(partnerService).getPartner(anyLong());
     verify(jobService).getJob(anyLong());
     verify(userService).getUser(anyLong());
-    verify(partnerService).updateJobContact(any(PartnerImpl.class), any(SalesforceJobOpp.class), any(User.class));
+    verify(partnerService).updateJobContact(any(PartnerImpl.class), any(SalesforceJobOpp.class),
+        any(User.class));
 
     assertEquals(jobId, partner.getContextJobId());
   }

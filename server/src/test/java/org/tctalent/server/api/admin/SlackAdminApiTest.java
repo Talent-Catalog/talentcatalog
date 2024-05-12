@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -37,6 +38,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.request.job.JobInfoForSlackPost;
 import org.tctalent.server.request.opportunity.PostJobToSlackRequest;
@@ -48,75 +50,79 @@ import org.tctalent.server.service.db.SlackService;
  */
 @WebMvcTest(SlackAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class SlackAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/slack";
-    private static final String POST_JOB_PATH = "/post-job";
-    private static final String testSlackChannelUrl = "https://slack.channel";
+
+  private static final String BASE_PATH = "/api/admin/slack";
+  private static final String POST_JOB_PATH = "/post-job";
+  private static final String testSlackChannelUrl = "https://slack.channel";
 
 
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper objectMapper;
-    @Autowired
-    SlackAdminApi slackAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  SlackAdminApi slackAdminApi;
 
-    @MockBean
-    SlackService slackService;
-    @MockBean
-    JobService jobService;
+  @MockBean
+  SlackService slackService;
+  @MockBean
+  JobService jobService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    void postJobFromRequest() throws Exception {
-        PostJobToSlackRequest request = new PostJobToSlackRequest();
+  @Test
+  void postJobFromRequest() throws Exception {
+    PostJobToSlackRequest request = new PostJobToSlackRequest();
 
-        given(slackService.postJob(any(PostJobToSlackRequest.class)))
-            .willReturn(testSlackChannelUrl);
+    given(slackService.postJob(any(PostJobToSlackRequest.class)))
+        .willReturn(testSlackChannelUrl);
 
-        mockMvc.perform(post(BASE_PATH + POST_JOB_PATH)
-                .header("Authorization", "Bearer " + "jwt-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + POST_JOB_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.slackChannelUrl", is(testSlackChannelUrl)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.slackChannelUrl", is(testSlackChannelUrl)));
 
-        verify(slackService).postJob(any(PostJobToSlackRequest.class));
-    }
+    verify(slackService).postJob(any(PostJobToSlackRequest.class));
+  }
 
-    @Test
-    void postJobFromJobIdAndLink() throws Exception {
+  @Test
+  void postJobFromJobIdAndLink() throws Exception {
 
-        given(slackService.postJob(any(JobInfoForSlackPost.class)))
-            .willReturn(testSlackChannelUrl);
+    given(slackService.postJob(any(JobInfoForSlackPost.class)))
+        .willReturn(testSlackChannelUrl);
 
-        JobInfoForSlackPost testInfo = new JobInfoForSlackPost();
-        given(jobService.extractJobInfoForSlack(anyLong(), anyString()))
-            .willReturn(testInfo);
+    JobInfoForSlackPost testInfo = new JobInfoForSlackPost();
+    given(jobService.extractJobInfoForSlack(anyLong(), anyString()))
+        .willReturn(testInfo);
 
-        String tcLink = "https://tctalent.org/admin-portal/job/123";
+    String tcLink = "https://tctalent.org/admin-portal/job/123";
 
-        mockMvc.perform(post(BASE_PATH + "/123" + POST_JOB_PATH)
-                .header("Authorization", "Bearer " + "jwt-token")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .content(tcLink)
-                .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + "/123" + POST_JOB_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .content(tcLink)
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.slackChannelUrl", is(testSlackChannelUrl)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.slackChannelUrl", is(testSlackChannelUrl)));
 
-        verify(slackService).postJob(any(JobInfoForSlackPost.class));
-    }
+    verify(slackService).postJob(any(JobInfoForSlackPost.class));
+  }
 }

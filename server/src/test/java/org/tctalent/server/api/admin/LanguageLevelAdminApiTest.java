@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -51,6 +52,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Status;
@@ -68,216 +70,231 @@ import org.tctalent.server.service.db.LanguageService;
  */
 @WebMvcTest(LanguageLevelAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class LanguageLevelAdminApiTest extends ApiTestBase {
 
-    private static final long LANGUAGE_LEVEL_ID = 99L;
+  private static final long LANGUAGE_LEVEL_ID = 99L;
 
-    private static final String BASE_PATH = "/api/admin/language-level";
-    private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
-    private static final String SEARCH_PATH = "/search";
+  private static final String BASE_PATH = "/api/admin/language-level";
+  private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
+  private static final String SEARCH_PATH = "/search";
 
-    private static final List<LanguageLevel> languageLevelList = AdminApiTestUtil.getLanguageLevelList();
-    private static final LanguageLevel languageLevel = AdminApiTestUtil.getLanguageLevel();
-    private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
+  private static final List<LanguageLevel> languageLevelList = AdminApiTestUtil.getLanguageLevelList();
+  private static final LanguageLevel languageLevel = AdminApiTestUtil.getLanguageLevel();
+  private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
 
-    private final Page<LanguageLevel> languageLevelPage =
-            new PageImpl<>(
-                    List.of(languageLevel),
-                    PageRequest.of(0,10, Sort.unsorted()),
-                    1
-            );
+  private final Page<LanguageLevel> languageLevelPage =
+      new PageImpl<>(
+          List.of(languageLevel),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
 
-    @MockBean LanguageLevelService languageLevelService;
-    @MockBean LanguageService languageService;
+  @MockBean
+  LanguageLevelService languageLevelService;
+  @MockBean
+  LanguageService languageService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired LanguageLevelAdminApi languageLevelAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  LanguageLevelAdminApi languageLevelAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(languageLevelAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(languageLevelAdminApi).isNotNull();
+  }
 
-    @Test
-    @DisplayName("add system language translation succeeds")
-    void addSystemLanguageTranslationsSucceeds() throws Exception {
-        String langCode = "Spanish";
-        MockMultipartFile file = new MockMultipartFile("trans", "trans.txt", "text/plain", "some translations".getBytes());
+  @Test
+  @DisplayName("add system language translation succeeds")
+  void addSystemLanguageTranslationsSucceeds() throws Exception {
+    String langCode = "Spanish";
+    MockMultipartFile file = new MockMultipartFile("trans", "trans.txt", "text/plain",
+        "some translations".getBytes());
 
-        given(languageService
-                .addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class)))
-                .willReturn(systemLanguage);
+    given(languageService
+        .addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class)))
+        .willReturn(systemLanguage);
 
-        mockMvc.perform(multipart(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
-                        .file("file", file.getBytes())
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(
+            multipart(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
+                .file("file", file.getBytes())
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.language", is("Spanish")))
-                .andExpect(jsonPath("$.label", is("spanish")))
-                .andExpect(jsonPath("$.rtl", is(false)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(1)))
+        .andExpect(jsonPath("$.language", is("Spanish")))
+        .andExpect(jsonPath("$.label", is("spanish")))
+        .andExpect(jsonPath("$.rtl", is(false)));
 
-        verify(languageService).addSystemLanguageTranslations(anyString(), anyString(), any(InputStream.class));
-    }
+    verify(languageService).addSystemLanguageTranslations(anyString(), anyString(),
+        any(InputStream.class));
+  }
 
-    @Test
-    @DisplayName("list all language levels succeeds")
-    void listAllLanguageLevelsSucceeds() throws Exception {
+  @Test
+  @DisplayName("list all language levels succeeds")
+  void listAllLanguageLevelsSucceeds() throws Exception {
 
-        given(languageLevelService
-                .listLanguageLevels())
-                .willReturn(languageLevelList);
+    given(languageLevelService
+        .listLanguageLevels())
+        .willReturn(languageLevelList);
 
-        mockMvc.perform(get(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$.[0].name", is("Excellent")))
-                .andExpect(jsonPath("$.[0].status", is("active")))
-                .andExpect(jsonPath("$.[0].level", is(1)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$.[0].name", is("Excellent")))
+        .andExpect(jsonPath("$.[0].status", is("active")))
+        .andExpect(jsonPath("$.[0].level", is(1)));
 
-        verify(languageLevelService).listLanguageLevels();
-    }
+    verify(languageLevelService).listLanguageLevels();
+  }
 
-    @Test
-    @DisplayName("search paged language levels succeeds")
-    void searchPagedSucceeds() throws Exception {
-        SearchLanguageLevelRequest request = new SearchLanguageLevelRequest();
-        request.setKeyword("exc");
-        request.setStatus(Status.active);
-        request.setLanguage("english");
+  @Test
+  @DisplayName("search paged language levels succeeds")
+  void searchPagedSucceeds() throws Exception {
+    SearchLanguageLevelRequest request = new SearchLanguageLevelRequest();
+    request.setKeyword("exc");
+    request.setStatus(Status.active);
+    request.setLanguage("english");
 
-        given(languageLevelService
-                .searchLanguageLevels(any(SearchLanguageLevelRequest.class)))
-                .willReturn(languageLevelPage);
+    given(languageLevelService
+        .searchLanguageLevels(any(SearchLanguageLevelRequest.class)))
+        .willReturn(languageLevelPage);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.totalElements", is(1)))
-                .andExpect(jsonPath("$.totalPages", is(1)))
-                .andExpect(jsonPath("$.number", is(0)))
-                .andExpect(jsonPath("$.hasNext", is(false)))
-                .andExpect(jsonPath("$.hasPrevious", is(false)))
-                .andExpect(jsonPath("$.content", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].name", is("Excellent")))
-                .andExpect(jsonPath("$.content.[0].status", is("active")))
-                .andExpect(jsonPath("$.content.[0].level", is(1)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Excellent")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].level", is(1)));
 
-        verify(languageLevelService).searchLanguageLevels(any(SearchLanguageLevelRequest.class));
-    }
+    verify(languageLevelService).searchLanguageLevels(any(SearchLanguageLevelRequest.class));
+  }
 
-    @Test
-    @DisplayName("get language level by id succeeds")
-    void getLanguageLevelByIdSucceeds() throws Exception {
+  @Test
+  @DisplayName("get language level by id succeeds")
+  void getLanguageLevelByIdSucceeds() throws Exception {
 
-        given(languageLevelService
-                .getLanguageLevel(anyLong()))
-                .willReturn(languageLevel);
+    given(languageLevelService
+        .getLanguageLevel(anyLong()))
+        .willReturn(languageLevel);
 
-        mockMvc.perform(get(BASE_PATH + "/" + LANGUAGE_LEVEL_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH + "/" + LANGUAGE_LEVEL_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Excellent")))
-                .andExpect(jsonPath("$.status", is("active")))
-                .andExpect(jsonPath("$.level", is(1)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.name", is("Excellent")))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.level", is(1)));
 
-        verify(languageLevelService).getLanguageLevel(anyLong());
-    }
+    verify(languageLevelService).getLanguageLevel(anyLong());
+  }
 
-    @Test
-    @DisplayName("create language level succeeds")
-    void createLanguageLevelSucceeds() throws Exception {
-        CreateLanguageLevelRequest request = new CreateLanguageLevelRequest();
-        request.setName("Excellent");
-        request.setStatus(Status.active);
-        request.setLevel(1);
+  @Test
+  @DisplayName("create language level succeeds")
+  void createLanguageLevelSucceeds() throws Exception {
+    CreateLanguageLevelRequest request = new CreateLanguageLevelRequest();
+    request.setName("Excellent");
+    request.setStatus(Status.active);
+    request.setLevel(1);
 
-        given(languageLevelService
-                .createLanguageLevel(any(CreateLanguageLevelRequest.class)))
-                .willReturn(languageLevel);
+    given(languageLevelService
+        .createLanguageLevel(any(CreateLanguageLevelRequest.class)))
+        .willReturn(languageLevel);
 
-        mockMvc.perform(post(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Excellent")))
-                .andExpect(jsonPath("$.status", is("active")))
-                .andExpect(jsonPath("$.level", is(1)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.name", is("Excellent")))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.level", is(1)));
 
-        verify(languageLevelService).createLanguageLevel(any(CreateLanguageLevelRequest.class));
-    }
+    verify(languageLevelService).createLanguageLevel(any(CreateLanguageLevelRequest.class));
+  }
 
-    @Test
-    @DisplayName("update language level by id succeeds")
-    void updateLanguageLevelByIdSucceeds() throws Exception {
-        UpdateLanguageLevelRequest request = new UpdateLanguageLevelRequest();
-        request.setName("Excellent");
-        request.setStatus(Status.active);
-        request.setLevel(1);
+  @Test
+  @DisplayName("update language level by id succeeds")
+  void updateLanguageLevelByIdSucceeds() throws Exception {
+    UpdateLanguageLevelRequest request = new UpdateLanguageLevelRequest();
+    request.setName("Excellent");
+    request.setStatus(Status.active);
+    request.setLevel(1);
 
-        given(languageLevelService
-                .updateLanguageLevel(anyLong(), any(UpdateLanguageLevelRequest.class)))
-                .willReturn(languageLevel);
+    given(languageLevelService
+        .updateLanguageLevel(anyLong(), any(UpdateLanguageLevelRequest.class)))
+        .willReturn(languageLevel);
 
-        mockMvc.perform(put(BASE_PATH + "/" + LANGUAGE_LEVEL_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(put(BASE_PATH + "/" + LANGUAGE_LEVEL_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Excellent")))
-                .andExpect(jsonPath("$.status", is("active")))
-                .andExpect(jsonPath("$.level", is(1)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.name", is("Excellent")))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.level", is(1)));
 
-        verify(languageLevelService).updateLanguageLevel(anyLong(), any(UpdateLanguageLevelRequest.class));
-    }
+    verify(languageLevelService).updateLanguageLevel(anyLong(),
+        any(UpdateLanguageLevelRequest.class));
+  }
 
-    @Test
-    @DisplayName("delete language level by id succeeds")
-    void deleteLanguageLevelByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + LANGUAGE_LEVEL_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+  @Test
+  @DisplayName("delete language level by id succeeds")
+  void deleteLanguageLevelByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + LANGUAGE_LEVEL_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-                .andExpect(status().isOk());
+        .andExpect(status().isOk());
 
-        verify(languageLevelService).deleteLanguageLevel(anyLong());
-    }
+    verify(languageLevelService).deleteLanguageLevel(anyLong());
+  }
 }

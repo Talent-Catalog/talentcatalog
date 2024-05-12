@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -47,6 +48,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
@@ -61,6 +63,7 @@ import org.tctalent.server.service.db.CountryService;
  */
 @WebMvcTest(CountryAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CountryAdminApiTest extends ApiTestBase {
 
   private static final long COUNTRY_ID = 465L;
@@ -75,15 +78,19 @@ class CountryAdminApiTest extends ApiTestBase {
   private final Page<Country> countryPage =
       new PageImpl<>(
           countries,
-          PageRequest.of(0,10, Sort.unsorted()),
+          PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
 
-  @MockBean CountryService countryService;
+  @MockBean
+  CountryService countryService;
 
-  @Autowired MockMvc mockMvc;
-  @Autowired ObjectMapper objectMapper;
-  @Autowired CountryAdminApi countryAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CountryAdminApi countryAdminApi;
 
   @BeforeEach
   void setUp() {
@@ -173,7 +180,6 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[2].name", is("Palestine")))
         .andExpect(jsonPath("$[2].status", is("active")));
 
-
     verify(countryService).getTBBDestinations();
   }
 
@@ -187,6 +193,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(countryPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -245,6 +252,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(new Country("Ukraine", Status.active));
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -272,6 +280,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(new Country("Ukraine", Status.active));
 
     mockMvc.perform(put(BASE_PATH + "/" + COUNTRY_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -296,6 +305,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + COUNTRY_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 

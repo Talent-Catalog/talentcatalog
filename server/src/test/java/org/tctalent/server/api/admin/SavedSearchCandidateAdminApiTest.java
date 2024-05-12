@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -44,6 +45,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
@@ -59,6 +61,7 @@ import org.tctalent.server.service.db.UserService;
 
 @WebMvcTest(SavedSearchCandidateAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   private static final String BASE_PATH = "/api/admin/saved-search-candidate";
   private static final String IS_EMPTY_PATH = "/{id}/is-empty";
@@ -102,6 +105,7 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
         .willReturn(candidatePage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH.replace("{id}", Long.toString(SAVED_SEARCH_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -145,6 +149,7 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
     SavedSearchGetRequest request = new SavedSearchGetRequest();
 
     mockMvc.perform(post(BASE_PATH + EXPORT_CSV_PATH.replace("{id}", Long.toString(SAVED_SEARCH_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))

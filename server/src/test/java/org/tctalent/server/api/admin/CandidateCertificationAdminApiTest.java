@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
@@ -41,6 +42,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -57,114 +59,126 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CandidateCertificationAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CandidateCertificationAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/candidate-certification";
-    private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
-    private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateCertification candidateCertification = AdminApiTestUtil.getCandidateCertification();
-    private final List<CandidateCertification> candidateCertificationList = AdminApiTestUtil.getListOfCandidateCertifications();
+  private static final String BASE_PATH = "/api/admin/candidate-certification";
+  private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
+  private static final long CANDIDATE_ID = 99L;
 
-    @MockBean CandidateCertificationService candidateCertificationService;
+  private final CandidateCertification candidateCertification = AdminApiTestUtil.getCandidateCertification();
+  private final List<CandidateCertification> candidateCertificationList = AdminApiTestUtil.getListOfCandidateCertifications();
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateCertificationAdminApi candidateCertificationAdminApi;
+  @MockBean
+  CandidateCertificationService candidateCertificationService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateCertificationAdminApi candidateCertificationAdminApi;
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateCertificationAdminApi).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    @DisplayName("get list of certifications by id succeeds")
-    void getCertificationListByIdSucceeds() throws Exception {
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateCertificationAdminApi).isNotNull();
+  }
 
-        given(candidateCertificationService
-                .list(anyLong()))
-                .willReturn(candidateCertificationList);
+  @Test
+  @DisplayName("get list of certifications by id succeeds")
+  void getCertificationListByIdSucceeds() throws Exception {
 
-        mockMvc.perform(get(BASE_PATH + GET_CERTIFICATION_LIST_BY_ID_PATH.replace("{id}", String.valueOf(CANDIDATE_ID)))
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateCertificationService
+        .list(anyLong()))
+        .willReturn(candidateCertificationList);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$.[0].institution", is("Cambridge")))
-                .andExpect(jsonPath("$.[0].dateCompleted", is("1998-05-01")))
-                .andExpect(jsonPath("$.[0].name", is("BA")));
+    mockMvc.perform(get(BASE_PATH + GET_CERTIFICATION_LIST_BY_ID_PATH.replace("{id}",
+            String.valueOf(CANDIDATE_ID)))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateCertificationService).list(CANDIDATE_ID);
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$.[0].institution", is("Cambridge")))
+        .andExpect(jsonPath("$.[0].dateCompleted", is("1998-05-01")))
+        .andExpect(jsonPath("$.[0].name", is("BA")));
 
-    @Test
-    @DisplayName("create candidate certification succeeds")
-    void createCertificationSucceeds() throws Exception {
-        CreateCandidateCertificationRequest request = new CreateCandidateCertificationRequest();
+    verify(candidateCertificationService).list(CANDIDATE_ID);
+  }
 
-        given(candidateCertificationService
-                .createCandidateCertification(any(CreateCandidateCertificationRequest.class)))
-                .willReturn(candidateCertification);
+  @Test
+  @DisplayName("create candidate certification succeeds")
+  void createCertificationSucceeds() throws Exception {
+    CreateCandidateCertificationRequest request = new CreateCandidateCertificationRequest();
 
-        mockMvc.perform(post(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateCertificationService
+        .createCandidateCertification(any(CreateCandidateCertificationRequest.class)))
+        .willReturn(candidateCertification);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.institution", is("Cambridge")))
-                .andExpect(jsonPath("$.dateCompleted", is("1998-05-01")))
-                .andExpect(jsonPath("$.name", is("BA")));
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateCertificationService).createCandidateCertification(any(CreateCandidateCertificationRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.institution", is("Cambridge")))
+        .andExpect(jsonPath("$.dateCompleted", is("1998-05-01")))
+        .andExpect(jsonPath("$.name", is("BA")));
 
-    @Test
-    @DisplayName("update candidate certification succeeds")
-    void updateCertificationSucceeds() throws Exception {
-        UpdateCandidateCertificationRequest request = new UpdateCandidateCertificationRequest();
+    verify(candidateCertificationService).createCandidateCertification(
+        any(CreateCandidateCertificationRequest.class));
+  }
 
-        given(candidateCertificationService
-                .updateCandidateCertification(any(UpdateCandidateCertificationRequest.class)))
-                .willReturn(candidateCertification);
+  @Test
+  @DisplayName("update candidate certification succeeds")
+  void updateCertificationSucceeds() throws Exception {
+    UpdateCandidateCertificationRequest request = new UpdateCandidateCertificationRequest();
 
-        mockMvc.perform(put(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateCertificationService
+        .updateCandidateCertification(any(UpdateCandidateCertificationRequest.class)))
+        .willReturn(candidateCertification);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.institution", is("Cambridge")))
-                .andExpect(jsonPath("$.dateCompleted", is("1998-05-01")))
-                .andExpect(jsonPath("$.name", is("BA")));
+    mockMvc.perform(put(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateCertificationService).updateCandidateCertification(any(UpdateCandidateCertificationRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.institution", is("Cambridge")))
+        .andExpect(jsonPath("$.dateCompleted", is("1998-05-01")))
+        .andExpect(jsonPath("$.name", is("BA")));
 
-    @Test
-    @DisplayName("delete candidate certification by id succeeds")
-    void deleteCertificationByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+    verify(candidateCertificationService).updateCandidateCertification(
+        any(UpdateCandidateCertificationRequest.class));
+  }
 
-                .andExpect(status().isOk());
+  @Test
+  @DisplayName("delete candidate certification by id succeeds")
+  void deleteCertificationByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-        verify(candidateCertificationService).deleteCandidateCertification(anyLong());
-    }
+        .andExpect(status().isOk());
+
+    verify(candidateCertificationService).deleteCandidateCertification(anyLong());
+  }
 }

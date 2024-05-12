@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,21 +30,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class SavedListAdminApiWebLayerTest {
-    @Autowired
-    private MockMvc mockMvc;
 
-//    @Test
-    public void shouldBeRejectedWithAuthorizationError() throws Exception {
+  @Autowired
+  private MockMvc mockMvc;
 
-        this.mockMvc.perform(
-                post("/api/admin/saved-list")
-                        .param("name","TestList")
-                        .param("fixed", "false")
+  //    @Test
+  public void shouldBeRejectedWithAuthorizationError() throws Exception {
+
+    this.mockMvc.perform(
+            post("/api/admin/saved-list")
+                .param("name", "TestList")
+                .param("fixed", "false")
+                .with(csrf())
         )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("TestList"))
-                .andExpect(jsonPath("$.fixed").value("false"))
-                .andExpect(jsonPath("$.id").isNumber());
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("TestList"))
+        .andExpect(jsonPath("$.fixed").value("false"))
+        .andExpect(jsonPath("$.id").isNumber());
+  }
 }

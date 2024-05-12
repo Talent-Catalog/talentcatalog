@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.Status;
@@ -49,6 +50,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -65,237 +67,248 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(LanguageAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class LanguageAdminApiTest extends ApiTestBase {
 
-    private static final long LANGUAGE_ID = 99L;
+  private static final long LANGUAGE_ID = 99L;
 
-    private static final String BASE_PATH = "/api/admin/language";
-    private static final String GET_SYSTEM_LANGUAGES = "/system";
-    private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
-    private static final String SEARCH_PATH = "/search";
+  private static final String BASE_PATH = "/api/admin/language";
+  private static final String GET_SYSTEM_LANGUAGES = "/system";
+  private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
+  private static final String SEARCH_PATH = "/search";
 
-    private static final List<Language> languageList = AdminApiTestUtil.getLanguageList();
-    private static final Language language = AdminApiTestUtil.getLanguage();
-    private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
-    private static final List<SystemLanguage> systemLanguageList = AdminApiTestUtil.getSystemLanguageList();
+  private static final List<Language> languageList = AdminApiTestUtil.getLanguageList();
+  private static final Language language = AdminApiTestUtil.getLanguage();
+  private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
+  private static final List<SystemLanguage> systemLanguageList = AdminApiTestUtil.getSystemLanguageList();
 
-    private final Page<Language> languagePage =
-            new PageImpl<>(
-                    List.of(language),
-                    PageRequest.of(0,10, Sort.unsorted()),
-                    1
-            );
+  private final Page<Language> languagePage =
+      new PageImpl<>(
+          List.of(language),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
 
-    @MockBean LanguageService languageService;
+  @MockBean
+  LanguageService languageService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired LanguageAdminApi languageAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  LanguageAdminApi languageAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(languageAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(languageAdminApi).isNotNull();
+  }
 
-    @Test
-    @DisplayName("list all languages succeeds")
-    void listAllLanguagesSucceeds() throws Exception {
+  @Test
+  @DisplayName("list all languages succeeds")
+  void listAllLanguagesSucceeds() throws Exception {
 
-        given(languageService
-                .listLanguages())
-                .willReturn(languageList);
+    given(languageService
+        .listLanguages())
+        .willReturn(languageList);
 
-        mockMvc.perform(get(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$.[0].name", is("Arabic")))
-                .andExpect(jsonPath("$.[0].status", is("active")))
-                .andExpect(jsonPath("$.[0].id", is(99)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$.[0].name", is("Arabic")))
+        .andExpect(jsonPath("$.[0].status", is("active")))
+        .andExpect(jsonPath("$.[0].id", is(99)));
 
-        verify(languageService).listLanguages();
-    }
+    verify(languageService).listLanguages();
+  }
 
-    @Test
-    @DisplayName("get system languages succeeds")
-    void getSystemLanguagesSucceeds() throws Exception {
-        given(languageService
-                .listSystemLanguages())
-                .willReturn(systemLanguageList);
+  @Test
+  @DisplayName("get system languages succeeds")
+  void getSystemLanguagesSucceeds() throws Exception {
+    given(languageService
+        .listSystemLanguages())
+        .willReturn(systemLanguageList);
 
-        mockMvc.perform(get(BASE_PATH + GET_SYSTEM_LANGUAGES)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH + GET_SYSTEM_LANGUAGES)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$.[0].language", is("Spanish")))
-                .andExpect(jsonPath("$.[0].label", is("spanish")))
-                .andExpect(jsonPath("$.[0].rtl", is(false)))
-                .andExpect(jsonPath("$.[0].id", is(1)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$.[0].language", is("Spanish")))
+        .andExpect(jsonPath("$.[0].label", is("spanish")))
+        .andExpect(jsonPath("$.[0].rtl", is(false)))
+        .andExpect(jsonPath("$.[0].id", is(1)));
 
-        verify(languageService).listSystemLanguages();
-    }
+    verify(languageService).listSystemLanguages();
+  }
 
-    @Test
-    @DisplayName("search paged language succeeds")
-    void searchPagedSucceeds() throws Exception {
-        SearchLanguageRequest request = new SearchLanguageRequest();
-        request.setKeyword("ara");
-        request.setStatus(Status.active);
-        request.setLanguage("english");
+  @Test
+  @DisplayName("search paged language succeeds")
+  void searchPagedSucceeds() throws Exception {
+    SearchLanguageRequest request = new SearchLanguageRequest();
+    request.setKeyword("ara");
+    request.setStatus(Status.active);
+    request.setLanguage("english");
 
-        given(languageService
-                .searchLanguages(any(SearchLanguageRequest.class)))
-                .willReturn(languagePage);
+    given(languageService
+        .searchLanguages(any(SearchLanguageRequest.class)))
+        .willReturn(languagePage);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.totalElements", is(1)))
-                .andExpect(jsonPath("$.totalPages", is(1)))
-                .andExpect(jsonPath("$.number", is(0)))
-                .andExpect(jsonPath("$.hasNext", is(false)))
-                .andExpect(jsonPath("$.hasPrevious", is(false)))
-                .andExpect(jsonPath("$.content", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].name", is("Arabic")))
-                .andExpect(jsonPath("$.content.[0].status", is("active")))
-                .andExpect(jsonPath("$.content.[0].id", is(99)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Arabic")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].id", is(99)));
 
-        verify(languageService).searchLanguages(any(SearchLanguageRequest.class));
-    }
+    verify(languageService).searchLanguages(any(SearchLanguageRequest.class));
+  }
 
-    @Test
-    @DisplayName("get language by id succeeds")
-    void getLanguageByIdSucceeds() throws Exception {
+  @Test
+  @DisplayName("get language by id succeeds")
+  void getLanguageByIdSucceeds() throws Exception {
 
-        given(languageService
-                .getLanguage(anyLong()))
-                .willReturn(language);
+    given(languageService
+        .getLanguage(anyLong()))
+        .willReturn(language);
 
-        mockMvc.perform(get(BASE_PATH + "/" + LANGUAGE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH + "/" + LANGUAGE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Arabic")))
-                .andExpect(jsonPath("$.status", is("active")))
-                .andExpect(jsonPath("$.id", is(99)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.name", is("Arabic")))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.id", is(99)));
 
-        verify(languageService).getLanguage(anyLong());
-    }
+    verify(languageService).getLanguage(anyLong());
+  }
 
-    @Test
-    @DisplayName("add system language translation succeeds")
-    void addSystemLanguageTranslationsSucceeds() throws Exception {
-        String langCode = "Spanish";
+  @Test
+  @DisplayName("add system language translation succeeds")
+  void addSystemLanguageTranslationsSucceeds() throws Exception {
+    String langCode = "Spanish";
 
-        given(languageService
-                .addSystemLanguage(anyString()))
-                .willReturn(systemLanguage);
+    given(languageService
+        .addSystemLanguage(anyString()))
+        .willReturn(systemLanguage);
 
-        mockMvc.perform(post(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(
+            post(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.language", is("Spanish")))
-                .andExpect(jsonPath("$.label", is("spanish")))
-                .andExpect(jsonPath("$.rtl", is(false)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(1)))
+        .andExpect(jsonPath("$.language", is("Spanish")))
+        .andExpect(jsonPath("$.label", is("spanish")))
+        .andExpect(jsonPath("$.rtl", is(false)));
 
-        verify(languageService).addSystemLanguage(anyString());
-    }
+    verify(languageService).addSystemLanguage(anyString());
+  }
 
-    @Test
-    @DisplayName("create language level succeeds")
-    void createLanguageSucceeds() throws Exception {
-        CreateLanguageRequest request = new CreateLanguageRequest();
-        request.setName("Arabic");
-        request.setStatus(Status.active);
+  @Test
+  @DisplayName("create language level succeeds")
+  void createLanguageSucceeds() throws Exception {
+    CreateLanguageRequest request = new CreateLanguageRequest();
+    request.setName("Arabic");
+    request.setStatus(Status.active);
 
-        given(languageService
-                .createLanguage(any(CreateLanguageRequest.class)))
-                .willReturn(language);
+    given(languageService
+        .createLanguage(any(CreateLanguageRequest.class)))
+        .willReturn(language);
 
-        mockMvc.perform(post(BASE_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Arabic")))
-                .andExpect(jsonPath("$.status", is("active")))
-                .andExpect(jsonPath("$.id", is(99)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.name", is("Arabic")))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.id", is(99)));
 
-        verify(languageService).createLanguage(any(CreateLanguageRequest.class));
-    }
+    verify(languageService).createLanguage(any(CreateLanguageRequest.class));
+  }
 
-    @Test
-    @DisplayName("update language by id succeeds")
-    void updateLanguageByIdSucceeds() throws Exception {
-        UpdateLanguageRequest request = new UpdateLanguageRequest();
-        request.setName("Arabic");
-        request.setStatus(Status.active);
+  @Test
+  @DisplayName("update language by id succeeds")
+  void updateLanguageByIdSucceeds() throws Exception {
+    UpdateLanguageRequest request = new UpdateLanguageRequest();
+    request.setName("Arabic");
+    request.setStatus(Status.active);
 
-        given(languageService
-                .updateLanguage(anyLong(), any(UpdateLanguageRequest.class)))
-                .willReturn(language);
+    given(languageService
+        .updateLanguage(anyLong(), any(UpdateLanguageRequest.class)))
+        .willReturn(language);
 
-        mockMvc.perform(put(BASE_PATH + "/" + LANGUAGE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(put(BASE_PATH + "/" + LANGUAGE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Arabic")))
-                .andExpect(jsonPath("$.status", is("active")))
-                .andExpect(jsonPath("$.id", is(99)));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.name", is("Arabic")))
+        .andExpect(jsonPath("$.status", is("active")))
+        .andExpect(jsonPath("$.id", is(99)));
 
-        verify(languageService).updateLanguage(anyLong(), any(UpdateLanguageRequest.class));
-    }
+    verify(languageService).updateLanguage(anyLong(), any(UpdateLanguageRequest.class));
+  }
 
-    @Test
-    @DisplayName("delete language by id succeeds")
-    void deleteLanguageByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + LANGUAGE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token"))
+  @Test
+  @DisplayName("delete language by id succeeds")
+  void deleteLanguageByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + LANGUAGE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
 
-                .andExpect(status().isOk());
+        .andExpect(status().isOk());
 
-        verify(languageService).deleteLanguage(anyLong());
-    }
+    verify(languageService).deleteLanguage(anyLong());
+  }
 }

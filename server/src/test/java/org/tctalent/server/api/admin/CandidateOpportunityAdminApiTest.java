@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
@@ -44,6 +45,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -59,129 +61,141 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CandidateOpportunityAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CandidateOpportunityAdminApiTest extends ApiTestBase {
 
-    private static final long CANDIDATE_ID = 99L;
+  private static final long CANDIDATE_ID = 99L;
 
-    private static final String BASE_PATH = "/api/admin/opp";
-    private static final String SEARCH_PAGED_PATH = "/search-paged";
+  private static final String BASE_PATH = "/api/admin/opp";
+  private static final String SEARCH_PAGED_PATH = "/search-paged";
 
-    private static final CandidateOpportunity candidateOpportunity = AdminApiTestUtil.getCandidateOpportunity();
-    private final Page<CandidateOpportunity> candidateOpportunityPage =
-            new PageImpl<>(
-                    List.of(candidateOpportunity),
-                    PageRequest.of(0,10, Sort.unsorted()),
-                    1
-            );
+  private static final CandidateOpportunity candidateOpportunity = AdminApiTestUtil.getCandidateOpportunity();
+  private final Page<CandidateOpportunity> candidateOpportunityPage =
+      new PageImpl<>(
+          List.of(candidateOpportunity),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
 
-    @MockBean CandidateOpportunityService candidateOpportunityService;
+  @MockBean
+  CandidateOpportunityService candidateOpportunityService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateOpportunityAdminApi candidateOpportunityAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateOpportunityAdminApi candidateOpportunityAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateOpportunityAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateOpportunityAdminApi).isNotNull();
+  }
 
-    @Test
-    @DisplayName("get candidate opportunity by id succeeds")
-    void getCandidateOpportunityByIdSucceeds() throws Exception {
+  @Test
+  @DisplayName("get candidate opportunity by id succeeds")
+  void getCandidateOpportunityByIdSucceeds() throws Exception {
 
-        given(candidateOpportunityService
-                .getCandidateOpportunity(anyLong()))
-                .willReturn(candidateOpportunity);
+    given(candidateOpportunityService
+        .getCandidateOpportunity(anyLong()))
+        .willReturn(candidateOpportunity);
 
-        mockMvc.perform(get(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get(BASE_PATH + "/" + CANDIDATE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.candidate.user.firstName", is("test")))
-                .andExpect(jsonPath("$.candidate.user.lastName", is("candidate1")))
-                .andExpect(jsonPath("$.candidate.user.email", is("test.candidate1@some.thing")))
-                .andExpect(jsonPath("$.candidate.user.username", is("candidate1")))
-                .andExpect(jsonPath("$.stage", is("offer")))
-                .andExpect(jsonPath("$.closingCommentsForCandidate", is("Some closing comments for candidate")))
-                .andExpect(jsonPath("$.closed", is(false)))
-                .andExpect(jsonPath("$.employerFeedback", is("Some employer feedback")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.candidate.user.firstName", is("test")))
+        .andExpect(jsonPath("$.candidate.user.lastName", is("candidate1")))
+        .andExpect(jsonPath("$.candidate.user.email", is("test.candidate1@some.thing")))
+        .andExpect(jsonPath("$.candidate.user.username", is("candidate1")))
+        .andExpect(jsonPath("$.stage", is("offer")))
+        .andExpect(
+            jsonPath("$.closingCommentsForCandidate", is("Some closing comments for candidate")))
+        .andExpect(jsonPath("$.closed", is(false)))
+        .andExpect(jsonPath("$.employerFeedback", is("Some employer feedback")));
 
-        verify(candidateOpportunityService).getCandidateOpportunity(anyLong());
-    }
+    verify(candidateOpportunityService).getCandidateOpportunity(anyLong());
+  }
 
-    @Test
-    @DisplayName("search opportunities paged succeeds")
-    void searchPagedSucceeds() throws Exception {
-        SearchCandidateOpportunityRequest request = new SearchCandidateOpportunityRequest();
+  @Test
+  @DisplayName("search opportunities paged succeeds")
+  void searchPagedSucceeds() throws Exception {
+    SearchCandidateOpportunityRequest request = new SearchCandidateOpportunityRequest();
 
-        given(candidateOpportunityService
-                .searchCandidateOpportunities(any(SearchCandidateOpportunityRequest.class)))
-                .willReturn(candidateOpportunityPage);
+    given(candidateOpportunityService
+        .searchCandidateOpportunities(any(SearchCandidateOpportunityRequest.class)))
+        .willReturn(candidateOpportunityPage);
 
-        mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.totalElements", is(1)))
-                .andExpect(jsonPath("$.totalPages", is(1)))
-                .andExpect(jsonPath("$.number", is(0)))
-                .andExpect(jsonPath("$.hasNext", is(false)))
-                .andExpect(jsonPath("$.hasPrevious", is(false)))
-                .andExpect(jsonPath("$.content", notNullValue()))
-                .andExpect(jsonPath("$.content.[0].candidate.user.firstName", is("test")))
-                .andExpect(jsonPath("$.content.[0].candidate.user.lastName", is("candidate1")))
-                .andExpect(jsonPath("$.content.[0].candidate.user.email", is("test.candidate1@some.thing")))
-                .andExpect(jsonPath("$.content.[0].candidate.user.username", is("candidate1")))
-                .andExpect(jsonPath("$.content.[0].stage", is("offer")))
-                .andExpect(jsonPath("$.content.[0].closingCommentsForCandidate", is("Some closing comments for candidate")))
-                .andExpect(jsonPath("$.content.[0].closed", is(false)))
-                .andExpect(jsonPath("$.content.[0].employerFeedback", is("Some employer feedback")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].candidate.user.firstName", is("test")))
+        .andExpect(jsonPath("$.content.[0].candidate.user.lastName", is("candidate1")))
+        .andExpect(jsonPath("$.content.[0].candidate.user.email", is("test.candidate1@some.thing")))
+        .andExpect(jsonPath("$.content.[0].candidate.user.username", is("candidate1")))
+        .andExpect(jsonPath("$.content.[0].stage", is("offer")))
+        .andExpect(jsonPath("$.content.[0].closingCommentsForCandidate",
+            is("Some closing comments for candidate")))
+        .andExpect(jsonPath("$.content.[0].closed", is(false)))
+        .andExpect(jsonPath("$.content.[0].employerFeedback", is("Some employer feedback")));
 
-        verify(candidateOpportunityService).searchCandidateOpportunities(any(SearchCandidateOpportunityRequest.class));
-    }
+    verify(candidateOpportunityService).searchCandidateOpportunities(
+        any(SearchCandidateOpportunityRequest.class));
+  }
 
-    @Test
-    @DisplayName("update opportunity by id succeeds")
-    void updateCandidateOccupationByIdSucceeds() throws Exception {
-        CandidateOpportunityParams request = new CandidateOpportunityParams();
+  @Test
+  @DisplayName("update opportunity by id succeeds")
+  void updateCandidateOccupationByIdSucceeds() throws Exception {
+    CandidateOpportunityParams request = new CandidateOpportunityParams();
 
-        given(candidateOpportunityService
-                .updateCandidateOpportunity(anyLong(), any(CandidateOpportunityParams.class)))
-                .willReturn(candidateOpportunity);
+    given(candidateOpportunityService
+        .updateCandidateOpportunity(anyLong(), any(CandidateOpportunityParams.class)))
+        .willReturn(candidateOpportunity);
 
-        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.candidate.user.firstName", is("test")))
-                .andExpect(jsonPath("$.candidate.user.lastName", is("candidate1")))
-                .andExpect(jsonPath("$.candidate.user.email", is("test.candidate1@some.thing")))
-                .andExpect(jsonPath("$.candidate.user.username", is("candidate1")))
-                .andExpect(jsonPath("$.stage", is("offer")))
-                .andExpect(jsonPath("$.closingCommentsForCandidate", is("Some closing comments for candidate")))
-                .andExpect(jsonPath("$.closed", is(false)))
-                .andExpect(jsonPath("$.employerFeedback", is("Some employer feedback")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.candidate.user.firstName", is("test")))
+        .andExpect(jsonPath("$.candidate.user.lastName", is("candidate1")))
+        .andExpect(jsonPath("$.candidate.user.email", is("test.candidate1@some.thing")))
+        .andExpect(jsonPath("$.candidate.user.username", is("candidate1")))
+        .andExpect(jsonPath("$.stage", is("offer")))
+        .andExpect(
+            jsonPath("$.closingCommentsForCandidate", is("Some closing comments for candidate")))
+        .andExpect(jsonPath("$.closed", is(false)))
+        .andExpect(jsonPath("$.employerFeedback", is("Some employer feedback")));
 
-        verify(candidateOpportunityService).updateCandidateOpportunity(anyLong(), any(CandidateOpportunityParams.class));
-    }
+    verify(candidateOpportunityService).updateCandidateOpportunity(anyLong(),
+        any(CandidateOpportunityParams.class));
+  }
 }

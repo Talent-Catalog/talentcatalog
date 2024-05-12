@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
@@ -35,6 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
  */
 @WebMvcTest(SiteRedirectController.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class SiteRedirectControllerTest extends ApiTestBase {
     private static final String BASE_PATH = "/backend/jobseeker";
     private static final String VIEW_RESUME_PATH = "/view-resume";

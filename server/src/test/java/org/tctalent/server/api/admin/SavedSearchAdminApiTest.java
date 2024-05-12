@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -47,6 +48,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
@@ -81,6 +83,7 @@ import org.tctalent.server.service.db.UserService;
 
 @WebMvcTest(SavedSearchAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class SavedSearchAdminApiTest extends ApiTestBase {
 
   private static final long SAVED_SEARCH_ID = 123L;
@@ -173,6 +176,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token"))
 
         .andExpect(status().isOk())
@@ -206,10 +210,11 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedSearchList);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-        .header("Authorization", "Bearer " + "jwt-token")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(request))
-        .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
         .andDo(print())
         .andExpect(status().isOk())
@@ -256,6 +261,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedSearchPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -309,8 +315,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
     UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
 
     given(savedSearchService
-          .updateSavedSearch(anyLong(), any(UpdateSavedSearchRequest.class)))
-          .willReturn(savedSearch);
+        .updateSavedSearch(anyLong(), any(UpdateSavedSearchRequest.class)))
+        .willReturn(savedSearch);
 
     updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
@@ -341,7 +347,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
     createSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
-    verify(savedSearchService).createFromDefaultSavedSearch(any(CreateFromDefaultSavedSearchRequest.class));
+    verify(savedSearchService).createFromDefaultSavedSearch(
+        any(CreateFromDefaultSavedSearchRequest.class));
   }
 
   @Test
@@ -361,6 +368,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedList);
 
     mockMvc.perform(put(BASE_PATH + SAVE_SELECTION_PATH + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -376,8 +384,10 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.displayedFieldsLong[1]", is("user.lastName")))
         .andExpect(jsonPath("$.exportColumns").isArray())
         .andExpect(jsonPath("$.exportColumns[0].key", is("key")))
-        .andExpect(jsonPath("$.exportColumns[0].properties.constant", is("non default constant column value")))
-        .andExpect(jsonPath("$.exportColumns[0].properties.header", is("non default column header")))
+        .andExpect(jsonPath("$.exportColumns[0].properties.constant",
+            is("non default constant column value")))
+        .andExpect(
+            jsonPath("$.exportColumns[0].properties.header", is("non default column header")))
         .andExpect(jsonPath("$.status", is("active")))
         .andExpect(jsonPath("$.name", is("Saved list name")))
         .andExpect(jsonPath("$.fixed", is(true)))
@@ -413,8 +423,10 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         );
 
     verify(savedSearchService).getSelectionListForLoggedInUser(anyLong());
-    verify(candidateSavedListService).copy(any(SavedList.class), any(CopySourceContentsRequest.class));
-    verify(candidateService).updateCandidateStatus(any(SavedList.class), any(UpdateCandidateStatusInfo.class));
+    verify(candidateSavedListService).copy(any(SavedList.class),
+        any(CopySourceContentsRequest.class));
+    verify(candidateService).updateCandidateStatus(any(SavedList.class),
+        any(UpdateCandidateStatusInfo.class));
   }
 
   @Test
@@ -468,7 +480,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
     updateSavedSearch(SELECT_CANDIDATE_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).getSelectionList(anyLong(), anyLong());
-    verify(savedListService).removeCandidateFromList(anyLong(), any(UpdateExplicitSavedListContentsRequest.class));
+    verify(savedListService).removeCandidateFromList(anyLong(),
+        any(UpdateExplicitSavedListContentsRequest.class));
   }
 
   @Test
@@ -486,7 +499,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
     updateSavedSearch(SELECT_CANDIDATE_PATH, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).getSelectionList(anyLong(), anyLong());
-    verify(savedListService).mergeSavedList(anyLong(), any(UpdateExplicitSavedListContentsRequest.class));
+    verify(savedListService).mergeSavedList(anyLong(),
+        any(UpdateExplicitSavedListContentsRequest.class));
   }
 
   @Test
@@ -607,7 +621,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
     updateSavedSearch(UPDATE_CONTEXT_PATH, objectMapper.writeValueAsString(request));
 
-    verify(savedSearchService).updateCandidateContextNote(anyLong(), any(UpdateCandidateContextNoteRequest.class));
+    verify(savedSearchService).updateCandidateContextNote(anyLong(),
+        any(UpdateCandidateContextNoteRequest.class));
   }
 
   @Test
@@ -618,7 +633,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
     updateSavedSearch(UPDATE_DESCRIPTION_PATH, objectMapper.writeValueAsString(request));
 
-    verify(savedSearchService).updateDescription(anyLong(), any(UpdateCandidateSourceDescriptionRequest.class));
+    verify(savedSearchService).updateDescription(anyLong(),
+        any(UpdateCandidateSourceDescriptionRequest.class));
   }
 
   @Test
@@ -628,11 +644,13 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
     updateSavedSearch(UPDATE_FIELDS_PATH, objectMapper.writeValueAsString(request));
 
-    verify(savedSearchService).updateDisplayedFieldPaths(anyLong(), any(UpdateDisplayedFieldPathsRequest.class));
+    verify(savedSearchService).updateDisplayedFieldPaths(anyLong(),
+        any(UpdateDisplayedFieldPathsRequest.class));
   }
 
   private void updateSavedSearchAndVerifyResponse(String path, String body) throws Exception {
     mockMvc.perform(put(BASE_PATH + path)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)
@@ -657,6 +675,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
   private void updateSavedSearch(String path, String body) throws Exception {
     mockMvc.perform(put(BASE_PATH + path + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)
@@ -690,6 +709,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
   private void createSavedSearchAndVerifyResponse(String path, String body) throws Exception {
     mockMvc.perform(post(path)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)

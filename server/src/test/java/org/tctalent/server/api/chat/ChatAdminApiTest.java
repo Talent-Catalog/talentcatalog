@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -43,6 +44,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.ApiTestBase;
@@ -68,6 +70,7 @@ import org.tctalent.server.service.db.impl.JobChatServiceImpl;
  */
 @WebMvcTest(ChatAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class ChatAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/chat";
     private static final String GET_OR_CREATE_PATH = "/get-or-create";
@@ -127,6 +130,7 @@ class ChatAdminApiTest extends ApiTestBase {
             .willReturn(chat);
 
         mockMvc.perform(post(BASE_PATH)
+                .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -175,6 +179,7 @@ class ChatAdminApiTest extends ApiTestBase {
             .willReturn(chat);
 
         mockMvc.perform(post(BASE_PATH + GET_OR_CREATE_PATH)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -210,6 +215,7 @@ class ChatAdminApiTest extends ApiTestBase {
 
         //For moment just testing that post id is passed as zero - meaning read whole post
         mockMvc.perform(put(BASE_PATH + "/" + chat.getId() + POST + "/0" + READ)
+                    .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 )
 

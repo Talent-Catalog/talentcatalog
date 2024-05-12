@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -42,6 +43,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
@@ -55,134 +57,150 @@ import org.tctalent.server.service.db.SalesforceService;
  */
 @WebMvcTest(CandidateVisaJobCheckAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/candidate-visa-job";
-    private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
 
-    private static final CandidateVisaJobCheck candidateVisaJobCheck = getCandidateVisaJobCheck(false);
-    private static final CandidateVisaJobCheck candidateVisaJobCheckComplete = getCandidateVisaJobCheck(true);
+  private static final String BASE_PATH = "/api/admin/candidate-visa-job";
+  private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
 
-    @MockBean
-    CandidateVisaJobCheckService candidateVisaJobCheckService;
+  private static final CandidateVisaJobCheck candidateVisaJobCheck = getCandidateVisaJobCheck(
+      false);
+  private static final CandidateVisaJobCheck candidateVisaJobCheckComplete = getCandidateVisaJobCheck(
+      true);
 
-    @MockBean
-    SalesforceService salesforceService;
+  @MockBean
+  CandidateVisaJobCheckService candidateVisaJobCheckService;
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired CandidateVisaJobCheckAdminApi candidateVisaJobCheckAdminApi;
+  @MockBean
+  SalesforceService salesforceService;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateVisaJobCheckAdminApi candidateVisaJobCheckAdminApi;
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(candidateVisaJobCheckAdminApi).isNotNull();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    @DisplayName("get by id succeeds")
-    void getByIdSucceeds() throws Exception {
-        long visaId = 1L;
-        given(candidateVisaJobCheckService
-                .getVisaJobCheck(anyLong()))
-                .willReturn(candidateVisaJobCheckComplete);
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(candidateVisaJobCheckAdminApi).isNotNull();
+  }
 
-        mockMvc.perform(get(BASE_PATH + "/" + visaId)
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON))
+  @Test
+  @DisplayName("get by id succeeds")
+  void getByIdSucceeds() throws Exception {
+    long visaId = 1L;
+    given(candidateVisaJobCheckService
+        .getVisaJobCheck(anyLong()))
+        .willReturn(candidateVisaJobCheckComplete);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.jobOpp", notNullValue()))
-                .andExpect(jsonPath("$.interest", is("Yes")))
-                .andExpect(jsonPath("$.interestNotes", is("These are some interest notes.")))
-                .andExpect(jsonPath("$.regional", is("No")))
-                .andExpect(jsonPath("$.salaryTsmit", is("Yes")))
-                .andExpect(jsonPath("$.qualification", is("Yes")))
-                .andExpect(jsonPath("$.eligible_494", is("No")))
-                .andExpect(jsonPath("$.eligible_494_Notes", is("These are some eligible for visa 494 notes.")))
-                .andExpect(jsonPath("$.eligible_186", is("Yes")))
-                .andExpect(jsonPath("$.eligible_186_Notes", is("These are some eligible for visa 186 notes.")))
-                .andExpect(jsonPath("$.eligibleOther", is("SpecialHum")))
-                .andExpect(jsonPath("$.eligibleOtherNotes", is("These are some eligible for other visa notes.")))
-                .andExpect(jsonPath("$.putForward", is("DiscussFurther")))
-                .andExpect(jsonPath("$.tbbEligibility", is("Discuss")))
-                .andExpect(jsonPath("$.notes", is("These are some notes.")))
-                .andExpect(jsonPath("$.occupation", notNullValue()))
-                .andExpect(jsonPath("$.occupationNotes", is("These are some occupation notes.")))
-                .andExpect(jsonPath("$.qualificationNotes", is("These are some qualification notes.")))
-                .andExpect(jsonPath("$.relevantWorkExp", is("These are some relevant work experience notes.")))
-                .andExpect(jsonPath("$.ageRequirement", is("There are some age requirements.")))
-                .andExpect(jsonPath("$.preferredPathways", is("These are some preferred pathways.")))
-                .andExpect(jsonPath("$.ineligiblePathways", is("These are some ineligible pathways.")))
-                .andExpect(jsonPath("$.eligiblePathways", is("These are some eligible pathways.")))
-                .andExpect(jsonPath("$.occupationCategory", is("This is the occupation category.")))
-                .andExpect(jsonPath("$.occupationSubCategory", is("This is the occupation subcategory.")))
-                .andExpect(jsonPath("$.englishThreshold", is("Yes")))
-                .andExpect(jsonPath("$.languagesRequired.[0]", is(342)))
-                .andExpect(jsonPath("$.languagesThresholdMet", is("Yes")))
-                .andExpect(jsonPath("$.languagesThresholdNotes", is("These are some language threshold notes.")));
+    mockMvc.perform(get(BASE_PATH + "/" + visaId)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
 
-        verify(candidateVisaJobCheckService).getVisaJobCheck(anyLong());
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(1)))
+        .andExpect(jsonPath("$.jobOpp", notNullValue()))
+        .andExpect(jsonPath("$.interest", is("Yes")))
+        .andExpect(jsonPath("$.interestNotes", is("These are some interest notes.")))
+        .andExpect(jsonPath("$.regional", is("No")))
+        .andExpect(jsonPath("$.salaryTsmit", is("Yes")))
+        .andExpect(jsonPath("$.qualification", is("Yes")))
+        .andExpect(jsonPath("$.eligible_494", is("No")))
+        .andExpect(
+            jsonPath("$.eligible_494_Notes", is("These are some eligible for visa 494 notes.")))
+        .andExpect(jsonPath("$.eligible_186", is("Yes")))
+        .andExpect(
+            jsonPath("$.eligible_186_Notes", is("These are some eligible for visa 186 notes.")))
+        .andExpect(jsonPath("$.eligibleOther", is("SpecialHum")))
+        .andExpect(
+            jsonPath("$.eligibleOtherNotes", is("These are some eligible for other visa notes.")))
+        .andExpect(jsonPath("$.putForward", is("DiscussFurther")))
+        .andExpect(jsonPath("$.tbbEligibility", is("Discuss")))
+        .andExpect(jsonPath("$.notes", is("These are some notes.")))
+        .andExpect(jsonPath("$.occupation", notNullValue()))
+        .andExpect(jsonPath("$.occupationNotes", is("These are some occupation notes.")))
+        .andExpect(jsonPath("$.qualificationNotes", is("These are some qualification notes.")))
+        .andExpect(
+            jsonPath("$.relevantWorkExp", is("These are some relevant work experience notes.")))
+        .andExpect(jsonPath("$.ageRequirement", is("There are some age requirements.")))
+        .andExpect(jsonPath("$.preferredPathways", is("These are some preferred pathways.")))
+        .andExpect(jsonPath("$.ineligiblePathways", is("These are some ineligible pathways.")))
+        .andExpect(jsonPath("$.eligiblePathways", is("These are some eligible pathways.")))
+        .andExpect(jsonPath("$.occupationCategory", is("This is the occupation category.")))
+        .andExpect(jsonPath("$.occupationSubCategory", is("This is the occupation subcategory.")))
+        .andExpect(jsonPath("$.englishThreshold", is("Yes")))
+        .andExpect(jsonPath("$.languagesRequired.[0]", is(342)))
+        .andExpect(jsonPath("$.languagesThresholdMet", is("Yes")))
+        .andExpect(
+            jsonPath("$.languagesThresholdNotes", is("These are some language threshold notes.")));
 
-    @Test
-    @DisplayName("create visa job check succeeds")
-    void createVisaJobCheckSucceeds() throws Exception {
-        CreateCandidateVisaJobCheckRequest request = new CreateCandidateVisaJobCheckRequest();
-        request.setJobOppId(99L);
+    verify(candidateVisaJobCheckService).getVisaJobCheck(anyLong());
+  }
 
-        given(candidateVisaJobCheckService
-                .createVisaJobCheck(anyLong(), any(CreateCandidateVisaJobCheckRequest.class)))
-                .willReturn(candidateVisaJobCheck);
+  @Test
+  @DisplayName("create visa job check succeeds")
+  void createVisaJobCheckSucceeds() throws Exception {
+    CreateCandidateVisaJobCheckRequest request = new CreateCandidateVisaJobCheckRequest();
+    request.setJobOppId(99L);
 
-        mockMvc.perform(post(BASE_PATH + "/" + anyLong())
-                        .header("Authorization", "Bearer " + "jwt-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON))
+    given(candidateVisaJobCheckService
+        .createVisaJobCheck(anyLong(), any(CreateCandidateVisaJobCheckRequest.class)))
+        .willReturn(candidateVisaJobCheck);
 
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.jobOpp.id", is(99)));
+    mockMvc.perform(post(BASE_PATH + "/" + anyLong())
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-        verify(candidateVisaJobCheckService).createVisaJobCheck(anyLong(), any(CreateCandidateVisaJobCheckRequest.class));
-    }
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.jobOpp.id", is(99)));
 
-    @Test
-    @DisplayName("delete visa job check by id succeeds")
-    void deleteByIdSucceeds() throws Exception {
-        mockMvc.perform(delete(BASE_PATH + "/" + anyLong())
-                        .header("Authorization", "Bearer " + "jwt-token"))
+    verify(candidateVisaJobCheckService).createVisaJobCheck(anyLong(),
+        any(CreateCandidateVisaJobCheckRequest.class));
+  }
 
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        verify(candidateVisaJobCheckService).deleteVisaJobCheck(anyLong());
-    }
-
-    @Test
-    @DisplayName("update sf case relocation info succeeds")
-    void updateSfCaseRelocationInfoSucceeds() throws Exception {
-        given(candidateVisaJobCheckService
-            .getVisaJobCheck(anyLong()))
-            .willReturn(any(CandidateVisaJobCheck.class));
-
-        mockMvc.perform(put(BASE_PATH + UPDATE_SF_CASE_PATH.replace(
-            "{id}", "3"))
+  @Test
+  @DisplayName("delete visa job check by id succeeds")
+  void deleteByIdSucceeds() throws Exception {
+    mockMvc.perform(delete(BASE_PATH + "/" + anyLong())
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token"))
 
-            .andDo(print())
-            .andExpect(status().isOk());
+        .andDo(print())
+        .andExpect(status().isOk());
 
-        verify(candidateVisaJobCheckService).getVisaJobCheck(anyLong());
-    }
+    verify(candidateVisaJobCheckService).deleteVisaJobCheck(anyLong());
+  }
+
+  @Test
+  @DisplayName("update sf case relocation info succeeds")
+  void updateSfCaseRelocationInfoSucceeds() throws Exception {
+    given(candidateVisaJobCheckService
+        .getVisaJobCheck(anyLong()))
+        .willReturn(any(CandidateVisaJobCheck.class));
+
+    mockMvc.perform(put(BASE_PATH + UPDATE_SF_CASE_PATH.replace(
+            "{id}", "3"))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token"))
+
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(candidateVisaJobCheckService).getVisaJobCheck(anyLong());
+  }
 }

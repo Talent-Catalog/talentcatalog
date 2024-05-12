@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,6 +50,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
@@ -65,6 +67,7 @@ import org.tctalent.server.service.db.UserService;
  */
 @WebMvcTest(UserAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class UserAdminApiTest extends ApiTestBase {
 
   private static final long USER_ID = 465L;
@@ -80,25 +83,30 @@ class UserAdminApiTest extends ApiTestBase {
   private final Page<User> userPage =
       new PageImpl<>(
           users,
-          PageRequest.of(0,10, Sort.unsorted()),
+          PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
-  
+
   private static final User fullUser = AdminApiTestUtil.getFullUser();
   private static final User loggedInAdminUser = AdminApiTestUtil.getUser();
   private static final User loggedInNonAdminUser = new User(
-      "nonAdminUser", 
-      "Not", 
-      "Admin", 
-      "notadmin@gmailcom", 
+      "nonAdminUser",
+      "Not",
+      "Admin",
+      "notadmin@gmailcom",
       Role.limited);
 
-  @MockBean AuthService authService;
-  @MockBean UserService userService;
+  @MockBean
+  AuthService authService;
+  @MockBean
+  UserService userService;
 
-  @Autowired MockMvc mockMvc;
-  @Autowired ObjectMapper objectMapper;
-  @Autowired UserAdminApi userAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  UserAdminApi userAdminApi;
 
   @BeforeEach
   void setUp() {
@@ -115,55 +123,57 @@ class UserAdminApiTest extends ApiTestBase {
   void searchUsersSucceeds() throws Exception {
     SearchUserRequest request = new SearchUserRequest();
     given(userService
-            .search(any(SearchUserRequest.class)))
-            .willReturn(users);
+        .search(any(SearchUserRequest.class)))
+        .willReturn(users);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].username", is("full_user")))
-            .andExpect(jsonPath("$[0].firstName", is("full")))
-            .andExpect(jsonPath("$[0].lastName", is("user")))
-            .andExpect(jsonPath("$[0].email", is("full.user@tbb.org")))
-            .andExpect(jsonPath("$[0].role", is("admin")))
-            .andExpect(jsonPath("$[0].jobCreator", is(true)))
-            .andExpect(jsonPath("$[0].approver.firstName", is("test")))
-            .andExpect(jsonPath("$[0].approver.lastName", is("user")))
-            .andExpect(jsonPath("$[0].purpose", is("Complete intakes")))
-            .andExpect(jsonPath("$[0].sourceCountries.[0].name", is("Jordan")))
-            .andExpect(jsonPath("$[0].readOnly", is(false)))
-            .andExpect(jsonPath("$[0].status", is("active")))
-            .andExpect(jsonPath("$[0].createdDate", is("2023-10-30T12:30:00+02:00")))
-            .andExpect(jsonPath("$[0].createdBy.role", is("admin")))
-            .andExpect(jsonPath("$[0].createdBy.status", is("active")))
-            .andExpect(jsonPath("$[0].createdBy.usingMfa", is(false)))
-            .andExpect(jsonPath("$[0].createdBy.mfaConfigured", is(false)))
-            .andExpect(jsonPath("$[0].lastLogin", is("2023-10-30T12:30:00+02:00")))
-            .andExpect(jsonPath("$[0].usingMfa", is(true)))
-            .andExpect(jsonPath("$[0].mfaConfigured", is(false)))
-            .andExpect(jsonPath("$[0].partner.abbreviation", is("TCP")))
-            .andExpect(jsonPath("$[0].partner.jobCreator", is(true)))
-            .andExpect(jsonPath("$[0].partner.defaultJobCreator", is(false)))
-            .andExpect(jsonPath("$[0].partner.defaultPartnerRef", is(false)))
-            .andExpect(jsonPath("$[0].partner.defaultSourcePartner", is(false)))
-            .andExpect(jsonPath("$[0].partner.registrationLandingPage", is("registration_landing_page")))
-            .andExpect(jsonPath("$[0].partner.sourceCountries", is(empty())))
-            .andExpect(jsonPath("$[0].partner.notificationEmail", is("notification@email.address")))
-            .andExpect(jsonPath("$[0].partner.sourcePartner", is(true)))
-            .andExpect(jsonPath("$[0].partner.autoAssignable", is(false)))
-            .andExpect(jsonPath("$[0].partner.websiteUrl", is("website_url")))
-            .andExpect(jsonPath("$[0].partner.name", is("TC Partner")))
-            .andExpect(jsonPath("$[0].partner.logo", is("logo_url")))
-            .andExpect(jsonPath("$[0].partner.status", is("active")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].username", is("full_user")))
+        .andExpect(jsonPath("$[0].firstName", is("full")))
+        .andExpect(jsonPath("$[0].lastName", is("user")))
+        .andExpect(jsonPath("$[0].email", is("full.user@tbb.org")))
+        .andExpect(jsonPath("$[0].role", is("admin")))
+        .andExpect(jsonPath("$[0].jobCreator", is(true)))
+        .andExpect(jsonPath("$[0].approver.firstName", is("test")))
+        .andExpect(jsonPath("$[0].approver.lastName", is("user")))
+        .andExpect(jsonPath("$[0].purpose", is("Complete intakes")))
+        .andExpect(jsonPath("$[0].sourceCountries.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$[0].readOnly", is(false)))
+        .andExpect(jsonPath("$[0].status", is("active")))
+        .andExpect(jsonPath("$[0].createdDate", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$[0].createdBy.role", is("admin")))
+        .andExpect(jsonPath("$[0].createdBy.status", is("active")))
+        .andExpect(jsonPath("$[0].createdBy.usingMfa", is(false)))
+        .andExpect(jsonPath("$[0].createdBy.mfaConfigured", is(false)))
+        .andExpect(jsonPath("$[0].lastLogin", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$[0].usingMfa", is(true)))
+        .andExpect(jsonPath("$[0].mfaConfigured", is(false)))
+        .andExpect(jsonPath("$[0].partner.abbreviation", is("TCP")))
+        .andExpect(jsonPath("$[0].partner.jobCreator", is(true)))
+        .andExpect(jsonPath("$[0].partner.defaultJobCreator", is(false)))
+        .andExpect(jsonPath("$[0].partner.defaultPartnerRef", is(false)))
+        .andExpect(jsonPath("$[0].partner.defaultSourcePartner", is(false)))
+        .andExpect(
+            jsonPath("$[0].partner.registrationLandingPage", is("registration_landing_page")))
+        .andExpect(jsonPath("$[0].partner.sourceCountries", is(empty())))
+        .andExpect(jsonPath("$[0].partner.notificationEmail", is("notification@email.address")))
+        .andExpect(jsonPath("$[0].partner.sourcePartner", is(true)))
+        .andExpect(jsonPath("$[0].partner.autoAssignable", is(false)))
+        .andExpect(jsonPath("$[0].partner.websiteUrl", is("website_url")))
+        .andExpect(jsonPath("$[0].partner.name", is("TC Partner")))
+        .andExpect(jsonPath("$[0].partner.logo", is("logo_url")))
+        .andExpect(jsonPath("$[0].partner.status", is("active")));
 
     verify(userService).search(any(SearchUserRequest.class));
   }
@@ -173,58 +183,61 @@ class UserAdminApiTest extends ApiTestBase {
   void searchPagedUsersSucceeds() throws Exception {
     SearchUserRequest request = new SearchUserRequest();
     given(userService
-            .searchPaged(any(SearchUserRequest.class)))
-            .willReturn(userPage);
+        .searchPaged(any(SearchUserRequest.class)))
+        .willReturn(userPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(1)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].username", is("full_user")))
-            .andExpect(jsonPath("$.content.[0].firstName", is("full")))
-            .andExpect(jsonPath("$.content.[0].lastName", is("user")))
-            .andExpect(jsonPath("$.content.[0].email", is("full.user@tbb.org")))
-            .andExpect(jsonPath("$.content.[0].role", is("admin")))
-            .andExpect(jsonPath("$.content.[0].jobCreator", is(true)))
-            .andExpect(jsonPath("$.content.[0].approver.firstName", is("test")))
-            .andExpect(jsonPath("$.content.[0].approver.lastName", is("user")))
-            .andExpect(jsonPath("$.content.[0].purpose", is("Complete intakes")))
-            .andExpect(jsonPath("$.content.[0].sourceCountries.[0].name", is("Jordan")))
-            .andExpect(jsonPath("$.content.[0].readOnly", is(false)))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].createdDate", is("2023-10-30T12:30:00+02:00")))
-            .andExpect(jsonPath("$.content.[0].createdBy.role", is("admin")))
-            .andExpect(jsonPath("$.content.[0].createdBy.status", is("active")))
-            .andExpect(jsonPath("$.content.[0].createdBy.usingMfa", is(false)))
-            .andExpect(jsonPath("$.content.[0].createdBy.mfaConfigured", is(false)))
-            .andExpect(jsonPath("$.content.[0].lastLogin", is("2023-10-30T12:30:00+02:00")))
-            .andExpect(jsonPath("$.content.[0].usingMfa", is(true)))
-            .andExpect(jsonPath("$.content.[0].mfaConfigured", is(false)))
-            .andExpect(jsonPath("$.content.[0].partner.abbreviation", is("TCP")))
-            .andExpect(jsonPath("$.content.[0].partner.jobCreator", is(true)))
-            .andExpect(jsonPath("$.content.[0].partner.defaultJobCreator", is(false)))
-            .andExpect(jsonPath("$.content.[0].partner.defaultPartnerRef", is(false)))
-            .andExpect(jsonPath("$.content.[0].partner.defaultSourcePartner", is(false)))
-            .andExpect(jsonPath("$.content.[0].partner.registrationLandingPage", is("registration_landing_page")))
-            .andExpect(jsonPath("$.content.[0].partner.sourceCountries", is(empty())))
-            .andExpect(jsonPath("$.content.[0].partner.notificationEmail", is("notification@email.address")))
-            .andExpect(jsonPath("$.content.[0].partner.sourcePartner", is(true)))
-            .andExpect(jsonPath("$.content.[0].partner.autoAssignable", is(false)))
-            .andExpect(jsonPath("$.content.[0].partner.websiteUrl", is("website_url")))
-            .andExpect(jsonPath("$.content.[0].partner.name", is("TC Partner")))
-            .andExpect(jsonPath("$.content.[0].partner.logo", is("logo_url")))
-            .andExpect(jsonPath("$.content.[0].partner.status", is("active")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].username", is("full_user")))
+        .andExpect(jsonPath("$.content.[0].firstName", is("full")))
+        .andExpect(jsonPath("$.content.[0].lastName", is("user")))
+        .andExpect(jsonPath("$.content.[0].email", is("full.user@tbb.org")))
+        .andExpect(jsonPath("$.content.[0].role", is("admin")))
+        .andExpect(jsonPath("$.content.[0].jobCreator", is(true)))
+        .andExpect(jsonPath("$.content.[0].approver.firstName", is("test")))
+        .andExpect(jsonPath("$.content.[0].approver.lastName", is("user")))
+        .andExpect(jsonPath("$.content.[0].purpose", is("Complete intakes")))
+        .andExpect(jsonPath("$.content.[0].sourceCountries.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$.content.[0].readOnly", is(false)))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].createdDate", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.content.[0].createdBy.role", is("admin")))
+        .andExpect(jsonPath("$.content.[0].createdBy.status", is("active")))
+        .andExpect(jsonPath("$.content.[0].createdBy.usingMfa", is(false)))
+        .andExpect(jsonPath("$.content.[0].createdBy.mfaConfigured", is(false)))
+        .andExpect(jsonPath("$.content.[0].lastLogin", is("2023-10-30T12:30:00+02:00")))
+        .andExpect(jsonPath("$.content.[0].usingMfa", is(true)))
+        .andExpect(jsonPath("$.content.[0].mfaConfigured", is(false)))
+        .andExpect(jsonPath("$.content.[0].partner.abbreviation", is("TCP")))
+        .andExpect(jsonPath("$.content.[0].partner.jobCreator", is(true)))
+        .andExpect(jsonPath("$.content.[0].partner.defaultJobCreator", is(false)))
+        .andExpect(jsonPath("$.content.[0].partner.defaultPartnerRef", is(false)))
+        .andExpect(jsonPath("$.content.[0].partner.defaultSourcePartner", is(false)))
+        .andExpect(jsonPath("$.content.[0].partner.registrationLandingPage",
+            is("registration_landing_page")))
+        .andExpect(jsonPath("$.content.[0].partner.sourceCountries", is(empty())))
+        .andExpect(
+            jsonPath("$.content.[0].partner.notificationEmail", is("notification@email.address")))
+        .andExpect(jsonPath("$.content.[0].partner.sourcePartner", is(true)))
+        .andExpect(jsonPath("$.content.[0].partner.autoAssignable", is(false)))
+        .andExpect(jsonPath("$.content.[0].partner.websiteUrl", is("website_url")))
+        .andExpect(jsonPath("$.content.[0].partner.name", is("TC Partner")))
+        .andExpect(jsonPath("$.content.[0].partner.logo", is("logo_url")))
+        .andExpect(jsonPath("$.content.[0].partner.status", is("active")));
 
     verify(userService).searchPaged(any(SearchUserRequest.class));
   }
@@ -321,6 +334,7 @@ class UserAdminApiTest extends ApiTestBase {
         .willReturn(fullUser);
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -378,6 +392,7 @@ class UserAdminApiTest extends ApiTestBase {
         .willReturn(fullUser);
 
     mockMvc.perform(put(BASE_PATH + "/" + USER_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -432,6 +447,7 @@ class UserAdminApiTest extends ApiTestBase {
 
     mockMvc.perform(put(BASE_PATH + "/" + UPDATE_PASSWORD_PATH
             .replace("{id}", Long.toString(USER_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -448,6 +464,7 @@ class UserAdminApiTest extends ApiTestBase {
 
     mockMvc.perform(put(BASE_PATH + "/" + MFA_RESET_PATH
             .replace("{id}", Long.toString(USER_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 
@@ -461,6 +478,7 @@ class UserAdminApiTest extends ApiTestBase {
   void deleteUserByIdSucceeds() throws Exception {
 
     mockMvc.perform(delete(BASE_PATH + "/" + USER_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token"))
 
         .andExpect(status().isOk());

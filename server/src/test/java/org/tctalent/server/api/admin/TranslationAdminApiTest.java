@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.*;
 import org.tctalent.server.request.country.SearchCountryRequest;
@@ -53,6 +54,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -65,7 +67,9 @@ import static org.tctalent.server.api.admin.AdminApiTestUtil.getTranslationFile;
  */
 @WebMvcTest(TranslationAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class TranslationAdminApiTest extends ApiTestBase {
+
   private static final String BASE_PATH = "/api/admin/translation";
   private static final String COUNTRY_PATH = "/country";
   private static final String NATIONALITY_PATH = "/nationality";
@@ -79,25 +83,25 @@ class TranslationAdminApiTest extends ApiTestBase {
 
   private static final Translation translation = AdminApiTestUtil.getTranslation();
   private final Page<Country> countryPage = new PageImpl<>(
-          AdminApiTestUtil.getCountries(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      AdminApiTestUtil.getCountries(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<Language> languagePage = new PageImpl<>(
-          AdminApiTestUtil.getLanguageList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      AdminApiTestUtil.getLanguageList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<LanguageLevel> languageLevelPage = new PageImpl<>(
-          AdminApiTestUtil.getLanguageLevelList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      AdminApiTestUtil.getLanguageLevelList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<Occupation> occupationPage = new PageImpl<>(
-          AdminApiTestUtil.getListOfOccupations(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      AdminApiTestUtil.getListOfOccupations(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<EducationLevel> educationLevelPage = new PageImpl<>(
-          AdminApiTestUtil.getEducationLevels(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      AdminApiTestUtil.getEducationLevels(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<EducationMajor> educationMajorPage = new PageImpl<>(
-          AdminApiTestUtil.getEducationMajors(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      AdminApiTestUtil.getEducationMajors(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<SurveyType> surveyTypePage = new PageImpl<>(
-          AdminApiTestUtil.getSurveyTypes(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      AdminApiTestUtil.getSurveyTypes(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   @MockBean
   TranslationService translationService;
@@ -141,27 +145,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     SearchCountryRequest request = new SearchCountryRequest();
 
     given(countryService
-            .searchCountries(any(SearchCountryRequest.class)))
-            .willReturn(countryPage);
+        .searchCountries(any(SearchCountryRequest.class)))
+        .willReturn(countryPage);
 
     mockMvc.perform(post(BASE_PATH + COUNTRY_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(3)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Jordan")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(3)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].translatedName", is("Jordan")));
 
     verify(countryService).searchCountries(any(SearchCountryRequest.class));
   }
@@ -172,27 +177,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     SearchCountryRequest request = new SearchCountryRequest();
 
     given(countryService
-            .searchCountries(any(SearchCountryRequest.class)))
-            .willReturn(countryPage);
+        .searchCountries(any(SearchCountryRequest.class)))
+        .willReturn(countryPage);
 
     mockMvc.perform(post(BASE_PATH + NATIONALITY_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(3)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Jordan")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(3)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].translatedName", is("Jordan")));
 
     verify(countryService).searchCountries(any(SearchCountryRequest.class));
   }
@@ -203,27 +209,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     SearchLanguageRequest request = new SearchLanguageRequest();
 
     given(languageService
-            .searchLanguages(any(SearchLanguageRequest.class)))
-            .willReturn(languagePage);
+        .searchLanguages(any(SearchLanguageRequest.class)))
+        .willReturn(languagePage);
 
     mockMvc.perform(post(BASE_PATH + LANGUAGE_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(1)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Arabic")))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Arabic")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Arabic")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].translatedName", is("Arabic")));
 
     verify(languageService).searchLanguages(any(SearchLanguageRequest.class));
   }
@@ -234,27 +241,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     SearchLanguageLevelRequest request = new SearchLanguageLevelRequest();
 
     given(languageLevelService
-            .searchLanguageLevels(any(SearchLanguageLevelRequest.class)))
-            .willReturn(languageLevelPage);
+        .searchLanguageLevels(any(SearchLanguageLevelRequest.class)))
+        .willReturn(languageLevelPage);
 
     mockMvc.perform(post(BASE_PATH + LANGUAGE_LEVEL_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(1)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Excellent")))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Excellent")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(1)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Excellent")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].translatedName", is("Excellent")));
 
     verify(languageLevelService).searchLanguageLevels(any(SearchLanguageLevelRequest.class));
   }
@@ -265,27 +273,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     SearchOccupationRequest request = new SearchOccupationRequest();
 
     given(occupationService
-            .searchOccupations(any(SearchOccupationRequest.class)))
-            .willReturn(occupationPage);
+        .searchOccupations(any(SearchOccupationRequest.class)))
+        .willReturn(occupationPage);
 
     mockMvc.perform(post(BASE_PATH + OCCUPATION_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(2)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Builder")))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Builder")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(2)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Builder")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].translatedName", is("Builder")));
 
     verify(occupationService).searchOccupations(any(SearchOccupationRequest.class));
   }
@@ -296,27 +305,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     SearchEducationLevelRequest request = new SearchEducationLevelRequest();
 
     given(educationLevelService
-            .searchEducationLevels(any(SearchEducationLevelRequest.class)))
-            .willReturn(educationLevelPage);
+        .searchEducationLevels(any(SearchEducationLevelRequest.class)))
+        .willReturn(educationLevelPage);
 
     mockMvc.perform(post(BASE_PATH + EDUCATION_LEVEL_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(3)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Excellent")))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Excellent")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(3)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Excellent")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].translatedName", is("Excellent")));
 
     verify(educationLevelService).searchEducationLevels(any(SearchEducationLevelRequest.class));
   }
@@ -327,27 +337,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     SearchEducationMajorRequest request = new SearchEducationMajorRequest();
 
     given(educationMajorService
-            .searchEducationMajors(any(SearchEducationMajorRequest.class)))
-            .willReturn(educationMajorPage);
+        .searchEducationMajors(any(SearchEducationMajorRequest.class)))
+        .willReturn(educationMajorPage);
 
     mockMvc.perform(post(BASE_PATH + EDUCATION_MAJOR_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(3)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Computer Science")))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Computer Science")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(3)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Computer Science")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].translatedName", is("Computer Science")));
 
     verify(educationMajorService).searchEducationMajors(any(SearchEducationMajorRequest.class));
   }
@@ -358,27 +369,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     SearchSurveyTypeRequest request = new SearchSurveyTypeRequest();
 
     given(surveyTypeService
-            .searchActiveSurveyTypes(any(SearchSurveyTypeRequest.class)))
-            .willReturn(surveyTypePage);
+        .searchActiveSurveyTypes(any(SearchSurveyTypeRequest.class)))
+        .willReturn(surveyTypePage);
 
     mockMvc.perform(post(BASE_PATH + SURVEY_TYPE_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(2)))
-            .andExpect(jsonPath("$.totalPages", is(1)))
-            .andExpect(jsonPath("$.number", is(0)))
-            .andExpect(jsonPath("$.hasNext", is(false)))
-            .andExpect(jsonPath("$.hasPrevious", is(false)))
-            .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Survey Type One")))
-            .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Survey Type One")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.totalElements", is(2)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content.[0].name", is("Survey Type One")))
+        .andExpect(jsonPath("$.content.[0].status", is("active")))
+        .andExpect(jsonPath("$.content.[0].translatedName", is("Survey Type One")));
 
     verify(surveyTypeService).searchActiveSurveyTypes(any(SearchSurveyTypeRequest.class));
   }
@@ -395,26 +407,28 @@ class TranslationAdminApiTest extends ApiTestBase {
     given(authService.getLoggedInUser()).willReturn(Optional.of(user));
 
     given(translationService
-            .createTranslation(any(User.class), any(CreateTranslationRequest.class)))
-            .willReturn(translation);
+        .createTranslation(any(User.class), any(CreateTranslationRequest.class)))
+        .willReturn(translation);
 
     mockMvc.perform(post(BASE_PATH)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.objectId", is(1)))
-            .andExpect(jsonPath("$.objectType", is("Country")))
-            .andExpect(jsonPath("$.language", is("French")))
-            .andExpect(jsonPath("$.value", is("Australie")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.objectId", is(1)))
+        .andExpect(jsonPath("$.objectType", is("Country")))
+        .andExpect(jsonPath("$.language", is("French")))
+        .andExpect(jsonPath("$.value", is("Australie")));
 
     verify(authService).getLoggedInUser();
-    verify(translationService).createTranslation(any(User.class), any(CreateTranslationRequest.class));
+    verify(translationService).createTranslation(any(User.class),
+        any(CreateTranslationRequest.class));
   }
 
   @Test
@@ -424,23 +438,24 @@ class TranslationAdminApiTest extends ApiTestBase {
     request.setValue("Australie");
 
     given(translationService
-            .updateTranslation(anyLong(), any(UpdateTranslationRequest.class)))
-            .willReturn(translation);
+        .updateTranslation(anyLong(), any(UpdateTranslationRequest.class)))
+        .willReturn(translation);
 
     mockMvc.perform(put(BASE_PATH + "/" + 1L)
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.objectId", is(1)))
-            .andExpect(jsonPath("$.objectType", is("Country")))
-            .andExpect(jsonPath("$.language", is("French")))
-            .andExpect(jsonPath("$.value", is("Australie")));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.objectId", is(1)))
+        .andExpect(jsonPath("$.objectType", is("Country")))
+        .andExpect(jsonPath("$.language", is("French")))
+        .andExpect(jsonPath("$.value", is("Australie")));
 
     verify(translationService).updateTranslation(anyLong(), any(UpdateTranslationRequest.class));
   }
@@ -450,18 +465,18 @@ class TranslationAdminApiTest extends ApiTestBase {
   void getTranslationFileSucceeds() throws Exception {
 
     given(translationService
-            .getTranslationFile(anyString()))
-            .willReturn(getTranslationFile());
+        .getTranslationFile(anyString()))
+        .willReturn(getTranslationFile());
 
     mockMvc.perform(get(BASE_PATH + "/" + TRANSLATION_PATH.replace("{language}", "english"))
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", notNullValue()));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()));
 
     verify(translationService).getTranslationFile(anyString());
   }
@@ -472,15 +487,16 @@ class TranslationAdminApiTest extends ApiTestBase {
     Map<String, Object> translation = new HashMap<>();
 
     mockMvc.perform(put(BASE_PATH + "/" + TRANSLATION_PATH.replace("{language}", "english"))
-                    .header("Authorization", "Bearer " + "jwt-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(translation))
-                    .accept(MediaType.APPLICATION_JSON))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(translation))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", notNullValue()));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()));
 
     verify(translationService).updateTranslationFile(anyString(), anyMap());
   }

@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,6 +37,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
@@ -48,58 +50,62 @@ import org.tctalent.server.service.db.HelpLinkService;
  */
 @WebMvcTest(HelpLinkAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class HelpLinkAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/help-link";
 
-    private static final HelpLink helpLink = AdminApiTestUtil.getHelpLink();
+  private static final String BASE_PATH = "/api/admin/help-link";
+
+  private static final HelpLink helpLink = AdminApiTestUtil.getHelpLink();
 
 
-    @MockBean
-    HelpLinkService helpLinkService;
+  @MockBean
+  HelpLinkService helpLinkService;
 
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper objectMapper;
-    @Autowired HelpLinkAdminApi helpLinkAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  HelpLinkAdminApi helpLinkAdminApi;
 
-    @BeforeEach
-    void setUp() {
-        configureAuthentication();
-    }
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(helpLinkAdminApi).isNotNull();
-    }
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(helpLinkAdminApi).isNotNull();
+  }
 
-    @Test
-    void create() throws Exception {
-        UpdateHelpLinkRequest request = new UpdateHelpLinkRequest();
+  @Test
+  void create() throws Exception {
+    UpdateHelpLinkRequest request = new UpdateHelpLinkRequest();
 
-        given(helpLinkService
-            .createHelpLink(any(UpdateHelpLinkRequest.class)))
-            .willReturn(helpLink);
+    given(helpLinkService
+        .createHelpLink(any(UpdateHelpLinkRequest.class)))
+        .willReturn(helpLink);
 
-        mockMvc.perform(post(BASE_PATH)
-                .header("Authorization", "Bearer " + "jwt-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
 
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.id", is(99)))
-            .andExpect(jsonPath("$.country.name", is("Jordan")))
-            .andExpect(jsonPath("$.caseStage", is("cvReview")))
-            .andExpect(jsonPath("$.jobStage", is("jobOffer")))
-            .andExpect(jsonPath("$.label", is("Test label")))
-            .andExpect(jsonPath("$.link", is("https://www.talentbeyondboundaries.org/")))
-        ;
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", notNullValue()))
+        .andExpect(jsonPath("$.id", is(99)))
+        .andExpect(jsonPath("$.country.name", is("Jordan")))
+        .andExpect(jsonPath("$.caseStage", is("cvReview")))
+        .andExpect(jsonPath("$.jobStage", is("jobOffer")))
+        .andExpect(jsonPath("$.label", is("Test label")))
+        .andExpect(jsonPath("$.link", is("https://www.talentbeyondboundaries.org/")))
+    ;
 
-        verify(helpLinkService).createHelpLink(any(UpdateHelpLinkRequest.class));
+    verify(helpLinkService).createHelpLink(any(UpdateHelpLinkRequest.class));
 
-    }
+  }
 }

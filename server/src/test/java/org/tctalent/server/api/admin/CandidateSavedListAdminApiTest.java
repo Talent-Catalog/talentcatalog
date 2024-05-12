@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -42,6 +43,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tctalent.server.request.list.SearchSavedListRequest;
@@ -55,6 +57,7 @@ import org.tctalent.server.service.db.SavedListService;
  */
 @WebMvcTest(CandidateSavedListAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   private static final String BASE_PATH = "/api/admin/candidate-saved-list";
@@ -68,12 +71,17 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   private static final long CANDIDATE_ID = 99L;
 
-  @MockBean CandidateSavedListService candidateSavedListService;
-  @MockBean SavedListService savedListService;
+  @MockBean
+  CandidateSavedListService candidateSavedListService;
+  @MockBean
+  SavedListService savedListService;
 
-  @Autowired MockMvc mockMvc;
-  @Autowired ObjectMapper objectMapper;
-  @Autowired CandidateSavedListAdminApi candidateSavedListAdminApi;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  CandidateSavedListAdminApi candidateSavedListAdminApi;
 
   @BeforeEach
   void setUp() {
@@ -95,6 +103,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .willReturn(getSavedLists());
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH.replace("{id}", "1"))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -112,8 +121,10 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.[0].displayedFieldsLong[1]", is("user.lastName")))
         .andExpect(jsonPath("$.[0].exportColumns").isArray())
         .andExpect(jsonPath("$.[0].exportColumns[0].key", is("key")))
-        .andExpect(jsonPath("$.[0].exportColumns[0].properties.constant", is("non default constant column value")))
-        .andExpect(jsonPath("$.[0].exportColumns[0].properties.header", is("non default column header")))
+        .andExpect(jsonPath("$.[0].exportColumns[0].properties.constant",
+            is("non default constant column value")))
+        .andExpect(
+            jsonPath("$.[0].exportColumns[0].properties.header", is("non default column header")))
         .andExpect(jsonPath("$.[0].status", is("active")))
         .andExpect(jsonPath("$.[0].name", is("Saved list name")))
         .andExpect(jsonPath("$.[0].fixed", is(true)))
@@ -154,6 +165,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
     HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
 
     mockMvc.perform(put(BASE_PATH + REPLACE_PATH.replace("{id}", String.valueOf(CANDIDATE_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -163,7 +175,8 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(status().isOk());
 
     verify(candidateSavedListService).clearCandidateSavedLists(CANDIDATE_ID);
-    verify(candidateSavedListService).mergeCandidateSavedLists(anyLong(), any(HasSetOfSavedListsImpl.class));
+    verify(candidateSavedListService).mergeCandidateSavedLists(anyLong(),
+        any(HasSetOfSavedListsImpl.class));
   }
 
   @Test
@@ -179,7 +192,8 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.code", is("not_implemented")))
-        .andExpect(jsonPath("$.message", is("Method 'list' of CandidateSavedListAdminApi is not implemented.")));
+        .andExpect(jsonPath("$.message",
+            is("Method 'list' of CandidateSavedListAdminApi is not implemented.")));
   }
 
   @Test
@@ -188,6 +202,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
     HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
 
     mockMvc.perform(put(BASE_PATH + MERGE_PATH.replace("{id}", "1"))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -198,7 +213,8 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.code", is("not_implemented")))
-        .andExpect(jsonPath("$.message", is("Method 'merge' of CandidateSavedListAdminApi is not implemented.")));
+        .andExpect(jsonPath("$.message",
+            is("Method 'merge' of CandidateSavedListAdminApi is not implemented.")));
   }
 
   @Test
@@ -207,6 +223,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
     HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
 
     mockMvc.perform(put(BASE_PATH + REMOVE_PATH.replace("{id}", "1"))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -217,7 +234,8 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.code", is("not_implemented")))
-        .andExpect(jsonPath("$.message", is("Method 'remove' of CandidateSavedListAdminApi is not implemented.")));
+        .andExpect(jsonPath("$.message",
+            is("Method 'remove' of CandidateSavedListAdminApi is not implemented.")));
   }
 
   @Test
@@ -226,6 +244,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
     SearchSavedListRequest request = new SearchSavedListRequest();
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH.replace("{id}", "1"))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -236,7 +255,8 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$.code", is("not_implemented")))
-        .andExpect(jsonPath("$.message", is("Method 'searchPaged' of CandidateSavedListAdminApi is not implemented.")));
+        .andExpect(jsonPath("$.message",
+            is("Method 'searchPaged' of CandidateSavedListAdminApi is not implemented.")));
   }
 
 }

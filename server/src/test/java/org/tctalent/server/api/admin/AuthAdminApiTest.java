@@ -24,6 +24,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,6 +45,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.tctalent.server.exception.InvalidCredentialsException;
@@ -62,177 +64,192 @@ import org.tctalent.server.util.qr.EncodedQrImage;
  */
 @WebMvcTest(AuthAdminApi.class)
 @AutoConfigureMockMvc
+@WithMockUser(roles = {"ADMIN"})
 class AuthAdminApiTest extends ApiTestBase {
-    private static final String BASE_PATH = "/api/admin/auth";
 
-    private static final String JWT_ACCESS_TOKEN = "jwt-abc-def-123";
-    private static final String JWT_TOKEN_TYPE = "Bearer";
+  private static final String BASE_PATH = "/api/admin/auth";
 
-    private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid credentials";
-    private static final String ACCOUNT_LOCKED_MESSAGE = "Account locked";
-    private static final String USER_DEACTIVATED_MESSAGE = "Account deactivated";
-    private static final String PASSWORD_EXPIRED_MESSAGE = "Password expired";
-    private static final String QR_CODE_GEN_EXCEPTION_MESSAGE = "Error generating QR code";
+  private static final String JWT_ACCESS_TOKEN = "jwt-abc-def-123";
+  private static final String JWT_TOKEN_TYPE = "Bearer";
 
-    private static final String INVALID_CREDENTIALS_CODE = "invalid_credentials";
-    private static final String ACCOUNT_LOCKED_EXCEPTION = "account_locked";
-    private static final String USER_DEACTIVATED_CODE = "user_deactivated";
-    private static final String PASSWORD_EXPIRED_CODE = "password_expired";
-    private static final String QR_CODE_GEN_ERROR_CODE = "qr_error";
+  private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid credentials";
+  private static final String ACCOUNT_LOCKED_MESSAGE = "Account locked";
+  private static final String USER_DEACTIVATED_MESSAGE = "Account deactivated";
+  private static final String PASSWORD_EXPIRED_MESSAGE = "Password expired";
+  private static final String QR_CODE_GEN_EXCEPTION_MESSAGE = "Error generating QR code";
 
-    private LoginRequest loginRequest;
+  private static final String INVALID_CREDENTIALS_CODE = "invalid_credentials";
+  private static final String ACCOUNT_LOCKED_EXCEPTION = "account_locked";
+  private static final String USER_DEACTIVATED_CODE = "user_deactivated";
+  private static final String PASSWORD_EXPIRED_CODE = "password_expired";
+  private static final String QR_CODE_GEN_ERROR_CODE = "qr_error";
 
-    @Autowired AuthAdminApi controller;
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
+  private LoginRequest loginRequest;
 
-    @MockBean UserService userService;
+  @Autowired
+  AuthAdminApi controller;
+  @Autowired
+  MockMvc mockMvc;
+  @Autowired
+  ObjectMapper objectMapper;
 
-    @BeforeEach
-    public void setUp() {
-        configureAuthentication();
+  @MockBean
+  UserService userService;
 
-        loginRequest = new LoginRequest();
-        loginRequest.setUsername("sadat");
-        loginRequest.setPassword("password");
-    }
+  @BeforeEach
+  public void setUp() {
+    configureAuthentication();
 
-    @Test
-    public void testWebOnlyContextLoads() {
-        assertThat(controller).isNotNull();
-    }
+    loginRequest = new LoginRequest();
+    loginRequest.setUsername("sadat");
+    loginRequest.setPassword("password");
+  }
 
-    @Test
-    @DisplayName("login succeeds - bypassing MFA and Captcha")
-    void loginSucceeds() throws Exception {
-        user.setUsingMfa(false);
-        loginRequest.setReCaptchaV3Token(null);
+  @Test
+  public void testWebOnlyContextLoads() {
+    assertThat(controller).isNotNull();
+  }
 
-        given(userService.login(any(LoginRequest.class)))
-                .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
+  @Test
+  @DisplayName("login succeeds - bypassing MFA and Captcha")
+  void loginSucceeds() throws Exception {
+    user.setUsingMfa(false);
+    loginRequest.setReCaptchaV3Token(null);
 
-        doLoginAndVerifyResponse();
+    given(userService.login(any(LoginRequest.class)))
+        .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
 
-        verify(userService, never()).mfaVerify(any());
-    }
+    doLoginAndVerifyResponse();
 
-    @Test
-    @DisplayName("login fails - using MFA with no secret configured - for initial login attempt")
-    void loginFailsUsingMfaWithNoSecret() throws Exception {
-        user.setUsingMfa(true);
-        user.setMfaSecret(null);
+    verify(userService, never()).mfaVerify(any());
+  }
 
-        given(userService.login(any(LoginRequest.class)))
-                .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
+  @Test
+  @DisplayName("login fails - using MFA with no secret configured - for initial login attempt")
+  void loginFailsUsingMfaWithNoSecret() throws Exception {
+    user.setUsingMfa(true);
+    user.setMfaSecret(null);
 
-        doLoginAndVerifyResponse();
+    given(userService.login(any(LoginRequest.class)))
+        .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
 
-        verify(userService, never()).mfaVerify(any());
-    }
+    doLoginAndVerifyResponse();
 
-    @Test
-    @DisplayName("login succeeds - using MFA with valid secret")
-    void loginSucceedsUsingMfaWithValidSecretConfigured() throws Exception {
-        user.setUsingMfa(true);
-        user.setMfaSecret("valid-mfa-secret");
+    verify(userService, never()).mfaVerify(any());
+  }
 
-        given(userService.login(any(LoginRequest.class)))
-                .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
+  @Test
+  @DisplayName("login succeeds - using MFA with valid secret")
+  void loginSucceedsUsingMfaWithValidSecretConfigured() throws Exception {
+    user.setUsingMfa(true);
+    user.setMfaSecret("valid-mfa-secret");
 
-        doLoginAndVerifyResponse();
+    given(userService.login(any(LoginRequest.class)))
+        .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
 
-        verify(userService).mfaVerify(any());
-    }
+    doLoginAndVerifyResponse();
 
-    private void doLoginAndVerifyResponse() throws Exception {
-        mockMvc.perform(post(BASE_PATH + "/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
-                        .accept(MediaType.APPLICATION_JSON))
+    verify(userService).mfaVerify(any());
+  }
 
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.accessToken", is(JWT_ACCESS_TOKEN)))
-                .andExpect(jsonPath("$.tokenType", is(JWT_TOKEN_TYPE)))
+  private void doLoginAndVerifyResponse() throws Exception {
+    mockMvc.perform(post(BASE_PATH + "/login")
+            .with(csrf())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(loginRequest))
+            .accept(MediaType.APPLICATION_JSON))
 
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.username", Matchers.is(user.getUsername())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.email", Matchers.is(user.getEmail())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.role", Matchers.is(user.getRole().toString())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.firstName", Matchers.is(user.getFirstName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.lastName", Matchers.is(user.getLastName())));
-    }
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.accessToken", is(JWT_ACCESS_TOKEN)))
+        .andExpect(jsonPath("$.tokenType", is(JWT_TOKEN_TYPE)))
 
-    @ParameterizedTest
-    @MethodSource("provideLoginExceptionsAndCodes")
-    @DisplayName("login fails - user service throws an exception")
-    void loginFailsUserServiceException(Throwable loginException, String errorCode) throws Exception {
-        given(userService.login(any(LoginRequest.class))).willThrow(loginException);
-        doLoginAndVerifyFails(errorCode, loginException.getMessage());
-    }
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.user.username", Matchers.is(user.getUsername())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.user.email", Matchers.is(user.getEmail())))
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.user.role", Matchers.is(user.getRole().toString())))
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.user.firstName", Matchers.is(user.getFirstName())))
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.user.lastName", Matchers.is(user.getLastName())));
+  }
 
-    private static Stream<Arguments> provideLoginExceptionsAndCodes() {
-        return Stream.of(
-                Arguments.of(new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE), INVALID_CREDENTIALS_CODE),
-                Arguments.of(new AccountLockedException(ACCOUNT_LOCKED_MESSAGE), ACCOUNT_LOCKED_EXCEPTION),
-                Arguments.of(new UserDeactivatedException(USER_DEACTIVATED_MESSAGE), USER_DEACTIVATED_CODE),
-                Arguments.of(new PasswordExpiredException(PASSWORD_EXPIRED_MESSAGE), PASSWORD_EXPIRED_CODE)
-        );
-    }
+  @ParameterizedTest
+  @MethodSource("provideLoginExceptionsAndCodes")
+  @DisplayName("login fails - user service throws an exception")
+  void loginFailsUserServiceException(Throwable loginException, String errorCode) throws Exception {
+    given(userService.login(any(LoginRequest.class))).willThrow(loginException);
+    doLoginAndVerifyFails(errorCode, loginException.getMessage());
+  }
 
-    @Test
-    @DisplayName("login fails - using MFA with invalid secret")
-    void loginFailsUsingMfaWithInvalidSecret() throws Exception {
-        user.setUsingMfa(true);
-        user.setMfaSecret("invalid-mfa-secret");
+  private static Stream<Arguments> provideLoginExceptionsAndCodes() {
+    return Stream.of(
+        Arguments.of(new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE),
+            INVALID_CREDENTIALS_CODE),
+        Arguments.of(new AccountLockedException(ACCOUNT_LOCKED_MESSAGE), ACCOUNT_LOCKED_EXCEPTION),
+        Arguments.of(new UserDeactivatedException(USER_DEACTIVATED_MESSAGE), USER_DEACTIVATED_CODE),
+        Arguments.of(new PasswordExpiredException(PASSWORD_EXPIRED_MESSAGE), PASSWORD_EXPIRED_CODE)
+    );
+  }
 
-        given(userService.login(any(LoginRequest.class)))
-                .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
-        willThrow(new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE))
-                .given(userService).mfaVerify(any());
+  @Test
+  @DisplayName("login fails - using MFA with invalid secret")
+  void loginFailsUsingMfaWithInvalidSecret() throws Exception {
+    user.setUsingMfa(true);
+    user.setMfaSecret("invalid-mfa-secret");
 
-        doLoginAndVerifyFails(INVALID_CREDENTIALS_CODE, INVALID_CREDENTIALS_MESSAGE);
-    }
+    given(userService.login(any(LoginRequest.class)))
+        .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
+    willThrow(new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE))
+        .given(userService).mfaVerify(any());
 
-    private void doLoginAndVerifyFails(String errorCode, String message) throws Exception {
-        mockMvc.perform(post(BASE_PATH + "/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
-                        .accept(MediaType.APPLICATION_JSON))
+    doLoginAndVerifyFails(INVALID_CREDENTIALS_CODE, INVALID_CREDENTIALS_MESSAGE);
+  }
 
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code", containsString(errorCode)))
-                .andExpect(jsonPath("$.message", containsString(message)));
-    }
+  private void doLoginAndVerifyFails(String errorCode, String message) throws Exception {
+    mockMvc.perform(post(BASE_PATH + "/login")
+            .with(csrf())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(loginRequest))
+            .accept(MediaType.APPLICATION_JSON))
 
-    @Test
-    @DisplayName("logout succeeds")
-    void logoutSucceeds() throws Exception {
-        mockMvc.perform(post(BASE_PATH + "/logout"))
-                .andExpect(status().isOk());
-    }
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.code", containsString(errorCode)))
+        .andExpect(jsonPath("$.message", containsString(message)));
+  }
 
-    @Test
-    @DisplayName("multi-factor authentication setup succeeds")
-    void mfaSetupSucceeds() throws Exception {
-        EncodedQrImage encodedQrImage = new EncodedQrImage("qr-code-image");
-        given(userService.mfaSetup()).willReturn(encodedQrImage);
+  @Test
+  @DisplayName("logout succeeds")
+  void logoutSucceeds() throws Exception {
+    mockMvc.perform(post(BASE_PATH + "/logout")
+            .with(csrf()))
+        .andExpect(status().isOk());
+  }
 
-        mockMvc.perform(post(BASE_PATH + "/mfa-setup"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.base64Encoding", containsString("qr-code-image")));
-    }
+  @Test
+  @DisplayName("multi-factor authentication setup succeeds")
+  void mfaSetupSucceeds() throws Exception {
+    EncodedQrImage encodedQrImage = new EncodedQrImage("qr-code-image");
+    given(userService.mfaSetup()).willReturn(encodedQrImage);
 
-    @Test
-    @DisplayName("multi-factor authentication setup fails with service exception")
-    void mfaSetupFailsWithServiceException() throws Exception {
-        given(userService.mfaSetup())
-                .willThrow(new ServiceException("qr_error", QR_CODE_GEN_EXCEPTION_MESSAGE));
+    mockMvc.perform(post(BASE_PATH + "/mfa-setup")
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.base64Encoding", containsString("qr-code-image")));
+  }
 
-        mockMvc.perform(post(BASE_PATH + "/mfa-setup"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code", containsString(QR_CODE_GEN_ERROR_CODE)))
-                .andExpect(jsonPath("$.message", containsString(QR_CODE_GEN_EXCEPTION_MESSAGE)));
-    }
+  @Test
+  @DisplayName("multi-factor authentication setup fails with service exception")
+  void mfaSetupFailsWithServiceException() throws Exception {
+    given(userService.mfaSetup())
+        .willThrow(new ServiceException("qr_error", QR_CODE_GEN_EXCEPTION_MESSAGE));
 
+    mockMvc.perform(post(BASE_PATH + "/mfa-setup")
+            .with(csrf()))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code", containsString(QR_CODE_GEN_ERROR_CODE)))
+        .andExpect(jsonPath("$.message", containsString(QR_CODE_GEN_EXCEPTION_MESSAGE)));
+  }
 }
