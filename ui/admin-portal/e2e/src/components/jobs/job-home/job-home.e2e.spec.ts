@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { browser, by, element, ExpectedConditions } from 'protractor';
+import {browser, by, element, ExpectedConditions} from 'protractor';
 export async function clickTabAndWait(tabIndex: number) {
   const tabElement = element(by.id(`ngb-nav-${tabIndex}`));
   await browser.wait(ExpectedConditions.elementToBeClickable(tabElement), 5000);

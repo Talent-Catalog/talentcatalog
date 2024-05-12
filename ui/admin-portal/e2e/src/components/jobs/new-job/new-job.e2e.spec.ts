@@ -16,7 +16,7 @@
 
 // new-job.e2e-spec.ts
 
-import { browser, by, element, ExpectedConditions as EC } from 'protractor';
+import {browser, by, element} from 'protractor';
 import {clickTabAndWait} from "../job-home/job-home.e2e.spec";
 
 describe('New Job Component', () => {

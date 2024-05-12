@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { browser, by, element, ExpectedConditions } from 'protractor';
+import {browser, by, element, ExpectedConditions} from 'protractor';
 import {clickTabAndWait} from "../job-home/job-home.e2e.spec";
 
 // Test suite for the JobsComponent
