@@ -18,17 +18,21 @@
 // https://github.com/angular/protractor/blob/master/lib/config.ts
 const { SpecReporter } = require('jasmine-spec-reporter');
 const httpMock = require('protractor-http-mock/lib/httpMock');
-
-exports.config = {
-  allScriptsTimeout: 11000,
-  specs: [
-    './src/**/*.e2e-spec.ts'
+  exports.config = {
+    allScriptsTimeout: 11000,
+    specs: [
+    './src/components/account/login/login.e2e.spec.ts',
+    './src/**/*.e2e-spec.ts',
+    './src/components/account/reset-password/reset-password.e2e.spec.ts',
+    './src/components/settings/users/create-update-user.e2e.spec.ts',
+    './src/components/account/change-password/change-password.e2e.spec.ts',
+    './src/components/settings/users/cleanup.e2e.spec.ts',
   ],
   capabilities: {
-    'browserName': 'firefox'
+    'browserName': 'chrome'
   },
   directConnect: true,
-  baseUrl: 'http://localhost:4201/',
+  baseUrl: 'http://localhost:4201',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
@@ -39,7 +43,7 @@ exports.config = {
     require('ts-node').register({
       project: require('path').join(__dirname, './tsconfig.e2e.json')
     });
-    jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+   jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
 
     // Initialize protractor-http-mock
     const mocks = []; // Define your mocks here if needed
