@@ -36,14 +36,14 @@ describe('New Job Component', () => {
     const invalidLink = 'https://example.com'; // An invalid link
 
     // Locate the input field and type the invalid link
-    const inputField = element(by.css('app-joblink input[type="text"]'));
+    const inputField = element(by.css('app-sf-joblink input[type="text"]'));
     inputField.sendKeys(invalidLink);
 
     // Wait for a brief moment (optional, can be adjusted)
     browser.sleep(1000);
 
     // Assertion: Check if the error message is displayed
-    const errorMessage = element(by.css('app-joblink .alert.alert-danger'));
+    const errorMessage = element(by.css('app-sf-joblink .alert.alert-danger'));
     expect(errorMessage.isPresent()).toBeTruthy();
 
     // Assertion: Check if the error message text matches the expected message
