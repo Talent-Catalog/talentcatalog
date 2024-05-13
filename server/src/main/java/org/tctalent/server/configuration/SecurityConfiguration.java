@@ -145,9 +145,8 @@ public class SecurityConfiguration {
         .permitAll()
         .requestMatchers("/websocket", "/websocket/**")
         .permitAll()
-        // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers("/app/**", "/app/**/**")
-//        .permitAll()
+        .requestMatchers("/app/**", "/app/**")
+        .permitAll()
         .requestMatchers("/topic", "/topic/**")
         .permitAll()
         .requestMatchers("/status**", "/status/**")
@@ -195,9 +194,8 @@ public class SecurityConfiguration {
 
         // ADMIN ONLY RESTRICTIONS
         // All OTHER DELETE end points
-        // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.DELETE, "/api/admin/**/*")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN")
+        .requestMatchers(HttpMethod.DELETE, "/api/admin/**")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN")
         // Migrate database
         .requestMatchers("/api/admin/system/migrate")
         .hasAnyRole("SYSTEMADMIN", "ADMIN")
@@ -258,10 +256,9 @@ public class SecurityConfiguration {
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // GET: LOAD SAVE SEARCHES
-        // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
+        .requestMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+        //
         // PUT: SELECT CANDIDATE SAVED SEARCHES
         .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/select-candidate/*")
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -284,22 +281,22 @@ public class SecurityConfiguration {
 
         // POST: EXPORT SAVE SELECTION SAVED SEARCHES
         // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.POST, "/api/admin/saved-search-candidate/*/export/csv")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST,
+         "/api/admin/saved-search-candidate/*/export/csv")
+                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
+         "READONLY")
 
         /*
          * SEARCH ENDPOINTS
          */
         // POST: ALL SEARCHES
-        // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.POST, "/api/admin/**/search")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+        .requestMatchers(HttpMethod.POST, getApiAdminSearchEndPoints())
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // POST: ALL PAGED SEARCHES
-        // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.POST, "/api/admin/**/search-paged")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
+        .requestMatchers(HttpMethod.POST, getAdminApiSearchPagedEndPoints())
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+        //
         // POST: SEARCH BY NUMBER/NAME
         .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbynumberorname")
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -340,13 +337,13 @@ public class SecurityConfiguration {
 
         // PUT: MERGE CANDIDATE INTO LIST (ADD BY NAME/NUMBER)
         // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/merge")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+        .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/merge")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // PUT: REMOVE CANDIDATE FROM LIST
         // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/remove")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+        .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/remove")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // PUT: UPDATE SF
         .requestMatchers(HttpMethod.PUT, "/api/admin/sf/*")
@@ -374,8 +371,8 @@ public class SecurityConfiguration {
 
         // POST: EXPORT LIST
         // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+        .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // POST: VIEW TRANSLATIONS
         .requestMatchers(HttpMethod.POST, "/api/admin/translation/*")
@@ -386,26 +383,28 @@ public class SecurityConfiguration {
          */
         // GET (EXC. READ ONLY)
         // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake")
+                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
+         "READONLY")
 
         // PUT (EXC. READ ONLY)
         // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake")
+                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
         /*
          * JOB INTAKE ENDPOINTS
          */
         // GET (EXC. READ ONLY)
         // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.GET, "/api/admin/job/*/intake")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.GET, "/api/admin/job/*/intake")
+                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
+         "READONLY")
 
         // PUT (EXC. READ ONLY)
         // TODO(SEC_UPDATE: fix the path matching here..)
-//        .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/intake")
-//        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/intake")
+                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
         // ALL OTHER END POINTS
         // POST (EXC. READ ONLY)
@@ -504,5 +503,71 @@ public class SecurityConfiguration {
         new TcAuthenticationProvider(userDetailsService);
     tcAuthenticationProvider.setPasswordEncoder(passwordEncoder());
     return tcAuthenticationProvider;
+  }
+
+  /**
+   * This method replaces existing AntMatcher which is non-default. (any directory wildcard)
+   * .requestMatchers(HttpMethod .POST, /api/admin/* * /search)
+   *
+   * @return list of urls.
+   */
+  private String[] getApiAdminSearchEndPoints() {
+    return new String[] {
+      "/api/admin/partner/search",
+      "/api/admin/candidate-vis-job/{id}/search",
+      "/api/admin/candidate-skill/search",
+      "/api/admin/saved-list/search",
+      "/api/admin/chat/search",
+      "/api/admin/country/search",
+      "/api/admin/help-linked/search",
+      "/api/admin/candidate-exam/{id}/search",
+      "/api/admin/industry/search",
+      "/api/admin/candidate-job-experience/search",
+      "/api/admin/education-major/search",
+      "/api/admin/task-assignment/search",
+      "/api/admin/opp/search",
+      "/api/admin/candidate-dependent/{id}/search",
+      "/api/admin/task/search",
+      "/api/admin/language/search",
+      "/api/admin/job/search",
+      "/api/admin/candidate-visa-check/{id}/search",
+      "/api/admin/chat-post/{id}/search",
+      "/api/admin/candidate-destination/{id}/search",
+      "/api/admin/candidate-citizenship/{id}/search",
+      "/api/admin/candidate-note/search",
+      "/api/admin/candidate-attachment/search",
+      "/api/admin/occupation/search",
+      "/api/admin/saved-list-candidate/{id}/search",
+      "/api/admin/education-level/search",
+      "/api/admin/candidate/search",
+      "/api/admin/language-level/search"
+    };
+  }
+
+  // .requestMatchers(HttpMethod.POST, "/api/admin/**/search-paged")
+  private String[] getAdminApiSearchPagedEndPoints() {
+    return new String[] {
+      "/api/admin/saved-list/search-paged",
+      "/api/admin/job/search-paged",
+      "/api/admin/task/search-paged",
+      "/api/admin/opp/search-paged",
+      "/api/admin/help-link/search-paged",
+      "/api/admin/country/search-paged",
+      "/api/admin/task-assignment/search-paged",
+      "/api/admin/job/search-paged",
+      "/api/admin/chat/search-paged",
+      "/api/admin/partner/search-paged",
+      "/api/admin/chat-post/{id}/search-paged",
+      "/api/admin/candidate-vis-job/{id}/search-paged",
+      "/api/admin/candidate-exam/{id}/search-paged",
+      "/api/admin/candidate-visa-check/{id}/search-paged",
+      "/api/admin/candidate-dependent/{id}/search-paged",
+      "/api/admin/candidate-destination/{id}/search-paged",
+      "/api/admin/candidate-citizenship/{id}/search-paged",
+      "/api/admin/candidate-attachment/search-paged",
+      "/api/admin/saved-list-candidate/{id}/search-paged",
+      "/api/admin/candidate-saved-list/{id}/search-paged",
+      "/api/admin/user/search-paged"
+    };
   }
 }
