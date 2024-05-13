@@ -6,7 +6,7 @@ describe('JobGroupChatsTabComponent', () => {
     // Navigate to the page where the component is rendered
     browser.get('/jobs');
   });
-  it('should display group chats general tab', async () => {
+  it('should display group chats tab', async () => {
     await clickTabAndWait(0);
     const jobEntries = element.all(by.css('app-jobs-with-detail'));
     expect(await jobEntries.count()).toBeGreaterThan(0);
