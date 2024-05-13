@@ -16,9 +16,13 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.service.db.CandidateSavedListService;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,12 +35,9 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.service.db.CandidateSavedListService;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * There are two kinds of SavedList:
@@ -116,6 +117,18 @@ public class SavedList extends AbstractCandidateSource {
      */
     @Nullable
     private String fileInterviewGuidanceLink;
+
+    /**
+     * Name of signed MOU file, if one exists
+     */
+    @Nullable
+    private String fileMouName;
+
+    /**
+     * Url link to signed MOU file, if one exists
+     */
+    @Nullable
+    private String fileMouLink;
 
     /**
      * Url link to corresponding list folder on Google Drive, if one exists.

@@ -16,14 +16,17 @@
 
 // config-test.ts
 
+import {environment} from "./environments/environment.prod";
+
 export const config_test = {
   production: false,
   credentials: {
-    username: 'test_user',
-    email: 'test_user@gmail.com',
-    password: 'test_password',
+    username: 'SystemAdmin',
+    email: 'admin@gmail.com',
+    password: 'password',
     totpToken:'test_totpToken'
   },
+  baseUrl:'', // Production False
   apiKeys: {
     apiKey: 'api_key'
   }

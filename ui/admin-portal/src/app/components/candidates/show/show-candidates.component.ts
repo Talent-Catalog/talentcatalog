@@ -1067,7 +1067,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
     if (this.candidateSource.sfJobOpp != null) {
-      modal.componentInstance.sfJoblink = this.salesforceService.joblink(this.candidateSource);
+      modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
     }
     if (!isSavedSearch(this.candidateSource)) {
       modal.componentInstance.excludeList = this.candidateSource;
@@ -1110,7 +1110,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         const ssCreateRequest: CreateFromDefaultSavedSearchRequest = {
           savedListId: targetListSelection.savedListId,
           name: targetListSelection.newListName,
-          sfJoblink: targetListSelection.sfJoblink
+          jobId: targetListSelection.jobId
         };
         this.savedSearchService.createFromDefaultSearch(ssCreateRequest).subscribe(
           (newSavedSearch) => {
@@ -1139,7 +1139,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         name: targetListSelection.newListName,
         statusUpdateInfo: targetListSelection.statusUpdateInfo,
         updateType: targetListSelection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-        sfJoblink: targetListSelection.sfJoblink,
+        jobId: targetListSelection.jobId,
         candidateIds: this.selectedCandidates.map(c => c.id),
         sourceListId: this.candidateSource.id
       };
@@ -1158,7 +1158,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       savedListId: targetChoice.savedListId,
       newListName: targetChoice.newListName,
       updateType: targetChoice.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-      sfJoblink: targetChoice.sfJoblink,
+      jobId: targetChoice.jobId,
       statusUpdateInfo: targetChoice.statusUpdateInfo,
 
     }
@@ -1684,14 +1684,14 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           sourceListId: this.candidateSource.id,
           statusUpdateInfo: selection.statusUpdateInfo,
           updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-          sfJoblink: this.salesforceService.joblink(this.candidateSource)
+          jobId: this.candidateSource?.sfJobOpp?.id
 
         }
         this.candidateSourceService.copy(this.candidateSource, request).subscribe(
           (targetSource) => {
             this.targetListId = targetSource.id;
             this.targetListName = targetSource.name;
-            // Set to false, to allow display of copied message in html. Otherwise it will display the saved message.
+            // Set false, to allow display of copied message in html. Otherwise it will display the saved message.
             this.savedSelection = false;
 
             //Clear cache for target list as its contents will have changed.

@@ -17,6 +17,8 @@ buildscript {
     ext {
         springBootVersion = '2.7.13'
         isDev = System.properties['env'] == 'dev'
+        javaTargetVersion = JavaVersion.VERSION_21
+        lombokVersion = "1.18.30"
     }
     repositories {
         mavenCentral()
@@ -27,15 +29,20 @@ buildscript {
 }
 
 plugins {
-    id "org.springframework.boot" version "$springBootVersion"
+    id "org.springframework.boot" version "${springBootVersion}"
     id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
     id 'idea'
-    id 'com.google.cloud.tools.jib' version '3.3.1'
+    id 'com.google.cloud.tools.jib' version '3.4.0'
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of('21'))
+    }
+    sourceCompatibility = 21
+    targetCompatibility = 21
+}
 
 //Yes - you do have to declare this again (even though it is declared in the
 //buildscript above)
@@ -53,10 +60,10 @@ dependencies {
     // (in unnamed module @0x3dd0aa6) cannot access class
     // com.sun.tools.javac.processing.JavacProcessingEnvironment (in module jdk.compiler) because
     // module jdk.compiler does not export com.sun.tools.javac.processing to unnamed module @0x3dd0aa6
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    testCompileOnly 'org.projectlombok:lombok:1.18.24'
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    testCompileOnly("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
@@ -118,8 +125,8 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.apache.commons:commons-lang3")
     implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
-    implementation('javax.mail:javax.mail-api')
-    implementation('com.sun.mail:jakarta.mail')
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
+    implementation("jakarta.activation:jakarta.activation-api:latest.release")
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
     implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
@@ -138,6 +145,9 @@ dependencies {
 }
 
 jib {
+    from {
+        image = "eclipse-temurin:21-jre"
+    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
