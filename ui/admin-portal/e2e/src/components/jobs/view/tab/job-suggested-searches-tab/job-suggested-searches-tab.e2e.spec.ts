@@ -17,7 +17,7 @@
 import {browser, by, element, ExpectedConditions} from "protractor";
 import {clickTabAndWait} from "../../../job-home/job-home.e2e.spec";
 
-fdescribe('JobSuggestedSearchesTabComponent', () => {
+describe('JobSuggestedSearchesTabComponent', () => {
   beforeEach(async () => {
     // Navigate to the page where the component is located
     await browser.get('/jobs');
