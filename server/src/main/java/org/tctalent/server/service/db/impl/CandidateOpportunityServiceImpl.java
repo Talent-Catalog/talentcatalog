@@ -156,38 +156,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         opp = updateCandidateOpportunity(opp, oppParams);
 
         if (create) {
-            // todo we aren't sending post to recruiting chat even though we are creating it below-do we need to do one?
-            jobChatService.createCandidateRecruitingChat(opp.getCandidate(), opp.getJobOpp());
-
             //Create the automated post to notify that a candidate has been added to a submission list.
-            String candidateName = opp.getCandidate().getUser().getFirstName() + " "
-                + opp.getCandidate().getUser().getLastName();
-            Post autoPostAddedToSubList = new Post();
-            autoPostAddedToSubList.setContent("The candidate " + candidateName +
-                " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
-
-            // AUTO CHAT TO PROSPECT CHAT
-            JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
-                    null, candidate);
-            // Create the chat post
-            ChatPost prospectChatPost = chatPostServiceImpl.createPost(
-                autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
-            //publish chat post
-            chatPostServiceImpl.publishChatPost(prospectChatPost);
-
-            // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
-            JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
-                candidate.getUser().getPartner(), null);
-            // Create the chat post
-            ChatPost jcspChatPost = chatPostServiceImpl.createPost(
-                autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
-            //publish chat post
-            chatPostServiceImpl.publishChatPost(jcspChatPost);
-        }
-
-        if (opp.isClosed()) {
-            // todo add auto posts here
-
+            publishAddedToSubmissionListPosts(opp);
         }
 
         return opp;
@@ -631,7 +601,14 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
             opp.setEmployerFeedback(oppParams.getEmployerFeedback());
         }
-        return candidateOpportunityRepository.save(opp);
+
+        opp = candidateOpportunityRepository.save(opp);
+
+        //Create the automated posts to notify that a candidate has been removed from a submission list (stage = closed)
+        if (opp.isClosed()) {
+            publishRemovedFromSubmissionListPosts(opp);
+        }
+        return opp;
     }
 
     @Override
@@ -778,6 +755,69 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 emailHelper.sendNewChatPostsForCandidateUserEmail(user, userChats);
             }
         }
+    }
+
+    private void publishRemovedFromSubmissionListPosts(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        String candidateName = candidate.getUser().getFirstName() + " " + candidate.getUser().getLastName();
+        Post autoPostRemovedFromSubList = new Post();
+        autoPostRemovedFromSubList.setContent("The candidate " + candidateName +
+                " has been removed for the job '" + opp.getJobOpp().getName() +
+                "' with the reason " + opp.getStage().getSalesforceStageName() + ".");
+
+        // AUTO CHAT TO PROSPECT CHAT
+        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+        // Create the chat post
+        ChatPost prospectChatPostRemoved = chatPostServiceImpl.createPost(
+                autoPostRemovedFromSubList, prospectChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostServiceImpl.publishChatPost(prospectChatPostRemoved);
+
+        // AUTO CHAT TO RECRUITING CHAT
+        JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
+                candidate.getUser().getPartner(), candidate);
+        // Create the chat post
+        ChatPost recruitingChatPostRemoved = chatPostServiceImpl.createPost(
+                autoPostRemovedFromSubList, recruitingChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostServiceImpl.publishChatPost(recruitingChatPostRemoved);
+
+        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
+                candidate.getUser().getPartner(), null);
+        // Create the chat post
+        ChatPost jcspChatPostRemoved = chatPostServiceImpl.createPost(
+                autoPostRemovedFromSubList, jcspChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostServiceImpl.publishChatPost(jcspChatPostRemoved);
+    }
+
+    private void publishAddedToSubmissionListPosts(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        String candidateName = candidate.getUser().getFirstName() + " "
+                + candidate.getUser().getLastName();
+        Post autoPostAddedToSubList = new Post();
+        autoPostAddedToSubList.setContent("The candidate " + candidateName +
+                " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
+
+        // AUTO CHAT TO PROSPECT CHAT
+        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+        // Create the chat post
+        ChatPost prospectChatPost = chatPostServiceImpl.createPost(
+                autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
+        //publish chat post
+        chatPostServiceImpl.publishChatPost(prospectChatPost);
+
+        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
+                candidate.getUser().getPartner(), null);
+        // Create the chat post
+        ChatPost jcspChatPost = chatPostServiceImpl.createPost(
+                autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
+        //publish chat post
+        chatPostServiceImpl.publishChatPost(jcspChatPost);
     }
 
 }
