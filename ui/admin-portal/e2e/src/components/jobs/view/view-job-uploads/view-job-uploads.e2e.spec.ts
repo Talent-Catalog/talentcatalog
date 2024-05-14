@@ -76,8 +76,5 @@ describe('ViewJobUploadsComponent', () => {
         cancelBtn.click();
         await browser.wait(ExpectedConditions.invisibilityOf(modalDialog), 5000);
       }
-
-
-    // You can add more interactions and assertions as needed based on your application's behavior
   });
 });
