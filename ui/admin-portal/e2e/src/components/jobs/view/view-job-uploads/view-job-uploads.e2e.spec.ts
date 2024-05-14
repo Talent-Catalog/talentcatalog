@@ -67,8 +67,7 @@ describe('ViewJobUploadsComponent', () => {
       if (await uploadFileButton.isPresent()) {
         // Click the upload file button
         await uploadFileButton.click();
-        // Perform additional actions as needed for uploading the file
-        // Perform additional actions as needed for entering/editing the link
+        // Perform additional actions as needed
         const modalDialog = element(by.css('ngb-modal-window app-file-selector'));
         await browser.wait(ExpectedConditions.presenceOf(modalDialog), 5000);
         const cancelBtn = modalDialog.element(by.css('.modal-footer .btn-accent-2'))
