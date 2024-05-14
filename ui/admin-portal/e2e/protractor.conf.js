@@ -43,6 +43,7 @@ const httpMock = require('protractor-http-mock/lib/httpMock');
     './src/components/jobs/view/tab/job-intake-tab/job-intake-tab.e2e.spec.ts',
     './src/components/jobs/view/tab/job-source-contacts-tab/job-source-contacts-tab.e2e.spec.ts',
     './src/components/jobs/view/tab/job-suggested-searches-tab/job-suggested-searches-tab.e2e.spec.ts',
+    './src/components/jobs/view/tab/job-upload-tab/job-upload-tab.e2e.spec.ts',
   ],
   capabilities: {
     'browserName': 'chrome'
