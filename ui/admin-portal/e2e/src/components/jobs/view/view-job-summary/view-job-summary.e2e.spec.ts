@@ -20,11 +20,7 @@ import {browser, by, element} from 'protractor';
 import {clickTabAndWait} from "../../job-home/job-home.e2e.spec";
 
 describe('ViewJobSummaryComponent', () => {
-  let initialSummary='';
-  beforeAll(async ()=>{
-    const jobSummaryTextarea = element(by.id('jobSummary'));
-    initialSummary = await jobSummaryTextarea.getAttribute('value')
-  })
+
   beforeEach(() => {
     browser.get('/jobs');
   });
@@ -53,19 +49,13 @@ describe('ViewJobSummaryComponent', () => {
 
     // Check if the job summary has been updated
     expect(await jobSummaryTextarea.getAttribute('value')).toEqual(newSummary);
-
-    // Reset the job summary to it's original value
-    jobSummaryTextarea.clear();
-    jobSummaryTextarea.sendKeys(initialSummary);
-    expect(await jobSummaryTextarea.getAttribute('value')).toEqual(initialSummary);
-
   });
 
   it('should cancel changes to job summary', async () => {
-    // const initialSummary = 'Initial job summary';
 
     // Find the job summary textarea and enter a new value
     const jobSummaryTextarea = element(by.id('jobSummary'));
+    const initialSummary = jobSummaryTextarea.getAttribute('value');
     jobSummaryTextarea.clear();
     jobSummaryTextarea.sendKeys('New Updated job summary');
 
@@ -74,7 +64,7 @@ describe('ViewJobSummaryComponent', () => {
     cancelButton.click();
 
     // Check if the job summary reverts to the initial value
-    expect(await jobSummaryTextarea.getAttribute('value')).toEqual(initialSummary);
+    expect(await jobSummaryTextarea.getAttribute('value')).toEqual(await initialSummary);
   });
 
 });
