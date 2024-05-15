@@ -29,7 +29,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -81,7 +81,7 @@ import org.tctalent.server.security.TcUserDetailsService;
  */
 @Configuration
 @EnableWebSecurity(debug = true)
-@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = false)
 public class SecurityConfiguration {
 
   @Autowired private Environment env;
@@ -94,6 +94,7 @@ public class SecurityConfiguration {
   public SecurityFilterChain filterChain(
       HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
     //    protected void configure(HttpSecurity http) throws Exception {
+
     http
         // Default is to use a Bean called corsConfigurationSource - defined
         // below.
@@ -280,11 +281,8 @@ public class SecurityConfiguration {
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // POST: EXPORT SAVE SELECTION SAVED SEARCHES
-        // TODO(SEC_UPDATE: fix the path matching here..)
-                .requestMatchers(HttpMethod.POST,
-         "/api/admin/saved-search-candidate/*/export/csv")
-                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
-         "READONLY")
+        .requestMatchers(HttpMethod.POST, "/api/admin/saved-search-candidate/*/export/csv")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         /*
          * SEARCH ENDPOINTS
@@ -336,12 +334,10 @@ public class SecurityConfiguration {
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // PUT: MERGE CANDIDATE INTO LIST (ADD BY NAME/NUMBER)
-        // TODO(SEC_UPDATE: fix the path matching here..)
         .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/merge")
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // PUT: REMOVE CANDIDATE FROM LIST
-        // TODO(SEC_UPDATE: fix the path matching here..)
         .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/remove")
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -370,7 +366,6 @@ public class SecurityConfiguration {
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // POST: EXPORT LIST
-        // TODO(SEC_UPDATE: fix the path matching here..)
         .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv")
         .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -382,29 +377,23 @@ public class SecurityConfiguration {
          * CANDIDATE INTAKE ENDPOINTS
          */
         // GET (EXC. READ ONLY)
-        // TODO(SEC_UPDATE: fix the path matching here..)
-                .requestMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake")
-                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
-         "READONLY")
+        .requestMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // PUT (EXC. READ ONLY)
-        // TODO(SEC_UPDATE: fix the path matching here..)
-                .requestMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake")
-                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
+        .requestMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
         /*
          * JOB INTAKE ENDPOINTS
          */
         // GET (EXC. READ ONLY)
-        // TODO(SEC_UPDATE: fix the path matching here..)
-                .requestMatchers(HttpMethod.GET, "/api/admin/job/*/intake")
-                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED",
-         "READONLY")
+        .requestMatchers(HttpMethod.GET, "/api/admin/job/*/intake")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
         // PUT (EXC. READ ONLY)
-        // TODO(SEC_UPDATE: fix the path matching here..)
-                .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/intake")
-                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
+        .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/intake")
+        .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
         // ALL OTHER END POINTS
         // POST (EXC. READ ONLY)
@@ -445,6 +434,7 @@ public class SecurityConfiguration {
         .addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class)
         .authenticationManager(authenticationManager(authenticationConfiguration));
     http.csrf(CsrfConfigurer::disable);
+
     return http.build();
 
     // See
