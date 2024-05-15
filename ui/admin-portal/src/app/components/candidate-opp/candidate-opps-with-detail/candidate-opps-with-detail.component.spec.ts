@@ -1,5 +1,5 @@
 import {CandidateOppsWithDetailComponent} from "./candidate-opps-with-detail.component";
-import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {ComponentFixture, fakeAsync, TestBed} from "@angular/core/testing";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {SearchOppsBy} from "../../../model/base";
@@ -47,7 +47,7 @@ fdescribe('CandidateOppsWithDetailComponent', () => {
     expect(component.selectedOpp).toEqual(mockOpp);
   });
 
-  it('should propagate update event appropriately when an opportunity is updated', fakeAsync(() => {
+  it('should propagate update event appropriately when an opportunity is updated', () => {
     // Mock candidate opportunity
     const mockOpp: CandidateOpportunity = mockCandidateOpportunity;
     component.candidateOpps = [mockOpp];
@@ -64,5 +64,5 @@ fdescribe('CandidateOppsWithDetailComponent', () => {
     component.searchBy = SearchOppsBy.starredByMe;
     component.onCandidateOppUpdated(mockOpp);
     expect(component.candidateOppsComponent.search).toHaveBeenCalled();
-  }));
+  });
 });
