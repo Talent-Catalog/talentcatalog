@@ -80,7 +80,7 @@ import org.tctalent.server.security.TcUserDetailsService;
  * </ul>
  */
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity(debug = false)
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = false)
 public class SecurityConfiguration {
 
