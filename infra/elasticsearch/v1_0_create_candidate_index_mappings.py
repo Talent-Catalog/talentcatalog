@@ -96,5 +96,5 @@ mappings = {
 
 
 if __name__ == "__main__":
-  es = connect_to_es()
-  create_index_if_not_exists(es, index_name, mappings)
+    es = connect_to_es()
+    create_index_if_not_exists(es, index_name, mappings)
