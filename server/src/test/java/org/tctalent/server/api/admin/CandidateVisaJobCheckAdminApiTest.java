@@ -142,7 +142,7 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
                 .createVisaJobCheck(anyLong(), any(CreateCandidateVisaJobCheckRequest.class)))
                 .willReturn(candidateVisaJobCheck);
 
-        mockMvc.perform(post(BASE_PATH + "/" + anyLong())
+        mockMvc.perform(post(BASE_PATH + "/" + 99L)
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
