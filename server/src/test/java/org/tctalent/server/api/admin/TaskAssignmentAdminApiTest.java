@@ -45,6 +45,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -101,6 +102,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .willReturn(taskAssignments);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -142,6 +144,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .willReturn(taskAssignment);
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -181,6 +184,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .willReturn(completedTaskAssignment);
 
     mockMvc.perform(put(BASE_PATH + "/" + TASK_ASSIGNMENT_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -219,6 +223,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + TASK_ASSIGNMENT_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 
@@ -241,6 +246,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
     given(savedListService.get(anyLong())).willReturn(savedList);
 
     mockMvc.perform(put(BASE_PATH + ASSIGN_TO_LIST_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -264,6 +270,7 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
     given(savedListService.get(anyLong())).willReturn(savedList);
 
     mockMvc.perform(put(BASE_PATH + REMOVE_FROM_LIST_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))

@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -143,6 +144,7 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
                 .willReturn(candidateVisaJobCheck);
 
         mockMvc.perform(post(BASE_PATH + "/" + 99L)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -161,6 +163,7 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
     @DisplayName("delete visa job check by id succeeds")
     void deleteByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + anyLong())
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andDo(print())
@@ -178,6 +181,7 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(put(BASE_PATH + UPDATE_SF_CASE_PATH.replace(
             "{id}", "3"))
+                .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token"))
 
             .andDo(print())

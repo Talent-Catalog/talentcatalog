@@ -68,11 +68,11 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    if (!isDev) {
-        implementation(project(':ui:admin-portal'))
-        implementation(project(':ui:candidate-portal'))
-        implementation(project(':ui:public-portal'))
-    }
+//    if (!isDev) {
+//        implementation(project(':ui:admin-portal'))
+//        implementation(project(':ui:candidate-portal'))
+//        implementation(project(':ui:public-portal'))
+//    }
     implementation platform('com.google.cloud:libraries-bom:22.0.0')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20210629-1.32.1'

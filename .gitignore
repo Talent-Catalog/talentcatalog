@@ -27,6 +27,9 @@
 
 ### END John Camerons extra changes
 
+infra/elasticsearch/tc_env*
+.idea/material_theme_project_new.xml
+.idea/google-java-format.xml
 
 # User-specific stuff
 .idea/**/workspace.xml
