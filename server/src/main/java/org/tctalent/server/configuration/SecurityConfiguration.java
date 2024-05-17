@@ -108,6 +108,7 @@ public class SecurityConfiguration {
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
+    @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             //Default is to use a Bean called corsConfigurationSource - defined
@@ -141,7 +142,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/published/**").permitAll()
 
                 .requestMatchers("/websocket","/websocket/**").permitAll()
-                .requestMatchers("/app/**","/app/**/**").permitAll()
+                .requestMatchers("/app/**","/app/**").permitAll()
                 .requestMatchers("/topic", "/topic/**").permitAll()
                 .requestMatchers("/status**", "/status/**").permitAll()
 
