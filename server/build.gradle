@@ -15,7 +15,7 @@
  */
 buildscript {
     ext {
-        springBootVersion = '2.7.13'
+        springBootVersion = '3.0.6'
         isDev = System.properties['env'] == 'dev'
         javaTargetVersion = JavaVersion.VERSION_21
         lombokVersion = "1.18.30"
@@ -53,6 +53,11 @@ repositories {
 
 dependencies {
 
+    // This is used to help with properties that require updating, changing, removing with spring3.
+    // turn on when the app compiles/runs again as they display at runtime.
+    // TODO (AT- do this before final)
+    // runtime("org.springframework.boot:spring-boot-properties-migrator")
+
     //Instead of defaulting Lombok version, specify recent Lombok version to address this issue:
     // https://stackoverflow.com/questions/65380359/lomboks-access-to-jdk-compilers-internal-packages-incompatible-with-java-16
     //We were getting this error when building server:
@@ -67,11 +72,11 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    if (!isDev) {
-        implementation(project(':ui:admin-portal'))
-        implementation(project(':ui:candidate-portal'))
-        implementation(project(':ui:public-portal'))
-    }
+//    if (!isDev) {
+//        implementation(project(':ui:admin-portal'))
+//        implementation(project(':ui:candidate-portal'))
+//        implementation(project(':ui:public-portal'))
+//    }
     implementation platform('com.google.cloud:libraries-bom:22.0.0')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20210629-1.32.1'
@@ -129,7 +134,7 @@ dependencies {
     implementation("jakarta.activation:jakarta.activation-api:latest.release")
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
-    implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
+    implementation('org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')

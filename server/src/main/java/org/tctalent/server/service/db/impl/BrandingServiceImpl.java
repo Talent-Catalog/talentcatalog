@@ -27,7 +27,7 @@ import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Implements BrandingService

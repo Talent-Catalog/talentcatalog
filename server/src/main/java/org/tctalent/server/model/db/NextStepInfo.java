@@ -16,7 +16,7 @@
 
 package org.tctalent.server.model.db;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
 

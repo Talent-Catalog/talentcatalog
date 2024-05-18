@@ -19,8 +19,14 @@ package org.tctalent.server.service.db.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateEducation;
+import org.tctalent.server.model.db.CandidateNote;
+import org.tctalent.server.model.db.NoteType;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
@@ -28,13 +34,6 @@ import org.tctalent.server.request.note.SearchCandidateNotesRequest;
 import org.tctalent.server.request.note.UpdateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateNoteService;
-
-import javax.transaction.Transactional;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateEducation;
-import org.tctalent.server.model.db.CandidateNote;
-import org.tctalent.server.model.db.NoteType;
-import org.tctalent.server.model.db.User;
 
 @Service
 public class CandidateNotesServiceImpl implements CandidateNoteService {

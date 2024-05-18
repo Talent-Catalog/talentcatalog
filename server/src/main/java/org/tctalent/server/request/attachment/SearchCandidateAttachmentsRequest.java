@@ -16,7 +16,7 @@
 
 package org.tctalent.server.request.attachment;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.tctalent.server.request.PagedSearchRequest;
 
