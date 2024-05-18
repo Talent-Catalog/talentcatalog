@@ -16,14 +16,14 @@
 
 package org.tctalent.server.service.db.es;
 
+import static org.tctalent.server.service.db.es.TCElasticHelpers.addTermFilter;
+
 import co.elastic.clients.elasticsearch._types.FieldSort;
-import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
 import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -40,7 +40,6 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
@@ -164,43 +163,5 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         .withPageable(PageRequest.of(0, 10))
         .build();
     return elasticsearchOperations.search(query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
-  }
-
-  /*
-   * Methods to create term queries.
-   */
-  @NotNull
-  private Query getTermsQuery(String field, List<Object> terms) {
-    if (terms.size() == 1) {
-      return getTermQuery(field, terms.getFirst());
-    } else {
-      return TermsQuery
-          .of(t -> t.field(field)
-              .terms(tt -> tt.value(terms.stream().map(FieldValue::of).toList())))._toQuery();
-    }
-  }
-
-  @NotNull
-  private Query getTermQuery(String field, Object value) {
-    return QueryBuilders.term().field(field).value(FieldValue.of(value)).build()._toQuery();
-  }
-
-  @NotNull
-  private Query addTermFilter(@Nullable SearchType searchType, String field, List<Object> values) {
-    Query qry = addTermFilter(field, values);
-
-    BoolQuery.Builder builder = QueryBuilders.bool();
-    if (searchType == SearchType.not) {
-      builder = builder.mustNot(qry);
-    } else {
-      builder = builder.filter(qry);
-    }
-
-    return builder.build()._toQuery();
-  }
-
-  @NotNull
-  private Query addTermFilter(String field, List<Object> values) {
-    return getTermQuery(field, values);
   }
 }
