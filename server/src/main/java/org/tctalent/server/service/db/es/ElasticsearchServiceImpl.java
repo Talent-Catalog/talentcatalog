@@ -16,28 +16,36 @@
 
 package org.tctalent.server.service.db.es;
 
+import co.elastic.clients.elasticsearch._types.FieldSort;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
+import co.elastic.clients.json.JsonData;
+import co.elastic.clients.json.JsonpDeserializer;
+import co.elastic.clients.json.JsonpMapper;
+import com.google.gson.Gson;
 import io.jsonwebtoken.lang.Collections;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonGenerator;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchBoolPrefixQueryBuilder;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
+import org.springframework.data.elasticsearch.client.erhlc.NativeSearchQuery;
+import org.springframework.data.elasticsearch.client.erhlc.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Criteria.Operator;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -151,8 +159,10 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     } return builder;
   }
 
+  // TODO (delete, replaced).
   @NotNull
   private SearchHits<CandidateEs> executeQuery(BoolQueryBuilder boolQuery) {
+
     NativeSearchQuery query = new NativeSearchQueryBuilder()
         .withQuery(boolQuery).withSorts(
             SortBuilders.fieldSort("masterId").order(SortOrder.ASC)
@@ -174,4 +184,44 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     return candidateIds;
   }
 
+  /*
+   * Replacement for executeQuery(BoolQueryBuilder boolQuery)
+   */
+  @NotNull
+  private SearchHits<CandidateEs> runQuery(Query boolQuery) {
+    NativeQuery query = new NativeQueryBuilder()
+        .withQuery(boolQuery)
+        .withSort(s -> s
+            .field(
+            FieldSort.of(f -> f
+                .field("masterId")
+                .order(SortOrder.Desc))
+        ))
+        .withPageable(PageRequest.of(0, 10))
+        .build();
+    return elasticsearchOperations.search(query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
+  }
+
+  /*
+   * Methods to create term queries.
+   */
+  @NotNull
+  private Query getTermsQuery(String field, List<Object> terms) {
+    // Need to convert to JsonData (string).... or create independent functions?
+    // This won't work.
+    String jsonTerms = new Gson().toJson(terms);
+
+    if (terms.size() == 1) {
+      return getTermQuery(field, jsonTerms);
+    } else {
+      return TermsQuery
+          .of(t -> t.field(field)
+              .terms(tt -> tt.value(terms.stream().map(FieldValue.of(jsonTerms)).toList())))._toQuery();
+    }
+  }
+
+  @NotNull
+  private Query getTermQuery(String field, String value) {
+    return QueryBuilders.term().field(field).value(value).build()._toQuery();
+  }
 }
