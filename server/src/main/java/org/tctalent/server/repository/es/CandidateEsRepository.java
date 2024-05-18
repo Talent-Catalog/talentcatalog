@@ -19,7 +19,7 @@ package org.tctalent.server.repository.es;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.client.erhlc.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.impl.CandidateServiceImpl;
