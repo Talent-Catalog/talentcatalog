@@ -19,16 +19,12 @@ package org.tctalent.server.service.db.es;
 import co.elastic.clients.elasticsearch._types.FieldSort;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
-import co.elastic.clients.json.JsonData;
-import co.elastic.clients.json.JsonpDeserializer;
-import co.elastic.clients.json.JsonpMapper;
-import com.google.gson.Gson;
 import io.jsonwebtoken.lang.Collections;
-import jakarta.json.JsonValue;
-import jakarta.json.stream.JsonGenerator;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,13 +35,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
-import org.springframework.data.elasticsearch.client.erhlc.NativeSearchQuery;
-import org.springframework.data.elasticsearch.client.erhlc.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.Criteria.Operator;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -81,8 +74,9 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
    */
   @Override
   public Set<Long> findByName(@NonNull String name) {
-    BoolQueryBuilder boolQuery = computeFindByNameQuery(name);
-    SearchHits<CandidateEs> hits = executeQuery(boolQuery);
+//    BoolQueryBuilder boolQuery = computeFindByNameQuery(name);
+    Query query = computeFindByNameQuery(name);
+    SearchHits<CandidateEs> hits = runQuery(query);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
 
     log.info("Found candidate IDs: " + candidateIds);
@@ -91,15 +85,17 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   }
 
   @NotNull
-  private BoolQueryBuilder computeFindByNameQuery(String name) {
-    // Create match_bool_prefix query for name
-    MatchBoolPrefixQueryBuilder nameQuery = QueryBuilders
-        .matchBoolPrefixQuery("fullName", name)
-        .operator(Operator.AND);
+  private Query computeFindByNameQuery(String name) {
+
+    Query nameQuery = QueryBuilders.matchBoolPrefix()
+        .field("fullName")
+        .query(name)
+        .operator(Operator.And)
+        .build()
+        ._toQuery();
 
     // Construct the boolean query
-    BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
-        .must(nameQuery);
+    Query boolQuery = QueryBuilders.bool().must(nameQuery).build()._toQuery();
 
     // Filter out deleted Statuses and account for country restrictions
     boolQuery = filterOnDeletedStatus(boolQuery);
@@ -110,17 +106,19 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   }
 
   @NotNull
-  private BoolQueryBuilder filterOnDeletedStatus(BoolQueryBuilder boolQuery) {
-    boolQuery = addElasticTermFilter(boolQuery,
+  private Query filterOnDeletedStatus(Query boolQuery) {
+    BoolQuery.Builder bqb = QueryBuilders.bool().filter(boolQuery);
+
+    bqb = bqb.filter(addTermFilter(
         SearchType.not,
         STATUS_KEYWORD,
         List.of(CandidateStatus.deleted)
-    );
-    return boolQuery;
+    ));
+    return bqb.build()._toQuery();
   }
 
   @NotNull
-  private BoolQueryBuilder filterOnSourceCountryRestrictions(BoolQueryBuilder boolQuery) {
+  private Query filterOnSourceCountryRestrictions(Query boolQuery) {
     User user = userService.getLoggedInUser();
     List<Object> countries = new ArrayList<>();
     if (user != null && !Collections.isEmpty(user.getSourceCountries())){
@@ -129,50 +127,16 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
       }
     }
 
+    BoolQuery.Builder bqb = QueryBuilders.bool().filter(boolQuery);
+
     if (!countries.isEmpty()) {
-      boolQuery = addElasticTermFilter(boolQuery,
+      bqb = bqb.filter(addTermFilter(
           SearchType.or,
           COUNTRY_KEYWORD,
           countries
-      );
+      ));
     }
-    return boolQuery;
-  }
-
-  @NotNull
-  private BoolQueryBuilder addElasticTermFilter(
-      BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
-      List<Object> values) {
-    final int nValues = values.size();
-    if (nValues > 0) {
-      QueryBuilder queryBuilder;
-      if (nValues == 1) {
-        queryBuilder = QueryBuilders.termQuery(field, values.get(0));
-      } else {
-        queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
-      }
-      if (searchType == SearchType.not) {
-        builder = builder.mustNot(queryBuilder);
-      } else {
-        builder = builder.filter(queryBuilder);
-      }
-    } return builder;
-  }
-
-  // TODO (delete, replaced).
-  @NotNull
-  private SearchHits<CandidateEs> executeQuery(BoolQueryBuilder boolQuery) {
-
-    NativeSearchQuery query = new NativeSearchQueryBuilder()
-        .withQuery(boolQuery).withSorts(
-            SortBuilders.fieldSort("masterId").order(SortOrder.ASC)
-        )
-        .withPageable(PageRequest.of(0, 10))
-        .build();
-
-    return elasticsearchOperations.search(
-        query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME)
-    );
+    return bqb.build()._toQuery();
   }
 
   @NotNull
@@ -207,21 +171,36 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
    */
   @NotNull
   private Query getTermsQuery(String field, List<Object> terms) {
-    // Need to convert to JsonData (string).... or create independent functions?
-    // This won't work.
-    String jsonTerms = new Gson().toJson(terms);
-
     if (terms.size() == 1) {
-      return getTermQuery(field, jsonTerms);
+      return getTermQuery(field, terms.getFirst());
     } else {
       return TermsQuery
           .of(t -> t.field(field)
-              .terms(tt -> tt.value(terms.stream().map(FieldValue.of(jsonTerms)).toList())))._toQuery();
+              .terms(tt -> tt.value(terms.stream().map(FieldValue::of).toList())))._toQuery();
     }
   }
 
   @NotNull
-  private Query getTermQuery(String field, String value) {
-    return QueryBuilders.term().field(field).value(value).build()._toQuery();
+  private Query getTermQuery(String field, Object value) {
+    return QueryBuilders.term().field(field).value(FieldValue.of(value)).build()._toQuery();
+  }
+
+  @NotNull
+  private Query addTermFilter(@Nullable SearchType searchType, String field, List<Object> values) {
+    Query qry = addTermFilter(field, values);
+
+    BoolQuery.Builder builder = QueryBuilders.bool();
+    if (searchType == SearchType.not) {
+      builder = builder.mustNot(qry);
+    } else {
+      builder = builder.filter(qry);
+    }
+
+    return builder.build()._toQuery();
+  }
+
+  @NotNull
+  private Query addTermFilter(String field, List<Object> values) {
+    return getTermQuery(field, values);
   }
 }

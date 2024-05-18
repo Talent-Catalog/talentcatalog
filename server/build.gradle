@@ -140,6 +140,10 @@ dependencies {
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
 
+
+    // TODO (AT - elastic....)
+    implementation("co.elastic.clients:elasticsearch-java:8.13.4")
+
     // Caching
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
