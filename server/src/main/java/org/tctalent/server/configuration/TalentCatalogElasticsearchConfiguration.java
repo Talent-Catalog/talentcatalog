@@ -19,16 +19,13 @@ package org.tctalent.server.configuration;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
-import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.RestClients;
-import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.lang.NonNull;
 
@@ -42,7 +39,7 @@ import org.springframework.lang.NonNull;
  */
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "org.tctalent.server.repository.es")
-public class ElasticsearchConfiguration extends AbstractElasticsearchConfiguration {
+public class TalentCatalogElasticsearchConfiguration extends ElasticsearchConfiguration {
 
     @Value("${spring.elasticsearch.uris}")
     private List<String> uris;
@@ -51,11 +48,12 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
     @Value("${spring.elasticsearch.password}")
     private String password;
 
-    private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(
+        TalentCatalogElasticsearchConfiguration.class);
 
     @Override
     @Bean
-    public @NonNull RestHighLevelClient elasticsearchClient() {
+    public @NonNull ClientConfiguration clientConfiguration() {
         try {
             if (uris != null && uris.size() > 0) {
                 URI uri = new URI(uris.get(0));
@@ -77,9 +75,7 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
                     x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
                             x.withBasicAuth(username, password);
                 }
-                ClientConfiguration clientConfiguration = x.build();
-
-                return RestClients.create(clientConfiguration).rest();
+                return x.build();
             } else {
                 throw new RuntimeException("Missing Elasticsearch URL");
             }
