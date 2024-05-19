@@ -19,6 +19,7 @@ buildscript {
         isDev = System.properties['env'] == 'dev'
         javaTargetVersion = JavaVersion.VERSION_21
         lombokVersion = "1.18.30"
+        ext['spring-security.version']='5.8.12'
     }
     repositories {
         mavenCentral()
