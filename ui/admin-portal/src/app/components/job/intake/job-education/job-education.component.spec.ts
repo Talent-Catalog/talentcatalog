@@ -3,7 +3,6 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {JobService} from "../../../../services/job.service";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {By} from '@angular/platform-browser';
 import {NgxWigModule} from "ngx-wig";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 fdescribe('JobEducationComponent', () => {
@@ -66,5 +65,5 @@ fdescribe('JobEducationComponent', () => {
     const errorDiv = fixture.nativeElement.querySelector('div');
     expect(errorDiv.textContent).toContain(error);
   });
-  
+
 });
