@@ -18,6 +18,9 @@ package org.tctalent.server.service.db.impl;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
@@ -289,7 +292,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             // This is an elasticsearch request
 
             // Combine any joined searches (which will all be processed as elastic)
-            BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
+            Query.Builder boolQueryBuilder = processElasticRequest(searchRequest,
                 simpleQueryString, excludedCandidates);
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
@@ -910,7 +913,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * and elastic classes are deprecated/removed as well.
      * // TODO(AT remove this comment/block when done)
      */
-    private BoolQueryBuilder computeElasticQuery(
+    private Query.Builder computeElasticQuery(
         SearchCandidateRequest request, @Nullable String simpleQueryString,
         @Nullable Collection<Candidate> excludedCandidates) {
     /*
@@ -934,7 +937,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         User user = userService.getLoggedInUser();
 
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+        BoolQuery.Builder boolQueryBuilder = QueryBuilders.bool();
 
         // Not every base search will contain an elastic search term, since we're processing
         // joined regular searches here too — so we need a safe escape here
@@ -1155,8 +1158,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
-    private BoolQueryBuilder addElasticRangeFilter(
-        BoolQueryBuilder builder, String field,
+    private Query.Builder addElasticRangeFilter(
+        Query.Builder builder, String field,
         @Nullable Object min, @Nullable Object max) {
         if (min != null || max != null) {
             RangeQueryBuilder rangeQueryBuilder =
@@ -1166,8 +1169,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return builder;
     }
 
-    private BoolQueryBuilder addElasticTermFilter(
-        BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
+    private Query.Builder addElasticTermFilter(
+        Query.Builder builder, @Nullable SearchType searchType, String field,
         List<Object> values) {
         final int nValues = values.size();
         if (nValues > 0) {
@@ -1185,7 +1188,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         } return builder;
     }
 
-    private BoolQueryBuilder addElasticQuery(BoolQueryBuilder boolQueryBuilder,
+    private Query.Builder addElasticQuery(Query.Builder boolQueryBuilder,
         SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
         // We don't want searches built on themselves - this is also guarded against in frontend
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
@@ -1590,7 +1593,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             // This is an elasticsearch request
 
             // Combine any joined searches (which will all be processed as elastic)
-            BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
+            Query.Builder boolQueryBuilder = processElasticRequest(searchRequest,
                 simpleQueryString, excludedCandidates);
 
             //Define sort from request
@@ -1694,7 +1697,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
-    private BoolQueryBuilder processElasticRequest(SearchCandidateRequest searchRequest,
+    private Query.Builder processElasticRequest(SearchCandidateRequest searchRequest,
         String simpleQueryString, Set<Candidate> excludedCandidates) {
         // If saved search, add to searchIds to guard against circular dependencies
         List<Long> searchIds = new ArrayList<>();
@@ -1702,7 +1705,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             searchIds.add(searchRequest.getSavedSearchId());
         }
 
-        BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
+        Query.Builder boolQueryBuilder = computeElasticQuery(searchRequest,
             simpleQueryString, excludedCandidates);
 
         // Add any joined searches to the builder
