@@ -17,12 +17,16 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.tctalent.server.service.db.es.TCElasticHelpers.filterIfNotNull;
+import static org.tctalent.server.service.db.es.TCElasticHelpers.getTermQuery;
+import static org.tctalent.server.service.db.es.TCElasticHelpers.getTermsQuery;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.ChildScoreMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import com.opencsv.CSVWriter;
-import io.jsonwebtoken.lang.Collections;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.OffsetDateTime;
@@ -36,9 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
@@ -47,6 +51,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -71,11 +77,9 @@ import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.EducationLevel;
-import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
-import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -292,13 +296,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             // This is an elasticsearch request
 
             // Combine any joined searches (which will all be processed as elastic)
-            Query.Builder boolQueryBuilder = processElasticRequest(searchRequest,
-                simpleQueryString, excludedCandidates);
+            BoolQuery boolQuery = handleElasticRequest(searchRequest,
+                simpleQueryString, excludedCandidates).build();
 
-            NativeSearchQuery query = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .build()
-                .setPageable(Pageable.unpaged());
+            NativeQuery query = new NativeQueryBuilder()
+                .withQuery(
+                    Query.of(q -> q.bool(boolQuery)))
+                .withPageable(Pageable.unpaged())
+                .build();
 
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
                 query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
@@ -908,225 +913,225 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return query;
     }
 
-    /*
-     * From here on there are changes as spring elastic classes are deprecated/removed
-     * and elastic classes are deprecated/removed as well.
-     * // TODO(AT remove this comment/block when done)
-     */
-    private Query.Builder computeElasticQuery(
-        SearchCandidateRequest request, @Nullable String simpleQueryString,
-        @Nullable Collection<Candidate> excludedCandidates) {
-    /*
-       Constructing a filtered simple query that looks like this:
-
-       GET /candidates/_search
-        {
-          "query": {
-            "bool": {
-              "must": [
-                { "simple_query_string": {"query":"the +jet+ engine"}}
-              ],
-              "filter": [
-                { "term":  { "status": "pending" }},
-                { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
-              ]
-            }
-          }
-        }
-     */
-
-        User user = userService.getLoggedInUser();
-
-        BoolQuery.Builder boolQueryBuilder = QueryBuilders.bool();
-
-        // Not every base search will contain an elastic search term, since we're processing
-        // joined regular searches here too — so we need a safe escape here
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            // Create a simple query string builder from the given string
-            SimpleQueryStringBuilder simpleQueryStringBuilder =
-                QueryBuilders.simpleQueryStringQuery(simpleQueryString);
-
-            // The simple query will be part of a composite query containing filters
-            boolQueryBuilder.must(simpleQueryStringBuilder);
-        }
-
-        //Add filters - each filter must return true for a hit
-        //(Note: Filters are different from "Must" entries only in that
-        //they don't affect the Elasticsearch score)
-
-        //Add a TermsQuery filter for each multiselect request - eg
-        //countries and nationalities. A match against any one of the
-        //multiselected values will result in the filter returning true.
-        //There is also a TermQuery which takes only one value.
-
-        //English levels
-        Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
-        if (minSpokenLevel != null) {
-            boolQueryBuilder =
-                addElasticRangeFilter(boolQueryBuilder,
-                    "minEnglishSpokenLevel",
-                    minSpokenLevel, null);
-        }
-        Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
-        if (minWrittenLevel != null) {
-            boolQueryBuilder =
-                addElasticRangeFilter(boolQueryBuilder,
-                    "minEnglishWrittenLevel",
-                    minWrittenLevel, null);
-        }
-
-        //Other languages
-        Long otherLanguageId = request.getOtherLanguageId();
-        if (otherLanguageId != null) {
-            Optional<Language> otherLanguage = languageRepository.findById(request.getOtherLanguageId());
-            if (otherLanguage.isPresent()) {
-
-                BoolQueryBuilder nestedQueryBuilder = QueryBuilders.boolQuery().must(
-                        QueryBuilders.termQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
-
-                Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
-                if (minOtherSpokenLevel != null) {
-                    nestedQueryBuilder =
-                            addElasticRangeFilter(nestedQueryBuilder,
-                                    "otherLanguages.minSpokenLevel",
-                                    minOtherSpokenLevel, null);
-                }
-
-                Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
-                if (minOtherWrittenLevel != null) {
-                    nestedQueryBuilder =
-                            addElasticRangeFilter(nestedQueryBuilder,
-                                    "otherLanguages.minWrittenLevel",
-                                    minOtherWrittenLevel, null);
-                }
-
-                boolQueryBuilder = boolQueryBuilder.filter(
-                        QueryBuilders.nestedQuery("otherLanguages", nestedQueryBuilder, ScoreMode.Avg));
-            }
-
-        }
-
-        //Exclude given candidates
-        if (excludedCandidates != null && excludedCandidates.size() > 0) {
-            List<Object> candidateIds = excludedCandidates.stream()
-                .map(Candidate::getId).collect(Collectors.toList());
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                SearchType.not,"masterId", candidateIds);
-        }
-
-        //Occupations
-        final List<Long> occupationIds = request.getOccupationIds();
-        if (occupationIds != null) {
-            //Look up names from ids.
-            List<Object> reqOccupations = new ArrayList<>();
-            for (Long id : occupationIds) {
-                final Occupation occupation = occupationService.getOccupation(id);
-                reqOccupations.add(occupation.getName());
-            }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                    null,"occupations.keyword", reqOccupations);
-        }
-
-        //Countries - need to take account of source country restrictions
-        final List<Long> countryIds = request.getCountryIds();
-        List<Object> reqCountries = new ArrayList<>();
-        // If countryIds is NOT EMPTY we can just accept them because the options
-        // presented to the user will be limited to the allowed source countries
-        if (!Collections.isEmpty(countryIds)) {
-            //Look up country names from ids.
-            for (Long countryId : countryIds) {
-                final Country country = countryService.getCountry(countryId);
-                reqCountries.add(country.getName());
-            }
-        } else if (user != null && !Collections.isEmpty(user.getSourceCountries())){
-            for (Country country: user.getSourceCountries()) {
-                reqCountries.add(country.getName());
-            }
-        }
-
-        if (reqCountries.size() > 0) {
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                request.getCountrySearchType(),
-                "country.keyword", reqCountries);
-        }
-
-        //Partners
-        final List<Long> partnerIds = request.getPartnerIds();
-        if (partnerIds != null) {
-            //Look up names from ids.
-            List<Object> reqPartners = new ArrayList<>();
-            for (Long id : partnerIds) {
-                final Partner partner = partnerService.getPartner(id);
-                reqPartners.add(partner.getAbbreviation());
-            }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                null,"partner.keyword", reqPartners);
-        }
-
-        //Nationalities
-        final List<Long> nationalityIds = request.getNationalityIds();
-        if (nationalityIds != null) {
-            //Look up names from ids.
-            List<Object> reqNationalities = new ArrayList<>();
-            for (Long id : nationalityIds) {
-                final Country nationality = countryService.getCountry(id);
-                reqNationalities.add(nationality.getName());
-            }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                request.getNationalitySearchType(),
-                "nationality.keyword", reqNationalities);
-        }
-
-        //Statuses
-        List<CandidateStatus> statuses = request.getStatuses();
-        if (statuses != null) {
-            //Extract names from enums
-            List<Object> reqStatuses = new ArrayList<>();
-            for (CandidateStatus status : statuses) {
-                reqStatuses.add(status.name());
-            }
-            boolQueryBuilder =
-                addElasticTermFilter(boolQueryBuilder,
-                    null,"status.keyword", reqStatuses);
-        }
-
-        //Referrer
-        String referrer = request.getRegoReferrerParam();
-        if (referrer != null) {
-            boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.termQuery("regoReferrerParam", referrer));
-        }
-
-        //Gender
-        Gender gender = request.getGender();
-        if (gender != null) {
-            boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.termQuery("gender", gender.name()));
-        }
-
-        //Education Level (minimum)
-        Integer minEducationLevel = request.getMinEducationLevel();
-        if (minEducationLevel != null) {
-            boolQueryBuilder =
-                    addElasticRangeFilter(boolQueryBuilder,
-                            "maxEducationLevel",
-                            minEducationLevel, null);
-        }
-
-        //Educations
-        final List<Long> educationMajorIds = request.getEducationMajorIds();
-        if (educationMajorIds != null) {
-            //Look up names from ids.
-            List<Object> reqEducations = new ArrayList<>();
-            for (Long id : educationMajorIds) {
-                final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
-                reqEducations.add(educationMajor.getName());
-            }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                    null, "educationMajors.keyword", reqEducations);
-        }
-        return boolQueryBuilder;
-    }
+//    /*
+//     * From here on there are changes as spring elastic classes are deprecated/removed
+//     * and elastic classes are deprecated/removed as well.
+//     * // TODO(AT remove this comment/block when done)
+//     */
+//    private Query.Builder computeElasticQuery(
+//        SearchCandidateRequest request, @Nullable String simpleQueryString,
+//        @Nullable Collection<Candidate> excludedCandidates) {
+//    /*
+//       Constructing a filtered simple query that looks like this:
+//
+//       GET /candidates/_search
+//        {
+//          "query": {
+//            "bool": {
+//              "must": [
+//                { "simple_query_string": {"query":"the +jet+ engine"}}
+//              ],
+//              "filter": [
+//                { "term":  { "status": "pending" }},
+//                { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
+//              ]
+//            }
+//          }
+//        }
+//     */
+//
+//        User user = userService.getLoggedInUser();
+//
+//        BoolQuery.Builder boolQueryBuilder = QueryBuilders.bool();
+//
+//        // Not every base search will contain an elastic search term, since we're processing
+//        // joined regular searches here too — so we need a safe escape here
+//        if (simpleQueryString != null && simpleQueryString.length() > 0) {
+//            // Create a simple query string builder from the given string
+//            SimpleQueryStringBuilder simpleQueryStringBuilder =
+//                QueryBuilders.simpleQueryStringQuery(simpleQueryString);
+//
+//            // The simple query will be part of a composite query containing filters
+//            boolQueryBuilder.must(simpleQueryStringBuilder);
+//        }
+//
+//        //Add filters - each filter must return true for a hit
+//        //(Note: Filters are different from "Must" entries only in that
+//        //they don't affect the Elasticsearch score)
+//
+//        //Add a TermsQuery filter for each multiselect request - eg
+//        //countries and nationalities. A match against any one of the
+//        //multiselected values will result in the filter returning true.
+//        //There is also a TermQuery which takes only one value.
+//
+//        //English levels
+//        Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
+//        if (minSpokenLevel != null) {
+//            boolQueryBuilder =
+//                addElasticRangeFilter(boolQueryBuilder,
+//                    "minEnglishSpokenLevel",
+//                    minSpokenLevel, null);
+//        }
+//        Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
+//        if (minWrittenLevel != null) {
+//            boolQueryBuilder =
+//                addElasticRangeFilter(boolQueryBuilder,
+//                    "minEnglishWrittenLevel",
+//                    minWrittenLevel, null);
+//        }
+//
+//        //Other languages
+//        Long otherLanguageId = request.getOtherLanguageId();
+//        if (otherLanguageId != null) {
+//            Optional<Language> otherLanguage = languageRepository.findById(request.getOtherLanguageId());
+//            if (otherLanguage.isPresent()) {
+//
+//                BoolQueryBuilder nestedQueryBuilder = QueryBuilders.boolQuery().must(
+//                        QueryBuilders.termQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
+//
+//                Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
+//                if (minOtherSpokenLevel != null) {
+//                    nestedQueryBuilder =
+//                            addElasticRangeFilter(nestedQueryBuilder,
+//                                    "otherLanguages.minSpokenLevel",
+//                                    minOtherSpokenLevel, null);
+//                }
+//
+//                Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
+//                if (minOtherWrittenLevel != null) {
+//                    nestedQueryBuilder =
+//                            addElasticRangeFilter(nestedQueryBuilder,
+//                                    "otherLanguages.minWrittenLevel",
+//                                    minOtherWrittenLevel, null);
+//                }
+//
+//                boolQueryBuilder = boolQueryBuilder.filter(
+//                        QueryBuilders.nestedQuery("otherLanguages", nestedQueryBuilder, ScoreMode.Avg));
+//            }
+//
+//        }
+//
+//        //Exclude given candidates
+//        if (excludedCandidates != null && excludedCandidates.size() > 0) {
+//            List<Object> candidateIds = excludedCandidates.stream()
+//                .map(Candidate::getId).collect(Collectors.toList());
+//            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+//                SearchType.not,"masterId", candidateIds);
+//        }
+//
+//        //Occupations
+//        final List<Long> occupationIds = request.getOccupationIds();
+//        if (occupationIds != null) {
+//            //Look up names from ids.
+//            List<Object> reqOccupations = new ArrayList<>();
+//            for (Long id : occupationIds) {
+//                final Occupation occupation = occupationService.getOccupation(id);
+//                reqOccupations.add(occupation.getName());
+//            }
+//            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+//                    null,"occupations.keyword", reqOccupations);
+//        }
+//
+//        //Countries - need to take account of source country restrictions
+//        final List<Long> countryIds = request.getCountryIds();
+//        List<Object> reqCountries = new ArrayList<>();
+//        // If countryIds is NOT EMPTY we can just accept them because the options
+//        // presented to the user will be limited to the allowed source countries
+//        if (!Collections.isEmpty(countryIds)) {
+//            //Look up country names from ids.
+//            for (Long countryId : countryIds) {
+//                final Country country = countryService.getCountry(countryId);
+//                reqCountries.add(country.getName());
+//            }
+//        } else if (user != null && !Collections.isEmpty(user.getSourceCountries())){
+//            for (Country country: user.getSourceCountries()) {
+//                reqCountries.add(country.getName());
+//            }
+//        }
+//
+//        if (reqCountries.size() > 0) {
+//            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+//                request.getCountrySearchType(),
+//                "country.keyword", reqCountries);
+//        }
+//
+//        //Partners
+//        final List<Long> partnerIds = request.getPartnerIds();
+//        if (partnerIds != null) {
+//            //Look up names from ids.
+//            List<Object> reqPartners = new ArrayList<>();
+//            for (Long id : partnerIds) {
+//                final Partner partner = partnerService.getPartner(id);
+//                reqPartners.add(partner.getAbbreviation());
+//            }
+//            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+//                null,"partner.keyword", reqPartners);
+//        }
+//
+//        //Nationalities
+//        final List<Long> nationalityIds = request.getNationalityIds();
+//        if (nationalityIds != null) {
+//            //Look up names from ids.
+//            List<Object> reqNationalities = new ArrayList<>();
+//            for (Long id : nationalityIds) {
+//                final Country nationality = countryService.getCountry(id);
+//                reqNationalities.add(nationality.getName());
+//            }
+//            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+//                request.getNationalitySearchType(),
+//                "nationality.keyword", reqNationalities);
+//        }
+//
+//        //Statuses
+//        List<CandidateStatus> statuses = request.getStatuses();
+//        if (statuses != null) {
+//            //Extract names from enums
+//            List<Object> reqStatuses = new ArrayList<>();
+//            for (CandidateStatus status : statuses) {
+//                reqStatuses.add(status.name());
+//            }
+//            boolQueryBuilder =
+//                addElasticTermFilter(boolQueryBuilder,
+//                    null,"status.keyword", reqStatuses);
+//        }
+//
+//        //Referrer
+//        String referrer = request.getRegoReferrerParam();
+//        if (referrer != null) {
+//            boolQueryBuilder = boolQueryBuilder.filter(
+//                QueryBuilders.termQuery("regoReferrerParam", referrer));
+//        }
+//
+//        //Gender
+//        Gender gender = request.getGender();
+//        if (gender != null) {
+//            boolQueryBuilder = boolQueryBuilder.filter(
+//                QueryBuilders.termQuery("gender", gender.name()));
+//        }
+//
+//        //Education Level (minimum)
+//        Integer minEducationLevel = request.getMinEducationLevel();
+//        if (minEducationLevel != null) {
+//            boolQueryBuilder =
+//                    addElasticRangeFilter(boolQueryBuilder,
+//                            "maxEducationLevel",
+//                            minEducationLevel, null);
+//        }
+//
+//        //Educations
+//        final List<Long> educationMajorIds = request.getEducationMajorIds();
+//        if (educationMajorIds != null) {
+//            //Look up names from ids.
+//            List<Object> reqEducations = new ArrayList<>();
+//            for (Long id : educationMajorIds) {
+//                final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
+//                reqEducations.add(educationMajor.getName());
+//            }
+//            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+//                    null, "educationMajors.keyword", reqEducations);
+//        }
+//        return boolQueryBuilder;
+//    }
 
     private static String constructDefaultSearchName(User user) {
         return "_DefaultSavedSearchForUser" + user.getId();
@@ -1158,66 +1163,66 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
-    private Query.Builder addElasticRangeFilter(
-        Query.Builder builder, String field,
-        @Nullable Object min, @Nullable Object max) {
-        if (min != null || max != null) {
-            RangeQueryBuilder rangeQueryBuilder =
-                QueryBuilders.rangeQuery(field).from(min).to(max);
-            builder = builder.filter(rangeQueryBuilder);
-        }
-        return builder;
-    }
+//    private BoolQueryBuilder addElasticRangeFilter(
+//        BoolQueryBuilder builder, String field,
+//        @Nullable Object min, @Nullable Object max) {
+//        if (min != null || max != null) {
+//            RangeQueryBuilder rangeQueryBuilder =
+//                QueryBuilders.rangeQuery(field).from(min).to(max);
+//            builder = builder.filter(rangeQueryBuilder);
+//        }
+//        return builder;
+//    }
 
-    private Query.Builder addElasticTermFilter(
-        Query.Builder builder, @Nullable SearchType searchType, String field,
-        List<Object> values) {
-        final int nValues = values.size();
-        if (nValues > 0) {
-            QueryBuilder queryBuilder;
-            if (nValues == 1) {
-                queryBuilder = QueryBuilders.termQuery(field, values.get(0));
-            } else {
-                queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
-            }
-            if (searchType == SearchType.not) {
-                builder = builder.mustNot(queryBuilder);
-            } else {
-                builder = builder.filter(queryBuilder);
-            }
-        } return builder;
-    }
+//    private BoolQueryBuilder addElasticTermFilter(
+//        BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
+//        List<Object> values) {
+//        final int nValues = values.size();
+//        if (nValues > 0) {
+//            QueryBuilder queryBuilder;
+//            if (nValues == 1) {
+//                queryBuilder = QueryBuilders.termQuery(field, values.get(0));
+//            } else {
+//                queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
+//            }
+//            if (searchType == SearchType.not) {
+//                builder = builder.mustNot(queryBuilder);
+//            } else {
+//                builder = builder.filter(queryBuilder);
+//            }
+//        } return builder;
+//    }
 
-    private Query.Builder addElasticQuery(Query.Builder boolQueryBuilder,
-        SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
-        // We don't want searches built on themselves - this is also guarded against in frontend
-        if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
-            throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
-        }
-        savedSearchIds.add(searchJoinRequest.getSavedSearchId());
-
-        SearchCandidateRequest request = loadSavedSearch(searchJoinRequest.getSavedSearchId());
-
-        // Get the keyword search term, if any
-        String simpleStringQuery = request.getSimpleQueryString();
-
-        // Compute the candidates that should be excluded from search
-        Set<Candidate> excludeCandidates =
-            computeCandidatesExcludedFromSearchCandidateRequest(request);
-
-        // Each recursion, if any, is added to the query as an additional must clause
-        boolQueryBuilder.must(
-            computeElasticQuery(request, simpleStringQuery, excludeCandidates)
-        );
-
-        // Like addQuery(), this method uses recursion to get every nested SearchJoinRequest
-        if (!request.getSearchJoinRequests().isEmpty()) {
-            for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
-                boolQueryBuilder = addElasticQuery(boolQueryBuilder, joinRequest, savedSearchIds);
-            }
-        }
-        return boolQueryBuilder;
-    }
+//    private BoolQueryBuilder addElasticQuery(BoolQueryBuilder boolQueryBuilder,
+//        SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
+//        // We don't want searches built on themselves - this is also guarded against in frontend
+//        if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
+//            throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
+//        }
+//        savedSearchIds.add(searchJoinRequest.getSavedSearchId());
+//
+//        SearchCandidateRequest request = loadSavedSearch(searchJoinRequest.getSavedSearchId());
+//
+//        // Get the keyword search term, if any
+//        String simpleStringQuery = request.getSimpleQueryString();
+//
+//        // Compute the candidates that should be excluded from search
+//        Set<Candidate> excludeCandidates =
+//            computeCandidatesExcludedFromSearchCandidateRequest(request);
+//
+//        // Each recursion, if any, is added to the query as an additional must clause
+//        boolQueryBuilder.must(
+//            computeElasticQuery(request, simpleStringQuery, excludeCandidates)
+//        );
+//
+//        // Like addQuery(), this method uses recursion to get every nested SearchJoinRequest
+//        if (!request.getSearchJoinRequests().isEmpty()) {
+//            for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
+//                boolQueryBuilder = addElasticQuery(boolQueryBuilder, joinRequest, savedSearchIds);
+//            }
+//        }
+//        return boolQueryBuilder;
+//    }
 
     private Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
@@ -1593,17 +1598,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             // This is an elasticsearch request
 
             // Combine any joined searches (which will all be processed as elastic)
-            Query.Builder boolQueryBuilder = processElasticRequest(searchRequest,
-                simpleQueryString, excludedCandidates);
+            BoolQuery boolQuery = handleElasticRequest(searchRequest,
+                simpleQueryString, excludedCandidates).build();
 
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            log.info("Elasticsearch query:\n" + boolQueryBuilder);
+            log.info("Elasticsearch query:\n" + boolQuery._toQuery());
             log.info("Elasticsearch sort:\n" + req);
 
-            NativeSearchQuery query = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
+            NativeQuery query = new NativeQueryBuilder()
+                .withQuery(
+                    Query.of(q -> q.bool(boolQuery)))
                 .withPageable(req)
                 .build();
 
@@ -1697,24 +1703,326 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
-    private Query.Builder processElasticRequest(SearchCandidateRequest searchRequest,
+//    private BoolQueryBuilder processElasticRequest(SearchCandidateRequest searchRequest,
+//        String simpleQueryString, Set<Candidate> excludedCandidates) {
+//        // If saved search, add to searchIds to guard against circular dependencies
+//        List<Long> searchIds = new ArrayList<>();
+//        if (searchRequest.getSavedSearchId() != null) {
+//            searchIds.add(searchRequest.getSavedSearchId());
+//        }
+//
+//        BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
+//            simpleQueryString, excludedCandidates);
+//
+//        // Add any joined searches to the builder
+//        if (!searchRequest.getSearchJoinRequests().isEmpty()) {
+//            for (SearchJoinRequest searchJoinRequest : searchRequest.getSearchJoinRequests()) {
+//                boolQueryBuilder = addElasticQuery(boolQueryBuilder, searchJoinRequest, searchIds);
+//            }
+//        }
+//        return boolQueryBuilder;
+//    }
+
+    /**
+     * Current replacement for the processelasticrequest function.
+     */
+    private BoolQuery.Builder handleElasticRequest(SearchCandidateRequest searchRequest,
         String simpleQueryString, Set<Candidate> excludedCandidates) {
-        // If saved search, add to searchIds to guard against circular dependencies
+
+        // Avoid circular dependencies by adding search id's in to check.
         List<Long> searchIds = new ArrayList<>();
-        if (searchRequest.getSavedSearchId() != null) {
-            searchIds.add(searchRequest.getSavedSearchId());
+        Long savedSearchId = searchRequest.getSavedSearchId();
+        if (savedSearchId != null) {
+            searchIds.add(savedSearchId);
         }
 
-        Query.Builder boolQueryBuilder = computeElasticQuery(searchRequest,
-            simpleQueryString, excludedCandidates);
+        // Build up the search query.
+        BoolQuery.Builder boolBuilder = buildElasticQuery(searchRequest, simpleQueryString,
+            excludedCandidates.stream().toList());
 
-        // Add any joined searches to the builder
-        if (!searchRequest.getSearchJoinRequests().isEmpty()) {
-            for (SearchJoinRequest searchJoinRequest : searchRequest.getSearchJoinRequests()) {
-                boolQueryBuilder = addElasticQuery(boolQueryBuilder, searchJoinRequest, searchIds);
-            }
-        }
-        return boolQueryBuilder;
+        // Add join searches in and return the boolQueryBuilder
+        return addJoinRequests(searchRequest.getSearchJoinRequests(), boolBuilder, searchIds);
     }
 
+    /* If there are requests to join process them and add to builder. */
+    private BoolQuery.Builder addJoinRequests(List<SearchJoinRequest> joinsReqs,
+        BoolQuery.Builder boolQryBuilder, List<Long> searchIds) {
+
+        if (joinsReqs.isEmpty()) {
+            return boolQryBuilder;
+        } else {
+            return joinsReqs.stream().reduce(new BoolQuery.Builder(),
+                (curBqb, joinReq) -> addQuery(curBqb, joinReq, searchIds), (acc1, acc2) -> acc2);
+        }
+    }
+
+    /**
+     * Current replacement for computeElasticQuery. Not every request will actually be an elastic
+     * query, so this will handle both elastic and other search types. It will add a load of filters.
+     * The filters are unlike the "must" score - they don't affect the elastic score.
+     */
+    private BoolQuery.Builder buildElasticQuery(SearchCandidateRequest req,
+        @Nullable String simpleQueryString, @Nullable List<Candidate> excludedCandidates) {
+
+        BoolQuery.Builder boolBuilder = QueryBuilders.bool();
+        if (simpleQueryStringExists(simpleQueryString)) {
+            boolBuilder = addSimpleQryString(simpleQueryString);
+        }
+
+        return addFilters(boolBuilder, req, excludedCandidates);
+    }
+
+    private BoolQuery.Builder addFilters(BoolQuery.Builder boolBuilder, SearchCandidateRequest req,
+        List<Candidate> excludedCandidates) {
+        User user = userService.getLoggedInUser();
+
+        boolBuilder = filterIfNotNull(boolBuilder, addMinSpokenLevel(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addMinWrittenLevel(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addOtherLanguage(req));
+        boolBuilder = filterIfNotNull(boolBuilder, excludeProvidedCandidates(excludedCandidates));
+        boolBuilder = filterIfNotNull(boolBuilder, addOccupations(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addCountries(req, user));
+        boolBuilder = filterIfNotNull(boolBuilder, addPartners(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addNationalities(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addStatuses(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addReferrer(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addGender(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addMinEducationLevel(req));
+        boolBuilder = filterIfNotNull(boolBuilder, addEducation(req));
+        return boolBuilder;
+    }
+
+    // Excludes candidates from a query so uses and overloaded call to get terms.
+    private Query excludeProvidedCandidates(List<Candidate> excludedCandidates) {
+        if (excludedCandidates == null || excludedCandidates.isEmpty()) {
+            return null;
+        }
+
+        List<Long> ids = getCandidateIds(excludedCandidates);
+        return getTermsQuery(SearchType.not, "masterId", ids);
+    }
+
+    private List<Long> getCandidateIds(List<Candidate> candidates) {
+        return candidates.stream().map(Candidate::getId).toList();
+    }
+
+    private Query addOccupations(SearchCandidateRequest req) {
+        List<Long> ids = req.getOccupationIds();
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+
+        List<String> occupations = getOccupationNames(ids);
+        return getTermsQuery("occupations.keyword", occupations);
+    }
+
+    private List<String> getOccupationNames(List<Long> ids) {
+        return getValues(ids, id -> occupationService.getOccupation(id).getName());
+    }
+
+    /* Must take into account restrictions of source countries.
+     * If the countries are not empty, accept them because what was presented to the
+     * user was already limited to the allowed source countries. Otherwise, need to restrict.
+     */
+    private Query addCountries(SearchCandidateRequest req, User user) {
+        List<Long> countryIds = req.getCountryIds();
+        List<String> countries;
+
+        if (countryIds == null || countryIds.isEmpty()) {
+            countries = user.getSourceCountries().stream().map(Country::getName).toList();
+        } else {
+            countries = getCountryNames(countryIds);
+        }
+
+        return (countries == null || countries.isEmpty()) ? null
+            : getTermsQuery("country.keyword", countries);
+    }
+
+    private List<String> getCountryNames(List<Long> ids) {
+        return getValues(ids, id -> countryService.getCountry(id).getName());
+    }
+
+    private Query addPartners(SearchCandidateRequest req) {
+        List<Long> ids = req.getPartnerIds();
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+
+        List<String> partners = getPartnerAbbreviations(ids);
+        return getTermsQuery("partner.keyword", partners);
+    }
+
+    private List<String> getPartnerAbbreviations(List<Long> ids) {
+        return getValues(ids, id -> partnerService.getPartner(id).getAbbreviation());
+    }
+
+    private Query addNationalities(SearchCandidateRequest req) {
+        List<Long> ids = req.getNationalityIds();
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+
+        List<String> nationalities = getNationalityNames(ids);
+        return getTermsQuery("nationality.keyword", nationalities);
+    }
+
+    private @NotNull List<String> getNationalityNames(List<Long> ids) {
+        return getValues(ids, id -> countryService.getCountry(id).getName());
+    }
+
+    /* Gets education majors. If not on the request it will go to db, so unfortunately
+    it calls out to the member variable educationMajorService making it less than self-sufficient.
+     */
+    private Query addEducation(SearchCandidateRequest req) {
+        List<Long> ids = req.getEducationMajorIds();
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+
+        // There are some ids so look them up to get the name.
+        List<String> majors = getMajorNames(ids);
+        return getTermsQuery("educationMajors.keyword", majors);
+    }
+
+    private @NotNull List<String> getMajorNames(List<Long> ids) {
+        return getValues(ids, id -> educationMajorService.getEducationMajor(id).getName());
+    }
+
+    private boolean simpleQueryStringExists(String qryString) {
+        return qryString != null && !qryString.isEmpty();
+    }
+
+    private BoolQuery.Builder addSimpleQryString(String qryString) {
+        return QueryBuilders.bool().must(getSimpleStringAsQuery(qryString));
+    }
+
+    /**
+     * Current replacement for addElasticQuery
+     */
+    private BoolQuery.Builder addQuery(BoolQuery.Builder bqb, SearchJoinRequest sjr,
+        List<Long> searchIds) {
+
+        // We don't want searches built on themselves - this is also guarded against in frontend
+        if (searchIds.contains(sjr.getSavedSearchId())) {
+            throw new CircularReferencedException(sjr.getSavedSearchId());
+        }
+        List<Long> newSearchIds = new ArrayList<>(searchIds);
+        newSearchIds.add(sjr.getSavedSearchId());
+
+        SearchCandidateRequest scr = loadSavedSearch(sjr.getSavedSearchId());
+        // Get the keyword search term, if any and get excluded candidates.
+        String sqs = scr.getSimpleQueryString();
+        Set<Candidate> exclCandidates = computeCandidatesExcludedFromSearchCandidateRequest(scr);
+
+        // Each time through this is added to the "must" of the query.
+        BoolQuery.Builder newBqb = bqb;
+        bqb.must(buildElasticQuery(scr, sqs, exclCandidates.stream().toList()).build()._toQuery());
+
+        return addJoinRequests(scr.getSearchJoinRequests(), bqb, newSearchIds);
+    }
+
+    private Query getSimpleStringAsQuery(String simpleQueryString) {
+        if (simpleQueryString == null || simpleQueryString.isEmpty()) {
+            return null;
+        }
+        return QueryBuilders.simpleQueryString().query(simpleQueryString).build()._toQuery();
+    }
+
+    private Query getRangeFilter(String field, @Nullable String min, @Nullable String max) {
+        return QueryBuilders.range(r -> r.field(field).from(min).to(max));
+    }
+
+//    private void logFoundSearches(String msg) {
+//        log.info("Found {} in search.", msg);
+//    }
+
+    private Query addGender(SearchCandidateRequest req) {
+        Gender g = req.getGender();
+        return g == null ? null : getTermQuery("gender", g.name());
+    }
+
+    // Check for bug - says min level but passes max as field...
+    private Query addMinEducationLevel(SearchCandidateRequest req) {
+        Integer level = req.getMinEducationLevel();
+        return level == null ? null : getRangeFilter("maxEducationLevel", String.valueOf(level), null);
+    }
+
+    private Query addMinSpokenLevel(SearchCandidateRequest req) {
+        Integer min = req.getEnglishMinSpokenLevel();
+        return min == null ? null : getRangeFilter("minEnglishSpokenLevel", String.valueOf(min), null);
+    }
+
+    private Query addMinWrittenLevel(SearchCandidateRequest req) {
+        Integer min = req.getEnglishMinWrittenLevel();
+        return min == null ? null : getRangeFilter("minEnglishWrittenLevel", String.valueOf(min), null);
+    }
+
+    private Query addMinOtherSpokenLevel(SearchCandidateRequest req) {
+        Integer min = req.getOtherMinSpokenLevel();
+        return min == null ? null
+            : getRangeFilter("otherLanguages.minSpokenLevel", String.valueOf(min), null);
+    }
+
+    private Query addMinOtherWrittenLevel(SearchCandidateRequest req) {
+        Integer min = req.getOtherMinWrittenLevel();
+        return min == null ? null
+            : getRangeFilter("otherLanguages.minWrittenLevel", String.valueOf(min), null);
+    }
+
+    /* Will determine if there are other languages. If there are, adds spoken and written levels.
+     * I don't know why this scores and others don't.
+     */
+    private Query addOtherLanguage(SearchCandidateRequest req) {
+        Language otherLang = getOtherLanguage(req);
+        if (otherLang == null) {
+            return null;
+        }
+
+        BoolQuery.Builder bool = QueryBuilders.bool()
+            .must(getTermQuery("otherLanguages.name.keyword", otherLang.getName()));
+        bool = bool.filter(addMinOtherSpokenLevel(req));
+        bool = bool.filter(addMinOtherWrittenLevel(req));
+
+        return QueryBuilders.nested().query(bool.build()._toQuery()).scoreMode(ChildScoreMode.Avg)
+            .build()._toQuery();
+    }
+
+    private @Nullable Language getOtherLanguage(SearchCandidateRequest req) {
+        Long otherLanguageId = req.getOtherLanguageId();
+        if (otherLanguageId == null) {
+            return null;
+        }
+
+        return languageRepository.findById(otherLanguageId).orElse(null);
+    }
+
+    private Query addStatuses(SearchCandidateRequest req) {
+        List<CandidateStatus> statuses = req.getStatuses();
+        if (statuses == null) {
+            return null;
+        }
+        List<String> names = getStatusNames(statuses);
+        return getTermsQuery("status.keyword", names);
+    }
+
+    private @NotNull List<String> getStatusNames(List<CandidateStatus> statuses) {
+        return statuses.stream().map(CandidateStatus::name).toList();
+    }
+
+    private Query addReferrer(SearchCandidateRequest req) {
+        String referrer = req.getRegoReferrerParam();
+        return referrer == null ? null : getTermQuery("regoReferrerParam", referrer);
+    }
+
+    /**
+     * Given a list of ids, execute the passed code to retrieve the resulting values.
+     * @param ids the list of ids used to get the values for.
+     * @param valueRetriever what to execute to get the values (e.g.
+     *                       occupationService.getOccupation(id).getName()
+     *                       )
+     * @return a list of the values.
+     */
+    private List<String> getValues(List<Long> ids, Function<Long, String> valueRetriever) {
+        return ids.stream().map(valueRetriever).toList();
+    }
 }

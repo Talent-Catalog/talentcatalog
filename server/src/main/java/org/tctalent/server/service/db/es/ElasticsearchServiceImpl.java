@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db.es;
 
-import static org.tctalent.server.service.db.es.TCElasticHelpers.addTermFilter;
+import static org.tctalent.server.service.db.es.TCElasticHelpers.getTermsQuery;
 
 import co.elastic.clients.elasticsearch._types.FieldSort;
 import co.elastic.clients.elasticsearch._types.SortOrder;
@@ -108,7 +108,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   private Query filterOnDeletedStatus(Query boolQuery) {
     BoolQuery.Builder bqb = QueryBuilders.bool().filter(boolQuery);
 
-    bqb = bqb.filter(addTermFilter(
+    bqb = bqb.filter(getTermsQuery(
         SearchType.not,
         STATUS_KEYWORD,
         List.of(CandidateStatus.deleted)
@@ -129,7 +129,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     BoolQuery.Builder bqb = QueryBuilders.bool().filter(boolQuery);
 
     if (!countries.isEmpty()) {
-      bqb = bqb.filter(addTermFilter(
+      bqb = bqb.filter(getTermsQuery(
           SearchType.or,
           COUNTRY_KEYWORD,
           countries

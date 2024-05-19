@@ -32,11 +32,16 @@ import org.tctalent.server.model.db.SearchType;
  * methods in this class.
  */
 public class TCElasticHelpers {
-  /*
-   * Methods to create term queries.
+
+  /**
+   * Creates a query based on the field and terms passed in. If a single term, delegates to provide
+   * a single term.
+   * @param field the name of the field to filter on
+   * @param terms the terms to use in the query
+   * @return a query
    */
   @NotNull
-  public static Query getTermsQuery(String field, List<Object> terms) {
+  public static Query getTermsQuery(String field, List<?> terms) {
     if (terms.size() == 1) {
       return getTermQuery(field, terms.getFirst());
     } else {
@@ -46,13 +51,27 @@ public class TCElasticHelpers {
     }
   }
 
+  /**
+   * Creates a query based on the field and value passed in.
+   * @param field the name of the field to filter on.
+   * @param value the value to use in the query
+   * @return a query
+   */
   @NotNull
   public static Query getTermQuery(String field, Object value) {
     return QueryBuilders.term().field(field).value(FieldValue.of(value)).build()._toQuery();
   }
 
+  /**
+   * Creates a term query using the field and values provided. Adds a must not to the query if
+   * not is passed - not sure why it's in here.
+   * @param searchType if a specific type is required
+   * @param field to test
+   * @param values to use in the query
+   * @return the constructed Query
+   */
   @NotNull
-  public static Query addTermFilter(@Nullable SearchType searchType, String field, List<Object> values) {
+  public static Query getTermsQuery(@Nullable SearchType searchType, String field, List<?> values) {
     Query qry = addTermFilter(field, values);
 
     BoolQuery.Builder builder = QueryBuilders.bool();
@@ -66,7 +85,7 @@ public class TCElasticHelpers {
   }
 
   @NotNull
-  private static Query addTermFilter(String field, List<Object> values) {
+  private static Query addTermFilter(String field, List<?> values) {
     return getTermQuery(field, values);
   }
 
