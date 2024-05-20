@@ -4,21 +4,16 @@ import {JobService} from "../../../../services/job.service";
 import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {NgxWigModule} from "ngx-wig";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 fdescribe('CostCommitEmployerComponent', () => {
   let component: CostCommitEmployerComponent;
   let fixture: ComponentFixture<CostCommitEmployerComponent>;
-  let jobServiceSpy: jasmine.SpyObj<JobService>;
 
   beforeEach(waitForAsync(() => {
-    const jobServiceSpyObj = jasmine.createSpyObj('JobService', ['saveJobIntakeData']);
     TestBed.configureTestingModule({
       declarations: [ CostCommitEmployerComponent,AutosaveStatusComponent ],
-      imports: [ ReactiveFormsModule,NgxWigModule ],
-      providers: [
-        FormBuilder,
-        { provide: JobService, useValue: jobServiceSpyObj }
-      ]
+      imports: [ ReactiveFormsModule,NgxWigModule,HttpClientTestingModule ]
     })
     .compileComponents();
   }));

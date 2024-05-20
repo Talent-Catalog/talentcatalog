@@ -10,20 +10,13 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 fdescribe('JobExperienceComponent', () => {
   let component: JobExperienceComponent;
   let fixture: ComponentFixture<JobExperienceComponent>;
-  let jobServiceSpy: jasmine.SpyObj<JobService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('JobService', ['get']);
     await TestBed.configureTestingModule({
       declarations: [ JobExperienceComponent,AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, FormsModule, NgxWigModule ,HttpClientTestingModule],
-      providers: [
-        { provide: JobService, useValue: spy },
-        FormBuilder
-      ]
+      imports: [ReactiveFormsModule, NgxWigModule ,HttpClientTestingModule]
     })
     .compileComponents();
-    jobServiceSpy = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;
   });
 
   beforeEach(() => {

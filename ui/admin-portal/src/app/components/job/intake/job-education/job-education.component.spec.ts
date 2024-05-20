@@ -1,27 +1,19 @@
 import {JobEducationComponent} from "./job-education.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {JobService} from "../../../../services/job.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgxWigModule} from "ngx-wig";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 fdescribe('JobEducationComponent', () => {
   let component: JobEducationComponent;
   let fixture: ComponentFixture<JobEducationComponent>;
-  let jobServiceSpy: jasmine.SpyObj<JobService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('JobService', ['get']);
     await TestBed.configureTestingModule({
       declarations: [ JobEducationComponent,AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, FormsModule,NgxWigModule, HttpClientTestingModule],
-      providers: [
-        { provide: JobService, useValue: spy },
-        FormBuilder
-      ]
+      imports: [ReactiveFormsModule,NgxWigModule, HttpClientTestingModule]
     })
     .compileComponents();
-    jobServiceSpy = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;
   });
 
   beforeEach(() => {

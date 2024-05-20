@@ -1,7 +1,6 @@
 import {JobLocationDetailsComponent} from "./job-location-details.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {JobService} from "../../../../services/job.service";
+import {ReactiveFormsModule} from "@angular/forms";
 import {NgxWigModule} from "ngx-wig";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -13,8 +12,7 @@ fdescribe('JobLocationDetailsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ JobLocationDetailsComponent,AutosaveStatusComponent ],
-      imports: [ ReactiveFormsModule,NgxWigModule, HttpClientTestingModule ],
-      providers: [ FormBuilder, JobService ]
+      imports: [ ReactiveFormsModule,NgxWigModule, HttpClientTestingModule ]
     })
     .compileComponents();
   });
@@ -45,7 +43,7 @@ fdescribe('JobLocationDetailsComponent', () => {
 
     expect(component.form.get('locationDetails').valid).toBe(true);
   });
-  
+
   it('should update form control value on input change', fakeAsync(() => {
     const initialLocation = 'San Francisco';
     component.editable = true;

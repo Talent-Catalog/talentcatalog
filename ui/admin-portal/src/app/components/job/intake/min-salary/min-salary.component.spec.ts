@@ -1,8 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 import {MinSalaryComponent} from './min-salary.component';
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {NgxWigModule} from "ngx-wig";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 fdescribe('MinSalaryComponent', () => {
@@ -12,8 +11,7 @@ fdescribe('MinSalaryComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ MinSalaryComponent, AutosaveStatusComponent ],
-      imports: [ ReactiveFormsModule, NgxWigModule, HttpClientTestingModule ],
-      providers: [ FormBuilder ]
+      imports: [ ReactiveFormsModule, HttpClientTestingModule ],
     })
     .compileComponents();
   });

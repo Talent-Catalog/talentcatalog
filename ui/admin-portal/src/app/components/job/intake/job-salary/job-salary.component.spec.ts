@@ -1,7 +1,6 @@
 import {JobSalaryComponent} from "./job-salary.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {JobService} from "../../../../services/job.service";
+import {ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {NgxWigModule} from "ngx-wig";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -13,8 +12,7 @@ fdescribe('JobSalaryComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ JobSalaryComponent,AutosaveStatusComponent ],
-      imports: [ ReactiveFormsModule,NgxWigModule,HttpClientTestingModule ],
-      providers: [ FormBuilder, JobService ]
+      imports: [ ReactiveFormsModule,NgxWigModule,HttpClientTestingModule ]
     })
     .compileComponents();
   });

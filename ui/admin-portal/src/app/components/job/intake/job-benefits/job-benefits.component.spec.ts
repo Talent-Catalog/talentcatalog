@@ -1,16 +1,10 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-  waitForAsync
-} from '@angular/core/testing';
-import { JobBenefitsComponent } from './job-benefits.component';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { JobService } from '../../../../services/job.service';
-import { of } from 'rxjs';
-import { AutosaveStatusComponent } from '../../../util/autosave-status/autosave-status.component';
-import { NgxWigModule } from 'ngx-wig';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {JobBenefitsComponent} from './job-benefits.component';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {JobService} from '../../../../services/job.service';
+import {of} from 'rxjs';
+import {AutosaveStatusComponent} from '../../../util/autosave-status/autosave-status.component';
+import {NgxWigModule} from 'ngx-wig';
 
 fdescribe('JobBenefitsComponent', () => {
   let component: JobBenefitsComponent;

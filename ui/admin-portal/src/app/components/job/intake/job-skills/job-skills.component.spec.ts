@@ -1,10 +1,9 @@
 import {JobSkillsComponent} from "./job-skills.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule} from "@angular/forms";
 import {NgxWigModule} from "ngx-wig";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {JobService} from "../../../../services/job.service";
 fdescribe('JobSkillsComponent', () => {
   let component: JobSkillsComponent;
   let fixture: ComponentFixture<JobSkillsComponent>;
@@ -12,7 +11,6 @@ fdescribe('JobSkillsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ JobSkillsComponent,AutosaveStatusComponent ],
       imports: [ ReactiveFormsModule,NgxWigModule,HttpClientTestingModule ],
-      providers: [ FormBuilder,JobService ]
     })
     .compileComponents();
   });
@@ -61,8 +59,10 @@ fdescribe('JobSkillsComponent', () => {
     component.editable = true; // Enable editing
     fixture.detectChanges();
 
-    // Emit contentChange event manually
-    component.form.get('skillRequirements').setValue(newSkillRequirements);
+
+    const skillRequirementsDiv = fixture.nativeElement.querySelector('.nw-editor__res');
+    skillRequirementsDiv.innerText = newSkillRequirements;
+    skillRequirementsDiv.dispatchEvent(new Event('input'));
 
     tick(); // Wait for asynchronous operations to complete
 
