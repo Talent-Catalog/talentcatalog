@@ -14,28 +14,89 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {HomeComponent} from './home.component';
+import {NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
+import {LocalStorageModule, LocalStorageService} from 'angular-2-local-storage';
+import {SavedSearchService} from '../../services/saved-search.service';
+import {AuthenticationService} from '../../services/authentication.service';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-import { HomeComponent } from './home.component';
-
-describe('HomeComponent', () => {
+fdescribe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
+  let localStorageService: jasmine.SpyObj<LocalStorageService>;
+  let savedSearchService: SavedSearchService;
+  let authenticationService: AuthenticationService;
+  // Define the value of lastTabKey
+  const lastTabKey = 'HomeLastTab';
+  const lastCategoryTabKey = 'HomeLastCategoryTab';
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
+    const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
     TestBed.configureTestingModule({
-      declarations: [ HomeComponent ]
-    })
-    .compileComponents();
+      declarations: [HomeComponent],
+      imports: [
+        NgbNavModule,
+        HttpClientTestingModule,
+        LocalStorageModule.forRoot({})
+      ],
+      providers: [
+        { provide: LocalStorageService, useValue: localStorageSpy },
+        SavedSearchService,
+        AuthenticationService
+      ]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
+    localStorageService = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
+    savedSearchService = TestBed.inject(SavedSearchService);
+    authenticationService = TestBed.inject(AuthenticationService);
+    // Set up mock behavior for LocalStorageService
+    localStorageService.get.and.callFake(<T>(key: string): T => {
+      if (key === 'HomeLastTab') {
+        return 'defaultTabId' as unknown as T; // Providing a default value
+      }
+      return null;
+    });
+
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should select the default tab and default saved search subtype upon initialization', () => {
+    const defaultTabId = 'defaultTabId';
+    const defaultCategoryValue = '0'; // Ensure this is a string
+
+    // Set up mock behavior for LocalStorageService
+    localStorageService.get.withArgs(lastCategoryTabKey).and.returnValue(defaultCategoryValue);
+
+    // Initialize the component
+    component.ngOnInit();
+
+    // Check if the default tab is selected
+    expect(component.activeTabId).toEqual(defaultTabId);
+
+    // Check if the default saved search subtype is selected
+    expect(component.selectedSavedSearchSubtype).toEqual(parseInt(defaultCategoryValue));
+
+    // Check if the last tab key is set in the local storage
+    expect(localStorageService.set).toHaveBeenCalledWith(lastTabKey, defaultTabId);
+  });
+  it('should update selectedSavedSearchSubtype when saved search subtype changes', () => {
+    // Define the new saved search subtype
+    const newSubtype: number = 1;
+
+    // Simulate a change event
+    component.onSavedSearchSubtypeChange({ title:"test", savedSearchSubtype: newSubtype });
+
+    // Check if selectedSavedSearchSubtype is updated
+    expect(component.selectedSavedSearchSubtype).toEqual(newSubtype);
   });
 });
