@@ -149,37 +149,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     + candidate.getCandidateNumber() + " job " + jobOpp.getId());
             }
             opp.setSfId(sfId);
-        } else {
-            // If this is an update request
-            if (opp.getStage() != oppParams.getStage()) {
-                // If update includes a stage change, automate post to JobCreatorSourcePartner chat
-                // NB: Intellij warns here of potential NullPointerException, but getStage() will
-                // only be null for new opp creation, which wouldn't pass preceding condition check
-                // Find the relevant job chat
-                JobChat jcspChat = jobChatService.getOrCreateJobChat(
-                    JobChatType.JobCreatorSourcePartner,
-                    opp.getJobOpp(),
-                    candidate.getUser().getPartner(),
-                    candidate
-                );
-
-                // Set the chat post content
-                Post autoPostCandidateOppStageChange = new Post();
-                autoPostCandidateOppStageChange.setContent(
-                    "💼 <b>" + opp.getName() + "</b> 🪜<br> This case for candidate "
-                        + candidate.getUser().getFirstName() + " "
-                        + candidate.getUser().getLastName() + " (" + candidate.getCandidateNumber()
-                        + ") has changed stage from '" + opp.getStage() + "' to '"
-                        + oppParams.getStage() + "'."
-                );
-
-                // Create the chat post
-                ChatPost candidateOppStageChangeChatPost = chatPostServiceImpl.createPost(
-                    autoPostCandidateOppStageChange, jcspChat, userService.getSystemAdminUser());
-
-                // Publish the chat post
-                chatPostServiceImpl.publishChatPost(candidateOppStageChangeChatPost);
-            }
         }
 
         opp.setAuditFields(loggedInUser);
@@ -633,8 +602,41 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         CandidateOpportunity opp, @Nullable CandidateOpportunityParams oppParams) {
 
         if (oppParams != null) {
+            // Get candidate name and number for automated chat posts
+            String candidateNameAndNumber = opp.getCandidate().getUser().getFirstName() + " "
+                + opp.getCandidate().getUser().getLastName()
+                + " (" + opp.getCandidate().getCandidateNumber() + ")";
+
             final CandidateOpportunityStage stage = oppParams.getStage();
             if (stage != null) {
+                // If stage changing, automate post to JobCreatorSourcePartner chat
+                if (!oppParams.getStage().equals(opp.getStage())) {
+
+                    // Find the relevant job chat
+                    JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                        JobChatType.JobCreatorSourcePartner,
+                        opp.getJobOpp(),
+                        opp.getCandidate().getUser().getPartner(),
+                        null
+                    );
+
+                    // Set the chat post content
+                    Post autoPostCandidateOppStageChange = new Post();
+                    autoPostCandidateOppStageChange.setContent(
+                        "💼 <b>" + opp.getName() + "</b> 🪜<br> This case for candidate "
+                            + candidateNameAndNumber
+                            + " has changed stage from '" + opp.getStage() + "' to '"
+                            + oppParams.getStage() + "'."
+                    );
+
+                    // Create the chat post
+                    ChatPost candidateOppStageChangeChatPost = chatPostServiceImpl.createPost(
+                        autoPostCandidateOppStageChange, jcspChat, userService.getSystemAdminUser());
+
+                    // Publish the chat post
+                    chatPostServiceImpl.publishChatPost(candidateOppStageChangeChatPost);
+                }
+
                 opp.setStage(stage);
             }
 
@@ -647,6 +649,42 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             final String processedNextStep = auditStampNextStep(
                 loggedInUser.getUsername(), LocalDate.now(),
                 opp.getNextStep(), oppParams.getNextStep());
+
+            // TODO: separate next step and due date, simplify condition checks
+            // If next step details changing, send automated post to JobCreatorSourcePartner chat.
+            if (
+                !processedNextStep.equals(opp.getNextStep()) ||
+                (oppParams.getNextStepDueDate() != null && opp.getNextStepDueDate() == null) ||
+                (!oppParams.getNextStepDueDate().isEqual(opp.getNextStepDueDate()))
+            ) {
+                // Find the relevant job chat
+                JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                    JobChatType.JobCreatorSourcePartner,
+                    opp.getJobOpp(),
+                    opp.getCandidate().getUser().getPartner(),
+                    null
+                );
+
+                // Set the chat post content
+                Post autoPostNextStepChange = new Post();
+                autoPostNextStepChange.setContent(
+                    "💼 <b>" + opp.getName()
+                        + "</b> 🪜<br> The next step details have changed for this case relating to candidate "
+                        + candidateNameAndNumber
+                        + ".<br><b>Next step:</b> " + processedNextStep
+                        + "<br><b>Due date:</b> "
+                        + (oppParams.getNextStepDueDate() == null ?
+                        opp.getNextStepDueDate() : oppParams.getNextStepDueDate())
+                );
+
+                // Create the chat post
+                ChatPost nextStepChangeChatPost = chatPostServiceImpl.createPost(
+                    autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
+
+                // Publish the chat post
+                chatPostServiceImpl.publishChatPost(nextStepChangeChatPost);
+            }
+
             opp.setNextStep(processedNextStep);
 
             opp.setNextStepDueDate(oppParams.getNextStepDueDate());
