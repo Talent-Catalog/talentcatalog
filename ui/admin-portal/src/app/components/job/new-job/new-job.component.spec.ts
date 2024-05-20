@@ -119,7 +119,7 @@ fdescribe('NewJobComponent', () => {
     const request: UpdateJobRequest = { roleName: null, sfJoblink };
     mockJobService.create.and.returnValue(of());
     // // Act
-    component.onJoblinkValidation({ valid: true, sfJoblink, jobname: MockJob.name });
+    component.onSfJoblinkValidation({ valid: true, sfJoblink, jobname: MockJob.name });
     component.doRegistration();
     // Assert
     expect(mockJobService.create).toHaveBeenCalledWith(request);

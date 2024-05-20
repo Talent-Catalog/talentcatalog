@@ -47,4 +47,11 @@ public class SearchJobRequest extends SearchOpportunityRequest {
     @Nullable
     private Boolean starred;
 
+    /**
+     * If specified and true only Job name and ID will be returned in the search results.
+     * Otherwise, full job details will be returned.
+     */
+    @Nullable
+    private Boolean jobNameAndIdOnly;
+
 }

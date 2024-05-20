@@ -60,8 +60,10 @@ import org.tctalent.server.util.html.TextExtracter;
  */
 @Getter
 @Setter
-@Document(indexName = "candidates")
+@Document(indexName = "candidates", createIndex = false)
 public class CandidateEs {
+
+    public static final String INDEX_NAME = "candidates";
 
     private static final String[] sortingFields = {
             "masterId",
@@ -129,11 +131,17 @@ public class CandidateEs {
     private Gender gender;
 
     private String firstName;
+    private String lastName;
+
+    /**
+     * Populated automatically from the {@code firstName} and {@code lastName} fields, in the
+     * format: "firstName lastName". Allows for simpler querying where full name searches are
+     * required.
+     */
+    private String fullName;
 
     @Field(type = FieldType.Text)
     private List<String> jobExperiences;
-
-    private String lastName;
 
     private Integer minEnglishSpokenLevel;
 
@@ -206,18 +214,34 @@ public class CandidateEs {
     public CandidateEs() {
     }
 
+    public void setFullName() {
+        this.fullName = this.firstName + " " + this.lastName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+        setFullName();  // Update fullName whenever firstName changes
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+        setFullName();  // Update fullName whenever lastName changes
+    }
+
     public void copy(Candidate candidate, TextExtracter textExtracter) {
 
         this.additionalInfo = candidate.getAdditionalInfo();
         this.firstName = candidate.getUser() == null ? null
-                : candidate.getUser().getFirstName();
+            : candidate.getUser().getFirstName();
+        this.lastName = candidate.getUser() == null ? null
+            : candidate.getUser().getLastName();
+        this.setFullName();
+
         this.gender = candidate.getGender();
         this.country = candidate.getCountry() == null ? null
                 : candidate.getCountry().getName();
         this.state = candidate.getState();
         this.city = candidate.getCity();
-        this.lastName = candidate.getUser() == null ? null
-                : candidate.getUser().getLastName();
         this.masterId = candidate.getId();
         this.updated = candidate.getUpdatedDate().toInstant().toEpochMilli();
         this.nationality = candidate.getNationality() == null ? null

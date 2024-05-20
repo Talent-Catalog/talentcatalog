@@ -15,9 +15,10 @@
  */
 
 
- import {MockUser} from "./MockUser";
+import {MockUser} from "./MockUser";
 import {Job, JobOpportunityStage} from "../model/job";
 import {TaskType, UploadType} from "../model/task";
+import {MockSavedSearch} from "./MockSavedSearch";
 
 export const MockJob: Job = {
   evergreen: false,
@@ -62,7 +63,7 @@ export const MockJob: Job = {
     }]
   },
   suggestedList: undefined,
-  suggestedSearches: [],
+  suggestedSearches: [new MockSavedSearch()],
   won: false,
   id: 1,
   hiringCommitment: 'Full-time',

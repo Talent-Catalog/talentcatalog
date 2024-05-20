@@ -19,7 +19,9 @@ package org.tctalent.server.service.db;
 import java.util.Collection;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 
@@ -58,6 +60,15 @@ public interface SalesforceJobOppService {
      */
     @Nullable
     SalesforceJobOpp getOrCreateJobOppFromLink(String sfJoblink) throws InvalidRequestException;
+
+    /**
+     * Get the Job opportunity with the given id.
+     * @param jobId ID of job to get
+     * @return job opp
+     * @throws NoSuchObjectException if there is no job opp with this id.
+     */
+    @NonNull
+    SalesforceJobOpp getJobOpp(long jobId) throws NoSuchObjectException;
 
     /**
      * Look up the SalesforceJobOpp associated with the Salesforce opportunity record with the

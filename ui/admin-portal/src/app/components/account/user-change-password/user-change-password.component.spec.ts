@@ -1,9 +1,9 @@
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import { UserChangePasswordComponent } from './user-change-password.component';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
-import { UserService } from '../../../services/user.service';
+import {UserChangePasswordComponent} from './user-change-password.component';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {of, throwError} from 'rxjs';
+import {UserService} from '../../../services/user.service';
 import {config_test} from "../../../../config-test";
 
 fdescribe('UserChangePasswordComponent', () => {

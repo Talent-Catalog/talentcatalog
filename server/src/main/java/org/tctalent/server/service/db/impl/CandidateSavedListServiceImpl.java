@@ -159,11 +159,10 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, targetId));
         }
 
-
-        //Set any specified Salesforce Job Opportunity
-        final String sfJoblink = request.getSfJoblink();
-        if (sfJoblink != null) {
-            targetList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink));
+        //Set any specified Job Opportunity
+        final Long jobId = request.getJobId();
+        if (jobId != null) {
+            targetList.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
         }
 
         boolean replace = request.getUpdateType() == ContentUpdateType.replace;

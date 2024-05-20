@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ResetPasswordComponent } from './reset-password.component';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { UserService } from "../../../services/user.service";
-import { of } from 'rxjs';
-import { SendResetPasswordEmailRequest } from "../../../model/candidate";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ResetPasswordComponent} from './reset-password.component';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UserService} from "../../../services/user.service";
+import {of} from 'rxjs';
+import {SendResetPasswordEmailRequest} from "../../../model/candidate";
 import {config_test} from "../../../../config-test";
 
 fdescribe('ResetPasswordComponent', () => {

@@ -14,107 +14,118 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
-  AbstractControl,
-  AsyncValidatorFn,
-  FormBuilder,
-  FormGroup,
-  ValidationErrors,
-  Validators
-} from '@angular/forms';
-import {salesforceSandboxUrlPattern, salesforceUrlPattern} from '../../../model/base';
-import {Observable, of} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
-import {SalesforceService} from "../../../services/salesforce.service";
-import {FormComponentBase} from "../form/FormComponentBase";
-
-/*
-  MODEL - subclass FormComponentBase, invalid values, sync and async validators
-  - use of subclassing FormComponentBase to inherit common standard form functionality
-  - shows how to check for invalid control values using inherited isInvalid method.
-  - use of both sync and async form validators
- */
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {Observable, of} from "rxjs";
+import {JobNameAndId} from "../../../model/job";
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {JobService} from "../../../services/job.service";
+import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-joblink',
   templateUrl: './joblink.component.html',
   styleUrls: ['./joblink.component.scss']
 })
-export class JoblinkComponent extends FormComponentBase implements OnInit {
-  form: FormGroup;
-  @Input() joblink: string;
-  @Output() updateError =  new EventEmitter();
-  @Output() joblinkValidation =  new EventEmitter();
+export class JoblinkComponent implements OnInit, OnChanges {
 
-  constructor(fb: FormBuilder,
-    private salesforceService: SalesforceService) {
-    super(fb);
+  @Input() jobId: number;
+  @Output() jobSelection =  new EventEmitter<JobNameAndId>();
+
+  //This is set in ngOnInit to the function called from the html input ngbTypeahead.
+  //(Note that calling a method does not work because "this" is undefined - instead of referring
+  //to this component instance - meaning that you can't access properties of this component - JC)
+  doJobSearch;
+
+  //Job name associated with jobId
+  currentJobName: string;
+
+  //Current update request
+  currentJobRequest: JobNameAndId;
+
+  //True if removeJob is currently checked.
+  removeJobRequest: boolean;
+
+  //Heading displayed for job search - depends on whether there is already a job associated
+  searchHeading: string;
+
+  //True if searching for jobs
+  searching: boolean;
+
+  constructor(private jobService: JobService) {
   }
 
   ngOnInit(): void {
 
-    this.form = this.fb.group({
-      sfJoblink: [this.joblink,
-        [Validators.pattern(`${salesforceUrlPattern}|${salesforceSandboxUrlPattern}`)], //Sync validators
-        [this.sfJoblinkValidator()] //Async validators
-      ],
-    });
+    //See https://ng-bootstrap.github.io/#/components/typeahead/examples
+    this.doJobSearch = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => {
+        this.searching = true;
+      }),
+      switchMap(text =>
+        this.jobService.searchPaged(
+          {keyword: text, jobNameAndIdOnly: true, pageSize: 10}).pipe(
+          map(result => result.content),
+          catchError(() => {
+            return of([]);
+          }))
+      ),
+      tap(() => this.searching = false)
+    );
   }
 
-  private sfJoblinkValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      const url: string = control.value;
-      let retval;
+  ngOnChanges(changes: SimpleChanges): void {
+    //Display appropriate heading for job search
+    this.searchHeading = (this.jobId ? "Change" : "Optional") + " job association";
 
-      this.updateError.emit(null);
-
-      if (url == null || url.length === 0) {
-        //Empty url always validates
-        retval = of(null)
-        this.joblinkValidation.emit("");
-      } else {
-        //See if we have name for a job corresponding to this url
-        retval = this.salesforceService.getOpportunity(url).pipe(
-          //As side effect populate the job details
-          tap(opportunity => {
-            const valid = opportunity && opportunity.name !== null;
-            const validationEvent = new JoblinkValidationEvent(valid);
-            if (valid) {
-              validationEvent.sfJoblink = this.form.controls.sfJoblink.value;
-              validationEvent.jobname = opportunity.name;
-            }
-            this.joblinkValidation.emit(validationEvent);
-          }),
-
-          //Null names turn into validation error - otherwise no error
-          map(opportunity => opportunity === null ? {'invalidSfJoblink': true} : null),
-
-          //Problems connecting to server will be displayed but we won't
-          //treat it as a validation error
-          catchError(err => {
-            this.updateError.emit(err);
-            return of(null);
-          })
-        );
-      }
-
-      return retval;
-    };
-  }
-
-}
-
-export class JoblinkValidationEvent {
-  jobname: string;
-  sfJoblink: string;
-  valid: boolean;
-
-  constructor(valid: boolean) {
-    this.valid = valid;
-    if (!valid) {
-      this.jobname = null;
-      this.sfJoblink = null;
+    //If there is already a job associated, get its name and construct the default
+    //job request (ie to retain existing job)
+    if (this.jobId) {
+      this.jobService.get(this.jobId).subscribe({
+        next: job => {
+          this.currentJobRequest = {
+            name: job.name,
+            id: job.id
+          }
+          this.currentJobName = job.name;
+        }
+      });
     }
+  }
+
+  renderJobRow(job: JobNameAndId) {
+    return job.name;
+  }
+
+  removeJob($event) {
+    this.removeJobRequest = $event.target.checked;
+    if (this.removeJobRequest) {
+      this.currentJobRequest = null;
+    } else {
+      this.currentJobRequest = {
+        name: this.currentJobName,
+        id: this.jobId
+      }
+    }
+    this.emitCurrentJobRequest();
+  }
+
+  selectSearchResult($event: NgbTypeaheadSelectItemEvent<any>) {
+      this.currentJobRequest = $event.item;
+      this.emitCurrentJobRequest();
+  }
+
+  private emitCurrentJobRequest() {
+    this.jobSelection.emit(this.currentJobRequest);
   }
 }

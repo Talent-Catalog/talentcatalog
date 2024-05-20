@@ -29,6 +29,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -51,6 +52,15 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     private final CountryService countryService;
 
     private final EmailHelper emailHelper;
+
+    @NonNull
+    @Override
+    public SalesforceJobOpp getJobOpp(long jobId) throws NoSuchObjectException {
+        final SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(jobId)
+            .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, jobId));
+
+        return jobOpp;
+    }
 
     @Nullable
     @Override

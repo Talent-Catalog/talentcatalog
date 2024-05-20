@@ -14,17 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AppPage} from './app.po';
 
-describe('workspace-project App', () => {
-  let page: AppPage;
+import {browser, by, element, ElementFinder, ExpectedConditions} from 'protractor';
+import {config_test} from "../../src/config-test";
 
-  beforeEach(() => {
-    page = new AppPage();
+describe('AppComponent', () => {
+  beforeEach(async () => {
+    await browser.get(config_test.baseUrl+'/jobs');
   });
 
-  it('should display welcome message', () => {
-    page.navigateTo();
-    expect(page.getTitleText()).toEqual('Welcome to admin-portal!');
-  });
+  it('should display header when user is logged in', async () => {
+    const header = element(by.tagName('app-header'));
+    await browser.wait(ExpectedConditions.presenceOf(header), 5000);
+    // Assert to be true because user logged in
+    expect(await header.isPresent()).toBeTruthy();
+  })
 });

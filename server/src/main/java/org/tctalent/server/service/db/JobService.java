@@ -16,8 +16,6 @@
 
 package org.tctalent.server.service.db;
 
-import java.io.IOException;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +31,9 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Service for managing {@link SalesforceJobOpp}
@@ -227,6 +228,18 @@ public interface JobService {
         throws InvalidRequestException, NoSuchObjectException;
 
     /**
+     * Updates the signed MOU file link of the job with the given id
+     * @param id ID of job
+     * @param updateLinkRequest Details of link (name and url)
+     * @return Updated job
+     * @throws InvalidRequestException if the job does not have a submission list
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateMouLink(long id, UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException;
+
+    /**
      * Updates whether or not the job wth the given id is starred by the current user
      * @param id ID of job
      * @param starred True if job should be starred, false if not
@@ -287,5 +300,19 @@ public interface JobService {
      * @throws InvalidRequestException if the job does not have a submission list
      */
     SalesforceJobOpp uploadInterviewGuidance(long id, MultipartFile file)
+            throws InvalidRequestException, NoSuchObjectException, IOException;
+
+    /**
+     * Uploads the signed MOU to the JobDescription subfolder of the folder associated with the
+     * submission list of the job with the given id.
+     * <p/>
+     * @param id ID of job
+     * @param file File containing the signed MOU
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     * @throws IOException           if there is a problem uploading the file.
+     * @throws InvalidRequestException if the job does not have a submission list
+     */
+    SalesforceJobOpp uploadMou(long id, MultipartFile file)
             throws InvalidRequestException, NoSuchObjectException, IOException;
 }

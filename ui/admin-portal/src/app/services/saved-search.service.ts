@@ -35,7 +35,7 @@ import {SearchCandidateRequest} from "../model/search-candidate-request";
 export interface CreateFromDefaultSavedSearchRequest {
   savedListId: number;
   name: string;
-  sfJoblink?: string;
+  jobId?: number;
 }
 
 export interface SavedSearchTypeInfo {
