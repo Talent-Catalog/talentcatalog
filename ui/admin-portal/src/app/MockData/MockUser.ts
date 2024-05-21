@@ -17,8 +17,8 @@
 
 
 import {User} from "../model/user";
- import {Country} from "../model/country";
- import {MockPartner} from "./MockPartner";
+import {Country} from "../model/country";
+import {MockPartner} from "./MockPartner";
 
  export class MockUser implements User {
    id: number = 1;

@@ -1,4 +1,4 @@
-import { browser, by, element, ExpectedConditions } from 'protractor';
+import {browser, by, element, ExpectedConditions} from 'protractor';
 import {config_test} from "../../../../../src/config-test";
 import {searchByInput} from "../../settings/users/cleanup.e2e.spec";
 

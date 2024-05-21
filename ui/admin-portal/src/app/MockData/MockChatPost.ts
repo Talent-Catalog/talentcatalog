@@ -1,5 +1,4 @@
 import {ChatPost} from "../model/chat";
-import {DisplayUser} from "../model/user";
 import {MockUser} from "./MockUser";
 import {Reaction} from "../model/reaction";
 import {MockReaction} from "./MockReaction";

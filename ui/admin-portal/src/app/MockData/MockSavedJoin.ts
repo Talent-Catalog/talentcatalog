@@ -1,5 +1,5 @@
-import { SavedSearchJoin } from "../model/saved-search";
-import { MockSavedSearch } from "./MockSavedSearch";
+import {SavedSearchJoin} from "../model/saved-search";
+import {MockSavedSearch} from "./MockSavedSearch";
 
 export class MockSavedJoin implements SavedSearchJoin {
   savedSearchId: number;
