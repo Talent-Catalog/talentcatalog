@@ -1,10 +1,11 @@
 import {MockUser} from "./MockUser";
 import {User} from "../model/user";
 import {Auditable, CandidateSource} from "../model/base";
-import {ExportColumn, PublishedDocColumnProps} from "../model/saved-list";
+import {ExportColumn, PublishedDocColumnProps, SavedList} from "../model/saved-list";
 import {OpportunityIds} from "../model/opportunity";
+import {Task} from "../model/task";
 
-export class MockCandidateSource implements CandidateSource {
+export class MockCandidateSource implements CandidateSource,SavedList {
   name: string = "Mock Candidate";
   description?: string = "Mock description";
   displayedFieldsLong?: string[] = ["Field1", "Field2"];
@@ -20,6 +21,7 @@ export class MockCandidateSource implements CandidateSource {
   createdDate?: Date = new Date("2024-05-01");
   updatedBy?: User = new MockUser();
   updatedDate?: Date = new Date("2024-05-01");
+  tasks?: Task[] = []; // Add the tasks property
 }
 
 export class MockExportColumn implements ExportColumn {

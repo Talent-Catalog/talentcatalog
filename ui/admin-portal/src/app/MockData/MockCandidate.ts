@@ -23,6 +23,7 @@ import {
   YesNo,
   YesNoUnsure
 } from "../model/candidate";
+import {TaskAssignment} from "../model/task-assignment";
 
 export class MockCandidate implements Candidate {
 
@@ -84,7 +85,7 @@ export class MockCandidate implements Candidate {
     { id: 1, exam: Exam.IELTSGen, score: "7.5", year: 2020 }
   ];
   candidateAttachments?: any[];
-  taskAssignments?: any[];
+  taskAssignments?: TaskAssignment[] = [];
   candidateOpportunities: any[] = [];
   candidateProperties?: any[];
   mediaWillingness?: string;
