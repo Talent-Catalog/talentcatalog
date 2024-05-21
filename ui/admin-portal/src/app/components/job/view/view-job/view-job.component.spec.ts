@@ -74,6 +74,7 @@ fdescribe('ViewJobComponent', () => {
     component.onJobUpdated(job);
     // Act
     component.doToggleStarred();
+    tick();
     // Assert
      expect(mockJobService.updateStarred).toHaveBeenCalledWith(1, false);
      expect(component.job).toEqual(job);

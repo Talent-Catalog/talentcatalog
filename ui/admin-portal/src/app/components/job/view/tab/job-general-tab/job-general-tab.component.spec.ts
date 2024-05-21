@@ -1,5 +1,5 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import { JobGeneralTabComponent } from './job-general-tab.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {JobGeneralTabComponent} from './job-general-tab.component';
 import {MockJob} from "../../../../../MockData/MockJob";
 import {ViewJobInfoComponent} from "../../info/view-job-info/view-job-info.component";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";

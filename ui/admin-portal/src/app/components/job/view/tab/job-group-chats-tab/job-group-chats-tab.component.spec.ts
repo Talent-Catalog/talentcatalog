@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { JobGroupChatsTabComponent } from './job-group-chats-tab.component';
-import { ChatService } from '../../../../../services/chat.service';
-import { AuthorizationService } from '../../../../../services/authorization.service';
-import { Job } from '../../../../../model/job';
-import {of, throwError} from 'rxjs';
+import {ComponentFixture,TestBed} from '@angular/core/testing';
+import {JobGroupChatsTabComponent} from './job-group-chats-tab.component';
+import {ChatService} from '../../../../../services/chat.service';
+import {AuthorizationService} from '../../../../../services/authorization.service';
+import {Job} from '../../../../../model/job';
+import {of,throwError} from 'rxjs';
 import {
   ChatsWithPostsComponent
 } from "../../../../chat/chats-with-posts/chats-with-posts.component";
