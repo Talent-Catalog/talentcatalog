@@ -129,7 +129,7 @@ dependencies {
     implementation("jakarta.activation:jakarta.activation-api:latest.release")
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
-    implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
+    implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
