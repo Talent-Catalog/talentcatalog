@@ -51,7 +51,7 @@ fdescribe('CandidatesListComponent', () => {
     mockSavedListService = jasmine.createSpyObj('SavedListService', ['get']);
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockLocation = jasmine.createSpyObj('Location', ['back']);
-
+    mockSavedListService.get.and.returnValue(of(MockSavedList));
     TestBed.configureTestingModule({
       declarations: [CandidatesListComponent, CandidateSourceDescriptionComponent, AutosaveStatusComponent, RouterLinkStubDirective ,ShowCandidatesComponent, SortedByComponent],
       imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}), NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
@@ -73,6 +73,7 @@ fdescribe('CandidatesListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(CandidatesListComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -93,26 +94,24 @@ fdescribe('CandidatesListComponent', () => {
   it('should handle errors from saved list service', () => {
     const errorMessage = 'Error fetching saved list';
     mockSavedListService.get.and.returnValue(throwError(errorMessage));
-
+    component.ngOnInit();
     fixture.detectChanges();
-
     expect(component.error).toEqual(errorMessage);
     expect(component.loading).toBe(false);
   });
 
-  it('should create a new list when no ID is specified in the route', () => {
-    mockActivatedRoute.paramMap = of({ get: (param: string) => null }); // Simulate no ID in route parameters
+  it('should create a new list when no ID is specified in the route', waitForAsync(() => {
+    mockActivatedRoute.paramMap = of({ get: (param: string) => null }); // Set id param to null
 
     const createdList: SavedList = MockSavedList; // Assuming you have a mock SavedList object
     const modalResultPromise = Promise.resolve(createdList);
     mockModalService.open.and.returnValue({ result: modalResultPromise });
+    component.ngOnInit();
 
-    fixture.detectChanges();
-
-    return modalResultPromise.then(() => {
+    modalResultPromise.then(() => {
       expect(mockRouter.navigate).toHaveBeenCalled();
     }).catch(error => {
       console.error('Error:', error); // Log any errors
     });
-  });
+  }));
 });
