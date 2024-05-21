@@ -1,11 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { of, throwError } from 'rxjs';
-
-import { ViewJobSummaryComponent } from './view-job-summary.component';
-import { JobService } from '../../../../../services/job.service';
-import { Job } from '../../../../../model/job';
+import {ComponentFixture,TestBed} from '@angular/core/testing';
+import {ReactiveFormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
+import {of,throwError} from 'rxjs';
+import {ViewJobSummaryComponent} from './view-job-summary.component';
+import {JobService } from '../../../../../services/job.service';
+import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
 
 fdescribe('ViewJobSummaryComponent', () => {
