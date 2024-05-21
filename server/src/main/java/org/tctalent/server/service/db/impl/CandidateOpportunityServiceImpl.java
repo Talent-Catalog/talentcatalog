@@ -650,44 +650,67 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 loggedInUser.getUsername(), LocalDate.now(),
                 opp.getNextStep(), oppParams.getNextStep());
 
-            // TODO: separate next step and due date, simplify condition checks
             // If next step details changing, send automated post to JobCreatorSourcePartner chat.
-            if (
-                !processedNextStep.equals(opp.getNextStep()) ||
-                (oppParams.getNextStepDueDate() != null && opp.getNextStepDueDate() == null) ||
-                (!oppParams.getNextStepDueDate().isEqual(opp.getNextStepDueDate()))
+            if (oppParams.getNextStep() != null
             ) {
-                // Find the relevant job chat
-                JobChat jcspChat = jobChatService.getOrCreateJobChat(
-                    JobChatType.JobCreatorSourcePartner,
-                    opp.getJobOpp(),
-                    opp.getCandidate().getUser().getPartner(),
-                    null
-                );
+                // To compare previous next step to new one, need to ensure neither is null.
+                // Cases are auto-populated with a value for next step when created, but this has
+                // not always been the case.
+                String currentNextStep = opp.getNextStep() == null ? "" : opp.getNextStep();
 
-                // Set the chat post content
-                Post autoPostNextStepChange = new Post();
-                autoPostNextStepChange.setContent(
-                    "💼 <b>" + opp.getName()
-                        + "</b> 🪜<br> The next step details have changed for this case relating to candidate "
-                        + candidateNameAndNumber
-                        + ".<br><b>Next step:</b> " + processedNextStep
-                        + "<br><b>Due date:</b> "
-                        + (oppParams.getNextStepDueDate() == null ?
-                        opp.getNextStepDueDate() : oppParams.getNextStepDueDate())
-                );
+                // If only the due date has changed, we still want to send a message.
+                // As above, there are some old cases with null values that need to be dealt with.
+                LocalDate currentDueDate =
+                    opp.getNextStepDueDate() == null ?
+                        LocalDate.of(1970, 1, 1) : opp.getNextStepDueDate();
 
-                // Create the chat post
-                ChatPost nextStepChangeChatPost = chatPostServiceImpl.createPost(
-                    autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
+                // If the request due date is null (user deletes the existing value in the form but
+                // doesn't set a new one, then submits) it will not be used (see below) — so, for
+                // purpose of comparison we give it the same value as the current due date (no
+                // message will be sent because they're the same).
+                // TODO: next step due date should be a required value in the form
+                LocalDate requestDueDate =
+                    oppParams.getNextStepDueDate() == null ?
+                        currentDueDate : oppParams.getNextStepDueDate();
 
-                // Publish the chat post
-                chatPostServiceImpl.publishChatPost(nextStepChangeChatPost);
+                if (!processedNextStep.equals(currentNextStep) || !requestDueDate.equals(currentDueDate)) {
+                    // Find the relevant job chat
+                    JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                        JobChatType.JobCreatorSourcePartner,
+                        opp.getJobOpp(),
+                        opp.getCandidate().getUser().getPartner(),
+                        null
+                    );
+
+                    // Set the chat post content
+                    Post autoPostNextStepChange = new Post();
+                    autoPostNextStepChange.setContent(
+                        "💼 <b>" + opp.getName()
+                            + "</b> 🪜<br> The next step details have changed for this case relating to candidate "
+                            + candidateNameAndNumber
+                            + ".<br><b>Next step:</b> " + processedNextStep
+                            + "<br><b>Due date:</b> "
+                            + (oppParams.getNextStepDueDate() == null ?
+                            opp.getNextStepDueDate() : oppParams.getNextStepDueDate())
+                    );
+
+                    // Create the chat post
+                    ChatPost nextStepChangeChatPost = chatPostServiceImpl.createPost(
+                        autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
+
+                    // Publish the chat post
+                    chatPostServiceImpl.publishChatPost(nextStepChangeChatPost);
+                }
             }
 
             opp.setNextStep(processedNextStep);
 
-            opp.setNextStepDueDate(oppParams.getNextStepDueDate());
+            // A next step always needs a due date
+            final LocalDate requestDueDate = oppParams.getNextStepDueDate();
+            if (requestDueDate != null) {
+                opp.setNextStepDueDate(oppParams.getNextStepDueDate());
+            }
+
             opp.setClosingComments(oppParams.getClosingComments());
             opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
             opp.setEmployerFeedback(oppParams.getEmployerFeedback());

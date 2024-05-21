@@ -68,6 +68,7 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
@@ -141,7 +142,7 @@ public class JobServiceImpl implements JobService {
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final JobOppIntakeService jobOppIntakeService;
-    private final ChatPostServiceImpl chatPostServiceImpl;
+    private final ChatPostService chatPostService;
 
     private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
@@ -152,7 +153,7 @@ public class JobServiceImpl implements JobService {
         UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
         JobChatService jobChatService, PartnerService partnerService, SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
             SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
-            SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService) {
+            SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService, ChatPostService chatPostService) {
         this.authService = authService;
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
@@ -171,6 +172,7 @@ public class JobServiceImpl implements JobService {
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
         this.jobOppIntakeService = jobOppIntakeService;
+        this.chatPostService = chatPostService;
 
         initialiseClosingCandidateStageLogic();
     }
@@ -805,11 +807,11 @@ public class JobServiceImpl implements JobService {
             );
 
             // Create the chat post
-            ChatPost jobOppStageChangeChatPost = chatPostServiceImpl.createPost(
+            ChatPost jobOppStageChangeChatPost = chatPostService.createPost(
                 autoPostJobOppStageChange, jcaspChat, userService.getSystemAdminUser());
 
             // Publish the chat post
-            chatPostServiceImpl.publishChatPost(jobOppStageChangeChatPost);
+            chatPostService.publishChatPost(jobOppStageChangeChatPost);
         }
 
         final String nextStep = request.getNextStep();
