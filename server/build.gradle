@@ -88,8 +88,7 @@ dependencies {
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk16', version: '1.45'
 // https://mvnrepository.com/artifact/com.slack.api/slack-api-client
     implementation group: 'com.slack.api', name: 'slack-api-client', version: '1.9.0'
-// https://mvnrepository.com/artifact/org.jdom/jdom2
-    implementation group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+    implementation("org.jdom:jdom2")
 // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
