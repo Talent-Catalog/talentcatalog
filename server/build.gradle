@@ -167,3 +167,8 @@ bootJar {
         include ".ebextensions/**"
     }
 }
+
+// Parameter flag required for SpringBoot3+ (Spring 6.1+)
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("-parameters")
+}
