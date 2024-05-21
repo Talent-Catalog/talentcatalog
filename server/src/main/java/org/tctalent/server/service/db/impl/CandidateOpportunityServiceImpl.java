@@ -79,6 +79,7 @@ import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportun
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -104,7 +105,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final AuthService authService;
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
-    private final ChatPostServiceImpl chatPostServiceImpl;
+    private final ChatPostService chatPostService;
 
     /**
      * Creates or updates CandidateOpportunities associated with the given candidates going for
@@ -168,18 +169,18 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             autoPostAddedToSubList.setContent("The candidate " + candidateName +
                 " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
             // Create the chat post
-            ChatPost prospectChatPost = chatPostServiceImpl.createPost(
+            ChatPost prospectChatPost = chatPostService.createPost(
                 autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
             //publish chat post
-            chatPostServiceImpl.publishChatPost(prospectChatPost);
+            chatPostService.publishChatPost(prospectChatPost);
             //Create another auto post to the job creator source partner chat.
             JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
                 candidate.getUser().getPartner(), null);
             // Create the chat post
-            ChatPost jcspChatPost = chatPostServiceImpl.createPost(
+            ChatPost jcspChatPost = chatPostService.createPost(
                 autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
             //publish chat post
-            chatPostServiceImpl.publishChatPost(jcspChatPost);
+            chatPostService.publishChatPost(jcspChatPost);
         }
 
         return opp;
@@ -630,11 +631,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     );
 
                     // Create the chat post
-                    ChatPost candidateOppStageChangeChatPost = chatPostServiceImpl.createPost(
+                    ChatPost candidateOppStageChangeChatPost = chatPostService.createPost(
                         autoPostCandidateOppStageChange, jcspChat, userService.getSystemAdminUser());
 
                     // Publish the chat post
-                    chatPostServiceImpl.publishChatPost(candidateOppStageChangeChatPost);
+                    chatPostService.publishChatPost(candidateOppStageChangeChatPost);
                 }
 
                 opp.setStage(stage);
@@ -695,11 +696,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     );
 
                     // Create the chat post
-                    ChatPost nextStepChangeChatPost = chatPostServiceImpl.createPost(
+                    ChatPost nextStepChangeChatPost = chatPostService.createPost(
                         autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
 
                     // Publish the chat post
-                    chatPostServiceImpl.publishChatPost(nextStepChangeChatPost);
+                    chatPostService.publishChatPost(nextStepChangeChatPost);
                 }
             }
 
