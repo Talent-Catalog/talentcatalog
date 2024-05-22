@@ -1,9 +1,9 @@
 <div class="d-flex justify-content-end mb-2">
-  <button (click)="visaJobAus.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-  <button (click)="visaJobAus.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+  <button (click)="visaJobAcc.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
+  <button (click)="visaJobAcc.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
 </div>
 
-<ngb-accordion *ngIf="selectedJobCheck" #visaJobAus="ngbAccordion" [destroyOnHide]="false">
+<ngb-accordion *ngIf="selectedJobCheck" #visaJobAcc="ngbAccordion" [destroyOnHide]="false">
 
   <ngb-panel id="emp-eligibility" title="Employer Eligibility">
     <ng-template ngbPanelContent>
@@ -30,7 +30,7 @@
         <div class="display">
           <app-fixed-input
             [question]="'Family in Australia that may impact offer'"
-            [answer]="familyInAus">
+            [answer]="family">
           </app-fixed-input>
         </div>
       </div>

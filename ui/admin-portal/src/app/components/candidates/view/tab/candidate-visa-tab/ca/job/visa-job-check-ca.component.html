@@ -1,9 +1,9 @@
 <div class="d-flex justify-content-end mb-2">
-  <button (click)="visaJobCanada.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
-  <button (click)="visaJobCanada.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+  <button (click)="visaJobAcc.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
+  <button (click)="visaJobAcc.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
 </div>
 
-<ngb-accordion *ngIf="selectedJobCheck" #visaJobCanada="ngbAccordion" [destroyOnHide]="false">
+<ngb-accordion *ngIf="selectedJobCheck" #visaJobAcc="ngbAccordion" [destroyOnHide]="false">
   <ngb-panel id="occupation-eligibility" title="Occupation Eligibility">
     <ng-template ngbPanelContent>
       <app-occupation-category
@@ -164,7 +164,7 @@
       <div class="card card-body intake-data">
         <app-fixed-input
           [question]="'Family in Canada that may impact offer'"
-          [answer]="familyInCanada">
+          [answer]="family">
         </app-fixed-input>
       </div>
     </ng-template>
