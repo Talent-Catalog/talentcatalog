@@ -85,6 +85,14 @@ public class SearchOpportunityRequest extends PagedSearchRequest {
     private Boolean ownedByMyPartner;
 
     /**
+     * If specified, match opportunities based on whether they have been published.
+     * (Currently only job opportunities support the idea of "publishing" but potentially it
+     * could apply to any opp - and it is useful to have it in this base class)
+     */
+    @Nullable
+    private Boolean published;
+
+    /**
      * If specified, match opportunities based on whether the opportunity is closed.
      */
     @Nullable

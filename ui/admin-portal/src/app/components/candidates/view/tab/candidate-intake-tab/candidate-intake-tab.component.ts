@@ -27,12 +27,16 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
 } from "../../../../../services/candidate-dependant.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
+import {calculateAge} from "../../../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -119,4 +123,29 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
         this.saving = false;
       });
   }
+
+  getAge(dob: string) {
+    let dobDate = new Date(dob);
+    if (!Number.isNaN(dobDate.getTime())) {
+      return calculateAge(dobDate);
+    } else {
+      return 'no DOB'
+    }
+  }
+
+  getGender(gender: string) {
+    return gender ? gender.slice(0,1).toUpperCase() : "";
+  }
+
+  hasDependantHealthIssues() {
+    let health: boolean = false;
+    for (let dep of this.candidateIntakeData?.candidateDependants) {
+      if (dep.healthConcern == "Yes") {
+        health = true;
+        break;
+      }
+    }
+    return health;
+  }
+
 }

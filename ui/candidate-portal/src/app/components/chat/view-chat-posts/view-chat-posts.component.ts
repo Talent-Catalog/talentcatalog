@@ -65,7 +65,13 @@ export class ViewChatPostsComponent extends PostsComponentBase
     this.requestJobChat(request);
   }
 
-  // Ensures that reaction and editor emoji pickers are not open at the same time, and that clicks
+  onMarkChatAsRead() {
+    if (this.chat) {
+      this.chatService.markChatAsRead(this.chat);
+    }
+  }
+
+// Ensures that reaction and editor emoji pickers are not open at the same time, and that clicks
   // anywhere on the DOM outside an open picker will close that picker. Reaction pickers are
   // attached to instances of ViewPostComponent (reacting to posts) and the editor picker is
   // attached to the Quill toolbar (writing posts).
@@ -92,12 +98,18 @@ export class ViewChatPostsComponent extends PostsComponentBase
       if (clickedElementId.includes('reactionBtn') && this.editor.emojiPickerVisible) {
         // If click was on reaction picker toggle button, close the editor picker
         this.editor.emojiPickerVisible = false
-      } else if (!sectionClass.includes('emoji') &&
+      } else if (clickedElementId.includes('emojiBtn') && postWithOpenPicker != null) {
+        // If click was on editor picker toggle button, close the post reaction picker
+        postWithOpenPicker.reactionPickerVisible = false;
+      }
+      else if (!sectionClass.includes('emoji') &&
           !clickedElementId.includes('reactionBtn') &&
           !clickedElementId.includes('emojiBtn')) {
         // If click was not on any emoji picker toggle button or emoji picker, close any open picker
         this.editor.emojiPickerVisible = false;
-        postWithOpenPicker.reactionPickerVisible = false;
+        if (postWithOpenPicker) {
+          postWithOpenPicker.reactionPickerVisible = false;
+        }
       }
     }
   }

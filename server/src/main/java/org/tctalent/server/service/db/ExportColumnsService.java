@@ -22,7 +22,14 @@ import org.tctalent.server.model.db.SavedList;
  * Unfortunately we have to manually remove export columns. We can't rely on
  * setExportColumns(savedList) automatically deleting the previous columns of the list.
  * <p/>
- * See https://stackoverflow.com/questions/2011519/jpa-onetomany-not-deleting-child
+ * See <a href="https://stackoverflow.com/questions/2011519/jpa-onetomany-not-deleting-child">...</a>
+ * <p/>
+ * Note from above reference that JPA 2 supports a solution around "optional=false" and
+ * "orphanRemoval"
+ * but not sure how well that will work given that ExportColumns table is used for both saved lists
+ * and saved searches - so those ids are optional (if saved search export columns are being
+ * specified, then savedSearchId will be specified but savedListId won't).
+ * Simpler and more straightforward to delete the export columns explicitly by SavedList id.
  * <p/>
  * So before each setExportColumns call, you should use this service to clearExportColumns for
  * that SavedList.

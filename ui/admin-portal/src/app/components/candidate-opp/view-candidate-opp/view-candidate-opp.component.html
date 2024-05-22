@@ -186,12 +186,6 @@
           </app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
-          <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-success " (click)="onMarkCandidateChatAsRead()">
-              Mark as Read <i class="fa-solid"></i>
-            </button>
-          </div>
-
           <app-view-chat-posts
             [candidateId]="opp.candidate.id"
             [jobChatType]="JobChatType.CandidateProspect"
@@ -209,12 +203,6 @@
           </app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
-          <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-success " (click)="onMarkCandidateRecruitingChatAsRead()">
-              Mark as Read <i class="fa-solid"></i>
-            </button>
-          </div>
-
           <app-view-chat-posts
             [candidateId]="opp.candidate.id"
             [jobId]="opp.jobOpp.id"

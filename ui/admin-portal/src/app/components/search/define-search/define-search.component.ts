@@ -14,17 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
-import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender} from '../../../model/candidate';
+import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -52,9 +44,7 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {
-  DateRangePickerComponent
-} from '../../util/form/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -131,6 +121,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
   loggedInUser: User;
+  unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
 
   selectedBaseJoin;
   storedBaseJoin;
@@ -188,6 +179,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       miniIntakeCompleted: [null],
       fullIntakeCompleted: [null],
       searchJoinRequests: this.fb.array([]),
+      unhcrStatuses: [[]],
       //for display purposes
       occupations: [[]],
       countries: [[]],
@@ -199,6 +191,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       surveyTypes: [[]],
       candidateFilterByOpps: [null],
       exclusionListId: [null],
+      unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
@@ -366,6 +359,12 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     if (request.surveyTypes != null) {
       request.surveyTypeIds = request.surveyTypes.map(s => s.id);
       delete request.surveyTypes;
+    }
+
+    if (request.unhcrStatusesDisplay != null) {
+      //Pick up key values from EnumOptions
+      request.unhcrStatuses = request.unhcrStatusesDisplay.map(s => s.key);
+      delete request.unhcrStatusesDisplay;
     }
 
     return request;
@@ -582,6 +581,13 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       searchType = 'or';
     }
     this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
+
+    /* UNHCR STATUSES */
+    let unhcrStatuses: EnumOption[] = [];
+    if (request.unhcrStatuses) {
+      unhcrStatuses = enumKeysToEnumOptions(request.unhcrStatuses, UnhcrStatus);
+    }
+    this.searchForm.controls['unhcrStatusesDisplay'].patchValue(unhcrStatuses);
 
     /* JOINED SEARCHES */
     while (this.searchJoinArray.length) {

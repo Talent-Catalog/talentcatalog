@@ -16,58 +16,58 @@
 
 package org.tctalent.server.service.db.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.configuration.GoogleDriveConfig;
-import org.tctalent.server.exception.InvalidRequestException;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.ChatPost;
-import org.tctalent.server.model.db.JobChat;
-import org.tctalent.server.model.db.chat.Post;
-import org.tctalent.server.repository.db.ChatPostRepository;
-import org.tctalent.server.repository.db.JobChatRepository;
-import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.ChatPostService;
-import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.util.dto.DtoBuilder;
-import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
-import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
-import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.configuration.GoogleDriveConfig;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.chat.Post;
+import org.tctalent.server.repository.db.ChatPostRepository;
+import org.tctalent.server.repository.db.JobChatRepository;
+import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.ChatPostService;
+import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.util.dto.DtoBuilder;
+import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
 @RequiredArgsConstructor
 public class ChatPostServiceImpl implements ChatPostService {
 
-    private final UserService userService;
     private final ChatPostRepository chatPostRepository;
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
     private final JobChatRepository jobChatRepository;
     private final CandidateService candidateService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     private static final Logger log = LoggerFactory.getLogger(ChatPostServiceImpl.class);
 
     @Override
-    public ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat) {
+    public ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat, User user) {
         ChatPost chatPost = new ChatPost();
         chatPost.setJobChat(jobChat);
         chatPost.setContent(post.getContent());
         chatPost.setCreatedDate(OffsetDateTime.now());
-        chatPost.setCreatedBy(userService.getLoggedInUser());
+        chatPost.setCreatedBy(user);
 
         chatPost = chatPostRepository.save(chatPost);
         return chatPost;
@@ -146,8 +146,15 @@ public class ChatPostServiceImpl implements ChatPostService {
     }
 
     @Override
+    public void publishChatPost(ChatPost post) {
+        final Map<String, Object> postDto = getChatPostDtoBuilder().build(post);
+        messagingTemplate.convertAndSend(
+            CHAT_PUBLISH_ROOT + "/" + post.getJobChat().getId(), postDto);
+    }
+
+    @Override
     public String uploadFile(long id, MultipartFile file)
-        throws InvalidRequestException, NoSuchObjectException, IOException {
+        throws NoSuchObjectException, IOException {
         JobChat chat = jobChatRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(JobChat.class, id));
 
@@ -204,11 +211,11 @@ public class ChatPostServiceImpl implements ChatPostService {
     /**
      * In order for the file to display via the html in the post or the editor, we need to alter
      * the link. It needs to be a display link (not embed or preview).
-     * See here: https://support.google.com/drive/thread/34363118?hl=en&msgid=34384934
+     * See here: <a href="https://support.google.com/drive/thread/34363118?hl=en&msgid=34384934">...</a>
      * The link type differs for an image tag embed, or if it's a hyperlink to a file.
      * Update! There is a bug/change with Google that no longer is embedding images as before. The work around is setting
      * to a thumbnail but with a param to set width UPDATE MARCH 28: thumbnail link for img tag no longer seems to work.
-     * See here for workaround: https://support.google.com/sites/thread/253003338/images-from-google-drive-in-embedded-html-no-longer-working?hl=en
+     * See here for workaround: <a href="https://support.google.com/sites/thread/253003338/images-from-google-drive-in-embedded-html-no-longer-working?hl=en">...</a>
      * @param uploadedFile which we want to display in the html of the post
      * @param file we uploaded that we want to get the content type from to determine which link we need.
      * @return string url to embed and open file

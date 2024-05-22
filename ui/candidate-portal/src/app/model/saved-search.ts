@@ -161,7 +161,7 @@ export interface SavedSearchRequest {
   name?: string;
   fixed?: boolean;
   reviewable?: boolean;
-  sfJoblink?: string;
+  jobId?: number;
   savedSearchType?: SavedSearchType;
   savedSearchSubtype?: SavedSearchSubtype;
 
@@ -181,25 +181,4 @@ export interface SelectCandidateInSearchRequest {
   userId: number;
   candidateId: number;
   selected: boolean;
-}
-
-/**
- * Create a SavedSearchRequest from a SavedSearch an optional Salesforce job link, and a search request.
- * @param savedSearch Saved search
- * @param sfJoblink Link to a Salesforce job - can be null
- * @param searchCandidateRequest Search request
- */
-export function convertToSavedSearchRequest
-(savedSearch: SavedSearch, sfJoblink: string, searchCandidateRequest: SearchCandidateRequest):
-  SavedSearchRequest {
-  const savedSearchRequest: SavedSearchRequest = {};
-  savedSearchRequest.id = savedSearch.id;
-  savedSearchRequest.name = savedSearch.name;
-  savedSearchRequest.fixed = savedSearch.fixed;
-  savedSearchRequest.sfJoblink = sfJoblink;
-  savedSearchRequest.reviewable = savedSearch.reviewable;
-  savedSearchRequest.savedSearchType = savedSearch.savedSearchType;
-  savedSearchRequest.savedSearchSubtype = savedSearch.savedSearchSubtype;
-  savedSearchRequest.searchCandidateRequest = searchCandidateRequest;
-  return savedSearchRequest;
 }

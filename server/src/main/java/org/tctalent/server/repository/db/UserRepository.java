@@ -17,6 +17,9 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,6 +31,11 @@ import org.tctalent.server.model.db.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", key = "#p0.username")
+    <T extends User> T save(@NotNull T user);
+
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
             + " and u.role = :role "
@@ -38,6 +46,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
             + " and u.status != 'deleted'")
+    @Cacheable(value = "users", key = "#p0")
     User findByUsernameIgnoreCase(@Param("username") String username);
 
     /* Used for candidate authentication */

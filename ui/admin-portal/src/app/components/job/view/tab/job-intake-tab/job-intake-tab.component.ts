@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {JobIntakeComponentTabBase} from "../../../../util/intake/JobIntakeComponentTabBase";
 import {JobService} from "../../../../../services/job.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
+import {JobOppIntake} from "../../../../../model/job-opp-intake";
 
 @Component({
   selector: 'app-job-intake-tab',
@@ -18,4 +19,7 @@ export class JobIntakeTabComponent extends JobIntakeComponentTabBase {
   }
 
 
+  onIntakeChanged(joi: JobOppIntake) {
+    this.intakeChanged.emit(joi);
+  }
 }

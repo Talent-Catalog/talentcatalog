@@ -540,12 +540,11 @@ export enum IntRecruitReason {
 }
 
 export enum UnhcrStatus {
-  NoResponse= "No response received from candidate",
+  RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
+  NotRegistered = "Not registered with UNHCR",
   MandateRefugee = "Assessed by UNHCR as a mandate refugee (RSD)",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
-  RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
-  NotRegistered = "Not registered with UNHCR",
   Unsure = "Candidate was unsure",
   NA = "Not applicable"
 }
@@ -782,6 +781,24 @@ export function getDestinationOccupationSubcatLink(countryId: number): string {
     case 6191:
       return 'this is a test link for australia to use';
   }
+}
+
+export function calculateAge(dob: Date): number {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const currentDay = currentDate.getDate();
+
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth();
+  const birthDay = dob.getDate();
+
+  let age = currentYear - birthYear;
+  if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+    age--;
+  }
+
+  return age;
 }
 
 export class SendResetPasswordEmailRequest {

@@ -24,13 +24,18 @@ $accent1:    #383b48;
 $accent2:    #64656d;
 $accent3:    #b2b7bb;
 $success: #03864d;
-$warning: #c7b408;
+$warning: #b0a007;
 $highlight: #ffff00;
 $danger: #a91206;
 
-$accordion-button-bg: fade-out($accent2, 0.4);
+// Bootstrap SCSS variable overrides
+// Accordion
+$accordion-button-bg: $accent3;
 $accordion-border-color: $light;
 $accordion-button-active-bg: $accent1;
 $accordion-button-active-color: $light;
+
+// Nav tabs
+$nav-link-padding-x: 0.75rem;
 
 $offcanvas-horizontal-width: 40vw;

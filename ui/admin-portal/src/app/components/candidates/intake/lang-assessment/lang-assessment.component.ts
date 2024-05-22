@@ -41,7 +41,9 @@ export class LangAssessmentComponent extends IntakeComponentBase implements OnIn
       frenchAssessmentScoreNclc: [this.candidateIntakeData?.frenchAssessmentScoreNclc],
     });
     this.regexpIeltsScore = new RegExp('^([0-8](\\.5)?$)|(^9$)');
-    this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only."
+    this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only.";
+
+    this.updateDataOnFieldChange("englishAssessmentScoreIelts");
   }
 
 }

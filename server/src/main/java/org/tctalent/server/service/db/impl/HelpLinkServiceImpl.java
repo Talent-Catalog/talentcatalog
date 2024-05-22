@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.HelpLinkHelper.generateRequestSequence;
+import static org.tctalent.server.util.help.HelpLinkHelper.generateRequestSequence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,24 +26,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.model.db.JobOpportunityStage;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.HelpLinkFetchSpecification;
 import org.tctalent.server.repository.db.HelpLinkRepository;
 import org.tctalent.server.repository.db.HelpLinkSettingsSpecification;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
+import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.HelpLinkService;
+import org.tctalent.server.service.db.JobService;
 
 @Service
 @RequiredArgsConstructor
 public class HelpLinkServiceImpl implements HelpLinkService {
     private final HelpLinkRepository helpLinkRepository;
+    private final CandidateOpportunityService candidateOpportunityService;
     private final CountryService countryService;
+    private final JobService jobService;
 
     private static final Logger log = LoggerFactory.getLogger(HelpLinkServiceImpl.class);
 
@@ -65,8 +73,15 @@ public class HelpLinkServiceImpl implements HelpLinkService {
 
     @Override
     public @NonNull List<HelpLink> fetchHelp(SearchHelpLinkRequest request) {
-        //TODO JC Enrich request with context based on user. Probably a HelpLinkHelper method taking
-        //a user as input.
+        //Enrich request using context.
+
+        //Country
+        if (request.getCountryId() == null) {
+            Country computedCountry = computeCountry(request);
+            if (computedCountry != null) {
+                request.setCountryId(computedCountry.getId());
+            }
+        }
 
         List<HelpLink> helpLinks = new ArrayList<>();
 
@@ -102,7 +117,7 @@ public class HelpLinkServiceImpl implements HelpLinkService {
                 HelpLinkFetchSpecification.buildSearchQuery(childRequest), request.getSort());
             if (!searchResults.isEmpty()) {
                 if (standardDocLink != null) {
-                    //Remove standardDocLink if it was found - because that is already there. 
+                    //Remove standardDocLink if it was found - because that is already there.
                     //Don't want it twice.
                     searchResults.remove(standardDocLink);
                 }
@@ -116,6 +131,30 @@ public class HelpLinkServiceImpl implements HelpLinkService {
         }
 
         return helpLinks;
+    }
+
+    @Nullable
+    private Country computeCountry(SearchHelpLinkRequest request) {
+        Country country = null;
+
+        //See if we have a jobOpp specified
+        SalesforceJobOpp jobOpp = null;
+        if (request.getJobOppId() != null) {
+            jobOpp = jobService.getJob(request.getJobOppId());
+        } else if (request.getCaseOppId() != null) {
+            CandidateOpportunity caseOpp = candidateOpportunityService
+                .getCandidateOpportunity(request.getCaseOppId());
+            jobOpp = caseOpp.getJobOpp();
+        }
+
+        //Get country from job opp
+        if (jobOpp != null) {
+            country = jobOpp.getCountry();
+            if (country == null && jobOpp.getEmployerEntity() != null) {
+                country = jobOpp.getEmployerEntity().getCountry();
+            }
+        }
+        return country;
     }
 
     @Override

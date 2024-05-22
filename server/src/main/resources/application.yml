@@ -31,6 +31,11 @@ logging:
             CustomConversions: ERROR
 
 spring:
+  autoconfigure:
+    exclude:
+      # We only want to use Redis as a cache so we do not want it to auto configure as a data store
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
   servlet:
     multipart:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
@@ -40,6 +45,13 @@ spring:
     uris: ${ELASTICSEARCH_URL:http://localhost:9200}
     username: ${ELASTICSEARCH_USERNAME:}
     password: ${ELASTICSEARCH_PASSWORD:}
+
+  cache:
+    type: redis
+
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
 
   data:
     # We explicitly enable repositories with @EnableJpaRepositories and
@@ -65,6 +77,7 @@ spring:
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
+      max-lifetime: ${SPRING_DBPOOL_MAX_LIFETIME:1800000} # 30 minutes
 
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193

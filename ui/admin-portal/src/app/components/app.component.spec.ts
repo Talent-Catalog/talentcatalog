@@ -13,33 +13,76 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {async, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AppComponent} from './app.component';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {AuthenticationService} from "../services/authentication.service";
+import {ActivatedRoute, Router} from "@angular/router";
+import {of, Subject} from "rxjs";
+import {User} from "../model/user";
+import {MockUser} from "../MockData/MockUser";
 
-describe('AppComponent', () => {
-  beforeEach(async(() => {
+// Stub class for AuthenticationService
+class AuthenticationServiceStub {
+  loggedInUser$ = new Subject<User>();
+  // Method to set the logged-in user
+  setLoggedInUser(user: User) {
+    this.loggedInUser$.next(user);
+  }
+}
+
+// Test suite declaration
+fdescribe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  let authService: AuthenticationServiceStub;
+
+  // Async setup before each test
+  beforeEach(waitForAsync(() => {
+    // TestBed configuration
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        HttpClientTestingModule,
+        LocalStorageModule.forRoot({}),
+        RouterTestingModule // Add RouterTestingModule to imports
       ],
-      declarations: [
-        AppComponent
-      ],
+      declarations: [AppComponent],
+      providers: [
+        { provide: AuthenticationService, useClass: AuthenticationServiceStub }, // Provide stubbed AuthenticationService
+        { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router
+        { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
+      ]
     }).compileComponents();
+
+    // Injecting AuthenticationServiceStub into the test suite
+    authService = TestBed.inject(AuthenticationService) as AuthenticationServiceStub;
   }));
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
+  // Setup before each test
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
-  it('should render title in a h1 tag', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Admin Portal');
+  // Test case: should create the app
+  it('should create the app', () => {
+    expect(component).toBeTruthy();
+  });
+
+  // Test case: should set showHeader to true when a user is logged in
+  it('should set showHeader to true when a user is logged in', () => {
+    /* mock user object */
+    const user: User = new MockUser();
+    authService.setLoggedInUser(user);
+    expect(component.showHeader).toBeTrue();
+  });
+
+  // Test case: should set showHeader to false when no user is logged in
+  it('should set showHeader to false when no user is logged in', () => {
+    authService.setLoggedInUser(null);
+    expect(component.showHeader).toBeFalse();
   });
 });

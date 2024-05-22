@@ -43,10 +43,16 @@ import org.tctalent.server.request.PagedSearchRequest;
 @NoArgsConstructor
 public class SearchHelpLinkRequest extends PagedSearchRequest {
 
+    /**
+     * Copy constructor is useful for generating multiple requests based on a single original.
+     * See code in HelpLinkHelper
+     */
     public SearchHelpLinkRequest(SearchHelpLinkRequest request) {
         this.countryId = request.countryId;
+        this.caseOppId = request.caseOppId;
         this.caseStage = request.caseStage;
         this.focus = request.focus;
+        this.jobOppId = request.jobOppId;
         this.jobStage = request.jobStage;
         this.keyword = request.keyword;
         this.nextStepName = request.nextStepName;
@@ -61,6 +67,14 @@ public class SearchHelpLinkRequest extends PagedSearchRequest {
     private Long countryId;
 
     /**
+     * Context field which can be used to populate, search terms like countryId if they are
+     * not explicitly supplied. For example the country of the job location associated with an
+     * opportunity can be used to set countryId.
+     */
+    @Nullable
+    private Long caseOppId;
+
+    /**
      * It only makes sense to specify at most one non-null stage in a request: caseStage or jobStage
      */
     @Nullable
@@ -71,6 +85,14 @@ public class SearchHelpLinkRequest extends PagedSearchRequest {
      */
     @Nullable
     private HelpFocus focus;
+
+    /**
+     * Context field which can be used to populate, search terms like countryId if they are
+     * not explicitly supplied. For example the country of the job location associated with an
+     * opportunity can be used to set countryId.
+     */
+    @Nullable
+    private Long jobOppId;
 
     /**
      * It only makes sense to specify at most one non-null stage in a request: caseStage or jobStage

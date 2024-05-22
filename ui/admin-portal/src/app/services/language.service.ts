@@ -17,8 +17,7 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Language} from "../model/language";
-import {SystemLanguage} from "../model/language";
+import {Language, SystemLanguage} from "../model/language";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 

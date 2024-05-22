@@ -14,13 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  HostListener, Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
+import {CandidateAttachmentService} from "../../../services/candidate-attachment.service";
 
 @Component({
   selector: 'app-file-upload',
@@ -66,6 +61,9 @@ export class FileUploadComponent implements OnInit {
 
   hover: boolean;
 
+  constructor(private candidateAttachmentService: CandidateAttachmentService) {
+  }
+
   ngOnInit() {
   }
 
@@ -83,7 +81,7 @@ export class FileUploadComponent implements OnInit {
     }
   }
 
-  validFile(file) {
+  validFile(file: File) {
     if (file.name.indexOf('.') === -1) {
       this.error.emit('No file extension found. Please rename and re-select this file.');
       return false;
@@ -95,6 +93,12 @@ export class FileUploadComponent implements OnInit {
       this.error.emit(
         'Unsupported file extension. Please select a file with one of the following extensions: '
         + this.validExtensions.join(', '));
+      return false;
+    }
+
+    if (file.size > this.candidateAttachmentService.getMaxUploadFileSize()) {
+      this.error.emit('File is too big. Size is ' + file.size +
+        '. Max size is ' + this.candidateAttachmentService.getMaxUploadFileSize());
       return false;
     }
 

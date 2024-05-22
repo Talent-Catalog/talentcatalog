@@ -166,7 +166,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * - JC
      */
     @Query(" select distinct c from Candidate c "
-            + " where lower(c.candidateNumber) like lower(:candidateNumber) "
+            + " where c.candidateNumber like :candidateNumber "
             + excludeDeleted
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
@@ -174,8 +174,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                           Pageable pageable);
 
     @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(u.email) like lower(:emailOrPhone) "
-            + " or lower(c.phone) like lower(:emailOrPhone) "
+            + " where (lower(c.phone) like lower(:emailOrPhone) "
+            + " or lower(u.email) like lower(:emailOrPhone)) "
             + excludeDeleted
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
@@ -188,14 +188,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
                                               @Param("userSourceCountries") Set<Country> userSourceCountries,
                                               Pageable pageable);
-
-    @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"
-            + excludeDeleted
-            + sourceCountryRestriction)
-    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
-                                        @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                        Pageable pageable);
 
     @Query(" select c from Candidate c "
             + " join c.user u "

@@ -23,6 +23,7 @@ export class ArrestImprisonComponent extends IntakeComponentBase implements OnIn
       arrestImprison: [{value: this.candidateIntakeData?.arrestImprison, disabled: !this.editable}],
       arrestImprisonNotes: [{value: this.candidateIntakeData?.arrestImprisonNotes, disabled: !this.editable}]
     });
+    this.updateDataOnFieldChange("arrestImprison");
   }
 
   get arrestImprison(): string {

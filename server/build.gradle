@@ -17,6 +17,8 @@ buildscript {
     ext {
         springBootVersion = '2.7.13'
         isDev = System.properties['env'] == 'dev'
+        javaTargetVersion = JavaVersion.VERSION_21
+        lombokVersion = "1.18.30"
     }
     repositories {
         mavenCentral()
@@ -27,15 +29,20 @@ buildscript {
 }
 
 plugins {
-    id "org.springframework.boot" version "$springBootVersion"
+    id "org.springframework.boot" version "${springBootVersion}"
     id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
     id 'idea'
-    id 'com.google.cloud.tools.jib' version '3.3.1'
+    id 'com.google.cloud.tools.jib' version '3.4.0'
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of('21'))
+    }
+    sourceCompatibility = 21
+    targetCompatibility = 21
+}
 
 //Yes - you do have to declare this again (even though it is declared in the
 //buildscript above)
@@ -53,10 +60,10 @@ dependencies {
     // (in unnamed module @0x3dd0aa6) cannot access class
     // com.sun.tools.javac.processing.JavacProcessingEnvironment (in module jdk.compiler) because
     // module jdk.compiler does not export com.sun.tools.javac.processing to unnamed module @0x3dd0aa6
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    testCompileOnly 'org.projectlombok:lombok:1.18.24'
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    testCompileOnly("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
@@ -81,14 +88,13 @@ dependencies {
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk16', version: '1.45'
 // https://mvnrepository.com/artifact/com.slack.api/slack-api-client
     implementation group: 'com.slack.api', name: 'slack-api-client', version: '1.9.0'
-// https://mvnrepository.com/artifact/org.jdom/jdom2
-    implementation group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+    implementation("org.jdom:jdom2")
 // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
+//    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
     implementation('org.springframework.boot:spring-boot-starter-webflux')
 
     //See https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
@@ -118,14 +124,23 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.apache.commons:commons-lang3")
     implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
-    implementation('javax.mail:javax.mail-api')
-    implementation('com.sun.mail:jakarta.mail')
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
+    implementation("jakarta.activation:jakarta.activation-api:latest.release")
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
-    implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
+    implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
+
+    // Temp to update spring thymeleaf as indepdendent unit until all spring is done.
+    implementation("org.thymeleaf:thymeleaf-spring6:3.1.2.RELEASE")
+
+
+    // Caching
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
     runtimeOnly('mysql:mysql-connector-java')
@@ -133,6 +148,9 @@ dependencies {
 }
 
 jib {
+    from {
+        image = "eclipse-temurin:21-jre"
+    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
@@ -151,4 +169,9 @@ bootJar {
     from(".") {
         include ".ebextensions/**"
     }
+}
+
+// Parameter flag required for SpringBoot3+ (Spring 6.1+)
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("-parameters")
 }

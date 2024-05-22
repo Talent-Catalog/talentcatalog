@@ -39,7 +39,7 @@ public class CreateFromDefaultSavedSearchRequest {
     private String name;
 
     /**
-     * This sfJobLink should be associated with the newly created search.
+     * This job (if not null) should be associated with the newly created search.
      */
-    private String sfJoblink;
+    private Long jobId;
 }

@@ -17,8 +17,36 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -29,12 +57,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -50,7 +78,6 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
-import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
@@ -143,39 +170,12 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
-
-import javax.servlet.http.HttpServletRequest;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * This is the lowest level service relating to managing candidates.
@@ -258,6 +258,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
+    private final ElasticsearchService elasticsearchService;
 
     @Transactional
     @Override
@@ -425,9 +426,11 @@ public class CandidateServiceImpl implements CandidateService {
                     request.getPageRequestWithoutSort());
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                candidates = candidateRepository.searchCandidateName(
-                        '%' + s + '%', sourceCountries,
-                        request.getPageRequestWithoutSort());
+                // Get candidate ids from Elasticsearch then fetch and return from the database
+                Set<Long> candidateIds = elasticsearchService.findByName(s);
+                List<Candidate> unsorted = findByIds(candidateIds);
+                candidates = new PageImpl<>(unsorted, request.getPageRequestWithoutSort(),
+                    candidateIds.size());
             } else {
                 return null;
             }
@@ -650,9 +653,9 @@ public class CandidateServiceImpl implements CandidateService {
         //set some fields to unknown on create as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
         //point to an "Unknown" value.
-        candidate.setCountry(countryRepository.getOne(0L));
-        candidate.setNationality(countryRepository.getOne(0L));
-        candidate.setMaxEducationLevel(educationLevelRepository.getOne(0L));
+        candidate.setCountry(countryRepository.getReferenceById(0L));
+        candidate.setNationality(countryRepository.getReferenceById(0L));
+        candidate.setMaxEducationLevel(educationLevelRepository.getReferenceById(0L));
 
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
@@ -2738,51 +2741,96 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+//    TODO implement this with appropriate arguments if investigation successful
+//    @Transactional
+//    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
+//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+//        lockAtMostFor = "PT23H")
+//    public void scheduledSfCandidateSync() {
+//        // We only want to run this in prod due to SF sandbox object limit of 10,000
+//        // Using a very high noOfPagesRequested, the method will revert to the limit set by total pages.
+//        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+//            syncCandidatesToSf(50, 0, 10000);
+//        }
+//    }
+
     @Override
-    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT12H",
-                    lockAtMostFor = "PT12H")
-    public void syncCandidatesToSf()
+    public void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPagesRequested)
         throws SalesforceException, WebClientException {
-        // We only want to run this in prod due to SF sandbox object limit of 10,000
-        if (environment.equalsIgnoreCase(Environment.prod.name())) {
 
-            log.info("Initiating TC-SF candidate sync");
+        Instant startOverall = Instant.now();
 
-            // Batches of 200 == SF REST API request limit
-            Pageable pageable = PageRequest.of(0, 200, Sort.unsorted());
+        log.info("Initiating TC-SF candidate sync");
 
-            // Candidates with an 'active' status or already uploaded to SF
-            List<CandidateStatus> statuses = new ArrayList<>(
-                EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
-                    CandidateStatus.incomplete));
+        Pageable pageable = PageRequest.of(
+            firstPageIndex,
+            pageSize,
+            Sort.by("id").ascending()
+        );
 
-            Page<Candidate> candidatePage = candidateRepository
-                .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
+        // Candidates with an 'active' status or already uploaded to SF
+        List<CandidateStatus> statuses = new ArrayList<>(
+            EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
+                CandidateStatus.incomplete));
 
-            log.info(candidatePage.getTotalElements() + " candidates meet the criteria");
+        Page<Candidate> candidatePage = candidateRepository
+            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
 
-            // Iterate through batches, upserting to SF
-            while(candidatePage.hasNext()) {
-                candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
-                    statuses, candidatePage.nextPageable());
-                List<Candidate> candidateList = candidatePage.getContent();
-                upsertCandidatesToSf(candidateList);
+        log.info(candidatePage.getTotalElements() + " candidates meet the criteria");
 
-                log.info("Upserted batch " + candidatePage.getNumber() + " of " +
-                    candidatePage.getTotalPages());
-            }
+        int totalPages = candidatePage.getTotalPages();
+        log.info("With a page size of " + pageSize + " this amounts to a total of " +
+            totalPages + " pages.");
+
+        int noOfPagesToProcess;
+
+        if (totalPages - firstPageIndex < noOfPagesRequested) {
+            noOfPagesToProcess = totalPages - firstPageIndex;
+        } else {
+            noOfPagesToProcess = noOfPagesRequested;
         }
+
+        log.info("This request will process pages " + (firstPageIndex + 1) + " to " +
+            (firstPageIndex + noOfPagesToProcess));
+
+        int pagesProcessed = 0;
+
+        // Iterate through batches, upserting to SF
+        while(pagesProcessed < noOfPagesToProcess) {
+            Instant start = Instant.now();
+            List<Candidate> candidateList = candidatePage.getContent();
+            upsertCandidatesToSf(candidateList);
+            candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
+                statuses, candidatePage.nextPageable());
+            pagesProcessed++;
+
+            Instant end = Instant.now();
+            Duration timeElapsed = Duration.between(start, end);
+            log.info("Upserted page " + pagesProcessed + " of " + noOfPagesToProcess +
+                " in " + timeElapsed.toSeconds() + " seconds.");
+        }
+
+        Instant endOverall = Instant.now();
+        Duration timeElapsedOverall = Duration.between(startOverall, endOverall);
+
+        log.info("Using these parameters it took " + timeElapsedOverall.toMinutes() +
+            " minutes to upsert " + (noOfPagesToProcess * pageSize) + " candidates.");
     }
 
     @Override
     public void upsertCandidatesToSf(List<Candidate> orderedCandidates)
         throws SalesforceException, WebClientException {
+        Instant start = Instant.now();
         // Update Salesforce contacts
         List<Contact> contacts =
             salesforceService.createOrUpdateContacts(orderedCandidates);
+        Instant end = Instant.now();
+        Duration timeElapsed = Duration.between(start, end);
+        log.info("salesforceService.createOrUpdateContacts(orderedCandidates) took "
+            + timeElapsed.toSeconds() +  " seconds.");
 
         // Update the sfLink in all implicated TC candidate records
+        start = Instant.now();
         int nCandidates = orderedCandidates.size();
         for (int i = 0; i < nCandidates; i++) {
             Contact contact = contacts.get(i);
@@ -2792,5 +2840,8 @@ public class CandidateServiceImpl implements CandidateService {
                     contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
+        end = Instant.now();
+        timeElapsed = Duration.between(start, end);
+        log.info("Updating all the sfLinks took " + timeElapsed.toSeconds() +  " seconds.");
     }
 }

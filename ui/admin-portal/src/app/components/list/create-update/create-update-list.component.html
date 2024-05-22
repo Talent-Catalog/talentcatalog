@@ -38,19 +38,23 @@
         </div>
       </div>
     </div>
-    <div class="form-check mb-3">
-      <label class="form-label" for="fixed">Fixed?</label>
-      <input type="checkbox" formControlName="fixed" id="fixed" class="form-check-input">
+    <!--  Submission lists are meant to be collaborative - no 'Fixed?' option for those  -->
+    <div *ngIf="!isSubmissionList">
+      <div class="form-check mb-3">
+        <label class="form-label" for="fixed">Fixed?</label>
+        <input type="checkbox" formControlName="fixed" id="fixed" class="form-check-input">
+        <button class="tool-tip-button"
+                triggers="click"
+                ngbTooltip="Prevent other users from making changes"
+                placement="right">
+          <i class="fa-regular fa-circle-question fa-xs"></i>
+        </button>
+      </div>
     </div>
 
-    <app-joblink [joblink]="salesforceService.joblink(savedList)"
-                 (updateError)="error=$event"
-                 (joblinkValidation)="onJoblinkValidation($event)"
+    <app-joblink [jobId]="savedList?.sfJobOpp?.id"
+                 (jobSelection)="onJobSelection($event)"
     ></app-joblink>
-
-    <div *ngIf="jobName">
-      {{jobName}}
-    </div>
 
     <div *ngIf="savedList">
       <!--todo-->

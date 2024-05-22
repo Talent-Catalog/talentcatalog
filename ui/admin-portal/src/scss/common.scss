@@ -101,11 +101,11 @@ table {
 }
 
 .card-header {
-  background-color: $accent2 !important;
+  background-color: $accent3 !important;
   background-image: var(--bs-gradient);
   font-size: 1.1em;
   font-weight: 400;
-  color: $light !important;
+  color: $dark !important;
   margin-bottom: 0;
 }
 
@@ -152,4 +152,16 @@ table {
 
 .side-panel-color {
   background-color: fade-out($accent3, 0.7);
+}
+
+.text-female {
+  color: #9b5567;
+}
+
+.text-male {
+  color: #1973b8;
+}
+
+.fw-600 {
+  font-weight: 600;
 }

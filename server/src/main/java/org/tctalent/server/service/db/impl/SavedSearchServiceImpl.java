@@ -66,7 +66,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.tctalent.server.exception.CircularReferencedException;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityExistsException;
@@ -93,6 +93,7 @@ import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.SearchJoin;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.es.CandidateEs;
@@ -308,7 +309,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .setPageable(Pageable.unpaged());
 
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+                query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
 
             //Get candidate ids from the returned results
             for (SearchHit<CandidateEs> hit : hits) {
@@ -415,22 +416,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Map<Integer, String> educationLevelMap = educationLevelRepository.findAllActive().stream().collect(
                 Collectors.toMap(EducationLevel::getLevel, EducationLevel::getName, (l1, l2) ->  l1));
 
-        if (!StringUtils.isEmpty(savedSearch.getCountryIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getCountryIds())){
             savedSearch.setCountryNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getPartnerIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getPartnerIds())){
             savedSearch.setPartnerNames(partnerRepository.getNamesForIds(getIdsFromString(savedSearch.getPartnerIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getNationalityIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getNationalityIds())){
             savedSearch.setNationalityNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getNationalityIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getOccupationIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getOccupationIds())){
             savedSearch.setOccupationNames(occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getOccupationIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getEducationMajorIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getEducationMajorIds())){
             savedSearch.setEducationMajors(educationMajorRepository.getNamesForIds(getIdsFromString(savedSearch.getEducationMajorIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getSurveyTypeIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getSurveyTypeIds())){
             savedSearch.setSurveyTypeNames(surveyTypeRepository.getNamesForIds(getIdsFromString(savedSearch.getSurveyTypeIds())));
         }
         if (savedSearch.getEnglishMinWrittenLevel() != null){
@@ -494,7 +495,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         UpdateSavedSearchRequest createRequest = new UpdateSavedSearchRequest();
         createRequest.setName(name);
-        createRequest.setSfJoblink(request.getSfJoblink());
+        createRequest.setJobId(request.getJobId());
 
         //Default to job type
         createRequest.setSavedSearchType(SavedSearchType.job);
@@ -528,7 +529,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
             throws EntityExistsException {
         SavedSearch defaultSavedSearch = getDefaultSavedSearch();
-        SavedSearch savedSearch = convertToSavedSearch(defaultSavedSearch, request);
+        return createSavedSearchBase(request, defaultSavedSearch);
+    }
+
+    private SavedSearch createDefaultSavedSearch(User user) {
+        UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
+        request.setName(constructDefaultSearchName(user));
+        request.setSavedSearchType(SavedSearchType.other);
+        request.setDefaultSearch(true);
+        return createSavedSearchBase(request, null);
+    }
+
+    private SavedSearch createSavedSearchBase(
+        UpdateSavedSearchRequest request, @Nullable SavedSearch template) {
+        SavedSearch savedSearch = convertToSavedSearch(template, request);
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
@@ -536,16 +550,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         savedSearch = savedSearchRepository.save(savedSearch);
-        savedSearch = addSearchJoins(request, savedSearch);
+        addSearchJoins(request, savedSearch);
 
-        //Copy across the user's selections (including context notes)
-        //of the default saved search.
-        copySelectionsAndContextNotes(defaultSavedSearch, savedSearch, true);
+        if (template != null) {
+            //Copy across the user's selections (including context notes)
+            //of the template saved search.
+            copySelectionsAndContextNotes(template, savedSearch, true);
+        }
 
         return savedSearch;
     }
 
-    private void copySelectionsAndContextNotes(SavedSearch fromSavedSearch,
+    private void copySelectionsAndContextNotes(@NonNull SavedSearch fromSavedSearch,
         SavedSearch toSavedSearch, boolean clearFromSavedSearch) {
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
@@ -588,8 +604,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
                 savedSearch.setReviewable(request.getReviewable());
-                savedSearch.setSfJobOpp(
-                    salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
+                final Long jobId = request.getJobId();
+                if (jobId != null) {
+                    savedSearch.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+                }
 
                 savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
                 return savedSearchRepository.save(savedSearch);
@@ -754,11 +773,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .orElse(null);
         if (savedSearch == null) {
             //Create a default saved search for logged in user
-            UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
-            request.setName(constructDefaultSearchName(loggedInUser));
-            request.setSavedSearchType(SavedSearchType.other);
-            request.setDefaultSearch(true);
-            savedSearch = createSavedSearch(request);
+            savedSearch = createDefaultSavedSearch(loggedInUser);
         } else {
             savedSearch.parseType();
         }
@@ -1346,18 +1361,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     //---------------------------------------------------------------------------------------------------
     private SavedSearch convertToSavedSearch(
-        SavedSearch origSavedSearch, UpdateSavedSearchRequest request) {
+        @Nullable SavedSearch origSavedSearch, UpdateSavedSearchRequest request) {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
         savedSearch.setFixed(request.getFixed());
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
-        savedSearch.setDescription(origSavedSearch.getDescription());
-        savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
-        savedSearch.setDisplayedFieldsShort(origSavedSearch.getDisplayedFieldsShort());
-        savedSearch.setSfJobOpp(
-            salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+        if (origSavedSearch != null) {
+            savedSearch.setDescription(origSavedSearch.getDescription());
+            savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
+            savedSearch.setDisplayedFieldsShort(origSavedSearch.getDisplayedFieldsShort());
+        }
+        final Long jobId = request.getJobId();
+        if (jobId != null) {
+            final SalesforceJobOpp jobOpp =
+                jobId < 0 ? null : salesforceJobOppService.getJobOpp(jobId);
+            savedSearch.setSfJobOpp(jobOpp);
+        }
 
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
@@ -1486,6 +1507,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
             savedSearch.setKeyword(request.getKeyword());
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
+            savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
             savedSearch.setMinYrs(request.getMinYrs());
@@ -1551,6 +1573,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
         searchCandidateRequest.setKeyword(search.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
+        searchCandidateRequest.setUnhcrStatuses(getUnhcrStatusListFromString(search.getUnhcrStatuses()));
         searchCandidateRequest.setGender(search.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
         searchCandidateRequest.setMinYrs(search.getMinYrs());
@@ -1639,6 +1662,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .collect(Collectors.toList()) : null;
     }
 
+    String getUnhcrStatusListAsString(List<UnhcrStatus> unhcrStatuses){
+        return !CollectionUtils.isEmpty(unhcrStatuses) ? unhcrStatuses.stream().map(
+                status -> status.name())
+            .collect(Collectors.joining(",")) : null;
+    }
+
+    List<UnhcrStatus> getUnhcrStatusListFromString(String unhcrStatusList){
+        return unhcrStatusList != null ? Stream.of(unhcrStatusList.split(","))
+            .map(s -> UnhcrStatus.valueOf(s))
+            .collect(Collectors.toList()) : null;
+    }
+
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest searchRequest) {
 
         Page<Candidate> candidates;
@@ -1670,7 +1705,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .build();
 
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+                query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
