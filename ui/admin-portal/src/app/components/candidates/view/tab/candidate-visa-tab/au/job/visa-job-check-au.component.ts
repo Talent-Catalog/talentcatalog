@@ -29,6 +29,7 @@ export class VisaJobCheckAuComponent extends VisaJobCheckBase {
   }
 
   ngOnInit() {
+    super.ngOnInit();
     // Get the list of all occupations
     this.occupationService.listOccupations().subscribe(
       (results) => {
