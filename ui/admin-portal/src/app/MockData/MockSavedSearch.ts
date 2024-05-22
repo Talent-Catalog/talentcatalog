@@ -1,13 +1,9 @@
-import {
-  SavedSearch,
-  SavedSearchSubtype,
-  SavedSearchType
-} from "../model/saved-search";
-import { ExportColumn } from "../model/saved-list";
-import { OpportunityIds } from "../model/opportunity";
-import { MockUser } from "./MockUser";
-import { MockSavedJoin } from "./MockSavedJoin";
-import { CandidateFilterByOpps } from "../model/candidate";
+import {SavedSearch, SavedSearchSubtype, SavedSearchType} from "../model/saved-search";
+import {ExportColumn} from "../model/saved-list";
+import {OpportunityIds} from "../model/opportunity";
+import {MockUser} from "./MockUser";
+import {MockSavedJoin} from "./MockSavedJoin";
+import {CandidateFilterByOpps} from "../model/candidate";
 
 export class MockSavedSearch implements SavedSearch {
   defaultSearch: boolean = true;
