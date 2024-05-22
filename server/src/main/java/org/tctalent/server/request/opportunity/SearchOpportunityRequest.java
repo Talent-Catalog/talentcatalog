@@ -16,7 +16,7 @@
 
 package org.tctalent.server.request.opportunity;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

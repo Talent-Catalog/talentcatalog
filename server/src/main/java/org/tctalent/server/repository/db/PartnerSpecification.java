@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 
 public class PartnerSpecification {
 

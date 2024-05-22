@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * A candidate can appear in multiple saved lists.

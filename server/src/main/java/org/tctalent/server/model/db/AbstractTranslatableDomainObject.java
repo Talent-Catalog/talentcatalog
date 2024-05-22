@@ -18,8 +18,8 @@ package org.tctalent.server.model.db;
 
 import java.io.Serializable;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;

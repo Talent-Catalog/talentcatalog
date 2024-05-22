@@ -15,12 +15,10 @@
  */
 buildscript {
     ext {
-        springBootVersion = '2.7.13'
+        springBootVersion = '3.0.13'
         isDev = System.properties['env'] == 'dev'
         javaTargetVersion = JavaVersion.VERSION_21
         lombokVersion = "1.18.30"
-        ext['spring-security.version']='5.8.12'
-        ext['spring-data-elasticsearch.version']='5.2.6'
     }
     repositories {
         mavenCentral()

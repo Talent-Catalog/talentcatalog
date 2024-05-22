@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.request.survey.SearchSurveyTypeRequest;
 
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 
 public class SurveyTypeSpecification {
 

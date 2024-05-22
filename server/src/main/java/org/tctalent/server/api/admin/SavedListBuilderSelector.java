@@ -19,7 +19,7 @@ package org.tctalent.server.api.admin;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Utility for selecting a SavedList DTO builder
