@@ -131,6 +131,42 @@
     </ng-template>
   </ngb-panel>
 
+  <ngb-panel id="family-assessment" title="Family Assessment">
+    <ng-template ngbPanelContent>
+      <div>
+        <app-relocating-dependants
+          [visaJobCheck]="selectedJobCheck"
+          [entity]="visaCheckRecord"
+          [dependants]="candidateIntakeData.candidateDependants">
+        </app-relocating-dependants>
+      </div>
+      <div>
+        <button class="btn btn-primary mb-3"
+                (click)="requestSfCaseRelocationInfoUpdate()">
+          <span *ngIf="loading; else elseBlock">
+            <i class="fas fa-spinner fa-spin"></i>
+          </span>
+          <ng-template #elseBlock>
+            <i class="fa-solid fa-chart-simple"></i>
+          </ng-template>
+          Update case stats
+        </button>
+      </div>
+      <!-- ERROR -->
+      <div *ngIf="error">
+        {{error}}
+      </div>
+      <div class="card card-body intake-data">
+        <div class="mb-3 h6">Dependant Family</div>
+        <app-dependants
+          [candidateIntakeData]="candidateIntakeData"
+          [candidate]="candidate"
+          [editable]="false">
+        </app-dependants>`
+      </div>
+    </ng-template>
+  </ngb-panel>
+
   <ngb-panel id="final-assessment" title="Final Assessment">
     <ng-template ngbPanelContent>
       <app-visa-four-nine-four
