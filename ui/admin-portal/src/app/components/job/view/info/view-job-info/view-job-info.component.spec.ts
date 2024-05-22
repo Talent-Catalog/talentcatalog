@@ -1,14 +1,8 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import { ViewJobInfoComponent } from './view-job-info.component';
+import {ViewJobInfoComponent } from './view-job-info.component';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
-import { Job } from '../../../../../model/job';
-import { User } from '../../../../../model/user';
-import { SavedList } from '../../../../../model/saved-list';
-import {CountryService} from "../../../../../services/country.service";
-import {JobService} from "../../../../../services/job.service";
 import {Directive, Input} from "@angular/core";
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
-import {Observable} from "rxjs";
 import {MockJob} from "../../../../../MockData/MockJob";
 
 @Directive({

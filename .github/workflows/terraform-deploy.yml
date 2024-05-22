@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - 'infra/**'
+      - 'infra/aws/**'
 
   workflow_dispatch: #this attribute will enable the manual run to the pipeline
 

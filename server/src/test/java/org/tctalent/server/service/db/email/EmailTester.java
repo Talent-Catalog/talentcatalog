@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.email.EmailSender.EmailType;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
