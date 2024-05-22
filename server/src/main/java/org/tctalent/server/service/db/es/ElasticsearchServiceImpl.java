@@ -16,6 +16,12 @@
 
 package org.tctalent.server.service.db.es;
 
+import static org.tctalent.server.service.db.es.TCElasticHelpers.getTermsQuery;
+
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -23,23 +29,16 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchBoolPrefixQueryBuilder;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
@@ -73,7 +72,8 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
    */
   @Override
   public Set<Long> findByName(@NonNull String name) {
-    BoolQueryBuilder boolQuery = computeFindByNameQuery(name);
+    BoolQuery.Builder bqb = computeFindByNameQuery(name);
+    Query boolQuery = bqb.build()._toQuery();
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
 
@@ -83,36 +83,41 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   }
 
   @NotNull
-  private BoolQueryBuilder computeFindByNameQuery(String name) {
+  private BoolQuery.Builder computeFindByNameQuery(String name) {
     // Create match_bool_prefix query for name
-    MatchBoolPrefixQueryBuilder nameQuery = QueryBuilders
-        .matchBoolPrefixQuery("fullName", name)
-        .operator(Operator.AND);
+    Query nameQuery = QueryBuilders.matchBoolPrefix()
+        .field("fullName")
+        .query(name)
+        .operator(Operator.And)
+        .build()
+        ._toQuery();
 
     // Construct the boolean query
-    BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+    BoolQuery.Builder boolQuery = QueryBuilders.bool()
         .must(nameQuery);
 
     // Filter out deleted Statuses and account for country restrictions
-    boolQuery = filterOnDeletedStatus(boolQuery);
-    boolQuery = filterOnSourceCountryRestrictions(boolQuery);
+    boolQuery = filterOnDeletedStatus(boolQuery.build()._toQuery());
+    boolQuery = filterOnSourceCountryRestrictions(boolQuery.build()._toQuery());
 
-    log.info("Elasticsearch query:\n" + boolQuery);
+    log.info("Elasticsearch query:\n" + boolQuery.build()._toQuery());
     return boolQuery;
   }
 
   @NotNull
-  private BoolQueryBuilder filterOnDeletedStatus(BoolQueryBuilder boolQuery) {
-    boolQuery = addElasticTermFilter(boolQuery,
+  private BoolQuery.Builder filterOnDeletedStatus(Query boolQuery) {
+    BoolQuery.Builder bqb = QueryBuilders.bool().filter(boolQuery);
+
+    bqb = bqb.filter(getTermsQuery(
         SearchType.not,
         STATUS_KEYWORD,
         List.of(CandidateStatus.deleted)
-    );
-    return boolQuery;
+    ));
+    return bqb;
   }
 
   @NotNull
-  private BoolQueryBuilder filterOnSourceCountryRestrictions(BoolQueryBuilder boolQuery) {
+  private BoolQuery.Builder filterOnSourceCountryRestrictions(Query boolQuery) {
     User user = userService.getLoggedInUser();
     List<Object> countries = new ArrayList<>();
     if (user != null && !Collections.isEmpty(user.getSourceCountries())){
@@ -121,42 +126,22 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
       }
     }
 
+    BoolQuery.Builder bqb = QueryBuilders.bool().filter(boolQuery);
     if (!countries.isEmpty()) {
-      boolQuery = addElasticTermFilter(boolQuery,
+      bqb = bqb.filter(getTermsQuery(
           SearchType.or,
           COUNTRY_KEYWORD,
           countries
-      );
+      ));
     }
-    return boolQuery;
+    return bqb;
   }
 
   @NotNull
-  private BoolQueryBuilder addElasticTermFilter(
-      BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
-      List<Object> values) {
-    final int nValues = values.size();
-    if (nValues > 0) {
-      QueryBuilder queryBuilder;
-      if (nValues == 1) {
-        queryBuilder = QueryBuilders.termQuery(field, values.get(0));
-      } else {
-        queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
-      }
-      if (searchType == SearchType.not) {
-        builder = builder.mustNot(queryBuilder);
-      } else {
-        builder = builder.filter(queryBuilder);
-      }
-    } return builder;
-  }
-
-  @NotNull
-  private SearchHits<CandidateEs> executeQuery(BoolQueryBuilder boolQuery) {
-    NativeSearchQuery query = new NativeSearchQueryBuilder()
-        .withQuery(boolQuery).withSorts(
-            SortBuilders.fieldSort("masterId").order(SortOrder.ASC)
-        )
+  private SearchHits<CandidateEs> executeQuery(Query boolQuery) {
+    NativeQuery query = new NativeQueryBuilder()
+        .withQuery(boolQuery)
+        .withSort(Sort.by("masterId").descending())
         .withPageable(PageRequest.of(0, 10))
         .build();
 
