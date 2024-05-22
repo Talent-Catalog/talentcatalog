@@ -21,6 +21,7 @@ import org.flywaydb.core.Flyway;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * <p/>
  * See also FlywayMigrationInitializer
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = ElasticsearchDataAutoConfiguration.class)
 @ConfigurationPropertiesScan
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")

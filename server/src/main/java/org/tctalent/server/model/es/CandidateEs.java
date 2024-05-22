@@ -104,7 +104,7 @@ public class CandidateEs {
        queries.
        See https://www.elastic.co/blog/strings-are-dead-long-live-strings
        The mess up happens in the Spring Data Elasticsearch support which on connection
-       (in ElasticsearchConfiguration.java) will force the mapping strictly according to any
+       (in TalentCatalogElasticsearchConfiguration.java) will force the mapping strictly according to any
        @Field annotation - which means that Elasticsearch's own clever defaulting never happens.
        - JC
      */

@@ -16,15 +16,17 @@
 
 package org.tctalent.server.repository.es;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.FuzzyQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
+import org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
@@ -33,7 +35,6 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.util.html.JsoupTextExtracterImpl;
 import org.tctalent.server.util.html.TextExtracter;
 
-import static org.elasticsearch.index.query.QueryBuilders.fuzzyQuery;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -74,9 +75,13 @@ public class CandidateEsRepositoryTest {
 //    @Transactional
 //    @Test
     public void givenPersistedArticles_whenUseRegexQuery_thenRightArticlesFound() {
-        final Query searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(fuzzyQuery("candidateAttachments", "Condell"))
-                .build();
+        FuzzyQuery qry = QueryBuilders.fuzzy(f -> f
+            .field("candidateAttachments")
+            .value("Condell")).fuzzy();
+
+        final Query searchQuery = new NativeQueryBuilder()
+            .withQuery(q -> q.fuzzy(qry))
+            .build();
 
         final SearchHits<CandidateEs> cands = elasticsearchTemplate
                 .search(searchQuery, CandidateEs.class, IndexCoordinates.of("jobs2"));
