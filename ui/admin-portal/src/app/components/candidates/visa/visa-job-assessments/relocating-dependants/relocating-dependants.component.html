@@ -20,12 +20,12 @@
       [formControlName]="'visaJobRelocatingDependantIds'">
       <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
         <div class="ng-value" *ngFor="let item of items">
-          <span class="ng-value-label">{{item.relation}}<span *ngIf="item?.name">: {{item?.name}}</span></span>
+          <span class="ng-value-label">{{item?.relation}}<span *ngIf="item?.name">: {{item?.name}}</span></span>
           <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
         </div>
       </ng-template>
       <ng-template ng-option-tmp let-item="item">
-        <span>{{item.relation}}<span *ngIf="item?.name">: {{item.name}}</span></span>
+        <span>{{item?.relation}}<span *ngIf="item?.name">: {{item.name}}</span></span>
       </ng-template>
     </ng-select>
 
