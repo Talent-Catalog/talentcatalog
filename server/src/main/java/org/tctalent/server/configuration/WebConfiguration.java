@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.NonNull;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
@@ -93,6 +94,15 @@ public class WebConfiguration implements WebMvcConfigurer {
         }
     }
 
+    /*
+     * Note: This method uses a deprecated method. Spring is working to put a proper resolution
+     * in so this isn't required in the future. It is required to allow trailing slashes on
+     * paths.
+     */
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+      configurer.setUseTrailingSlashMatch(true);
+    }
 
     public static final class UIBundle {
         public String url;
