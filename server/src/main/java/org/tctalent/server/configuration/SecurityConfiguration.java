@@ -38,6 +38,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -251,10 +252,10 @@ public class SecurityConfiguration {
                  * SEARCH ENDPOINTS
                  */
                 // POST: ALL SEARCHES
-                .requestMatchers(HttpMethod.POST, getApiAdminSearchEndPoints()).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: ALL PAGED SEARCHES
-                .requestMatchers(HttpMethod.POST, getAdminApiSearchPagedEndPoints()).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search-paged", HttpMethod.POST.name())).hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: SEARCH BY NUMBER/NAME
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbynumberorname").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -420,71 +421,5 @@ public class SecurityConfiguration {
         TcAuthenticationProvider tcAuthenticationProvider = new TcAuthenticationProvider(userDetailsService);
         tcAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return tcAuthenticationProvider;
-    }
-
-    /**
-     * This method replaces existing AntMatcher which is non-default. (any directory wildcard)
-     * .requestMatchers(HttpMethod .POST, /api/admin/* * /search)
-     *
-     * @return list of urls.
-     */
-    private String[] getApiAdminSearchEndPoints() {
-        return new String[] {
-            "/api/admin/partner/search",
-            "/api/admin/candidate-vis-job/{id}/search",
-            "/api/admin/candidate-skill/search",
-            "/api/admin/saved-list/search",
-            "/api/admin/chat/search",
-            "/api/admin/country/search",
-            "/api/admin/help-linked/search",
-            "/api/admin/candidate-exam/{id}/search",
-            "/api/admin/industry/search",
-            "/api/admin/candidate-job-experience/search",
-            "/api/admin/education-major/search",
-            "/api/admin/task-assignment/search",
-            "/api/admin/opp/search",
-            "/api/admin/candidate-dependent/{id}/search",
-            "/api/admin/task/search",
-            "/api/admin/language/search",
-            "/api/admin/job/search",
-            "/api/admin/candidate-visa-check/{id}/search",
-            "/api/admin/chat-post/{id}/search",
-            "/api/admin/candidate-destination/{id}/search",
-            "/api/admin/candidate-citizenship/{id}/search",
-            "/api/admin/candidate-note/search",
-            "/api/admin/candidate-attachment/search",
-            "/api/admin/occupation/search",
-            "/api/admin/saved-list-candidate/{id}/search",
-            "/api/admin/education-level/search",
-            "/api/admin/candidate/search",
-            "/api/admin/language-level/search"
-        };
-    }
-
-    // .requestMatchers(HttpMethod.POST, "/api/admin/**/search-paged")
-    private String[] getAdminApiSearchPagedEndPoints() {
-        return new String[] {
-            "/api/admin/saved-list/search-paged",
-            "/api/admin/job/search-paged",
-            "/api/admin/task/search-paged",
-            "/api/admin/opp/search-paged",
-            "/api/admin/help-link/search-paged",
-            "/api/admin/country/search-paged",
-            "/api/admin/task-assignment/search-paged",
-            "/api/admin/job/search-paged",
-            "/api/admin/chat/search-paged",
-            "/api/admin/partner/search-paged",
-            "/api/admin/chat-post/{id}/search-paged",
-            "/api/admin/candidate-vis-job/{id}/search-paged",
-            "/api/admin/candidate-exam/{id}/search-paged",
-            "/api/admin/candidate-visa-check/{id}/search-paged",
-            "/api/admin/candidate-dependent/{id}/search-paged",
-            "/api/admin/candidate-destination/{id}/search-paged",
-            "/api/admin/candidate-citizenship/{id}/search-paged",
-            "/api/admin/candidate-attachment/search-paged",
-            "/api/admin/saved-list-candidate/{id}/search-paged",
-            "/api/admin/candidate-saved-list/{id}/search-paged",
-            "/api/admin/user/search-paged"
-        };
     }
 }
