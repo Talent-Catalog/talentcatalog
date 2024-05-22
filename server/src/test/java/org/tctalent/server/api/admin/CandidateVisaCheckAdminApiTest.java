@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -166,6 +167,7 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
         String visaId = "99";
 
         mockMvc.perform(put(BASE_PATH + UPDATE_INTAKE_PATH.replace("{id}", visaId))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -188,6 +190,7 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .willReturn(candidateVisaCheck);
 
         mockMvc.perform(post(BASE_PATH + "/" + visaId)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -208,6 +211,7 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
     void deleteByIdSucceeds() throws Exception {
         String visaId = "99";
         mockMvc.perform(delete(BASE_PATH + "/" + visaId)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andDo(print())

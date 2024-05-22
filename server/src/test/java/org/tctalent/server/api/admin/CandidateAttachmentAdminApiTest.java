@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -119,6 +120,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(List.of(candidateAttachments));
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -146,6 +148,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(List.of(candidateAttachmentsCvOnly));
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -172,6 +175,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(pageCandidateAttachments);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -202,6 +206,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(candidateAttachments);
 
         mockMvc.perform(post(BASE_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -269,6 +274,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(multipart(BASE_PATH + UPLOAD_BY_ID_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
                         .file("file", file.getBytes())
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .param("cv", "true"))
 
@@ -292,6 +298,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(candidateAttachments);
 
         mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -315,6 +322,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(List.of(candidateAttachments));
 
         mockMvc.perform(post(BASE_PATH + LIST_BY_TYPE_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -333,6 +341,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
     @DisplayName("delete attachment by id succeeds")
     void deleteByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andDo(print())
