@@ -37,7 +37,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * <p/>
  * See also FlywayMigrationInitializer
  */
-@SpringBootApplication(exclude = ElasticsearchDataAutoConfiguration.class)
+@SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
