@@ -16,7 +16,7 @@
 
 package org.tctalent.server.request.search;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;

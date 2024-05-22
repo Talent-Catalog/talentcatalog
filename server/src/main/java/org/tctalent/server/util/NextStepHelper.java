@@ -16,9 +16,9 @@
 
 package org.tctalent.server.util;
 
+import jakarta.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import javax.annotation.Nullable;
 
 /**
  * Some utilities for managing opportunity next steps

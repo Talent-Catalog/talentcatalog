@@ -18,7 +18,7 @@ package org.tctalent.server.repository.db;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.SavedSearch;

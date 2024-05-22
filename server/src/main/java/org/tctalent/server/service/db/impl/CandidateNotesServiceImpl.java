@@ -29,7 +29,7 @@ import org.tctalent.server.request.note.UpdateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateNoteService;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateNote;
