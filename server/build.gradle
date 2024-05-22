@@ -139,12 +139,11 @@ dependencies {
     // Libraries for elastic, now using native rather than spring managed (interim).
     implementation("co.elastic.clients:elasticsearch-java:8.13.4")
 
+    testImplementation("org.springframework.security:spring-security-test:6.0.1")
+
     // Caching
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-
-    // Testing
-    testImplementation("org.springframework.security:spring-security-test:5.8.12")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
