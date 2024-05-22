@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {getDestinationPathwayInfoLink, IeltsStatus} from "../../../../../../../model/candidate";
+import {IeltsStatus} from "../../../../../../../model/candidate";
 import {VisaJobCheckBase} from "../../../../../../util/visa/visaJobCheckBase";
 
 @Component({
@@ -15,13 +15,14 @@ export class VisaJobCheckCaComponent extends VisaJobCheckBase {
   loading: boolean;
 
   ngOnInit(): void {
+    super.ngOnInit();
+    // Set the partner IELTS score
     if (this.candidateIntakeData?.partnerIelts) {
       this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts] +
         (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
     } else {
       this.partnerIeltsString = null;
     }
-    this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
   }
 }
 

@@ -16,7 +16,13 @@
 
 import {AfterViewInit, Directive, Input, OnInit, ViewChild} from '@angular/core';
 import {CandidateVisaJobService} from "../../../services/candidate-visa-job.service";
-import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../model/candidate";
+import {
+  Candidate,
+  CandidateIntakeData,
+  CandidateVisa,
+  CandidateVisaJobCheck,
+  getDestinationPathwayInfoLink
+} from "../../../model/candidate";
 import {CandidateEducationService} from "../../../services/candidate-education.service";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../model/candidate-occupation";
@@ -41,6 +47,7 @@ export abstract class VisaJobCheckBase implements OnInit, AfterViewInit {
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
+  pathwaysInfoLink: string;
   family: string;
 
   error: string;
@@ -67,9 +74,9 @@ export abstract class VisaJobCheckBase implements OnInit, AfterViewInit {
         this.error = error;
       }
     )
-
     // Process & fetch values that need to be displayed.
     this.family = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
+    this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
   }
 
   /**
