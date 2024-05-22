@@ -27,6 +27,8 @@
 
 ### END John Camerons extra changes
 
+# Python virtual environment
+infra/elasticsearch/tc_env*
 
 # User-specific stuff
 .idea/**/workspace.xml
