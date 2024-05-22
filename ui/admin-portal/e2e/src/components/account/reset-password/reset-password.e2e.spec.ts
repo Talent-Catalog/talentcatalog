@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { browser, by, element } from 'protractor';
+import {browser, by, element} from 'protractor';
 
 describe('Reset Password Component', () => {
 

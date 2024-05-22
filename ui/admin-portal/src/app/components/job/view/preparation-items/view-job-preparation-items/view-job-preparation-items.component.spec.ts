@@ -1,5 +1,5 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { ViewJobPreparationItemsComponent } from "./view-job-preparation-items.component";
+import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
+import {ViewJobPreparationItemsComponent} from "./view-job-preparation-items.component";
 import {MockJobPrepItem} from "../../../../../MockData/MockJobPrepItem";
 
 
