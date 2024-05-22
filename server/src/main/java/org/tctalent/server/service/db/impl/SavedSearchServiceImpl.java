@@ -1044,14 +1044,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (reqOccupations.size() > 0) {
                 BoolQueryBuilder nestedQueryBuilder = new BoolQueryBuilder();
                 nestedQueryBuilder = addElasticTermFilter(
-                    nestedQueryBuilder, SearchType.or, "esOccupations.name.keyword", reqOccupations);
+                    nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
                 if (minYrs != null || maxYrs != null) {
                     nestedQueryBuilder = addElasticRangeFilter(
-                        nestedQueryBuilder, "esOccupations.yearsExperience", minYrs, maxYrs);
+                        nestedQueryBuilder, "occupations.yearsExperience", minYrs, maxYrs);
                 }
                 boolQueryBuilder = boolQueryBuilder.filter(
                     QueryBuilders.nestedQuery(
-                        "esOccupations", nestedQueryBuilder, ScoreMode.Avg));
+                        "occupations", nestedQueryBuilder, ScoreMode.Avg));
             }
         }
 
@@ -1116,6 +1116,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             boolQueryBuilder =
                 addElasticTermFilter(boolQueryBuilder,
                     null,"status.keyword", reqStatuses);
+        }
+
+        //UNHCR Statuses
+        List<UnhcrStatus> unhcrStatuses = request.getUnhcrStatuses();
+        if (unhcrStatuses != null) {
+            //Extract names from enums
+            List<Object> reqUnhcrStatuses = new ArrayList<>();
+            for (UnhcrStatus unhcrStatus : unhcrStatuses) {
+                reqUnhcrStatuses.add(unhcrStatus.name());
+            }
+            boolQueryBuilder =
+                addElasticTermFilter(boolQueryBuilder,
+                    null,"unhcrStatus.keyword", reqUnhcrStatuses);
         }
 
         //Referrer

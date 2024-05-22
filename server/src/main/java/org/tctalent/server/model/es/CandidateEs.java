@@ -190,7 +190,7 @@ public class CandidateEs {
     private String partner;
 
     @Field(type = FieldType.Nested)
-    private List<Occupation> esOccupations;
+    private List<Occupation> occupations;
 
     @Getter
     @Setter
@@ -381,25 +381,25 @@ public class CandidateEs {
             }
         }
 
-        this.esOccupations = new ArrayList<>();
+        this.occupations = new ArrayList<>();
         this.migrationOccupation = null;
-        List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
-        if (occupations != null) {
-            for (CandidateOccupation occupation : occupations) {
-                if (occupation != null && occupation.getOccupation() != null) {
-                    Occupation esOccupation = new Occupation();
-                    String name = occupation.getOccupation().getName();
-                    Long yearsExperience = occupation.getYearsExperience();
+        List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
+        if (candidateOccupations != null) {
+            for (CandidateOccupation candidateOccupation : candidateOccupations) {
+                if (candidateOccupation != null && candidateOccupation.getOccupation() != null) {
+                    Occupation occupation = new Occupation();
+                    String name = candidateOccupation.getOccupation().getName();
+                    Long yearsExperience = candidateOccupation.getYearsExperience();
                     if (name != null) {
-                        esOccupation.setName(name);
+                        occupation.setName(name);
                         if (yearsExperience != null) {
-                            esOccupation.setYearsExperience(yearsExperience);
+                            occupation.setYearsExperience(yearsExperience);
                         }
-                        esOccupations.add(esOccupation);
+                        occupations.add(occupation);
                     }
 
-                    if (occupation.getMigrationOccupation() != null) {
-                        this.migrationOccupation = occupation.getMigrationOccupation();
+                    if (candidateOccupation.getMigrationOccupation() != null) {
+                        this.migrationOccupation = candidateOccupation.getMigrationOccupation();
                     }
                 }
             }
