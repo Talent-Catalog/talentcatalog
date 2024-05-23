@@ -44,6 +44,7 @@ mappings = {
       "drivingLicense": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "educationMajors": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "educations": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
+      "email": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "firstName": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "fullIntakeCompletedDate": {"type": "long"},
       "fullName": {"type" : "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
