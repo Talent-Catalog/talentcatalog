@@ -15,7 +15,7 @@
  */
 buildscript {
     ext {
-        springBootVersion = '3.0.13'
+        springBootVersion = '3.2.5'
         isDev = System.properties['env'] == 'dev'
         javaTargetVersion = JavaVersion.VERSION_21
         lombokVersion = "1.18.30"
@@ -94,7 +94,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-//    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
+    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
     implementation('org.springframework.boot:spring-boot-starter-webflux')
 
     //See https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
@@ -134,12 +134,12 @@ dependencies {
     implementation('org.jsoup:jsoup:1.15.4')
 
     // Temp to update spring thymeleaf as independent unit until all spring is done.
-    implementation("org.thymeleaf:thymeleaf-spring6:3.1.2.RELEASE")
+//    implementation("org.thymeleaf:thymeleaf-spring6:3.1.2.RELEASE")
 
     // Libraries for elastic, now using native rather than spring managed (interim).
     implementation("co.elastic.clients:elasticsearch-java:8.13.4")
 
-    testImplementation("org.springframework.security:spring-security-test:6.0.1")
+    testImplementation('org.springframework.security:spring-security-test:6.3.0')
 
     // Caching
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
