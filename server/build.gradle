@@ -51,6 +51,10 @@ repositories {
     mavenCentral()
 }
 
+configurations.configureEach {
+    exclude group: "commons-logging", module: "commons-logging"
+}
+
 dependencies {
 
     //Instead of defaulting Lombok version, specify recent Lombok version to address this issue:
