@@ -938,7 +938,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         User user = userService.getLoggedInUser();
 
-        BoolQuery.Builder boolQueryBuilder = co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders.bool();
+        BoolQuery.Builder boolQueryBuilder = QueryBuilders.bool();
 
         // Not every base search will contain an elastic search term, since we're processing
         // joined regular searches here too — so we need a safe escape here
@@ -1002,7 +1002,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 }
 
                 Query q = QueryBuilders.nested()
-                    .query(boolQueryBuilder.build()._toQuery())
+                    .query(nestedQueryBuilder.build()._toQuery())
                     .path("otherLanguages")
                     .scoreMode(ChildScoreMode.Avg)
                     .build()._toQuery();
@@ -1212,17 +1212,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             computeCandidatesExcludedFromSearchCandidateRequest(request);
 
         // Each recursion, if any, is added to the query as an additional must clause
-        boolQueryBuilder.must(
+        BoolQuery.Builder bqb = boolQueryBuilder.must(
             computeElasticQuery(request, simpleStringQuery, excludeCandidates).build()._toQuery()
         );
 
         // Like addQuery(), this method uses recursion to get every nested SearchJoinRequest
         if (!request.getSearchJoinRequests().isEmpty()) {
             for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
-                boolQueryBuilder = addElasticQuery(boolQueryBuilder, joinRequest, savedSearchIds);
+                bqb = addElasticQuery(boolQueryBuilder, joinRequest, savedSearchIds);
             }
         }
-        return boolQueryBuilder;
+        return bqb;
     }
 
     private Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
@@ -1599,18 +1599,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             // This is an elasticsearch request
 
             // Combine any joined searches (which will all be processed as elastic)
-            BoolQuery boolQueryBuilder = processElasticRequest(searchRequest,
-                simpleQueryString, excludedCandidates).build();
+            BoolQuery.Builder boolQueryBuilder = processElasticRequest(searchRequest,
+                simpleQueryString, excludedCandidates);
 
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            log.info("Elasticsearch query:\n" + boolQueryBuilder._toQuery());
+            log.info("Elasticsearch query:\n" + boolQueryBuilder);
             log.info("Elasticsearch sort:\n" + req);
 
             NativeQuery query = new NativeQueryBuilder()
-                .withQuery(
-                    Query.of(q -> q.bool(boolQueryBuilder)))
+                .withQuery(boolQueryBuilder.build()._toQuery())
                 .withPageable(req)
                 .build();
 
