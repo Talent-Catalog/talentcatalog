@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -125,6 +126,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(post(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -250,6 +252,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(post(BASE_PATH + CREATE_SUGGESTED_SEARCH.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(suffix)
@@ -335,6 +338,7 @@ class JobAdminApiTest extends ApiTestBase {
         JobIntakeData request = new JobIntakeData();
 
         mockMvc.perform(put(BASE_PATH + UPDATE_INTAKE_DATA.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -354,6 +358,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(put(BASE_PATH + PUBLISH_JOB.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -387,6 +392,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(put(BASE_PATH + REMOVE_SEARCH.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.valueOf(savedSearchId))
@@ -413,6 +419,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(jobPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -443,6 +450,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(put(BASE_PATH + "/" + JOB_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -468,6 +476,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(put(BASE_PATH + "/" + UPDATE_JD_LINK.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -493,6 +502,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(put(BASE_PATH + "/" + UPDATE_JOI_LINK.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -518,6 +528,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(put(BASE_PATH + "/" + UPDATE_INTERVIEW_LINK.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -543,6 +554,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(put(BASE_PATH + "/" + UPDATE_STARRED.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.valueOf(starred))
@@ -568,6 +580,7 @@ class JobAdminApiTest extends ApiTestBase {
                 .willReturn(job);
 
         mockMvc.perform(put(BASE_PATH + "/" + UPDATE_SUMMARY.replace("{id}", String.valueOf(JOB_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(summary)
@@ -594,6 +607,7 @@ class JobAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(multipart(BASE_PATH + "/" + UPLOAD_JD.replace("{id}", String.valueOf(JOB_ID)))
                         .file("file", file.getBytes())
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON))
 
@@ -618,6 +632,7 @@ class JobAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(multipart(BASE_PATH + "/" + UPLOAD_JOI.replace("{id}", String.valueOf(JOB_ID)))
                         .file("file", file.getBytes())
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON))
 
@@ -642,6 +657,7 @@ class JobAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(multipart(BASE_PATH + "/" + UPLOAD_INTERVIEW_GUIDANCE.replace("{id}", String.valueOf(JOB_ID)))
                 .file("file", file.getBytes())
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON))
 
