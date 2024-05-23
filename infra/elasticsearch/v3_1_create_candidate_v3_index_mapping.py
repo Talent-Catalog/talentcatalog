@@ -27,7 +27,7 @@
 from elasticsearch_utils import create_index_if_not_exists, connect_to_es
 
 # Define the index names
-index_name = "candidates_v2"
+index_name = "candidates_v3"
 
 
 # Define the mappings and settings for the new index
