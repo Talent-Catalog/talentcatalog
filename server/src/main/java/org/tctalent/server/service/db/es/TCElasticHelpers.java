@@ -27,17 +27,17 @@ import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.SearchType;
 
 /**
- * A set of functions to assist with creation/use of elastic query construction.
- * They'd be better as independent functions in Kotlin, but not there yet, so wrapped as static
- * methods in this class.
+ * A set of functions to assist with creation/use of elastic query construction. They'd be better as
+ * independent functions in Kotlin, but not there yet, so wrapped as static methods in this class.
  */
 public class TCElasticHelpers {
 
   /**
    * Creates a query based on the field and terms passed in. If a single term, delegates to provide
    * a single term.
+   *
    * @param field the name of the field to filter on
-   * @param terms the terms to use in the query
+   * @param terms the terms to use in the query. Either Long or String
    * @return a query
    */
   @NotNull
@@ -45,29 +45,51 @@ public class TCElasticHelpers {
     if (terms.size() == 1) {
       return getTermQuery(field, terms.getFirst());
     } else {
-      return TermsQuery
-          .of(t -> t.field(field)
-              .terms(tt -> tt.value(terms.stream().map(FieldValue::of).toList())))._toQuery();
+      if (terms instanceof List && !terms.isEmpty() && terms.get(0) instanceof Long) {
+        return TermsQuery
+            .of(t -> t.field(field)
+                .terms(tt -> tt.value(terms.stream()
+                    .map(term -> FieldValue.of((Long) term))
+                    .toList())))
+            ._toQuery();
+      } else if (terms instanceof List && !terms.isEmpty() && terms.get(0) instanceof String) {
+        return TermsQuery
+            .of(t -> t.field(field)
+                .terms(tt -> tt.value(terms.stream()
+                    .map(term -> FieldValue.of((String) term))
+                    .toList())))
+            ._toQuery();
+      } else {
+        throw new RuntimeException("Expect either String or Long");
+      }
     }
   }
 
   /**
    * Creates a query based on the field and value passed in.
+   *
    * @param field the name of the field to filter on.
    * @param value the value to use in the query
    * @return a query
    */
   @NotNull
   public static Query getTermQuery(String field, Object value) {
-    return QueryBuilders.term().field(field).value(FieldValue.of(value)).build()._toQuery();
+    if (value instanceof String) {
+      return QueryBuilders.term().field(field).value(FieldValue.of((String) value)).build()
+          ._toQuery();
+    } else {
+      return QueryBuilders.term().field(field).value(FieldValue.of((Long) value)).build()
+          ._toQuery();
+    }
   }
 
   /**
-   * Creates a term query using the field and values provided. Adds a must not to the query if
-   * not is passed - not sure why it's in here.
+   * Creates a term query using the field and values provided. Adds a must not to the query if not
+   * is passed - not sure why it's in here.
+   *
    * @param searchType if a specific type is required
-   * @param field to test
-   * @param values to use in the query
+   * @param field      to test
+   * @param values     to use in the query
    * @return the constructed Query
    */
   @NotNull
@@ -91,8 +113,9 @@ public class TCElasticHelpers {
 
   /**
    * Simple function that will add the query into the builder if the query is not null.
+   *
    * @param builder the boolean query builder to use.
-   * @param qry the query to add (if not null)
+   * @param qry     the query to add (if not null)
    * @return the BoolQuery.Builder
    */
   public static BoolQuery.Builder filterIfNotNull(BoolQuery.Builder builder, @Nullable Query qry) {
