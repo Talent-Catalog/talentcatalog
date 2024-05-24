@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -116,6 +117,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
 
     mockMvc.perform(multipart(BASE_PATH + SYSTEM_LANGUAGE_TRANSLATION_PATH.replace("{langCode}", LANG_CODE))
             .file("file", file.getBytes())
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token"))
 
         .andDo(print())
@@ -169,6 +171,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .willReturn(educationLevelPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -231,6 +234,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .willReturn(new EducationLevel("Amazing", Status.active, 0));
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -259,6 +263,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .willReturn(new EducationLevel("Amazing", Status.active, 0));
 
     mockMvc.perform(put(BASE_PATH + "/" + EDUCATION_LEVEL_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -284,6 +289,7 @@ class EducationLevelAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + EDUCATION_LEVEL_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 

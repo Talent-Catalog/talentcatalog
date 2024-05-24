@@ -19,6 +19,7 @@ buildscript {
         isDev = System.properties['env'] == 'dev'
         javaTargetVersion = JavaVersion.VERSION_21
         lombokVersion = "1.18.30"
+        ext['spring-security.version']='5.8.12'
     }
     repositories {
         mavenCentral()
@@ -140,6 +141,9 @@ dependencies {
     // Caching
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    // Testing
+    testImplementation("org.springframework.security:spring-security-test:5.8.12")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')

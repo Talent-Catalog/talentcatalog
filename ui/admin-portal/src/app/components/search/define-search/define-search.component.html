@@ -213,15 +213,15 @@
                   <!-- MIN AGE -->
                   <div class="col-6">
                     <label class="form-label" for="minYrs">Min Years Experience</label>
-                    <input id="minYrs" type="number" class="form-control"
-                           name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
+                    <input id="minYrs" type="number" class="form-control" name="minYrs"
+                           [formControlName]="'minYrs'" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
                   <div class="col-6">
                     <label class="form-label" for="maxYrs">Max Years Experience</label>
-                    <input id="maxYrs" type="number" class="form-control"
-                           name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
+                    <input id="maxYrs" type="number" class="form-control" name="maxYrs"
+                           [formControlName]="'maxYrs'" [placeholder]="'Select'">
                   </div>
                 </div>
 
@@ -237,14 +237,14 @@
                   <div class="row">
                     <div class="col-6">
                       <label class="form-label" for="minAge">Min Age</label>
-                      <input id="minAge" type="number" class="form-control"
-                             name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()" [placeholder]="'Select'">
+                      <input id="minAge" type="number" class="form-control" name="minAge"
+                             [formControlName]="'minAge'" [placeholder]="'Select'">
                     </div>
                     <!-- MAX AGE -->
                     <div class="col-6">
                       <label class="form-label" for="maxAge">Max Age</label>
-                      <input id="maxAge" type="number" class="form-control"
-                             name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()" [placeholder]="'Select'">
+                      <input id="maxAge" type="number" class="form-control" name="maxAge"
+                             [formControlName]="'maxAge'" [placeholder]="'Select'">
                     </div>
                   </div>
                 </div>
@@ -281,8 +281,8 @@
                 <!-- MODIFIED BETWEEN -->
                 <div class="col-md-3">
                   <label class="form-label">Last Modified</label>
-                  <app-date-range-picker [readonly]="elastic()"
-                                         #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
+                  <app-date-range-picker
+                    #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
                   </app-date-range-picker>
                 </div>
               </div>

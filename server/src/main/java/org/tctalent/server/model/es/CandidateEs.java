@@ -193,7 +193,17 @@ public class CandidateEs {
 
     private String partner;
 
-    private List<String> occupations;
+    @Field(type = FieldType.Nested)
+    private List<Occupation> occupations;
+
+    @Getter
+    @Setter
+    static class Occupation {
+        private String name;
+
+        @Field(type = FieldType.Long)
+        private Long yearsExperience;
+    }
 
     @Field(type = FieldType.Text)
     private String migrationOccupation;
@@ -214,6 +224,12 @@ public class CandidateEs {
 
     @Field(type = FieldType.Long)
     private Long numberDependants;
+
+    private Long fullIntakeCompletedDate;
+
+    private Long miniIntakeCompletedDate;
+
+    private Long surveyType;
 
     public CandidateEs() {
     }
@@ -377,19 +393,33 @@ public class CandidateEs {
 
         this.occupations = new ArrayList<>();
         this.migrationOccupation = null;
-        List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
-        if (occupations != null) {
-            for (CandidateOccupation occupation : occupations) {
-                if (occupation != null && occupation.getOccupation() != null) {
-                    String text = occupation.getOccupation().getName();
-                    if (text != null) {
-                        this.occupations.add(text);
+        List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
+        if (candidateOccupations != null) {
+            for (CandidateOccupation candidateOccupation : candidateOccupations) {
+                if (candidateOccupation != null && candidateOccupation.getOccupation() != null) {
+                    Occupation occupation = new Occupation();
+                    String name = candidateOccupation.getOccupation().getName();
+                    Long yearsExperience = candidateOccupation.getYearsExperience();
+                    if (name != null) {
+                        occupation.setName(name);
+                        if (yearsExperience != null) {
+                            occupation.setYearsExperience(yearsExperience);
+                        }
+                        occupations.add(occupation);
                     }
-                    if (occupation.getMigrationOccupation() != null) {
-                        this.migrationOccupation = occupation.getMigrationOccupation();
+
+                    if (candidateOccupation.getMigrationOccupation() != null) {
+                        this.migrationOccupation = candidateOccupation.getMigrationOccupation();
                     }
                 }
             }
+            this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
+                null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();
+            this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
+                null : candidate.getFullIntakeCompletedDate().toInstant().toEpochMilli();
+
+            this.surveyType = candidate.getSurveyType() == null ?
+                null : candidate.getSurveyType().getId();
         }
 
         this.skills = new ArrayList<>();
