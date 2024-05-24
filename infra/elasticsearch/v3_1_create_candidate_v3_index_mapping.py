@@ -36,6 +36,7 @@ mappings = {
     "properties": {
       "_class": {"type": "keyword", "index": False, "doc_values": False},
       "additionalInfo": {"type": "text"},
+      "candidateNumber": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "certifications": {"type": "text"},
       "city": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "country": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
@@ -45,6 +46,7 @@ mappings = {
       "educationMajors": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "educations": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "email": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
+      "externalId": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "firstName": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "fullIntakeCompletedDate": {"type": "long"},
       "fullName": {"type" : "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
