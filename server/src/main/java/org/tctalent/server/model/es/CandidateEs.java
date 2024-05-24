@@ -225,6 +225,8 @@ public class CandidateEs {
 
     private Long miniIntakeCompletedDate;
 
+    private Long surveyType;
+
     public CandidateEs() {
     }
 
@@ -407,6 +409,9 @@ public class CandidateEs {
                 null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();
             this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
                 null : candidate.getFullIntakeCompletedDate().toInstant().toEpochMilli();
+
+            this.surveyType = candidate.getSurveyType() == null ?
+                null : candidate.getSurveyType().getId();
         }
 
         this.skills = new ArrayList<>();

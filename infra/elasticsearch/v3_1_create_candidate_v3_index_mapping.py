@@ -84,6 +84,7 @@ mappings = {
       "skills": {"type": "text"},
       "state": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "status": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
+      "surveyType": {"type": "long"},
       "unhcrStatus": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "updated": {"type": "long"}
     }

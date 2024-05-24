@@ -1222,6 +1222,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             );
         }
 
+        // Survey types
+        final List<Long> surveyTypeIds = request.getSurveyTypeIds();
+        if (surveyTypeIds != null) {
+            List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                null,"surveyType", surveyTypeObjList);
+        }
+
         return boolQueryBuilder;
     }
 
