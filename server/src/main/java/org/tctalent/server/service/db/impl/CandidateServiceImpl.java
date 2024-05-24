@@ -51,6 +51,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -127,6 +128,7 @@ import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
+import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -386,25 +388,9 @@ public class CandidateServiceImpl implements CandidateService {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
-        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates = candidateRepository.searchCandidateEmailOrPhone(
-                '%' + s + '%', sourceCountries,
-                        request.getPageRequestWithoutSort());
-
-//        if (searchForNumber) {
-//            candidates = candidateRepository.searchCandidateNumber(
-//                    s +'%', sourceCountries,
-//                    request.getPageRequestWithoutSort());
-//        } else {
-//            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.partneradmin) {
-//                candidates = candidateRepository.searchCandidateName(
-//                        '%' + s + '%', sourceCountries,
-//                        request.getPageRequestWithoutSort());
-//            } else {
-//                return null;
-//            }
-//        }
+        // Get candidate ids from Elasticsearch then fetch and return from the database
+        Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmail(s);
+        Page<Candidate> candidates = getCandidates(request, candidateIds);
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
@@ -428,9 +414,7 @@ public class CandidateServiceImpl implements CandidateService {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
                 // Get candidate ids from Elasticsearch then fetch and return from the database
                 Set<Long> candidateIds = elasticsearchService.findByName(s);
-                List<Candidate> unsorted = findByIds(candidateIds);
-                candidates = new PageImpl<>(unsorted, request.getPageRequestWithoutSort(),
-                    candidateIds.size());
+                candidates = getCandidates(request, candidateIds);
             } else {
                 return null;
             }
@@ -438,6 +422,18 @@ public class CandidateServiceImpl implements CandidateService {
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
+    }
+
+    @NotNull
+    private Page<Candidate> getCandidates(PagedSearchRequest request, Set<Long> candidateIds) {
+
+        List<Candidate> unsorted = findByIds(candidateIds);
+
+        return new PageImpl<>(
+            unsorted,
+            request.getPageRequestWithoutSort(),
+            candidateIds.size()
+        );
     }
 
     @Override
