@@ -1135,7 +1135,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         String referrer = request.getRegoReferrerParam();
         if (referrer != null && !referrer.isEmpty()) {
             boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.termQuery("regoReferrerParam", referrer));
+                QueryBuilders.termQuery("regoReferrerParam.keyword", referrer));
         }
 
         //Gender
