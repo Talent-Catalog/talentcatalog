@@ -52,7 +52,7 @@ export abstract class VisaJobCheckBase implements OnInit, AfterViewInit {
   error: string;
   loading: boolean;
 
-  public constructor(protected candidateEducationService: CandidateEducationService,
+  protected constructor(protected candidateEducationService: CandidateEducationService,
                      protected candidateOccupationService: CandidateOccupationService) {}
 
   ngOnInit(): void {
