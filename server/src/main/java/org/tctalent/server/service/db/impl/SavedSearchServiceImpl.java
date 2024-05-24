@@ -24,6 +24,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.ChildScoreMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch.core.search.ScoreMode;
 import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
@@ -1021,7 +1022,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     .query(nestedQueryBuilder.build()._toQuery())
                     .path("otherLanguages")
                     .scoreMode(ChildScoreMode.Avg)
-                    .build()._toQuery();
+                    .build().query();
 
                 boolQueryBuilder = boolQueryBuilder.filter(q);
             }
@@ -1048,23 +1049,42 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 reqOccupations.add(occupation.getName());
             }
 
-            // TODO (the block below was added, how do they override)???
-          boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-              null,"occupations.keyword", reqOccupations);
-
-
             if (reqOccupations.size() > 0) {
-                BoolQuery.Builder nestedQueryBuilder = QueryBuilders.bool();
-                nestedQueryBuilder = addElasticTermFilter(
-                    nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
+                BoolQuery.Builder nestedQryBuilder =
+                        addElasticTermFilter(
+                                QueryBuilders.bool(),
+                                SearchType.or,
+                                "occupations.name.keyword",
+                                reqOccupations
+                                );
+
                 if (minYrs != null || maxYrs != null) {
-                    nestedQueryBuilder = addElasticRangeFilter(
-                        nestedQueryBuilder, "occupations.yearsExperience", minYrs, maxYrs);
+                    nestedQryBuilder = addElasticRangeFilter(
+                            nestedQryBuilder,
+                            "occupations.yearsExperience",
+                            minYrs,
+                            maxYrs);
                 }
                 boolQueryBuilder = boolQueryBuilder.filter(
-                    QueryBuilders.nestedQuery(
-                        "occupations", nestedQueryBuilder, ScoreMode.Avg));
+                        QueryBuilders.nested()
+                                .query(nestedQryBuilder.build()._toQuery())
+                                .path("occupations")
+                                .scoreMode(ChildScoreMode.Avg)
+                                .build().query());
             }
+
+//            if (reqOccupations.size() > 0) {
+//                BoolQuery.Builder nestedQueryBuilder = QueryBuilders.bool();
+//                nestedQueryBuilder = addElasticTermFilter(
+//                    nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
+//                if (minYrs != null || maxYrs != null) {
+//                    nestedQueryBuilder = addElasticRangeFilter(
+//                        nestedQueryBuilder, "occupations.yearsExperience", minYrs, maxYrs);
+//                }
+//                boolQueryBuilder = boolQueryBuilder.filter(
+//                    QueryBuilders.nestedQuery(
+//                        "occupations", nestedQueryBuilder, ScoreMode.Avg));
+//            }
         }
 
         //Countries - need to take account of source country restrictions
@@ -1201,6 +1221,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     QueryBuilders.existsQuery("fullIntakeCompletedDate")
                 );
             } else {
+
                 boolQueryBuilder = boolQueryBuilder.mustNot(
                     QueryBuilders.existsQuery("fullIntakeCompletedDate")
                 );
