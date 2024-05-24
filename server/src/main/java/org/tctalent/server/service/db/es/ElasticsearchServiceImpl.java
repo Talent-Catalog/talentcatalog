@@ -66,6 +66,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   private static final String FULL_NAME_FIELD = "fullName";
   private static final String PHONE_NUMBER_FIELD = "phone";
   private static final String EMAIL_FIELD = "email";
+  private static final String EXTERNAL_ID_FIELD = "externalId";
   private static final String STATUS_KEYWORD = "status.keyword";
   private static final String COUNTRY_KEYWORD = "country.keyword";
 
@@ -92,6 +93,20 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   @Override
   public Set<Long> findByPhoneOrEmail(@NonNull String number) {
     BoolQueryBuilder boolQuery = computeFindByPhoneOrEmailQuery(number);
+    SearchHits<CandidateEs> hits = executeQuery(boolQuery);
+    LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
+
+    log.info("Found candidate IDs: " + candidateIds);
+
+    return candidateIds;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Set<Long> findByExternalId(@NonNull String number) {
+    BoolQueryBuilder boolQuery = computeFindByExternalIdQuery(number);
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
 
@@ -142,6 +157,25 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     log.debug("Elasticsearch query:\n" + boolQuery);
     return boolQuery;
   }
+
+  @NotNull
+  private BoolQueryBuilder computeFindByExternalIdQuery(String externalId) {
+    // Create prefix query for external ID
+    PrefixQueryBuilder externalIdQuery = QueryBuilders
+        .prefixQuery(EXTERNAL_ID_FIELD, externalId);
+
+    // Construct the boolean query
+    BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+        .must(externalIdQuery);
+
+    // Filter out deleted Statuses and account for country restrictions
+    boolQuery = filterOnDeletedStatus(boolQuery);
+    boolQuery = filterOnSourceCountryRestrictions(boolQuery);
+
+    log.debug("Elasticsearch query:\n" + boolQuery);
+    return boolQuery;
+  }
+
 
   @NotNull
   private BoolQueryBuilder filterOnDeletedStatus(BoolQueryBuilder boolQuery) {

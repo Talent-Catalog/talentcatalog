@@ -42,4 +42,16 @@ public interface ElasticsearchService {
    * @throws IllegalArgumentException if the provided input string is null.
    */
   Set<Long> findByPhoneOrEmail(@NonNull String input);
+
+  /**
+   * Retrieves a set of candidate IDs by elastic searching for a specified external ID
+   *
+   * @param externalId the external ID string to search for in the Elasticsearch index. Must not be
+   *                  null.
+   * @return a {@link Set} of {@link Long} candidate IDs that match the search criteria.
+   *         The set will be empty if no candidates are found.
+   * @throws IllegalArgumentException if the provided input string is null.
+   */
+  Set<Long> findByExternalId(@NonNull String externalId);
+
 }
