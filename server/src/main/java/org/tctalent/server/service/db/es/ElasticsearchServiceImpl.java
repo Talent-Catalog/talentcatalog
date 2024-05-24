@@ -63,12 +63,14 @@ import org.tctalent.server.service.db.UserService;
 @Service
 public class ElasticsearchServiceImpl implements ElasticsearchService {
 
-  private static final String FULL_NAME_FIELD = "fullName";
-  private static final String PHONE_NUMBER_FIELD = "phone";
+  private static final String CANDIDATE_NUMBER_FIELD = "candidateNumber";
   private static final String EMAIL_FIELD = "email";
   private static final String EXTERNAL_ID_FIELD = "externalId";
-  private static final String STATUS_KEYWORD = "status.keyword";
+  private static final String FULL_NAME_FIELD = "fullName";
+  private static final String PHONE_NUMBER_FIELD = "phone";
+
   private static final String COUNTRY_KEYWORD = "country.keyword";
+  private static final String STATUS_KEYWORD = "status.keyword";
 
   private final ElasticsearchOperations elasticsearchOperations;
   private final UserService userService;
@@ -79,6 +81,20 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   @Override
   public Set<Long> findByName(@NonNull String name) {
     BoolQueryBuilder boolQuery = computeFindByNameQuery(name);
+    SearchHits<CandidateEs> hits = executeQuery(boolQuery);
+    LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
+
+    log.info("Found candidate IDs: " + candidateIds);
+
+    return candidateIds;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Set<Long> findByNumber(@NonNull String number) {
+    BoolQueryBuilder boolQuery = computeFindByNumberQuery(number);
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
 
@@ -125,6 +141,24 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     // Construct the boolean query
     BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
         .must(nameQuery);
+
+    // Filter out deleted Statuses and account for country restrictions
+    boolQuery = filterOnDeletedStatus(boolQuery);
+    boolQuery = filterOnSourceCountryRestrictions(boolQuery);
+
+    log.debug("Elasticsearch query:\n" + boolQuery);
+    return boolQuery;
+  }
+
+  @NotNull
+  private BoolQueryBuilder computeFindByNumberQuery(String number) {
+    // Create prefix query for candidate number
+    PrefixQueryBuilder cnQuery = QueryBuilders
+        .prefixQuery(CANDIDATE_NUMBER_FIELD, number);
+
+    // Construct the boolean query
+    BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+        .must(cnQuery);
 
     // Filter out deleted Statuses and account for country restrictions
     boolQuery = filterOnDeletedStatus(boolQuery);

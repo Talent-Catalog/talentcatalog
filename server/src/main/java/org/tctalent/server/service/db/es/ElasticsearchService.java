@@ -33,6 +33,16 @@ public interface ElasticsearchService {
   Set<Long> findByName(@NonNull String name);
 
   /**
+   * Retrieves a set of candidate IDs by elastic searching for a specified candidate number.
+   *
+   * @param number the candidate number to search for in the Elasticsearch index. Must not be null.
+   * @return a {@link Set} of {@link Long} candidate IDs that match the search criteria.
+   *         The set will be empty if no candidates are found.
+   * @throws IllegalArgumentException if the provided name is null.
+   */
+  Set<Long> findByNumber(@NonNull String number);
+
+  /**
    * Retrieves a set of candidate IDs by elastic searching for a specified input string
    * that matches either the phone number or email in the Elasticsearch index.
    *
