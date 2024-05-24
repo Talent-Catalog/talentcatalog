@@ -28,7 +28,10 @@ import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -960,6 +963,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //multiselected values will result in the filter returning true.
         //There is also a TermQuery which takes only one value.
 
+        // AGE
+        // Note that the orders of filters is reversed, since we're using DOB — i.e., min age has
+        // higher DOB-as-a-number than max age (e.g., 19690101 vs 19920101)
+        Integer minAge = request.getMinAge();
+        Integer maxAge = request.getMaxAge();
+        if (minAge != null || maxAge != null) {
+            boolQueryBuilder = addElasticRangeFilter(
+                boolQueryBuilder,
+                "dob",
+                constructDobFilter(maxAge),
+                constructDobFilter(minAge));
+        }
+
         //English levels
         Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
         if (minSpokenLevel != null) {
@@ -1022,15 +1038,33 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Occupations
         final List<Long> occupationIds = request.getOccupationIds();
-        if (occupationIds != null) {
+        final Integer minYrs = request.getMinYrs();
+        final Integer maxYrs = request.getMaxYrs();
+        if (!Collections.isEmpty(occupationIds)) {
             //Look up names from ids.
             List<Object> reqOccupations = new ArrayList<>();
             for (Long id : occupationIds) {
                 final Occupation occupation = occupationService.getOccupation(id);
                 reqOccupations.add(occupation.getName());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                    null,"occupations.keyword", reqOccupations);
+
+            // TODO (the block below was added, how do they override)???
+          boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+              null,"occupations.keyword", reqOccupations);
+
+
+            if (reqOccupations.size() > 0) {
+                BoolQueryBuilder nestedQueryBuilder = new BoolQueryBuilder();
+                nestedQueryBuilder = addElasticTermFilter(
+                    nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
+                if (minYrs != null || maxYrs != null) {
+                    nestedQueryBuilder = addElasticRangeFilter(
+                        nestedQueryBuilder, "occupations.yearsExperience", minYrs, maxYrs);
+                }
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.nestedQuery(
+                        "occupations", nestedQueryBuilder, ScoreMode.Avg));
+            }
         }
 
         //Countries - need to take account of source country restrictions
@@ -1096,11 +1130,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     null,"status.keyword", reqStatuses);
         }
 
+        //UNHCR Statuses
+        List<UnhcrStatus> unhcrStatuses = request.getUnhcrStatuses();
+        if (unhcrStatuses != null) {
+            //Extract names from enums
+            List<Object> reqUnhcrStatuses = new ArrayList<>();
+            for (UnhcrStatus unhcrStatus : unhcrStatuses) {
+                reqUnhcrStatuses.add(unhcrStatus.name());
+            }
+            boolQueryBuilder =
+                addElasticTermFilter(boolQueryBuilder,
+                    null,"unhcrStatus.keyword", reqUnhcrStatuses);
+        }
+
         //Referrer
         String referrer = request.getRegoReferrerParam();
-        if (referrer != null) {
+        if (referrer != null && !referrer.isEmpty()) {
             boolQueryBuilder = boolQueryBuilder.filter(
-                getTermQuery("regoReferrerParam", referrer));
+                getTermQuery("regoReferrerParam.keyword", referrer));
         }
 
         //Gender
@@ -1131,7 +1178,84 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
                     null, "educationMajors.keyword", reqEducations);
         }
+
+        //Mini Intake
+        final Boolean miniIntakeCompleted = request.getMiniIntakeCompleted();
+        if (miniIntakeCompleted != null) {
+            if (miniIntakeCompleted) {
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.existsQuery("miniIntakeCompletedDate")
+                );
+            } else {
+                boolQueryBuilder = boolQueryBuilder.mustNot(
+                    QueryBuilders.existsQuery("miniIntakeCompletedDate")
+                );
+            }
+        }
+
+        //Full Intake
+        final Boolean fullIntakeCompleted = request.getFullIntakeCompleted();
+        if (fullIntakeCompleted != null) {
+            if (fullIntakeCompleted) {
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.existsQuery("fullIntakeCompletedDate")
+                );
+            } else {
+                boolQueryBuilder = boolQueryBuilder.mustNot(
+                    QueryBuilders.existsQuery("fullIntakeCompletedDate")
+                );
+            }
+
+        }
+
+        // Last Modified
+        // updatedDate is converted for the ES field 'updated' to a long denoting no. of
+        // milliseconds elapsed since 1970-01-01T00:00:00Z. This enables an ES range query by
+        // converting the dates in the request in the same way, as below.
+        if (request.getLastModifiedFrom() != null) {
+            Long lastModifiedFrom = OffsetDateTime.of(
+                request.getLastModifiedFrom(),
+                LocalTime.MIN,
+                ZoneOffset.UTC
+            ).toInstant().toEpochMilli();
+
+            Long lastModifiedTo = request.getLastModifiedTo() == null ?
+                null : OffsetDateTime.of(
+                    request.getLastModifiedTo(),
+                    LocalTime.MAX,
+                    ZoneOffset.UTC
+                ).toInstant().toEpochMilli();
+
+            boolQueryBuilder = addElasticRangeFilter(
+                boolQueryBuilder,
+                "updated",
+                lastModifiedFrom,
+                lastModifiedTo
+            );
+        }
+
+        // Survey types
+        final List<Long> surveyTypeIds = request.getSurveyTypeIds();
+        if (surveyTypeIds != null) {
+            List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                null,"surveyType", surveyTypeObjList);
+        }
+
         return boolQueryBuilder;
+    }
+
+    /**
+     * Takes a min or max age as specified in candidate search and returns a term for filtering on
+     * the DOB field in elasticsearch.
+     * @param age min or max age as an Integer
+     * @return String term for adding to search query as min or max value for a range filter
+     */
+    private String constructDobFilter(Integer age) {
+        return age == null ? null : LocalDate.now()
+            .minusYears(age + 1)
+            .toString()
+            .replaceAll("-", "");
     }
 
     private static String constructDefaultSearchName(User user) {
