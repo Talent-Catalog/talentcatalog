@@ -85,18 +85,4 @@ export abstract class VisaJobCheckBase implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.visaJobAcc.expandAll();
   }
-
-  requestSfCaseRelocationInfoUpdate() {
-    this.error = null;
-    this.loading = true;
-    this.candidateVisaJobService.updateSfCaseRelocationInfo(
-      this.selectedJobCheck.id).subscribe(
-      boolean => {
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      });
-  }
 }
