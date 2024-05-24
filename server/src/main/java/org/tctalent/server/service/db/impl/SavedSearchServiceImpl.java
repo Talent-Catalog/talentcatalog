@@ -1133,7 +1133,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Referrer
         String referrer = request.getRegoReferrerParam();
-        if (referrer != null) {
+        if (referrer != null && !referrer.isEmpty()) {
             boolQueryBuilder = boolQueryBuilder.filter(
                 QueryBuilders.termQuery("regoReferrerParam", referrer));
         }
