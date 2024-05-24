@@ -403,13 +403,13 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
-        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
 
         if (searchForNumber) {
-            candidates = candidateRepository.searchCandidateNumber(
-                        s +'%', sourceCountries,
-                    request.getPageRequestWithoutSort());
+            // Get candidate ids from Elasticsearch then fetch and return from the database
+            Set<Long> candidateIds = elasticsearchService.findByNumber(s);
+            candidates = getCandidates(request, candidateIds);
+
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
                 // Get candidate ids from Elasticsearch then fetch and return from the database
