@@ -424,6 +424,24 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
+    @Override
+    public Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request) {
+        String s = request.getExternalId();
+        User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
+            // Get candidate ids from Elasticsearch then fetch and return from the database
+            Set<Long> candidateIds = elasticsearchService.findByExternalId(s);
+            Page<Candidate> candidates = getCandidates(request, candidateIds);
+
+            log.info("Found " + candidates.getTotalElements() + " candidates in search");
+            return candidates;
+        } else {
+            return null;
+        }
+    }
+
     @NotNull
     private Page<Candidate> getCandidates(PagedSearchRequest request, Set<Long> candidateIds) {
 
@@ -434,26 +452,6 @@ public class CandidateServiceImpl implements CandidateService {
             request.getPageRequestWithoutSort(),
             candidateIds.size()
         );
-    }
-
-    @Override
-    public Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request) {
-        String s = request.getExternalId();
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
-        if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-            Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-            Page<Candidate> candidates;
-
-            candidates = candidateRepository.searchCandidateExternalId(
-                    s +'%', sourceCountries, request.getPageRequestWithoutSort());
-
-            log.info("Found " + candidates.getTotalElements() + " candidates in search");
-            return candidates;
-        } else {
-            return null;
-        }
     }
 
     @Override
