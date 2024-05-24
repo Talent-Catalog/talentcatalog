@@ -1054,7 +1054,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
 
             if (reqOccupations.size() > 0) {
-                BoolQueryBuilder nestedQueryBuilder = new BoolQueryBuilder();
+                BoolQuery.Builder nestedQueryBuilder = QueryBuilders.bool();
                 nestedQueryBuilder = addElasticTermFilter(
                     nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
                 if (minYrs != null || maxYrs != null) {
