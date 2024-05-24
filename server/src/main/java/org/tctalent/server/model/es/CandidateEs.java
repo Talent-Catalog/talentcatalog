@@ -140,6 +140,8 @@ public class CandidateEs {
      */
     private String fullName;
 
+    private String email;
+
     @Field(type = FieldType.Text)
     private List<String> jobExperiences;
 
@@ -236,6 +238,8 @@ public class CandidateEs {
         this.lastName = candidate.getUser() == null ? null
             : candidate.getUser().getLastName();
         this.setFullName();
+        this.email = candidate.getUser() == null ? null
+            : candidate.getUser().getEmail();
 
         this.gender = candidate.getGender();
         this.country = candidate.getCountry() == null ? null
