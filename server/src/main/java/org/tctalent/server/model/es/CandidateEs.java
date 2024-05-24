@@ -92,6 +92,8 @@ public class CandidateEs {
     @Id
     private String id;
 
+    private String externalId;
+
     @Field(type = FieldType.Text)
     private String additionalInfo;
 
