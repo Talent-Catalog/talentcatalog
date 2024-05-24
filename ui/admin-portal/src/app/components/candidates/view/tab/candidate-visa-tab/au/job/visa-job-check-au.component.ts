@@ -5,7 +5,6 @@ import {CandidateOccupationService} from "../../../../../../../services/candidat
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {Occupation} from "../../../../../../../model/occupation";
-import {CandidateVisaJobService} from "../../../../../../../services/candidate-visa-job.service";
 import {VisaJobCheckBase} from "../../../../../../util/visa/visaJobCheckBase";
 
 @Component({
@@ -23,9 +22,8 @@ export class VisaJobCheckAuComponent extends VisaJobCheckBase {
 
   constructor(candidateEducationService: CandidateEducationService,
               candidateOccupationService: CandidateOccupationService,
-              candidateVisaJobService: CandidateVisaJobService,
               private occupationService: OccupationService) {
-    super(candidateEducationService, candidateOccupationService, candidateVisaJobService);
+    super(candidateEducationService, candidateOccupationService);
   }
 
   ngOnInit() {

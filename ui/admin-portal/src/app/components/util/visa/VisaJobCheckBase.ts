@@ -15,7 +15,6 @@
  */
 
 import {AfterViewInit, Directive, Input, OnInit, ViewChild} from '@angular/core';
-import {CandidateVisaJobService} from "../../../services/candidate-visa-job.service";
 import {
   Candidate,
   CandidateIntakeData,
@@ -54,8 +53,7 @@ export abstract class VisaJobCheckBase implements OnInit, AfterViewInit {
   loading: boolean;
 
   public constructor(protected candidateEducationService: CandidateEducationService,
-                     protected candidateOccupationService: CandidateOccupationService,
-                     protected candidateVisaJobService: CandidateVisaJobService) {}
+                     protected candidateOccupationService: CandidateOccupationService) {}
 
   ngOnInit(): void {
     // Get the candidate occupations
