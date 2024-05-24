@@ -971,8 +971,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             boolQueryBuilder = addElasticRangeFilter(
                 boolQueryBuilder,
                 "dob",
-                constructAgeFilter(maxAge),
-                constructAgeFilter(minAge));
+                constructDobFilter(maxAge),
+                constructDobFilter(minAge));
         }
 
         //English levels
@@ -1239,7 +1239,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * @param age min or max age as an Integer
      * @return String term for adding to search query as min or max value for a range filter
      */
-    private String constructAgeFilter(Integer age) {
+    private String constructDobFilter(Integer age) {
         return age == null ? null : LocalDate.now()
             .minusYears(age + 1)
             .toString()
