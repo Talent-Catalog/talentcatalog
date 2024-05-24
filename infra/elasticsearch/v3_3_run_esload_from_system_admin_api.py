@@ -24,13 +24,7 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program. If not, see https://www.gnu.org/licenses/.
 
-from elasticsearch_utils import reindex_data_with_full_names, connect_to_es
-
-# Define the source and destination index names
-src_index_name = "candidates_v2"
-dest_index_name = "candidates_v3"
-
-
-if __name__ == "__main__":
-    es = connect_to_es()
-    reindex_data_with_full_names(es, src_index_name, dest_index_name)
+# If we choose to implement the approach described in the naming of this file,
+# the content here will be a python script running esload from the SystemAdminApi.
+# However, the approach is still a point for discussion and so this serves as
+# explanatory placeholder.
