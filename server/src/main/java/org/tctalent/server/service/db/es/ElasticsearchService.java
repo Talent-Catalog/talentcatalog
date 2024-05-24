@@ -23,8 +23,7 @@ import org.springframework.lang.NonNull;
 public interface ElasticsearchService {
 
   /**
-   * Retrieves a set of candidate IDs by searching for a specified name.
-   * This method uses Elasticsearch to perform a search based on the full name of candidates.
+   * Retrieves a set of candidate IDs by elastic searching for a specified name.
    *
    * @param name the full name to search for in the Elasticsearch index. Must not be null.
    * @return a {@link Set} of {@link Long} candidate IDs that match the search criteria.
@@ -33,4 +32,14 @@ public interface ElasticsearchService {
    */
   Set<Long> findByName(@NonNull String name);
 
+  /**
+   * Retrieves a set of candidate IDs by elastic searching for a specified input string
+   * that matches either the phone number or email in the Elasticsearch index.
+   *
+   * @param input the input string to search for in the Elasticsearch index. Must not be null.
+   * @return a {@link Set} of {@link Long} candidate IDs that match the search criteria.
+   *         The set will be empty if no candidates are found.
+   * @throws IllegalArgumentException if the provided input string is null.
+   */
+  Set<Long> findByPhoneOrEmail(@NonNull String input);
 }
