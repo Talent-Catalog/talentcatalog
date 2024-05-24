@@ -173,13 +173,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                           @Param("userSourceCountries") Set<Country> userSourceCountries,
                                           Pageable pageable);
 
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.externalId) like lower(:externalId) "
-            + sourceCountryRestriction)
-    Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
-                                              @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                              Pageable pageable);
-
     @Query(" select c from Candidate c "
             + " join c.user u "
             + " where c.id = :id "
