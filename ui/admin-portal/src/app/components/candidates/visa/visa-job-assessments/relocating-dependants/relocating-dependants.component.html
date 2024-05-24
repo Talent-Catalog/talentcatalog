@@ -1,4 +1,4 @@
-<div *ngIf="error">
+<div *ngIf="error" class="alert alert-danger">
   {{error}}
 </div>
 <form [formGroup]="form" class="mb-3">
@@ -31,7 +31,7 @@
       </ng-select>
     </div>
     <div class="col-auto">
-      <button class="btn btn-sm btn-primary mb-1"
+      <button class="btn btn-sm btn-secondary mb-1"
               (click)="requestSfCaseRelocationInfoUpdate()">
         <span *ngIf="loading; else elseBlock">
             <i class="fas fa-spinner fa-spin"></i>
