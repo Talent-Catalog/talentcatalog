@@ -390,7 +390,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         // Get candidate ids from Elasticsearch then fetch and return from the database
         Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmail(s);
-        Page<Candidate> candidates = getCandidates(request, candidateIds);
+        Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
@@ -403,22 +403,21 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
-        Page<Candidate> candidates;
 
+        // Get candidate ids from Elasticsearch
+        Set<Long> candidateIds;
         if (searchForNumber) {
-            // Get candidate ids from Elasticsearch then fetch and return from the database
-            Set<Long> candidateIds = elasticsearchService.findByNumber(s);
-            candidates = getCandidates(request, candidateIds);
-
+            candidateIds = elasticsearchService.findByNumber(s);
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                // Get candidate ids from Elasticsearch then fetch and return from the database
-                Set<Long> candidateIds = elasticsearchService.findByName(s);
-                candidates = getCandidates(request, candidateIds);
+                candidateIds = elasticsearchService.findByName(s);
             } else {
                 return null;
             }
         }
+
+        // then fetch and return from the database
+        Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
@@ -433,7 +432,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
             // Get candidate ids from Elasticsearch then fetch and return from the database
             Set<Long> candidateIds = elasticsearchService.findByExternalId(s);
-            Page<Candidate> candidates = getCandidates(request, candidateIds);
+            Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
             log.info("Found " + candidates.getTotalElements() + " candidates in search");
             return candidates;
@@ -443,7 +442,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @NotNull
-    private Page<Candidate> getCandidates(PagedSearchRequest request, Set<Long> candidateIds) {
+    private Page<Candidate> fetchCandidates(PagedSearchRequest request, Set<Long> candidateIds) {
 
         List<Candidate> unsorted = findByIds(candidateIds);
 
