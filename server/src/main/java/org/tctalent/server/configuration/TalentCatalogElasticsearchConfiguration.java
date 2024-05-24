@@ -52,7 +52,6 @@ public class TalentCatalogElasticsearchConfiguration extends ElasticsearchConfig
     private static final Logger log = LoggerFactory.getLogger(TalentCatalogElasticsearchConfiguration.class);
 
     @Override
-    @Bean
     public @NonNull ClientConfiguration clientConfiguration() {
         try {
             if (uris != null && uris.size() > 0) {
