@@ -91,8 +91,8 @@ public class CandidateEs {
 
     @Id
     private String id;
-
     private String externalId;
+    private String candidateNumber;
 
     @Field(type = FieldType.Text)
     private String additionalInfo;
@@ -242,6 +242,8 @@ public class CandidateEs {
         this.setFullName();
         this.email = candidate.getUser() == null ? null
             : candidate.getUser().getEmail();
+        this.externalId = candidate.getExternalId();
+        this.candidateNumber = candidate.getCandidateNumber();
 
         this.gender = candidate.getGender();
         this.country = candidate.getCountry() == null ? null
