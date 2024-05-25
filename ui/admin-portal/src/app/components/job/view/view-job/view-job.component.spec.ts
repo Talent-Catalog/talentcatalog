@@ -1,25 +1,29 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import { ViewJobComponent } from './view-job.component';
+import {ViewJobComponent} from './view-job.component';
 import {NgbModal, NgbNavModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
-import { AuthenticationService } from '../../../../services/authentication.service';
-import { JobService } from '../../../../services/job.service';
-import { SlackService } from '../../../../services/slack.service';
-import { Router } from '@angular/router';
+import {AuthenticationService} from '../../../../services/authentication.service';
+import {JobService} from '../../../../services/job.service';
+import {SlackService} from '../../../../services/slack.service';
+import {Router} from '@angular/router';
 import {CommonModule, Location} from '@angular/common';
 import {of, throwError} from 'rxjs';
-import { Job } from '../../../../model/job';
+import {Job} from '../../../../model/job';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockUser} from "../../../../MockData/MockUser";
 import {MockJob} from "../../../../MockData/MockJob";
-import {
-  RouterLinkDirectiveStub
-} from "../submission-list/view-job-submission-list/view-job-submission-list.component.spec";
+import {RouterLinkDirectiveStub} from "../submission-list/view-job-submission-list/view-job-submission-list.component.spec";
 import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.component";
 import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.component";
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+// Mock isStarredByMe function
+const isStarredByMe = (starringUsers: any[], authService: AuthenticationService) => {
+  const loggedInUser = authService.getLoggedInUser();
+  console.log(loggedInUser)
+  return starringUsers.some(user => user.id === loggedInUser.id);
+};
 
 fdescribe('ViewJobComponent', () => {
   let component: ViewJobComponent;
@@ -57,6 +61,9 @@ fdescribe('ViewJobComponent', () => {
     fixture = TestBed.createComponent(ViewJobComponent);
     component = fixture.componentInstance;
     component.job=MockJob;
+
+    // Override the isStarredByMe method
+    (window as any).isStarredByMe = isStarredByMe;
     fixture.detectChanges();
   });
 
@@ -64,23 +71,52 @@ fdescribe('ViewJobComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should toggle starred status of job', fakeAsync(() => {
+
+  it('should toggle starred status of job when initially starred', fakeAsync(() => {
     // Arrange
     const loggedInUser = new MockUser();
     mockAuthService.getLoggedInUser.and.returnValue(loggedInUser);
-    const job: Job = MockJob;
-    mockJobService.updateStarred.and.returnValue(of(job));
-    spyOn(component.jobUpdated, 'emit');
-    component.onJobUpdated(job);
+
+    // Initial state where the job is starred by the user
+    const job: Job = { ...MockJob, starringUsers: [loggedInUser] };
+    component.job = job;
+
+    // Toggled state where the job is no longer starred
+    const updatedJob = { ...job, starringUsers: [] };
+    mockJobService.updateStarred.and.returnValue(of(updatedJob));
     // Act
     component.doToggleStarred();
     tick();
+
     // Assert
-     expect(mockJobService.updateStarred).toHaveBeenCalledWith(1, false);
-     expect(component.job).toEqual(job);
-     expect(component.jobUpdated.emit).toHaveBeenCalledWith(job);
-     expect(component.loading).toBeFalsy(); // Ensure loading indicator is turned off
+    expect(mockJobService.updateStarred).toHaveBeenCalledWith(job.id, false);
+    expect(component.job).toEqual(updatedJob);
+    expect(component.loading).toBeFalsy();
   }));
+
+  it('should toggle starred status of job when initially not starred', fakeAsync(() => {
+    // Arrange
+    const loggedInUser = new MockUser();
+    mockAuthService.getLoggedInUser.and.returnValue(loggedInUser);
+
+    // Initial state where the job is not starred by the user
+    const job: Job = { ...MockJob, starringUsers: [] };
+    component.job = job;
+
+    // Toggled state where the job is now starred
+    const updatedJob = { ...job, starringUsers: [loggedInUser] };
+    mockJobService.updateStarred.and.returnValue(of(updatedJob));
+
+    // Act
+    component.doToggleStarred();
+    tick();
+
+    // Assert
+    expect(mockJobService.updateStarred).toHaveBeenCalledWith(job.id, true);
+    expect(component.job).toEqual(updatedJob);
+    expect(component.loading).toBeFalsy();
+  }));
+
   it('should handle error when updating starred status of job', fakeAsync(() => {
     // Arrange
     const loggedInUser = new MockUser();
