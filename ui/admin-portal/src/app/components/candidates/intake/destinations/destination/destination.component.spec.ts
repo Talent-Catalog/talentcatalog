@@ -13,29 +13,50 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {DestinationComponent} from "./destination.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {CandidateService} from "../../../../../services/candidate.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
+import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {MockUser} from "../../../../../MockData/MockUser";
+import {Country} from "../../../../../model/country";
+import {MockJob} from "../../../../../MockData/MockJob";
+import {YesNo} from "../../../../../model/candidate";
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {DestinationComponent} from './destination.component';
-
-describe('DestinationAusComponent', () => {
+fdescribe('DestinationComponent', () => {
   let component: DestinationComponent;
   let fixture: ComponentFixture<DestinationComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DestinationComponent ]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ DestinationComponent, AutosaveStatusComponent],
+      imports: [NgSelectModule,FormsModule, ReactiveFormsModule, HttpClientTestingModule],
+      providers: [FormBuilder, CandidateService]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DestinationComponent);
     component = fixture.componentInstance;
+    // Providing a mock country object
+    component.country = MockJob.country;
+    component.myRecordIndex = 0;
+    component.destInterestOptions = [];
+    component.candidateIntakeData = {
+      candidateDestinations:undefined
+    };
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have empty arrays for options', () => {
+    expect(component.destInterestOptions).toEqual([]);
   });
 });
