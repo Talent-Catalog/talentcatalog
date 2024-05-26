@@ -16,6 +16,11 @@
 
 package org.tctalent.server.repository.db;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -26,37 +31,40 @@ import jakarta.persistence.criteria.Predicate;
 public class PartnerSpecification {
 
     public static Specification<PartnerImpl> buildSearchQuery(final SearchPartnerRequest request) {
-        return (partner, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (Root<PartnerImpl> partner, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+            // List to hold the predicates
+            List<Predicate> predicates = new ArrayList<>();
             query.distinct(true);
 
             // KEYWORD SEARCH
-            if (!StringUtils.isBlank(request.getKeyword())){
+            if (request.getKeyword() != null && !request.getKeyword().isEmpty()){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(partner.get("name")), likeMatchTerm),
-                                builder.like(builder.lower(partner.get("abbreviation")), likeMatchTerm)
-                        ));
+                predicates.add(
+                    builder.or(
+                        builder.like(builder.lower(partner.get("name")), likeMatchTerm),
+                        builder.like(builder.lower(partner.get("abbreviation")), likeMatchTerm)
+                    )
+                );
             }
 
             // STATUS
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(partner.get("status"), request.getStatus()));
+                predicates.add(builder.equal(partner.get("status"), request.getStatus()));
             }
 
             // Job Creators
             if (request.getJobCreator() != null){
-                conjunction.getExpressions().add(builder.equal(partner.get("jobCreator"), request.getJobCreator()));
+                predicates.add(builder.equal(partner.get("jobCreator"), request.getJobCreator()));
             }
 
             // Source Partners
             if (request.getSourcePartner() != null){
-                conjunction.getExpressions().add(builder.equal(partner.get("sourcePartner"), request.getSourcePartner()));
+                predicates.add(builder.equal(partner.get("sourcePartner"), request.getSourcePartner()));
             }
 
-            return conjunction;
+            // Combine all predicates into a single conjunction predicate
+            return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
 }

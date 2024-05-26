@@ -70,7 +70,7 @@ public class CandidateSpecification {
             //To better understand this code, look at the simpler but similar
             //GetSavedListCandidatesQuery. JC - The Programmer's Friend.
 
-            Predicate conjunction = builder.conjunction();
+            List<Predicate> predicates = new ArrayList<>();
 
             //These joins are only created as needed - depending on the query.
             //eg candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
@@ -136,7 +136,7 @@ public class CandidateSpecification {
             if (!StringUtils.isBlank(request.getKeyword())) {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String[] splittedText = lowerCaseMatchTerm.split("\\s+|,\\s*|\\.\\s*");
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> intPredicates = new ArrayList<>();
                 candidateJobExperiences = candidateJobExperiences != null ? candidateJobExperiences : candidate.join("candidateJobExperiences", JoinType.LEFT);
                 candidateSkills = candidateSkills != null ? candidateSkills : candidate.join("candidateSkills", JoinType.LEFT);
                 candidateAttachments = candidateAttachments != null ? candidateAttachments : candidate.join("candidateAttachments", JoinType.LEFT);
@@ -146,7 +146,7 @@ public class CandidateSpecification {
 
                 for (String s : splittedText) {
                     String likeMatchTerm = "%" + s + "%";
-                    predicates.add(builder.or(
+                    intPredicates.add(builder.or(
                             builder.like(builder.lower(candidate.get("candidateNumber")), lowerCaseMatchTerm),
                             builder.like(builder.lower(user.get("firstName")), likeMatchTerm),
                             builder.like(builder.lower(user.get("lastName")), likeMatchTerm),
@@ -165,16 +165,16 @@ public class CandidateSpecification {
                     // This is adding an OR statement IF the keyword search includes uploaded files AND cv is true.
                     // May be a better way to do this, but it works.
 //                    if(BooleanUtils.isTrue(request.getIncludeUploadedFiles())) {
-//                        predicates.get(0).getExpressions().add(builder.and(
+//                        intPredicates.get(0).getExpressions().add(builder.and(
 //                                builder.isTrue(candidateAttachments.get("cv")),
 //                                builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm)));
 //
 //                    }
                 }
-                if (predicates.size() > 1) {
-                    conjunction.getExpressions().add(builder.and(builder.and(predicates.toArray(new Predicate[0]))));
+                if (intPredicates.size() > 1) {
+                    predicates.add(builder.and(builder.and(intPredicates.toArray(new Predicate[0]))));
                 } else {
-                    conjunction.getExpressions().add(builder.and(predicates.toArray(new Predicate[0])));
+                    predicates.add(builder.and(intPredicates.toArray(new Predicate[0])));
                 }
 
 
@@ -182,7 +182,7 @@ public class CandidateSpecification {
             // STATUS SEARCH
             if (!Collections.isEmpty(request.getStatuses())) {
                 List<CandidateStatus> statuses = request.getStatuses();
-                conjunction.getExpressions().add(
+                predicates.add(
                     builder.isTrue(candidate.get("status").in(statuses)));
             }
 
@@ -191,21 +191,21 @@ public class CandidateSpecification {
                 candidateOccupations = candidateOccupations != null ? candidateOccupations: candidate.join("candidateOccupations", JoinType.LEFT);
                 occupation = occupation != null ? occupation : candidateOccupations.join("occupation", JoinType.LEFT);
 
-                conjunction.getExpressions().add(
+                predicates.add(
                         occupation.get("id").in(request.getOccupationIds())
                 );
 
                 //Min / Max Age
                 if (request.getMinYrs() != null) {
                     Integer minYrs = request.getMinYrs();
-                    conjunction.getExpressions().add(builder.and(
+                    predicates.add(builder.and(
                             builder.greaterThanOrEqualTo(candidateOccupations.get("yearsExperience"), minYrs),
                             builder.isTrue(occupation.get("id").in(request.getOccupationIds()))));
                 }
 
                 if (request.getMaxYrs() != null) {
                     Integer maxYrs = request.getMaxYrs();
-                    conjunction.getExpressions().add(builder.and(
+                    predicates.add(builder.and(
                             builder.lessThanOrEqualTo(candidateOccupations.get("yearsExperience"), maxYrs),
                             builder.isTrue(occupation.get("id").in(request.getOccupationIds()))));
                 }
@@ -213,18 +213,18 @@ public class CandidateSpecification {
 
             // EXCLUDED CANDIDATES (eg from Review Status)
             if (excludedCandidates != null && excludedCandidates.size() > 0) {
-                conjunction.getExpressions().add(candidate.in(excludedCandidates).not()
+                predicates.add(candidate.in(excludedCandidates).not()
                     );
             }
 
             // NATIONALITY SEARCH
             if (!Collections.isEmpty(request.getNationalityIds())) {
                 if (request.getNationalitySearchType() == null || SearchType.or.equals(request.getNationalitySearchType())) {
-                    conjunction.getExpressions().add(
+                    predicates.add(
                             builder.isTrue(candidate.get("nationality").get("id").in(request.getNationalityIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("nationality").get("id").in(request.getNationalityIds()).not()
+                    predicates.add(candidate.get("nationality").get("id").in(request.getNationalityIds()).not()
                     );
                 }
             }
@@ -234,23 +234,23 @@ public class CandidateSpecification {
             // presented to the user will be limited to the allowed source countries
             if (!Collections.isEmpty(request.getCountryIds())) {
                 if (request.getCountrySearchType() == null || SearchType.or.equals(request.getCountrySearchType())) {
-                    conjunction.getExpressions().add(
+                    predicates.add(
                         builder.isTrue(candidate.get("country").get("id").in(request.getCountryIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("country").get("id").in(request.getCountryIds()).not());
+                    predicates.add(candidate.get("country").get("id").in(request.getCountryIds()).not());
                 }
             // If request ids IS EMPTY only show source countries
             } else if (loggedInUser != null &&
                     !Collections.isEmpty(loggedInUser.getSourceCountries())) {
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.isTrue(candidate.get("country").in(loggedInUser.getSourceCountries()))
                 );
             }
 
             // PARTNER SEARCH
             if (!Collections.isEmpty(request.getPartnerIds())) {
-                conjunction.getExpressions().add(
+                predicates.add(
                     builder.isTrue(user.get("partner").get("id").in(request.getPartnerIds()))
                 );
             }
@@ -284,21 +284,21 @@ public class CandidateSpecification {
 
             // SURVEY TYPE SEARCH
             if (!Collections.isEmpty(request.getSurveyTypeIds())) {
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.isTrue(candidate.get("surveyType").in(request.getSurveyTypeIds()))
                 );
             }
 
             // REFERRER
             if (request.getRegoReferrerParam() != null && request.getRegoReferrerParam().trim().length() != 0) {
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.like(builder.lower(candidate.get("regoReferrerParam")), request.getRegoReferrerParam().toLowerCase())
                 );
             }
 
             // GENDER SEARCH
             if (request.getGender() != null) {
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.equal(candidate.get("gender"), request.getGender())
                 );
             }
@@ -306,29 +306,29 @@ public class CandidateSpecification {
 
             //Modified From
             if (request.getLastModifiedFrom() != null) {
-                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedFrom(), LocalTime.MIN, request.getTimezone())));
+                predicates.add(builder.greaterThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedFrom(), LocalTime.MIN, request.getTimezone())));
             }
 
             if (request.getLastModifiedTo() != null) {
-                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone())));
+                predicates.add(builder.lessThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone())));
             }
 
             //Min / Max Age
             if (request.getMinAge() != null) {
                 LocalDate minDob = LocalDate.now().minusYears(request.getMinAge() + 1);
-                conjunction.getExpressions().add(builder.or(builder.lessThanOrEqualTo(candidate.get("dob"), minDob), builder.isNull(candidate.get("dob"))));
+                predicates.add(builder.or(builder.lessThanOrEqualTo(candidate.get("dob"), minDob), builder.isNull(candidate.get("dob"))));
             }
 
             if (request.getMaxAge() != null) {
                 LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge() + 1);
 
-                conjunction.getExpressions().add(builder.or(builder.greaterThan(candidate.get("dob"), maxDob), builder.isNull(candidate.get("dob"))));
+                predicates.add(builder.or(builder.greaterThan(candidate.get("dob"), maxDob), builder.isNull(candidate.get("dob"))));
             }
 
             // UNHCR STATUSES
             if (!Collections.isEmpty(request.getUnhcrStatuses())) {
                 List<UnhcrStatus> statuses = request.getUnhcrStatuses();
-                conjunction.getExpressions().add(
+                predicates.add(
                     builder.isTrue(candidate.get("unhcrStatus").in(statuses))
                 );
             }
@@ -336,7 +336,7 @@ public class CandidateSpecification {
             // EDUCATION LEVEL SEARCH
             if (request.getMinEducationLevel() != null) {
                 Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel", JoinType.LEFT);
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
                 );
             }
@@ -344,10 +344,10 @@ public class CandidateSpecification {
             // MINI INTAKE COMPLETE
             if (request.getMiniIntakeCompleted() != null) {
                 if(request.getMiniIntakeCompleted()) {
-                    conjunction.getExpressions().add(
+                    predicates.add(
                         builder.isNotNull(candidate.get("miniIntakeCompletedDate"))); 
                 } else {
-                    conjunction.getExpressions().add(
+                    predicates.add(
                         builder.isNull(candidate.get("miniIntakeCompletedDate")));
                 }
             }
@@ -355,10 +355,10 @@ public class CandidateSpecification {
             // FULL INTAKE COMPLETE
             if (request.getFullIntakeCompleted() != null) {
                 if(request.getFullIntakeCompleted()) {
-                    conjunction.getExpressions().add(
+                    predicates.add(
                         builder.isNotNull(candidate.get("fullIntakeCompletedDate")));
                 } else {
-                    conjunction.getExpressions().add(
+                    predicates.add(
                         builder.isNull(candidate.get("fullIntakeCompletedDate")));
                 }
             }
@@ -369,7 +369,7 @@ public class CandidateSpecification {
                 Join<Candidate, EducationMajor> major = candidateEducations.join("educationMajor", JoinType.LEFT);
                 Join<Candidate, EducationMajor> migrationMajor = candidate.join("migrationEducationMajor", JoinType.LEFT);
 
-                conjunction.getExpressions().add(builder.or(
+                predicates.add(builder.or(
                         builder.isTrue(major.get("id").in(request.getEducationMajorIds())),
                         builder.isTrue(migrationMajor.get("id").in(request.getEducationMajorIds())))
                 );
@@ -383,26 +383,26 @@ public class CandidateSpecification {
                 Join<CandidateLanguage, LanguageLevel> spokenLevel = candidateLanguages.join("spokenLevel", JoinType.LEFT);
                 Join<CandidateLanguage, Language> language = candidateLanguages.join("language", JoinType.LEFT);
                 if (request.getEnglishMinWrittenLevel() != null && request.getEnglishMinSpokenLevel() != null) {
-                    conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
+                    predicates.add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
                             builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinWrittenLevel()),
                             builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinSpokenLevel())));
                 } else if (request.getEnglishMinWrittenLevel() != null) {
-                    conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
+                    predicates.add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
                             builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinWrittenLevel())));
                 } else if (request.getEnglishMinSpokenLevel() != null) {
-                    conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
+                    predicates.add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
                             builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinSpokenLevel())));
                 }
                 if (request.getOtherLanguageId() != null) {
                     if (request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null) {
-                        conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
+                        predicates.add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
                                 builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getOtherMinWrittenLevel()),
                                 builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getOtherMinSpokenLevel())));
                     } else if (request.getOtherMinSpokenLevel() != null) {
-                        conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
+                        predicates.add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
                                 builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getOtherMinSpokenLevel())));
                     } else if (request.getOtherMinWrittenLevel() != null) {
-                        conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
+                        predicates.add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
                                 builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getOtherMinWrittenLevel())));
                     }
                 }
@@ -466,13 +466,13 @@ public class CandidateSpecification {
                 //the where clauses we have added to oppsConjunction
                 sq.select(builder.count(opp)).where(oppsWhereClauses);
 
-                conjunction.getExpressions().add(
+                predicates.add(
                     //Check for zero or non-zero opportunity count depending on the above logic.
                     countMustBeNonZero ? builder.greaterThan(sq, 0L) : builder.equal(sq, 0L)
                 );
             }
 
-            return conjunction;
+            return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
 

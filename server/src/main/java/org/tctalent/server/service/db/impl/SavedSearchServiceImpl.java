@@ -1204,11 +1204,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (miniIntakeCompleted != null) {
             if (miniIntakeCompleted) {
                 boolQueryBuilder = boolQueryBuilder.filter(
-                    QueryBuilders.existsQuery("miniIntakeCompletedDate")
+                    QueryBuilders.exists(e -> e
+                        .field("miniIntakeCompletedDate"))
                 );
             } else {
                 boolQueryBuilder = boolQueryBuilder.mustNot(
-                    QueryBuilders.existsQuery("miniIntakeCompletedDate")
+                    QueryBuilders.exists(e -> e
+                        .field("miniIntakeCompletedDate"))
                 );
             }
         }
@@ -1218,12 +1220,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (fullIntakeCompleted != null) {
             if (fullIntakeCompleted) {
                 boolQueryBuilder = boolQueryBuilder.filter(
-                    QueryBuilders.existsQuery("fullIntakeCompletedDate")
+                    QueryBuilders.exists(e -> e
+                        .field("fullIntakeCompletedDate"))
                 );
             } else {
 
                 boolQueryBuilder = boolQueryBuilder.mustNot(
-                    QueryBuilders.existsQuery("fullIntakeCompletedDate")
+                    QueryBuilders.exists(e -> e
+                        .field("fullIntakeCompletedDate"))
                 );
             }
 

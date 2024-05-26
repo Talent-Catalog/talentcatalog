@@ -52,7 +52,8 @@ public class JobSpecification {
     public static Specification<SalesforceJobOpp> buildSearchQuery(
         final SearchJobRequest request, User loggedInUser) {
         return (job, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+            List<Predicate> predicates = new ArrayList<>();
+            query.distinct(true);
 
             /*
               Note that there are two ways of retrieving a join.
@@ -88,7 +89,7 @@ public class JobSpecification {
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.or(
                                 builder.like(builder.lower(job.get("name")), likeMatchTerm)
                         ));
@@ -103,14 +104,14 @@ public class JobSpecification {
             // STAGE
             List<JobOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
-                conjunction.getExpressions().add(builder.isTrue(job.get("stage").in(stages)));
+                predicates.add(builder.isTrue(job.get("stage").in(stages)));
                 isStageFilterActive = true;
             }
 
             // DESTINATION
             List<Long> destinationIds = request.getDestinationIds();
             if (!Collections.isEmpty(destinationIds)) {
-                conjunction.getExpressions().add(builder.isTrue(job.get("country").in(destinationIds)));
+                predicates.add(builder.isTrue(job.get("country").in(destinationIds)));
             }
 
             //ACTIVE STAGES (ignored if doing stage filtering)
@@ -139,9 +140,9 @@ public class JobSpecification {
                                 disjunction.getExpressions().add(
                                     builder.isNull(job.get("publishedDate")));
                             }
-                            conjunction.getExpressions().add(disjunction);
+                            predicates.add(disjunction);
                         } else {
-                            conjunction.getExpressions().add(activePredicate);
+                            predicates.add(activePredicate);
                         }
                     }
                 }
@@ -151,7 +152,7 @@ public class JobSpecification {
             //Only apply filter if we want to exclude closed opps.
             //Otherwise the filter when true will only show closed opps - which we don't want.
             if (!isStageFilterActive && !showClosed) {
-                conjunction.getExpressions().add(builder.equal(job.get("closed"), false));
+                predicates.add(builder.equal(job.get("closed"), false));
             }
 
             //UNREAD MESSAGES
@@ -178,7 +179,7 @@ public class JobSpecification {
                     loggedInUser, query, builder, numberOfChatsToRead, numberOfChatsToReadRoot,
                     chatBelongsToOpp);
 
-                conjunction.getExpressions().add(oppHasUnreadChats);
+                predicates.add(oppHasUnreadChats);
             }
 
             // (starred OR owned)
@@ -221,10 +222,10 @@ public class JobSpecification {
             }
 
             if (!ors.getExpressions().isEmpty()) {
-                conjunction.getExpressions().add(ors);
+                predicates.add(ors);
             }
 
-            return conjunction;
+        return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
 

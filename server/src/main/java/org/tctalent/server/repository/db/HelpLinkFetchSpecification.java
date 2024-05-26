@@ -17,6 +17,8 @@
 package org.tctalent.server.repository.db;
 
 import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
@@ -31,36 +33,36 @@ public class HelpLinkFetchSpecification {
 
     public static Specification<HelpLink> buildSearchQuery(final SearchHelpLinkRequest request) {
         return (helpLink, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+            List<Predicate> predicates = new ArrayList<>();
             query.distinct(true);
 
             if (request.getCountryId() != null){
-                conjunction.getExpressions().add(
+                predicates.add(
                     builder.equal(helpLink.get("country").get("id"), request.getCountryId()));
             }
 
             if (request.getCaseStage() != null){
-                conjunction.getExpressions().add(
+                predicates.add(
                     builder.equal(helpLink.get("caseStage"), request.getCaseStage()));
             }
 
             if (request.getFocus() != null){
-                conjunction.getExpressions().add(
+                predicates.add(
                     builder.equal(helpLink.get("focus"), request.getFocus()));
             }
 
             if (request.getJobStage() != null){
-                conjunction.getExpressions().add(
+                predicates.add(
                     builder.equal(helpLink.get("jobStage"), request.getJobStage()));
             }
 
             if (request.getNextStepName() != null){
-                conjunction.getExpressions().add(
+                predicates.add(
                     builder.equal(helpLink.get("nextStepInfo").get("nextStepName"),
                         request.getNextStepName()));
             }
 
-            return conjunction;
+            return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
 }

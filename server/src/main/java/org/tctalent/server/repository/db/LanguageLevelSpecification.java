@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.LanguageLevel;
@@ -27,24 +29,24 @@ public class LanguageLevelSpecification {
 
     public static Specification<LanguageLevel> buildSearchQuery(final SearchLanguageLevelRequest request) {
         return (languageLevel, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+            List<Predicate> predicates = new ArrayList<>();
             query.distinct(true);
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.or(
                                 builder.like(builder.lower(languageLevel.get("name")), likeMatchTerm)
                         ));
             }
 
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(languageLevel.get("status"), request.getStatus()));
+                predicates.add(builder.equal(languageLevel.get("status"), request.getStatus()));
             }
 
-            return conjunction;
+            return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
 }

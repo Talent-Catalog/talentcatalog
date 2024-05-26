@@ -51,7 +51,7 @@ public class CandidateOpportunitySpecification {
     public static Specification<CandidateOpportunity> buildSearchQuery(
         final SearchCandidateOpportunityRequest request, User loggedInUser) {
         return (opp, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+            List<Predicate> predicates = new ArrayList<>();
 
             boolean isCountQuery = query.getResultType().equals(Long.class);
             if (!isCountQuery) {
@@ -64,7 +64,7 @@ public class CandidateOpportunitySpecification {
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.or(
                                 builder.like(builder.lower(opp.get("name")), likeMatchTerm)
                         ));
@@ -79,7 +79,7 @@ public class CandidateOpportunitySpecification {
             // STAGE
             List<CandidateOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
-                conjunction.getExpressions().add(builder.isTrue(opp.get("stage").in(stages)));
+                predicates.add(builder.isTrue(opp.get("stage").in(stages)));
                 isStageFilterActive = true;
             }
 
@@ -96,11 +96,11 @@ public class CandidateOpportunitySpecification {
                         if (showClosed != null && showClosed) {
                             //When active stages are requested as well as closed, we need both.
                             //ie We need to show opps which are active OR closed
-                            conjunction.getExpressions().add(
+                            predicates.add(
                                 builder.or(activePredicate,
                                 builder.equal(opp.get("closed"), true)));
                         } else {
-                            conjunction.getExpressions().add(activePredicate);
+                            predicates.add(activePredicate);
                         }
                     }
                 }
@@ -111,15 +111,14 @@ public class CandidateOpportunitySpecification {
                 //Only apply filter if we want to exclude closed opps.
                 //Otherwise the filter when true will only show closed opps - which we don't want.
                 if (!showClosed) {
-                    conjunction.getExpressions().add(builder.equal(opp.get("closed"), false));
+                    predicates.add(builder.equal(opp.get("closed"), false));
                 }
             }
 
             //OVERDUE - if true we only display overdue opps
             if (request.getOverdue() != null) {
                 if (request.getOverdue()) {
-                    conjunction.getExpressions()
-                        .add(
+                    predicates.add(
                             builder.and(
                                 builder.isNotNull(opp.get("nextStepDueDate")),
                                 builder.lessThan(opp.get("nextStepDueDate"), LocalDate.now())
@@ -151,7 +150,7 @@ public class CandidateOpportunitySpecification {
                     .hasUnreadChats(loggedInUser, query, builder,
                         numberOfChatsToRead, numberOfChatsToReadRoot, chatBelongsToOpp);
 
-                conjunction.getExpressions().add(oppHasUnreadChats);
+                predicates.add(oppHasUnreadChats);
             }
 
             //OWNERSHIP
@@ -173,7 +172,7 @@ public class CandidateOpportunitySpecification {
                                 //Just check that the job associated with the opportunity was created
                                 //by the logged in user's partner.
                                 Join<Object, Object> jobOpp = opp.join("jobOpp");
-                                conjunction.getExpressions().add(builder.equal(
+                                predicates.add(builder.equal(
                                     jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
                                 );
                             } else {
@@ -191,7 +190,7 @@ public class CandidateOpportunitySpecification {
                                         builder.equal(jobOpp.get("createdBy").get("id"),
                                             loggedInUser.getId())
                                     );
-                                    conjunction.getExpressions().add(
+                                    predicates.add(
                                         builder.or(matchContactUser, matchCreatingUser)
                                     );
                                 }
@@ -207,7 +206,7 @@ public class CandidateOpportunitySpecification {
                                     //Just check that the candidate associated with the opportunity is managed
                                     //by the logged in user's partner.
                                     Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
-                                    conjunction.getExpressions().add(
+                                    predicates.add(
                                         builder.equal(partner.get("id"), loggedInUserPartner.getId())
                                     );
                                 } else {
@@ -219,7 +218,7 @@ public class CandidateOpportunitySpecification {
 
                                         //Candidate must be owned by user's partner
                                         Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
-                                        conjunction.getExpressions().add(
+                                        predicates.add(
                                             builder.equal(partner.get("id"), loggedInUserPartner.getId())
                                         );
 
@@ -272,7 +271,7 @@ public class CandidateOpportunitySpecification {
 
                                         //Only add ors if we have some
                                         if (!ors.getExpressions().isEmpty()) {
-                                            conjunction.getExpressions().add(ors);
+                                            predicates.add(ors);
                                         }
                                     }
                                 }
@@ -282,7 +281,7 @@ public class CandidateOpportunitySpecification {
                 }
             }
 
-            return conjunction;
+            return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
 

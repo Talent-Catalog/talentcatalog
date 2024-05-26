@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.TaskImpl;
@@ -27,14 +29,14 @@ public class TaskSpecification {
 
     public static Specification<TaskImpl> buildSearchQuery(final SearchTaskRequest request) {
         return (task, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+            List<Predicate> predicates = new ArrayList<>();
             query.distinct(true);
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.or(
                                 builder.like(builder.lower(task.get("name")), likeMatchTerm),
                                 builder.like(builder.lower(task.get("displayName")), likeMatchTerm),
@@ -42,7 +44,7 @@ public class TaskSpecification {
                         ));
             }
 
-            return conjunction;
+            return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
 }
