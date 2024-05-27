@@ -76,22 +76,6 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
     this.visaJobAus.expandAll();
   }
 
-
-  get currentYear(): string {
-    return new Date().getFullYear().toString();
-  }
-
-  get birthYear(): string {
-    return this.candidate?.dob.toString().slice(0, 4);
-  }
-
-  get selectedOccupations(): CandidateOccupation {
-    if (this.candOccupations) {
-      this.yrsExp = this.candOccupations?.find(occ => occ.occupation.id === this.selectedJobCheck?.occupation?.id);
-      return this.yrsExp;
-    }
-  }
-
   get ieltsScoreType(): string {
     return getIeltsScoreTypeString(this.candidate);
   }
