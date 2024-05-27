@@ -45,6 +45,10 @@ fdescribe('HomeLocationComponent', () => {
     fixture.detectChanges(); // Trigger initial data binding
   });
 
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
   it('should initialize the form with candidate data', () => {
     expect(component.form.get('homeLocation').value).toBe('Test Location');
   });
