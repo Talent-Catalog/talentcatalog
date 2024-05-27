@@ -809,10 +809,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         for (CandidateOpportunityRecordComposite request : requests) {
             UpsertResult result = results[count++];
             if (!result.isSuccess()) {
-                throw new SalesforceException(
-                        "Update failed for opportunity "
-                                + request.getName()
-                                + ": " + result.getErrorMessage());
+                log.error("Update failed for opportunity "
+                    + request.getName()
+                    + ": " + result.getErrorMessage());
             }
         }
     }
