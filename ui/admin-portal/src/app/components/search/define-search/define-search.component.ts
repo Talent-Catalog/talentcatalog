@@ -277,7 +277,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     })
   }
 
-
   get simpleQueryString(): string {
     return this.searchForm.value.simpleQueryString;
   }
