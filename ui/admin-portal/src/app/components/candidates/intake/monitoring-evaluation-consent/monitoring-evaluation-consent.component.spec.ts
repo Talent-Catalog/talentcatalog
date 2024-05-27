@@ -15,9 +15,7 @@
  */
 import {MonitoringEvaluationConsentComponent} from "./monitoring-evaluation-consent.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {of} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -31,7 +29,7 @@ fdescribe('MonitoringEvaluationConsentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ MonitoringEvaluationConsentComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, NgbTooltipModule, NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
+      imports: [HttpClientTestingModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
       providers: [
         { provide: CandidateService }
       ]

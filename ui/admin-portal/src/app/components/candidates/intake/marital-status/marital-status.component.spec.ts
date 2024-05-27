@@ -17,7 +17,6 @@
 import {MaritalStatusComponent} from "./marital-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
@@ -30,7 +29,7 @@ fdescribe('MaritalStatusComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ MaritalStatusComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, NgbTooltipModule, NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
+      imports: [HttpClientTestingModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
       providers: [
         FormBuilder,
         { provide: CandidateService }

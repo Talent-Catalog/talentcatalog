@@ -20,7 +20,6 @@ import {RegistrationUnhcrComponent} from './registration-unhcr.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {UnhcrStatus, YesNo} from "../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
 fdescribe('RegistrationUnhcrComponent', () => {
@@ -30,7 +29,7 @@ fdescribe('RegistrationUnhcrComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ RegistrationUnhcrComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, NgbTooltipModule, NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
+      imports: [HttpClientTestingModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
       providers: [
         { provide: CandidateService }
       ]

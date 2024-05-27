@@ -17,7 +17,7 @@
 import {LangAssessmentComponent} from "./lang-assessment.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateIntakeData, IntRecruitReason} from "../../../../model/candidate";
@@ -44,7 +44,7 @@ fdescribe('LangAssessmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [LangAssessmentComponent, AutosaveStatusComponent, NclcScoreValidationComponent, IeltsScoreValidationComponent],
-      imports: [HttpClientTestingModule,NgbTooltipModule,NgbDatepickerModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [HttpClientTestingModule,NgbTooltipModule,NgSelectModule,FormsModule,ReactiveFormsModule],
     })
     .compileComponents();
   });

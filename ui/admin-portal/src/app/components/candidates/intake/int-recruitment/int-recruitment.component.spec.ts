@@ -17,7 +17,6 @@ import {IntRecruitmentComponent} from "./int-recruitment.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -33,7 +32,7 @@ fdescribe('IntRecruitmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [IntRecruitmentComponent, AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,NgbDatepickerModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
         { provide: CandidateService }
       ]

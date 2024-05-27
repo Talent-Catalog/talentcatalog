@@ -20,7 +20,6 @@ import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateIntakeData, IntRecruitReason, LeftHomeReason} from "../../../../model/candidate";
@@ -35,7 +34,7 @@ fdescribe('LeftHomeReasonComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LeftHomeReasonComponent, AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule,NgbTooltipModule,NgbDatepickerModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
 
       providers: [
         FormBuilder,

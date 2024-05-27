@@ -16,7 +16,6 @@
 import {HostEntryLegallyComponent} from "./host-entry-legally.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
@@ -30,7 +29,7 @@ fdescribe('HostEntryLegallyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,NgbDatepickerModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
       declarations: [HostEntryLegallyComponent,AutosaveStatusComponent],
       providers: [
         FormBuilder,
