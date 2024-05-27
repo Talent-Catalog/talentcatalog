@@ -76,31 +76,33 @@
 
       <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
         <ng-template #keywordSearchTip>
-          Search candidate CVs using these tips to create powerful queries:
-          <ul id="keyword-search-tip-list">
-            <li>
-              <code>+</code> means AND, <code>space</code> means OR -
-              e.g. <code>welder diesel+mechanic</code> finds all profiles containing the word
-              'welder' OR <em>both</em> the words 'diesel' AND 'mechanic'.
-            </li>
-            <li>
-              Match the first part of a word using <code>*</code> - e.g. <code>account*</code>
-              will find 'accounting' and 'accountant'.
-            </li>
-            <li>
-              Search for phrases as well as words by using double quotes
-              - e.g. <code>accountant + "hospital director"</code> will find profiles with the word
-              'accountant' AND the phrase 'hospital director'.
-            </li>
-            <li>
-              Use brackets to group terms - e.g. <code>accountant + (excel powerpoint)</code>
-              finds profiles containing the word 'accountant' AND <em>either</em> 'excel' or
-              'powerpoint', whereas <code>(accountant + excel) powerpoint</code> finds profiles
-              containing 'accountant' AND 'excel', OR profiles containing the word 'powerpoint'.
-            </li>
-          </ul>
-          You can further refine your query by applying the available filters below.
-          Click the 'Search' button to execute.
+          <span class="search-tips-content">
+            Search candidate CVs using these tips to create powerful queries:
+            <ul>
+              <li>
+                <code>+</code> means AND, <code>space</code> means OR -
+                e.g. <code>welder diesel+mechanic</code> finds all profiles containing the word
+                'welder' OR <em>both</em> the words 'diesel' AND 'mechanic'.
+              </li>
+              <li>
+                Match the first part of a word using <code>*</code> - e.g. <code>account*</code>
+                will find 'accounting' and 'accountant'.
+              </li>
+              <li>
+                Search for phrases as well as words by using double quotes
+                - e.g. <code>accountant + "hospital director"</code> will find profiles with the word
+                'accountant' AND the phrase 'hospital director'.
+              </li>
+              <li>
+                Use brackets to group terms - e.g. <code>accountant + (excel powerpoint)</code>
+                finds profiles containing the word 'accountant' AND <em>either</em> 'excel' or
+                'powerpoint', whereas <code>(accountant + excel) powerpoint</code> finds profiles
+                containing 'accountant' AND 'excel', OR profiles containing the word 'powerpoint'.
+              </li>
+            </ul>
+            You can further refine your query by applying the available filters below.
+            Click the 'Search' button to execute.
+          </span>
         </ng-template>
 
         <div class="container-fluid">
@@ -469,17 +471,21 @@
             <!-- REFERRER -->
             <div class="col-md-4">
               <label class="form-label" for="referrer">Referrer</label>
-              <button class="tool-tip-button"
-                      ngbTooltip="Search ignores upper or lower case so don't worry about case.
-                      Also % can be used as a wild card. So 'ab%' will find any referers which
-                      begin with 'ab'. Or '%irc%' will find any referers with irc appearing
-                      anywhere in the name."
+              <button class="tool-tip-button" [ngbTooltip]="referrerTooltip"
                       placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <input id="referrer" class="form-control"
                      name="referrer" [formControlName]="'regoReferrerParam'" appLowercase>
             </div>
+            <ng-template #referrerTooltip>
+              <span class="search-tips-content">
+                Search ignores upper or lower case so don't worry about case.
+                Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                referrers beginning with <code>ab</code>. Or <code>%irc%</code> will find any referrers
+                with <code>irc</code> appearing anywhere in the name.
+              </span>
+            </ng-template>
 
             <!-- CANDIDATE OPPS -->
             <div class="col-md-4">
