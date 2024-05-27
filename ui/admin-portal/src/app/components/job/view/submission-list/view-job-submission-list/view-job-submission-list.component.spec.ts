@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ViewJobSubmissionListComponent } from './view-job-submission-list.component';
-import { Job } from '../../../../../model/job';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {ViewJobSubmissionListComponent } from './view-job-submission-list.component';
+import {Job} from '../../../../../model/job';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ShowCandidatesComponent} from "../../../../candidates/show/show-candidates.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder,FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {LocalStorageModule} from "angular-2-local-storage";
-import { DatePipe, TitleCasePipe} from "@angular/common";
+import {DatePipe,TitleCasePipe} from "@angular/common";
 import {ActivatedRoute} from "@angular/router";
 import {of} from "rxjs";
 import {SortedByComponent} from "../../../../util/sort/sorted-by.component";

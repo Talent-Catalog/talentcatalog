@@ -19,6 +19,7 @@ buildscript {
         isDev = System.properties['env'] == 'dev'
         javaTargetVersion = JavaVersion.VERSION_21
         lombokVersion = "1.18.30"
+        ext['spring-security.version']='5.8.12'
     }
     repositories {
         mavenCentral()
@@ -49,6 +50,10 @@ java {
 //- see https://stackoverflow.com/questions/13923766/gradle-buildscript-dependencies
 repositories {
     mavenCentral()
+}
+
+configurations.configureEach {
+    exclude group: "commons-logging", module: "commons-logging"
 }
 
 dependencies {
@@ -88,14 +93,13 @@ dependencies {
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk16', version: '1.45'
 // https://mvnrepository.com/artifact/com.slack.api/slack-api-client
     implementation group: 'com.slack.api', name: 'slack-api-client', version: '1.9.0'
-// https://mvnrepository.com/artifact/org.jdom/jdom2
-    implementation group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+    implementation("org.jdom:jdom2")
 // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
+//    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
     implementation('org.springframework.boot:spring-boot-starter-webflux')
 
     //See https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
@@ -129,14 +133,21 @@ dependencies {
     implementation("jakarta.activation:jakarta.activation-api:latest.release")
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
-    implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
+    implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
 
+    // Temp to update spring thymeleaf as indepdendent unit until all spring is done.
+    implementation("org.thymeleaf:thymeleaf-spring6:3.1.2.RELEASE")
+
+
     // Caching
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    // Testing
+    testImplementation("org.springframework.security:spring-security-test:5.8.12")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
@@ -166,4 +177,9 @@ bootJar {
     from(".") {
         include ".ebextensions/**"
     }
+}
+
+// Parameter flag required for SpringBoot3+ (Spring 6.1+)
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("-parameters")
 }

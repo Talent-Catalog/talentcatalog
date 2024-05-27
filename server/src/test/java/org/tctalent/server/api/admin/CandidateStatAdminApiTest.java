@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -121,6 +122,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getGenderStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -158,6 +160,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getRegistrationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -195,6 +198,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getRegistrationByOccupationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -232,6 +236,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getBirthYearStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -269,6 +274,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getLinkedInExistsStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -304,6 +310,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getLinkedInByRegistrationDateStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -341,6 +348,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getUnhcrRegistrationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -378,6 +386,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getUnhcrStatusStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -417,6 +426,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getNationalityStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -452,6 +462,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getSourceCountryStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -487,6 +498,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getStatusStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -528,6 +540,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getOccupationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -565,6 +578,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getOccupationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -602,6 +616,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getMaxEducationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -639,6 +654,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getLanguageStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -676,6 +692,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getReferrerStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -711,6 +728,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getSurveyStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -748,6 +766,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .willReturn(getSpokenLanguageLevelStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
