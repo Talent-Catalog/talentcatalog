@@ -20,7 +20,6 @@ import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {of} from "rxjs";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
