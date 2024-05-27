@@ -709,7 +709,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             // A next step always needs a due date
             final LocalDate requestDueDate = oppParams.getNextStepDueDate();
             if (requestDueDate != null) {
-                opp.setNextStepDueDate(oppParams.getNextStepDueDate());
+                opp.setNextStepDueDate(requestDueDate);
             }
 
             opp.setClosingComments(oppParams.getClosingComments());
