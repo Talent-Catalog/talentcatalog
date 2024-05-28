@@ -51,7 +51,7 @@ export class MockCandidate implements Candidate {
   user: any = { id: 1, username: "user123", email: "user@example.com" };
   candidateReviewStatusItems: any[] = [];
   migrationEducationMajor: any = { id: 1, name: "Computer Science" };
-  additionalInfo: string = "";
+  additionalInfo: string = "Additional Information about candidate";
   linkedInLink: string = "";
   candidateMessage: string = "";
   maxEducationLevel: any = { id: 1, name: "Bachelor's Degree" };
