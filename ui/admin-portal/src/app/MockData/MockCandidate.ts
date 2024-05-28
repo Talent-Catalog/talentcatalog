@@ -24,6 +24,9 @@ import {
   YesNoUnsure
 } from "../model/candidate";
 import {TaskAssignment} from "../model/task-assignment";
+import {MockUser} from "./MockUser";
+import {AttachmentType, CandidateAttachment} from "../model/candidate-attachment";
+import {UploadType} from "../model/task";
 
 export class MockCandidate implements Candidate {
 
@@ -84,7 +87,23 @@ export class MockCandidate implements Candidate {
   candidateExams: any[] = [
     { id: 1, exam: Exam.IELTSGen, score: "7.5", year: 2020 }
   ];
-  candidateAttachments?: any[];
+  candidateAttachments: CandidateAttachment[] = [
+    {
+      id: 1,
+      type: AttachmentType.file,
+      name: 'Attachment 1',
+      location: 'location1',
+      url: 'http://example.com/attachment1',
+      createdBy: new MockUser(),
+      createdDate: 1620000000000,
+      updatedBy: new MockUser(),
+      updatedDate: 1620000000000,
+      migrated: false,
+      cv: false,
+      uploadType: UploadType.cv,
+      fileType: 'pdf'
+    }
+  ];
   taskAssignments?: TaskAssignment[] = [];
   candidateOpportunities: any[] = [];
   candidateProperties?: any[];
