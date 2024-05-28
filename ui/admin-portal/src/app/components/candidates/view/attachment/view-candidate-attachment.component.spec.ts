@@ -16,16 +16,13 @@
 import {ViewCandidateAttachmentComponent} from "./view-candidate-attachment.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {of} from "rxjs";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {AttachmentType, CandidateAttachment} from "../../../../model/candidate-attachment";
 import {MockUser} from "../../../../MockData/MockUser";
-import {UploadType} from "../../../../model/task";
 import {UpdatedByComponent} from "../../../util/user/updated-by/updated-by.component";
-import {CreatedByComponent} from "../../../util/user/created-by/created-by.component";
 import {ShareableDocsComponent} from "../shareable-docs/shareable-docs.component";
 import {UserPipe} from "../../../util/user/user.pipe";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -37,7 +34,6 @@ fdescribe('ViewCandidateAttachmentComponent', () => {
   let fb: FormBuilder;
 
   const mockCandidate = new MockCandidate();
-  const mockUser = new MockUser();
   beforeEach(async () => {
     const spy = jasmine.createSpyObj('CandidateAttachmentService', ['searchPaged']);
 
