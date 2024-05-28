@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.tctalent.server.repository.db.PredicateUtil.addOrPredicates;
+
 import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,17 +132,18 @@ public class JobSpecification {
                             //or that are unpublished.
                             //ie The user might want to show jobs which are active OR closed OR
                             //unpublished
-                            Predicate disjunction = builder.disjunction();
-                            disjunction.getExpressions().add(activePredicate);
+                            List<Predicate> disjunctionPredicates = new ArrayList<>();
+                            disjunctionPredicates.add(activePredicate);
                             if (showClosed) {
-                                disjunction.getExpressions().add(
+                                disjunctionPredicates.add(
                                     builder.equal(job.get("closed"), true));
                             }
                             if (showUnpublished) {
-                                disjunction.getExpressions().add(
+                                disjunctionPredicates.add(
                                     builder.isNull(job.get("publishedDate")));
                             }
-                            predicates.add(disjunction);
+
+                            predicates = addOrPredicates(builder, predicates, disjunctionPredicates);
                         } else {
                             predicates.add(activePredicate);
                         }
@@ -183,15 +186,15 @@ public class JobSpecification {
             }
 
             // (starred OR owned)
-            Predicate ors = builder.disjunction();
+            List<Predicate> ors = new ArrayList<>();
 
             //If owned by this user (ie by logged in user)
             if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
                 if (loggedInUser != null) {
-                    ors.getExpressions().add(
+                    ors.add(
                         builder.equal(job.get("createdBy"), loggedInUser.getId())
                     );
-                    ors.getExpressions().add(
+                    ors.add(
                         builder.equal(job.get("contactUser"), loggedInUser.getId())
                     );
                 }
@@ -204,7 +207,7 @@ public class JobSpecification {
                     if (loggedInUserPartner != null) {
                         Join<Object, Object> owner = job.join("createdBy");
                         Join<Object, Object> partner = owner.join("partner");
-                        ors.getExpressions().add(
+                        ors.add(
                             builder.equal(partner.get("id"), loggedInUserPartner.getId())
                         );
                     }
@@ -215,14 +218,14 @@ public class JobSpecification {
             if (request.getStarred() != null && request.getStarred()) {
                 if (loggedInUser != null) {
                     Join<Object, Object> users = job.join("starringUsers");
-                    ors.getExpressions().add(
+                    ors.add(
                         builder.equal(users.get("id"), loggedInUser.getId())
                     );
                 }
             }
 
-            if (!ors.getExpressions().isEmpty()) {
-                predicates.add(ors);
+            if (!ors.isEmpty()) {
+                predicates.addAll(ors);
             }
 
         return builder.and(predicates.toArray(new Predicate[0]));

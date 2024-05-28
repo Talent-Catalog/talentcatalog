@@ -16,6 +16,9 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.tctalent.server.repository.db.PredicateUtil.addOrPredicates;
+import static org.tctalent.server.repository.db.PredicateUtil.createAndPredicate;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -105,10 +108,10 @@ public class SavedSearchSpecification {
             }
 
             // (shared OR owned OR global)
-            Predicate ors = builder.disjunction();
+            List<Predicate> ors = new ArrayList<>();
 
             if (request.getGlobal() != null && request.getGlobal()) {
-                ors.getExpressions().add(
+                ors.add(
                         builder.equal(savedSearch.get("global"), request.getGlobal())
                 );
             }
@@ -122,7 +125,7 @@ public class SavedSearchSpecification {
                         for (SavedSearch sharedSearch : sharedSearches) {
                             sharedIDs.add(sharedSearch.getId());
                         }
-                        ors.getExpressions().add(
+                        ors.add(
                                 savedSearch.get("id").in( sharedIDs )
                         );
                     }
@@ -132,17 +135,15 @@ public class SavedSearchSpecification {
             //If owned by this user (ie by logged in user)
             if (request.getOwned() != null && request.getOwned()) {
                 if (loggedInUser != null) {
-                    ors.getExpressions().add(
+                    ors.add(
                          builder.equal(savedSearch.get("createdBy"), loggedInUser)
                     );
                 }
             }
 
-            if (ors.getExpressions().size() != 0) {
-                predicates.add(ors);
-            }
+            predicates = addOrPredicates(builder, predicates, ors);
 
-            return builder.and(predicates.toArray(new Predicate[0]));
+            return createAndPredicate(builder, predicates);
         };
     }
 
