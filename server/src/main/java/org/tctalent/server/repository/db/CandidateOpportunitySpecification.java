@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.tctalent.server.repository.db.PredicateUtil.addOrPredicates;
+
 import io.jsonwebtoken.lang.Collections;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -227,7 +229,7 @@ public class CandidateOpportunitySpecification {
                                         //the source contact for.
                                         //  or (if I am the default partner contact)
                                         //Nobody else is nominated as the contact, so use me
-                                        Predicate ors = builder.disjunction();
+                                        List<Predicate> ors = new ArrayList<>();
 
                                         Long partnerId = loggedInUserPartner.getId();
                                         Long userId = loggedInUser.getId();
@@ -244,7 +246,7 @@ public class CandidateOpportunitySpecification {
                                         );
                                         //Get the opp's jobOpp and check whether it is one of the above jobs
                                         Join<Object, Object> jobOpp = opp.join("jobOpp");
-                                        ors.getExpressions().add(
+                                        ors.add(
                                             builder.in(jobOpp).value(usersJobs)
                                         );
 
@@ -266,13 +268,10 @@ public class CandidateOpportunitySpecification {
                                                     builder.equal(pjrc.get("job").get("id"), jobOpp.get("id"))
                                                 )
                                             );
-                                            ors.getExpressions().add(builder.isNull(contact));
+                                            ors.add(builder.isNull(contact));
                                         }
 
-                                        //Only add ors if we have some
-                                        if (!ors.getExpressions().isEmpty()) {
-                                            predicates.add(ors);
-                                        }
+                                        predicates = addOrPredicates(builder, predicates, ors);
                                     }
                                 }
                             }

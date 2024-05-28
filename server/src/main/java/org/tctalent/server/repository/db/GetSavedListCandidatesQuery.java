@@ -17,7 +17,9 @@
 package org.tctalent.server.repository.db;
 
 import static org.tctalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
+import static org.tctalent.server.repository.db.PredicateUtil.createAndPredicate;
 
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -106,10 +108,10 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         Subquery<Candidate> sq = query.subquery(Candidate.class);
         Root<CandidateSavedList> csl = sq.from(CandidateSavedList.class);
 
-        Predicate conjunction = cb.conjunction();
+        List<Predicate> conjunctions = new ArrayList<>();
 
         //Start with the basic candidate in list predicate
-        conjunction.getExpressions().add(
+        conjunctions.add(
             cb.equal(csl.get("savedList").get("id"), savedList.getId())
         );
 
@@ -119,7 +121,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
             String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
 
             //Add predicate where the keyword matches any of the various fields
-            conjunction.getExpressions().add(
+            conjunctions.add(
                 cb.or(
                     cb.like(cb.lower(candidate.get("candidateNumber")), likeMatchTerm),
                     cb.like(cb.lower(candidate.get("user").get("firstName")), likeMatchTerm),
@@ -142,12 +144,12 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
             //for the job.
             Join<Candidate, CandidateOpportunity> opp =
                 candidate.join("candidateOpportunities", JoinType.LEFT);
-            conjunction.getExpressions().add(
+            conjunctions.add(
                 cb.equal(opp.get("jobOpp").get("id"), sfJobOpp.getId())
             );
             if (request.getShowClosedOpps() == null || !request.getShowClosedOpps()) {
                 //ShowClosedOpps is not true - so only select opps that are won or open (ie closed = true)
-                conjunction.getExpressions().add(
+                conjunctions.add(
                     cb.or(
                         cb.equal(opp.get("closed"), false),
                         cb.equal(opp.get("won"), true)
@@ -157,7 +159,8 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         }
 
         //Now create subquery
-        sq.select(csl.get("candidate")).where(conjunction);
+        Predicate wherePredicate = createAndPredicate(cb, conjunctions);
+        sq.select(csl.get("candidate")).where(wherePredicate);
 
         //And the candidate must apear in the subquery
         return cb.in(candidate).value(sq);

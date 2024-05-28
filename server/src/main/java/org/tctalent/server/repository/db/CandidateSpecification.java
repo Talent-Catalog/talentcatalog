@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.tctalent.server.repository.db.PredicateUtil.createOrPredicate;
+
 import io.jsonwebtoken.lang.Collections;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -426,14 +428,14 @@ public class CandidateSpecification {
                    - Plus possible other where clauses - eg "and closed = false"
                 */
                 //This "conjunction predicate" will AND together all the where clauses we add to it.
-                Predicate oppsWhereClauses = builder.conjunction();
+                List<Predicate> oppsWhereClauses = new ArrayList<>();
 
                 //Create the Select subquery which will return the opportunity count as a Long
                 Subquery<Long> sq = query.subquery(Long.class);
                 Root<CandidateOpportunity> opp = sq.from(CandidateOpportunity.class);
 
                 //This where clause is always there: candidate_id = candidate.id
-                oppsWhereClauses.getExpressions().add(
+                oppsWhereClauses.add(
                     builder.equal(opp.get("candidate").get("id"), candidate.get("id")));
 
                 boolean countMustBeNonZero = true;
@@ -447,7 +449,7 @@ public class CandidateSpecification {
                     if (closedOpps != null) {
                         boolean closedClauseValue = closedOpps;
                         //Add the where clause "closed = true" or "closed = false"
-                        oppsWhereClauses.getExpressions().add(
+                        oppsWhereClauses.add(
                             builder.equal(opp.get("closed"), closedClauseValue));
                     }
                     if (relocatedOpps != null) {
@@ -458,13 +460,14 @@ public class CandidateSpecification {
                         Predicate relocatedPredicate = relocatedOpps ?
                             builder.greaterThanOrEqualTo(opp.get("stageOrder"), relocatedStageOrder) :
                             builder.lessThan(opp.get("stageOrder"), relocatedStageOrder);
-                        oppsWhereClauses.getExpressions().add(relocatedPredicate);
+                        oppsWhereClauses.add(relocatedPredicate);
                     }
                 }
 
                 //Do the subquery select - ie do the opportunity count, by "and-ing" together all
                 //the where clauses we have added to oppsConjunction
-                sq.select(builder.count(opp)).where(oppsWhereClauses);
+                Predicate wherePredicate = createOrPredicate(builder, oppsWhereClauses);
+                sq.select(builder.count(opp)).where(wherePredicate);
 
                 predicates.add(
                     //Check for zero or non-zero opportunity count depending on the above logic.
