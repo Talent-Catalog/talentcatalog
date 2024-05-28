@@ -12,12 +12,12 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockUser} from "../../../../MockData/MockUser";
 import {MockJob} from "../../../../MockData/MockJob";
-import {RouterLinkDirectiveStub} from "../submission-list/view-job-submission-list/view-job-submission-list.component.spec";
 import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.component";
 import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.component";
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
 import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 // Mock isStarredByMe function
 const isStarredByMe = (starringUsers: any[], authService: AuthenticationService) => {
   const loggedInUser = authService.getLoggedInUser();
@@ -43,7 +43,7 @@ fdescribe('ViewJobComponent', () => {
 
     await TestBed.configureTestingModule({
       imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
-      declarations: [ViewJobComponent,RouterLinkDirectiveStub,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
+      declarations: [ViewJobComponent,RouterLinkStubDirective,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
       providers: [
         FormBuilder,
         { provide: NgbModal, useValue: {} },

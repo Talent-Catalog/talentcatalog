@@ -1,31 +1,25 @@
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import { ReactiveFormsModule, FormBuilder, FormsModule } from '@angular/forms';
-import { NewJobComponent } from './new-job.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NgbPaginationModule } from "@ng-bootstrap/ng-bootstrap";
-import { LocalStorageModule } from "angular-2-local-storage";
-import { NgSelectModule } from "@ng-select/ng-select";
-import { JobService } from '../../../services/job.service';
- import { SavedListService } from '../../../services/saved-list.service';
-import { SlackService } from '../../../services/slack.service';
- import { of} from 'rxjs';
+import {ReactiveFormsModule, FormBuilder, FormsModule} from '@angular/forms';
+import {NewJobComponent} from './new-job.component';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {JobService} from '../../../services/job.service';
+ import {SavedListService} from '../../../services/saved-list.service';
+import {SlackService} from '../../../services/slack.service';
+ import {of} from 'rxjs';
 import {UpdateJobRequest} from "../../../model/job";
 import {Progress} from "../../../model/base";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {Router} from "@angular/router";
-import { Directive, Input} from "@angular/core";
 import {Location} from "@angular/common";
 import {MockJob} from "../../../MockData/MockJob";
 import {MockEmployer} from "../../../MockData/MockEmployer";
 import {MockSavedList} from "../../../MockData/MockSavedList";
+import {RouterLinkStubDirective} from "../../login/login.component.spec";
 
 
- @Directive({
-  selector: '[routerLink]'
-})
-export class RouterLinkDirectiveStub {
-  @Input('routerLink') linkParams: any;
- }
 fdescribe('NewJobComponent', () => {
   let component: NewJobComponent;
   let fixture: ComponentFixture<NewJobComponent>;
@@ -58,7 +52,7 @@ fdescribe('NewJobComponent', () => {
       router
      );
     TestBed.configureTestingModule({
-      declarations: [NewJobComponent,RouterLinkDirectiveStub],
+      declarations: [NewJobComponent,RouterLinkStubDirective],
       imports: [
         ReactiveFormsModule,
         HttpClientTestingModule,
