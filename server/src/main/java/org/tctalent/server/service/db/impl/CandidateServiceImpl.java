@@ -692,9 +692,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate updateCandidateSalesforceLink(Candidate candidate, String sfLink) {
+    public void updateCandidateSalesforceLink(Candidate candidate, String sfLink) {
         candidate.setSflink(sfLink);
-        return save(candidate, false);
+        save(candidate, false);
     }
 
     /**

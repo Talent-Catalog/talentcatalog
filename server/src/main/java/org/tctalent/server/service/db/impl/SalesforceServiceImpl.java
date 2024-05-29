@@ -1493,12 +1493,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .findAny()
                 .orElse(null);
             if (languageToCheck != null) {
-                String languageSpeakingLevel = String.valueOf(languageToCheck.getSpokenLevel().getName());
-                return languageSpeakingLevel;
+                return languageToCheck.getSpokenLevel() == null ? null :
+                    String.valueOf(languageToCheck.getSpokenLevel().getName());
             } else {
                 return null;
             }
-
         }
 
         /**
