@@ -26,7 +26,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {of, throwError} from "rxjs";
 
-fdescribe('EditCandidateAttachmentComponent', () => {
+describe('EditCandidateAttachmentComponent', () => {
   let component: EditCandidateAttachmentComponent;
   let fixture: ComponentFixture<EditCandidateAttachmentComponent>;
   let candidateAttachmentServiceSpy: jasmine.SpyObj<CandidateAttachmentService>;
