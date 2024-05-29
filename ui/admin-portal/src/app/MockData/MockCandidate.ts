@@ -29,6 +29,7 @@ import {AttachmentType, CandidateAttachment} from "../model/candidate-attachment
 import {UploadType} from "../model/task";
 import {CandidateEducation} from "../model/candidate-education";
 import {MockJob} from "./MockJob";
+import {CandidateLanguage} from "../model/candidate-language";
 
 export class MockCandidate implements Candidate {
 
@@ -140,7 +141,30 @@ export class MockCandidate implements Candidate {
     },
   ];
   candidateJobExperiences?: any[];
-  candidateLanguages?: any[];
+  candidateLanguages?: CandidateLanguage[] = [
+    {
+      id: 1,
+      candidate: {id:1} as Candidate,
+      language: {
+        id: 1,
+        name: "English",
+        status: "Active"
+      },
+      spokenLevel: {
+        id: 1,
+        name: "Fluent",
+        level: 3,
+        status: "Active"
+      },
+      writtenLevel: {
+        id: 2,
+        name: "Advanced",
+        level: 1,
+        status: "Active"
+      },
+      migrationLanguage: "French"
+    }
+  ];
   candidateOccupations?: any[];
 
   constructor() {}
