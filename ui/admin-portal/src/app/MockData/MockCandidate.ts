@@ -51,7 +51,7 @@ export class MockCandidate implements Candidate {
   unhcrConsent: YesNo = YesNo.Yes;
   unrwaRegistered: YesNoUnsure = YesNoUnsure.No;
   unrwaNumber: string = "";
-  user: any = { id: 1, username: "user123", email: "user@example.com" };
+  user: any = new MockUser();
   candidateReviewStatusItems: any[] = [];
   migrationEducationMajor: any = { id: 1, name: "Computer Science" };
   additionalInfo: string = "Additional Information about candidate";
