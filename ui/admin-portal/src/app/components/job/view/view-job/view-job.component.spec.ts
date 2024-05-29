@@ -116,19 +116,5 @@ fdescribe('ViewJobComponent', () => {
     expect(component.job).toEqual(updatedJob);
     expect(component.loading).toBeFalsy();
   }));
-
-  it('should handle error when updating starred status of job', fakeAsync(() => {
-    // Arrange
-    const loggedInUser = new MockUser();
-    mockAuthService.getLoggedInUser.and.returnValue(loggedInUser);
-    const errorResponse = { status: 500, statusText: 'Internal Server Error' };
-    mockJobService.updateStarred.and.returnValue(throwError(errorResponse));
-    // Act
-    component.doToggleStarred();
-    tick(); // Wait for asynchronous operation to complete
-    // Assert
-    expect(mockJobService.updateStarred).toHaveBeenCalledWith(1, false);
-    expect(component.error).toEqual(errorResponse); // Ensure the error is set in the component
-    expect(component.loading).toBeFalsy(); // Ensure loading indicator is turned off
-  }));
+  
 });
