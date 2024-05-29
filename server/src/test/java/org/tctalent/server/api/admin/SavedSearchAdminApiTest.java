@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -173,6 +174,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token"))
 
         .andExpect(status().isOk())
@@ -206,6 +208,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedSearchList);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+        .with(csrf())
         .header("Authorization", "Bearer " + "jwt-token")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request))
@@ -256,6 +259,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedSearchPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -361,6 +365,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedList);
 
     mockMvc.perform(put(BASE_PATH + SAVE_SELECTION_PATH + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -441,6 +446,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedList);
 
     mockMvc.perform(get(BASE_PATH + GET_SELECTION_COUNT_PATH + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -633,6 +639,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
   private void updateSavedSearchAndVerifyResponse(String path, String body) throws Exception {
     mockMvc.perform(put(BASE_PATH + path)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)
@@ -657,6 +664,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
   private void updateSavedSearch(String path, String body) throws Exception {
     mockMvc.perform(put(BASE_PATH + path + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)
@@ -690,6 +698,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
   private void createSavedSearchAndVerifyResponse(String path, String body) throws Exception {
     mockMvc.perform(post(path)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)

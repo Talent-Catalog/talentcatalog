@@ -24,6 +24,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -146,6 +147,7 @@ class AuthAdminApiTest extends ApiTestBase {
 
     private void doLoginAndVerifyResponse() throws Exception {
         mockMvc.perform(post(BASE_PATH + "/login")
+                .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest))
                         .accept(MediaType.APPLICATION_JSON))
@@ -195,6 +197,7 @@ class AuthAdminApiTest extends ApiTestBase {
 
     private void doLoginAndVerifyFails(String errorCode, String message) throws Exception {
         mockMvc.perform(post(BASE_PATH + "/login")
+                .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest))
                         .accept(MediaType.APPLICATION_JSON))
@@ -208,7 +211,8 @@ class AuthAdminApiTest extends ApiTestBase {
     @Test
     @DisplayName("logout succeeds")
     void logoutSucceeds() throws Exception {
-        mockMvc.perform(post(BASE_PATH + "/logout"))
+        mockMvc.perform(post(BASE_PATH + "/logout")
+                .with(csrf()))
                 .andExpect(status().isOk());
     }
 
@@ -218,7 +222,8 @@ class AuthAdminApiTest extends ApiTestBase {
         EncodedQrImage encodedQrImage = new EncodedQrImage("qr-code-image");
         given(userService.mfaSetup()).willReturn(encodedQrImage);
 
-        mockMvc.perform(post(BASE_PATH + "/mfa-setup"))
+        mockMvc.perform(post(BASE_PATH + "/mfa-setup")
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.base64Encoding", containsString("qr-code-image")));
     }
@@ -229,7 +234,8 @@ class AuthAdminApiTest extends ApiTestBase {
         given(userService.mfaSetup())
                 .willThrow(new ServiceException("qr_error", QR_CODE_GEN_EXCEPTION_MESSAGE));
 
-        mockMvc.perform(post(BASE_PATH + "/mfa-setup"))
+        mockMvc.perform(post(BASE_PATH + "/mfa-setup")
+                .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code", containsString(QR_CODE_GEN_ERROR_CODE)))
                 .andExpect(jsonPath("$.message", containsString(QR_CODE_GEN_EXCEPTION_MESSAGE)));
