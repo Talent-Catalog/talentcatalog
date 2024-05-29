@@ -27,6 +27,8 @@ import {TaskAssignment} from "../model/task-assignment";
 import {MockUser} from "./MockUser";
 import {AttachmentType, CandidateAttachment} from "../model/candidate-attachment";
 import {UploadType} from "../model/task";
+import {CandidateEducation} from "../model/candidate-education";
+import {MockJob} from "./MockJob";
 
 export class MockCandidate implements Candidate {
 
@@ -113,7 +115,30 @@ export class MockCandidate implements Candidate {
   fullIntakeCompletedBy: any = { id: 1, username: "admin", email: "admin@example.com" };
   fullIntakeCompletedDate: number = 19900101;
   candidateCertifications?: any[];
-  candidateEducations?: any[];
+  candidateEducations?: CandidateEducation[] = [
+    {
+      id: 1,
+      educationType: "Bachelor's Degree",
+      country: MockJob.country,
+      educationMajor: { id: 1, name: "Computer Science", status: "active" },
+      lengthOfCourseYears: 4,
+      institution: "University of Example",
+      courseName: "B.Sc. in Computer Science",
+      yearCompleted: "2012",
+      incomplete: false,
+    },
+    {
+      id: 2,
+      educationType: "Master's Degree",
+      country:  MockJob.country,
+      educationMajor: { id: 1, name: "Management", status: "active" },
+      lengthOfCourseYears: 2,
+      institution: "Institute of Example",
+      courseName: "M.Sc. in Software Engineering",
+      yearCompleted: "2014",
+      incomplete: false,
+    },
+  ];
   candidateJobExperiences?: any[];
   candidateLanguages?: any[];
   candidateOccupations?: any[];
