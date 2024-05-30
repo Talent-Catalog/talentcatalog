@@ -18,9 +18,6 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {Candidate} from "../../../../model/candidate";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {NgSelectModule} from "@ng-select/ng-select";
 import {By} from "@angular/platform-browser";
 import {
   EditCandidateMediaWillingnessComponent

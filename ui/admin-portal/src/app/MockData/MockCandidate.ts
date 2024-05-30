@@ -110,7 +110,7 @@ export class MockCandidate implements Candidate {
   taskAssignments?: TaskAssignment[] = [];
   candidateOpportunities: any[] = [];
   candidateProperties?: any[];
-  mediaWillingness?: 'Yes, open to media';
+  mediaWillingness?:string = 'Yes, open to media';
   miniIntakeCompletedBy: any = { id: 1, username: "admin", email: "admin@example.com" };
   miniIntakeCompletedDate: number = 19900101;
   fullIntakeCompletedBy: any = { id: 1, username: "admin", email: "admin@example.com" };
