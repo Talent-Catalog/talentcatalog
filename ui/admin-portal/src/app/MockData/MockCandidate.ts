@@ -30,7 +30,8 @@ import {UploadType} from "../model/task";
 import {CandidateEducation} from "../model/candidate-education";
 import {MockJob} from "./MockJob";
 import {CandidateLanguage} from "../model/candidate-language";
-
+import {CandidateOccupation} from "../model/candidate-occupation";
+const mockUser = new MockUser();
 export class MockCandidate implements Candidate {
 
   id: number = 1;
@@ -54,7 +55,7 @@ export class MockCandidate implements Candidate {
   unhcrConsent: YesNo = YesNo.Yes;
   unrwaRegistered: YesNoUnsure = YesNoUnsure.No;
   unrwaNumber: string = "";
-  user: any = new MockUser();
+  user: any = mockUser;
   candidateReviewStatusItems: any[] = [];
   migrationEducationMajor: any = { id: 1, name: "Computer Science" };
   additionalInfo: string = "Additional Information about candidate";
@@ -97,9 +98,9 @@ export class MockCandidate implements Candidate {
       name: 'Attachment 1',
       location: 'location1',
       url: 'http://example.com/attachment1',
-      createdBy: new MockUser(),
+      createdBy: mockUser,
       createdDate: 1620000000000,
-      updatedBy: new MockUser(),
+      updatedBy: mockUser,
       updatedDate: 1620000000000,
       migrated: false,
       cv: false,
@@ -165,7 +166,39 @@ export class MockCandidate implements Candidate {
       migrationLanguage: "French"
     }
   ];
-  candidateOccupations?: any[];
+  candidateOccupations: CandidateOccupation[] = [
+    {
+      id: 1,
+      occupation: {
+        id: 1,
+        name: "Software Engineer",
+        isco08Code: "1234",
+        status: "active"
+      },
+      yearsExperience: 5,
+      migrationOccupation: "Software Developer",
+      createdBy: mockUser,
+      createdDate: 2023,
+      updatedBy: mockUser,
+      updatedDate: 2024
+    },
+    {
+      id: 2,
+      occupation: {
+        id: 2,
+        name: "Data Scientist",
+        isco08Code: "5678",
+        status: "active"
+      },
+      yearsExperience: 3,
+      migrationOccupation: "Data Analyst",
+      createdBy: mockUser,
+      createdDate: 2023,
+      updatedBy: mockUser,
+      updatedDate: 2024
+    }
+  ];
+
 
   constructor() {}
 }
