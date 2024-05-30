@@ -595,6 +595,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     // If stage is changing to CLOSED (e.g. removed from submission list) automate removal post.
                     if (stage.isClosed()) {
                         publishRemovedFromSubmissionListPosts(opp, stage);
+                    // If a stage is changed to ACCEPTANCE (job offer is accepted)
+                    } else if (stage.equals(CandidateOpportunityStage.acceptance)) {
+                        publishOppAcceptedPosts(opp);
                     } else {
                         // If non closing stage change, automate post to JobCreatorSourcePartner chat
                         // Find the relevant job chat
@@ -912,6 +915,41 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
         //publish chat post
         chatPostService.publishChatPost(jcspChatPost);
+    }
+
+    private void publishOppAcceptedPosts(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        String candidateName = candidate.getUser().getFirstName() + " " + candidate.getUser().getLastName();
+        Post autoPostAcceptedJobOffer = new Post();
+        autoPostAcceptedJobOffer.setContent("The candidate " + candidateName + " has accepted the job offer from '"
+                + opp.getJobOpp().getName() + " and is now a member of the Pathway Club.");
+
+        // AUTO CHAT TO PROSPECT CHAT
+        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+        // Create the chat post
+        ChatPost prospectChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, prospectChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(prospectChatPostAccepted);
+
+        // AUTO CHAT TO RECRUITING CHAT
+        JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
+                candidate.getUser().getPartner(), candidate);
+        // Create the chat post
+        ChatPost recruitingChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, recruitingChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(recruitingChatPostAccepted);
+
+        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
+                candidate.getUser().getPartner(), null);
+        // Create the chat post
+        ChatPost jcspChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, jcspChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(jcspChatPostAccepted);
     }
 
 }
