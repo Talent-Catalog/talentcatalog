@@ -45,6 +45,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -261,6 +263,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
     private final ElasticsearchService elasticsearchService;
+    private final EntityManager entityManager;
 
     @Transactional
     @Override
@@ -692,9 +695,13 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public void updateCandidateSalesforceLink(Candidate candidate, String sfLink) {
-        candidate.setSflink(sfLink);
+    public long updateCandidateSalesforceLink(Candidate candidate, String sflink) {
+        candidate.setSflink(sflink);
+        Instant startSave = Instant.now();
         save(candidate, false);
+        Instant endSave = Instant.now();
+        long timeElapsedForSave = Duration.between(startSave, endSave).toMillis();
+        return timeElapsedForSave;
     }
 
     /**
@@ -2756,6 +2763,7 @@ public class CandidateServiceImpl implements CandidateService {
         log.info("Initiating TC-SF candidate sync");
 
         Pageable pageable = PageRequest.of(
+            // TODO: firstPageIndex can't be a parameter if I use the current loop/offset
             firstPageIndex,
             pageSize,
             Sort.by("id").ascending()
@@ -2766,8 +2774,10 @@ public class CandidateServiceImpl implements CandidateService {
             EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
                 CandidateStatus.incomplete));
 
+        var highestId = 0L;
+
         Page<Candidate> candidatePage = candidateRepository
-            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
+            .findByStatusesOrSfLinkIsNotNull(statuses, pageable, highestId);
 
         log.info(candidatePage.getTotalElements() + " candidates meet the criteria");
 
@@ -2793,8 +2803,10 @@ public class CandidateServiceImpl implements CandidateService {
             Instant start = Instant.now();
             List<Candidate> candidateList = candidatePage.getContent();
             upsertCandidatesToSf(candidateList);
+            highestId = candidateList.getLast().getId();
+
             candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
-                statuses, candidatePage.nextPageable());
+                statuses, pageable, highestId);
             pagesProcessed++;
 
             Instant end = Instant.now();
@@ -2806,13 +2818,17 @@ public class CandidateServiceImpl implements CandidateService {
         Instant endOverall = Instant.now();
         Duration timeElapsedOverall = Duration.between(startOverall, endOverall);
 
-        log.info("Using these parameters it took " + timeElapsedOverall.toMinutes() +
+        log.info("With these parameters it took " + timeElapsedOverall.toMinutes() +
             " minutes to upsert " + (noOfPagesToProcess * pageSize) + " candidates.");
     }
 
     @Override
     public void upsertCandidatesToSf(List<Candidate> orderedCandidates)
         throws SalesforceException, WebClientException {
+        // For measuring and logging durations
+        long saveDuration = 0;
+        int candidatesSaved = 0;
+
         Instant start = Instant.now();
         // Update Salesforce contacts
         List<Contact> contacts =
@@ -2825,14 +2841,19 @@ public class CandidateServiceImpl implements CandidateService {
         // Update the sfLink in all implicated TC candidate records
         start = Instant.now();
         int nCandidates = orderedCandidates.size();
+
         for (int i = 0; i < nCandidates; i++) {
             Contact contact = contacts.get(i);
             if (contact.getId() != null) {
                 Candidate candidate = orderedCandidates.get(i);
-                updateCandidateSalesforceLink(candidate,
+                saveDuration += updateCandidateSalesforceLink(candidate,
                     contact.getUrl(salesforceConfig.getBaseLightningUrl()));
+                candidatesSaved ++;
             }
         }
+        log.info("DB saving for " + candidatesSaved + " candidates took " + saveDuration +
+            " milliseconds, or " + (saveDuration / 1000) + " seconds, for an average of " +
+            (saveDuration / candidatesSaved) + " milliseconds per candidate.");
         end = Instant.now();
         timeElapsed = Duration.between(start, end);
         log.info("Updating all the sfLinks took " + timeElapsed.toSeconds() +  " seconds.");

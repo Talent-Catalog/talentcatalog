@@ -146,7 +146,7 @@ public interface CandidateService {
 
     Candidate updateCandidateRegistration(long id, UpdateCandidateRegistrationRequest request);
 
-    void updateCandidateSalesforceLink(Candidate candidate, String sfLink);
+    long updateCandidateSalesforceLink(Candidate candidate, String sfLink);
 
     Candidate updateCandidateStatus(Candidate candidate, UpdateCandidateStatusInfo info);
 

@@ -116,10 +116,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * @return candidate list
      */
     @Query(" select c from Candidate c "
-            + " where c.status in (:statuses)"
-            + " or c.sflink is not null")
+            + " where (c.status in (:statuses)"
+            + " or c.sflink is not null)"
+            + " and c.id >:idOffset")
     Page<Candidate> findByStatusesOrSfLinkIsNotNull(
-        @Param("statuses") List<CandidateStatus> statuses, Pageable pageable);
+        @Param("statuses") List<CandidateStatus> statuses, Pageable pageable, Long idOffset);
 
 
     @Query("select c from Candidate c "
