@@ -17,9 +17,8 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.tctalent.server.service.db.es.TCElasticHelpers.getTermQuery;
-import static org.tctalent.server.service.db.es.TCElasticHelpers.getTermsQuery;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.ChildScoreMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
@@ -1000,7 +999,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (otherLanguage.isPresent()) {
 
                 BoolQuery.Builder nestedQueryBuilder = QueryBuilders.bool().must(
-                    getTermQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
+                    QueryBuilders.term()
+                        .field("otherLanguages.name.keyword")
+                            .value(otherLanguage.get().getName()).build()._toQuery());
 
                 Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
                 if (minOtherSpokenLevel != null) {
@@ -1167,14 +1168,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         String referrer = request.getRegoReferrerParam();
         if (referrer != null && !referrer.isEmpty()) {
             boolQueryBuilder = boolQueryBuilder.filter(
-                getTermQuery("regoReferrerParam.keyword", referrer));
+                QueryBuilders.term()
+                    .field("regoReferrerParam.keyword")
+                    .value(referrer)
+                    .build()._toQuery());
         }
 
         //Gender
         Gender gender = request.getGender();
         if (gender != null) {
             boolQueryBuilder = boolQueryBuilder.filter(
-                getTermQuery("gender", gender.name()));
+                QueryBuilders.term()
+                    .field("gender")
+                    .value(gender.name())
+                    .build()._toQuery());
         }
 
         //Education Level (minimum)
@@ -1331,9 +1338,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (nValues > 0) {
             Query queryBuilder;
             if (nValues == 1) {
-                queryBuilder = getTermQuery(field, values.getFirst());
+                queryBuilder = QueryBuilders.term().field(field).value(FieldValue.of(values.getFirst())).build()
+                    ._toQuery();
             } else {
-                queryBuilder = getTermsQuery(field, values);
+                queryBuilder = QueryBuilders.terms(tt -> tt
+                    .field(field)
+                    .terms(t -> t
+                        .value(values.stream()
+                            .map(FieldValue::of)
+                            .toList())));
             }
             if (searchType == SearchType.not) {
                 builder = builder.mustNot(queryBuilder);
