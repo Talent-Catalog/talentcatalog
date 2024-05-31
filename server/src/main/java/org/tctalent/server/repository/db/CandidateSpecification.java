@@ -287,7 +287,7 @@ public class CandidateSpecification {
             // SURVEY TYPE SEARCH
             if (!Collections.isEmpty(request.getSurveyTypeIds())) {
                 predicates.add(
-                        builder.isTrue(candidate.get("surveyType").in(request.getSurveyTypeIds()))
+                        builder.isTrue(candidate.get("surveyType").get("id").in(request.getSurveyTypeIds()))
                 );
             }
 

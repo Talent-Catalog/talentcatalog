@@ -113,7 +113,7 @@ public class JobSpecification {
             // DESTINATION
             List<Long> destinationIds = request.getDestinationIds();
             if (!Collections.isEmpty(destinationIds)) {
-                predicates.add(builder.isTrue(job.get("country").in(destinationIds)));
+                predicates.add(builder.isTrue(job.get("country").get("id").in(destinationIds)));
             }
 
             //ACTIVE STAGES (ignored if doing stage filtering)
