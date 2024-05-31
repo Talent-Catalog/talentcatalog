@@ -91,6 +91,8 @@ public class CandidateEs {
 
     @Id
     private String id;
+    private String externalId;
+    private String candidateNumber;
 
     @Field(type = FieldType.Text)
     private String additionalInfo;
@@ -139,6 +141,8 @@ public class CandidateEs {
      * required.
      */
     private String fullName;
+
+    private String email;
 
     @Field(type = FieldType.Text)
     private List<String> jobExperiences;
@@ -252,6 +256,10 @@ public class CandidateEs {
         this.lastName = candidate.getUser() == null ? null
             : candidate.getUser().getLastName();
         this.setFullName();
+        this.email = candidate.getUser() == null ? null
+            : candidate.getUser().getEmail();
+        this.externalId = candidate.getExternalId();
+        this.candidateNumber = candidate.getCandidateNumber();
 
         this.gender = candidate.getGender();
         this.country = candidate.getCountry() == null ? null

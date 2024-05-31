@@ -154,41 +154,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
                                          Pageable pageable);
 
-    /**
-     * Note that we need to pass in a CandidateStatus.deleted constant in the
-     * "exclude" parameter because I haven't been able to just put
-     * CanadidateStatus.deleted constant directly into the query.
-     * Theoretically the fully qualified name should work eg
-     * " and c.status <> db.model.org.tctalent.server.CandidateStatus.deleted"
-     * See https://stackoverflow.com/questions/8217144/problems-with-making-a-query-when-using-enum-in-entity
-     * but Hibernate rejects that at run time with the following error:
-     * org.hibernate.hql.internal.ast.QuerySyntaxException: Invalid path
-     * - JC
-     */
-    @Query(" select distinct c from Candidate c "
-            + " where c.candidateNumber like :candidateNumber "
-            + excludeDeleted
-            + sourceCountryRestriction)
-    Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
-                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                          Pageable pageable);
-
-    @Query(" select distinct c from Candidate c left join c.user u "
-            + " where (lower(c.phone) like lower(:emailOrPhone) "
-            + " or lower(u.email) like lower(:emailOrPhone)) "
-            + excludeDeleted
-            + sourceCountryRestriction)
-    Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
-                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                          Pageable pageable);
-
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.externalId) like lower(:externalId) "
-            + sourceCountryRestriction)
-    Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
-                                              @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                              Pageable pageable);
-
     @Query(" select c from Candidate c "
             + " join c.user u "
             + " where c.id = :id "

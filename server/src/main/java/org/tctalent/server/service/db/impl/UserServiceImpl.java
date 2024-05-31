@@ -236,15 +236,8 @@ public class UserServiceImpl implements UserService {
                 }
             }
         } else {
-            //If user does not already have a source partner, assign one
-            if (currentPartner == null) {
-                if (creatingUser == null) {
-                    //If we do not know who created this user, set up a default partner
-                    newSourcePartner = partnerService.getDefaultSourcePartner();
-                } else {
-                    newSourcePartner = creatingUser.getPartner();
-                }
-            }
+            //Throw an exception if no partner is specified
+            throw new InvalidRequestException("A partner must be specified.");
         }
         //If we have a new source partner, update it.
         if (newSourcePartner != null) {
