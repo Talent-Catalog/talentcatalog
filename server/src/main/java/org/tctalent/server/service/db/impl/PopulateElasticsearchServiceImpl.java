@@ -16,6 +16,9 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.time.Duration;
+import java.time.Instant;
+//import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +39,18 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateEsRepository candidateEsRepository;
+//    private final EntityManager entityManager;
 
     @Autowired
     public PopulateElasticsearchServiceImpl(
             CandidateRepository candidateRepository,
-            CandidateService candidateService, CandidateEsRepository candidateEsRepository) {
+            CandidateService candidateService, CandidateEsRepository candidateEsRepository
+        //            EntityManager entityManager
+    ) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateEsRepository = candidateEsRepository;
+//        this.entityManager = entityManager;
     }
 
     @Async
@@ -63,6 +70,8 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
 
         log.info("Loading candidates.");
 
+        Instant overallStart = Instant.now();
+
         String verb = createElastic ? "added" : "updated";
 
         final int pageSize = 20;
@@ -75,6 +84,7 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
         int startPage = fromPage != null ? fromPage : 0;
         Pageable page = PageRequest.of(startPage, pageSize, Sort.by("id"));
         do {
+            Instant start = Instant.now();
             nUpdated = candidateService.populateElasticCandidates(page, logTotal, createElastic);
             logTotal = false;
 
@@ -86,9 +96,16 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
                 log.info(count + " candidates (up to page " + (pageNum-1) + ") " + verb
                         + " to Elasticsearch");
             }
+            Instant end = Instant.now();
+            Duration timeElapsed = Duration.between(start, end);
+            log.info("Indexing page " + (pageNum - 1) + " took " + timeElapsed.toMillis() + " ms");
+//            entityManager.clear();
         } while (nUpdated > 0 && (toPage == null || page.getPageNumber() <= toPage));
 
         log.info("Done: " + count + " candidates " + verb + " to Elasticsearch");
+        Instant overallEnd = Instant.now();
+        Duration overallTimeElapsed = Duration.between(overallStart, overallEnd);
+        log.info("Overall the indexing took " + overallTimeElapsed.toMinutes() + " minutes.");
     }
 
     @Async
