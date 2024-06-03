@@ -34,8 +34,7 @@ fdescribe('CandidateJobsTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({}),
-      ],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
       declarations: [CandidateJobsTabComponent,ViewCandidateJobsComponent, CandidateOppsComponent]
     })
     .compileComponents();
