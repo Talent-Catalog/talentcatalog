@@ -26,12 +26,13 @@ import {
 import {TaskAssignment} from "../model/task-assignment";
 import {MockUser} from "./MockUser";
 import {AttachmentType, CandidateAttachment} from "../model/candidate-attachment";
-import {UploadType} from "../model/task";
+import {TaskType, UploadType} from "../model/task";
 import {CandidateEducation} from "../model/candidate-education";
 import {MockJob} from "./MockJob";
 import {CandidateLanguage} from "../model/candidate-language";
 import {CandidateOccupation} from "../model/candidate-occupation";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
+import {Status} from "../model/base";
 const mockUser = new MockUser();
 export class MockCandidate implements Candidate {
 
@@ -109,7 +110,77 @@ export class MockCandidate implements Candidate {
       fileType: 'pdf'
     }
   ];
-  taskAssignments?: TaskAssignment[] = [];
+  taskAssignments?: TaskAssignment[] = [
+    {
+      id: 1,
+      abandonedDate: null,
+      candidateNotes: '',
+      completedDate: null,
+      dueDate: new Date('2012-06-30'),
+      status: Status.active,
+      task: {
+        id: 1,
+        name: 'Submit CV',
+        daysToComplete: 7,
+        description: 'Submit your latest CV.',
+        displayName: 'CV Submission',
+        optional: false,
+        helpLink: 'http://example.com/cv-help',
+        taskType: TaskType.Upload,
+        uploadType: UploadType.cv,
+        uploadSubfolderName: 'cvs',
+        uploadableFileTypes: 'pdf,doc,docx',
+        candidateAnswerField: 'N/A'
+      },
+      answer: ''
+    },
+    {
+      id: 2,
+      abandonedDate: null,
+      candidateNotes: '',
+      completedDate: null,
+      dueDate: new Date('2024-06-25'),
+      status: Status.active,
+      task: {
+        id: 2,
+        name: 'Complete Questionnaire',
+        daysToComplete: 5,
+        description: 'Answer the provided questions.',
+        displayName: 'Questionnaire',
+        optional: false,
+        helpLink: 'http://example.com/questionnaire-help',
+        taskType: TaskType.Question,
+        uploadType: UploadType.other,
+        uploadSubfolderName: '',
+        uploadableFileTypes: '',
+        candidateAnswerField: 'Please answer the questions in the text box.'
+      },
+      answer: ''
+    },
+    {
+      id: 3,
+      abandonedDate: null,
+      candidateNotes: '',
+      completedDate: null,
+      dueDate: new Date('2024-07-05'),
+      status: Status.active,
+      task: {
+        id: 3,
+        name: 'Upload Passport',
+        daysToComplete: 10,
+        description: 'Upload a scan of your passport.',
+        displayName: 'Passport Upload',
+        optional: true,
+        helpLink: 'http://example.com/passport-help',
+        taskType: TaskType.Upload,
+        uploadType: UploadType.passport,
+        uploadSubfolderName: 'passports',
+        uploadableFileTypes: 'jpg,png,pdf',
+        candidateAnswerField: 'N/A'
+      },
+      answer: ''
+    }
+  ];
   candidateOpportunities: any[] = [];
   candidateProperties?: any[];
   mediaWillingness?:string = 'Yes, open to media';
