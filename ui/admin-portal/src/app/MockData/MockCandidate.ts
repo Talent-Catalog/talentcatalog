@@ -132,7 +132,7 @@ export class MockCandidate implements Candidate {
         uploadableFileTypes: 'pdf,doc,docx',
         candidateAnswerField: 'N/A'
       },
-      answer: ''
+      answer: 'Sample Answer'
     },
     {
       id: 2,
@@ -155,7 +155,7 @@ export class MockCandidate implements Candidate {
         uploadableFileTypes: '',
         candidateAnswerField: 'Please answer the questions in the text box.'
       },
-      answer: ''
+      answer: 'Sample Answer'
     },
     {
       id: 3,
@@ -178,7 +178,7 @@ export class MockCandidate implements Candidate {
         uploadableFileTypes: 'jpg,png,pdf',
         candidateAnswerField: 'N/A'
       },
-      answer: ''
+      answer: 'Sample Answer'
     }
   ];
   candidateOpportunities: any[] = [];
