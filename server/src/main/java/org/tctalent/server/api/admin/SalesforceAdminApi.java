@@ -65,6 +65,12 @@ public class SalesforceAdminApi {
       if (sfId != null) {
         opp = salesforceService.findOpportunity(sfId);
       }
+    } else {
+      throw new IllegalArgumentException("Please ensure that your URL points to a valid Salesforce "
+          + "opportunity and is the longer version containing the word 'Opportunity', which can be "
+          + "obtained by navigating to the record itself and copying from your browser's address "
+          + "bar, e.g.: "
+          + "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/006Uu000004qo4rIAA/view");
     }
     return opportunityDto().build(opp);
   }
