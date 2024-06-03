@@ -45,10 +45,14 @@ import {ConfirmContactComponent} from "../../../intake/confirm-contact/confirm-c
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {FixedInputComponent} from "../../../../util/intake/fixed-input/fixed-input.component";
 import {ExportPdfComponent} from "../../../../util/export-pdf/export-pdf.component";
-import {Country} from "../../../../../model/country";
 import {
   AvailImmediateReason,
-  CandidateCitizenship, CandidateExam, CandidateIntakeData, Exam,
+  CandidateCitizenship,
+  CandidateDestination,
+  CandidateExam,
+  CandidateIntakeData,
+  Exam,
+  FamilyRelations,
   HasPassport,
   YesNoUnsure
 } from "../../../../../model/candidate";
@@ -98,6 +102,41 @@ import {
   IeltsScoreValidationComponent
 } from "../../../../util/ielts-score-validation/ielts-score-validation.component";
 
+const mockCitizenship: CandidateCitizenship = {
+  id: 1,
+  nationality: MockJob.country,
+  hasPassport: HasPassport.ValidPassport,
+  passportExp: '02/03/2028',
+  notes: 'Note'
+}
+const mockCandidateExam: CandidateExam = {
+  id: 1,
+  exam: Exam.TOEFL,
+  otherExam: 'TOEFL',
+  score: '95',
+  year: 2022,
+  notes: 'Passed with high marks'
+};
+const mockCandidateDestination: CandidateDestination = {
+  id: 1,
+  country:MockJob.country,
+  interest: YesNoUnsure.Yes,
+  family: FamilyRelations.Child,
+  location:'USA',
+  notes:'SimpleNote'
+}
+export const mockCandidateIntakeData: CandidateIntakeData = {
+  asylumYear: '2023',
+  availImmediate: YesNoUnsure.Yes,
+  availImmediateJobOps: 'Some job opportunities',
+  availImmediateReason: AvailImmediateReason.Other,
+  availImmediateNotes: 'Some notes',
+  candidateCitizenships: [mockCitizenship],
+  candidateExams:[mockCandidateExam],
+  candidateDependants: [],
+  candidateDestinations:[mockCandidateDestination]
+  // Add more properties with predefined values here
+};
 fdescribe('CandidateIntakeTabComponent', () => {
   let component: CandidateIntakeTabComponent;
   let fixture: ComponentFixture<CandidateIntakeTabComponent>;
@@ -112,32 +151,7 @@ fdescribe('CandidateIntakeTabComponent', () => {
   let candidateExamServiceSpy: jasmine.SpyObj<CandidateExamService>;
   let candidateDependantServiceSpy: jasmine.SpyObj<CandidateDependantService>;
   const mockCandidate = new MockCandidate();
-  const mockCitizenship: CandidateCitizenship = {
-    id: 1,
-    nationality: MockJob.country,
-    hasPassport: HasPassport.ValidPassport,
-    passportExp: '02/03/2028',
-    notes: 'Note'
-  }
-  const mockCandidateExam: CandidateExam = {
-    id: 1,
-    exam: Exam.TOEFL,
-    otherExam: 'TOEFL',
-    score: '95',
-    year: 2022,
-    notes: 'Passed with high marks'
-  };
-  const mockCandidateIntakeData: CandidateIntakeData = {
-    asylumYear: '2023',
-    availImmediate: YesNoUnsure.Yes,
-    availImmediateJobOps: 'Some job opportunities',
-    availImmediateReason: AvailImmediateReason.Other,
-    availImmediateNotes: 'Some notes',
-    candidateCitizenships: [mockCitizenship],
-    candidateExams:[mockCandidateExam],
-    candidateDependants: [],
-    // Add more properties with predefined values here
-  };
+
   beforeEach(async () => {
     const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData']);
     const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTBBDestinations']);
