@@ -79,7 +79,7 @@ export class MockCandidate implements Candidate {
   listShareableDoc: any = { id: 4, filename: "list_document.pdf", url: "https://example.com/list_document.pdf" };
   shareableNotes: string = "";
   surveyType: any = { id: 1, name: "Survey" };
-  surveyComment: string = "";
+  surveyComment: string = "Referred by a friend";
   selected: boolean = false;
   createdDate: number = 19900101;
   updatedDate: number = 19900101;
