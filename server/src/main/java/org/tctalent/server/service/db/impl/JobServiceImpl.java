@@ -598,9 +598,33 @@ public class JobServiceImpl implements JobService {
             SavedList suggestedList = candidateSavedListService.copy(submissionList, request);
             job.setSuggestedList(suggestedList);
         }
+        // Send a message to the job chat
+        sendMessageToJobChat(JobChatType.JobCreatorAllSourcePartners, job, "💼 <b>A new job has been published!</b>");
 
         return salesforceJobOppRepository.save(job);
     }
+    private void sendMessageToJobChat(JobChatType chatType, SalesforceJobOpp job, String messageContent) {
+        // Get or create the job chat based on the provided chat type
+        JobChat jobChat = jobChatService.getOrCreateJobChat(chatType, job, null, null);
+
+        // Create the message post
+        String jobInfo = "<b>Job Name:</b> </br>" + job.getName() + "</br>"
+            + "<b> Job Creator: </b> </br>" + job.getJobCreator() + "</br>"
+            + "<b> Job Country: </b> </br>" + job.getCountry().getName() + "</br>"
+            // Add more job information fields as needed
+            + "</br>"; // Add a newline for readability
+        String fullMessageContent = messageContent + "</br>" + jobInfo; // Combine message content and job info
+
+        Post messagePost = new Post();
+        messagePost.setContent(fullMessageContent);
+
+        // Create the chat post
+        ChatPost chatPost = chatPostService.createPost(messagePost, jobChat, userService.getSystemAdminUser());
+
+        // Publish the chat post
+        chatPostService.publishChatPost(chatPost);
+    }
+
 
     @NonNull
     @Override

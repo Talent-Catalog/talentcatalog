@@ -14,28 +14,56 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {AvailImmediateComponent} from "./avail-immediate.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {CandidateService} from "../../../../services/candidate.service";
+import {AvailImmediateReason, YesNoUnsure} from "../../../../model/candidate";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-import {AvailImmediateComponent} from './avail-immediate.component';
-
-describe('AvailImmediateComponent', () => {
+fdescribe('AvailImmediateComponent', () => {
   let component: AvailImmediateComponent;
   let fixture: ComponentFixture<AvailImmediateComponent>;
+  let fb: FormBuilder;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AvailImmediateComponent ]
-    })
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AvailImmediateComponent, AutosaveStatusComponent],
+      imports: [HttpClientTestingModule, NgSelectModule,FormsModule,ReactiveFormsModule],
+      providers: [
+        FormBuilder,
+        { provide: CandidateService }
+      ]
+    }).compileComponents();
+
+    fb = TestBed.inject(FormBuilder);
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AvailImmediateComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    component.candidateIntakeData = {
+      availImmediate: YesNoUnsure.Yes,
+      availImmediateJobOps: 'Software Development',
+      availImmediateReason: AvailImmediateReason.Health,
+      availImmediateNotes: 'Some additional notes'
+    };
+    fixture.detectChanges(); // Trigger initial data binding
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should initialize the form correctly with the provided data', () => {
+    expect(component.form).toBeTruthy();
+    const availImmediateControl = component.form.get('availImmediate');
+    const availImmediateJobOpsControl = component.form.get('availImmediateJobOps');
+    const availImmediateReasonControl = component.form.get('availImmediateReason');
+    const availImmediateNotesControl = component.form.get('availImmediateNotes');
+
+    expect(availImmediateControl.value).toBe('Yes');
+    expect(availImmediateJobOpsControl.value).toBe('Software Development');
+    expect(availImmediateReasonControl.value).toBe(AvailImmediateReason.Health);
+    expect(availImmediateNotesControl.value).toBe('Some additional notes');
   });
 });

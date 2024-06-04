@@ -14,7 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -78,7 +87,7 @@ import {first} from "rxjs/operators";
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges {
+export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -254,6 +263,18 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       this.loading = false;
       this.error = error;
     });
+  }
+
+  // Stops Keyword Search tooltip from opening on keydown.enter in inputs
+  ngAfterViewInit() {
+    const inputs: NodeList = document.querySelectorAll('input')
+    inputs.forEach(input => {
+      input.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+      })
+    })
   }
 
   get simpleQueryString(): string {

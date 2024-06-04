@@ -13,29 +13,71 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {HostEntryLegallyComponent} from "./host-entry-legally.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {CandidateService} from "../../../../services/candidate.service";
+import {EnumOption} from "../../../../util/enum";
+import {YesNo} from "../../../../model/candidate";
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {HostEntryLegallyComponent} from './host-entry-legally.component';
-
-describe('HostEntryLegallyComponent', () => {
+fdescribe('HostEntryLegallyComponent', () => {
   let component: HostEntryLegallyComponent;
   let fixture: ComponentFixture<HostEntryLegallyComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ HostEntryLegallyComponent ]
-    })
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      declarations: [HostEntryLegallyComponent,AutosaveStatusComponent],
+      providers: [
+        FormBuilder,
+        { provide: CandidateService } // Provide the mock service
+      ]
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HostEntryLegallyComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+
+    component.candidateIntakeData = {
+      hostEntryLegally: YesNo.Yes
+    };
+    // Manually trigger ngOnInit
+    fixture.detectChanges(); // Trigger initial data binding
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize the form with candidate data', () => {
+    const expectedLegallyOption: EnumOption[] = [
+      { key: 'Yes', stringValue: 'Yes' },
+      { key: 'No', stringValue: 'No' }
+    ];
+
+    const expectedEnterLegally = YesNo.Yes; // Assuming default value for testing
+
+    expect(component.form.get('hostEntryLegally').value).toBe(expectedEnterLegally);
+    expect(component.hostEntryLegallyOptions).toEqual(expectedLegallyOption);
+  });
+
+  it('should display the notes textarea when "No" is selected', () => {
+    component.form.get('hostEntryLegally').setValue('No');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    const notesTextarea = compiled.querySelector('textarea');
+    expect(notesTextarea).toBeTruthy();
+  });
+
+  it('should not display the notes textarea when "Yes" is selected', () => {
+    component.form.get('hostEntryLegally').setValue('Yes');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    const notesTextarea = compiled.querySelector('textarea');
+    expect(notesTextarea).toBeNull();
   });
 });

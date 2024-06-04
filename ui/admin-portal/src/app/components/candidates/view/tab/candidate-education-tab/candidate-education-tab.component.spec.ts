@@ -13,29 +13,89 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CandidateEducationTabComponent} from './candidate-education-tab.component';
+import {Candidate} from "../../../../../model/candidate";
+import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {
+  ViewCandidateCertificationComponent
+} from "../../certification/view-candidate-certification.component";
+import {ViewCandidateEducationComponent} from "../../education/view-candidate-education.component";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {NgSelectModule} from "@ng-select/ng-select";
 
-describe('CandidateEligibilityTabComponent', () => {
+fdescribe('CandidateEducationTabComponent', () => {
   let component: CandidateEducationTabComponent;
   let fixture: ComponentFixture<CandidateEducationTabComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CandidateEducationTabComponent ]
+  const mockCandidate = new MockCandidate();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      declarations: [CandidateEducationTabComponent,ViewCandidateCertificationComponent,ViewCandidateEducationComponent]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CandidateEducationTabComponent);
     component = fixture.componentInstance;
+    component.candidate = mockCandidate;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should fetch candidate education information on initialization', () => {
+    const candidate: Candidate = mockCandidate; // Provide a sample candidate object for testing
+    component.candidate = candidate;
+
+    component.ngOnInit();
+    component.ngOnChanges({
+      candidate:
+        {
+          previousValue: null,
+          currentValue: mockCandidate,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+    });
+    expect(component.error).toBe(null); // Ensure error is set to null after initialization
+    expect(component.loading).toBe(false); // Ensure loading is set to false after initialization
+    expect(component.result).toEqual(candidate); // Ensure candidate education information is set correctly
+  });
+
+  it('should fetch candidate education information when candidate data changes', () => {
+    const initialCandidate: Candidate = mockCandidate;
+    const updatedCandidate: Candidate = mockCandidate;
+    updatedCandidate.id = 2;
+    component.candidate = initialCandidate;
+
+    component.ngOnChanges({
+      candidate:
+        {
+          previousValue: null,
+          currentValue: initialCandidate,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+    });
+
+    expect(component.loading).toBe(false); // Ensure loading is set to false after candidate education information is fetched
+    expect(component.result).toEqual(initialCandidate); // Ensure candidate education information is set correctly
+
+    component.ngOnChanges({
+      candidate:
+        {
+          previousValue: initialCandidate,
+          currentValue: updatedCandidate,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+    });
+    expect(component.loading).toBe(false); // Ensure loading is set to false after candidate education information is fetched
+    expect(component.result).toEqual(updatedCandidate); // Ensure candidate education information is updated correctly
   });
 });
