@@ -13,29 +13,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DestinationsComponent} from './destinations.component';
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {YesNo} from "../../../../model/candidate";
+import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-describe('DestinationsComponent', () => {
+fdescribe('DestinationsComponent', () => {
   let component: DestinationsComponent;
   let fixture: ComponentFixture<DestinationsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DestinationsComponent ]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      declarations: [ DestinationsComponent,AutosaveStatusComponent ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DestinationsComponent);
     component = fixture.componentInstance;
+    component.candidateIntakeData = {
+      candidateDestinations:undefined
+    };
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize with undefined candidate and candidate intake data inputs', () => {
+    expect(component.candidate).toBeUndefined();
+    expect(component.candidateIntakeData.candidateDestinations).toBeUndefined();
   });
 });
