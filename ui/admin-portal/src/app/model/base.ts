@@ -121,12 +121,12 @@ export enum SearchOppsBy {
  * Any validation method needs to use BOTH the SF sandbox and prod patterns below, combining them as OR options using a pipe: Validators.pattern(`${salesforceUrlPattern}|${salesforceSandboxUrlPattern}`)
  */
 export const salesforceUrlPattern: string =
-  'https://talentbeyondboundaries.lightning.force.com/' +
-  '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
+  'https://talentbeyondboundaries.lightning.force.com/lightning/r/' +
+  '[\\w]+/[\\w]{15,}[^\\w]?.*';
 
 export const salesforceSandboxUrlPattern: string =
-  'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/' +
-    '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
+  'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/lightning/r/' +
+    '[\\w]+/[\\w]{15,}[^\\w]?.*';
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 
