@@ -16,14 +16,7 @@ import {
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {RouterTestingModule} from "@angular/router/testing";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {Directive, Input} from "@angular/core";
 import {MockJob} from "../../../../../MockData/MockJob";
- @Directive({
-  selector: '[routerLink]'
-})
-export class RouterLinkDirectiveStub {
-  @Input('routerLink') linkParams: any;
-}
 fdescribe('ViewJobSubmissionListComponent', () => {
   let component: ViewJobSubmissionListComponent;
   let fixture: ComponentFixture<ViewJobSubmissionListComponent>;

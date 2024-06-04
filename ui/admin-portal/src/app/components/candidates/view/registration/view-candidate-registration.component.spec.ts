@@ -13,29 +13,70 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {ViewCandidateRegistrationComponent} from "./view-candidate-registration.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {CandidateService} from "../../../../services/candidate.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {of} from "rxjs";
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {ViewCandidateRegistrationComponent} from './view-candidate-registration.component';
-
-describe('ViewCandidateRegistrationComponent', () => {
+fdescribe('ViewCandidateRegistrationComponent', () => {
   let component: ViewCandidateRegistrationComponent;
   let fixture: ComponentFixture<ViewCandidateRegistrationComponent>;
-
+  let candidateService: jasmine.SpyObj<CandidateService>;
+  let modalService: jasmine.SpyObj<NgbModal>;
+  const mockCandidate = new MockCandidate();
   beforeEach(async () => {
+    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get']);
+    const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
+
     await TestBed.configureTestingModule({
-      declarations: [ ViewCandidateRegistrationComponent ]
-    })
-    .compileComponents();
+      declarations: [ViewCandidateRegistrationComponent],
+      providers: [
+        { provide: CandidateService, useValue: candidateServiceSpy },
+        { provide: NgbModal, useValue: modalServiceSpy }
+      ]
+    }).compileComponents();
+
+    candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
+    modalService = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ViewCandidateRegistrationComponent);
     component = fixture.componentInstance;
+    component.candidate = mockCandidate;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize component correctly and load data', () => {
+
+    // Simulate candidateService.get() returning mock data
+    candidateService.get.and.returnValue(of(mockCandidate));
+
+    // Set input properties
+    component.candidate = mockCandidate;
+    component.editable = true;
+
+    // Trigger ngOnChanges manually
+    component.ngOnChanges({  candidate: {
+        currentValue: component.candidate,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true
+      }} );
+    
+    // Expect candidateService.get() to have been called with the correct candidate ID
+    expect(candidateService.get).toHaveBeenCalledWith(mockCandidate.id);
+
+    // Simulate candidateService.get() completing and emitting mock response data
+    fixture.detectChanges();
+
+    // Expect component's candidate property to be set with the response data
+    expect(component.candidate).toEqual(mockCandidate);
   });
 });

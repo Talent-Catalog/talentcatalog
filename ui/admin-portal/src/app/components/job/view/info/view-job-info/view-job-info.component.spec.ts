@@ -1,23 +1,17 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ViewJobInfoComponent } from './view-job-info.component';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
-import {Directive, Input} from "@angular/core";
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {MockJob} from "../../../../../MockData/MockJob";
+import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 
-@Directive({
-  selector: '[routerLink]'
-})
-export class RouterLinkDirectiveStub {
-  @Input('routerLink') linkParams: any;
-}
 fdescribe('ViewJobInfoComponent', () => {
   let component: ViewJobInfoComponent;
   let fixture: ComponentFixture<ViewJobInfoComponent>;
   let modalService: NgbModal;
    beforeEach(async () => {
      await TestBed.configureTestingModule({
-      declarations: [ ViewJobInfoComponent,RouterLinkDirectiveStub ],
+      declarations: [ ViewJobInfoComponent,RouterLinkStubDirective ],
       providers: [
         { provide: NgbModal  },
       ]
