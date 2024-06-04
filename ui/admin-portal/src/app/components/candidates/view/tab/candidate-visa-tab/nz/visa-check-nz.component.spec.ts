@@ -14,8 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {NgSelectModule} from "@ng-select/ng-select";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {VisaCheckNzComponent} from "./visa-check-nz.component";
