@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -261,11 +262,13 @@ public class CandidateServiceImpl implements CandidateService {
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
     private final ElasticsearchService elasticsearchService;
+    private final EntityManager entityManager;
 
     @Transactional
     @Override
     public int populateElasticCandidates(
             Pageable pageable, boolean logTotal, boolean createElastic) {
+        entityManager.clear();
         Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
         if (logTotal) {
             log.info(candidates.getTotalElements() + " candidates to be processed.");
