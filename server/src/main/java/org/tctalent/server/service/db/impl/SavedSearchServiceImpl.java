@@ -680,12 +680,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
+                entityManager.clear();
                 Page<Candidate> result = doSearchCandidates(request);
                 setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {
                     csvWriter.writeNext(candidateService.getExportCandidateStrings(candidate));
                 }
-                entityManager.clear();
 
                 if ((long) result.getNumber() * request.getPageSize() < result.getTotalElements()) {
                     request.setPageNumber(request.getPageNumber()+1);
