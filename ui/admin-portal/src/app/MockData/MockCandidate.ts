@@ -24,6 +24,7 @@ import {
   YesNoUnsure
 } from "../model/candidate";
 import {TaskAssignment} from "../model/task-assignment";
+import {MockUser} from "./MockUser";
 
 export class MockCandidate implements Candidate {
 
@@ -48,7 +49,7 @@ export class MockCandidate implements Candidate {
   unhcrConsent: YesNo = YesNo.Yes;
   unrwaRegistered: YesNoUnsure = YesNoUnsure.No;
   unrwaNumber: string = "";
-  user: any = { id: 1, username: "user123", email: "user@example.com" };
+  user: any = new MockUser();
   candidateReviewStatusItems: any[] = [];
   migrationEducationMajor: any = { id: 1, name: "Computer Science" };
   additionalInfo: string = "";
@@ -73,8 +74,8 @@ export class MockCandidate implements Candidate {
   surveyType: any = { id: 1, name: "Survey" };
   surveyComment: string = "";
   selected: boolean = false;
-  createdDate: number = Date.now();
-  updatedDate: number = Date.now();
+  createdDate: number = 19900101;
+  updatedDate: number = 19900101;
   contextNote: string = "";
   maritalStatus: MaritalStatus = MaritalStatus.Single;
   drivingLicense: DrivingLicenseStatus = DrivingLicenseStatus.Valid;
@@ -90,9 +91,9 @@ export class MockCandidate implements Candidate {
   candidateProperties?: any[];
   mediaWillingness?: string;
   miniIntakeCompletedBy: any = { id: 1, username: "admin", email: "admin@example.com" };
-  miniIntakeCompletedDate: number = Date.now();
+  miniIntakeCompletedDate: number = 19900101;
   fullIntakeCompletedBy: any = { id: 1, username: "admin", email: "admin@example.com" };
-  fullIntakeCompletedDate: number = Date.now();
+  fullIntakeCompletedDate: number = 19900101;
   candidateCertifications?: any[];
   candidateEducations?: any[];
   candidateJobExperiences?: any[];
