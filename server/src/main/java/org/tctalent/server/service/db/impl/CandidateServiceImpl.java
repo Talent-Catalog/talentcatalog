@@ -2230,7 +2230,7 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.setMiniIntakeCompletedDate(OffsetDateTime.now());
             }
         }
-        save(candidate, false);
+        save(candidate, true);
         return candidate;
 
     }
