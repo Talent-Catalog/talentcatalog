@@ -1,24 +1,11 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
- import {NgbActiveModal, NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
-import { Job } from '../../../../../model/job';
-import { User } from '../../../../../model/user';
-import { SavedList } from '../../../../../model/saved-list';
-import {CountryService} from "../../../../../services/country.service";
-import {JobService} from "../../../../../services/job.service";
-import {Directive, Input} from "@angular/core";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
-import {Observable} from "rxjs";
 import {FormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockJob} from "../../../../../MockData/MockJob";
-
-@Directive({
-  selector: '[routerLink]'
-})
-export class RouterLinkDirectiveStub {
-  @Input('routerLink') linkParams: any;
-}
+import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 fdescribe('EditJobInfoComponent', () => {
   let component: EditJobInfoComponent;
   let fixture: ComponentFixture<EditJobInfoComponent>;
@@ -27,7 +14,7 @@ fdescribe('EditJobInfoComponent', () => {
   let fb: FormBuilder;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EditJobInfoComponent,RouterLinkDirectiveStub ],
+      declarations: [ EditJobInfoComponent,RouterLinkStubDirective ],
       imports:[HttpClientTestingModule,
         LocalStorageModule.forRoot({}),
       ],
