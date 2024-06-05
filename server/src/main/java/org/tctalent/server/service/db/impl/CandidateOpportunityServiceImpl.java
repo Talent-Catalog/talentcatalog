@@ -583,47 +583,20 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         CandidateOpportunity opp, @Nullable CandidateOpportunityParams oppParams) {
 
         if (oppParams != null) {
-            // Get candidate name and number for automated chat posts
-            String candidateNameAndNumber = opp.getCandidate().getUser().getFirstName() + " "
-                + opp.getCandidate().getUser().getLastName()
-                + " (" + opp.getCandidate().getCandidateNumber() + ")";
-
-            final CandidateOpportunityStage stage = oppParams.getStage();
-            if (stage != null) {
+            final CandidateOpportunityStage newStage = oppParams.getStage();
+            if (newStage != null) {
                 // Stage is changing
-                if (!oppParams.getStage().equals(opp.getStage())) {
-                    // If stage is changing to CLOSED (e.g. removed from submission list) automate removal post.
-                    if (stage.isClosed()) {
-                        publishRemovedFromSubmissionListPosts(opp, stage);
+                if (!newStage.equals(opp.getStage())) {
+                    // If stage is changing to CLOSED (e.g. removed from submission list) publish posts
+                    if (newStage.isClosed()) {
+                        publishRemovedFromSubmissionListPosts(opp, newStage);
                     } else {
-                        // If non closing stage change, automate post to JobCreatorSourcePartner chat
-                        // Find the relevant job chat
-                        JobChat jcspChat = jobChatService.getOrCreateJobChat(
-                                JobChatType.JobCreatorSourcePartner,
-                                opp.getJobOpp(),
-                                opp.getCandidate().getUser().getPartner(),
-                                null
-                        );
-
-                        // Set the chat post content
-                        Post autoPostCandidateOppStageChange = new Post();
-                        autoPostCandidateOppStageChange.setContent(
-                                "💼 <b>" + opp.getName() + "</b> 🪜<br> This case for candidate "
-                                        + candidateNameAndNumber
-                                        + " has changed stage from '" + opp.getStage() + "' to '"
-                                        + oppParams.getStage() + "'."
-                        );
-
-                        // Create the chat post
-                        ChatPost candidateOppStageChangeChatPost = chatPostService.createPost(
-                                autoPostCandidateOppStageChange, jcspChat, userService.getSystemAdminUser());
-
-                        // Publish the chat post
-                        chatPostService.publishChatPost(candidateOppStageChangeChatPost);
+                        // If non closing stage change, publish posts
+                        publishStageChangePosts(opp, newStage);
                     }
                 }
 
-                opp.setStage(stage);
+                opp.setStage(newStage);
             }
 
             //Process next step
@@ -667,6 +640,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                         opp.getCandidate().getUser().getPartner(),
                         null
                     );
+
+                    String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
 
                     // Set the chat post content
                     Post autoPostNextStepChange = new Post();
@@ -851,11 +826,21 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
     }
 
+    /**
+     * Publish posts for a candidate opportunity that is moved to a closing stage.
+     * Publish to:
+     * - JobCreatorSourcePartner chat
+     * - CandidateProspect chat
+     * - CandidateRecruiting chat
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
+     * @param newStage CandidateOpportunityStage - closing stage that the opp is being changed to
+     */
     private void publishRemovedFromSubmissionListPosts(CandidateOpportunity opp, CandidateOpportunityStage newStage) {
         Candidate candidate = opp.getCandidate();
-        String candidateName = candidate.getUser().getFirstName() + " " + candidate.getUser().getLastName();
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+
         Post autoPostRemovedFromSubList = new Post();
-        autoPostRemovedFromSubList.setContent("The candidate " + candidateName +
+        autoPostRemovedFromSubList.setContent("The candidate " + candidateNameAndNumber +
                 " has been removed for the job '" + opp.getJobOpp().getName() +
                 "' with the reason " + newStage.getSalesforceStageName() + ".");
 
@@ -887,12 +872,19 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         chatPostService.publishChatPost(jcspChatPostRemoved);
     }
 
+    /**
+     * Publish posts for after a Candidate Opportunity is created (e.g. Added to submission list) and the stage is now prospect.
+     * Publish to:
+     * - CandidateProspect chat
+     * - JobCreatorSourcePartner chat.
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
+     */
     private void publishAddedToSubmissionListPosts(CandidateOpportunity opp) {
         Candidate candidate = opp.getCandidate();
-        String candidateName = candidate.getUser().getFirstName() + " "
-                + candidate.getUser().getLastName();
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+
         Post autoPostAddedToSubList = new Post();
-        autoPostAddedToSubList.setContent("The candidate " + candidateName +
+        autoPostAddedToSubList.setContent("The candidate " + candidateNameAndNumber +
                 " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
 
         // AUTO CHAT TO PROSPECT CHAT
@@ -912,6 +904,51 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
         //publish chat post
         chatPostService.publishChatPost(jcspChatPost);
+    }
+
+    /**
+     * Publish post for a candidate opportunity stage change that is not to a closing stage.
+     * Publish to Job Creator Source Partner chat.
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
+     * @param newStage CandidateOpportunityStage - non-closing stage that the opp is being changed to
+     */
+    private void publishStageChangePosts(CandidateOpportunity opp, CandidateOpportunityStage newStage) {
+        // Find the relevant job chat
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                JobChatType.JobCreatorSourcePartner,
+                opp.getJobOpp(),
+                opp.getCandidate().getUser().getPartner(),
+                null
+        );
+
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+
+        // Set the chat post content
+        Post autoPostCandidateOppStageChange = new Post();
+        autoPostCandidateOppStageChange.setContent(
+                "💼 <b>" + opp.getName() + "</b> 🪜<br> This case for candidate "
+                        + candidateNameAndNumber
+                        + " has changed stage from '" + opp.getStage() + "' to '"
+                        + newStage + "'."
+        );
+
+        // Create the chat post
+        ChatPost candidateOppStageChangeChatPost = chatPostService.createPost(
+                autoPostCandidateOppStageChange, jcspChat, userService.getSystemAdminUser());
+
+        // Publish the chat post
+        chatPostService.publishChatPost(candidateOppStageChangeChatPost);
+    }
+
+    /**
+     * Get candidate name and number string for automated chat posts
+     * @param candidate Candidate to get details from
+     */
+    private String getCandidateNameNumber(Candidate candidate) {
+        // Get candidate name and number for automated chat posts
+        return candidate.getUser().getFirstName() + " "
+                + candidate.getUser().getLastName()
+                + " (" + candidate.getCandidateNumber() + ")";
     }
 
 }
