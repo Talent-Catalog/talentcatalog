@@ -1,5 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {
+  calculateAge,
   Candidate,
   CandidateIntakeData,
   CandidateVisa,
@@ -13,23 +14,27 @@ import {CandidateEducationService} from "../../../../../../../services/candidate
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {Occupation} from "../../../../../../../model/occupation";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-visa-job-check-au',
   templateUrl: './visa-job-check-au.component.html',
   styleUrls: ['./visa-job-check-au.component.scss']
 })
-export class VisaJobCheckAuComponent implements OnInit {
+export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
+
+  @ViewChild('visaJobAus') visaJobAus: NgbAccordion;
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
   occupations: Occupation[];
   yrsExp: CandidateOccupation;
   familyInAus: string;
+  candidateAge: number;
 
   error: string;
 
@@ -63,28 +68,12 @@ export class VisaJobCheckAuComponent implements OnInit {
     )
 
     this.familyInAus = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
+    const dobDate = new Date(this.candidate.dob);
+    this.candidateAge = calculateAge(dobDate);
   }
 
-  get currentYear(): string {
-    return new Date().getFullYear().toString();
-  }
-
-  get birthYear(): string {
-    return this.candidate?.dob.toString().slice(0, 4);
-  }
-
-  get selectedOccupations(): CandidateOccupation {
-    if (this.candOccupations) {
-      this.yrsExp = this.candOccupations?.find(occ => occ.occupation.id === this.selectedJobCheck?.occupation?.id);
-      return this.yrsExp;
-    }
-  }
-
-  get candidateAge(): string {
-    if (this.candidate?.dob) {
-      const timeDiff = Math.abs(Date.now() - new Date(this.candidate?.dob).getTime());
-      return Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25).toString(2);
-    }
+  ngAfterViewInit() {
+    this.visaJobAus.expandAll();
   }
 
   get ieltsScoreType(): string {
