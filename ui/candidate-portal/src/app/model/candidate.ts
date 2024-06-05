@@ -393,20 +393,15 @@ export enum CandidateStatus {
   withdrawn = "withdrawn (inactive)"
 }
 
-export enum CandidateFilterByOpps {
-  someOpps = "Some cases",
-
-  noOpps = "No cases",
-
-  openOpps = "Some open cases",
-
-  closedOpps = "Some closed cases",
-
-  preRelocationOpps = "Some cases not yet at relocated stage - ie 'live' cases",
-
-  postRelocationOpps = "Some cases at the relocated or later stage"
-
-}
+// Previously used in candidate search, removed Jun '24 - preserved in case of reinstatement elsewhere.
+// export enum CandidateFilterByOpps {
+//   someOpps = "Some cases",
+//   noOpps = "No cases",
+//   openOpps = "Some open cases",
+//   closedOpps = "Some closed cases",
+//   preRelocationOpps = "Some cases not yet at relocated stage - ie 'live' cases",
+//   postRelocationOpps = "Some cases at the relocated or later stage"
+// }
 
 export interface CandidateOpportunityParams extends OpportunityProgressParams {
   closingComments?: string;

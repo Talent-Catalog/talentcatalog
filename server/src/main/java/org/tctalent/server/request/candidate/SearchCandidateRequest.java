@@ -26,7 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Sort;
-import org.tctalent.server.model.db.CandidateFilterByOpps;
+//import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.ReviewStatus;
@@ -143,8 +143,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      *     <li>closedOpps</li>
      *     <li>relocatedOpps</li>
      * </ul>
+     *
+     * Previously used in candidate search, removed Jun '24 - preserved in case of reinstatement elsewhere.
      */
-    private CandidateFilterByOpps candidateFilterByOpps;
+//    private CandidateFilterByOpps candidateFilterByOpps;
 
     public SearchCandidateRequest() {
         super(Sort.Direction.DESC, new String[]{"id"});
