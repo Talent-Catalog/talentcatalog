@@ -23,6 +23,7 @@ import {
 } from "../model/candidate";
 import {MockUser} from "./MockUser";
 import {MockJob} from "./MockJob";
+import {MockCandidateVisaJobCheck} from "./MockCandidateVisaCheck";
 
 const mockUser = new MockUser();
 export const MockCandidateVisa: CandidateVisa = {
@@ -51,38 +52,5 @@ export const MockCandidateVisa: CandidateVisa = {
   visaEligibilityAssessment: YesNo.Yes,
   pathwayAssessment: YesNoUnsure.Unsure,
   pathwayAssessmentNotes: 'Not sure about the pathway',
-  candidateVisaJobChecks: [
-    {
-      id: 1,
-      name: 'Job title',
-      occupation: { id: 1, name: 'Software Engineer', isco08Code: '123', status: 'Active' },
-      qualification: YesNo.Yes,
-      qualificationNotes: 'Bachelor\'s degree in Computer Science',
-      salaryTsmit: YesNo.Yes,
-      regional: YesNo.No,
-      interest: YesNo.Yes,
-      interestNotes: 'Interested in the job',
-      familyAus: YesNo.No,
-      eligible_494: YesNo.No,
-      eligible_494_Notes: 'Not eligible for subclass 494',
-      eligible_186: YesNo.Yes,
-      eligible_186_Notes: 'Eligible for subclass 186',
-      eligibleOther: YesNo.No,
-      eligibleOtherNotes: 'Not eligible for other visas',
-      putForward: VisaEligibility.Yes,
-      tbbEligibility: TBBEligibilityAssessment.Proceed,
-      notes: 'Notes about the job check',
-      relevantWorkExp: '3 years of relevant work experience',
-      ageRequirement: YesNo.Yes,
-      preferredPathways: 'Preferred pathways for visa application',
-      ineligiblePathways: 'Ineligible pathways for visa application',
-      eligiblePathways: 'Eligible pathways for visa application',
-      occupationCategory: 'IT',
-      occupationSubCategory: 'Software Development',
-      languagesRequired: 'English',
-      languagesThresholdMet: YesNo.Yes,
-      languagesThresholdNotes: 'Met English language threshold',
-      relocatingDependantIds: [1, 2, 3]
-    }
-  ]
+  candidateVisaJobChecks: [MockCandidateVisaJobCheck]
 };
