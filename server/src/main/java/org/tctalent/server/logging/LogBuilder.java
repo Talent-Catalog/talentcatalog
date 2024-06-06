@@ -24,19 +24,43 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.tctalent.server.model.db.User;
 
+/**
+ * The {@code LogBuilder} class is used to construct log messages with standardised fields
+ * and log them using SLF4J. The fields are specified using the {@link LogField} enum and are
+ * included in the log messages based on their sort order.
+ *
+ * @author sadatmalik
+ */
 public class LogBuilder {
   private final Logger logger;
   private final Map<LogField, String> logFields;
 
+  /**
+   * Constructs a new {@code LogBuilder} with the specified {@link Logger}.
+   *
+   * @param logger the SLF4J logger to use for logging
+   */
   private LogBuilder(Logger logger) {
     this.logger = logger;
     this.logFields = new EnumMap<>(LogField.class);
   }
 
+  /**
+   * Creates a new {@code LogBuilder} instance with the specified {@link Logger}.
+   *
+   * @param logger the SLF4J logger to use for logging
+   * @return a new instance of {@code LogBuilder}
+   */
   public static LogBuilder builder(Logger logger) {
     return new LogBuilder(logger);
   }
 
+  /**
+   * Adds the user ID to the log fields if the user is present.
+   *
+   * @param loggedInUser an {@link Optional} containing the logged-in user
+   * @return the current {@code LogBuilder} instance for chaining
+   */
   public LogBuilder user(Optional<User> loggedInUser) {
     loggedInUser
         .map(User::getId)
@@ -45,6 +69,12 @@ public class LogBuilder {
     return this;
   }
 
+  /**
+   * Adds the list ID to the log fields if the list ID is not null.
+   *
+   * @param listId the list ID
+   * @return the current {@code LogBuilder} instance for chaining
+   */
   public LogBuilder listId(Long listId) {
     if (listId == null) {
       return this;
@@ -53,6 +83,12 @@ public class LogBuilder {
     return this;
   }
 
+  /**
+   * Adds the search ID to the log fields if the search ID is not null.
+   *
+   * @param searchId the search ID
+   * @return the current {@code LogBuilder} instance for chaining
+   */
   public LogBuilder searchId(Long searchId) {
     if (searchId == null) {
       return this;
@@ -61,6 +97,12 @@ public class LogBuilder {
     return this;
   }
 
+  /**
+   * Adds the job ID to the log fields if the job ID is not null.
+   *
+   * @param jobId the job ID
+   * @return the current {@code LogBuilder} instance for chaining
+   */
   public LogBuilder jobId(Long jobId) {
     if (jobId == null) {
       return this;
@@ -69,6 +111,12 @@ public class LogBuilder {
     return this;
   }
 
+  /**
+   * Adds the action to the log fields if the action is not null.
+   *
+   * @param action the action
+   * @return the current {@code LogBuilder} instance for chaining
+   */
   public LogBuilder action(String action) {
     if (action == null) {
       return this;
@@ -77,6 +125,12 @@ public class LogBuilder {
     return this;
   }
 
+  /**
+   * Adds the message to the log fields if the message is not null.
+   *
+   * @param message the message
+   * @return the current {@code LogBuilder} instance for chaining
+   */
   public LogBuilder message(String message) {
     if (message == null) {
       return this;
@@ -85,28 +139,49 @@ public class LogBuilder {
     return this;
   }
 
-  private void addField(LogField field, String value) {
-    logFields.put(field, value);
-  }
-
+  /**
+   * Logs the constructed message at the INFO level.
+   */
   public void logInfo() {
     logger.info(buildLogMessage());
   }
 
+  /**
+   * Logs the constructed message at the ERROR level.
+   */
   public void logError() {
     logger.error(buildLogMessage());
   }
 
+  /**
+   * Logs the constructed message at the DEBUG level.
+   */
   public void logDebug() {
     logger.debug(buildLogMessage());
   }
 
+  /**
+   * Constructs the log message by sorting the log fields based on their sort order
+   * and concatenating them into a single string.
+   *
+   * @return the constructed log message
+   */
   private String buildLogMessage() {
     return logFields.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
         .sorted(Map.Entry.comparingByKey(Comparator.comparingInt(LogField::getSortOrder)))
         .map(entry -> entry.getKey().getLabel() + ": " + entry.getValue())
         .collect(Collectors.joining(" | "));
+  }
+
+  /**
+   * Adds a field to the log fields map.
+   *
+   * @param field the log field
+   * @param value the value of the log field
+   */
+  private void addField(LogField field, String value) {
+    logFields.put(field, value);
   }
 
 }
