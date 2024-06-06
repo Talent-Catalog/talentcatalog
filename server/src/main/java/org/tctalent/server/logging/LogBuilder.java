@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.tctalent.server.model.db.User;
 
@@ -102,26 +102,11 @@ public class LogBuilder {
   }
 
   private String buildLogMessage() {
-    StringBuilder sb = new StringBuilder();
-
-    // Sort log fields based on sortOrder
-    TreeMap<LogField, String> sortedLogFields =
-        new TreeMap<>(Comparator.comparingInt(LogField::getSortOrder));
-
-    sortedLogFields.putAll(logFields);
-
-    sortedLogFields.forEach((field, value) -> {
-      if (value != null) {
-        sb.append(field.getLabel()).append(": ").append(value).append(" | ");
-      }
-    });
-
-    // Remove the trailing " | " if present
-    if (!sb.isEmpty()) {
-      sb.setLength(sb.length() - 3);
-    }
-
-    return sb.toString();
+    return logFields.entrySet().stream()
+        .filter(entry -> entry.getValue() != null)
+        .sorted(Map.Entry.comparingByKey(Comparator.comparingInt(LogField::getSortOrder)))
+        .map(entry -> entry.getKey().getLabel() + ": " + entry.getValue())
+        .collect(Collectors.joining(" | "));
   }
 
 }
