@@ -1,13 +1,10 @@
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {ActivatedRoute, Router} from '@angular/router';
 import {of, throwError} from 'rxjs';
-import { ViewJobFromUrlComponent } from './view-job-from-url.component';
-import { JobService } from '../../../../services/job.service';
-import { MockJob } from "../../../../MockData/MockJob";
+import {ViewJobFromUrlComponent} from './view-job-from-url.component';
+import {JobService} from '../../../../services/job.service';
+import {MockJob} from "../../../../MockData/MockJob";
 import {ViewJobComponent} from "../view-job/view-job.component";
-import {
-  RouterLinkDirectiveStub
-} from "../submission-list/view-job-submission-list/view-job-submission-list.component.spec";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {NgbNavModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
@@ -17,6 +14,7 @@ import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.com
 import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.component";
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
+import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 
 fdescribe('ViewJobFromUrlComponent', () => {
   let component: ViewJobFromUrlComponent;
@@ -33,7 +31,7 @@ fdescribe('ViewJobFromUrlComponent', () => {
     mockJobService.get.and.returnValue(of(MockJob));
     TestBed.configureTestingModule({
       imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
-      declarations: [ViewJobFromUrlComponent,ViewJobComponent,JobGeneralTabComponent,ViewJobInfoComponent,ChatReadStatusComponent,ViewJobSummaryComponent,RouterLinkDirectiveStub],
+      declarations: [ViewJobFromUrlComponent,ViewJobComponent,JobGeneralTabComponent,ViewJobInfoComponent,ChatReadStatusComponent,ViewJobSummaryComponent,RouterLinkStubDirective],
       providers: [
         { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router
         { provide: JobService, useValue: mockJobService },

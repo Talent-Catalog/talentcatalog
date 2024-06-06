@@ -261,6 +261,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
     private final ElasticsearchService elasticsearchService;
+    private final EntityManager entityManager;
 
     @Transactional
     @Override
@@ -2230,7 +2231,7 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.setMiniIntakeCompletedDate(OffsetDateTime.now());
             }
         }
-        save(candidate, false);
+        save(candidate, true);
         return candidate;
 
     }
@@ -2793,6 +2794,7 @@ public class CandidateServiceImpl implements CandidateService {
             Instant start = Instant.now();
             List<Candidate> candidateList = candidatePage.getContent();
             upsertCandidatesToSf(candidateList);
+            entityManager.clear();
             candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
                 statuses, candidatePage.nextPageable());
             pagesProcessed++;
@@ -2806,7 +2808,7 @@ public class CandidateServiceImpl implements CandidateService {
         Instant endOverall = Instant.now();
         Duration timeElapsedOverall = Duration.between(startOverall, endOverall);
 
-        log.info("Using these parameters it took " + timeElapsedOverall.toMinutes() +
+        log.info("With these parameters it took " + timeElapsedOverall.toMinutes() +
             " minutes to upsert " + (noOfPagesToProcess * pageSize) + " candidates.");
     }
 

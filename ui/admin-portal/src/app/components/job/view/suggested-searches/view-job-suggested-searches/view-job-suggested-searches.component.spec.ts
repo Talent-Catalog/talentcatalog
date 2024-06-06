@@ -7,18 +7,11 @@ import {JobService} from '../../../../../services/job.service';
 import {SavedSearch} from "../../../../../model/saved-search";
 import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
-import {Directive,Input} from "@angular/core";
 import {ActivatedRoute,Router} from "@angular/router";
 import {of} from "rxjs";
 import {MockSavedSearch} from "../../../../../MockData/MockSavedSearch";
 import {JobPrepSuggestedSearches} from "../../../../../model/job-prep-item";
-
-@Directive({
-  selector: "[routerLink]", // Stub directive for routerLink
-})
-export class RouterLinkStubDirective {
-  @Input('routerLink') linkParams: any;
-}
+import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 fdescribe('ViewJobSuggestedSearchesComponent', () => {
   let component: ViewJobSuggestedSearchesComponent;
   let fixture: ComponentFixture<ViewJobSuggestedSearchesComponent>;
