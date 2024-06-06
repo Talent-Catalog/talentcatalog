@@ -33,7 +33,7 @@ fdescribe('CharacterAssessmentComponent', () => {
     const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,NgbNavModule,RouterTestingModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       declarations: [CharacterAssessmentComponent,AutosaveStatusComponent],
       providers: [
         FormBuilder,

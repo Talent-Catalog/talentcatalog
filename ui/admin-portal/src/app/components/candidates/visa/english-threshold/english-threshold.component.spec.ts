@@ -1,16 +1,34 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {ReactiveFormsModule, FormBuilder, FormsModule} from '@angular/forms';
 import {EnglishThresholdComponent} from './english-threshold.component';
+import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
+import {EnumOption, enumOptions} from '../../../../util/enum';
+import {YesNo} from '../../../../model/candidate';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
+import {RouterTestingModule} from "@angular/router/testing";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {NgxWigModule} from "ngx-wig";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-describe('EnglishThresholdComponent', () => {
+fdescribe('EnglishThresholdComponent', () => {
   let component: EnglishThresholdComponent;
   let fixture: ComponentFixture<EnglishThresholdComponent>;
+  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
 
   beforeEach(async () => {
+    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+
     await TestBed.configureTestingModule({
-      declarations: [ EnglishThresholdComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
+      declarations: [EnglishThresholdComponent,AutosaveStatusComponent],
+      providers: [
+        FormBuilder,
+        {provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy}
+      ]
+    }).compileComponents();
+
+    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
   });
 
   beforeEach(() => {
@@ -21,5 +39,27 @@ describe('EnglishThresholdComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('hasNotes should return false when visaEnglishThreshold is not "Yes" or "No"', () => {
+    component.form.controls['visaEnglishThreshold'].setValue('Maybe');
+    expect(component.hasNotes).toBeFalse();
+
+    component.form.controls['visaEnglishThreshold'].setValue(null);
+    expect(component.hasNotes).toBeFalse();
+
+    component.form.controls['visaEnglishThreshold'].setValue('Not sure');
+    expect(component.hasNotes).toBeFalse();
+  });
+
+  // Optional: Add tests for 'Yes' and 'No' values to ensure completeness
+  it('hasNotes should return true when visaEnglishThreshold is "Yes"', () => {
+    component.form.controls['visaEnglishThreshold'].setValue('Yes');
+    expect(component.hasNotes).toBeTrue();
+  });
+
+  it('hasNotes should return true when visaEnglishThreshold is "No"', () => {
+    component.form.controls['visaEnglishThreshold'].setValue('No');
+    expect(component.hasNotes).toBeTrue();
   });
 });
