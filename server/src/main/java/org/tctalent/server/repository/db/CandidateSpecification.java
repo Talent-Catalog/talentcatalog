@@ -39,7 +39,7 @@ import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateEducation;
-//import org.tctalent.server.model.db.CandidateFilterByOpps;
+import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.CandidateOccupation;
@@ -410,68 +410,68 @@ public class CandidateSpecification {
 
             }
 
-//            // CANDIDATE OPPORTUNITIES
-//            // Previously used in candidate search, removed Jun '24 - preserved for now in case of reinstatement elsewhere.
-//            final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
-//            if (candidateFilterByOpps != null) {
-//               Boolean anyOpps = candidateFilterByOpps.getAnyOpps();
-//               Boolean closedOpps = candidateFilterByOpps.getClosedOpps();
-//               Boolean relocatedOpps = candidateFilterByOpps.getRelocatedOpps();
-//
-//                //This is the where clause we are constructing
-//                /*
-//                   where 0 <
-//                   (select count(*) from candidate_opportunity
-//                   where candidate_id = candidate.id)
-//
-//                   - Plus possible other where clauses - eg "and closed = false"
-//                */
-//                //This "conjunction predicate" will AND together all the where clauses we add to it.
-//                Predicate oppsWhereClauses = builder.conjunction();
-//
-//                //Create the Select subquery which will return the opportunity count as a Long
-//                Subquery<Long> sq = query.subquery(Long.class);
-//                Root<CandidateOpportunity> opp = sq.from(CandidateOpportunity.class);
-//
-//                //This where clause is always there: candidate_id = candidate.id
-//                oppsWhereClauses.getExpressions().add(
-//                    builder.equal(opp.get("candidate").get("id"), candidate.get("id")));
-//
-//                boolean countMustBeNonZero = true;
-//                if (anyOpps != null) {
-//                    //The "AnyOpp" request doesn't add any other clauses.
-//                    //It just changes whether we are testing that the count of opportunities should
-//                    //or should not equal zero. ie are we looking for candidates with some opp or
-//                    //no opps.
-//                    countMustBeNonZero = anyOpps;
-//                } else {
-//                    if (closedOpps != null) {
-//                        boolean closedClauseValue = closedOpps;
-//                        //Add the where clause "closed = true" or "closed = false"
-//                        oppsWhereClauses.getExpressions().add(
-//                            builder.equal(opp.get("closed"), closedClauseValue));
-//                    }
-//                    if (relocatedOpps != null) {
-//                        //Add the where clause checking whether the integer value associated with
-//                        //opps stage is before (ie less than) the relocated stage or not.
-//                        //ie the clause is effectively "stage < relocated" or "stage >= relocated"
-//                        int relocatedStageOrder = CandidateOpportunityStage.relocated.ordinal();
-//                        Predicate relocatedPredicate = relocatedOpps ?
-//                            builder.greaterThanOrEqualTo(opp.get("stageOrder"), relocatedStageOrder) :
-//                            builder.lessThan(opp.get("stageOrder"), relocatedStageOrder);
-//                        oppsWhereClauses.getExpressions().add(relocatedPredicate);
-//                    }
-//                }
-//
-//                //Do the subquery select - ie do the opportunity count, by "and-ing" together all
-//                //the where clauses we have added to oppsConjunction
-//                sq.select(builder.count(opp)).where(oppsWhereClauses);
-//
-//                conjunction.getExpressions().add(
-//                    //Check for zero or non-zero opportunity count depending on the above logic.
-//                    countMustBeNonZero ? builder.greaterThan(sq, 0L) : builder.equal(sq, 0L)
-//                );
-//            }
+            //CANDIDATE OPPORTUNITIES
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement elsewhere.
+            final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
+            if (candidateFilterByOpps != null) {
+               Boolean anyOpps = candidateFilterByOpps.getAnyOpps();
+               Boolean closedOpps = candidateFilterByOpps.getClosedOpps();
+               Boolean relocatedOpps = candidateFilterByOpps.getRelocatedOpps();
+
+                //This is the where clause we are constructing
+                /*
+                   where 0 <
+                   (select count(*) from candidate_opportunity
+                   where candidate_id = candidate.id)
+
+                   - Plus possible other where clauses - eg "and closed = false"
+                */
+                //This "conjunction predicate" will AND together all the where clauses we add to it.
+                Predicate oppsWhereClauses = builder.conjunction();
+
+                //Create the Select subquery which will return the opportunity count as a Long
+                Subquery<Long> sq = query.subquery(Long.class);
+                Root<CandidateOpportunity> opp = sq.from(CandidateOpportunity.class);
+
+                //This where clause is always there: candidate_id = candidate.id
+                oppsWhereClauses.getExpressions().add(
+                    builder.equal(opp.get("candidate").get("id"), candidate.get("id")));
+
+                boolean countMustBeNonZero = true;
+                if (anyOpps != null) {
+                    //The "AnyOpp" request doesn't add any other clauses.
+                    //It just changes whether we are testing that the count of opportunities should
+                    //or should not equal zero. ie are we looking for candidates with some opp or
+                    //no opps.
+                    countMustBeNonZero = anyOpps;
+                } else {
+                    if (closedOpps != null) {
+                        boolean closedClauseValue = closedOpps;
+                        //Add the where clause "closed = true" or "closed = false"
+                        oppsWhereClauses.getExpressions().add(
+                            builder.equal(opp.get("closed"), closedClauseValue));
+                    }
+                    if (relocatedOpps != null) {
+                        //Add the where clause checking whether the integer value associated with
+                        //opps stage is before (ie less than) the relocated stage or not.
+                        //ie the clause is effectively "stage < relocated" or "stage >= relocated"
+                        int relocatedStageOrder = CandidateOpportunityStage.relocated.ordinal();
+                        Predicate relocatedPredicate = relocatedOpps ?
+                            builder.greaterThanOrEqualTo(opp.get("stageOrder"), relocatedStageOrder) :
+                            builder.lessThan(opp.get("stageOrder"), relocatedStageOrder);
+                        oppsWhereClauses.getExpressions().add(relocatedPredicate);
+                    }
+                }
+
+                //Do the subquery select - ie do the opportunity count, by "and-ing" together all
+                //the where clauses we have added to oppsConjunction
+                sq.select(builder.count(opp)).where(oppsWhereClauses);
+
+                conjunction.getExpressions().add(
+                    //Check for zero or non-zero opportunity count depending on the above logic.
+                    countMustBeNonZero ? builder.greaterThan(sq, 0L) : builder.equal(sq, 0L)
+                );
+            }
 
             return conjunction;
         };

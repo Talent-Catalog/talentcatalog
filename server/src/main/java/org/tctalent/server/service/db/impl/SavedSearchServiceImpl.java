@@ -75,7 +75,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
-//import org.tctalent.server.model.db.CandidateFilterByOpps;
+import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.EducationLevel;
@@ -1573,18 +1573,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMiniIntakeCompleted(request.getMiniIntakeCompleted());
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
 
-//            // Previously used in candidate search, removed Jun '24 - preserved in case of reinstatement elsewhere.
-//            // Save Boolean filters corresponding to enum name
-//            final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
-//            if (candidateFilterByOpps == null) {
-//                savedSearch.setAnyOpps(null);
-//                savedSearch.setClosedOpps(null);
-//                savedSearch.setRelocatedOpps(null);
-//            } else {
-//                savedSearch.setAnyOpps(candidateFilterByOpps.getAnyOpps());
-//                savedSearch.setClosedOpps(candidateFilterByOpps.getClosedOpps());
-//                savedSearch.setRelocatedOpps(candidateFilterByOpps.getRelocatedOpps());
-//            }
+            //Save Boolean filters corresponding to enum name
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement elsewhere.
+            final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
+            if (candidateFilterByOpps == null) {
+                savedSearch.setAnyOpps(null);
+                savedSearch.setClosedOpps(null);
+                savedSearch.setRelocatedOpps(null);
+            } else {
+                savedSearch.setAnyOpps(candidateFilterByOpps.getAnyOpps());
+                savedSearch.setClosedOpps(candidateFilterByOpps.getClosedOpps());
+                savedSearch.setRelocatedOpps(candidateFilterByOpps.getRelocatedOpps());
+            }
         }
     }
 
@@ -1646,10 +1646,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
 
-        // Previously used in candidate search, removed Jun '24 - preserved in case of reinstatement elsewhere.
-//        CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
-//            search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
-//        searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
+        // Not currently in use as of Jun '24 - preserved for now in case of reinstatement elsewhere.
+        CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
+            search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
+        searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
 
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
         for (SearchJoin searchJoin : search.getSearchJoins()) {
