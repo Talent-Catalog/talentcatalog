@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import jakarta.persistence.EntityManager;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
