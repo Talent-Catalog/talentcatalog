@@ -1574,7 +1574,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
 
             //Save Boolean filters corresponding to enum name
-            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement elsewhere.
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
             final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
             if (candidateFilterByOpps == null) {
                 savedSearch.setAnyOpps(null);
@@ -1646,7 +1646,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
 
-        // Not currently in use as of Jun '24 - preserved for now in case of reinstatement elsewhere.
+        // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
         CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
             search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
         searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
