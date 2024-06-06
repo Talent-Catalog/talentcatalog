@@ -268,6 +268,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public int populateElasticCandidates(
             Pageable pageable, boolean logTotal, boolean createElastic) {
+        entityManager.clear();
         Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
         if (logTotal) {
             log.info(candidates.getTotalElements() + " candidates to be processed.");

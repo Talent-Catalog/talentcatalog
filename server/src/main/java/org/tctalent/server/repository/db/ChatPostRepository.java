@@ -18,8 +18,10 @@ package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.ChatPost;
 
 import java.util.List;
@@ -27,7 +29,14 @@ import java.util.Optional;
 
 public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
     JpaSpecificationExecutor<ChatPost> {
-
+    /**
+     * Deletes {@link ChatPost} entries associated with the specified job chat ID.
+     * @param jobChatId The ID of the job chat for which associated {@link ChatPost} entries will be deleted.
+     */
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ChatPost cp WHERE cp.jobChat.id = :jobChatId")
+    void deleteByJobChatId(@Param("jobChatId") Long jobChatId);
     Optional<List<ChatPost>> findByJobChatId(Long chatId);
 
     @Query(

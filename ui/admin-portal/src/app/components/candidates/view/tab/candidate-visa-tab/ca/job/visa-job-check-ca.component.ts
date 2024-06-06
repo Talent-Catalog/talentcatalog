@@ -9,9 +9,7 @@ import {
 } from "../../../../../../../model/candidate";
 import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
-import {
-  CandidateOccupationService
-} from "../../../../../../../services/candidate-occupation.service";
+import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
