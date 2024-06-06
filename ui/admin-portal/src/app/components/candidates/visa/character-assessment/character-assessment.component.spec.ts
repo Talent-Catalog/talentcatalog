@@ -19,10 +19,7 @@ import {ReactiveFormsModule, FormBuilder, FormsModule} from '@angular/forms';
 import {CharacterAssessmentComponent} from './character-assessment.component';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
-import {RouterTestingModule} from "@angular/router/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {NgxWigModule} from "ngx-wig";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 fdescribe('CharacterAssessmentComponent', () => {
   let component: CharacterAssessmentComponent;
