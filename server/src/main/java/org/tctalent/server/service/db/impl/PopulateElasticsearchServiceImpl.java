@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.time.Duration;
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +65,8 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
 
         log.info("Loading candidates.");
 
+        Instant overallStart = Instant.now();
+
         String verb = createElastic ? "added" : "updated";
 
         final int pageSize = 20;
@@ -89,6 +93,10 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
         } while (nUpdated > 0 && (toPage == null || page.getPageNumber() <= toPage));
 
         log.info("Done: " + count + " candidates " + verb + " to Elasticsearch");
+
+        Instant overallEnd = Instant.now();
+        Duration overallTimeElapsed = Duration.between(overallStart, overallEnd);
+      log.info("Overall the indexing took {} minutes.", overallTimeElapsed.toMinutes());
     }
 
     @Async
