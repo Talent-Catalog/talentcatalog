@@ -18,7 +18,7 @@ package org.tctalent.server.model.db;
 
 import org.tctalent.server.util.EnumHelper;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 import java.util.List;
 
 public class IntRecruitReasonConverter

@@ -17,17 +17,19 @@
 package org.tctalent.server.repository.db;
 
 import static org.tctalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
+import static org.tctalent.server.repository.db.PredicateUtil.createAndPredicate;
 
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
@@ -106,10 +108,10 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         Subquery<Candidate> sq = query.subquery(Candidate.class);
         Root<CandidateSavedList> csl = sq.from(CandidateSavedList.class);
 
-        Predicate conjunction = cb.conjunction();
+        List<Predicate> conjunctions = new ArrayList<>();
 
         //Start with the basic candidate in list predicate
-        conjunction.getExpressions().add(
+        conjunctions.add(
             cb.equal(csl.get("savedList").get("id"), savedList.getId())
         );
 
@@ -119,7 +121,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
             String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
 
             //Add predicate where the keyword matches any of the various fields
-            conjunction.getExpressions().add(
+            conjunctions.add(
                 cb.or(
                     cb.like(cb.lower(candidate.get("candidateNumber")), likeMatchTerm),
                     cb.like(cb.lower(candidate.get("user").get("firstName")), likeMatchTerm),
@@ -142,12 +144,12 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
             //for the job.
             Join<Candidate, CandidateOpportunity> opp =
                 candidate.join("candidateOpportunities", JoinType.LEFT);
-            conjunction.getExpressions().add(
+            conjunctions.add(
                 cb.equal(opp.get("jobOpp").get("id"), sfJobOpp.getId())
             );
             if (request.getShowClosedOpps() == null || !request.getShowClosedOpps()) {
                 //ShowClosedOpps is not true - so only select opps that are won or open (ie closed = true)
-                conjunction.getExpressions().add(
+                conjunctions.add(
                     cb.or(
                         cb.equal(opp.get("closed"), false),
                         cb.equal(opp.get("won"), true)
@@ -157,7 +159,8 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         }
 
         //Now create subquery
-        sq.select(csl.get("candidate")).where(conjunction);
+        Predicate wherePredicate = createAndPredicate(cb, conjunctions);
+        sq.select(csl.get("candidate")).where(wherePredicate);
 
         //And the candidate must apear in the subquery
         return cb.in(candidate).value(sq);

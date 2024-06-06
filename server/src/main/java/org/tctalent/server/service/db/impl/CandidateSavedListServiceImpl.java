@@ -54,7 +54,7 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;

@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.task.TaskAssignment;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import org.tctalent.server.model.db.task.TaskType;

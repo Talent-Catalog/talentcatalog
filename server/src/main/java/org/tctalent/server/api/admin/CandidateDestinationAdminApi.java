@@ -27,8 +27,8 @@ import org.tctalent.server.request.candidate.destination.CreateCandidateDestinat
 import org.tctalent.server.service.db.CandidateDestinationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.Map;
 
 @RestController()

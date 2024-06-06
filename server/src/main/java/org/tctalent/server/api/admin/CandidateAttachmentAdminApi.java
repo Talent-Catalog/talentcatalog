@@ -33,7 +33,7 @@ import org.tctalent.server.service.db.CandidateAttachmentService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

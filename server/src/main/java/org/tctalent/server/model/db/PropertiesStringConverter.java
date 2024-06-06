@@ -16,7 +16,7 @@
 
 package org.tctalent.server.model.db;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
 
 /**

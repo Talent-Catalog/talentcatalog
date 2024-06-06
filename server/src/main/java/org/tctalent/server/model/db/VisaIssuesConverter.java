@@ -18,7 +18,7 @@ package org.tctalent.server.model.db;
 
 import java.util.List;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 
 import org.tctalent.server.util.EnumHelper;
 

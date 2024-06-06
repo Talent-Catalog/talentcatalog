@@ -17,7 +17,7 @@
 package org.tctalent.server.model.db;
 
 import java.time.LocalDate;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;

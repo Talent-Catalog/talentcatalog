@@ -16,9 +16,14 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.tctalent.server.repository.db.PredicateUtil.addOrPredicates;
+import static org.tctalent.server.repository.db.PredicateUtil.createAndPredicate;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.SavedSearch;
@@ -42,7 +47,7 @@ public class SavedSearchSpecification {
         return (savedSearch, query, builder) -> {
 
             //Conjunction means implicit AND between each term (sub Predicate)
-            Predicate conjunction = builder.conjunction();
+            List<Predicate> predicates = new ArrayList<>();
             query.distinct(true);
 
             /*
@@ -65,12 +70,12 @@ public class SavedSearchSpecification {
              */
 
             // ONLY SHOW ACTIVE SAVED SEARCHES
-            conjunction.getExpressions().add(
+            predicates.add(
                     builder.equal(savedSearch.get("status"), Status.active)
             );
 
             // DON'T SHOW DEFAULT SAVED SEARCHES
-            conjunction.getExpressions().add(
+            predicates.add(
                     builder.not(savedSearch.get("defaultSearch"))
             );
 
@@ -78,7 +83,7 @@ public class SavedSearchSpecification {
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
+                predicates.add(
                      builder.like(builder.lower(savedSearch.get("name")), likeMatchTerm)
                 );
             }
@@ -90,23 +95,23 @@ public class SavedSearchSpecification {
                 SavedSearchSubtype savedSearchSubtype = request.getSavedSearchSubtype();
                 String type = SavedSearch.makeStringSavedSearchType(
                         savedSearchType, savedSearchSubtype);
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.equal(savedSearch.get("type"), type)
                 );
             }
 
             //If fixed is specified, only supply matching saved searches
             if (request.getFixed() != null && request.getFixed()) {
-                conjunction.getExpressions().add(
+                predicates.add(
                         builder.equal(savedSearch.get("fixed"), request.getFixed())
                 );
             }
 
             // (shared OR owned OR global)
-            Predicate ors = builder.disjunction();
+            List<Predicate> ors = new ArrayList<>();
 
             if (request.getGlobal() != null && request.getGlobal()) {
-                ors.getExpressions().add(
+                ors.add(
                         builder.equal(savedSearch.get("global"), request.getGlobal())
                 );
             }
@@ -120,7 +125,7 @@ public class SavedSearchSpecification {
                         for (SavedSearch sharedSearch : sharedSearches) {
                             sharedIDs.add(sharedSearch.getId());
                         }
-                        ors.getExpressions().add(
+                        ors.add(
                                 savedSearch.get("id").in( sharedIDs )
                         );
                     }
@@ -130,17 +135,15 @@ public class SavedSearchSpecification {
             //If owned by this user (ie by logged in user)
             if (request.getOwned() != null && request.getOwned()) {
                 if (loggedInUser != null) {
-                    ors.getExpressions().add(
+                    ors.add(
                          builder.equal(savedSearch.get("createdBy"), loggedInUser)
                     );
                 }
             }
 
-            if (ors.getExpressions().size() != 0) {
-                conjunction.getExpressions().add(ors);
-            }
+            predicates = addOrPredicates(builder, predicates, ors);
 
-            return conjunction;
+            return createAndPredicate(builder, predicates);
         };
     }
 

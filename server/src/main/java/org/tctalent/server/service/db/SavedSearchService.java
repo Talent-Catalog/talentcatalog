@@ -19,7 +19,7 @@ package org.tctalent.server.service.db;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;

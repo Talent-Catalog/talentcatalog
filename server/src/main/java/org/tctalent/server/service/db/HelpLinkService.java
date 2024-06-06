@@ -17,7 +17,7 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.NoSuchObjectException;

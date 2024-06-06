@@ -19,7 +19,7 @@ package org.tctalent.server.security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

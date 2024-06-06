@@ -18,7 +18,7 @@ package org.tctalent.server.request.candidate;
 
 import java.util.Arrays;
 import java.util.Collection;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -18,7 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import java.time.Duration;
 import java.time.Instant;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.RootRequest;

@@ -21,8 +21,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -106,7 +106,7 @@ public class CandidateEs {
        queries.
        See https://www.elastic.co/blog/strings-are-dead-long-live-strings
        The mess up happens in the Spring Data Elasticsearch support which on connection
-       (in ElasticsearchConfiguration.java) will force the mapping strictly according to any
+       (in TalentCatalogElasticsearchConfiguration.java) will force the mapping strictly according to any
        @Field annotation - which means that Elasticsearch's own clever defaulting never happens.
        - JC
      */

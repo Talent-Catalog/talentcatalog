@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.task.UploadType;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter

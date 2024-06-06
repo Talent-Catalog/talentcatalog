@@ -16,7 +16,7 @@
 
 package org.tctalent.server.model.db;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 

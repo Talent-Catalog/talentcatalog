@@ -17,7 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import java.util.Map;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

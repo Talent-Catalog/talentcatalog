@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.repository.db.ExportColumnRepository;

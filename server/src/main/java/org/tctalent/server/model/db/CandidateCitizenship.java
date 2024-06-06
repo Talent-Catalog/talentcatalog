@@ -23,7 +23,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Getter

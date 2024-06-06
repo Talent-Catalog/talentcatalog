@@ -16,9 +16,9 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.annotation.Nullable;
 import java.util.Collection;
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;

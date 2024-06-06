@@ -25,7 +25,7 @@ import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupatio
 import org.tctalent.server.service.db.CandidateOccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
