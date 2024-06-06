@@ -42,14 +42,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,6 +70,7 @@ import org.tctalent.server.model.db.CandidateNote;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
@@ -73,6 +80,10 @@ import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.repository.db.ChatPostRepository;
+import org.tctalent.server.repository.db.JobChatRepository;
+import org.tctalent.server.repository.db.JobChatUserRepository;
+import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.request.job.SearchJobRequest;
@@ -123,8 +134,12 @@ public class SystemAdminApi {
     private final SalesforceConfig salesforceConfig;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListRepository savedListRepository;
+    private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
+    private final JobChatRepository jobChatRepository;
+    private final JobChatUserRepository jobChatUserRepository;
+    private final ChatPostRepository chatPostRepository;
     private final S3ResourceHelper s3ResourceHelper;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -153,7 +168,8 @@ public class SystemAdminApi {
 
     @Value("${google.drive.listFoldersRootId}")
     private String listFoldersRootId;
-
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     public SystemAdminApi(
             DataSharingService dataSharingService,
@@ -167,8 +183,9 @@ public class SystemAdminApi {
             JobService jobService, JobChatService jobChatService, LanguageService languageService,
             PopulateElasticsearchService populateElasticsearchService,
             SalesforceService salesforceService,
-            SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
+            SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
             SavedListRepository savedListRepository, SavedSearchService savedSearchService,
+            JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig) {
         this.dataSharingService = dataSharingService;
@@ -188,8 +205,12 @@ public class SystemAdminApi {
         this.salesforceConfig = salesforceConfig;
         this.salesforceJobOppService = salesforceJobOppService;
         this.savedListRepository = savedListRepository;
+        this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
+        this.jobChatRepository = jobChatRepository;
+        this.jobChatUserRepository = jobChatUserRepository;
+        this.chatPostRepository = chatPostRepository;
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
@@ -2084,5 +2105,70 @@ public class SystemAdminApi {
         @PathVariable("noOfPagesRequested") int noOfPagesRequested
     ) {
         candidateService.syncCandidatesToSf(pageSize, firstPageIndex, noOfPagesRequested);
+    }
+
+    @GetMapping("delete-job/{jobId}")
+    @Transactional
+    public ResponseEntity<Void> deleteJob(@PathVariable("jobId") Long jobId) {
+        try {
+        // Check if the job exists before proceeding
+        Optional<SalesforceJobOpp> optionalJob = salesforceJobOppRepository.findById(jobId);
+        if (!optionalJob.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 Not Found if job does not exist
+        }
+
+        SalesforceJobOpp job = optionalJob.get();
+        job.setSubmissionList(null);
+        job.setExclusionList(null);
+        salesforceJobOppRepository.save(job);
+
+        // Delete related entries in chat_post and job_chat_user
+        deleteChatAndJobChatUserEntries(jobId);
+
+        // Execute a native SQL query to delete records from job_suggested_saved_search table
+        deleteJobSuggestedSavedSearchEntries(jobId);
+
+        // Delete related entries in SavedList and SavedSearch
+        deleteSavedListAndSavedSearchEntries(jobId);
+
+        // Delete the job from salesforce_job_opp
+        salesforceJobOppRepository.deleteById(jobId);
+
+        return ResponseEntity.ok().build(); // Return 200 OK
+    } catch (Exception e) {
+        log.error("Error deleting job with id " + jobId, e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Return 500 Internal Server Error
+    }
+}
+    // Helper method to delete related entries in chat_post and job_chat_user
+    private void deleteChatAndJobChatUserEntries(Long jobId) {
+        List<JobChat> jobChats = jobChatRepository.findByJobOppId(jobId);
+        for (JobChat jobChat : jobChats) {
+            Long jobChatId = jobChat.getId();
+            jobChatUserRepository.deleteByJobChatId(jobChatId);
+            chatPostRepository.deleteByJobChatId(jobChatId);
+        }
+        jobChatRepository.deleteAll(jobChats);
+    }
+
+    // Helper method to delete records from job_suggested_saved_search table
+    private void deleteJobSuggestedSavedSearchEntries(Long jobId) {
+        String sql = "DELETE FROM job_suggested_saved_search WHERE tc_job_id = :jobId";
+        entityManager.createNativeQuery(sql)
+            .setParameter("jobId", jobId)
+            .executeUpdate();
+    }
+
+    // Helper method to delete related entries in SavedList and SavedSearch
+    private void deleteSavedListAndSavedSearchEntries(Long jobId) {
+        List<SavedList> savedLists = savedListRepository.findByJobIds(jobId);
+        savedLists.forEach(savedList -> {
+            savedList.setSavedSearch(null);
+            savedList.setSavedSearchSource(null);
+        });
+        savedListRepository.saveAll(savedLists);
+        savedListRepository.flush();
+        savedListRepository.deleteAll(savedLists);
+        savedSearchRepository.deleteByJobId(jobId);
     }
 }
