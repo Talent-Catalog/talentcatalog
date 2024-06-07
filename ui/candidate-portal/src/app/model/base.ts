@@ -260,7 +260,7 @@ export class LoginRequest {
   totpToken: string;
 }
 
-export const EMAIL_REGEX: string = '(?!.*[.]{2})[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$';
+export const EMAIL_REGEX: string = '(?!.*[._%+-]{2})[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$';
 
 export function isMine(source: CandidateSource, authenticationService: AuthenticationService) {
   let mine: boolean = false;
