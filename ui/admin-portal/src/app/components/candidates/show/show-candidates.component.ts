@@ -624,12 +624,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   exportCandidates() {
-    // if (this.results.totalElements > 3000) {
-    //   const csvError: string = "Spreadsheet exports are currently capped at 3,000 candidates — please " +
-    //     "contact a TC admin if this limit will negatively impact your work."
-    //   this.error = csvError
-    //   throw new Error(csvError)
-    // }
     this.exporting = true;
 
     //Create the appropriate request
