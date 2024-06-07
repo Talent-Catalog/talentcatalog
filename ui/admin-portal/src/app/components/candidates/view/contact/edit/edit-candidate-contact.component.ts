@@ -22,6 +22,7 @@ import {Candidate, Gender} from '../../../../../model/candidate';
 import {CountryService} from '../../../../../services/country.service';
 import {generateYearArray} from '../../../../../util/year-helper';
 import {EnumOption, enumOptions} from "../../../../../util/enum";
+import {EMAIL_REGEX} from "../../../../../model/base";
 
 @Component({
   selector: 'app-edit-candidate-contact',
@@ -42,6 +43,8 @@ export class EditCandidateContactComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
+
+  protected readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,

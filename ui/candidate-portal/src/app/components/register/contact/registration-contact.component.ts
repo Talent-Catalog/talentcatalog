@@ -45,7 +45,7 @@ export class RegistrationContactComponent implements OnInit {
 
   usAfghan: boolean;
 
-  emailRegex: string;
+  protected readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -56,7 +56,6 @@ export class RegistrationContactComponent implements OnInit {
     this.authenticated = false;
     this.loading = true;
     this.candidate = null;
-    this.emailRegex = EMAIL_REGEX;
     this.form = this.fb.group({
       email: ['', Validators.required],
       phone: [''],

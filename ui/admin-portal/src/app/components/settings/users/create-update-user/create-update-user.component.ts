@@ -26,7 +26,7 @@ import {EnumOption, enumOptions} from "../../../../util/enum";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {forkJoin} from "rxjs";
-import {SearchUserRequest, Status} from "../../../../model/base";
+import {EMAIL_REGEX, SearchUserRequest, Status} from "../../../../model/base";
 
 @Component({
   selector: 'app-create-update-user',
@@ -44,6 +44,8 @@ export class CreateUpdateUserComponent implements OnInit {
   countries: Country[];
   partners: Partner[];
   approvers: User[];
+
+  protected readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
