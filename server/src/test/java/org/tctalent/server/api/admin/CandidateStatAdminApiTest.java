@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -146,7 +147,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[0].rows[2].label", is("female")))
         .andExpect(jsonPath("$[0].rows[2].value", is(2588)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeGenderStats(any(), any(), any());
   }
 
@@ -184,7 +185,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[1].rows[2].label", is("2016-06-14")))
         .andExpect(jsonPath("$[1].rows[2].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeRegistrationStats(any(), any(), any());
   }
 
@@ -222,7 +223,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[2].rows[2].label", is("Teacher")))
         .andExpect(jsonPath("$[2].rows[2].value", is(777)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeRegistrationOccupationStats(any(), any(), any());
   }
 
@@ -260,7 +261,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[3].rows[2].label", is("1951")))
         .andExpect(jsonPath("$[3].rows[2].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeBirthYearStats(any(), any(), any(), any());
   }
 
@@ -296,7 +297,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[6].rows[1].label", is("Has link")))
         .andExpect(jsonPath("$[6].rows[1].value", is(10)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeLinkedInExistsStats(any(), any(), any());
   }
 
@@ -334,7 +335,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[7].rows[2].label", is("2016-06-14")))
         .andExpect(jsonPath("$[7].rows[2].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeLinkedInStats(any(), any(), any());
   }
 
@@ -372,7 +373,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[8].rows[2].label", is("No")))
         .andExpect(jsonPath("$[8].rows[2].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeUnhcrRegisteredStats(any(), any(), any());
   }
 
@@ -412,7 +413,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[9].rows[3].label", is("RegisteredStatusUnknown")))
         .andExpect(jsonPath("$[9].rows[3].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeUnhcrStatusStats(any(), any(), any());
   }
 
@@ -448,7 +449,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[10].rows[1].label", is("Syria")))
         .andExpect(jsonPath("$[10].rows[1].value", is(14852)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(5)).computeNationalityStats(any(), any(), any(), any(), any());
   }
 
@@ -484,7 +485,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[15].rows[1].label", is("Jordan")))
         .andExpect(jsonPath("$[15].rows[1].value", is(4396)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeSourceCountryStats(any(), any(), any(), any());
   }
 
@@ -526,7 +527,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[18].rows[4].label", is("autonomousEmployment")))
         .andExpect(jsonPath("$[18].rows[4].value", is(5000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(5)).computeStatusStats(any(), any(), any(), any(), any());
   }
 
@@ -564,7 +565,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[23].rows[2].label", is("Accountant")))
         .andExpect(jsonPath("$[23].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeOccupationStats(any(), any(), any(), any());
   }
 
@@ -602,7 +603,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[26].rows[2].label", is("Accountant")))
         .andExpect(jsonPath("$[26].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeMostCommonOccupationStats(any(), any(), any(), any());
   }
 
@@ -640,7 +641,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[29].rows[2].label", is("Doctoral Degree")))
         .andExpect(jsonPath("$[29].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeMaxEducationStats(any(), any(), any(), any());
   }
 
@@ -678,7 +679,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[32].rows[2].label", is("French")))
         .andExpect(jsonPath("$[32].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeLanguageStats(any(), any(), any(), any());
   }
 
@@ -714,7 +715,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[35].rows[1].label", is("uncle fred")))
         .andExpect(jsonPath("$[35].rows[1].value", is(2000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeReferrerStats(any(), any(), any(), any(), any());
   }
 
@@ -752,7 +753,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[38].rows[2].label", is("NGO")))
         .andExpect(jsonPath("$[38].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(5)).computeSurveyStats(any(), any(), any(), any(), any());
   }
 
@@ -790,7 +791,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[43].rows[2].label", is("Elementary Proficiency")))
         .andExpect(jsonPath("$[43].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(6)).computeSpokenLanguageLevelStats(any(), any(), any(), any(), any());
   }
 
