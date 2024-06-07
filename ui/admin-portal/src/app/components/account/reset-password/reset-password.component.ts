@@ -19,7 +19,7 @@ export class ResetPasswordComponent implements OnInit {
 
   backgroundImage: string;
 
-  protected readonly emailRegex: string = EMAIL_REGEX;
+  readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private fb: FormBuilder,
               private userService: UserService) {

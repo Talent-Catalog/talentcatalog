@@ -44,7 +44,7 @@ export class EditCandidateContactComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
-  protected readonly emailRegex: string = EMAIL_REGEX;
+  readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,

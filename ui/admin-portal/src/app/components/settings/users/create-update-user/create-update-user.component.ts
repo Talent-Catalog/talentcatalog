@@ -45,7 +45,7 @@ export class CreateUpdateUserComponent implements OnInit {
   partners: Partner[];
   approvers: User[];
 
-  protected readonly emailRegex: string = EMAIL_REGEX;
+  readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,

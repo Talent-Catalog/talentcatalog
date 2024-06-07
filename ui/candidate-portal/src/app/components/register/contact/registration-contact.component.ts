@@ -45,7 +45,7 @@ export class RegistrationContactComponent implements OnInit {
 
   usAfghan: boolean;
 
-  protected readonly emailRegex: string = EMAIL_REGEX;
+  readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,

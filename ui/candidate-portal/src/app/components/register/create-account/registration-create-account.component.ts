@@ -35,7 +35,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
   usAfghan: boolean;
   partnerName: string;
 
-  protected readonly emailRegex: string = EMAIL_REGEX;
+  readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private builder: FormBuilder,
               private route: ActivatedRoute,
