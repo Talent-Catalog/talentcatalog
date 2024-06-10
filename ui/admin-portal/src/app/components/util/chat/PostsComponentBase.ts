@@ -79,7 +79,7 @@ export abstract class PostsComponentBase implements OnDestroy{
     this.posts = [];
 
     if (this.chat) {
-      console.log('Subscribing for posts on chat ' + chat.id)
+      // console.log('Subscribing for posts on chat ' + chat.id)
       //Subscribe for updates on new chat
       this.chatSubscription = this.chatService.getChatPosts$(this.chat).subscribe({
           next: (post) => this.addNewPost(post)
