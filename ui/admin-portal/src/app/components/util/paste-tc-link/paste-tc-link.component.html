@@ -1,0 +1,21 @@
+<form [formGroup]="form">
+  <div class="modal-header">
+    <div class="modal-title">
+      <h5>{{label}}</h5>
+    </div>
+  </div>
+  <div class="modal-body">
+    <div class="mb-3">
+      <label class="form-label" for="name">TC Link</label>
+      <input class="form-control" id="name" [formControlName]="'name'" type="text">
+    </div>
+  </div>
+</form>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="onSelect()">
+    {{select}}
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="onCancel()">
+    {{cancel}}
+  </button>
+</div>

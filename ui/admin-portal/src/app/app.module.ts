@@ -544,7 +544,8 @@ import {
 } from './components/settings/help-links/create-update-help-link/create-update-help-link.component';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {LanguageLoader} from "./services/language.loader";
-import { SfJoblinkComponent } from './components/util/sf-joblink/sf-joblink.component';
+import {SfJoblinkComponent} from './components/util/sf-joblink/sf-joblink.component';
+import {PasteTcLinkComponent} from './components/util/paste-tc-link/paste-tc-link.component';
 
 @NgModule({
   declarations: [
@@ -865,7 +866,8 @@ import { SfJoblinkComponent } from './components/util/sf-joblink/sf-joblink.comp
     HelpComponent,
     SearchHelpLinksComponent,
     CreateUpdateHelpLinkComponent,
-    SfJoblinkComponent
+    SfJoblinkComponent,
+    PasteTcLinkComponent
   ],
   imports: [
     BrowserModule,

@@ -1,11 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {
-  PostJobToSlackRequest,
-  Progress,
-  UpdateEmployerOpportunityRequest
-} from "../../../model/base";
+import {PostJobToSlackRequest, Progress, UpdateEmployerOpportunityRequest} from "../../../model/base";
 import {getCandidateSourceExternalHref} from "../../../model/saved-search";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
@@ -19,6 +15,8 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {Employer} from "../../../model/partner";
 import {SfJoblinkValidationEvent} from "../../util/sf-joblink/sf-joblink.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {PasteTcLinkComponent} from "../../util/paste-tc-link/paste-tc-link.component";
 
 @Component({
   selector: 'app-new-job',
@@ -32,6 +30,7 @@ export class NewJobComponent implements OnInit {
   job: Job;
   savedList: SavedList;
   sfJoblink: string;
+  jobCopyId: number;
   slacklink: string;
   creatingJob: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
@@ -53,7 +52,8 @@ export class NewJobComponent implements OnInit {
     private savedListService: SavedListService,
     private slackService: SlackService,
     private location: Location,
-    private router: Router) { }
+    private router: Router,
+    private modalService: NgbModal) { }
 
   ngOnInit(): void {
     if (this.isEmployerPartner()) {
@@ -140,7 +140,8 @@ export class NewJobComponent implements OnInit {
     this.creatingJob = Progress.Started;
     const request: UpdateJobRequest = {
       roleName: this.roleName ? this.roleName : null,
-      sfJoblink: this.sfJoblink ? this.sfJoblink : null
+      sfJoblink: this.sfJoblink ? this.sfJoblink : null,
+      jobCopyId: this.jobCopyId ? this.jobCopyId : null
     };
     this.jobService.create(request).subscribe(
       (job) => {
@@ -229,11 +230,29 @@ export class NewJobComponent implements OnInit {
   }
 
   getBreadCrumb() {
-    return "Create a new job";
+    return "New Job";
   }
 
   doPreparation() {
     this.createRegisteredJob()
+  }
+
+  selectJobCopy() {
+    // todo get jobs to copy from (only jobs that belong to the employer?) instead poste link to job to copy
+    let jobs: Job[] = []
+    const copyJobModal = this.modalService.open(PasteTcLinkComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+    copyJobModal.componentInstance.label = "Paste link to job to copy";
+    copyJobModal.result.then(
+      (linkToJob: string) => {
+        this.jobCopyId = 123;
+        // todo get job id from link, then fetch that job.
+        // todo do a similar action to doPreparation but we need to copy fields from job selected
+        this.doPreparation()
+      })
+      .catch(() => {})
   }
 
   doShowJob() {
