@@ -50,6 +50,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrStatusStats
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.Set;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @MockBean SavedListService savedListService;
   @MockBean SavedSearchService savedSearchService;
   @MockBean AuthService authService;
+  @MockBean EntityManager entityManager;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
