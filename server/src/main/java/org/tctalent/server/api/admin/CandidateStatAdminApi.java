@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,6 +56,7 @@ public class CandidateStatAdminApi {
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final AuthService authService;
+    private final EntityManager entityManager;
 
     /**
      * Runs queries to generate all our supported reports.
@@ -87,6 +89,11 @@ public class CandidateStatAdminApi {
         } else if (request.getSearchId() != null) {
             //Get candidates from search
             candidateIds = savedSearchService.searchCandidates(request.getSearchId());
+
+            //The above call loads all candidates into persistence context (even though it
+            //only returns their ids).
+            //They are no longer needed so free up memory by clearing the context.
+            entityManager.clear();
         }
 
         convertDateRangeDefaults(request);
