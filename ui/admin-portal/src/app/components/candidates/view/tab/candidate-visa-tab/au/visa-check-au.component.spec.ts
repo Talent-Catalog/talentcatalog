@@ -15,7 +15,7 @@
  */
 import {VisaCheckAuComponent} from "./visa-check-au.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
@@ -42,7 +42,7 @@ fdescribe('VisaCheckAuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ VisaCheckAuComponent ],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule ,NgSelectModule,LocalStorageModule.forRoot({})],
       providers: [
         { provide: NgbModal, useValue: {} },
         { provide: LocalStorageService, useValue: {} }
@@ -82,4 +82,5 @@ fdescribe('VisaCheckAuComponent', () => {
   it('should select the first job by default', () => {
     expect(component.selectedJob).toBe(component.visaCheckRecord.candidateVisaJobChecks[0]);
   });
+  
 });
