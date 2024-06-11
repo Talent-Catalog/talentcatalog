@@ -20,6 +20,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {Candidate} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {EMAIL_REGEX} from "../../../model/base";
 
 @Component({
   selector: 'app-registration-contact',
@@ -43,6 +44,8 @@ export class RegistrationContactComponent implements OnInit {
   candidate: Candidate;
 
   usAfghan: boolean;
+
+  readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
