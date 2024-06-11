@@ -143,6 +143,8 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      *     <li>closedOpps</li>
      *     <li>relocatedOpps</li>
      * </ul>
+     *
+     * Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
      */
     private CandidateFilterByOpps candidateFilterByOpps;
 
