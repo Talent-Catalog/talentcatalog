@@ -115,5 +115,5 @@ export interface UpdateJobRequest extends OpportunityProgressParams {
   sfId?: string;
   sfJoblink?: string;
   submissionDueDate?: Date;
-  jobCopyId?: number;
+  jobToCopyId?: number;
 }

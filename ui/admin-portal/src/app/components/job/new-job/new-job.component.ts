@@ -30,7 +30,7 @@ export class NewJobComponent implements OnInit {
   job: Job;
   savedList: SavedList;
   sfJoblink: string;
-  jobCopyId: number;
+  jobToCopyId: number;
   slacklink: string;
   creatingJob: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
@@ -141,7 +141,7 @@ export class NewJobComponent implements OnInit {
     const request: UpdateJobRequest = {
       roleName: this.roleName ? this.roleName : null,
       sfJoblink: this.sfJoblink ? this.sfJoblink : null,
-      jobCopyId: this.jobCopyId ? this.jobCopyId : null
+      jobToCopyId: this.jobToCopyId ? this.jobToCopyId : null
     };
     this.jobService.create(request).subscribe(
       (job) => {
@@ -246,8 +246,8 @@ export class NewJobComponent implements OnInit {
     });
     copyJobModal.componentInstance.label = "Paste link to job to copy";
     copyJobModal.result.then(
-      (linkToJob: string) => {
-        this.jobCopyId = 123;
+      (linkToJob: number) => {
+        this.jobToCopyId = linkToJob;
         // todo get job id from link, then fetch that job.
         // todo do a similar action to doPreparation but we need to copy fields from job selected
         this.doPreparation()
