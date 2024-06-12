@@ -27,11 +27,11 @@ MODEL - use of subclassing FormComponentBase to inherit common standard form fun
     <input type="text" class="form-control" formControlName="sfJoblink">
   </div>
   <div *ngIf="isInvalid(form.controls.sfJoblink)" class="alert alert-danger">
-    Doesn't look like a Salesforce Job opportunity link to me!
-    <br/>
-    Copy and paste from Salesforce.
+    Your link must be the <em>full version</em> of a URL pointing to a valid Salesforce opportunity.
+    Navigate to the record and copy-paste from your browser's address bar, e.g.:
+    https://talentbeyondboundaries.lightning.force.com/lightning/r/<b>Opportunity</b>/006Uu000004qo4rIAA/view
   </div>
   <div *ngIf="form.controls.sfJoblink.pending">
-    <i class="fas fa-spinner fa-spin"></i>Waiting validation from Salesforce...
+    <i class="fas fa-spinner fa-spin"></i>Waiting for validation from Salesforce...
   </div>
 </form>

@@ -14,28 +14,67 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {DeleteCandidateComponent} from "./delete-candidate.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateService} from "../../../../services/candidate.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {Candidate} from "../../../../model/candidate";
+import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-import { DeleteCandidateComponent } from './delete-candidate.component';
+import {CandidatePipe} from "../../../../pipes/candidate.pipe";
+import {of} from "rxjs";
 
-describe('DeleteCandidateComponent', () => {
+fdescribe('DeleteCandidateComponent', () => {
   let component: DeleteCandidateComponent;
   let fixture: ComponentFixture<DeleteCandidateComponent>;
+  let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
+  let mockCandidateService: jasmine.SpyObj<CandidateService>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DeleteCandidateComponent ]
+  const mockCandidate =  new MockCandidate();
+  beforeEach(async () => {
+    const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['dismiss', 'close']);
+    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['delete']);
+
+    await TestBed.configureTestingModule({
+      declarations: [DeleteCandidateComponent,CandidatePipe],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      providers: [
+        { provide: NgbActiveModal, useValue: activeModalSpy },
+        { provide: CandidateService, useValue: candidateServiceSpy }
+      ]
     })
     .compileComponents();
-  }));
+
+    mockActiveModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
+    mockCandidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DeleteCandidateComponent);
     component = fixture.componentInstance;
+    component.candidate = mockCandidate;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should dismiss the modal when cancel is called', () => {
+    component.cancel();
+    expect(mockActiveModal.dismiss).toHaveBeenCalled();
+  });
+
+  it('should set deleting to false and close the modal when confirm is called', () => {
+    component.candidate = mockCandidate;
+    mockCandidateService.delete.and.returnValue(of(true));
+    component.confirm();
+    expect(component.deleting).toBeFalse();
+    expect(mockCandidateService.delete).toHaveBeenCalledWith(mockCandidate.id);
+    expect(mockActiveModal.close).toHaveBeenCalled();
+  });
 });
+

@@ -26,6 +26,13 @@ import org.tctalent.server.model.db.SavedList;
 
 public interface SavedListRepository extends JpaRepository<SavedList, Long>, JpaSpecificationExecutor<SavedList> {
 
+    /**
+     * Retrieves a list of {@link SavedList} entries associated with the specified job IDs.
+     * @param jobIds The IDs of the jobs for which associated {@link SavedList} entries will be retrieved.
+     * @return A list of {@link SavedList} entries associated with the specified job IDs.
+     */
+    @Query("SELECT s FROM SavedList s WHERE s.sfJobOpp.id IN :jobIds")
+    List<SavedList> findByJobIds(@Param("jobIds") Long jobIds);
     @Query(" select distinct s from SavedList s "
             + " where lower(s.name) = lower(:name)"
             + " and s.createdBy.id = :userId"

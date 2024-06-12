@@ -411,6 +411,7 @@ public class CandidateSpecification {
             }
 
             //CANDIDATE OPPORTUNITIES
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
             final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
             if (candidateFilterByOpps != null) {
                Boolean anyOpps = candidateFilterByOpps.getAnyOpps();

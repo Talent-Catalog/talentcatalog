@@ -204,7 +204,6 @@
     <!--  Generate all job entries - but only one is enabled and loaded at a time. Reloaded with selectedJobIndex changes.-->
     <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
       <app-visa-job-check-ca *ngIf="job.id == selectedJob.id"
-                             [id]="i"
                              [selectedJobCheck]="job"
                              [candidate]="candidate"
                              [candidateIntakeData]="candidateIntakeData"

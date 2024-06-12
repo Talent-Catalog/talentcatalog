@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -169,6 +170,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationMajorRepository educationMajorRepository;
     private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
+    private final EntityManager entityManager;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
@@ -678,6 +680,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
+                entityManager.clear();
                 Page<Candidate> result = doSearchCandidates(request);
                 setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {
@@ -1574,6 +1577,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
 
             //Save Boolean filters corresponding to enum name
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
             final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
             if (candidateFilterByOpps == null) {
                 savedSearch.setAnyOpps(null);
@@ -1645,6 +1649,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
 
+        // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
         CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
             search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
         searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);

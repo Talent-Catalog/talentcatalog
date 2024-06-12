@@ -17,6 +17,10 @@
 package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.JobChatUser;
 import org.tctalent.server.model.db.JobChatUserKey;
 
@@ -24,4 +28,12 @@ import org.tctalent.server.model.db.JobChatUserKey;
  * See doc for {@link org.tctalent.server.model.db.JobChatUser}
  */
 public interface JobChatUserRepository extends JpaRepository<JobChatUser, JobChatUserKey> {
+  /**
+   * Deletes {@link JobChatUser} entries associated with the specified job chat ID.
+   * @param jobChatId The ID of the job chat for which associated {@link JobChatUser} entries will be deleted.
+   */
+  @Transactional
+  @Modifying
+  @Query("DELETE FROM JobChatUser cp WHERE cp.chat.id = :jobChatId")
+  void deleteByJobChatId(@Param("jobChatId") Long jobChatId);
 }
