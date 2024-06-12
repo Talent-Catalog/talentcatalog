@@ -944,21 +944,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
 
     /**
-     * Get candidate name and number string for automated chat posts
-     * @param candidate Candidate to get details from
+     * Publish post for a candidate opportunity stage change to acceptance. Notify all previous chats.
+     * - CandidateProspect chat
+     * - CandidateRecruiting chat
+     * - JobCreatorSourcePartner chat
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
      */
-    private String getCandidateNameNumber(Candidate candidate) {
-        // Get candidate name and number for automated chat posts
-        return candidate.getUser().getFirstName() + " "
-                + candidate.getUser().getLastName()
-                + " (" + candidate.getCandidateNumber() + ")";
-    }
-
     private void publishOppAcceptedPosts(CandidateOpportunity opp) {
         Candidate candidate = opp.getCandidate();
-        String candidateName = candidate.getUser().getFirstName() + " " + candidate.getUser().getLastName();
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
         Post autoPostAcceptedJobOffer = new Post();
-        autoPostAcceptedJobOffer.setContent("The candidate " + candidateName + " has accepted the job offer from '"
+        autoPostAcceptedJobOffer.setContent("The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
                 + opp.getJobOpp().getName() + " and is now a member of the Pathway Club.");
 
         // AUTO CHAT TO PROSPECT CHAT
@@ -987,6 +983,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 autoPostAcceptedJobOffer, jcspChat, userService.getSystemAdminUser());
         // Publish chat post
         chatPostService.publishChatPost(jcspChatPostAccepted);
+    }
+
+    /**
+     * Get candidate name and number string for automated chat posts
+     * @param candidate Candidate to get details from
+     */
+    private String getCandidateNameNumber(Candidate candidate) {
+        // Get candidate name and number for automated chat posts
+        return candidate.getUser().getFirstName() + " "
+                + candidate.getUser().getLastName()
+                + " (" + candidate.getCandidateNumber() + ")";
     }
 
 }
