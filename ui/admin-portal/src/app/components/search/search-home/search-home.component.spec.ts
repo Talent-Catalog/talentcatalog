@@ -28,12 +28,12 @@ fdescribe('SearchHomeComponent', () => {
   let fixture: ComponentFixture<SearchHomeComponent>;
   let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
   let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
-  let authenticationcServiceSpy: jasmine.SpyObj<AuthenticationService>;
+  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
 
   beforeEach(async () => {
     const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
     const searchServiceSpy = jasmine.createSpyObj('SavedSearchService', ['getSavedSearchTypeInfos']);
-    const authenticationcSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    const authenticationSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
 
     await TestBed.configureTestingModule({
       declarations: [SearchHomeComponent],
@@ -41,21 +41,19 @@ fdescribe('SearchHomeComponent', () => {
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },
         { provide: SavedSearchService, useValue: searchServiceSpy },
-        { provide: AuthenticationService, useValue: authenticationcSpy }
+        { provide: AuthenticationService, useValue: authenticationSpy }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
    localStorageServiceSpy = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
     savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;
-    authenticationcServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-
-    // Mock localStorageService.get to return defaultTabId
+    authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
   });
 
   beforeEach(()=>{
     fixture = TestBed.createComponent(SearchHomeComponent);
     component = fixture.componentInstance;
-    authenticationcServiceSpy.getLoggedInUser.and.returnValue(new MockUser());
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(new MockUser());
     localStorageServiceSpy.get.and.returnValue(component['defaultTabId']);
     component.savedSearchTypeInfos = MockSavedSearchTypeInfo;
   });
@@ -85,7 +83,6 @@ fdescribe('SearchHomeComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
     expect(compiled.querySelector('app-candidates-search')).toBeTruthy();
-
     component.activeTabId = 'MySearches';
     fixture.detectChanges();
     expect(compiled.querySelector('app-browse-candidate-sources')).toBeTruthy();
@@ -94,7 +91,7 @@ fdescribe('SearchHomeComponent', () => {
   it('should handle tab change event with valid tab ID', () => {
     fixture.detectChanges();
     const event = { nextId: 'SearchesSharedWithMe' };
-    // @ts-ignore
+    // @ts-expect-error
     component.onTabChanged(event);
     expect(component.activeTabId).toBe('SearchesSharedWithMe');
     expect(localStorageServiceSpy.set).toHaveBeenCalledWith(component["lastTabKey"], 'SearchesSharedWithMe');
