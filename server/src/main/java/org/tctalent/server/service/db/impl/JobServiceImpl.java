@@ -1129,8 +1129,10 @@ public class JobServiceImpl implements JobService {
         job.setJobSummary(jobToCopy.getJobSummary());
 
         // Copy JOI data
-        JobOppIntake copiedIntake = jobOppIntakeService.create(jobToCopy.getJobOppIntake());
-        job.setJobOppIntake(copiedIntake);
+        if (jobToCopy.getJobOppIntake() != null) {
+            JobOppIntake copiedIntake = jobOppIntakeService.create(jobToCopy.getJobOppIntake());
+            job.setJobOppIntake(copiedIntake);
+        }
 
         // Copy all associated job uploads
         SavedList submissionListToCopy = jobToCopy.getSubmissionList();

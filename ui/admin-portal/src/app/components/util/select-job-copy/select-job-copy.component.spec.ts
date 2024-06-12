@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {PasteTcLinkComponent} from './paste-tc-link.component';
+import {SelectJobCopyComponent} from './select-job-copy.component';
 
-describe('PasteTcLinkComponent', () => {
-  let component: PasteTcLinkComponent;
-  let fixture: ComponentFixture<PasteTcLinkComponent>;
+describe('SelectJobCopyComponent', () => {
+  let component: SelectJobCopyComponent;
+  let fixture: ComponentFixture<SelectJobCopyComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PasteTcLinkComponent ]
+      declarations: [ SelectJobCopyComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PasteTcLinkComponent);
+    fixture = TestBed.createComponent(SelectJobCopyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

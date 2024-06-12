@@ -16,7 +16,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {Employer} from "../../../model/partner";
 import {SfJoblinkValidationEvent} from "../../util/sf-joblink/sf-joblink.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {PasteTcLinkComponent} from "../../util/paste-tc-link/paste-tc-link.component";
+import {SelectJobCopyComponent} from "../../util/select-job-copy/select-job-copy.component";
 
 @Component({
   selector: 'app-new-job',
@@ -31,6 +31,7 @@ export class NewJobComponent implements OnInit {
   savedList: SavedList;
   sfJoblink: string;
   jobToCopyId: number;
+  jobsToCopy: Job[];
   slacklink: string;
   creatingJob: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
@@ -41,6 +42,7 @@ export class NewJobComponent implements OnInit {
   errorCreatingJob: string = null;
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
+  errorGettingJobsToCopySlack: string = null;
   jobForm: FormGroup;
 
   constructor(
@@ -240,16 +242,15 @@ export class NewJobComponent implements OnInit {
   selectJobCopy() {
     // todo get jobs to copy from (only jobs that belong to the employer?) instead poste link to job to copy
     let jobs: Job[] = []
-    const copyJobModal = this.modalService.open(PasteTcLinkComponent, {
+    const copyJobModal = this.modalService.open(SelectJobCopyComponent, {
       centered: true,
       backdrop: 'static'
     });
-    copyJobModal.componentInstance.label = "Paste link to job to copy";
+
     copyJobModal.result.then(
       (linkToJob: number) => {
         this.jobToCopyId = linkToJob;
         // todo get job id from link, then fetch that job.
-        // todo do a similar action to doPreparation but we need to copy fields from job selected
         this.doPreparation()
       })
       .catch(() => {})
