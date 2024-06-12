@@ -1,21 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { JobSuggestedSearchesTabComponent } from './job-suggested-searches-tab.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {JobSuggestedSearchesTabComponent} from './job-suggested-searches-tab.component';
 import {Job} from "../../../../../model/job";
 import {MockJob} from "../../../../../MockData/MockJob";
-import { By } from '@angular/platform-browser';
+import {By} from '@angular/platform-browser';
 import {JobPrepItem} from "../../../../../model/job-prep-item";
-import {
-  ViewJobSuggestedSearchesComponent
-} from "../../suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component";
+import {ViewJobSuggestedSearchesComponent} from "../../suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
-import {
-  RouterLinkDirectiveStub
-} from "../../submission-list/view-job-submission-list/view-job-submission-list.component.spec";
 import {MockJobPrepItem} from "../../../../../MockData/MockJobPrepItem";
-import {
-  ViewJobSourceContactsComponent
-} from "../../source-contacts/view-job-source-contacts/view-job-source-contacts.component"; // Import the job prep item data
+import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 
 fdescribe('JobSuggestedSearchesTabComponent', () => {
   let component: JobSuggestedSearchesTabComponent;
@@ -28,7 +21,7 @@ fdescribe('JobSuggestedSearchesTabComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports:[HttpClientTestingModule,LocalStorageModule.forRoot({})],
-      declarations: [ JobSuggestedSearchesTabComponent,ViewJobSuggestedSearchesComponent,RouterLinkDirectiveStub ]
+      declarations: [ JobSuggestedSearchesTabComponent,ViewJobSuggestedSearchesComponent,RouterLinkStubDirective ]
     })
     .compileComponents();
   });

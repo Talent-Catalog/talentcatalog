@@ -3,7 +3,6 @@ import {ExportColumn} from "../model/saved-list";
 import {OpportunityIds} from "../model/opportunity";
 import {MockUser} from "./MockUser";
 import {MockSavedJoin} from "./MockSavedJoin";
-import {CandidateFilterByOpps} from "../model/candidate";
 
 export class MockSavedSearch implements SavedSearch {
   defaultSearch: boolean = true;
@@ -78,7 +77,6 @@ export class MockSavedSearch implements SavedSearch {
   includeDraftAndDeleted: boolean = true;
   searchJoins: MockSavedJoin[];
   exclusionListId: number = 1;
-  candidateFilterByOpps: CandidateFilterByOpps = CandidateFilterByOpps.openOpps;
   miniIntakeCompleted: boolean = true;
   fullIntakeCompleted: boolean = false;
 

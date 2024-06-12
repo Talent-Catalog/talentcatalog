@@ -9,6 +9,7 @@ import {RegistrationService} from "../../../services/registration.service";
 import {LanguageService} from "../../../services/language.service";
 import {RegisterCandidateRequest} from "../../../model/candidate";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
+import {EMAIL_REGEX} from "../../../model/base";
 
 @Component({
   selector: 'app-registration-create-account',
@@ -33,6 +34,8 @@ export class RegistrationCreateAccountComponent implements OnInit {
 
   usAfghan: boolean;
   partnerName: string;
+
+  readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private builder: FormBuilder,
               private route: ActivatedRoute,

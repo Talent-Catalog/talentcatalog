@@ -13,21 +13,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {CandidateEligibilityTabComponent} from "./candidate-eligibility-tab.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {Candidate} from "../../../../../model/candidate";
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {CandidateEligibilityTabComponent} from './candidate-eligibility-tab.component';
-
-describe('CandidateEligibilityTabComponent', () => {
+fdescribe('CandidateEligibilityTabComponent', () => {
   let component: CandidateEligibilityTabComponent;
   let fixture: ComponentFixture<CandidateEligibilityTabComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [ CandidateEligibilityTabComponent ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CandidateEligibilityTabComponent);
@@ -37,5 +37,29 @@ describe('CandidateEligibilityTabComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should set initial state correctly', () => {
+    expect(component.error).toBeNull(); // Ensure error is null initially
+    expect(component.loading).toBeUndefined(); // Ensure loading is undefined initially
+    expect(component.result).toBeUndefined(); // Ensure result is undefined initially
+  });
+
+  it('should fetch candidate data when candidate changes', () => {
+    const candidate: Candidate = new MockCandidate();
+    component.candidate = candidate;
+
+    component.ngOnChanges({
+      candidate:
+        {
+          previousValue: null,
+          currentValue: candidate,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+    });
+    expect(component.error).toBeNull(); // Ensure error is null after candidate data changes
+    expect(component.loading).toBe(false); // Ensure loading is false after candidate data changes
+    expect(component.result).toEqual(candidate); // Ensure candidate data is set correctly
   });
 });

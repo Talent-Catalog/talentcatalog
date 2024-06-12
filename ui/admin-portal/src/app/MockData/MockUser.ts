@@ -39,7 +39,7 @@ import {MockPartner} from "./MockPartner";
    lastLogin: number;
    usingMfa: boolean = false;
    mfaConfigured: boolean = false;
-   partner: MockPartner | undefined;
+   partner:  MockPartner = new MockPartner();
    name: string = "Mock User";
 
    constructor() {

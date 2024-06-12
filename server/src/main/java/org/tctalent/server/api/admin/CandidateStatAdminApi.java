@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
@@ -48,6 +50,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RestController()
 @RequestMapping("/api/admin/candidate/stat")
 @RequiredArgsConstructor
+@Slf4j
 public class CandidateStatAdminApi {
 
     private final CandidateService candidateService;
@@ -75,6 +78,14 @@ public class CandidateStatAdminApi {
         //Check whether the requested data to report on is from a set of candidates
         Set<Long> candidateIds = null;
         if (request.getListId() != null) {
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .listId(request.getListId())
+                .action("Get all stats")
+                .message("Getting all stats for list with id: " + request.getListId())
+                .logInfo();
+
             //Get candidates from list
             SavedList list = savedListService.get(request.getListId());
             Set<Candidate> candidates = list.getCandidates();
@@ -85,6 +96,14 @@ public class CandidateStatAdminApi {
             }
 
         } else if (request.getSearchId() != null) {
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .searchId(request.getSearchId())
+                .action("Get all stats")
+                .message("Getting all stats for search with id: " + request.getSearchId())
+                .logInfo();
+
             //Get candidates from search
             candidateIds = savedSearchService.searchCandidates(request.getSearchId());
         }
@@ -104,6 +123,14 @@ public class CandidateStatAdminApi {
         for (StatReport statReport: statReports) {
             dto.add(statDto().buildReport(statReport));
         }
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .listId(request.getListId())
+            .searchId(request.getSearchId())
+            .action("Get all stats")
+            .message("Returning all stats")
+            .logInfo();
 
         return dto;
     }

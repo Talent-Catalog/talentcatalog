@@ -14,28 +14,68 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {CandidateMiniIntakeTabComponent} from "./candidate-mini-intake-tab.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {CandidateService} from "../../../../../services/candidate.service";
+import {CountryService} from "../../../../../services/country.service";
+import {EducationLevelService} from "../../../../../services/education-level.service";
+import {OccupationService} from "../../../../../services/occupation.service";
+import {LanguageLevelService} from "../../../../../services/language-level.service";
+import {CandidateNoteService} from "../../../../../services/candidate-note.service";
+import {AuthenticationService} from "../../../../../services/authentication.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {AuthorizationService} from "../../../../../services/authorization.service";
+import {CandidateCitizenshipService} from "../../../../../services/candidate-citizenship.service";
+import {CandidateExamService} from "../../../../../services/candidate-exam.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
-import {CandidateMiniIntakeTabComponent} from './candidate-mini-intake-tab.component';
-
-describe('CandidateMiniIntakeTabComponent', () => {
+fdescribe('CandidateMiniIntakeTabComponent', () => {
   let component: CandidateMiniIntakeTabComponent;
   let fixture: ComponentFixture<CandidateMiniIntakeTabComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CandidateMiniIntakeTabComponent ]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
+      declarations: [CandidateMiniIntakeTabComponent],
+      providers: [
+        CandidateService,
+        CountryService,
+        EducationLevelService,
+        OccupationService,
+        LanguageLevelService,
+        CandidateNoteService,
+        AuthenticationService,
+        NgbModal,
+        AuthorizationService,
+        CandidateCitizenshipService,
+        CandidateExamService
+      ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CandidateMiniIntakeTabComponent);
     component = fixture.componentInstance;
+    component.candidate = new MockCandidate();
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should correctly determine the mini intake completion status', () => {
+    // Case 1: miniIntakeCompletedDate is null
+    component.candidate = { miniIntakeCompletedDate: null } as any;
+    expect(component.miniIntakeComplete).toBeFalse();
+
+    // Case 2: miniIntakeCompletedDate is not null
+    component.candidate = { miniIntakeCompletedDate: new Date() } as any;
+    expect(component.miniIntakeComplete).toBeTrue();
   });
 });
