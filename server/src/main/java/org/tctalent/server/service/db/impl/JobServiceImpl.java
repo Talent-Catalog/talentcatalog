@@ -1119,8 +1119,8 @@ public class JobServiceImpl implements JobService {
      * - Job uploads
      * - Job summary
      * - JOI fields
-     * @param jobToCopyId: id of selected job to copy from.
-     * @param job: job that is being created and fields are being copied across to.
+     * @param jobToCopyId id of selected job to copy from.
+     * @param job job that is being created and fields are being copied across to.
      */
     private void copyJobFields(long jobToCopyId, SalesforceJobOpp job) {
         SalesforceJobOpp jobToCopy = salesforceJobOppService.getJobOpp(jobToCopyId);
