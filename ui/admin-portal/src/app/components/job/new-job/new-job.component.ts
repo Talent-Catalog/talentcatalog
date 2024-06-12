@@ -240,7 +240,6 @@ export class NewJobComponent implements OnInit {
   }
 
   selectJobCopy() {
-    // todo get jobs to copy from (only jobs that belong to the employer?) instead poste link to job to copy
     let jobs: Job[] = []
     const copyJobModal = this.modalService.open(SelectJobCopyComponent, {
       centered: true,
@@ -248,9 +247,8 @@ export class NewJobComponent implements OnInit {
     });
 
     copyJobModal.result.then(
-      (linkToJob: number) => {
-        this.jobToCopyId = linkToJob;
-        // todo get job id from link, then fetch that job.
+      (jobId: number) => {
+        this.jobToCopyId = jobId;
         this.doPreparation()
       })
       .catch(() => {})
