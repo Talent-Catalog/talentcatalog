@@ -285,52 +285,42 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public @NotNull Set<Long> searchCandidates(long savedSearchId)
-        throws NoSuchObjectException {
+        throws NoSuchObjectException, InvalidRequestException {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
 
-        // Compute the candidates which should be excluded from search
-        Set<Candidate> excludedCandidates =
-            computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
-
-        // Modify request, doing standard defaults
-        addDefaultsToSearchCandidateRequest(searchRequest);
-
         Set<Long> candidateIds = new HashSet<>();
-        String simpleQueryString = searchRequest.getSimpleQueryString();
-        if (
-            (simpleQueryString != null && !simpleQueryString.isEmpty()) ||
-                !searchRequest.getSearchJoinRequests().isEmpty()
-        ) {
-            // This is an elasticsearch request OR is built on one or more other searches.
 
-            // Combine any joined searches (which will all be processed as elastic)
-            BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
-                simpleQueryString, excludedCandidates);
+        searchRequest.setPageSize(10000);
+        long count = 0;
+        int pageNum = 0;
 
-            NativeSearchQuery query = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .build()
-                .setPageable(Pageable.unpaged());
+        Page<Candidate> pageOfCandidates;
+        do {
+            searchRequest.setPageNumber(pageNum++);
+            pageOfCandidates = doSearchCandidates(searchRequest);
 
-            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
-
-            //Get candidate ids from the returned results
-            for (SearchHit<CandidateEs> hit : hits) {
-                candidateIds.add(hit.getContent().getMasterId());
+            int limit = 32000;
+            if (pageOfCandidates.getTotalElements() > limit) {
+                throw new InvalidRequestException(
+                    "Sorry, but there is currently a limit on doing stats on searches returning more than "
+                        + limit + " candidates. We are working to remove this limit.");
             }
-        } else {
-            //Compute the non-elastic search query
-            final Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
 
-            List<Candidate> candidates = candidateRepository.findAll(query);
+            count += pageOfCandidates.getNumberOfElements();
+            log.info("Processing page " + pageNum + ". "
+                    + count + " candidates of "
+                + pageOfCandidates.getTotalElements());
 
+            //Extract candidate ids
+            List<Candidate> candidates = pageOfCandidates.getContent();
             for (Candidate candidate : candidates) {
                 candidateIds.add(candidate.getId());
             }
-        }
-        log.info("Found " + candidateIds.size() + " candidates in search");
+
+            //Clear persistence context to free up memory
+            entityManager.clear();
+        } while (pageOfCandidates.hasNext());
         return candidateIds;
     }
 

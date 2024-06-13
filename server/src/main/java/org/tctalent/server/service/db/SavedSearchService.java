@@ -70,7 +70,7 @@ public interface SavedSearchService {
     /**
      * Returns the requested page of candidates of the given saved search.
      * @param savedSearchId ID of saved search
-     * @param request Request specifying which candidates to return
+     * @param request Request specifying which page of candidates to return
      * @return Page of candidates
      * @throws NoSuchObjectException is no saved search exists with given id.
      */
@@ -80,13 +80,17 @@ public interface SavedSearchService {
 
     /**
      * Returns a set of the ids of all candidates matching the given saved search.
+     * <p/>
+     * WARNING: This method clears the JPA persistence context by calling entityManager.clear().
      *
      * @param savedSearchId ID of saved search
      * @return Candidate ids (NOT candidateNumbers) of candidates matching search
-     * @throws NoSuchObjectException is no saved search exists with given id.
+     * @throws NoSuchObjectException if no saved search exists with given id.
+     * @throws InvalidRequestException if we exceed the limit on the maximum number of candidates.
      */
     @NotNull
-    Set<Long> searchCandidates(long savedSearchId) throws NoSuchObjectException;
+    Set<Long> searchCandidates(long savedSearchId)
+        throws NoSuchObjectException, InvalidRequestException;
 
     void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
 

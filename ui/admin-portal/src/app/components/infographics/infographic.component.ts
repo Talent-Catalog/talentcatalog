@@ -78,7 +78,9 @@ export class InfographicComponent implements OnInit {
 
   private loadListsAndSearches() {
     /*load all our visible lists and searches */
-     this.loading = true;
+    this.loading = true;
+    this.error = null;
+
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
@@ -138,6 +140,7 @@ export class InfographicComponent implements OnInit {
 
   submitStatsRequest(){
     this.loading = true;
+    this.error = null;
 
     const request: CandidateStatsRequest = {
       listId: this.savedList == null ? null : this.savedList.id,
