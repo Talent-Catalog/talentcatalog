@@ -286,7 +286,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         Set<Long> candidateIds = new HashSet<>();
 
-        searchRequest.setPageSize(1000);
+        searchRequest.setPageSize(10000);
         long count = 0;
         int pageNum = 0;
 

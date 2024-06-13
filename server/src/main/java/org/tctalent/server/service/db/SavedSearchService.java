@@ -80,6 +80,8 @@ public interface SavedSearchService {
 
     /**
      * Returns a set of the ids of all candidates matching the given saved search.
+     * <p/>
+     * WARNING: This method clears the JPA persistence context by calling entityManager.clear().
      *
      * @param savedSearchId ID of saved search
      * @return Candidate ids (NOT candidateNumbers) of candidates matching search
