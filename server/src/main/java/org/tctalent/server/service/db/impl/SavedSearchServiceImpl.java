@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -49,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -165,6 +165,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationMajorRepository educationMajorRepository;
     private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
+    private final EntityManager entityManager;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
@@ -283,45 +284,31 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
 
-        // Compute the candidates which should be excluded from search
-        Set<Candidate> excludedCandidates =
-            computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
-
-        // Modify request, doing standard defaults
-        addDefaultsToSearchCandidateRequest(searchRequest);
-
         Set<Long> candidateIds = new HashSet<>();
-        String simpleQueryString = searchRequest.getSimpleQueryString();
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            // This is an elasticsearch request
 
-            // Combine any joined searches (which will all be processed as elastic)
-            BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
-                simpleQueryString, excludedCandidates);
+        searchRequest.setPageSize(1000);
+        long count = 0;
+        int pageNum = 0;
 
-            NativeSearchQuery query = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .build()
-                .setPageable(Pageable.unpaged());
+        Page<Candidate> pageOfCandidates;
+        do {
+            searchRequest.setPageNumber(pageNum++);
+            pageOfCandidates = doSearchCandidates(searchRequest);
 
-            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+            count += pageOfCandidates.getNumberOfElements();
+            log.info("Processing page " + pageNum + ". "
+                    + count + " candidates of "
+                + pageOfCandidates.getTotalElements());
 
-            //Get candidate ids from the returned results
-            for (SearchHit<CandidateEs> hit : hits) {
-                candidateIds.add(hit.getContent().getMasterId());
-            }
-        } else {
-            //Compute the non-elastic search query
-            final Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
-
-            List<Candidate> candidates = candidateRepository.findAll(query);
-
+            //Extract candidate ids
+            List<Candidate> candidates = pageOfCandidates.getContent();
             for (Candidate candidate : candidates) {
                 candidateIds.add(candidate.getId());
             }
-        }
-        log.info("Found " + candidateIds.size() + " candidates in search");
+
+            //Clear persistence context to free up memory
+            entityManager.clear();
+        } while (pageOfCandidates.hasNext());
         return candidateIds;
     }
 

@@ -70,7 +70,7 @@ public interface SavedSearchService {
     /**
      * Returns the requested page of candidates of the given saved search.
      * @param savedSearchId ID of saved search
-     * @param request Request specifying which candidates to return
+     * @param request Request specifying which page of candidates to return
      * @return Page of candidates
      * @throws NoSuchObjectException is no saved search exists with given id.
      */
