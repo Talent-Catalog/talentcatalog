@@ -590,7 +590,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     // If stage is changing to CLOSED (e.g. removed from submission list) publish posts
                     if (newStage.isClosed()) {
                         publishRemovedFromSubmissionListPosts(opp, newStage);
-                    } else {
+                    } else if (newStage.equals(CandidateOpportunityStage.miniIntake)) {
+                        publishMiniIntakeRequestPost(opp);
+                    }else {
                         // If non closing stage change, publish posts
                         publishStageChangePosts(opp, newStage);
                     }
@@ -939,6 +941,34 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         // Publish the chat post
         chatPostService.publishChatPost(candidateOppStageChangeChatPost);
     }
+
+    /**
+     * When a candidate opp stage chagnes to 'Mini Intake' automate a post asking the candidate to complete intake.
+     * Publishes a post to the
+     * - CandidateProspect chat
+     * @param opp candidate opportunity that has moved to the Mini Intake stage.
+     */
+    private void publishMiniIntakeRequestPost(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+
+        Post autoPostRequestMiniIntake = new Post();
+        autoPostRequestMiniIntake.setContent("An intake has been requested by " + opp.getJobOpp().getJobCreator().getName() +
+                ". The purpose of this intake is to gather some more information that can assist in the recruitment " +
+                "process for the job '" + opp.getJobOpp().getName() +"'. " +
+                "This questionnaire should take approximately 15-20 minutes. " +
+                "Please complete the intake by " + opp.getNextStepDueDate() + ". " +
+                "You can access the intake <a href=\"www.google.com\" target=\"_blank\">here</a> or via the new 'Mini Intake' tab on your profile.");
+
+        // AUTO CHAT TO PROSPECT CHAT
+        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+        // Create the chat post
+        ChatPost prospectChatPost = chatPostService.createPost(
+                autoPostRequestMiniIntake, prospectChat, userService.getSystemAdminUser());
+        //publish chat post
+        chatPostService.publishChatPost(prospectChatPost);
+    };
 
     /**
      * Get candidate name and number string for automated chat posts
