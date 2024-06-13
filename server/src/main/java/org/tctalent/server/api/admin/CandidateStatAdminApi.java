@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
@@ -97,13 +96,6 @@ public class CandidateStatAdminApi {
         //Report based on set of candidates or date range
         List<StatReport> statReports;
         if (candidateIds != null) {
-            int limit = 32000;
-            if (candidateIds.size() > limit) {
-                throw new InvalidRequestException(
-                    "Sorry, but there is currently a limit on doing stats on searches returning more than "
-                + limit + " candidates. We are working to remove this limit.");
-            }
-
             statReports = createReports(request.getDateFrom(), request.getDateTo(),  candidateIds, sourceCountryIds);
         } else {
             statReports = createReports(request.getDateFrom(), request.getDateTo(), sourceCountryIds);

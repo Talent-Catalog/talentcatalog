@@ -280,7 +280,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public @NotNull Set<Long> searchCandidates(long savedSearchId)
-        throws NoSuchObjectException {
+        throws NoSuchObjectException, InvalidRequestException {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
 
@@ -294,6 +294,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         do {
             searchRequest.setPageNumber(pageNum++);
             pageOfCandidates = doSearchCandidates(searchRequest);
+
+            int limit = 32000;
+            if (pageOfCandidates.getTotalElements() > limit) {
+                throw new InvalidRequestException(
+                    "Sorry, but there is currently a limit on doing stats on searches returning more than "
+                        + limit + " candidates. We are working to remove this limit.");
+            }
 
             count += pageOfCandidates.getNumberOfElements();
             log.info("Processing page " + pageNum + ". "

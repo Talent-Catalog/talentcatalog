@@ -85,10 +85,12 @@ public interface SavedSearchService {
      *
      * @param savedSearchId ID of saved search
      * @return Candidate ids (NOT candidateNumbers) of candidates matching search
-     * @throws NoSuchObjectException is no saved search exists with given id.
+     * @throws NoSuchObjectException if no saved search exists with given id.
+     * @throws InvalidRequestException if we exceed the limit on the maximum number of candidates.
      */
     @NotNull
-    Set<Long> searchCandidates(long savedSearchId) throws NoSuchObjectException;
+    Set<Long> searchCandidates(long savedSearchId)
+        throws NoSuchObjectException, InvalidRequestException;
 
     void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
 
