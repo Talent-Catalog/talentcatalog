@@ -955,7 +955,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
         Post autoPostAcceptedJobOffer = new Post();
         autoPostAcceptedJobOffer.setContent("The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
-                + opp.getJobOpp().getName() + " and is now a member of the Pathway Club.");
+                + opp.getJobOpp().getName() + " and is now a member of the <a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>.");
 
         // AUTO CHAT TO PROSPECT CHAT
         JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
