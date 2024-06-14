@@ -17,7 +17,7 @@ buildscript {
     ext {
         springBootVersion = '2.7.13'
         isDev = System.properties['env'] == 'dev'
-        javaTargetVersion = JavaVersion.VERSION_21
+        javaTargetVersion = JavaVersion.VERSION_17
         lombokVersion = "1.18.30"
         ext['spring-security.version']='5.8.12'
     }
@@ -39,10 +39,10 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of('21'))
+        languageVersion.set(JavaLanguageVersion.of(javaTargetVersion.toString()))
     }
-    sourceCompatibility = 21
-    targetCompatibility = 21
+    sourceCompatibility = javaTargetVersion
+    targetCompatibility = javaTargetVersion
 }
 
 //Yes - you do have to declare this again (even though it is declared in the
