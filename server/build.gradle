@@ -156,9 +156,6 @@ dependencies {
 }
 
 jib {
-    from {
-        image = "eclipse-temurin:21-jre"
-    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
