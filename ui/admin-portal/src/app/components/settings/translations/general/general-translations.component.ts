@@ -433,7 +433,8 @@ const ALL_FIELDS = {
       "TAB": {
         "PROFILE": null,
         "TASKS": null,
-        "OPPS": null
+        "OPPS": null,
+        "MINIINTAKE": null
       },
       "CONTACT": {
         "TITLE": null,

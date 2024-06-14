@@ -4,15 +4,10 @@ import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
-import {
-  ChatPost,
-  CreateChatRequest,
-  JobChat,
-  JobChatType,
-  JobChatUserInfo
-} from "../../../model/chat";
+import {ChatPost, CreateChatRequest, JobChat, JobChatType, JobChatUserInfo} from "../../../model/chat";
 import {forkJoin, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
+import {CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-view-candidate',
@@ -173,5 +168,17 @@ export class ViewCandidateComponent implements OnInit {
 
   onMarkChatAsRead() {
     this.chatService.markChatAsRead(this.sourceChat);
+  }
+
+  miniIntakeRequired() {
+    // check if any of the candidate opps are in a mini intake stage
+    let miniIntakeStage: boolean = false;
+    for (let opp of this.candidate?.candidateOpportunities) {
+      miniIntakeStage = CandidateOpportunityStage[opp.stage] === CandidateOpportunityStage.miniIntake
+      if (miniIntakeStage) {
+        break;
+      }
+    }
+    return miniIntakeStage;
   }
 }

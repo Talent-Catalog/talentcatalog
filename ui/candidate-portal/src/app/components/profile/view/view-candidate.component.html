@@ -64,6 +64,17 @@
           </app-view-chat-posts>
         </ng-template>
       </ng-container>
+
+      <!-- MINI INTAKE - if candidate is in a mini intake stage for a job, and it doesn't exist. -->
+      <ng-container *ngIf="miniIntakeRequired()" ngbNavItem="Mini Intake">
+        <a ngbNavLink>{{ 'PROFILE.TAB.MINIINTAKE' | translate }}</a>
+        <ng-template ngbNavContent>
+          <app-mini-intake
+            [candidate]="candidate"
+          >
+          </app-mini-intake>
+        </ng-template>
+      </ng-container>
     </nav>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
   </ng-container>
