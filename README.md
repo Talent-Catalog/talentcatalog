@@ -47,7 +47,7 @@ Download and install the latest of the following tools.
 
 - IntelliJ IDEA - [Intellij website](https://www.jetbrains.com/idea/download/)
     - Import standard settings and run configurations from another developer
-    - In development it is best to build using Intellij rather than gradle. Change the Intellij
+    - In development, it is best to build using Intellij rather than gradle. Change the Intellij
       setting for "Build, Execution & Deployment" > "Build Tools" > "Gradle" to build with Intellij.
 
 - Java 17
@@ -64,11 +64,12 @@ Download and install the latest of the following tools.
 
     - Intellij will load the JDK through the .sdkmanrc file.
     - Update the Project SDK:
-        - Go to File / Project Structure / Project and set the SDK to corretto-21
+        - Go to File / Project Structure / Project and set the SDK to your chosen JDK.
+        - On the same page, ensure the language level matches your chosen SDK version.
     - IntelliJ Settings:
         - Go to IntelliJ / Settings / Build,Execution,Deployment / Compiler / Java Compiler
             - Add `-parameters` to the`Additional command line parameters` textbox.
-            - Set the `Project bytecode version` to **20**.
+            - Set the `Project bytecode version` to match the JDK chosen (e.g. **17**).
         - Go to IntelliJ / Settings / Build,Execution,Deployment / Build Tools / Gradle
             - Set the **GradleJVM** from the drop list to use the Project SDK.
 
