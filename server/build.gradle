@@ -17,7 +17,8 @@ buildscript {
     ext {
         springBootVersion = '2.7.13'
         isDev = System.properties['env'] == 'dev'
-        javaTargetVersion = JavaVersion.VERSION_21
+        javaTargetVersion = JavaVersion.VERSION_17
+        kotlinTargetVersion = JavaVersion.VERSION_17
         lombokVersion = "1.18.30"
         ext['spring-security.version']='5.8.12'
     }
@@ -32,6 +33,7 @@ buildscript {
 plugins {
     id "org.springframework.boot" version "${springBootVersion}"
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.jetbrains.kotlin.jvm' version '2.0.0'
     id 'java'
     id 'idea'
     id 'com.google.cloud.tools.jib' version '3.4.0'
@@ -39,10 +41,16 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of('21'))
+        languageVersion.set(JavaLanguageVersion.of(javaTargetVersion.toString()))
     }
-    sourceCompatibility = 21
-    targetCompatibility = 21
+    sourceCompatibility = javaTargetVersion
+    targetCompatibility = javaTargetVersion
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(kotlinTargetVersion.majorVersion))
+    }
 }
 
 //Yes - you do have to declare this again (even though it is declared in the
@@ -146,8 +154,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
+    // Test containers
+    testImplementation("org.testcontainers:postgresql:1.19.8")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+
     // Testing
     testImplementation("org.springframework.security:spring-security-test:5.8.12")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
@@ -156,9 +169,6 @@ dependencies {
 }
 
 jib {
-    from {
-        image = "eclipse-temurin:21-jre"
-    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
@@ -166,6 +176,17 @@ jib {
             image = "968457613372.dkr.ecr.us-east-1.amazonaws.com/talent-catalog"
         }
         credHelper = 'ecr-login'
+    }
+}
+
+sourceSets {
+    main {
+        java.srcDirs("src/main/java")
+        kotlin.srcDirs("src/main/kotlin")
+    }
+    test {
+        java.srcDirs("src/test/java")
+        kotlin.srcDirs("src/test/kotlin")
     }
 }
 
