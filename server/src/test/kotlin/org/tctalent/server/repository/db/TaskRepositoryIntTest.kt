@@ -17,37 +17,75 @@
 package org.tctalent.server.repository.db
 
 import java.time.OffsetDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.TaskImpl
-import org.tctalent.server.model.db.User
+import org.tctalent.server.model.db.task.Task
+import kotlin.test.*
 
+/**
+ * Integration test class for task repository to ensure JPA working as expected. User comes from
+ * creation function in base class.
+ */
 open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: TaskRepository
 
   @Test
   fun `test find by name`() {
     assertTrue { isContainerInitialized() }
-    val name = "BigTask"
-    val user = User()
-    user.id = 4
-    user.username = "andrew.todd"
-    val task = TaskImpl()
+    val task = getTask()
     assertNull(task.id)
-    task.setName(name)
-    task.setCreatedBy(user)
-    task.setCreatedDate(OffsetDateTime.now())
-    repo.save(task)
+
+    repo.save(task as TaskImpl)
     assertNotNull(task.id)
     assertTrue { task.id > 0 }
-    assertEquals(name, task.name)
+    assertEquals("DEFAULT", task.name)
 
-    val savedTask = repo.findByName(name)
+    val savedTask = repo.findByName("DEFAULT")
     assertNotNull(savedTask)
     assertEquals(1, savedTask.size)
+  }
+
+  @Test
+  fun `test find by lower name`() {
+    assertTrue { isContainerInitialized() }
+    val task = getTask()
+    assertNull(task.id)
+
+    repo.save(task as TaskImpl)
+    assertNotNull(task.id)
+    assertTrue { task.id > 0 }
+    assertEquals("DEFAULT", task.name)
+
+    val savedTask = repo.findByLowerName("Default").orElse(fail("Did not find by lower."))
+    assertTrue { task.id > 0 }
+    assertEquals("DEFAULT", savedTask.name)
+  }
+
+  @Test
+  fun `test find by lower display name`() {
+    assertTrue { isContainerInitialized() }
+    val task = getTask()
+    assertNull(task.id)
+
+    repo.save(task as TaskImpl)
+
+    assertNotNull(task.id)
+    assertTrue { task.id > 0 }
+    assertEquals("DEFAULT", task.name)
+
+    val savedTask = repo.findByLowerDisplayName("Default Display")
+    assertNotNull(savedTask)
+    assertTrue { task.id > 0 }
+    assertEquals("DEFAULT", savedTask.name)
+  }
+}
+
+fun getTask(taskName: String = "DEFAULT", taskDisplay: String = "DEFAULT DISPLAY"): Task {
+  return TaskImpl().apply {
+    name = taskName
+    displayName = taskDisplay
+    createdBy = user()
+    createdDate = OffsetDateTime.now()
   }
 }

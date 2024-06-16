@@ -10,3 +10,8 @@ spring:
 app:
     dump_file_path: ${TC_DB_DUMP_FILE_PATH:~/databases/dump/dump.sql}
     container_mount_path: ${TC_CONTAINER_MOUNT_PATH:/docker-entrypoint-initdb.d/dump.sql}
+logging:
+  level:
+    org.hibernate:
+      sql.Insert: DEBUG
+      type.descriptor.sql.BasicBinder: TRACE

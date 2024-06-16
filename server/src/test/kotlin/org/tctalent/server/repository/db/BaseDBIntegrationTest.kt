@@ -25,8 +25,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.tctalent.server.model.db.User
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.shaded.org.bouncycastle.cms.RecipientId.password
 import org.testcontainers.utility.MountableFile
 
 private val logger = KotlinLogging.logger {}
@@ -104,4 +106,13 @@ abstract class BaseDBIntegrationTest {
   }
 
   fun isContainerInitialized(): Boolean = db.isRunning()
+}
+
+fun user(): User {
+  return User().apply {
+    id = 999L
+    username = "jo.bloggs@email.com"
+    firstName = "jo"
+    lastName = "bloggs"
+  }
 }
