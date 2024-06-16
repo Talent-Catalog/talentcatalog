@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:latest:///tctalent
+    username: tctalent
+    password: tctalent
+  flyway:
+    enabled: true
+
+app:
+  db:
+    dump-file-path: ${TC_DB_DUMP_FILE_PATH:~/databases/dump/dump.sql}
+    container-mount-path: ${TC_CONTAINER_MOUNT_PATH:/docker-entrypoint-initdb.d/dump.sql}
