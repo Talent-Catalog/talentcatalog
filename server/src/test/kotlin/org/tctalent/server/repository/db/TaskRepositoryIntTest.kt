@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.TaskImpl
 import org.tctalent.server.model.db.task.Task
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.*
 
 /**
@@ -57,9 +58,24 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
     assertTrue { task.id > 0 }
     assertEquals("DEFAULT", task.name)
 
-    val savedTask = repo.findByLowerName("Default").orElse(fail("Did not find by lower."))
-    assertTrue { task.id > 0 }
+    val savedTask = repo.findByLowerName("Default").orElseThrow { fail("Did not find.") }
+    assertTrue { savedTask.id > 0 }
     assertEquals("DEFAULT", savedTask.name)
+  }
+
+  @Test
+  fun `test find by lower name fail`() {
+    assertTrue { isContainerInitialized() }
+    val task = getTask()
+    assertNull(task.id)
+
+    repo.save(task as TaskImpl)
+    assertNotNull(task.id)
+    assertTrue { task.id > 0 }
+    assertEquals("DEFAULT", task.name)
+
+    val savedTask = repo.findByLowerName("NothingToFind").getOrNull()
+    assertNull(savedTask)
   }
 
   @Test
@@ -76,8 +92,24 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
     val savedTask = repo.findByLowerDisplayName("Default Display")
     assertNotNull(savedTask)
-    assertTrue { task.id > 0 }
+    assertTrue { savedTask.id > 0 }
     assertEquals("DEFAULT", savedTask.name)
+  }
+
+  @Test
+  fun `test find by lower display name fail`() {
+    assertTrue { isContainerInitialized() }
+    val task = getTask()
+    assertNull(task.id)
+
+    repo.save(task as TaskImpl)
+
+    assertNotNull(task.id)
+    assertTrue { task.id > 0 }
+    assertEquals("DEFAULT", task.name)
+
+    val savedTask = repo.findByLowerDisplayName("NothingToFind")
+    assertNull(savedTask)
   }
 }
 
