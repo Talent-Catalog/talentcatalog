@@ -16,15 +16,23 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.assertTrue
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.test.context.DynamicPropertyRegistry
 
-class TaskRepositoryTest : BaseDBIntegrationTest() {
-  @Autowired lateinit var repository: TaskRepository
+@DataJpaTest
+interface IntegrationContainerDBTest {
 
-  @Test
-  fun `test find by name`() {
-    assertTrue { db.isRunning() }
+  fun setup() {
+    IntegrationDBContainer.start()
   }
+
+  fun teardown() {
+    IntegrationDBContainer.stop()
+  }
+
+  fun registerDbContainer(registry: DynamicPropertyRegistry) {
+    IntegrationDBContainer.register(registry)
+  }
+
+  fun isContainerRunning() = IntegrationDBContainer.isContainerInitialized()
 }

@@ -26,13 +26,14 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.MountableFile
 
 private val logger = KotlinLogging.logger {}
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ExtendWith(SpringExtension::class)
+@Testcontainers
 abstract class BaseDBIntegrationTest {
 
   companion object {
@@ -59,6 +60,7 @@ abstract class BaseDBIntegrationTest {
           withDatabaseName("tctalent")
           withUsername("tctalent")
           withPassword("tctalent")
+          withReuse(true)
         }
 
     @BeforeAll

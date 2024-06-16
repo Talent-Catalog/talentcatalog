@@ -18,15 +18,16 @@ package org.tctalent.server.repository.db
 
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.tctalent.server.model.db.AuditLog
 import org.tctalent.server.service.db.audit.AuditType
 
-class AuditLogRepositoryTest : BaseDBIntegrationTest() {
+open class AuditLogRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repository: AuditLogRepository
 
   @Test
   fun `test find by type and object`() {
-    assertTrue(db.isRunning())
+    assertTrue(isContainerInitialized())
     val auditLog = AuditLog()
     auditLog.type = AuditType.CANDIDATE_OCCUPATION
     auditLog.userId = 9L

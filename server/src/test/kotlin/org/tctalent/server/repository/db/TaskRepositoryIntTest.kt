@@ -16,29 +16,27 @@
 
 package org.tctalent.server.repository.db
 
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.model.db.TaskImpl
+import java.time.OffsetDateTime
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
-interface TestDatabaseContainerSetup {
-  companion object {
-    @BeforeAll
-    @JvmStatic
-    fun setup() {
-      DatabaseContainerSetup.startDbContainer()
-    }
+open class TaskRepositoryIntTest: BaseDBIntegrationTest() {
+  @Autowired lateinit var repo: TaskRepository
 
-    @AfterAll
-    @JvmStatic
-    fun teardown() {
-      DatabaseContainerSetup.stopDbContainer()
-    }
+  @Test
+  fun `test find by name`() {
+    assertTrue { isContainerInitialized() }
 
-    @DynamicPropertySource
-    @JvmStatic
-    fun registerDbContainer(registry: DynamicPropertyRegistry) {
-      DatabaseContainerSetup.registerDbContainer(registry)
-    }
+    val task = TaskImpl()
+    assertNull(task.id)
+    task.setName("Sample Simple Task")
+    task.setCreatedDate(OffsetDateTime.now())
+    repo.save(task)
+    assertNotNull(task.id)
+    assertTrue { task.id > 0 }
   }
 }
