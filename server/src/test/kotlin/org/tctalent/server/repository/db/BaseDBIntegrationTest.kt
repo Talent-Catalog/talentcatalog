@@ -94,12 +94,6 @@ abstract class BaseDBIntegrationTest {
       logger.info { "Dump file copied to the database" }
     }
 
-    @AfterAll
-    @JvmStatic
-    fun stopDBContainer() {
-      db.stop()
-    }
-
     @DynamicPropertySource
     @JvmStatic
     fun registerDBContainer(registry: DynamicPropertyRegistry) {
