@@ -22,27 +22,31 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.utility.MountableFile
 
 private val logger = KotlinLogging.logger {}
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ExtendWith(SpringExtension::class)
-@TestConfiguration
-@ActiveProfiles("test")
 abstract class BaseDBIntegrationTest {
 
   companion object {
+    private val createDb = arrayOf("psql", "-U", "postgres", "-c", "CREATE DATABASE tctalent;")
+    private val createUserCommand =
+      arrayOf("psql", "-U", "postgres", "-c", "CREATE USER tctalent WITH PASSWORD 'tctalent';")
+    private val superUserCommand =
+      arrayOf("psql", "-U", "postgres", "-c", "ALTER USER tctalent WITH SUPERUSER;")
     private val dumpFilePath: String =
       System.getenv("TC_DB_DUMP_FILE_PATH") ?: "FAIL: ENV VARIABLE not set"
     private val containerMountPath: String =
       System.getenv("TC_CONTAINER_MOUNT_PATH") ?: "FAIL: ENV VARIABLE not set"
+    val psqlCommand =
+      arrayOf("psql", "-d", "tctalent", "-U", "tctalent", "-f", "$containerMountPath")
 
     val db: PostgreSQLContainer<*> =
       PostgreSQLContainer("postgres:14")
@@ -60,7 +64,32 @@ abstract class BaseDBIntegrationTest {
     @BeforeAll
     @JvmStatic
     fun startDBContainer() {
-      db.start()
+      db.apply { start() }
+      createDbObjects()
+      loadDb()
+      importDumpFileToDatabase()
+    }
+
+    fun importDumpFileToDatabase() {
+      logger.info { "Importing the database dump." }
+      db.apply { execInContainer(*psqlCommand) }
+      logger.info { "Done importing the database dump." }
+    }
+
+    fun createDbObjects() {
+      logger.info { "Creating database objects" }
+      db.apply {
+        execInContainer(*createDb)
+        execInContainer(*createUserCommand)
+        execInContainer(*superUserCommand)
+      }
+      logger.info { "Database container started. DB and user created." }
+    }
+
+    fun loadDb() {
+      logger.info { "Copying dump file to the container." }
+      db.apply { copyFileToContainer(MountableFile.forHostPath(dumpFilePath), containerMountPath) }
+      logger.info { "Dump file copied to the database" }
     }
 
     @AfterAll

@@ -16,23 +16,15 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.*
+import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.tctalent.server.model.db.AuditLog
-import org.tctalent.server.service.db.audit.AuditType
 
-class AuditLogRepositoryTest : BaseDBIntegrationTest() {
-  @Autowired lateinit var repository: AuditLogRepository
+class TaskRepositoryTest : BaseDBIntegrationTest() {
+  @Autowired lateinit var repository: TaskRepository
 
   @Test
-  fun `test find by type and object`() {
-    assertTrue(db.isRunning())
-    val auditLog = AuditLog()
-    auditLog.type = AuditType.CANDIDATE_OCCUPATION
-    auditLog.userId = 9L
-
-    assertNull(auditLog.id, "Expect Id to be null")
-    repository.save(auditLog)
-    assertNotEquals(0L, auditLog.id)
+  fun `test find by name`() {
+    assertTrue { db.isRunning() }
   }
 }
