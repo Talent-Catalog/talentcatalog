@@ -22,23 +22,23 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 
 interface TestDatabaseContainerSetup {
-    companion object {
-        @BeforeAll
-        @JvmStatic
-        fun setup() {
-            DatabaseContainerSetup.startDbContainer()
-        }
-
-        @AfterAll
-        @JvmStatic
-        fun teardown() {
-            DatabaseContainerSetup.stopDbContainer()
-        }
-
-        @DynamicPropertySource
-        @JvmStatic
-        fun registerDbContainer(registry: DynamicPropertyRegistry) {
-            DatabaseContainerSetup.registerDbContainer(registry)
-        }
+  companion object {
+    @BeforeAll
+    @JvmStatic
+    fun setup() {
+      DatabaseContainerSetup.startDbContainer()
     }
+
+    @AfterAll
+    @JvmStatic
+    fun teardown() {
+      DatabaseContainerSetup.stopDbContainer()
+    }
+
+    @DynamicPropertySource
+    @JvmStatic
+    fun registerDbContainer(registry: DynamicPropertyRegistry) {
+      DatabaseContainerSetup.registerDbContainer(registry)
+    }
+  }
 }

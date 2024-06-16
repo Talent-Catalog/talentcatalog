@@ -16,34 +16,26 @@
 
 package org.tctalent.server.repository.db
 
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.tctalent.server.model.db.AuditLog
-import org.tctalent.server.service.db.audit.AuditType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
+import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.model.db.AuditLog
+import org.tctalent.server.service.db.audit.AuditType
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ExtendWith(SpringExtension::class)
-open class AuditLogRepositoryTest: TestDatabaseContainerSetup {
-    @Autowired
-    lateinit var repository: AuditLogRepository
+open class AuditLogRepositoryTest : BaseDBIntegrationTest() {
+  @Autowired lateinit var repository: AuditLogRepository
 
-    @Test
-    fun `test find by type and object`() {
-        assertTrue(DatabaseContainerSetup.isDbRunning())
-        val auditLog = AuditLog()
-        auditLog.type = AuditType.CANDIDATE_OCCUPATION
-        auditLog.userId = 9L
+  @Test
+  fun `test find by type and object`() {
+    assertTrue(isContainerInitialized())
+    val auditLog = AuditLog()
+    auditLog.type = AuditType.CANDIDATE_OCCUPATION
+    auditLog.userId = 9L
 
-        assertEquals(0L, auditLog.id)
-        repository.save(auditLog)
-        assertNotEquals(0L, auditLog.id)
-    }
+    assertEquals(0L, auditLog.id)
+    repository.save(auditLog)
+    assertNotEquals(0L, auditLog.id)
+  }
 }

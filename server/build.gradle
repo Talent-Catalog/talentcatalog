@@ -37,6 +37,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'com.google.cloud.tools.jib' version '3.4.0'
+    id "com.diffplug.spotless" version "7.0.0.BETA1"
 }
 
 java {
@@ -146,9 +147,11 @@ dependencies {
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
 
-    // Temp to update spring thymeleaf as indepdendent unit until all spring is done.
+    // Temp to update spring thymeleaf as independent unit until all spring is done.
     implementation("org.thymeleaf:thymeleaf-spring6:3.1.2.RELEASE")
 
+    // Logging in kotlin
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
 
     // Caching
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -203,4 +206,10 @@ bootJar {
 // Parameter flag required for SpringBoot3+ (Spring 6.1+)
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add("-parameters")
+}
+
+spotless {
+    kotlin {
+        ktfmt().googleStyle()
+    }
 }
