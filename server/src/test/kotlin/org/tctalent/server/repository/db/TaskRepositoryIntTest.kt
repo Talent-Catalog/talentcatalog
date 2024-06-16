@@ -16,27 +16,38 @@
 
 package org.tctalent.server.repository.db
 
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.tctalent.server.model.db.TaskImpl
 import java.time.OffsetDateTime
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.model.db.TaskImpl
+import org.tctalent.server.model.db.User
 
-open class TaskRepositoryIntTest: BaseDBIntegrationTest() {
+open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: TaskRepository
 
   @Test
   fun `test find by name`() {
     assertTrue { isContainerInitialized() }
-
+    val name = "BigTask"
+    val user = User()
+    user.id = 4
+    user.username = "andrew.todd"
     val task = TaskImpl()
     assertNull(task.id)
-    task.setName("Sample Simple Task")
+    task.setName(name)
+    task.setCreatedBy(user)
     task.setCreatedDate(OffsetDateTime.now())
     repo.save(task)
     assertNotNull(task.id)
     assertTrue { task.id > 0 }
+    assertEquals(name, task.name)
+
+    val savedTask = repo.findByName(name)
+    assertNotNull(savedTask)
+    assertEquals(1, savedTask.size)
   }
 }
