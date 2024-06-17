@@ -13,5 +13,5 @@ app:
 logging:
   level:
     org.hibernate:
-      sql.Insert: DEBUG
-      type.descriptor.sql.BasicBinder: TRACE
+      sql.Insert: INFO
+      type.descriptor.sql.BasicBinder: INFO

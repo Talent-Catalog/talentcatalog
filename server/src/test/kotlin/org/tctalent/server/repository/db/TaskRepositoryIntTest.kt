@@ -16,13 +16,11 @@
 
 package org.tctalent.server.repository.db
 
-import java.time.OffsetDateTime
+import kotlin.jvm.optionals.getOrNull
+import kotlin.test.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.TaskImpl
-import org.tctalent.server.model.db.task.Task
-import kotlin.jvm.optionals.getOrNull
-import kotlin.test.*
 
 /**
  * Integration test class for task repository to ensure JPA working as expected. User comes from
@@ -110,14 +108,5 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
     val savedTask = repo.findByLowerDisplayName("NothingToFind")
     assertNull(savedTask)
-  }
-}
-
-fun getTask(taskName: String = "DEFAULT", taskDisplay: String = "DEFAULT DISPLAY"): Task {
-  return TaskImpl().apply {
-    name = taskName
-    displayName = taskDisplay
-    createdBy = user()
-    createdDate = OffsetDateTime.now()
   }
 }

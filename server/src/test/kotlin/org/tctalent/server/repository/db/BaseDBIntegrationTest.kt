@@ -107,12 +107,3 @@ abstract class BaseDBIntegrationTest {
 
   fun isContainerInitialized(): Boolean = db.isRunning()
 }
-
-fun user(): User {
-  return User().apply {
-    id = 999L
-    username = "jo.bloggs@email.com"
-    firstName = "jo"
-    lastName = "bloggs"
-  }
-}
