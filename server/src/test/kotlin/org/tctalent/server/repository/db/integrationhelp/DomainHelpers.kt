@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
 import org.tctalent.server.repository.db.CandidateRepository
 import org.tctalent.server.repository.db.SavedListRepository
+import org.tctalent.server.repository.db.SurveyTypeRepository
 import org.tctalent.server.repository.db.SystemLanguageRepository
 import org.tctalent.server.repository.db.TaskRepository
 import org.tctalent.server.repository.db.UserRepository
@@ -69,7 +70,7 @@ fun getCandidate(): Candidate {
 }
 
 fun getSavedList(savedListRepo: SavedListRepository): SavedList {
-  return saveHelperObject(savedListRepo, getSavedList()) as SavedList
+  return saveHelperObject(savedListRepo, getSavedList())
 }
 
 fun getSavedList(): SavedList {
@@ -78,6 +79,17 @@ fun getSavedList(): SavedList {
     name = "SavedList"
     createdBy = user(1999L)
     createdDate = OffsetDateTime.now()
+  }
+}
+
+fun getSavedSurveyType(repo: SurveyTypeRepository): SurveyType {
+  return saveHelperObject(repo, getSurveyType())
+}
+
+fun getSurveyType(): SurveyType {
+  return SurveyType().apply {
+    name = "IntTestSurvey"
+    status = Status.active
   }
 }
 
