@@ -16,43 +16,40 @@
 
 package org.tctalent.server.repository.db
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.tctalent.server.model.db.Status
-import org.tctalent.server.model.db.SystemLanguage
-import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getSavedSystemLanguage
-import org.testcontainers.shaded.org.bouncycastle.asn1.x500.style.RFC4519Style.name
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.model.db.Status
+import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
+import org.tctalent.server.repository.db.integrationhelp.getSavedSystemLanguage
 
-class SystemLanguageRepositoryIntTest: BaseDBIntegrationTest() {
-    @Autowired
-    private lateinit var repo: SystemLanguageRepository
+class SystemLanguageRepositoryIntTest : BaseDBIntegrationTest() {
+  @Autowired private lateinit var repo: SystemLanguageRepository
 
-    @Test
-    fun `find by status`() {
-        assertTrue { isContainerInitialized() }
+  @Test
+  fun `find by status`() {
+    assertTrue { isContainerInitialized() }
 
-        val sl = getSavedSystemLanguage(repo)
-        assertNotNull(sl.id)
-        assertTrue { sl.id > 0 }
+    val sl = getSavedSystemLanguage(repo)
+    assertNotNull(sl.id)
+    assertTrue { sl.id > 0 }
 
-        val savedLang = repo.findByStatus(Status.active)
-        assertNotNull(savedLang)
-        assertTrue { savedLang.isNotEmpty() }
-    }
+    val savedLang = repo.findByStatus(Status.active)
+    assertNotNull(savedLang)
+    assertTrue { savedLang.isNotEmpty() }
+  }
 
-    @Test
-    fun `find by status fails`() {
-        assertTrue { isContainerInitialized() }
+  @Test
+  fun `find by status fails`() {
+    assertTrue { isContainerInitialized() }
 
-        val sl = getSavedSystemLanguage(repo)
-        assertNotNull(sl.id)
-        assertTrue { sl.id > 0 }
+    val sl = getSavedSystemLanguage(repo)
+    assertNotNull(sl.id)
+    assertTrue { sl.id > 0 }
 
-        val savedLang = repo.findByStatus(Status.deleted)
-        assertNotNull(savedLang)
-        assertTrue { savedLang.isEmpty() }
-    }
+    val savedLang = repo.findByStatus(Status.deleted)
+    assertNotNull(savedLang)
+    assertTrue { savedLang.isEmpty() }
+  }
 }
