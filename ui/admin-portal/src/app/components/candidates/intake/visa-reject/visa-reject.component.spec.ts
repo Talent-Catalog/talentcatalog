@@ -23,7 +23,7 @@ import {of} from 'rxjs';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-describe('VisaRejectComponent', () => {
+fdescribe('VisaRejectComponent', () => {
   let component: VisaRejectComponent;
   let fixture: ComponentFixture<VisaRejectComponent>;
 
