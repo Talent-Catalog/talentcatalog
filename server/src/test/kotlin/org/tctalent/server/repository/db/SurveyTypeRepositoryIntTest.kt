@@ -17,12 +17,12 @@
 package org.tctalent.server.repository.db
 
 import kotlin.test.Test
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Status
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedSurveyType
-import kotlin.test.assertNotNull
 
 class SurveyTypeRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var surveyTypeRepository: SurveyTypeRepository
