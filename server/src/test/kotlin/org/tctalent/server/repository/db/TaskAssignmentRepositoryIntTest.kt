@@ -53,7 +53,7 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
 
     val savedAssignment = repo.findByTaskAndList(taskId, savedList.id)
     assertNotNull(savedAssignment)
-    assertTrue { savedAssignment.size > 0 }
+    assertTrue { savedAssignment.isNotEmpty() }
   }
 
   /**

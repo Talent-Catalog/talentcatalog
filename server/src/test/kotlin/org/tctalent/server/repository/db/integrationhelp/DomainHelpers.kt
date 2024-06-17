@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
 import org.tctalent.server.repository.db.CandidateRepository
 import org.tctalent.server.repository.db.SavedListRepository
+import org.tctalent.server.repository.db.SystemLanguageRepository
 import org.tctalent.server.repository.db.TaskRepository
 import org.tctalent.server.repository.db.UserRepository
 import org.tctalent.server.service.db.audit.AuditAction
@@ -77,6 +78,18 @@ fun getSavedList(): SavedList {
     name = "SavedList"
     createdBy = user(1999L)
     createdDate = OffsetDateTime.now()
+  }
+}
+
+fun getSavedSystemLanguage(repo: SystemLanguageRepository): SystemLanguage {
+  return saveHelperObject(repo, getSystemLanguage())
+}
+
+fun getSystemLanguage(): SystemLanguage {
+  return SystemLanguage().apply {
+    language = "en"
+    label = "English"
+    status = Status.active
   }
 }
 
