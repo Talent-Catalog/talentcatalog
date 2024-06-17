@@ -3,5 +3,9 @@ spring:
     url: jdbc:tc:postgresql:latest:///tctalent
     username: tctalent
     password: tctalent
+  jpa:
+    properties.hibernate:
+      show_sql: false
+
   flyway:
     enabled: true
