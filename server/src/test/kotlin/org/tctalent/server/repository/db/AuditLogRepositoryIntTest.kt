@@ -20,20 +20,40 @@ import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.AuditLog
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
+import org.tctalent.server.repository.db.integrationhelp.getAuditLog
+import org.tctalent.server.service.db.audit.AuditAction
 import org.tctalent.server.service.db.audit.AuditType
+import java.time.OffsetDateTime
 
 open class AuditLogRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repository: AuditLogRepository
+  private val objRef = "TEST_AUDIT"
 
   @Test
   fun `test find by type and object`() {
     assertTrue(isContainerInitialized())
-    val auditLog = AuditLog()
-    auditLog.type = AuditType.CANDIDATE_OCCUPATION
-    auditLog.userId = 9L
+    val auditLog = getAuditLog(objRef)
 
-    assertNull(auditLog.id, "Expect Id to be null")
     repository.save(auditLog)
-    assertNotEquals(0L, auditLog.id)
+    assertTrue(auditLog.id > 0)
+
+    val savedAuditLog = repository.findByTypeAndObjectRef(AuditType.CANDIDATE_OCCUPATION, objRef)
+    assertNotNull(savedAuditLog)
+    assertEquals(objRef, savedAuditLog.objectRef)
+  }
+
+  /**
+   * Same as regular test, just ensuring fails if object ref is invalid.
+   */
+  @Test
+  fun `test find by type and object fail`() {
+    assertTrue(isContainerInitialized())
+    val auditLog = getAuditLog(objRef)
+
+    repository.save(auditLog)
+    assertTrue(auditLog.id > 0)
+
+    val savedAuditLog = repository.findByTypeAndObjectRef(AuditType.CANDIDATE_OCCUPATION, objRef + "00")
+    assertNull(savedAuditLog)
   }
 }

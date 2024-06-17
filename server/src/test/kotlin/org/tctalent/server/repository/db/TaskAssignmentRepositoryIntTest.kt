@@ -16,78 +16,73 @@
 
 package org.tctalent.server.repository.db
 
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.tctalent.server.repository.db.integrationhelp.*
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.repository.db.integrationhelp.*
 
 class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
-    @Autowired
-    lateinit var repo: TaskAssignmentRepository
-    @Autowired
-    lateinit var taskRepository: TaskRepository
-    @Autowired
-    lateinit var candidateRepository: CandidateRepository
-    @Autowired
-    lateinit var userRepository: UserRepository
-    @Autowired
-    lateinit var savedListRepository: SavedListRepository
+  @Autowired lateinit var repo: TaskAssignmentRepository
+  @Autowired lateinit var taskRepository: TaskRepository
+  @Autowired lateinit var candidateRepository: CandidateRepository
+  @Autowired lateinit var userRepository: UserRepository
+  @Autowired lateinit var savedListRepository: SavedListRepository
 
-    @Test
-    fun `test find by task and list`() {
-        assertTrue { isContainerInitialized() }
+  @Test
+  fun `test find by task and list`() {
+    assertTrue { isContainerInitialized() }
 
-        val testTask = getSavedTask(taskRepository)
-        val user = getSavedUser(userRepository)
-        val testCandidate = getSavedCandidate(candidateRepository, user)
-        val savedList = getSavedList(savedListRepository)
+    val testTask = getSavedTask(taskRepository)
+    val user = getSavedUser(userRepository)
+    val testCandidate = getSavedCandidate(candidateRepository, user)
+    val savedList = getSavedList(savedListRepository)
 
-        val ta = getTaskAssignment(user)
-        ta.apply {
-            task = testTask
-            candidate = testCandidate
-            relatedList = savedList
-        }
-        assertNull(ta.id)
-        repo.save(ta)
-        assertNotNull(ta.id)
-        assertTrue { ta.id > 0 }
-        val taskId = ta.task.id
-
-        val savedAssignment = repo.findByTaskAndList(taskId, savedList.id)
-        assertNotNull(savedAssignment)
-        assertTrue { savedAssignment.size > 0 }
+    val ta = getTaskAssignment(user)
+    ta.apply {
+      task = testTask
+      candidate = testCandidate
+      relatedList = savedList
     }
+    assertNull(ta.id)
+    repo.save(ta)
+    assertNotNull(ta.id)
+    assertTrue { ta.id > 0 }
+    val taskId = ta.task.id
 
-    /**
-     * This is identical to above, except with the 1 added to the savedList id
-     * so that it does not return results.
-     */
-    @Test
-    fun `test find by task and list fails`() {
-        assertTrue { isContainerInitialized() }
+    val savedAssignment = repo.findByTaskAndList(taskId, savedList.id)
+    assertNotNull(savedAssignment)
+    assertTrue { savedAssignment.size > 0 }
+  }
 
-        val testTask = getSavedTask(taskRepository)
-        val user = getSavedUser(userRepository)
-        val testCandidate = getSavedCandidate(candidateRepository, user)
-        val savedList = getSavedList(savedListRepository)
+  /**
+   * This is identical to above, except with the 1 added to the savedList id so that it does not
+   * return results.
+   */
+  @Test
+  fun `test find by task and list fails`() {
+    assertTrue { isContainerInitialized() }
 
-        val ta = getTaskAssignment(user)
-        ta.apply {
-            task = testTask
-            candidate = testCandidate
-            relatedList = savedList
-        }
-        assertNull(ta.id)
-        repo.save(ta)
-        assertNotNull(ta.id)
-        assertTrue { ta.id > 0 }
-        val taskId = ta.task.id
+    val testTask = getSavedTask(taskRepository)
+    val user = getSavedUser(userRepository)
+    val testCandidate = getSavedCandidate(candidateRepository, user)
+    val savedList = getSavedList(savedListRepository)
 
-        val savedAssignment = repo.findByTaskAndList(taskId, savedList.id + 1)
-        assertNotNull(savedAssignment)
-        assertTrue { savedAssignment.isEmpty() }
+    val ta = getTaskAssignment(user)
+    ta.apply {
+      task = testTask
+      candidate = testCandidate
+      relatedList = savedList
     }
+    assertNull(ta.id)
+    repo.save(ta)
+    assertNotNull(ta.id)
+    assertTrue { ta.id > 0 }
+    val taskId = ta.task.id
+
+    val savedAssignment = repo.findByTaskAndList(taskId, savedList.id + 1)
+    assertNotNull(savedAssignment)
+    assertTrue { savedAssignment.isEmpty() }
+  }
 }

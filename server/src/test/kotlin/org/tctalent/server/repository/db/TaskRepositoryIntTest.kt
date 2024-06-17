@@ -20,7 +20,6 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.tctalent.server.model.db.TaskImpl
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getTask
 
@@ -34,11 +33,9 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by name`() {
     assertTrue { isContainerInitialized() }
-    val task = getTask()
-    assertNull(task.id)
 
-    repo.save(task as TaskImpl)
-    assertNotNull(task.id)
+    val task = getTask()
+    repo.save(task)
     assertTrue { task.id > 0 }
     assertEquals("DEFAULT", task.name)
 
@@ -50,11 +47,9 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by lower name`() {
     assertTrue { isContainerInitialized() }
-    val task = getTask()
-    assertNull(task.id)
 
-    repo.save(task as TaskImpl)
-    assertNotNull(task.id)
+    val task = getTask()
+    repo.save(task)
     assertTrue { task.id > 0 }
     assertEquals("DEFAULT", task.name)
 
@@ -66,11 +61,9 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by lower name fail`() {
     assertTrue { isContainerInitialized() }
-    val task = getTask()
-    assertNull(task.id)
 
-    repo.save(task as TaskImpl)
-    assertNotNull(task.id)
+    val task = getTask()
+    repo.save(task)
     assertTrue { task.id > 0 }
     assertEquals("DEFAULT", task.name)
 
@@ -81,17 +74,13 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by lower display name`() {
     assertTrue { isContainerInitialized() }
+
     val task = getTask()
-    assertNull(task.id)
-
-    repo.save(task as TaskImpl)
-
-    assertNotNull(task.id)
+    repo.save(task)
     assertTrue { task.id > 0 }
     assertEquals("DEFAULT", task.name)
 
     val savedTask = repo.findByLowerDisplayName("Default Display")
-    assertNotNull(savedTask)
     assertTrue { savedTask.id > 0 }
     assertEquals("DEFAULT", savedTask.name)
   }
@@ -99,12 +88,9 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by lower display name fail`() {
     assertTrue { isContainerInitialized() }
+
     val task = getTask()
-    assertNull(task.id)
-
-    repo.save(task as TaskImpl)
-
-    assertNotNull(task.id)
+    repo.save(task)
     assertTrue { task.id > 0 }
     assertEquals("DEFAULT", task.name)
 
