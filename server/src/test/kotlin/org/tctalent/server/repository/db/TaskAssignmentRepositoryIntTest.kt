@@ -26,15 +26,17 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: TaskAssignmentRepository
   @Autowired lateinit var taskRepository: TaskRepository
   @Autowired lateinit var candidateRepository: CandidateRepository
+  @Autowired lateinit var userRepository: UserRepository
 
   @Test
   fun `test find by task and list`() {
     assertTrue { isContainerInitialized() }
 
     val testTask = getSavedTask(taskRepository)
-    val testCandidate = getSavedCandidate(candidateRepository)
+    val user = getSavedUser(userRepository)
+    val testCandidate = getSavedCandidate(candidateRepository, user)
 
-    val ta = getTaskAssignment()
+    val ta = getTaskAssignment(user)
     ta.apply {
       task = testTask
       candidate = testCandidate
