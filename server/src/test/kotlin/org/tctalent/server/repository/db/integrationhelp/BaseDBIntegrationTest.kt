@@ -100,5 +100,5 @@ abstract class BaseDBIntegrationTest {
     }
   }
 
-  fun isContainerInitialized(): Boolean = db.isRunning()
+  fun isContainerInitialized(): Boolean = db.isRunning
 }
