@@ -82,6 +82,15 @@ fun getSavedList(): SavedList {
   }
 }
 
+fun getCandidateEducation(): CandidateEducation {
+  return CandidateEducation().apply {
+    lengthOfCourseYears = 3
+    institution = "TESTINSTO"
+    country = Country().apply { id = 6192 } // Australia
+    educationType = EducationType.Masters
+  }
+}
+
 fun getSavedSurveyType(repo: SurveyTypeRepository): SurveyType {
   return saveHelperObject(repo, getSurveyType())
 }

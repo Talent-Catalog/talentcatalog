@@ -16,11 +16,14 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.BeforeTest
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.model.db.Candidate
+import org.tctalent.server.model.db.User
 import org.tctalent.server.repository.db.integrationhelp.*
 
 class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
@@ -29,14 +32,20 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var candidateRepository: CandidateRepository
   @Autowired lateinit var userRepository: UserRepository
   @Autowired lateinit var savedListRepository: SavedListRepository
+  private lateinit var user: User
+  private lateinit var testCandidate: Candidate
+
+  @BeforeTest
+  fun setup() {
+    user = getSavedUser(userRepository)
+    testCandidate = getSavedCandidate(candidateRepository, user)
+  }
 
   @Test
   fun `test find by task and list`() {
     assertTrue { isContainerInitialized() }
 
     val testTask = getSavedTask(taskRepository)
-    val user = getSavedUser(userRepository)
-    val testCandidate = getSavedCandidate(candidateRepository, user)
     val savedList = getSavedList(savedListRepository)
 
     val ta = getTaskAssignment(user)
@@ -68,8 +77,6 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
     assertTrue { isContainerInitialized() }
 
     val testTask = getSavedTask(taskRepository)
-    val user = getSavedUser(userRepository)
-    val testCandidate = getSavedCandidate(candidateRepository, user)
     val savedList = getSavedList(savedListRepository)
 
     val ta = getTaskAssignment(user)
