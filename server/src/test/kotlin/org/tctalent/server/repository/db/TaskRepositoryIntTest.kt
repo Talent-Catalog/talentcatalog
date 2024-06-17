@@ -21,6 +21,8 @@ import kotlin.test.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.TaskImpl
+import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
+import org.tctalent.server.repository.db.integrationhelp.getTask
 
 /**
  * Integration test class for task repository to ensure JPA working as expected. User comes from

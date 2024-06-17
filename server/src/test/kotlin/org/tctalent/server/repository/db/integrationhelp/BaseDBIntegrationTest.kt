@@ -14,21 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.repository.db
+package org.tctalent.server.repository.db.integrationhelp
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.tctalent.server.model.db.User
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.shaded.org.bouncycastle.cms.RecipientId.password
 import org.testcontainers.utility.MountableFile
 
 private val logger = KotlinLogging.logger {}
@@ -48,8 +43,8 @@ abstract class BaseDBIntegrationTest {
       System.getenv("TC_DB_DUMP_FILE_PATH") ?: "FAIL: ENV VARIABLE not set"
     private val containerMountPath: String =
       System.getenv("TC_CONTAINER_MOUNT_PATH") ?: "FAIL: ENV VARIABLE not set"
-    val psqlCommand =
-      arrayOf("psql", "-d", "tctalent", "-U", "tctalent", "-f", "$containerMountPath")
+    private val psqlCommand =
+      arrayOf("psql", "-d", "tctalent", "-U", "tctalent", "-f", containerMountPath)
 
     val db: PostgreSQLContainer<*> =
       PostgreSQLContainer("postgres:14")
@@ -74,13 +69,13 @@ abstract class BaseDBIntegrationTest {
       importDumpFileToDatabase()
     }
 
-    fun importDumpFileToDatabase() {
+    private fun importDumpFileToDatabase() {
       logger.info { "Importing the database dump." }
       db.apply { execInContainer(*psqlCommand) }
       logger.info { "Done importing the database dump." }
     }
 
-    fun createDbObjects() {
+    private fun createDbObjects() {
       logger.info { "Creating database objects" }
       db.apply {
         execInContainer(*createDb)
@@ -90,7 +85,7 @@ abstract class BaseDBIntegrationTest {
       logger.info { "Database container started. DB and user created." }
     }
 
-    fun loadDb() {
+    private fun loadDb() {
       logger.info { "Copying dump file to the container." }
       db.apply { copyFileToContainer(MountableFile.forHostPath(dumpFilePath), containerMountPath) }
       logger.info { "Dump file copied to the database" }

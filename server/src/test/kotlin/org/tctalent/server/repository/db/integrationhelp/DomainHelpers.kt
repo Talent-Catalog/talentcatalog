@@ -14,12 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.repository.db
+package org.tctalent.server.repository.db.integrationhelp
 
 import org.apache.commons.lang3.RandomStringUtils
 import java.time.OffsetDateTime
 import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
+import org.tctalent.server.repository.db.CandidateRepository
+import org.tctalent.server.repository.db.SavedListRepository
+import org.tctalent.server.repository.db.TaskRepository
+import org.tctalent.server.repository.db.UserRepository
 
 fun getTask(taskName: String = "DEFAULT", taskDisplay: String = "DEFAULT DISPLAY"): TaskImpl {
     return TaskImpl().apply {
@@ -56,6 +60,18 @@ fun getCandidate(): Candidate {
         contactConsentPartners = true
         contactConsentRegistration = true
         status = CandidateStatus.active
+        createdBy = user(1999L)
+        createdDate = OffsetDateTime.now()
+    }
+}
+
+fun getSavedList(savedListRepo: SavedListRepository): SavedList {
+    return saveHelperObject(savedListRepo, getSavedList()) as SavedList
+}
+fun getSavedList(): SavedList {
+    return SavedList().apply {
+        description = "SavedList"
+        name = "SavedList"
         createdBy = user(1999L)
         createdDate = OffsetDateTime.now()
     }

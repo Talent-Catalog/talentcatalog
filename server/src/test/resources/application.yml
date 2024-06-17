@@ -5,13 +5,3 @@ spring:
     password: tctalent
   flyway:
     enabled: true
-
-# I can't get this to load properly....work in progress.
-app:
-    dump_file_path: ${TC_DB_DUMP_FILE_PATH:~/databases/dump/dump.sql}
-    container_mount_path: ${TC_CONTAINER_MOUNT_PATH:/docker-entrypoint-initdb.d/dump.sql}
-logging:
-  level:
-    org.hibernate:
-      sql.Insert: INFO
-      type.descriptor.sql.BasicBinder: INFO

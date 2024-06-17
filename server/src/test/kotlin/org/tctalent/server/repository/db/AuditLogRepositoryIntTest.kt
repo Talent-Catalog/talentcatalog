@@ -18,8 +18,8 @@ package org.tctalent.server.repository.db
 
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.tctalent.server.model.db.AuditLog
+import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.service.db.audit.AuditType
 
 open class AuditLogRepositoryIntTest : BaseDBIntegrationTest() {
