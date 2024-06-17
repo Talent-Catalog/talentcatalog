@@ -38,6 +38,9 @@ class SystemLanguageRepositoryIntTest : BaseDBIntegrationTest() {
     val savedLang = repo.findByStatus(Status.active)
     assertNotNull(savedLang)
     assertTrue { savedLang.isNotEmpty() }
+    // Check the created item is in the list.
+    val resultIds = savedLang.map { it.id }
+    assertTrue { resultIds.contains(sl.id) }
   }
 
   @Test

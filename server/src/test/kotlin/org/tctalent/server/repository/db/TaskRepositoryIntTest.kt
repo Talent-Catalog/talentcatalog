@@ -41,6 +41,10 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
     val savedTask = repo.findByName("DEFAULT")
     assertNotNull(savedTask)
+
+    // Check the created item is in the list.
+    val resultIds = savedTask.map { it.id }
+    assertTrue { resultIds.contains(task.id) }
     assertEquals(1, savedTask.size)
   }
 
@@ -55,6 +59,7 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
     val savedTask = repo.findByLowerName("Default").orElseThrow { fail("Did not find.") }
     assertTrue { savedTask.id > 0 }
+    assertEquals(task.id, savedTask.id)
     assertEquals("DEFAULT", savedTask.name)
   }
 
@@ -82,6 +87,7 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
     val savedTask = repo.findByLowerDisplayName("Default Display")
     assertTrue { savedTask.id > 0 }
+    assertEquals(task.id, savedTask.id)
     assertEquals("DEFAULT", savedTask.name)
   }
 

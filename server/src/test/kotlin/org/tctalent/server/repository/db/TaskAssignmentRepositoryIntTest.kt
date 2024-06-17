@@ -54,6 +54,9 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
     val savedAssignment = repo.findByTaskAndList(taskId, savedList.id)
     assertNotNull(savedAssignment)
     assertTrue { savedAssignment.isNotEmpty() }
+    // Check the created item is in the list.
+    val resultIds = savedAssignment.map { it.id }
+    assertTrue { resultIds.contains(ta.id) }
   }
 
   /**
