@@ -16,24 +16,30 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Status
+import org.tctalent.server.model.db.SurveyType
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedSurveyType
 
 class SurveyTypeRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var surveyTypeRepository: SurveyTypeRepository
+  private lateinit var st: SurveyType
+
+  @BeforeTest
+  fun setup() {
+    st = getSavedSurveyType(surveyTypeRepository)
+    assertNotNull(st.id)
+    assertTrue { st.id > 0 }
+  }
 
   @Test
   fun `test find by status`() {
     assertTrue { isContainerInitialized() }
-
-    val st = getSavedSurveyType(surveyTypeRepository)
-    assertNotNull(st.id)
-    assertTrue { st.id > 0 }
 
     val savedSurveyType = surveyTypeRepository.findByStatus(Status.active)
     assertNotNull(savedSurveyType)
@@ -46,10 +52,6 @@ class SurveyTypeRepositoryIntTest : BaseDBIntegrationTest() {
   fun `test find by status fail`() {
     assertTrue { isContainerInitialized() }
 
-    val st = getSavedSurveyType(surveyTypeRepository)
-    assertNotNull(st.id)
-    assertTrue { st.id > 0 }
-
     val savedSurveyType = surveyTypeRepository.findByStatus(Status.deleted)
     assertNotNull(savedSurveyType)
     assertTrue { savedSurveyType.isEmpty() }
@@ -58,9 +60,6 @@ class SurveyTypeRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test get names for ids`() {
     assertTrue { isContainerInitialized() }
-    val st = getSavedSurveyType(surveyTypeRepository)
-    assertNotNull(st.id)
-    assertTrue { st.id > 0 }
 
     val ids = listOf(st.id)
     val savedNames = surveyTypeRepository.getNamesForIds(ids)

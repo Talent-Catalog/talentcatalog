@@ -20,6 +20,8 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.model.db.TaskImpl
+import org.tctalent.server.model.db.task.Task
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getTask
 
@@ -29,20 +31,23 @@ import org.tctalent.server.repository.db.integrationhelp.getTask
  */
 open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: TaskRepository
+  private lateinit var task: Task
+
+  @BeforeTest
+  fun setup() {
+    task = getTask()
+    repo.save(task as TaskImpl)
+    assertTrue { task.id > 0 }
+    assertEquals("DEFAULT", task.name)
+  }
 
   @Test
   fun `test find by name`() {
     assertTrue { isContainerInitialized() }
 
-    val task = getTask()
-    repo.save(task)
-    assertTrue { task.id > 0 }
-    assertEquals("DEFAULT", task.name)
-
     val savedTask = repo.findByName("DEFAULT")
     assertNotNull(savedTask)
 
-    // Check the created item is in the list.
     val resultIds = savedTask.map { it.id }
     assertTrue { resultIds.contains(task.id) }
     assertEquals(1, savedTask.size)
@@ -51,11 +56,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by lower name`() {
     assertTrue { isContainerInitialized() }
-
-    val task = getTask()
-    repo.save(task)
-    assertTrue { task.id > 0 }
-    assertEquals("DEFAULT", task.name)
 
     val savedTask = repo.findByLowerName("Default").orElseThrow { fail("Did not find.") }
     assertTrue { savedTask.id > 0 }
@@ -67,11 +67,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   fun `test find by lower name fail`() {
     assertTrue { isContainerInitialized() }
 
-    val task = getTask()
-    repo.save(task)
-    assertTrue { task.id > 0 }
-    assertEquals("DEFAULT", task.name)
-
     val savedTask = repo.findByLowerName("NothingToFind").getOrNull()
     assertNull(savedTask)
   }
@@ -79,11 +74,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by lower display name`() {
     assertTrue { isContainerInitialized() }
-
-    val task = getTask()
-    repo.save(task)
-    assertTrue { task.id > 0 }
-    assertEquals("DEFAULT", task.name)
 
     val savedTask = repo.findByLowerDisplayName("Default Display")
     assertTrue { savedTask.id > 0 }
@@ -94,11 +84,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by lower display name fail`() {
     assertTrue { isContainerInitialized() }
-
-    val task = getTask()
-    repo.save(task)
-    assertTrue { task.id > 0 }
-    assertEquals("DEFAULT", task.name)
 
     val savedTask = repo.findByLowerDisplayName("NothingToFind")
     assertNull(savedTask)

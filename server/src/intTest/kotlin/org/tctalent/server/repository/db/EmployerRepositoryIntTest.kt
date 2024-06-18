@@ -17,29 +17,30 @@
 package org.tctalent.server.repository.db
 
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.Test
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Employer
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import kotlin.test.assertNull
 
 class EmployerRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repository: EmployerRepository
   private val testDescription = "The description"
   private val salesforceId = "salesforceId"
 
+  @BeforeTest
+  fun setup() {
+    val employer =
+      Employer().apply {
+        description = testDescription
+        sfId = salesforceId
+      }
+    repository.save(employer)
+    assertTrue { employer.id > 0 }
+  }
+
   @Test
   fun `find first by sf id`() {
     assertTrue { isContainerInitialized() }
-
-    val employer = Employer().apply {
-      description = testDescription
-      sfId = salesforceId
-    }
-    repository.save(employer)
-    assertTrue { employer.id > 0 }
 
     val savedEmployee = repository.findFirstBySfId(salesforceId).getOrNull()
     assertNotNull(savedEmployee)
@@ -49,10 +50,6 @@ class EmployerRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `find by sf id fail`() {
     assertTrue { isContainerInitialized() }
-
-    val employer = Employer().apply { description = testDescription }
-    repository.save(employer)
-    assertTrue { employer.id > 0 }
 
     val savedEmployee = repository.findFirstBySfId(salesforceId + "00").getOrNull()
     assertNull(savedEmployee)

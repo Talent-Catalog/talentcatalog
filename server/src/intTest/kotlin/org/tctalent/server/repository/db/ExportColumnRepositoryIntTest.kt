@@ -20,21 +20,27 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.ExportColumn
+import org.tctalent.server.model.db.SavedList
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedList
 
 class ExportColumnRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: ExportColumnRepository
   @Autowired lateinit var savedListRepository: SavedListRepository
+  private lateinit var ec: ExportColumn
+  private lateinit var testSavedList: SavedList
+
+  @BeforeTest
+  fun setup() {
+    testSavedList = getSavedList(savedListRepository)
+    ec = ExportColumn().apply { savedList = testSavedList }
+    repo.save(ec)
+    assertTrue { ec.id > 0 }
+  }
 
   @Test
   fun `delete by saved list`() {
     assertTrue { isContainerInitialized() }
-    val testSavedList = getSavedList(savedListRepository)
-
-    val ec = ExportColumn().apply { savedList = testSavedList }
-    repo.save(ec)
-    assertTrue { ec.id > 0 }
 
     val savedExportColumn = repo.findById(ec.id).getOrNull()
     assertNotNull(savedExportColumn)

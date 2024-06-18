@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db
 
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.model.db.AuditLog
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getAuditLog
 import org.tctalent.server.service.db.audit.AuditType
@@ -25,14 +26,18 @@ import org.tctalent.server.service.db.audit.AuditType
 open class AuditLogRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repository: AuditLogRepository
   private val objRef = "TEST_AUDIT"
+  private lateinit var auditLog: AuditLog
+
+  @BeforeTest
+  fun setup() {
+    auditLog = getAuditLog(objRef)
+    repository.save(auditLog)
+    assertTrue(auditLog.id > 0)
+  }
 
   @Test
   fun `test find by type and object`() {
     assertTrue(isContainerInitialized())
-    val auditLog = getAuditLog(objRef)
-
-    repository.save(auditLog)
-    assertTrue(auditLog.id > 0)
 
     val savedAuditLog = repository.findByTypeAndObjectRef(AuditType.CANDIDATE_OCCUPATION, objRef)
     assertNotNull(savedAuditLog)
@@ -43,10 +48,6 @@ open class AuditLogRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by type and object fail`() {
     assertTrue(isContainerInitialized())
-    val auditLog = getAuditLog(objRef)
-
-    repository.save(auditLog)
-    assertTrue(auditLog.id > 0)
 
     val savedAuditLog =
       repository.findByTypeAndObjectRef(AuditType.CANDIDATE_OCCUPATION, objRef + "00")

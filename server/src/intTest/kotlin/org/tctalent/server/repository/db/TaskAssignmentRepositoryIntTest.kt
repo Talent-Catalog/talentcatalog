@@ -23,6 +23,8 @@ import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Candidate
+import org.tctalent.server.model.db.SavedList
+import org.tctalent.server.model.db.TaskAssignmentImpl
 import org.tctalent.server.model.db.User
 import org.tctalent.server.repository.db.integrationhelp.*
 
@@ -34,21 +36,18 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var savedListRepository: SavedListRepository
   private lateinit var user: User
   private lateinit var testCandidate: Candidate
+  private lateinit var ta: TaskAssignmentImpl
+  private lateinit var savedList: SavedList
 
   @BeforeTest
   fun setup() {
     user = getSavedUser(userRepository)
     testCandidate = getSavedCandidate(candidateRepository, user)
-  }
-
-  @Test
-  fun `test find by task and list`() {
-    assertTrue { isContainerInitialized() }
 
     val testTask = getSavedTask(taskRepository)
-    val savedList = getSavedList(savedListRepository)
+    savedList = getSavedList(savedListRepository)
 
-    val ta = getTaskAssignment(user)
+    ta = getTaskAssignment(user)
     ta.apply {
       task = testTask
       candidate = testCandidate
@@ -58,12 +57,18 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
     repo.save(ta)
     assertNotNull(ta.id)
     assertTrue { ta.id > 0 }
+  }
+
+  @Test
+  fun `test find by task and list`() {
+    assertTrue { isContainerInitialized() }
+
     val taskId = ta.task.id
 
     val savedAssignment = repo.findByTaskAndList(taskId, savedList.id)
     assertNotNull(savedAssignment)
     assertTrue { savedAssignment.isNotEmpty() }
-    // Check the created item is in the list.
+
     val resultIds = savedAssignment.map { it.id }
     assertTrue { resultIds.contains(ta.id) }
   }
@@ -76,19 +81,6 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
   fun `test find by task and list fails`() {
     assertTrue { isContainerInitialized() }
 
-    val testTask = getSavedTask(taskRepository)
-    val savedList = getSavedList(savedListRepository)
-
-    val ta = getTaskAssignment(user)
-    ta.apply {
-      task = testTask
-      candidate = testCandidate
-      relatedList = savedList
-    }
-    assertNull(ta.id)
-    repo.save(ta)
-    assertNotNull(ta.id)
-    assertTrue { ta.id > 0 }
     val taskId = ta.task.id
 
     val savedAssignment = repo.findByTaskAndList(taskId, savedList.id + 1)

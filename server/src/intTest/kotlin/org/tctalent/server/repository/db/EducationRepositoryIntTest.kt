@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Candidate
+import org.tctalent.server.model.db.CandidateEducation
 import org.tctalent.server.model.db.User
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getCandidateEducation
@@ -32,22 +33,22 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var userRepository: UserRepository
   private lateinit var user: User
   private lateinit var testCandidate: Candidate
+  private lateinit var ce: CandidateEducation
 
   @BeforeTest
   fun setup() {
     user = getSavedUser(userRepository)
     testCandidate = getSavedCandidate(candidateRepository, user)
+    ce = getCandidateEducation()
+    ce.apply { candidate = testCandidate }
+    repository.save(ce)
+    assertNotNull(ce.id)
+    assertTrue { ce.id > 0 }
   }
 
   @Test
   fun `test find candidate by id`() {
     assertTrue { isContainerInitialized() }
-
-    val ce = getCandidateEducation()
-    ce.apply { candidate = testCandidate }
-    repository.save(ce)
-    assertNotNull(ce.id)
-    assertTrue { ce.id > 0 }
 
     val savedCE = repository.findByIdLoadCandidate(ce.id).getOrNull()
     assertNotNull(savedCE)
@@ -66,12 +67,6 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
   fun `test find by id and education type`() {
     assertTrue { isContainerInitialized() }
 
-    val ce = getCandidateEducation()
-    ce.apply { candidate = testCandidate }
-    repository.save(ce)
-    assertNotNull(ce.id)
-    assertTrue { ce.id > 0 }
-
     val savedCE = repository.findByIdLoadEducationType(ce.educationType)
     assertNotNull(savedCE)
     assertEquals(ce.institution, savedCE.institution)
@@ -81,12 +76,6 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find by id and education type fail`() {
     assertTrue { isContainerInitialized() }
-
-    val ce = getCandidateEducation()
-    ce.apply { candidate = testCandidate }
-    repository.save(ce)
-    assertNotNull(ce.id)
-    assertTrue { ce.id > 0 }
 
     val savedCE = repository.findByIdLoadEducationType(ce.educationType)
     assertNull(savedCE)

@@ -32,17 +32,16 @@ class ReactionRepositoryIntTest : BaseDBIntegrationTest() {
   @BeforeTest
   fun setup() {
     testChatPost = getSavedChatPost(chatPostRepository)
-  }
-
-  @Test
-  fun `test find by chat post id`() {
-    assertTrue { isContainerInitialized() }
-
     val reaction = getReaction()
     reaction.apply { chatPost = testChatPost }
     repository.save(reaction)
     assertNotNull(reaction.id)
     assertTrue { reaction.id > 0 }
+  }
+
+  @Test
+  fun `test find by chat post id`() {
+    assertTrue { isContainerInitialized() }
 
     val savedReaction = repository.findBychatPostId(testChatPost.id).getOrNull()
     assertNotNull(savedReaction)
@@ -61,14 +60,8 @@ class ReactionRepositoryIntTest : BaseDBIntegrationTest() {
   }
 
   @Test
-  fun `test find by emjoi and chat post id`() {
+  fun `test find by emoji and chat post id`() {
     assertTrue { isContainerInitialized() }
-
-    val reaction = getReaction()
-    reaction.apply { chatPost = testChatPost }
-    repository.save(reaction)
-    assertNotNull(reaction.id)
-    assertTrue { reaction.id > 0 }
 
     val savedReaction = repository.findByEmojiAndChatPostId("Smile", testChatPost.id).getOrNull()
     assertNotNull(savedReaction)
@@ -76,7 +69,7 @@ class ReactionRepositoryIntTest : BaseDBIntegrationTest() {
   }
 
   @Test
-  fun `test find by emjoi and chat post id fail`() {
+  fun `test find by emoji and chat post id fail`() {
     assertTrue { isContainerInitialized() }
 
     val savedReaction = repository.findByEmojiAndChatPostId("", 0L).getOrNull()
