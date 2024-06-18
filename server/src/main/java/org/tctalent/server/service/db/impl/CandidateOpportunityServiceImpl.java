@@ -590,9 +590,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     // If stage is changing to CLOSED (e.g. removed from submission list) publish posts
                     if (newStage.isClosed()) {
                         publishRemovedFromSubmissionListPosts(opp, newStage);
+                    // If a stage is changing to MINI INTAKE
                     } else if (newStage.equals(CandidateOpportunityStage.miniIntake)) {
                         publishMiniIntakeRequestPost(opp);
-                    }else {
+                    // If a stage is changed to ACCEPTANCE (job offer is accepted)
+                    } else if (newStage.equals(CandidateOpportunityStage.acceptance)) {
+                        publishOppAcceptedPosts(opp);
+                    } else {
                         // If non closing stage change, publish posts
                         publishStageChangePosts(opp, newStage);
                     }
@@ -940,6 +944,48 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         // Publish the chat post
         chatPostService.publishChatPost(candidateOppStageChangeChatPost);
+    }
+
+    /**
+     * Publish post for a candidate opportunity stage change to acceptance. Notify all previous chats.
+     * - CandidateProspect chat
+     * - CandidateRecruiting chat
+     * - JobCreatorSourcePartner chat
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
+     */
+    private void publishOppAcceptedPosts(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+        Post autoPostAcceptedJobOffer = new Post();
+        autoPostAcceptedJobOffer.setContent("The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
+                + opp.getJobOpp().getName() + " and is now a member of the <a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>.");
+
+        // AUTO CHAT TO PROSPECT CHAT
+        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+        // Create the chat post
+        ChatPost prospectChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, prospectChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(prospectChatPostAccepted);
+
+        // AUTO CHAT TO RECRUITING CHAT
+        JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
+                candidate.getUser().getPartner(), candidate);
+        // Create the chat post
+        ChatPost recruitingChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, recruitingChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(recruitingChatPostAccepted);
+
+        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
+                candidate.getUser().getPartner(), null);
+        // Create the chat post
+        ChatPost jcspChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, jcspChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(jcspChatPostAccepted);
     }
 
     /**
