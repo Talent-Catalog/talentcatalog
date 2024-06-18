@@ -200,7 +200,7 @@ sourceSets {
         kotlin.srcDirs("src/test/kotlin")
     }
     intTest {
-        kotlin.srcDirs("src.intTest/kotlin")
+        kotlin.srcDirs("src/intTest/kotlin")
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
     }
