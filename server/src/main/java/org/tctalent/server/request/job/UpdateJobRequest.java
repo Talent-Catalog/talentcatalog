@@ -64,4 +64,10 @@ public class UpdateJobRequest extends OpportunityParams {
 
     @Nullable
     private LocalDate submissionDueDate;
+
+    /**
+     * If present, the job is to have certain fields copied from the job belonging to this job id.
+     */
+    @Nullable
+    private Long jobToCopyId;
 }
