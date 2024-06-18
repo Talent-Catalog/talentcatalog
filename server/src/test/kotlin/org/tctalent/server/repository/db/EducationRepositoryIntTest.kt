@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.jvm.optionals.getOrNull
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Candidate
 import org.tctalent.server.model.db.User
@@ -23,8 +25,6 @@ import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getCandidateEducation
 import org.tctalent.server.repository.db.integrationhelp.getSavedCandidate
 import org.tctalent.server.repository.db.integrationhelp.getSavedUser
-import kotlin.jvm.optionals.getOrNull
-import kotlin.test.*
 
 class EducationRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var repository: EducationRepository
@@ -44,9 +44,7 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
     assertTrue { isContainerInitialized() }
 
     val ce = getCandidateEducation()
-    ce.apply {
-      candidate = testCandidate
-    }
+    ce.apply { candidate = testCandidate }
     repository.save(ce)
     assertNotNull(ce.id)
     assertTrue { ce.id > 0 }
@@ -69,9 +67,7 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
     assertTrue { isContainerInitialized() }
 
     val ce = getCandidateEducation()
-    ce.apply {
-      candidate = testCandidate
-    }
+    ce.apply { candidate = testCandidate }
     repository.save(ce)
     assertNotNull(ce.id)
     assertTrue { ce.id > 0 }
@@ -81,17 +77,13 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
     assertEquals(ce.institution, savedCE.institution)
   }
 
-  /**
-   * Make sure it fails to find the saved one.
-   */
+  /** Make sure it fails to find the saved one. */
   @Test
   fun `test find by id and education type fail`() {
     assertTrue { isContainerInitialized() }
 
     val ce = getCandidateEducation()
-    ce.apply {
-      candidate = testCandidate
-    }
+    ce.apply { candidate = testCandidate }
     repository.save(ce)
     assertNotNull(ce.id)
     assertTrue { ce.id > 0 }

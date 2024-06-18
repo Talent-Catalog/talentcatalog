@@ -20,12 +20,7 @@ import java.time.OffsetDateTime
 import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
-import org.tctalent.server.repository.db.CandidateRepository
-import org.tctalent.server.repository.db.SavedListRepository
-import org.tctalent.server.repository.db.SurveyTypeRepository
-import org.tctalent.server.repository.db.SystemLanguageRepository
-import org.tctalent.server.repository.db.TaskRepository
-import org.tctalent.server.repository.db.UserRepository
+import org.tctalent.server.repository.db.*
 import org.tctalent.server.service.db.audit.AuditAction
 import org.tctalent.server.service.db.audit.AuditType
 
@@ -69,9 +64,8 @@ fun getCandidate(): Candidate {
   }
 }
 
-fun getSavedList(savedListRepo: SavedListRepository): SavedList {
-  return saveHelperObject(savedListRepo, getSavedList())
-}
+fun getSavedList(savedListRepo: SavedListRepository): SavedList =
+  saveHelperObject(savedListRepo, getSavedList())
 
 fun getSavedList(): SavedList {
   return SavedList().apply {
@@ -91,9 +85,32 @@ fun getCandidateEducation(): CandidateEducation {
   }
 }
 
-fun getSavedSurveyType(repo: SurveyTypeRepository): SurveyType {
-  return saveHelperObject(repo, getSurveyType())
+fun getSavedReaction(repo: ReactionRepository): Reaction = saveHelperObject(repo, getReaction())
+
+fun getReaction(): Reaction {
+  return Reaction().apply { emoji = "Smile" }
 }
+
+fun getJobChat(): JobChat {
+  return JobChat().apply {
+    id = 1
+    type = JobChatType.JobCreatorAllSourcePartners
+  }
+}
+
+fun getSavedChatPost(repo: ChatPostRepository): ChatPost = saveHelperObject(repo, getChatPost())
+
+fun getChatPost(): ChatPost {
+  return ChatPost().apply {
+    jobChat = org.tctalent.server.repository.db.integrationhelp.getJobChat()
+    content = "NothingChatContent"
+    createdBy = user(1999L)
+    createdDate = OffsetDateTime.now()
+  }
+}
+
+fun getSavedSurveyType(repo: SurveyTypeRepository): SurveyType =
+  saveHelperObject(repo, getSurveyType())
 
 fun getSurveyType(): SurveyType {
   return SurveyType().apply {
@@ -102,9 +119,8 @@ fun getSurveyType(): SurveyType {
   }
 }
 
-fun getSavedSystemLanguage(repo: SystemLanguageRepository): SystemLanguage {
-  return saveHelperObject(repo, getSystemLanguage())
-}
+fun getSavedSystemLanguage(repo: SystemLanguageRepository): SystemLanguage =
+  saveHelperObject(repo, getSystemLanguage())
 
 fun getSystemLanguage(): SystemLanguage {
   return SystemLanguage().apply {
