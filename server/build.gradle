@@ -64,10 +64,9 @@ repositories {
 configurations {
     intTestImplementation.extendsFrom testImplementation
     intTestRuntimeOnly.extendsFrom runtimeOnly
-}
-
-configurations.configureEach {
-    exclude group: "commons-logging", module: "commons-logging"
+    configureEach {
+        exclude group: "commons-logging", module: "commons-logging"
+    }
 }
 
 dependencies {
