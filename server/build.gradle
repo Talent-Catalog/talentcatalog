@@ -61,6 +61,11 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    intTestImplementation.extendsFrom testImplementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 configurations.configureEach {
     exclude group: "commons-logging", module: "commons-logging"
 }
@@ -161,9 +166,13 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:1.19.8")
     testImplementation("org.testcontainers:junit-jupiter:1.19.8")
 
-    // Testing
-    testImplementation("org.springframework.security:spring-security-test:5.8.12")
+    // Testing frameworks
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.springframework.security:spring-security-test:5.8.12")
+
+    // Integration Testing
+    intTestImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    intTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
@@ -191,11 +200,33 @@ sourceSets {
         java.srcDirs("src/test/java")
         kotlin.srcDirs("src/test/kotlin")
     }
+    intTest {
+        kotlin.srcDirs("src.intTest/kotlin")
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
 }
 
 test {
     useJUnitPlatform()
+    testLogging {
+        events "failed"
+    }
 }
+
+tasks.register("integrationTest", Test) {
+    description = "Run integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    shouldRunAfter test
+    useJUnitPlatform()
+    testLogging {
+        events "failed"
+    }
+}
+
+check.dependsOn("integrationTest")
 
 bootJar {
     from(".") {
