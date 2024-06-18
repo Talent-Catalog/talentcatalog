@@ -88,7 +88,6 @@ spring:
     resources:
       add-mappings: false
 
-
   jpa:
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
