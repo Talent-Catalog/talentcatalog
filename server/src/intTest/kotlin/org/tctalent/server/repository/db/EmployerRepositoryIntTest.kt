@@ -29,6 +29,8 @@ class EmployerRepositoryIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     val employer =
       Employer().apply {
         description = testDescription
@@ -39,8 +41,7 @@ class EmployerRepositoryIntTest : BaseDBIntegrationTest() {
   }
 
   @Test
-  fun `find first by sf id`() {
-    assertTrue { isContainerInitialized() }
+  fun `test find first by sf id`() {
 
     val savedEmployee = repository.findFirstBySfId(salesforceId).getOrNull()
     assertNotNull(savedEmployee)
@@ -48,8 +49,7 @@ class EmployerRepositoryIntTest : BaseDBIntegrationTest() {
   }
 
   @Test
-  fun `find by sf id fail`() {
-    assertTrue { isContainerInitialized() }
+  fun `test find by sf id fail`() {
 
     val savedEmployee = repository.findFirstBySfId(salesforceId + "00").getOrNull()
     assertNull(savedEmployee)

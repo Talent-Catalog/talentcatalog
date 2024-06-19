@@ -84,6 +84,13 @@ fun getSavedCandidate(repo: CandidateRepository, savedUser: User): Candidate {
   return saveHelperObject(repo, candidate) as Candidate
 }
 
+fun getSavedCandidateCert(repo: CandidateCertificationRepository): CandidateCertification =
+  saveHelperObject(repo, getCandidateCert())
+
+fun getCandidateCert(): CandidateCertification {
+  return CandidateCertification().apply { name = "GREAT CERT".format(Random.nextInt(10000)) }
+}
+
 /**
  * Retrieves a new Candidate instance initialized with random data.
  *

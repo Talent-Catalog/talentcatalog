@@ -32,6 +32,8 @@ class SurveyTypeRepositoryIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     st = getSavedSurveyType(surveyTypeRepository)
     assertNotNull(st.id)
     assertTrue { st.id > 0 }
@@ -39,7 +41,6 @@ class SurveyTypeRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by status`() {
-    assertTrue { isContainerInitialized() }
 
     val savedSurveyType = surveyTypeRepository.findByStatus(Status.active)
     assertNotNull(savedSurveyType)
@@ -50,7 +51,6 @@ class SurveyTypeRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by status fail`() {
-    assertTrue { isContainerInitialized() }
 
     val savedSurveyType = surveyTypeRepository.findByStatus(Status.deleted)
     assertNotNull(savedSurveyType)
@@ -59,7 +59,6 @@ class SurveyTypeRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test get names for ids`() {
-    assertTrue { isContainerInitialized() }
 
     val ids = listOf(st.id)
     val savedNames = surveyTypeRepository.getNamesForIds(ids)

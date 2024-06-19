@@ -32,6 +32,8 @@ class ExportColumnRepositoryIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     testSavedList = getSavedList(savedListRepository)
     ec = ExportColumn().apply { savedList = testSavedList }
     repo.save(ec)
@@ -40,7 +42,6 @@ class ExportColumnRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `delete by saved list`() {
-    assertTrue { isContainerInitialized() }
 
     val savedExportColumn = repo.findById(ec.id).getOrNull()
     assertNotNull(savedExportColumn)

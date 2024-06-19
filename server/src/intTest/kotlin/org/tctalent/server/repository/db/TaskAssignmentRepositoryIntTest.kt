@@ -41,6 +41,8 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     user = getSavedUser(userRepository)
     testCandidate = getSavedCandidate(candidateRepository, user)
 
@@ -61,7 +63,6 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by task and list`() {
-    assertTrue { isContainerInitialized() }
 
     val taskId = ta.task.id
 
@@ -79,7 +80,6 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
    */
   @Test
   fun `test find by task and list fails`() {
-    assertTrue { isContainerInitialized() }
 
     val taskId = ta.task.id
 

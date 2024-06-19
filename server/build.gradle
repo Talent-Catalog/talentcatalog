@@ -209,7 +209,7 @@ sourceSets {
 test {
     useJUnitPlatform()
     testLogging {
-        events "failed"
+        events("failed")
     }
 }
 
@@ -221,7 +221,7 @@ tasks.register("integrationTest", Test) {
     shouldRunAfter test
     useJUnitPlatform()
     testLogging {
-        events "failed"
+        events("passed", "failed")
     }
 }
 

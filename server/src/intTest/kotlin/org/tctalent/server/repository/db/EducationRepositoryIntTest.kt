@@ -37,6 +37,8 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     user = getSavedUser(userRepository)
     testCandidate = getSavedCandidate(candidateRepository, user)
     ce = getCandidateEducation()
@@ -48,7 +50,6 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find candidate by id`() {
-    assertTrue { isContainerInitialized() }
 
     val savedCE = repository.findByIdLoadCandidate(ce.id).getOrNull()
     assertNotNull(savedCE)
@@ -57,7 +58,6 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find candidate by id fail`() {
-    assertTrue { isContainerInitialized() }
 
     val savedCE = repository.findByIdLoadCandidate(99999999L).getOrNull()
     assertNull(savedCE)
@@ -68,7 +68,6 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
 
   //  @Test
   fun `test find by id and education type`() {
-    assertTrue { isContainerInitialized() }
 
     val savedCE = repository.findByIdLoadEducationType(ce.educationType)
     assertNotNull(savedCE)
@@ -78,7 +77,6 @@ class EducationRepositoryIntTest : BaseDBIntegrationTest() {
   /** Make sure it fails to find the saved one. */
   //  @Test
   fun `test find by id and education type fail`() {
-    assertTrue { isContainerInitialized() }
 
     val savedCE = repository.findByIdLoadEducationType(ce.educationType)
     assertNull(savedCE)

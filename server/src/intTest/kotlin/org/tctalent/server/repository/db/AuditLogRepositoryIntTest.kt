@@ -30,6 +30,8 @@ open class AuditLogRepositoryIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     auditLog = getAuditLog(objRef)
     repository.save(auditLog)
     assertTrue(auditLog.id > 0)
@@ -37,7 +39,6 @@ open class AuditLogRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by type and object`() {
-    assertTrue(isContainerInitialized())
 
     val savedAuditLog = repository.findByTypeAndObjectRef(AuditType.CANDIDATE_OCCUPATION, objRef)
     assertNotNull(savedAuditLog)
@@ -47,7 +48,6 @@ open class AuditLogRepositoryIntTest : BaseDBIntegrationTest() {
   /** Same as regular test, just ensuring fails if object ref is invalid. */
   @Test
   fun `test find by type and object fail`() {
-    assertTrue(isContainerInitialized())
 
     val savedAuditLog =
       repository.findByTypeAndObjectRef(AuditType.CANDIDATE_OCCUPATION, objRef + "00")

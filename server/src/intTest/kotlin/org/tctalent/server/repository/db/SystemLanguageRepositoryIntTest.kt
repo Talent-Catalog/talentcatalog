@@ -32,14 +32,15 @@ class SystemLanguageRepositoryIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     sl = getSavedSystemLanguage(repo)
     assertNotNull(sl.id)
     assertTrue { sl.id > 0 }
   }
 
   @Test
-  fun `find by status`() {
-    assertTrue { isContainerInitialized() }
+  fun `test find by status`() {
 
     val savedLang = repo.findByStatus(Status.active)
     assertNotNull(savedLang)
@@ -50,8 +51,7 @@ class SystemLanguageRepositoryIntTest : BaseDBIntegrationTest() {
   }
 
   @Test
-  fun `find by status fails`() {
-    assertTrue { isContainerInitialized() }
+  fun `test find by status fails`() {
 
     val savedLang = repo.findByStatus(Status.deleted)
     assertNotNull(savedLang)

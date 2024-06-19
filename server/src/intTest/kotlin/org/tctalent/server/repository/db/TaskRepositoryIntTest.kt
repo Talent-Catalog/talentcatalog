@@ -35,6 +35,8 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     task = getTask()
     repo.save(task as TaskImpl)
     assertTrue { task.id > 0 }
@@ -43,7 +45,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by name`() {
-    assertTrue { isContainerInitialized() }
 
     val savedTask = repo.findByName("DEFAULT")
     assertNotNull(savedTask)
@@ -55,7 +56,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by lower name`() {
-    assertTrue { isContainerInitialized() }
 
     val savedTask = repo.findByLowerName("Default").orElseThrow { fail("Did not find.") }
     assertTrue { savedTask.id > 0 }
@@ -65,7 +65,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by lower name fail`() {
-    assertTrue { isContainerInitialized() }
 
     val savedTask = repo.findByLowerName("NothingToFind").getOrNull()
     assertNull(savedTask)
@@ -73,7 +72,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by lower display name`() {
-    assertTrue { isContainerInitialized() }
 
     val savedTask = repo.findByLowerDisplayName("Default Display")
     assertTrue { savedTask.id > 0 }
@@ -83,7 +81,6 @@ open class TaskRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by lower display name fail`() {
-    assertTrue { isContainerInitialized() }
 
     val savedTask = repo.findByLowerDisplayName("NothingToFind")
     assertNull(savedTask)
