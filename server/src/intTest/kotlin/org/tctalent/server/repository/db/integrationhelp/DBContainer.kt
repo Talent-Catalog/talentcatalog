@@ -26,20 +26,23 @@ import org.testcontainers.utility.TestcontainersConfiguration
 private val logger = KotlinLogging.logger {}
 
 /**
- * Singleton that creates a Testcontainer instance with the tctalent postgres database dump file
- * loaded. It must be done statically and run beforeAll so the flyway scripts will execute against
- * it when spring launches, so all this happens before spring takes over. It also ensures the
- * database is created and users created so the dump loads correctly.
+ * Singleton that creates a Testcontainer instance with the tctalent Postgres database dump file
+ * loaded. It must be initialized statically and run beforeAll to ensure the Flyway scripts execute
+ * against it when Spring launches. This setup occurs before Spring takes over, ensuring the
+ * database is created and users are set up correctly so the dump loads as expected.
  *
  * ## Requirements:
- * - Must have a system environment variable *TCTALENT_DB_HOME* specifying the location of the dump
+ * - Refer to the <a href="./resources/testcontainers.properties">testcontainers.properties</a>
  *   file.
- * - Must have testcontainers.properties in the classpath with the two variables set.
+ * - Set the system environment variable *TCTALENT_DB_HOME* to specify the location of the dump
+ *   file.
+ * - Ensure `testcontainers.properties` is in the classpath with the required variables set.
  *
- * The first param is the name of the dump file (lead with a slash). The second is the required
- * mount point in the docker image.A default for the second item is provided.
+ * The first parameter is the name of the dump file (must start with a slash). The second parameter
+ * is the required mount point in the Docker image, with a default value provided.
  *
- * Configuration functions are separated so the container is simply the container.
+ * Configuration functions are separated, so the container setup is streamlined and focused solely
+ * on the container configuration.
  */
 object DBContainer {
 
