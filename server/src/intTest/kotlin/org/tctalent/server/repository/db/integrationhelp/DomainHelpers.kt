@@ -84,11 +84,22 @@ fun getSavedCandidate(repo: CandidateRepository, savedUser: User): Candidate {
   return saveHelperObject(repo, candidate) as Candidate
 }
 
+/**
+ * Retrieves a saved CandidateCertification instance after saving it to the repository.
+ *
+ * @param repo The repository where the candidate certification will be saved.
+ * @return The saved CandidateCertification instance.
+ */
 fun getSavedCandidateCert(repo: CandidateCertificationRepository): CandidateCertification =
   saveHelperObject(repo, getCandidateCert())
 
+/**
+ * Retrieves a new CandidateCertification instance initialized with a default name.
+ *
+ * @return A new CandidateCertification instance.
+ */
 fun getCandidateCert(): CandidateCertification {
-  return CandidateCertification().apply { name = "GREAT CERT".format(Random.nextInt(10000)) }
+  return CandidateCertification().apply { name = "GREAT CERT" }
 }
 
 /**
@@ -283,5 +294,17 @@ fun getAuditLog(objRef: String): AuditLog {
     eventDate = OffsetDateTime.now()
     action = AuditAction.ADD
     description = "Create a test audit record."
+  }
+}
+
+/**
+ * Retrieves a new CandidateDependant instance initialized with a default name and gender.
+ *
+ * @return A new CandidateDependant instance.
+ */
+fun getCandidateDependent(): CandidateDependant {
+  return CandidateDependant().apply {
+    name = "James%04d".format(Random.nextInt(10000))
+    gender = Gender.male
   }
 }
