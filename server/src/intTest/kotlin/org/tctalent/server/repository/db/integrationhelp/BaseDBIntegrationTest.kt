@@ -23,26 +23,31 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.junit.jupiter.Testcontainers
 
+/**
+ * Base class for integration testing when using the tctalent database. It provides a singleton
+ * instance of the database to each subclass to execute test cases against.
+ *
+ * Subclasses do not need to call anything, simply extend from this class.
+ */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
 abstract class BaseDBIntegrationTest {
 
   companion object {
-    private val dbContainer = DBContainer
 
     @BeforeAll
     @JvmStatic
     fun startDBContainer() {
-      dbContainer.startDBContainer()
+      DBContainer.startDBContainer()
     }
 
     @DynamicPropertySource
     @JvmStatic
     fun registerDBContainer(registry: DynamicPropertyRegistry) {
-      dbContainer.registerDBContainer(registry)
+      DBContainer.registerDBContainer(registry)
     }
   }
 
-  fun isContainerInitialized(): Boolean = dbContainer.db.isRunning()
+  fun isContainerInitialized(): Boolean = DBContainer.db.isRunning()
 }
