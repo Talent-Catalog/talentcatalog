@@ -1,0 +1,8 @@
+<div class="step-template">
+  <h2>Step {{ step.section }}</h2>
+  <div class="step-content-label">Here's where you show content for step {{ step.section }}</div>
+  <button class="step-complete-btn" (click)="onCompleteStep()">
+        <i class="fa-solid
+            {{ step.isComplete ? 'fa-map-location-dot' : 'fa-spinner' }}"></i>
+        Complete Step {{ step.section }}</button>
+</div>

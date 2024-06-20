@@ -16,139 +16,92 @@
 
 import {Injectable} from '@angular/core';
 import {RegistrationStep} from '../components/register/registration-step';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Subscription} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IntakeService {
 
-  private subscription: Subscription;
-
-  public steps: RegistrationStep[] = [
+  public miniSteps: RegistrationStep[] = [
     {
       key: 'account',
       title: 'Welcome to Talent Catalog!',
-      section: 0
+      section: 1,
+      isComplete: false
     },
     {
       key: 'intRecruitment',
       title: 'Interest in International Recruitment',
-      section: 1
+      section: 2,
+      isComplete: false
     },
     {
       key: 'destinations',
       title: 'Destinations',
-      section: 2
+      section: 3,
+      isComplete: false
     },
     {
-      key: 'occupation',
-      title: 'Tell us about your occupation',
-      section: 3
+      key: 'personalEligibility',
+      title: 'Personal Status / Program Eligibility',
+      section: 4,
+      isComplete: false
     },
     {
-      key: 'experience',
-      title: 'Tell us about your working history',
-      section: 4
+      key: 'langExams',
+      title: 'Language Exams',
+      section: 5,
+      isComplete: false
     },
     {
-      key: 'education',
-      title: 'Tell us about your education',
-      section: 5
+      key: 'langAssessment',
+      title: 'Language Assessment',
+      section: 6,
+      isComplete: false
     },
     {
-      key: 'language',
-      title: 'What languages do you speak?',
-      section: 6
-    },
-    {
-      key: 'certifications',
-      title: 'Do you have any other professional certifications?',
-      section: 7
-    },
-    {
-      key: 'additional',
-      title: 'How did you hear about us?',
-      section: 8
-    },
-    {
-      key: 'upload',
-      title: 'Do you have any files to upload?',
-      section: 9
+      key: 'registration',
+      title: 'Registration',
+      section: 7,
+      isComplete: false
     },
     {
       key: 'complete',
       title: '',
       hideHeader: true,
-      section: 9
+      section: 8,
+      isComplete: false
     }
   ];
-  public totalSections: number = Math.max(...this.steps.map(s => s.section));
-  public currentStepKey: string;
-  public currentStep: RegistrationStep;
-  public currentStepIndex: number;
-  registering: boolean = false;
+  steps$: BehaviorSubject<RegistrationStep[]> = new BehaviorSubject<RegistrationStep[]>(this.miniSteps);
+  currentStep$: BehaviorSubject<RegistrationStep> = new BehaviorSubject<RegistrationStep>(null);
 
-  constructor(private router: Router,
-              private route: ActivatedRoute) { }
+  constructor() {
+    this.currentStep$.next(this.steps$.value[0]);
+  }
 
-  // Observe the query params in the url to determine which step to display
-  start() {
-    // Set step back to 0 before starting a new registration.
-    this.currentStepIndex = 0;
-    this.currentStep = this.steps[this.currentStepIndex];
-    this.currentStepKey = this.currentStep.key;
-    if (!this.subscription || this.subscription.closed) {
-      this.registering = true;
-      this.subscription = this.route.queryParams.subscribe(
-        params => {
-          if (params['step']) {
-            this.openStep(params['step']);
-          } else {
-            this.routeToStep('landing');
-          }
-        }
-      );
+  setCurrentStep(step: RegistrationStep): void {
+    this.currentStep$.next(step);
+  }
+
+  getCurrentStep(): Observable<RegistrationStep> {
+    return this.currentStep$.asObservable();
+  }
+
+  getSteps(): Observable<RegistrationStep[]> {
+    return this.steps$.asObservable();
+  }
+
+  moveToNextStep(): void {
+    const index = this.currentStep$.value.section;
+
+    if (index < this.steps$.value.length) {
+      this.currentStep$.next(this.steps$.value[index]);
     }
   }
 
-  // Stop observing the url changes
-  stop() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-      this.registering = false;
-    }
-  }
-
-  openStep(stepKey: string) {
-    stepKey = stepKey || 'landing';
-    this.currentStepIndex = this.steps.findIndex(step => step.key === stepKey);
-    this.setStep();
-  }
-
-  back() {
-    if (!this.registering) {return;}
-    this.currentStepIndex--;
-    this.setStep();
-  }
-
-  next() {
-    if (!this.registering) {return;}
-    this.currentStepIndex++;
-    this.setStep();
-  }
-
-  setStep() {
-    if (this.currentStepIndex < 1 || this.currentStepIndex > this.steps.length - 1) {
-      this.currentStepIndex = 0;
-    }
-    this.currentStep = this.steps[this.currentStepIndex];
-    this.currentStepKey = this.currentStep.key;
-    this.routeToStep(this.currentStepKey);
-  }
-
-  routeToStep(key: string) {
-    this.router.navigate([], {queryParams: {step: key}, queryParamsHandling: "merge"});
+  isLastStep(): boolean {
+    return this.currentStep$.value.section === this.steps$.value.length;
   }
 }

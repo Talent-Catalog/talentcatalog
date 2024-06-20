@@ -19,4 +19,5 @@ export interface RegistrationStep {
   title: string;
   section: number;
   hideHeader?: boolean;
+  isComplete?: boolean;
 }

@@ -153,6 +153,8 @@ import {
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
 import {MiniIntakeComponent} from './components/profile/view/tab/intake/mini/mini-intake.component';
+import {StepsComponent} from './util/steps/steps.component';
+import {StepTemplateComponent} from './util/step-template/step-template.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -223,7 +225,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent,
-    MiniIntakeComponent
+    MiniIntakeComponent,
+    StepsComponent,
+    StepTemplateComponent
   ],
   imports: [
     BrowserModule,
