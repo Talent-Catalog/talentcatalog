@@ -79,8 +79,7 @@ fun getSavedUser(userRepo: UserRepository): User = userRepo.save(user())
  * @return The saved Candidate instance.
  */
 fun getSavedCandidate(repo: CandidateRepository, savedUser: User): Candidate {
-  val candidate = getCandidate()
-  candidate.apply { user = savedUser }
+  val candidate = getCandidate().apply { user = savedUser }
   return saveHelperObject(repo, candidate) as Candidate
 }
 
@@ -113,6 +112,7 @@ fun getCandidate(): Candidate {
     phone = "999999999"
     contactConsentPartners = true
     contactConsentRegistration = true
+    workAbroadNotes = "GOOD FOR TEST"
     status = CandidateStatus.active
     createdBy = user(1999L)
     createdDate = OffsetDateTime.now()
@@ -182,6 +182,8 @@ fun getJobChat(): JobChat {
   return JobChat().apply {
     id = 1
     type = JobChatType.JobCreatorAllSourcePartners
+    createdBy = user(1999L)
+    createdDate = OffsetDateTime.now()
   }
 }
 
@@ -308,3 +310,69 @@ fun getCandidateDependent(): CandidateDependant {
     gender = Gender.male
   }
 }
+
+/**
+ * Retrieves a new SalesforceJobOpp instance initialized with default values.
+ *
+ * @return A new SalesforceJobOpp instance.
+ */
+fun getSalesforceJobOpp(): SalesforceJobOpp {
+  return SalesforceJobOpp().apply {
+    description = "SF TEST JOB"
+    employer = "Seraco Pty Ltd"
+    country = Country().apply { id = 6192 } // Australia
+    sfId = "TESTSFID"
+  }
+}
+
+/**
+ * Retrieves a saved JobChat instance after saving it to the repository.
+ *
+ * @param repo The repository where the job chat will be saved.
+ * @return The saved JobChat instance.
+ */
+fun getSavedJobChat(repo: JobChatRepository): JobChat = saveHelperObject(repo, getJobChat())
+
+/**
+ * Retrieves a saved JobChatUser instance after saving it to the repository.
+ *
+ * @param repository The repository where the job chat user will be saved.
+ * @param savedUser The user associated with the job chat.
+ * @param savedJobChat The job chat associated with the user.
+ * @return The saved JobChatUser instance.
+ */
+fun getSavedJobChatUser(repository: JobChatUserRepository, savedUser: User, savedJobChat: JobChat) =
+  saveHelperObject(repository, getJobChatUser(savedUser, savedJobChat))
+
+/**
+ * Retrieves a new JobChatUser instance initialized with provided user and job chat.
+ *
+ * @param savedUser The user associated with the job chat.
+ * @param savedChat The job chat associated with the user.
+ * @return A new JobChatUser instance.
+ */
+fun getJobChatUser(savedUser: User, savedChat: JobChat): JobChatUser {
+  val key = getJobChatUserKey(savedUser, savedChat)
+  return JobChatUser().apply {
+    id = key
+    chat = savedChat
+    user = savedUser
+  }
+}
+
+/**
+ * Retrieves a new JobChatUserKey instance initialized with provided user and job chat IDs.
+ *
+ * @param savedUser The user associated with the job chat.
+ * @param savedChat The job chat associated with the user.
+ * @return A new JobChatUserKey instance.
+ */
+fun getJobChatUserKey(savedUser: User, savedChat: JobChat): JobChatUserKey {
+  return JobChatUserKey().apply {
+    userId = savedUser.id
+    jobChatId = savedChat.id
+  }
+}
+
+fun getSavedSalesforceJobOpp(repository: SalesforceJobOppRepository) =
+  saveHelperObject(repository, getSalesforceJobOpp())

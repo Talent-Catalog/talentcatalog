@@ -16,35 +16,95 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.BeforeTest
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Candidate
-import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getSavedCandidate
-import org.tctalent.server.repository.db.integrationhelp.getSavedUser
+import org.tctalent.server.model.db.JobChat
+import org.tctalent.server.model.db.JobChatType
+import org.tctalent.server.model.db.SalesforceJobOpp
+import org.tctalent.server.repository.db.integrationhelp.*
 
 class JobChatRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var repo: JobChatRepository
   @Autowired private lateinit var candidateRepository: CandidateRepository
   @Autowired private lateinit var userRepository: UserRepository
+  @Autowired private lateinit var sfJobOppRepository: SalesforceJobOppRepository
+  @Autowired private lateinit var jobChatRepository: JobChatRepository
   private lateinit var testCandidate: Candidate
+  private lateinit var jobChat: JobChat
+  private lateinit var sfJobOpp: SalesforceJobOpp
 
   @BeforeTest
   fun setup() {
+    assertTrue { isContainerInitialized() }
+
     testCandidate = getSavedCandidate(candidateRepository, getSavedUser(userRepository))
+    sfJobOpp = getSavedSalesforceJobOpp(sfJobOppRepository)
+
+    jobChat =
+      getJobChat().apply {
+        jobOpp = sfJobOpp
+        candidate = testCandidate
+      }
+    jobChatRepository.save(jobChat)
+    assertTrue(jobChat.id > 0)
   }
 
-  fun `test find by job opp id`() {}
+  @Test
+  fun `test find by job opp id`() {
+    val savedJobChat = repo.findByIds(listOf(jobChat.id))
+    assertNotNull(savedJobChat)
+    assertTrue { savedJobChat.isNotEmpty() }
+    val ids = savedJobChat.map { it.id }
+    assertTrue { ids.contains(jobChat.id) }
+  }
 
-  fun `test find by type and job`() {}
+  @Test
+  fun `test find by job opp id fail`() {
+    val savedJobChat = repo.findByIds(listOf(jobChat.id + 9009999))
+    assertNotNull(savedJobChat)
+    assertTrue { savedJobChat.isEmpty() }
+  }
 
-  fun `test find by ids`() {}
+  @Test
+  fun `test find by type and job`() {
+    val savedJobChat = repo.findByTypeAndJob(JobChatType.JobCreatorAllSourcePartners, sfJobOpp.id)
+    assertNotNull(savedJobChat)
+    assertEquals(
+      testCandidate.workAbroadNotes,
+      savedJobChat.candidate?.workAbroadNotes ?: fail("Candidate is wrong"),
+    )
+  }
 
-  fun `test find by type and candidate`() {}
+  @Test
+  fun `test find by type and job fail`() {
+    val savedJobChat =
+      repo.findByTypeAndJob(JobChatType.JobCreatorAllSourcePartners, sfJobOpp.id + 1)
+    assertNull(savedJobChat)
+  }
 
-  fun `test find by type and candidate and job`() {}
+  @Test
+  fun `test find by ids`() {
+    fail("not implemented")
+  }
 
-  fun `test find by type and job and partner`() {}
+  @Test
+  fun `test find by type and candidate`() {
+    fail("not implemented")
+  }
 
-  fun `test find with posts since date`() {}
+  @Test
+  fun `test find by type and candidate and job`() {
+    fail("not implemented")
+  }
+
+  @Test
+  fun `test find by type and job and partner`() {
+    fail("not implemented")
+  }
+
+  @Test
+  fun `test find with posts since date`() {
+    fail("not implemented")
+  }
 }
