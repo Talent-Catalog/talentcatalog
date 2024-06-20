@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.ChatPost
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getChatPost
+import org.tctalent.server.repository.db.integrationhelp.getSavedJobChat
 
 class ChatPostRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: ChatPostRepository
@@ -31,7 +32,9 @@ class ChatPostRepositoryIntTest : BaseDBIntegrationTest() {
   @BeforeTest
   fun setup() {
     assertTrue { isContainerInitialized() }
-    chatPost = getChatPost()
+
+    val testJobChat = getSavedJobChat(jobChatRepository)
+    chatPost = getChatPost().apply { jobChat = testJobChat }
     repo.save(chatPost)
     assertTrue { chatPost.id > 0 }
   }

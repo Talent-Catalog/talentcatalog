@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.tctalent.server.model.db.Candidate
 import org.tctalent.server.model.db.SalesforceJobOpp
 import org.tctalent.server.model.db.SavedList
 import org.tctalent.server.model.db.User
@@ -32,19 +33,25 @@ class SalesforceJobOppRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var userRepository: UserRepository
   @Autowired private lateinit var jobChatRepository: JobChatRepository
   @Autowired private lateinit var chatPostRepository: ChatPostRepository
+  @Autowired private lateinit var candidateRepository: CandidateRepository
   private lateinit var sfJobOpp: SalesforceJobOpp
   private lateinit var savedList: SavedList
   private lateinit var savedUser: User
+  private lateinit var testCandidate: Candidate
 
   @BeforeTest
   fun setup() {
     assertTrue { isContainerInitialized() }
 
     savedUser = getSavedUser(userRepository)
+    testCandidate = getSavedCandidate(candidateRepository, getSavedUser(userRepository))
+
     val savedJobChat = getSavedJobChat(jobChatRepository)
-    val savedChatPost = getSavedChatPost(chatPostRepository)
+    val chatPost = getChatPost().apply { jobChat = savedJobChat }
+    chatPostRepository.save(chatPost)
+    assertTrue { chatPost.id > 0 }
     val jobChatUser = getSavedJobChatUser(jobChatUserRepository, savedUser, savedJobChat)
-    jobChatUser.apply { lastReadPost = savedChatPost }
+    jobChatUser.apply { lastReadPost = chatPost }
     jobChatUserRepository.save(jobChatUser)
 
     assertTrue { isContainerInitialized() }
@@ -88,27 +95,51 @@ class SalesforceJobOppRepositoryIntTest : BaseDBIntegrationTest() {
   fun `test find unread chats in opps`() {
     // Different user here.
     val newUser = getSavedUser(userRepository)
+
     val sfJobOpp2 = getSalesforceJobOpp().apply { submissionList = savedList }
     repo.save(sfJobOpp2)
+    assertTrue { sfJobOpp2.id > 0 }
+
     val sfJobOpp3 = getSalesforceJobOpp().apply { submissionList = savedList }
     repo.save(sfJobOpp3)
+    assertTrue { sfJobOpp3.id > 0 }
 
     // Create some saved chats
-    val savedJobChat1 = getSavedJobChat(jobChatRepository).apply { jobOpp = sfJobOpp2 }
+    val savedJobChat1 =
+      getSavedJobChat(jobChatRepository).apply {
+        jobOpp = sfJobOpp2
+        candidate = testCandidate
+      }
     jobChatRepository.save(savedJobChat1)
-    val savedJobChat2 = getSavedJobChat(jobChatRepository).apply { jobOpp = sfJobOpp3 }
+    assertTrue { savedJobChat1.id > 0 }
+
+    val savedJobChat2 =
+      getSavedJobChat(jobChatRepository).apply {
+        jobOpp = sfJobOpp3
+        candidate = testCandidate
+      }
     jobChatRepository.save(savedJobChat2)
+    assertTrue { savedJobChat2.id > 0 }
+
+    // Create the chat posts
+    val testChatPost = getChatPost().apply { jobChat = savedJobChat1 }
+    chatPostRepository.save(testChatPost)
+    assertTrue { testChatPost.id > 0 }
+
+    val testChatPost2 = getChatPost().apply { jobChat = savedJobChat2 }
+    chatPostRepository.save(testChatPost2)
+    assertTrue { testChatPost2.id > 0 }
 
     // Create job chat user links
-    getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat1)
-    getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat2)
+    val jobChatUser1 = getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat1)
+    val jobChatUser2 = getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat2)
 
     val savedOpp =
       repo.findUnreadChatsInOpps(newUser.id, listOf(sfJobOpp.id, sfJobOpp2.id, sfJobOpp3.id))
 
     assertNotNull(savedOpp)
     assertTrue { savedOpp.isNotEmpty() }
-    assertEquals(1, savedOpp.size)
+    assertEquals(2, savedOpp.size)
   }
 
   @Test

@@ -180,7 +180,6 @@ fun getReaction(): Reaction {
  */
 fun getJobChat(): JobChat {
   return JobChat().apply {
-    id = 1
     type = JobChatType.JobCreatorAllSourcePartners
     createdBy = user(1999L)
     createdDate = OffsetDateTime.now()
@@ -202,7 +201,6 @@ fun getSavedChatPost(repo: ChatPostRepository): ChatPost = saveHelperObject(repo
  */
 fun getChatPost(): ChatPost {
   return ChatPost().apply {
-    jobChat = org.tctalent.server.repository.db.integrationhelp.getJobChat()
     content = "NothingChatContent"
     createdBy = user(1999L)
     createdDate = OffsetDateTime.now()
@@ -374,5 +372,33 @@ fun getJobChatUserKey(savedUser: User, savedChat: JobChat): JobChatUserKey {
   }
 }
 
-fun getSavedSalesforceJobOpp(repository: SalesforceJobOppRepository) =
+/**
+ * Retrieves a saved SalesforceJobOpp instance after saving it to the repository.
+ *
+ * @param repository The repository where the Salesforce job opportunity will be saved.
+ * @return The saved SalesforceJobOpp instance.
+ */
+fun getSavedSalesforceJobOpp(repository: SalesforceJobOppRepository): SalesforceJobOpp =
   saveHelperObject(repository, getSalesforceJobOpp())
+
+/**
+ * Retrieves a saved Partner instance after saving it to the repository.
+ *
+ * @param repository The repository where the partner will be saved.
+ * @return The saved Partner instance.
+ */
+fun getSavedPartner(repository: PartnerRepository): PartnerImpl =
+  saveHelperObject(repository, getPartner())
+
+/**
+ * Retrieves a new PartnerImpl instance initialized with a default name.
+ *
+ * @return A new PartnerImpl instance.
+ */
+fun getPartner(): PartnerImpl {
+  return PartnerImpl().apply {
+    name = "GREAT TEST PARTNER"
+    status = Status.active
+    abbreviation = "GTP"
+  }
+}

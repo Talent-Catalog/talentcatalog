@@ -20,20 +20,23 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.ChatPost
-import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getReaction
-import org.tctalent.server.repository.db.integrationhelp.getSavedChatPost
+import org.tctalent.server.repository.db.integrationhelp.*
 
 class ReactionRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var repository: ReactionRepository
   @Autowired private lateinit var chatPostRepository: ChatPostRepository
+  @Autowired private lateinit var jobChatRepository: JobChatRepository
   private lateinit var testChatPost: ChatPost
 
   @BeforeTest
   fun setup() {
     assertTrue { isContainerInitialized() }
 
-    testChatPost = getSavedChatPost(chatPostRepository)
+    val testJobChat = getSavedJobChat(jobChatRepository)
+    testChatPost = getChatPost().apply { jobChat = testJobChat }
+    chatPostRepository.save(testChatPost)
+    assertTrue { testChatPost.id > 0 }
+
     val reaction = getReaction()
     reaction.apply { chatPost = testChatPost }
     repository.save(reaction)
