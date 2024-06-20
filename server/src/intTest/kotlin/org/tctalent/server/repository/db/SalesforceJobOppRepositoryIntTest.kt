@@ -131,8 +131,8 @@ class SalesforceJobOppRepositoryIntTest : BaseDBIntegrationTest() {
     assertTrue { testChatPost2.id > 0 }
 
     // Create job chat user links
-    val jobChatUser1 = getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat1)
-    val jobChatUser2 = getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat2)
+    getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat1)
+    getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat2)
 
     val savedOpp =
       repo.findUnreadChatsInOpps(newUser.id, listOf(sfJobOpp.id, sfJobOpp2.id, sfJobOpp3.id))

@@ -87,12 +87,13 @@ class JobChatRepositoryIntTest : BaseDBIntegrationTest() {
     assertNull(savedJobChat)
 
     savedJobChat = repo.findByTypeAndJob(JobChatType.CandidateProspect, sfJobOpp.id)
+    assertNull(savedJobChat)
   }
 
   @Test
   fun `test find by ids`() {
     val jc1 = getSavedJobChat(repo)
-    val jc2 = getSavedJobChat(repo)
+    getSavedJobChat(repo) // This one won't be used in the search.
     val jc3 = getSavedJobChat(repo)
     val jc4 = getSavedJobChat(repo)
     val results = repo.findByIds(listOf(jc1.id, jc3.id, jc4.id))
