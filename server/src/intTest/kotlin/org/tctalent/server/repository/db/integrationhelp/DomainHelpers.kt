@@ -406,11 +406,10 @@ fun getPartner(): PartnerImpl {
 /**
  * Retrieves a saved Country instance after saving it to the repository.
  *
- * @param repo  The repository where the country will be saved.
+ * @param repo The repository where the country will be saved.
  * @return The saved Country instance.
  */
-fun getSavedCountry(repo: CountryRepository): Country =
-  saveHelperObject(repo, getCountry())
+fun getSavedCountry(repo: CountryRepository): Country = saveHelperObject(repo, getCountry())
 
 /**
  * Retrieves a new Country instance initialized with default ISO code and name.
@@ -422,5 +421,34 @@ fun getCountry(): Country {
     isoCode = "ISOCODE"
     name = "NewAustralia"
     status = Status.active
+  }
+}
+
+/**
+ * Retrieves a new CandidateVisaCheck instance initialized with default protection status.
+ *
+ * @return A new CandidateVisaCheck instance.
+ */
+fun getCandidateVisaCheck(): CandidateVisaCheck {
+  return CandidateVisaCheck().apply { protection = YesNo.Yes }
+}
+
+/**
+ * Retrieves a saved Industry instance after saving it to the repository.
+ *
+ * @param repo The repository where the industry will be saved.
+ * @return The saved Industry instance.
+ */
+fun getSavedIndustry(repo: IndustryRepository): Industry = saveHelperObject(repo, getIndustry())
+
+/**
+ * Retrieves a new Industry instance initialized with default status and name.
+ *
+ * @return A new Industry instance.
+ */
+fun getIndustry(): Industry {
+  return Industry().apply {
+    status = Status.active
+    name = "TestIndustry"
   }
 }
