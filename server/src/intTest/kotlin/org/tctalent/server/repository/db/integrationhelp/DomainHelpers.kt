@@ -35,7 +35,7 @@ fun getTask(taskName: String = "DEFAULT", taskDisplay: String = "DEFAULT DISPLAY
   TaskImpl().apply {
     name = taskName
     displayName = taskDisplay
-    createdBy = user(9997)
+    createdBy = getUser(9997)
     createdDate = OffsetDateTime.now()
   }
 
@@ -67,7 +67,7 @@ fun getTaskAssignment(user: User) =
  * @param userRepo The repository where the user will be saved.
  * @return The saved User instance.
  */
-fun getSavedUser(userRepo: UserRepository): User = userRepo.save(user())
+fun getSavedUser(userRepo: UserRepository): User = userRepo.save(getUser())
 
 /**
  * Retrieves a saved Candidate instance after saving it to the repository.
@@ -110,7 +110,7 @@ fun getCandidate() =
     contactConsentRegistration = true
     workAbroadNotes = "GOOD FOR TEST"
     status = CandidateStatus.active
-    createdBy = user(1999L)
+    createdBy = getUser(1999L)
     createdDate = OffsetDateTime.now()
   }
 
@@ -132,7 +132,7 @@ fun getSavedList() =
   SavedList().apply {
     description = "SavedList"
     name = "SavedList"
-    createdBy = user(1999L)
+    createdBy = getUser(1999L)
     createdDate = OffsetDateTime.now()
   }
 
@@ -172,7 +172,7 @@ fun getReaction() = Reaction().apply { emoji = "Smile" }
 fun getJobChat() =
   JobChat().apply {
     type = JobChatType.JobCreatorAllSourcePartners
-    createdBy = user(1999L)
+    createdBy = getUser(1999L)
     createdDate = OffsetDateTime.now()
   }
 
@@ -192,7 +192,7 @@ fun getSavedChatPost(repo: ChatPostRepository): ChatPost = saveHelperObject(repo
 fun getChatPost() =
   ChatPost().apply {
     content = "NothingChatContent"
-    createdBy = user(1999L)
+    createdBy = getUser(1999L)
     createdDate = OffsetDateTime.now()
   }
 
@@ -255,7 +255,7 @@ fun <T, ID> saveHelperObject(repo: JpaRepository<T, ID>, entity: T & Any): T =
  * @param idToUse The optional ID to assign to the user.
  * @return A User instance.
  */
-fun user(idToUse: Long? = null) =
+fun getUser(idToUse: Long? = null) =
   User().apply {
     id = idToUse
     username = "jo.blogs@email.com"
@@ -263,7 +263,7 @@ fun user(idToUse: Long? = null) =
     lastName = "blogs"
     role = Role.user
     status = Status.active
-    partner = PartnerImpl().apply { id = 1L } // This is TBB in dumps.
+    partner = PartnerImpl().apply { id = 1L } // This is TBB in the dump.
   }
 
 /**
@@ -304,6 +304,8 @@ fun getSalesforceJobOpp() =
     employer = "Seraco Pty Ltd"
     country = Country().apply { id = 6192 } // Australia
     sfId = "TESTSFID"
+    createdBy = getUser(9997)
+    createdDate = OffsetDateTime.now()
   }
 
 /**
@@ -353,15 +355,6 @@ fun getJobChatUserKey(savedUser: User, savedChat: JobChat) =
     userId = savedUser.id
     jobChatId = savedChat.id
   }
-
-/**
- * Retrieves a saved SalesforceJobOpp instance after saving it to the repository.
- *
- * @param repository The repository where the Salesforce job opportunity will be saved.
- * @return The saved SalesforceJobOpp instance.
- */
-fun getSavedSalesforceJobOpp(repository: SalesforceJobOppRepository): SalesforceJobOpp =
-  saveHelperObject(repository, getSalesforceJobOpp())
 
 /**
  * Retrieves a saved Partner instance after saving it to the repository.
@@ -472,6 +465,27 @@ fun getSavedSearch(): SavedSearch =
     type = "TestSavedSearch"
     status = Status.active
     name = "TestSavedSearch"
-    createdBy = user(1999L)
+    createdBy = getUser(1999L)
     createdDate = OffsetDateTime.now()
   }
+
+/**
+ * Retrieves a new CandidateOpportunity instance initialized with default stage and closing
+ * comments.
+ *
+ * @return A new CandidateOpportunity instance.
+ */
+fun getCandidateOpportunity(): CandidateOpportunity =
+  CandidateOpportunity().apply {
+    stage = CandidateOpportunityStage.cvPreparation
+    closingCommentsForCandidate = "WELLDONE"
+  }
+
+/**
+ * Retrieves a saved SalesforceJobOpp instance after saving it to the repository.
+ *
+ * @param repo The repository where the Salesforce job opportunity will be saved.
+ * @return The saved SalesforceJobOpp instance.
+ */
+fun getSavedSfJobOpp(repo: SalesforceJobOppRepository): SalesforceJobOpp =
+  saveHelperObject(repo, getSalesforceJobOpp())

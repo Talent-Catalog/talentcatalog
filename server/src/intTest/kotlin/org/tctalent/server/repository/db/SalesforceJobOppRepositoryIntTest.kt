@@ -54,7 +54,6 @@ class SalesforceJobOppRepositoryIntTest : BaseDBIntegrationTest() {
     jobChatUser.apply { lastReadPost = chatPost }
     jobChatUserRepository.save(jobChatUser)
 
-    assertTrue { isContainerInitialized() }
     savedList = getSavedList(savedListRepository)
     sfJobOpp = getSalesforceJobOpp().apply { submissionList = savedList }
     repo.save(sfJobOpp)

@@ -47,9 +47,7 @@ class CandidateVisaJobRepositoryIntTest : BaseDBIntegrationTest() {
     candidateVisaJobCheckRepository.save(testCandidateVisaCheck)
     assertTrue { testCandidateVisaCheck.id > 0 }
 
-    sfJobOpp = getSalesforceJobOpp()
-    salesforceJobOppRepository.save(sfJobOpp)
-    assertTrue { sfJobOpp.id > 0 }
+    sfJobOpp = getSavedSfJobOpp(salesforceJobOppRepository)
 
     candidateVisaJobCheck =
       getCandidateVisaJobCheck().apply {
