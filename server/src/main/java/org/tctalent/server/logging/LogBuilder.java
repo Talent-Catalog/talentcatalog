@@ -147,10 +147,31 @@ public class LogBuilder {
   }
 
   /**
+   * Logs the constructed message at the WARN level.
+   */
+  public void logWarn() {
+    logger.warn(buildLogMessage());
+  }
+
+  /**
+   * Logs the constructed message with exception at the WARN level.
+   */
+  public void logWarn(Exception e) {
+    logger.warn(buildLogMessage(), e);
+  }
+
+  /**
    * Logs the constructed message at the ERROR level.
    */
   public void logError() {
     logger.error(buildLogMessage());
+  }
+
+  /**
+   * Logs the constructed message with exception at the ERROR level.
+   */
+  public void logError(Exception e) {
+    logger.error(buildLogMessage(), e);
   }
 
   /**
