@@ -25,6 +25,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
+import org.tctalent.server.logging.LogBuilder;
 
 /**
  * This defines some redirections and also where the Angular jars
@@ -62,7 +63,10 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         for (UIBundle uiBundle : uiBundles) {
 
-            log.info("Adding UI Bundle: " + uiBundle.url + " => " + uiBundle.module);
+            LogBuilder.builder(log)
+                .action("WebConfiguration")
+                .message("Adding UI Bundle: " + uiBundle.url + " => " + uiBundle.module)
+                .logInfo();
 
             registry.addResourceHandler("/" + uiBundle.url + "/*.*")
                     .setCachePeriod(0)
