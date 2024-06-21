@@ -21,6 +21,7 @@ import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Candidate
 import org.tctalent.server.model.db.CandidateOpportunity
+import org.tctalent.server.model.db.JobChatUser
 import org.tctalent.server.model.db.SalesforceJobOpp
 import org.tctalent.server.repository.db.integrationhelp.*
 
@@ -33,7 +34,7 @@ class CandidateOpportunityRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var jobChatRepository: JobChatRepository
   @Autowired private lateinit var chatPostRepository: ChatPostRepository
   @Autowired private lateinit var jobChatUserRepository: JobChatUserRepository
-
+  private lateinit var testjobChatUser: JobChatUser
   private lateinit var testCandidate: Candidate
   private lateinit var candidateOpportunity: CandidateOpportunity
   private lateinit var sfJobOpp: SalesforceJobOpp
@@ -47,11 +48,9 @@ class CandidateOpportunityRepositoryIntTest : BaseDBIntegrationTest() {
 
     // something weird going on here with the partner and user....works this way
     // but not when putting savedpartner on the user from above.
-    val newP = partnerRepository.findAll()
-    newP.forEach { println(it) }
-    val toUse = newP.filter { it.abbreviation == "GTP" }.first()
+    val newP = partnerRepository.findAll().filter { it.abbreviation == "GTP" }.first()
 
-    val user = getUser().apply { partner = toUse }
+    val user = getUser().apply { partner = newP }
     userRepo.save(user)
 
     testCandidate = getSavedCandidate(candidateRepo, user)
@@ -62,9 +61,9 @@ class CandidateOpportunityRepositoryIntTest : BaseDBIntegrationTest() {
     val chatPost = getChatPost().apply { jobChat = savedJobChat }
     chatPostRepository.save(chatPost)
     assertTrue { chatPost.id > 0 }
-    val jobChatUser = getSavedJobChatUser(jobChatUserRepository, user, savedJobChat)
-    jobChatUser.apply { lastReadPost = chatPost }
-    jobChatUserRepository.save(jobChatUser)
+    testjobChatUser = getSavedJobChatUser(jobChatUserRepository, user, savedJobChat)
+    testjobChatUser.apply { lastReadPost = chatPost }
+    jobChatUserRepository.save(testjobChatUser)
 
     candidateOpportunity =
       getCandidateOpportunity().apply {
@@ -116,5 +115,12 @@ class CandidateOpportunityRepositoryIntTest : BaseDBIntegrationTest() {
     val opp = repo.findPartnerOpps(999999999L)
     assertNotNull(opp)
     assertTrue { opp.isEmpty() }
+  }
+
+  @Test
+  fun `test find unread chats in opps`() {
+    val ids = repo.findUnreadChatsInOpps(testjobChatUser.user.id, listOf(sfJobOpp.id))
+    assertNotNull(ids)
+    assertTrue { ids.isNotEmpty() }
   }
 }
