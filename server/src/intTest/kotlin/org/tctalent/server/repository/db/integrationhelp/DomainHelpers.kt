@@ -452,3 +452,10 @@ fun getIndustry(): Industry {
     name = "TestIndustry"
   }
 }
+
+fun getCandidateVisaJobCheck(): CandidateVisaJobCheck {
+  return CandidateVisaJobCheck().apply {
+    name = "TestCandidateVisaJobCheck"
+    interest = YesNo.Yes
+  }
+}
