@@ -402,3 +402,25 @@ fun getPartner(): PartnerImpl {
     abbreviation = "GTP"
   }
 }
+
+/**
+ * Retrieves a saved Country instance after saving it to the repository.
+ *
+ * @param repo  The repository where the country will be saved.
+ * @return The saved Country instance.
+ */
+fun getSavedCountry(repo: CountryRepository): Country =
+  saveHelperObject(repo, getCountry())
+
+/**
+ * Retrieves a new Country instance initialized with default ISO code and name.
+ *
+ * @return A new Country instance.
+ */
+fun getCountry(): Country {
+  return Country().apply {
+    isoCode = "ISOCODE"
+    name = "NewAustralia"
+    status = Status.active
+  }
+}
