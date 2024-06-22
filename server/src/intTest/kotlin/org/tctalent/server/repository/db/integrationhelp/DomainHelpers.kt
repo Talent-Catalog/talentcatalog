@@ -540,3 +540,11 @@ fun getOccupation(): Occupation =
  */
 fun getSavedOccupation(repo: OccupationRepository): Occupation =
   saveHelperObject(repo, getOccupation())
+
+fun getSavedLanguage(repo: LanguageRepository) = saveHelperObject(repo, getLanguage())
+
+fun getLanguage() =
+  Language().apply {
+    status = Status.active
+    name = "TEST_LANGUAGE%04d".format(Random.nextInt(10000))
+  }
