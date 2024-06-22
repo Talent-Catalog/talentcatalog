@@ -45,103 +45,103 @@ private val logger = KotlinLogging.logger {}
  * on the container configuration.
  */
 object DBContainer {
-  private const val DB_NAME = "tctalent"
-  private const val DB_USER = "tctalent"
-  private const val DB_PWD = "tctalent"
-  const val DEFAULT_DUMP = "/integration-test-dump.sql"
-  const val TEST_CONTAINERS_DUMP = "testcontainers.dump.location"
-  const val TEST_CONTAINERS_MOUNT = "testcontainers.container.mount"
+    private const val DB_NAME = "tctalent"
+    private const val DB_USER = "tctalent"
+    private const val DB_PWD = "tctalent"
+    const val DEFAULT_DUMP = "/integration-test-dump.sql"
+    const val TEST_CONTAINERS_DUMP = "testcontainers.dump.location"
+    const val TEST_CONTAINERS_MOUNT = "testcontainers.container.mount"
 
-  @Container
-  val db: PostgreSQLContainer<*> =
-    PostgreSQLContainer(pgContainerImage())
-      .also {
-        logger.info { "Creating the postgres container." }
-        logger.info { "Dump file path: ${dumpFilePath()}" }
-        logger.info { "Container mount path: ${containerMountPath()}" }
-      }
-      .apply {
-        withDatabaseName(DB_NAME)
-        withUsername(DB_USER)
-        withPassword(DB_PWD)
-        withReuse(true)
-      }
+    @Container
+    val db: PostgreSQLContainer<*> =
+        PostgreSQLContainer(pgContainerImage())
+            .also {
+                logger.info { "Creating the postgres container." }
+                logger.info { "Dump file path: ${dumpFilePath()}" }
+                logger.info { "Container mount path: ${containerMountPath()}" }
+            }
+            .apply {
+                withDatabaseName(DB_NAME)
+                withUsername(DB_USER)
+                withPassword(DB_PWD)
+                withReuse(true)
+            }
 
-  fun startDBContainer() {
-    db.apply { start() }
-    createDbObjects()
-    loadDb()
-    importDumpFileToDatabase()
-  }
-
-  private fun importDumpFileToDatabase() {
-    logger.info { "Importing the database dump." }
-    db.apply { execInContainer(*psqlCommand()) }
-    logger.info { "Done importing the database dump. Connection is: ${db.jdbcUrl}" }
-    logger.info { "Ready to use: ${db.isRunning()}" }
-  }
-
-  private fun createDbObjects() {
-    logger.info { "Creating database objects" }
-    db.apply {
-      execInContainer(*createDbCommands())
-      execInContainer(*createUserCommands())
-      execInContainer(*superUserCommand())
+    fun startDBContainer() {
+        db.apply { start() }
+        createDbObjects()
+        loadDb()
+        importDumpFileToDatabase()
     }
-    logger.info { "Database container started. DB and user created." }
-  }
 
-  private fun loadDb() {
-    logger.info { "Copying dump file to the container." }
-    db.apply {
-      copyFileToContainer(MountableFile.forHostPath(dumpFilePath()), containerMountPath())
+    private fun importDumpFileToDatabase() {
+        logger.info { "Importing the database dump." }
+        db.apply { execInContainer(*psqlCommand()) }
+        logger.info { "Done importing the database dump. Connection is: ${db.jdbcUrl}" }
+        logger.info { "Ready to use: ${db.isRunning()}" }
     }
-    logger.info { "Dump file copied to the database" }
-  }
 
-  fun registerDBContainer(registry: DynamicPropertyRegistry) {
-    registry.add("spring.datasource.url", db::getJdbcUrl)
-    registry.add("spring.datasource.username", db::getUsername)
-    registry.add("spring.datasource.password", db::getPassword)
-  }
+    private fun createDbObjects() {
+        logger.info { "Creating database objects" }
+        db.apply {
+            execInContainer(*createDbCommands())
+            execInContainer(*createUserCommands())
+            execInContainer(*superUserCommand())
+        }
+        logger.info { "Database container started. DB and user created." }
+    }
+
+    private fun loadDb() {
+        logger.info { "Copying dump file to the container." }
+        db.apply {
+            copyFileToContainer(MountableFile.forHostPath(dumpFilePath()), containerMountPath())
+        }
+        logger.info { "Dump file copied to the database" }
+    }
+
+    fun registerDBContainer(registry: DynamicPropertyRegistry) {
+        registry.add("spring.datasource.url", db::getJdbcUrl)
+        registry.add("spring.datasource.username", db::getUsername)
+        registry.add("spring.datasource.password", db::getPassword)
+    }
 }
 
 private fun pgContainerImage() = "postgres:14"
 
 private fun createDbCommands() =
-  arrayOf("psql", "-U", "postgres", "-c", "CREATE DATABASE tctalent;")
+    arrayOf("psql", "-U", "postgres", "-c", "CREATE DATABASE tctalent;")
 
 private fun createUserCommands() =
-  arrayOf("psql", "-U", "postgres", "-c", "CREATE USER tctalent WITH PASSWORD 'tctalent';")
+    arrayOf("psql", "-U", "postgres", "-c", "CREATE USER tctalent WITH PASSWORD 'tctalent';")
 
 private fun superUserCommand() =
-  arrayOf("psql", "-U", "postgres", "-c", "ALTER USER tctalent WITH SUPERUSER;")
+    arrayOf("psql", "-U", "postgres", "-c", "ALTER USER tctalent WITH SUPERUSER;")
 
 // This looks a bit funky. It's getting a path to the dump file based on
 // an environment variable and the test container classpath variable.
 private fun dumpFilePath() = buildString {
-  val tcContainerConfig = TestcontainersConfiguration.getInstance()
+    val tcContainerConfig = TestcontainersConfiguration.getInstance()
 
-  val home = tcContainerConfig.environment["TCTALENT_DB_HOME"] ?: "ERROR DB_HOME not set"
-  val dumpLocation =
-    tcContainerConfig.getEnvVarOrProperty(
-      DBContainer.TEST_CONTAINERS_DUMP,
-      DBContainer.DEFAULT_DUMP,
-    )
-  append(home)
-  append(dumpLocation)
+    val home = tcContainerConfig.environment["TCTALENT_DB_HOME"] ?: "ERROR DB_HOME not set"
+    val dumpLocation =
+        tcContainerConfig.getEnvVarOrProperty(
+            DBContainer.TEST_CONTAINERS_DUMP,
+            DBContainer.DEFAULT_DUMP,
+        )
+    append(home)
+    append(dumpLocation)
 }
 
 private fun containerMountPath() = buildString {
-  val tcContainerConfig = TestcontainersConfiguration.getInstance()
+    val tcContainerConfig = TestcontainersConfiguration.getInstance()
 
-  val mountPoint =
-    tcContainerConfig.getEnvVarOrProperty(
-      DBContainer.TEST_CONTAINERS_MOUNT,
-      "ERROR: Container mount point is not set.",
-    )
-  append(mountPoint)
+    val mountPoint =
+        tcContainerConfig.getEnvVarOrProperty(
+            DBContainer.TEST_CONTAINERS_MOUNT,
+            "ERROR: Container mount point is not set.",
+        )
+    append(mountPoint)
 }
 
 private fun psqlCommand() =
-  arrayOf("psql", "-d", "tctalent", "-U", "tctalent", "-f", containerMountPath())
+    arrayOf("psql", "-d", "tctalent", "-U", "tctalent", "-f", containerMountPath())
