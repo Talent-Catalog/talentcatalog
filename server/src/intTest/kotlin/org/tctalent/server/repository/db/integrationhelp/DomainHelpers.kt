@@ -499,3 +499,24 @@ fun getSavedSfJobOpp(repo: SalesforceJobOppRepository): SalesforceJobOpp =
  * @return A User instance with ID 25000.
  */
 fun systemUser(): User = getUser(25000)
+
+/**
+ * Retrieves a saved LanguageLevel instance after saving it to the repository.
+ *
+ * @param repo The repository where the language level will be saved.
+ * @return The saved LanguageLevel instance.
+ */
+fun getSavedLanguageLevel(repo: LanguageLevelRepository): LanguageLevel =
+  saveHelperObject(repo, getLanguageLevel())
+
+/**
+ * Retrieves a new LanguageLevel instance initialized with default level, status, and name.
+ *
+ * @return A new LanguageLevel instance.
+ */
+fun getLanguageLevel(): LanguageLevel =
+  LanguageLevel().apply {
+    level = 1
+    status = Status.active
+    name = "VERYHIGHLEVEL"
+  }
