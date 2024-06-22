@@ -41,7 +41,7 @@ class JobChatRepositoryIntTest : BaseDBIntegrationTest() {
     assertTrue { isContainerInitialized() }
 
     testCandidate = getSavedCandidate(candidateRepository, getSavedUser(userRepository))
-    sfJobOpp = getSavedSalesforceJobOpp(sfJobOppRepository)
+    sfJobOpp = getSavedSfJobOpp(sfJobOppRepository)
     val partner = getSavedPartner(partnerRepository)
 
     testJobChat =

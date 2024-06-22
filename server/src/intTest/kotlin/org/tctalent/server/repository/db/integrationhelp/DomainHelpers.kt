@@ -31,14 +31,13 @@ import org.tctalent.server.service.db.audit.AuditType
  * @param taskDisplay The display name of the task (default: "DEFAULT DISPLAY").
  * @return A new TaskImpl instance.
  */
-fun getTask(taskName: String = "DEFAULT", taskDisplay: String = "DEFAULT DISPLAY"): TaskImpl {
-  return TaskImpl().apply {
+fun getTask(taskName: String = "DEFAULT", taskDisplay: String = "DEFAULT DISPLAY") =
+  TaskImpl().apply {
     name = taskName
     displayName = taskDisplay
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
-}
 
 /**
  * Retrieves a saved TaskImpl instance after saving it to the repository.
@@ -54,14 +53,13 @@ fun getSavedTask(repo: TaskRepository): TaskImpl = saveHelperObject(repo, getTas
  * @param user The user to whom the task assignment is made.
  * @return A new TaskAssignmentImpl instance.
  */
-fun getTaskAssignment(user: User): TaskAssignmentImpl {
-  return TaskAssignmentImpl().apply {
+fun getTaskAssignment(user: User) =
+  TaskAssignmentImpl().apply {
     activatedBy = user
     activatedDate = OffsetDateTime.now()
     status = Status.active
     candidate = Candidate().apply { id = 99999999 }
   }
-}
 
 /**
  * Retrieves a saved User instance after saving it to the repository.
@@ -69,7 +67,7 @@ fun getTaskAssignment(user: User): TaskAssignmentImpl {
  * @param userRepo The repository where the user will be saved.
  * @return The saved User instance.
  */
-fun getSavedUser(userRepo: UserRepository): User = userRepo.save(user())
+fun getSavedUser(userRepo: UserRepository): User = userRepo.save(getUser())
 
 /**
  * Retrieves a saved Candidate instance after saving it to the repository.
@@ -97,17 +95,15 @@ fun getSavedCandidateCert(repo: CandidateCertificationRepository): CandidateCert
  *
  * @return A new CandidateCertification instance.
  */
-fun getCandidateCert(): CandidateCertification {
-  return CandidateCertification().apply { name = "GREAT CERT" }
-}
+fun getCandidateCert() = CandidateCertification().apply { name = "GREAT CERT" }
 
 /**
  * Retrieves a new Candidate instance initialized with random data.
  *
  * @return A new Candidate instance.
  */
-fun getCandidate(): Candidate {
-  return Candidate().apply {
+fun getCandidate() =
+  Candidate().apply {
     candidateNumber = "TEMP%04d".format(Random.nextInt(10000))
     phone = "999999999"
     contactConsentPartners = true
@@ -117,7 +113,6 @@ fun getCandidate(): Candidate {
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
-}
 
 /**
  * Retrieves a saved SavedList instance after saving it to the repository.
@@ -133,28 +128,26 @@ fun getSavedList(savedListRepo: SavedListRepository): SavedList =
  *
  * @return A new SavedList instance.
  */
-fun getSavedList(): SavedList {
-  return SavedList().apply {
+fun getSavedList() =
+  SavedList().apply {
     description = "SavedList"
     name = "SavedList"
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
-}
 
 /**
  * Retrieves a new CandidateEducation instance initialized with default values.
  *
  * @return A new CandidateEducation instance.
  */
-fun getCandidateEducation(): CandidateEducation {
-  return CandidateEducation().apply {
+fun getCandidateEducation() =
+  CandidateEducation().apply {
     lengthOfCourseYears = 3
     institution = "TEST INSTITUTION"
     country = Country().apply { id = 6192 } // Australia
     educationType = EducationType.Masters
   }
-}
 
 /**
  * Retrieves a saved Reaction instance after saving it to the repository.
@@ -169,22 +162,19 @@ fun getSavedReaction(repo: ReactionRepository): Reaction = saveHelperObject(repo
  *
  * @return A new Reaction instance.
  */
-fun getReaction(): Reaction {
-  return Reaction().apply { emoji = "Smile" }
-}
+fun getReaction() = Reaction().apply { emoji = "Smile" }
 
 /**
  * Retrieves a new JobChat instance initialized with default values.
  *
  * @return A new JobChat instance.
  */
-fun getJobChat(): JobChat {
-  return JobChat().apply {
+fun getJobChat() =
+  JobChat().apply {
     type = JobChatType.JobCreatorAllSourcePartners
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
-}
 
 /**
  * Retrieves a saved ChatPost instance after saving it to the repository.
@@ -199,13 +189,12 @@ fun getSavedChatPost(repo: ChatPostRepository): ChatPost = saveHelperObject(repo
  *
  * @return A new ChatPost instance.
  */
-fun getChatPost(): ChatPost {
-  return ChatPost().apply {
+fun getChatPost() =
+  ChatPost().apply {
     content = "NothingChatContent"
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
-}
 
 /**
  * Retrieves a saved SurveyType instance after saving it to the repository.
@@ -221,12 +210,11 @@ fun getSavedSurveyType(repo: SurveyTypeRepository): SurveyType =
  *
  * @return A new SurveyType instance.
  */
-fun getSurveyType(): SurveyType {
-  return SurveyType().apply {
+fun getSurveyType() =
+  SurveyType().apply {
     name = "IntTestSurvey"
     status = Status.active
   }
-}
 
 /**
  * Retrieves a saved SystemLanguage instance after saving it to the repository.
@@ -242,13 +230,12 @@ fun getSavedSystemLanguage(repo: SystemLanguageRepository): SystemLanguage =
  *
  * @return A new SystemLanguage instance.
  */
-fun getSystemLanguage(): SystemLanguage {
-  return SystemLanguage().apply {
+fun getSystemLanguage() =
+  SystemLanguage().apply {
     language = "en"
     label = "English"
     status = Status.active
   }
-}
 
 /**
  * Saves the provided entity to the repository and returns the saved entity.
@@ -268,17 +255,16 @@ fun <T, ID> saveHelperObject(repo: JpaRepository<T, ID>, entity: T & Any): T =
  * @param idToUse The optional ID to assign to the user.
  * @return A User instance.
  */
-fun user(idToUse: Long? = null): User {
-  return User().apply {
+fun getUser(idToUse: Long? = null) =
+  User().apply {
     id = idToUse
     username = "jo.blogs@email.com"
     firstName = "jo"
     lastName = "blogs"
     role = Role.user
     status = Status.active
-    partner = PartnerImpl().apply { id = 1L } // This is TBB in dumps.
+    partner = PartnerImpl().apply { id = 1L } // This is TBB in the dump.
   }
-}
 
 /**
  * Retrieves a new AuditLog instance initialized with provided object reference.
@@ -286,8 +272,8 @@ fun user(idToUse: Long? = null): User {
  * @param objRef The reference to the object associated with the audit log.
  * @return A new AuditLog instance.
  */
-fun getAuditLog(objRef: String): AuditLog {
-  return AuditLog().apply {
+fun getAuditLog(objRef: String) =
+  AuditLog().apply {
     type = AuditType.CANDIDATE_OCCUPATION
     userId = 9L
     objectRef = objRef
@@ -295,33 +281,32 @@ fun getAuditLog(objRef: String): AuditLog {
     action = AuditAction.ADD
     description = "Create a test audit record."
   }
-}
 
 /**
  * Retrieves a new CandidateDependant instance initialized with a default name and gender.
  *
  * @return A new CandidateDependant instance.
  */
-fun getCandidateDependent(): CandidateDependant {
-  return CandidateDependant().apply {
+fun getCandidateDependent() =
+  CandidateDependant().apply {
     name = "James%04d".format(Random.nextInt(10000))
     gender = Gender.male
   }
-}
 
 /**
  * Retrieves a new SalesforceJobOpp instance initialized with default values.
  *
  * @return A new SalesforceJobOpp instance.
  */
-fun getSalesforceJobOpp(): SalesforceJobOpp {
-  return SalesforceJobOpp().apply {
+fun getSalesforceJobOpp() =
+  SalesforceJobOpp().apply {
     description = "SF TEST JOB"
     employer = "Seraco Pty Ltd"
     country = Country().apply { id = 6192 } // Australia
     sfId = "TESTSFID"
+    createdBy = systemUser()
+    createdDate = OffsetDateTime.now()
   }
-}
 
 /**
  * Retrieves a saved JobChat instance after saving it to the repository.
@@ -365,21 +350,11 @@ fun getJobChatUser(savedUser: User, savedChat: JobChat): JobChatUser {
  * @param savedChat The job chat associated with the user.
  * @return A new JobChatUserKey instance.
  */
-fun getJobChatUserKey(savedUser: User, savedChat: JobChat): JobChatUserKey {
-  return JobChatUserKey().apply {
+fun getJobChatUserKey(savedUser: User, savedChat: JobChat) =
+  JobChatUserKey().apply {
     userId = savedUser.id
     jobChatId = savedChat.id
   }
-}
-
-/**
- * Retrieves a saved SalesforceJobOpp instance after saving it to the repository.
- *
- * @param repository The repository where the Salesforce job opportunity will be saved.
- * @return The saved SalesforceJobOpp instance.
- */
-fun getSavedSalesforceJobOpp(repository: SalesforceJobOppRepository): SalesforceJobOpp =
-  saveHelperObject(repository, getSalesforceJobOpp())
 
 /**
  * Retrieves a saved Partner instance after saving it to the repository.
@@ -395,13 +370,12 @@ fun getSavedPartner(repository: PartnerRepository): PartnerImpl =
  *
  * @return A new PartnerImpl instance.
  */
-fun getPartner(): PartnerImpl {
-  return PartnerImpl().apply {
+fun getPartner() =
+  PartnerImpl().apply {
     name = "GREAT TEST PARTNER"
     status = Status.active
     abbreviation = "GTP"
   }
-}
 
 /**
  * Retrieves a saved Country instance after saving it to the repository.
@@ -416,22 +390,19 @@ fun getSavedCountry(repo: CountryRepository): Country = saveHelperObject(repo, g
  *
  * @return A new Country instance.
  */
-fun getCountry(): Country {
-  return Country().apply {
+fun getCountry() =
+  Country().apply {
     isoCode = "ISOCODE"
     name = "NewAustralia"
     status = Status.active
   }
-}
 
 /**
  * Retrieves a new CandidateVisaCheck instance initialized with default protection status.
  *
  * @return A new CandidateVisaCheck instance.
  */
-fun getCandidateVisaCheck(): CandidateVisaCheck {
-  return CandidateVisaCheck().apply { protection = YesNo.Yes }
-}
+fun getCandidateVisaCheck() = CandidateVisaCheck().apply { protection = YesNo.Yes }
 
 /**
  * Retrieves a saved Industry instance after saving it to the repository.
@@ -446,11 +417,77 @@ fun getSavedIndustry(repo: IndustryRepository): Industry = saveHelperObject(repo
  *
  * @return A new Industry instance.
  */
-fun getIndustry(): Industry {
-  return Industry().apply {
+fun getIndustry() =
+  Industry().apply {
     status = Status.active
     name = "TestIndustry"
   }
-}
+
+/**
+ * Retrieves a new CandidateVisaJobCheck instance initialized with default name and interest status.
+ *
+ * @return A new CandidateVisaJobCheck instance.
+ */
+fun getCandidateVisaJobCheck() =
+  CandidateVisaJobCheck().apply {
+    name = "TestCandidateVisaJobCheck"
+    interest = YesNo.Yes
+  }
+
+/**
+ * Retrieves a new CandidateReviewStatusItem instance initialized with a default comment and review
+ * status.
+ *
+ * @return A new CandidateReviewStatusItem instance.
+ */
+fun getCandidateReviewStatusItem(): CandidateReviewStatusItem =
+  CandidateReviewStatusItem().apply {
+    comment = "TestCandidateReviewStatusItem"
+    reviewStatus = ReviewStatus.verified
+  }
+
+/**
+ * Retrieves a saved SavedSearch instance after saving it to the repository.
+ *
+ * @param repository The repository where the saved search will be saved.
+ * @return The saved SavedSearch instance.
+ */
+fun getSavedSavedSearch(repository: SavedSearchRepository): SavedSearch =
+  saveHelperObject(repository, getSavedSearch())
+
+/**
+ * Retrieves a new SavedSearch instance initialized with a default type and status and name.
+ *
+ * @return A new SavedSearch instance.
+ */
+fun getSavedSearch(): SavedSearch =
+  SavedSearch().apply {
+    type = "TestSavedSearch"
+    status = Status.active
+    name = "TestSavedSearch"
+    createdBy = getUser(1999L)
+    createdDate = OffsetDateTime.now()
+  }
+
+/**
+ * Retrieves a new CandidateOpportunity instance initialized with default stage and closing
+ * comments.
+ *
+ * @return A new CandidateOpportunity instance.
+ */
+fun getCandidateOpportunity(): CandidateOpportunity =
+  CandidateOpportunity().apply {
+    stage = CandidateOpportunityStage.cvPreparation
+    closingCommentsForCandidate = "WELLDONE"
+  }
+
+/**
+ * Retrieves a saved SalesforceJobOpp instance after saving it to the repository.
+ *
+ * @param repo The repository where the Salesforce job opportunity will be saved.
+ * @return The saved SalesforceJobOpp instance.
+ */
+fun getSavedSfJobOpp(repo: SalesforceJobOppRepository): SalesforceJobOpp =
+  saveHelperObject(repo, getSalesforceJobOpp())
 
 fun systemUser() = user(25000)
