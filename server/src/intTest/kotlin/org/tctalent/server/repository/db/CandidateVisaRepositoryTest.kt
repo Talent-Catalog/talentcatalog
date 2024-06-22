@@ -64,8 +64,7 @@ class CandidateVisaRepositoryTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by candidate id and country id fail`() {
-    val visaChecks =
-      repo.findByCandidateIdCountryId(testCandidate.id, null).getOrNull()
+    val visaChecks = repo.findByCandidateIdCountryId(testCandidate.id, null).getOrNull()
     assertNull(visaChecks)
   }
 }

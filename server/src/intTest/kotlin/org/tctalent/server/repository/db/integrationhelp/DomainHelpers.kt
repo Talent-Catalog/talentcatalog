@@ -35,7 +35,7 @@ fun getTask(taskName: String = "DEFAULT", taskDisplay: String = "DEFAULT DISPLAY
   return TaskImpl().apply {
     name = taskName
     displayName = taskDisplay
-    createdBy = user(9997)
+    createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
 }
@@ -114,7 +114,7 @@ fun getCandidate(): Candidate {
     contactConsentRegistration = true
     workAbroadNotes = "GOOD FOR TEST"
     status = CandidateStatus.active
-    createdBy = user(1999L)
+    createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
 }
@@ -137,7 +137,7 @@ fun getSavedList(): SavedList {
   return SavedList().apply {
     description = "SavedList"
     name = "SavedList"
-    createdBy = user(1999L)
+    createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
 }
@@ -181,7 +181,7 @@ fun getReaction(): Reaction {
 fun getJobChat(): JobChat {
   return JobChat().apply {
     type = JobChatType.JobCreatorAllSourcePartners
-    createdBy = user(1999L)
+    createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
 }
@@ -202,7 +202,7 @@ fun getSavedChatPost(repo: ChatPostRepository): ChatPost = saveHelperObject(repo
 fun getChatPost(): ChatPost {
   return ChatPost().apply {
     content = "NothingChatContent"
-    createdBy = user(1999L)
+    createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
 }
@@ -452,3 +452,5 @@ fun getIndustry(): Industry {
     name = "TestIndustry"
   }
 }
+
+fun systemUser() = user(25000)

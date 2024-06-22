@@ -16,51 +16,51 @@
 
 package org.tctalent.server.repository.db
 
+import java.util.*
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Industry
 import org.tctalent.server.model.db.Status
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getIndustry
 import org.tctalent.server.repository.db.integrationhelp.getSavedIndustry
-import java.util.*
-import kotlin.test.*
 
-class IndustryRepositoryIntTest: BaseDBIntegrationTest() {
-    @Autowired private lateinit var repo: IndustryRepository
-    private lateinit var industry: Industry
+class IndustryRepositoryIntTest : BaseDBIntegrationTest() {
+  @Autowired private lateinit var repo: IndustryRepository
+  private lateinit var industry: Industry
 
-    @BeforeTest
-    fun setup() {
-        assertTrue { isContainerInitialized() }
-        industry = getSavedIndustry(repo)
-    }
+  @BeforeTest
+  fun setup() {
+    assertTrue { isContainerInitialized() }
+    industry = getSavedIndustry(repo)
+  }
 
-    @Test
-    fun `test find by status`() {
-        val industries = repo.findByStatus(Status.active)
-        assertNotNull(industries)
-        assertTrue { industries.isNotEmpty() }
-        val names = industries.map { it.name }
-        assertTrue { names.contains(industry.name) }
-    }
+  @Test
+  fun `test find by status`() {
+    val industries = repo.findByStatus(Status.active)
+    assertNotNull(industries)
+    assertTrue { industries.isNotEmpty() }
+    val names = industries.map { it.name }
+    assertTrue { names.contains(industry.name) }
+  }
 
-    @Test
-    fun `test find by status fail`() {
-        val newIndustry = getIndustry().apply { status = Status.inactive }
-        repo.save(newIndustry)
-        assertTrue { newIndustry.id > 0 }
-        val savedIndustry = repo.findByStatus(Status.active)
-        assertNotNull(savedIndustry)
-        assertTrue { savedIndustry.isNotEmpty() }
-        val ids = savedIndustry.map { it.id }
-        assertFalse { ids.contains(newIndustry.id) }
-    }
+  @Test
+  fun `test find by status fail`() {
+    val newIndustry = getIndustry().apply { status = Status.inactive }
+    repo.save(newIndustry)
+    assertTrue { newIndustry.id > 0 }
+    val savedIndustry = repo.findByStatus(Status.active)
+    assertNotNull(savedIndustry)
+    assertTrue { savedIndustry.isNotEmpty() }
+    val ids = savedIndustry.map { it.id }
+    assertFalse { ids.contains(newIndustry.id) }
+  }
 
-    @Test
-    fun `test find by name ignore case`() {
-        val name = industry.name.uppercase(Locale.getDefault())
-        val i = repo.findByNameIgnoreCase(name)
-        assertNotNull(i)
-        assertEquals(industry.name, i.name)
-    }
+  @Test
+  fun `test find by name ignore case`() {
+    val name = industry.name.uppercase(Locale.getDefault())
+    val i = repo.findByNameIgnoreCase(name)
+    assertNotNull(i)
+    assertEquals(industry.name, i.name)
+  }
 }

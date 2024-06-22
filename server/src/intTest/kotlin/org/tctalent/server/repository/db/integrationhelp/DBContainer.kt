@@ -45,6 +45,12 @@ private val logger = KotlinLogging.logger {}
  * on the container configuration.
  */
 object DBContainer {
+  private const val DB_NAME = "tctalent"
+  private const val DB_USER = "tctalent"
+  private const val DB_PWD = "tctalent"
+  const val DEFAULT_DUMP = "/integration-test-dump.sql"
+  const val TEST_CONTAINERS_DUMP = "testcontainers.dump.location"
+  const val TEST_CONTAINERS_MOUNT = "testcontainers.container.mount"
 
   @Container
   val db: PostgreSQLContainer<*> =
@@ -55,9 +61,9 @@ object DBContainer {
         logger.info { "Container mount path: ${containerMountPath()}" }
       }
       .apply {
-        withDatabaseName("tctalent")
-        withUsername("tctalent")
-        withPassword("tctalent")
+        withDatabaseName(DB_NAME)
+        withUsername(DB_USER)
+        withPassword(DB_PWD)
         withReuse(true)
       }
 
@@ -71,7 +77,8 @@ object DBContainer {
   private fun importDumpFileToDatabase() {
     logger.info { "Importing the database dump." }
     db.apply { execInContainer(*psqlCommand()) }
-    logger.info { "Done importing the database dump." }
+    logger.info { "Done importing the database dump. Connection is: ${db.jdbcUrl}" }
+    logger.info { "Ready to use: ${db.isRunning()}" }
   }
 
   private fun createDbObjects() {
@@ -118,8 +125,8 @@ private fun dumpFilePath() = buildString {
   val home = tcContainerConfig.environment["TCTALENT_DB_HOME"] ?: "ERROR DB_HOME not set"
   val dumpLocation =
     tcContainerConfig.getEnvVarOrProperty(
-      "testcontainers.dump.location",
-      "/docker-entrypoint-initdb.d/dump.sql",
+      DBContainer.TEST_CONTAINERS_DUMP,
+      DBContainer.DEFAULT_DUMP,
     )
   append(home)
   append(dumpLocation)
@@ -130,7 +137,7 @@ private fun containerMountPath() = buildString {
 
   val mountPoint =
     tcContainerConfig.getEnvVarOrProperty(
-      "testcontainers.container.mount",
+      DBContainer.TEST_CONTAINERS_MOUNT,
       "ERROR: Container mount point is not set.",
     )
   append(mountPoint)
