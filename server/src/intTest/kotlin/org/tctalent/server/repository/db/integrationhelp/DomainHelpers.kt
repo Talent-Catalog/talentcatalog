@@ -324,8 +324,11 @@ fun getSavedJobChat(repo: JobChatRepository): JobChat = saveHelperObject(repo, g
  * @param savedJobChat The job chat associated with the user.
  * @return The saved JobChatUser instance.
  */
-fun getSavedJobChatUser(repository: JobChatUserRepository, savedUser: User, savedJobChat: JobChat) =
-  saveHelperObject(repository, getJobChatUser(savedUser, savedJobChat))
+fun getSavedJobChatUser(
+  repository: JobChatUserRepository,
+  savedUser: User,
+  savedJobChat: JobChat,
+): JobChatUser = saveHelperObject(repository, getJobChatUser(savedUser, savedJobChat))
 
 /**
  * Retrieves a new JobChatUser instance initialized with provided user and job chat.
@@ -465,7 +468,7 @@ fun getSavedSearch(): SavedSearch =
     type = "TestSavedSearch"
     status = Status.active
     name = "TestSavedSearch"
-    createdBy = getUser(1999L)
+    createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
 
@@ -490,4 +493,9 @@ fun getCandidateOpportunity(): CandidateOpportunity =
 fun getSavedSfJobOpp(repo: SalesforceJobOppRepository): SalesforceJobOpp =
   saveHelperObject(repo, getSalesforceJobOpp())
 
-fun systemUser() = user(25000)
+/**
+ * Retrieves a User instance with a predefined ID.
+ *
+ * @return A User instance with ID 25000.
+ */
+fun systemUser(): User = getUser(25000)
