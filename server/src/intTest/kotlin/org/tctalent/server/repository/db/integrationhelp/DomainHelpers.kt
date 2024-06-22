@@ -518,5 +518,25 @@ fun getLanguageLevel(): LanguageLevel =
   LanguageLevel().apply {
     level = 1
     status = Status.active
-    name = "VERYHIGHLEVEL"
+    name = "VERY_HIGH_LEVEL"
   }
+
+/**
+ * Retrieves a new Occupation instance initialized with a default status and name.
+ *
+ * @return A new Occupation instance.
+ */
+fun getOccupation(): Occupation =
+  Occupation().apply {
+    status = Status.active
+    name = "TEST_OCCUPATION%04d".format(Random.nextInt(10000))
+  }
+
+/**
+ * Retrieves a saved Occupation instance after saving it to the repository.
+ *
+ * @param repo The repository where the occupation will be saved.
+ * @return The saved Occupation instance.
+ */
+fun getSavedOccupation(repo: OccupationRepository): Occupation =
+  saveHelperObject(repo, getOccupation())
