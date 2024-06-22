@@ -16,11 +16,11 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.jvm.optionals.getOrNull
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.*
 import org.tctalent.server.repository.db.integrationhelp.*
-import kotlin.jvm.optionals.getOrNull
-import kotlin.test.*
 
 class CandidateOpportunityRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: CandidateOpportunityRepository
@@ -31,14 +31,11 @@ class CandidateOpportunityRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var jobChatRepository: JobChatRepository
   @Autowired private lateinit var chatPostRepository: ChatPostRepository
   @Autowired private lateinit var jobChatUserRepository: JobChatUserRepository
-  @Autowired private lateinit var userRepository: UserRepository
-  @Autowired private lateinit var sfRepo: SalesforceJobOppRepository
-  @Autowired private lateinit var savedListRepository: SavedListRepository
   private lateinit var testjobChatUser: JobChatUser
   private lateinit var testCandidate: Candidate
   private lateinit var candidateOpportunity: CandidateOpportunity
   private lateinit var sfJobOpp: SalesforceJobOpp
-  private lateinit var savedList: SavedList
+  private lateinit var user: User
 
   @BeforeTest
   fun setup() {
@@ -51,7 +48,7 @@ class CandidateOpportunityRepositoryIntTest : BaseDBIntegrationTest() {
     // but not when putting savedpartner on the user from above.
     val newP = partnerRepository.findAll().filter { it.abbreviation == "GTP" }.first()
 
-    val user = getUser().apply { partner = newP }
+    user = getUser().apply { partner = newP }
     userRepo.save(user)
 
     testCandidate = getSavedCandidate(candidateRepo, user)
@@ -120,53 +117,22 @@ class CandidateOpportunityRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find unread chats in opps`() {
-
-    // Different user here.
-    val newUser = getSavedUser(userRepository)
-    savedList = getSavedList(savedListRepository)
-
-    val sfJobOpp2 = getSalesforceJobOpp().apply { submissionList = savedList }
-    sfRepo.save(sfJobOpp2)
-    assertTrue { sfJobOpp2.id > 0 }
-
-    val sfJobOpp3 = getSalesforceJobOpp().apply { submissionList = savedList }
-    sfRepo.save(sfJobOpp3)
-    assertTrue { sfJobOpp3.id > 0 }
-
-    // Create some saved chats
-    val savedJobChat1 =
+    val testJobChat =
       getSavedJobChat(jobChatRepository).apply {
-        jobOpp = sfJobOpp2
-        candidate = testCandidate
+        jobOpp = sfJobOpp
         type = JobChatType.CandidateRecruiting
-      }
-    jobChatRepository.save(savedJobChat1)
-    assertTrue { savedJobChat1.id > 0 }
-
-    val savedJobChat2 =
-      getSavedJobChat(jobChatRepository).apply {
-        jobOpp = sfJobOpp3
         candidate = testCandidate
-        type = JobChatType.CandidateRecruiting
       }
-    jobChatRepository.save(savedJobChat2)
-    assertTrue { savedJobChat2.id > 0 }
 
     // Create the chat posts
-    val testChatPost = getChatPost().apply { jobChat = savedJobChat1 }
+    val testChatPost = getChatPost().apply { jobChat = testJobChat }
     chatPostRepository.save(testChatPost)
     assertTrue { testChatPost.id > 0 }
 
-    val testChatPost2 = getChatPost().apply { jobChat = savedJobChat2 }
-    chatPostRepository.save(testChatPost2)
-    assertTrue { testChatPost2.id > 0 }
+    getSavedJobChatUser(jobChatUserRepository, user, testJobChat)
+    repo.save(candidateOpportunity.apply { jobOpp = sfJobOpp })
 
-    // Create job chat user links
-    getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat1)
-    getSavedJobChatUser(jobChatUserRepository, newUser, savedJobChat2)
-
-    repo.save(candidateOpportunity.apply { jobOpp = sfJobOpp2 })
-    val ids = repo.findUnreadChatsInOpps(testjobChatUser.user.id, listOf(sfJobOpp.id))
+    val ids = repo.findUnreadChatsInOpps(testjobChatUser.user.id, listOf(candidateOpportunity.id))
     assertNotNull(ids)
     assertTrue { ids.isNotEmpty() }
   }
