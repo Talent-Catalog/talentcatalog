@@ -16,13 +16,13 @@
 
 package org.tctalent.server.repository.db.integrationhelp
 
-import java.time.OffsetDateTime
-import kotlin.random.Random
 import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
 import org.tctalent.server.repository.db.*
 import org.tctalent.server.service.db.audit.AuditAction
 import org.tctalent.server.service.db.audit.AuditType
+import java.time.OffsetDateTime
+import kotlin.random.Random
 
 /**
  * Retrieves a new TaskImpl instance initialized with provided or default values.
@@ -258,11 +258,13 @@ fun <T, ID> saveHelperObject(repo: JpaRepository<T, ID>, entity: T & Any): T =
 fun getUser(idToUse: Long? = null) =
   User().apply {
     id = idToUse
-    username = "jo.blogs@email.com"
+    username = "JO BLOGS"
+    email = "JO.BLOgs@email.com"
     firstName = "jo"
     lastName = "blogs"
     role = Role.user
     status = Status.active
+    usingMfa = false
     partner = PartnerImpl().apply { id = 1L } // This is TBB in the dump.
   }
 
