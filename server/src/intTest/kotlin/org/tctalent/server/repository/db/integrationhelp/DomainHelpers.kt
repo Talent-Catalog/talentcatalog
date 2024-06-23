@@ -586,3 +586,23 @@ fun getTranslation(): Translation =
     language = "ar"
     value = "hello"
   }
+
+/**
+ * Retrieves a saved EducationMajor instance after saving it to the repository.
+ *
+ * @param repo The repository where the education major will be saved.
+ * @return The saved EducationMajor instance.
+ */
+fun getSavedEducationMajor(repo: EducationMajorRepository): EducationMajor =
+  saveHelperObject(repo, getEducationMajor())
+
+/**
+ * Retrieves a new EducationMajor instance initialized with a default status and name.
+ *
+ * @return A new EducationMajor instance.
+ */
+fun getEducationMajor(): EducationMajor =
+  EducationMajor().apply {
+    status = Status.active
+    name = "TEST_EDUCATION_MAJOR%04d".format(Random.nextInt(10000))
+  }
