@@ -20,7 +20,7 @@ buildscript {
         javaTargetVersion = JavaVersion.VERSION_17
         kotlinTargetVersion = JavaVersion.VERSION_17
         lombokVersion = "1.18.30"
-        ext['spring-security.version']='5.8.12'
+        ext['spring-security.version'] = '5.8.12'
     }
     repositories {
         mavenCentral()
@@ -199,10 +199,10 @@ sourceSets {
         java.srcDirs("src/test/java")
         kotlin.srcDirs("src/test/kotlin")
     }
-    intTest {
-        kotlin.srcDirs("src/intTest/kotlin")
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
+    create("intTest") {
+        kotlin.srcDir("src/intTest/kotlin")
+        compileClasspath += sourceSets["main"].output + configurations["testCompileClasspath"]
+        runtimeClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
     }
 }
 
@@ -222,19 +222,21 @@ test {
     }
 }
 
-tasks.register("integrationTest", Test) {
+tasks.register("intTest", Test) {
     description = "Run integration tests"
     group = "verification"
     testClassesDirs = sourceSets.intTest.output.classesDirs
     classpath = sourceSets.intTest.runtimeClasspath
-    shouldRunAfter test
+    shouldRunAfter(tasks.named("test"))
     useJUnitPlatform()
     testLogging {
-        events("failed")
+        events("passed", "failed")
     }
 }
 
-check.dependsOn("integrationTest")
+tasks.named("check") {
+    dependsOn("intTest")
+}
 
 bootJar {
     from(".") {
