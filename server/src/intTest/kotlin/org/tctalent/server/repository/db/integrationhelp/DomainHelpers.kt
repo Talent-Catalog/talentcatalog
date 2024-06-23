@@ -16,13 +16,13 @@
 
 package org.tctalent.server.repository.db.integrationhelp
 
+import java.time.OffsetDateTime
+import kotlin.random.Random
 import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
 import org.tctalent.server.repository.db.*
 import org.tctalent.server.service.db.audit.AuditAction
 import org.tctalent.server.service.db.audit.AuditType
-import java.time.OffsetDateTime
-import kotlin.random.Random
 
 /**
  * Retrieves a new TaskImpl instance initialized with provided or default values.
@@ -545,10 +545,44 @@ fun getOccupation(): Occupation =
 fun getSavedOccupation(repo: OccupationRepository): Occupation =
   saveHelperObject(repo, getOccupation())
 
-fun getSavedLanguage(repo: LanguageRepository) = saveHelperObject(repo, getLanguage())
+/**
+ * Retrieves a saved Language instance after saving it to the repository.
+ *
+ * @param repo The repository where the language will be saved.
+ * @return The saved Language instance.
+ */
+fun getSavedLanguage(repo: LanguageRepository): Language = saveHelperObject(repo, getLanguage())
 
-fun getLanguage() =
+/**
+ * Retrieves a new Language instance initialized with a default status and name.
+ *
+ * @return A new Language instance.
+ */
+fun getLanguage(): Language =
   Language().apply {
     status = Status.active
     name = "TEST_LANGUAGE%04d".format(Random.nextInt(10000))
+  }
+
+/**
+ * Retrieves a saved Translation instance after saving it to the repository.
+ *
+ * @param repo The repository where the translation will be saved.
+ * @return The saved Translation instance.
+ */
+fun getSavedTranslation(repo: TranslationRepository): Translation =
+  saveHelperObject(repo, getTranslation())
+
+/**
+ * Retrieves a new Translation instance initialized with default object ID, object type, language,
+ * and value.
+ *
+ * @return A new Translation instance.
+ */
+fun getTranslation(): Translation =
+  Translation().apply {
+    objectId = 1
+    objectType = "country"
+    language = "ar"
+    value = "hello"
   }
