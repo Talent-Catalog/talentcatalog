@@ -16,14 +16,15 @@
 
 package org.tctalent.server.repository.db.integrationhelp
 
-import java.time.Instant
-import java.time.OffsetDateTime
-import kotlin.random.Random
 import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
+import org.tctalent.server.model.db.task.UploadType
 import org.tctalent.server.repository.db.*
 import org.tctalent.server.service.db.audit.AuditAction
 import org.tctalent.server.service.db.audit.AuditType
+import java.time.Instant
+import java.time.OffsetDateTime
+import kotlin.random.Random
 
 /**
  * Retrieves a new TaskImpl instance initialized with provided or default values.
@@ -718,6 +719,13 @@ fun getSavedCandidateAttachment(repo: CandidateAttachmentRepository): CandidateA
  */
 fun getCandidateAttachment(): CandidateAttachment =
   CandidateAttachment().apply {
-    name = "TEST ATTACHMENT"
+    name = "TEST_ATTACHMENT.pdf"
     type = AttachmentType.googlefile
+    fileType = "pdf"
+    isMigrated = true
+    isCv = false
+    location = "TEST LOCATION"
+    uploadType = UploadType.idCard
+    createdBy = systemUser()
+    createdDate = OffsetDateTime.now()
   }
