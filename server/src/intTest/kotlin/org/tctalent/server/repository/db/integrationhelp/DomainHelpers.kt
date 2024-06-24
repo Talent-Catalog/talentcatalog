@@ -16,15 +16,15 @@
 
 package org.tctalent.server.repository.db.integrationhelp
 
+import java.time.Instant
+import java.time.OffsetDateTime
+import kotlin.random.Random
 import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
 import org.tctalent.server.model.db.task.UploadType
 import org.tctalent.server.repository.db.*
 import org.tctalent.server.service.db.audit.AuditAction
 import org.tctalent.server.service.db.audit.AuditType
-import java.time.Instant
-import java.time.OffsetDateTime
-import kotlin.random.Random
 
 /**
  * Retrieves a new TaskImpl instance initialized with provided or default values.
@@ -729,3 +729,12 @@ fun getCandidateAttachment(): CandidateAttachment =
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
+
+/**
+ * Retrieves a saved CandidateEducation instance after saving it to the repository.
+ *
+ * @param repo The repository where the candidate education will be saved.
+ * @return The saved CandidateEducation instance.
+ */
+fun getSavedCandidateEducation(repo: CandidateEducationRepository): CandidateEducation =
+  saveHelperObject(repo, getCandidateEducation())
