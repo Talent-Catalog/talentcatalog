@@ -24,9 +24,7 @@ import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {SearchResults} from "../../../model/search-results";
-import {SavedList} from "../../../model/saved-list";
-import {MockSavedList} from "../../../MockData/MockSavedList";
-import MOCK_HELP_LINK, {MockHelpLink} from "../../../MockData/MockHelpLink";
+import MOCK_HELP_LINK from "../../../MockData/MockHelpLink";
 import {HelpLink} from "../../../model/help-link";
 import {HelpComponent} from "../../help/help.component";
 import {
