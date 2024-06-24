@@ -606,3 +606,19 @@ fun getEducationMajor(): EducationMajor =
     status = Status.active
     name = "TEST_EDUCATION_MAJOR%04d".format(Random.nextInt(10000))
   }
+
+/**
+ * Retrieves a saved SearchJoin instance after saving it to the repository.
+ *
+ * @param repo The repository where the search join will be saved.
+ * @return The saved SearchJoin instance.
+ */
+fun getSavedSearchJoin(repo: SearchJoinRepository): SearchJoin =
+  saveHelperObject(repo, getSearchJoin())
+
+/**
+ * Retrieves a new SearchJoin instance initialized with a default search type.
+ *
+ * @return A new SearchJoin instance.
+ */
+fun getSearchJoin(): SearchJoin = SearchJoin().apply { searchType = SearchType.or }
