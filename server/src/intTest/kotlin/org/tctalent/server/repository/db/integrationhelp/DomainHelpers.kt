@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db.integrationhelp
 
+import java.time.Instant
 import java.time.OffsetDateTime
 import kotlin.random.Random
 import org.springframework.data.jpa.repository.JpaRepository
@@ -641,3 +642,25 @@ fun getSavedSavedListLink(repo: SavedListLinkRepository): SavedListLink =
  * @return A new SavedListLink instance.
  */
 fun getSavedListLink(): SavedListLink = SavedListLink().apply { link = "TEST_SAVED_LINK" }
+
+/**
+ * Retrieves a saved RootRequest instance after saving it to the repository.
+ *
+ * @param repo The repository where the root request will be saved.
+ * @return The saved RootRequest instance.
+ */
+fun getSavedRootRequest(repo: RootRequestRepository): RootRequest =
+  saveHelperObject(repo, getRootRequest())
+
+/**
+ * Retrieves a new RootRequest instance initialized with a default timestamp and partner
+ * abbreviation.
+ *
+ * @return A new RootRequest instance.
+ */
+fun getRootRequest(): RootRequest =
+  RootRequest().apply {
+    timestamp = Instant.now()
+    partnerAbbreviation = "TEST_PARTNER_ABBREVIATION"
+    ipAddress = "127.0.0.1"
+  }
