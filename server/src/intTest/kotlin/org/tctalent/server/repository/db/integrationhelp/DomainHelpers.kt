@@ -472,6 +472,7 @@ fun getSavedSearch(): SavedSearch =
     type = "TestSavedSearch"
     status = Status.active
     name = "TestSavedSearch"
+    defaultSearch = true
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
