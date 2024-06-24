@@ -38,29 +38,16 @@ class SavedSearchRepositoryIntTest : BaseDBIntegrationTest() {
     assertTrue { isContainerInitialized() }
     savedSearch = getSavedSavedSearch(repo)
     testUser = getSavedUser(userRepository)
+    testSFJobOpp = getSavedSfJobOpp(sfJobOppRepository)
   }
 
   @Test
-  fun `test delete by job id`() {
-    // TODO (fix this failing test).
-    testSFJobOpp = getSavedSfJobOpp(sfJobOppRepository)
-    println("sf id: ${testSFJobOpp.id}")
-
+  fun `test delete`() {
     repo.save(savedSearch.apply { sfJobOpp = testSFJobOpp })
-    println("saved ss id: ${savedSearch.sfJobOpp?.id}")
-    println("ss id: ${savedSearch.id}")
-
-    assertTrue { savedSearch.id > 0 }
-
-    println("Deleting with ${testSFJobOpp.id}")
-    repo.deleteByJobId(savedSearch.sfJobOpp?.id ?: 0)
-    repo.flush()
-
-    println("Finding with ${savedSearch.id}")
-    val remaining = repo.findById(savedSearch.id).getOrNull()
-    println("found: $remaining")
-    println("found ${remaining?.sfJobOpp}")
-    assertNull(remaining)
+    repo.deleteByJobId(testSFJobOpp.id)
+    val result = repo.findAll()
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
   }
 
   @Test
