@@ -47,7 +47,7 @@ class TaskAssignmentRepositoryIntTest : BaseDBIntegrationTest() {
     testCandidate = getSavedCandidate(candidateRepository, user)
 
     val testTask = getSavedTask(taskRepository)
-    savedList = getSavedList(savedListRepository)
+    savedList = getSavedSavedList(savedListRepository)
 
     ta = getTaskAssignment(user)
     ta.apply {

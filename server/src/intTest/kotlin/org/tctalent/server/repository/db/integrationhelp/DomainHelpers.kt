@@ -16,13 +16,13 @@
 
 package org.tctalent.server.repository.db.integrationhelp
 
-import java.time.OffsetDateTime
-import kotlin.random.Random
 import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
 import org.tctalent.server.repository.db.*
 import org.tctalent.server.service.db.audit.AuditAction
 import org.tctalent.server.service.db.audit.AuditType
+import java.time.OffsetDateTime
+import kotlin.random.Random
 
 /**
  * Retrieves a new TaskImpl instance initialized with provided or default values.
@@ -120,7 +120,7 @@ fun getCandidate() =
  * @param savedListRepo The repository where the saved list will be saved.
  * @return The saved SavedList instance.
  */
-fun getSavedList(savedListRepo: SavedListRepository): SavedList =
+fun getSavedSavedList(savedListRepo: SavedListRepository): SavedList =
   saveHelperObject(savedListRepo, getSavedList())
 
 /**
@@ -132,6 +132,8 @@ fun getSavedList() =
   SavedList().apply {
     description = "SavedList"
     name = "SavedList"
+    tbbShortName = "TEST_TBB_SHORT_NAME"
+    registeredJob = true
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }

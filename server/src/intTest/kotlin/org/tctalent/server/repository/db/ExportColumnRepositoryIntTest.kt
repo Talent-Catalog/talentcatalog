@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.ExportColumn
 import org.tctalent.server.model.db.SavedList
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getSavedList
+import org.tctalent.server.repository.db.integrationhelp.getSavedSavedList
 
 class ExportColumnRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: ExportColumnRepository
@@ -34,7 +34,7 @@ class ExportColumnRepositoryIntTest : BaseDBIntegrationTest() {
   fun setup() {
     assertTrue { isContainerInitialized() }
 
-    testSavedList = getSavedList(savedListRepository)
+    testSavedList = getSavedSavedList(savedListRepository)
     ec = ExportColumn().apply { savedList = testSavedList }
     repo.save(ec)
     assertTrue { ec.id > 0 }

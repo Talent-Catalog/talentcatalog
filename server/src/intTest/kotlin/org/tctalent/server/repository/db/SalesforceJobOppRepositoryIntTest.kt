@@ -54,7 +54,7 @@ class SalesforceJobOppRepositoryIntTest : BaseDBIntegrationTest() {
     jobChatUser.apply { lastReadPost = chatPost }
     jobChatUserRepository.save(jobChatUser)
 
-    savedList = getSavedList(savedListRepository)
+    savedList = getSavedSavedList(savedListRepository)
     sfJobOpp = getSalesforceJobOpp().apply { submissionList = savedList }
     repo.save(sfJobOpp)
     assertTrue { sfJobOpp.id > 0 }
@@ -82,7 +82,7 @@ class SalesforceJobOppRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test get job by submission list fail`() {
-    val newSL = getSavedList(savedListRepository)
+    val newSL = getSavedSavedList(savedListRepository)
     val savedJobOpp = repo.getJobBySubmissionList(newSL)
     assertNull(savedJobOpp)
   }
