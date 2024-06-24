@@ -738,3 +738,19 @@ fun getCandidateAttachment(): CandidateAttachment =
  */
 fun getSavedCandidateEducation(repo: CandidateEducationRepository): CandidateEducation =
   saveHelperObject(repo, getCandidateEducation())
+
+/**
+ * Retrieves a saved CandidateExam instance after saving it to the repository.
+ *
+ * @param repo The repository where the candidate exam will be saved.
+ * @return The saved CandidateExam instance.
+ */
+fun getSavedCandidateExam(repo: CandidateExamRepository): CandidateExam =
+  saveHelperObject(repo, getCandidateExam())
+
+/**
+ * Retrieves a new CandidateExam instance initialized with a default exam.
+ *
+ * @return A new CandidateExam instance.
+ */
+fun getCandidateExam(): CandidateExam = CandidateExam().apply { exam = Exam.OET }
