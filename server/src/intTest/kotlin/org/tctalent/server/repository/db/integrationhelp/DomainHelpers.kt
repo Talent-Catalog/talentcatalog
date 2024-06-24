@@ -685,3 +685,19 @@ fun getEducationLevel(): EducationLevel =
     status = Status.deleted
     level = 9
   }
+
+/**
+ * Retrieves a saved CandidateSkill instance after saving it to the repository.
+ *
+ * @param repo The repository where the candidate skill will be saved.
+ * @return The saved CandidateSkill instance.
+ */
+fun getSavedCandidateSkill(repo: CandidateSkillRepository): CandidateSkill =
+  saveHelperObject(repo, getCandidateSkill())
+
+/**
+ * Retrieves a new CandidateSkill instance initialized with a default skill.
+ *
+ * @return A new CandidateSkill instance.
+ */
+fun getCandidateSkill(): CandidateSkill = CandidateSkill().apply { skill = "TEST SKILL" }
