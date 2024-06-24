@@ -701,3 +701,23 @@ fun getSavedCandidateSkill(repo: CandidateSkillRepository): CandidateSkill =
  * @return A new CandidateSkill instance.
  */
 fun getCandidateSkill(): CandidateSkill = CandidateSkill().apply { skill = "TEST SKILL" }
+
+/**
+ * Retrieves a saved CandidateAttachment instance after saving it to the repository.
+ *
+ * @param repo The repository where the candidate attachment will be saved.
+ * @return The saved CandidateAttachment instance.
+ */
+fun getSavedCandidateAttachment(repo: CandidateAttachmentRepository): CandidateAttachment =
+  saveHelperObject(repo, getCandidateAttachment())
+
+/**
+ * Retrieves a new CandidateAttachment instance initialized with a default name and type.
+ *
+ * @return A new CandidateAttachment instance.
+ */
+fun getCandidateAttachment(): CandidateAttachment =
+  CandidateAttachment().apply {
+    name = "TEST ATTACHMENT"
+    type = AttachmentType.googlefile
+  }
