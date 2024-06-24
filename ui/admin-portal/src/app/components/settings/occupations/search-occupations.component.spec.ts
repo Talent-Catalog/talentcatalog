@@ -26,7 +26,6 @@ import {EditOccupationComponent} from "./edit/edit-occupation.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {MockUser} from "../../../MockData/MockUser";
 import {SearchResults} from "../../../model/search-results";
-import {LanguageLevel} from "../../../model/language-level";
 import {Occupation} from "../../../model/occupation";
 
 fdescribe('SearchOccupationsComponent', () => {
