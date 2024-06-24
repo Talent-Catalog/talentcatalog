@@ -29,6 +29,7 @@ import {of, throwError} from "rxjs";
 import {MockUser} from "../../../../MockData/MockUser";
 import {SearchUserRequest} from "../../../../model/base";
 import {Role} from "../../../../model/user";
+import {config_test} from "../../../../../config-test";
 
 fdescribe('CreateUpdateUserComponent', () => {
   let component: CreateUpdateUserComponent;
@@ -101,8 +102,8 @@ fdescribe('CreateUpdateUserComponent', () => {
     component.user = null; // Ensure it's a new user
     component.ngOnInit();
     component.userForm.setValue({
-      email: 'newuser@example.com',
-      username: 'newuser',
+      email: config_test.credentials.email,
+      username: config_test.credentials.username,
       firstName: 'New',
       lastName: 'User',
       partnerId: 1,
@@ -114,7 +115,7 @@ fdescribe('CreateUpdateUserComponent', () => {
       sourceCountries: [],
       readOnly: false,
       usingMfa: true,
-      password: 'password'
+      password: config_test.credentials.password
     });
     component.onSave();
     expect(userServiceSpy.create).toHaveBeenCalled();
@@ -132,8 +133,8 @@ fdescribe('CreateUpdateUserComponent', () => {
     component.user = null; // Ensure it's a new user
     component.ngOnInit();
     component.userForm.setValue({
-      email: 'newuser@example.com',
-      username: 'newuser',
+      email: config_test.credentials.email,
+      username: config_test.credentials.username,
       firstName: 'New',
       lastName: 'User',
       partnerId: 1,
@@ -145,7 +146,7 @@ fdescribe('CreateUpdateUserComponent', () => {
       sourceCountries: [],
       readOnly: false,
       usingMfa: true,
-      password: 'password'
+      password: config_test.credentials.password
     });
     component.onSave();
     expect(component.error).toBe('error');
@@ -170,8 +171,8 @@ fdescribe('CreateUpdateUserComponent', () => {
     component.user = null; // Ensure it's a new user
     component.ngOnInit();
     component.userForm.setValue({
-      email: 'newuser@example.com',
-      username: 'newuser',
+      email: config_test.credentials.email,
+      username: config_test.credentials.username,
       firstName: 'New',
       lastName: 'User',
       partnerId: 1,
@@ -183,7 +184,7 @@ fdescribe('CreateUpdateUserComponent', () => {
       sourceCountries: [],
       readOnly: false,
       usingMfa: true,
-      password: 'password'
+      password: config_test.credentials.password
     });
     component.onSave();
     expect(activeModal.close).toHaveBeenCalled();
