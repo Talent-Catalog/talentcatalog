@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {SearchExternalLinksComponent} from "./search-external-links.component";
-import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {SavedListService} from "../../../services/saved-list.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
@@ -123,7 +123,7 @@ fdescribe('SearchExternalLinksComponent', () => {
     expect(modalRefMock.componentInstance.savedList).toEqual(savedList);
   });
 
-  it('should open delete confirmation modal and delete link on confirmation', async () => {
+  it('should open delete confirmation modal and delete link on confirmation', fakeAsync( () => {
     const modalRefMock = {
       componentInstance: {
         message: ''
@@ -135,12 +135,12 @@ fdescribe('SearchExternalLinksComponent', () => {
 
     const savedList = { id: 1, name: 'Test List' } as any;
     component.deleteLink(savedList);
-
+    tick();
     expect(modalServiceSpy.open).toHaveBeenCalledWith(ConfirmationComponent, {
       centered: true,
       backdrop: 'static'
     });
     expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId: 1, tbbShortName: null });
-  });
+  }));
 
 });
