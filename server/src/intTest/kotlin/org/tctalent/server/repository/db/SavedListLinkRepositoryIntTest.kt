@@ -16,18 +16,48 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.BeforeTest
-import kotlin.test.assertTrue
-import org.springframework.beans.factory.annotation.Autowired
-import org.tctalent.server.model.db.SavedListLink
+import kotlin.test.*
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 
+/** Appears unused class in main. No such table. Will fail when running. */
 class SavedListLinkRepositoryIntTest : BaseDBIntegrationTest() {
-  @Autowired lateinit var savedListLinkRepository: SavedListLinkRepository
-  private lateinit var savedListLink: SavedListLink
-
-  @BeforeTest
-  fun setup() {
-    assertTrue { isContainerInitialized() }
-  }
+  //  @Autowired lateinit var repo: SavedListLinkRepository
+  //  @Autowired lateinit var savedListRepository: SavedListRepository
+  //  private lateinit var savedListLink: SavedListLink
+  //
+  //  @BeforeTest
+  //  fun setup() {
+  //    assertTrue { isContainerInitialized() }
+  //    savedListLink = getSavedSavedListLink(repo)
+  //  }
+  //
+  //  @Test
+  //  fun `test find by link ignore case`() {
+  //    val result = repo.findByLinkIgnoreCase(savedListLink.link)
+  //    assertNotNull(result)
+  //    assertEquals(savedListLink.id, result.id)
+  //  }
+  //
+  //  @Test
+  //  fun `test find by link ignore case fail`() {
+  //    val result = repo.findByLinkIgnoreCase("")
+  //    assertNull(result)
+  //  }
+  //
+  //  @Test
+  //  fun `test find by saved list`() {
+  //    val testSavedList = getSavedSavedList(savedListRepository)
+  //    repo.save(savedListLink.apply { savedList = testSavedList })
+  //    val result = repo.findBySavedList(testSavedList.id)
+  //    assertNotNull(result)
+  //    assertEquals(savedListLink.id, result.id)
+  //  }
+  //
+  //  @Test
+  //  fun `test find by saved list fail`() {
+  //    val testSavedList = getSavedSavedList(savedListRepository)
+  //    repo.save(savedListLink.apply { savedList = testSavedList })
+  //    val result = repo.findBySavedList(0L)
+  //    assertNull(result)
+  //  }
 }

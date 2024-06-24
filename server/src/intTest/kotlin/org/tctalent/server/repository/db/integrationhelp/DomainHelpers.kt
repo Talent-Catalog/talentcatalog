@@ -16,13 +16,13 @@
 
 package org.tctalent.server.repository.db.integrationhelp
 
+import java.time.OffsetDateTime
+import kotlin.random.Random
 import org.springframework.data.jpa.repository.JpaRepository
 import org.tctalent.server.model.db.*
 import org.tctalent.server.repository.db.*
 import org.tctalent.server.service.db.audit.AuditAction
 import org.tctalent.server.service.db.audit.AuditType
-import java.time.OffsetDateTime
-import kotlin.random.Random
 
 /**
  * Retrieves a new TaskImpl instance initialized with provided or default values.
@@ -625,3 +625,19 @@ fun getSavedSearchJoin(repo: SearchJoinRepository): SearchJoin =
  * @return A new SearchJoin instance.
  */
 fun getSearchJoin(): SearchJoin = SearchJoin().apply { searchType = SearchType.or }
+
+/**
+ * Retrieves a saved SavedListLink instance after saving it to the repository.
+ *
+ * @param repo The repository where the saved list link will be saved.
+ * @return The saved SavedListLink instance.
+ */
+fun getSavedSavedListLink(repo: SavedListLinkRepository): SavedListLink =
+  saveHelperObject(repo, getSavedListLink())
+
+/**
+ * Retrieves a new SavedListLink instance initialized with a default link.
+ *
+ * @return A new SavedListLink instance.
+ */
+fun getSavedListLink(): SavedListLink = SavedListLink().apply { link = "TEST_SAVED_LINK" }
