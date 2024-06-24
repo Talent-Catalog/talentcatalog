@@ -25,7 +25,6 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {of} from "rxjs";
 import {SearchResults} from "../../../../model/search-results";
-import {Occupation} from "../../../../model/occupation";
 import {Partner} from "../../../../model/partner";
 import {MockPartner} from "../../../../MockData/MockPartner";
 import {
@@ -137,5 +136,5 @@ fdescribe('SearchPartnersComponent', () => {
     expect(partnerService.searchPaged).toHaveBeenCalled();
   });
 
-  
+
 });
