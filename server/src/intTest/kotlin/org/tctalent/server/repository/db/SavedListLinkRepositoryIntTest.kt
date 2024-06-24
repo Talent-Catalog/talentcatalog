@@ -16,7 +16,6 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.*
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 
 /** Appears unused class in main. No such table. Will fail when running. */
