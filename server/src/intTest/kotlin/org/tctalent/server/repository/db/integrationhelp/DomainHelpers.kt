@@ -664,3 +664,24 @@ fun getRootRequest(): RootRequest =
     partnerAbbreviation = "TEST_PARTNER_ABBREVIATION"
     ipAddress = "127.0.0.1"
   }
+
+/**
+ * Retrieves a saved EducationLevel instance after saving it to the repository.
+ *
+ * @param report The repository where the education level will be saved.
+ * @return The saved EducationLevel instance.
+ */
+fun getSavedEducationLevel(report: EducationLevelRepository): EducationLevel =
+  saveHelperObject(report, getEducationLevel())
+
+/**
+ * Retrieves a new EducationLevel instance initialized with a default name and status.
+ *
+ * @return A new EducationLevel instance.
+ */
+fun getEducationLevel(): EducationLevel =
+  EducationLevel().apply {
+    name = "TEST HIGH EDUCATION LEVEL"
+    status = Status.deleted
+    level = 9
+  }
