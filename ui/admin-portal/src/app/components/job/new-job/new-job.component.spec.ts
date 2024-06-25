@@ -6,9 +6,9 @@ import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {JobService} from '../../../services/job.service';
-import {SavedListService} from '../../../services/saved-list.service';
+ import {SavedListService} from '../../../services/saved-list.service';
 import {SlackService} from '../../../services/slack.service';
-import {of} from 'rxjs';
+ import {of} from 'rxjs';
 import {UpdateJobRequest} from "../../../model/job";
 import {Progress} from "../../../model/base";
 import {SalesforceService} from "../../../services/salesforce.service";
@@ -52,7 +52,7 @@ fdescribe('NewJobComponent', () => {
       location, // Provide mock Location
       router,
       ngbModal
-    );
+     );
     TestBed.configureTestingModule({
       declarations: [NewJobComponent,RouterLinkStubDirective],
       imports: [
@@ -86,8 +86,8 @@ fdescribe('NewJobComponent', () => {
     mockSavedListService = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
     mockSalesforceService = TestBed.inject(SalesforceService) as jasmine.SpyObj<SalesforceService>;
     mockSlackService = TestBed.inject(SlackService) as jasmine.SpyObj<SlackService>;
-    fb = TestBed.inject(FormBuilder);
-  }));
+   fb = TestBed.inject(FormBuilder);
+   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NewJobComponent);
@@ -126,7 +126,7 @@ fdescribe('NewJobComponent', () => {
     component.employer = new MockEmployer();
     component.jobForm = fb.group({
       role: [roleName] // Initialize with an empty string or any default value
-    });
+     });
     const spyOnMethod = spyOn<any>(component, 'subscribeToJobFormChanges').and.callThrough();
     component['subscribeToJobFormChanges']();
     component.jobForm.patchValue({ role: roleName });

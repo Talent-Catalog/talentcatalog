@@ -13,62 +13,52 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {SearchTasksComponent} from "./search-tasks.component";
-import {TaskService} from "../../../services/task.service";
+
+import {SearchLanguagesComponent} from "./search-languages.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {LanguageService} from "../../../services/language.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {SearchResults} from "../../../model/search-results";
-import {of, throwError} from "rxjs";
-import {EditTaskComponent} from "./edit/edit-task.component";
-import {Task} from "../../../model/task";
-import {MockSavedList} from "../../../MockData/MockSavedList";
+import {of} from "rxjs";
+import {CreateLanguageComponent} from "./create/create-language.component";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('SearchTasksComponent', () => {
-  let component: SearchTasksComponent;
-  let fixture: ComponentFixture<SearchTasksComponent>;
-  let taskServiceSpy: jasmine.SpyObj<TaskService>;
+fdescribe('SearchLanguagesComponent', () => {
+  let component: SearchLanguagesComponent;
+  let fixture: ComponentFixture<SearchLanguagesComponent>;
+  let languageServiceSpy: jasmine.SpyObj<LanguageService>;
   let modalServiceSpy: jasmine.SpyObj<NgbModal>;
   let authServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  const mockResults: SearchResults<Task> = {
-    first: false,
-    last: false,
-    number: 0,
-    size: 0,
-    totalPages: 0,
-    totalElements: 1,
-    content: MockSavedList.tasks
-  };
+  const mockResults = [];
 
   beforeEach(async () => {
-    const taskSpy = jasmine.createSpyObj('TaskService', ['searchPaged']);
+    const languageSpy = jasmine.createSpyObj('LanguageService', ['listSystemLanguages']);
     const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
     const authSpy = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin']);
 
     await TestBed.configureTestingModule({
-      declarations: [SearchTasksComponent],
+      declarations: [SearchLanguagesComponent],
       imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
-        { provide: TaskService, useValue: taskSpy },
+        { provide: LanguageService, useValue: languageSpy },
         { provide: NgbModal, useValue: modalSpy },
         { provide: AuthorizationService, useValue: authSpy },
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchTasksComponent);
+    fixture = TestBed.createComponent(SearchLanguagesComponent);
     component = fixture.componentInstance;
-    taskServiceSpy = TestBed.inject(TaskService) as jasmine.SpyObj<TaskService>;
+    languageServiceSpy = TestBed.inject(LanguageService) as jasmine.SpyObj<LanguageService>;
     modalServiceSpy = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
     authServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SearchTasksComponent);
+    fixture = TestBed.createComponent(SearchLanguagesComponent);
     component = fixture.componentInstance;
-    taskServiceSpy.searchPaged.and.returnValue(of(mockResults));
+    languageServiceSpy.listSystemLanguages.and.returnValue(of(mockResults));
     component.loggedInUser = new MockUser();
     fixture.detectChanges();
   });
@@ -77,40 +67,30 @@ fdescribe('SearchTasksComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize forms and set default values', () => {
+  it('should initialize form and set default values', () => {
     component.ngOnInit();
     expect(component.searchForm).toBeDefined();
     expect(component.pageNumber).toBe(1);
     expect(component.pageSize).toBe(50);
   });
 
-  it('should search tasks', () => {
+
+  it('should search languages', () => {
 
     component.search();
 
-    expect(taskServiceSpy.searchPaged).toHaveBeenCalled();
+    expect(languageServiceSpy.listSystemLanguages).toHaveBeenCalled();
     expect(component.results).toEqual(mockResults);
     expect(component.loading).toBeFalse();
   });
 
-  it('should handle search errors', () => {
-    taskServiceSpy.searchPaged.and.returnValue(throwError('Error'));
-
-    component.search();
-
-    expect(component.error).toBe('Error');
-    expect(component.loading).toBeFalse();
-  });
-
-  it('should open edit task modal', () => {
-    const task: Task = MockSavedList.tasks[0];
-    const modalRefMock = { componentInstance: { taskId: null }, result: Promise.resolve(true) } as any;
+  it('should add language', () => {
+    const modalRefMock = { result: Promise.resolve(true) } as any;
     modalServiceSpy.open.and.returnValue(modalRefMock);
 
-    component.editTask(task);
+    component.addLanguage();
 
-    expect(modalServiceSpy.open).toHaveBeenCalledWith(EditTaskComponent, { centered: true, backdrop: 'static' });
-    expect(modalRefMock.componentInstance.taskId).toBe(task.id);
+    expect(modalServiceSpy.open).toHaveBeenCalledWith(CreateLanguageComponent, { centered: true, backdrop: 'static' });
   });
 
   it('should check if user is admin', () => {
