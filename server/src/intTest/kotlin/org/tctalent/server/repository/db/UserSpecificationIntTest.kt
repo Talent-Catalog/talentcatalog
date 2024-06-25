@@ -34,7 +34,7 @@ import org.tctalent.server.request.user.SearchUserRequest
  * database as a starting point, before adding the user within the test case. It also means checking
  * the 'last' item in the array as there is no sorting so the system admin will be first.
  */
-class UserSpecificationTest : BaseDBIntegrationTest() {
+class UserSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: UserRepository
   private lateinit var testUser: User
 

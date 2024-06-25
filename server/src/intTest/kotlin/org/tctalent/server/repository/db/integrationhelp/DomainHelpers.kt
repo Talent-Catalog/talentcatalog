@@ -384,6 +384,7 @@ fun getPartner() =
     name = "GREAT TEST PARTNER"
     status = Status.active
     abbreviation = "GTP"
+    isJobCreator = true
     isDefaultSourcePartner = false
     isAutoAssignable = true
   }

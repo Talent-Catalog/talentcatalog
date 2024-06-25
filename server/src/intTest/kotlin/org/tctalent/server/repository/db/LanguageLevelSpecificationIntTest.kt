@@ -18,57 +18,57 @@ package org.tctalent.server.repository.db
 
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.tctalent.server.model.db.Language
+import org.tctalent.server.model.db.LanguageLevel
 import org.tctalent.server.model.db.Status
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getSavedLanguage
-import org.tctalent.server.request.language.SearchLanguageRequest
+import org.tctalent.server.repository.db.integrationhelp.getSavedLanguageLevel
+import org.tctalent.server.request.language.level.SearchLanguageLevelRequest
 
-class LanguageSpecificationTest : BaseDBIntegrationTest() {
-  @Autowired private lateinit var repo: LanguageRepository
-  private lateinit var testLanguage: Language
+class LanguageLevelSpecificationIntTest : BaseDBIntegrationTest() {
+  @Autowired lateinit var repo: LanguageLevelRepository
+  private lateinit var languageLevel: LanguageLevel
 
   @BeforeTest
   fun setup() {
     assertTrue { isContainerInitialized() }
-    testLanguage = getSavedLanguage(repo)
+    languageLevel = getSavedLanguageLevel(repo)
   }
 
   @Test
   fun `test keyword`() {
-    val request = SearchLanguageRequest().apply { keyword = testLanguage.name }
-    val spec = LanguageSpecification.buildSearchQuery(request)
+    val request = SearchLanguageLevelRequest().apply { keyword = languageLevel.name }
+    val spec = LanguageLevelSpecification.buildSearchQuery(request)
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
     assertEquals(1, result.size)
-    assertEquals(testLanguage.id, result.first().id)
+    assertEquals(languageLevel.id, result.first().id)
   }
 
   @Test
   fun `test keyword fail`() {
-    val request = SearchLanguageRequest().apply { keyword = "NOTHING" }
-    val spec = LanguageSpecification.buildSearchQuery(request)
+    val request = SearchLanguageLevelRequest().apply { keyword = "NOTHING" }
+    val spec = LanguageLevelSpecification.buildSearchQuery(request)
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue { result.isEmpty() }
   }
 
   @Test
-  fun `test build search query with status`() {
-    val request = SearchLanguageRequest().apply { status = Status.active }
-    val spec = LanguageSpecification.buildSearchQuery(request)
+  fun `test status`() {
+    val request = SearchLanguageLevelRequest().apply { status = Status.active }
+    val spec = LanguageLevelSpecification.buildSearchQuery(request)
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue(result.isNotEmpty())
     val ids = result.map { it.id }
-    assertTrue { ids.contains(testLanguage.id) }
+    assertTrue { ids.contains(languageLevel.id) }
   }
 
   @Test
-  fun `test build search query with status fail`() {
-    val request = SearchLanguageRequest().apply { status = Status.deleted }
-    val spec = LanguageSpecification.buildSearchQuery(request)
+  fun `test fail`() {
+    val request = SearchLanguageLevelRequest().apply { status = Status.deleted }
+    val spec = LanguageLevelSpecification.buildSearchQuery(request)
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue(result.isEmpty())
