@@ -16,12 +16,12 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.SurveyType
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedSurveyType
 import org.tctalent.server.request.survey.SearchSurveyTypeRequest
+import kotlin.test.*
 
 class SurveyTypeSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var repo: SurveyTypeRepository
@@ -60,10 +60,10 @@ class SurveyTypeSpecificationIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test keyword fail`() {
-    val request = SearchSurveyTypeRequest().apply { keyword = "" }
+    val request = SearchSurveyTypeRequest().apply { keyword = "NOTHING" }
     val spec = SurveyTypeSpecification.buildSearchQuery(request)
     val result = repo.findAll(spec)
     assertNotNull(result)
-    assertTrue { result.isEmpty() }
+    assertTrue(result.isEmpty())
   }
 }
