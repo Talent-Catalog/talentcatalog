@@ -2,13 +2,13 @@ import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular
 import {ReactiveFormsModule, FormBuilder, FormsModule} from '@angular/forms';
 import {NewJobComponent} from './new-job.component';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {JobService} from '../../../services/job.service';
- import {SavedListService} from '../../../services/saved-list.service';
+import {SavedListService} from '../../../services/saved-list.service';
 import {SlackService} from '../../../services/slack.service';
- import {of} from 'rxjs';
+import {of} from 'rxjs';
 import {UpdateJobRequest} from "../../../model/job";
 import {Progress} from "../../../model/base";
 import {SalesforceService} from "../../../services/salesforce.service";
@@ -32,6 +32,7 @@ fdescribe('NewJobComponent', () => {
   let fb: FormBuilder;
   let fbSpy : any;
   let router: Router; // Add Router dependency here
+  let ngbModal: NgbModal; // Add Router dependency here
 
   beforeEach(waitForAsync(() => {
     mockJobService = jasmine.createSpyObj('JobService', ['create']);
@@ -49,8 +50,9 @@ fdescribe('NewJobComponent', () => {
       mockSavedListService,
       mockSlackService,
       location, // Provide mock Location
-      router
-     );
+      router,
+      ngbModal
+    );
     TestBed.configureTestingModule({
       declarations: [NewJobComponent,RouterLinkStubDirective],
       imports: [
@@ -84,8 +86,8 @@ fdescribe('NewJobComponent', () => {
     mockSavedListService = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
     mockSalesforceService = TestBed.inject(SalesforceService) as jasmine.SpyObj<SalesforceService>;
     mockSlackService = TestBed.inject(SlackService) as jasmine.SpyObj<SlackService>;
-   fb = TestBed.inject(FormBuilder);
-   }));
+    fb = TestBed.inject(FormBuilder);
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NewJobComponent);
@@ -110,7 +112,7 @@ fdescribe('NewJobComponent', () => {
   it('should start job creation process when a valid job link is provided', () => {
     // Arrange
     const sfJoblink = 'valid_job_link';
-    const request: UpdateJobRequest = { roleName: null, sfJoblink };
+    const request: UpdateJobRequest = { roleName: null, sfJoblink,jobToCopyId: null };
     mockJobService.create.and.returnValue(of());
     // // Act
     component.onSfJoblinkValidation({ valid: true, sfJoblink, jobname: MockJob.name });
@@ -124,7 +126,7 @@ fdescribe('NewJobComponent', () => {
     component.employer = new MockEmployer();
     component.jobForm = fb.group({
       role: [roleName] // Initialize with an empty string or any default value
-     });
+    });
     const spyOnMethod = spyOn<any>(component, 'subscribeToJobFormChanges').and.callThrough();
     component['subscribeToJobFormChanges']();
     component.jobForm.patchValue({ role: roleName });

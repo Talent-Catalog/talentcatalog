@@ -139,7 +139,7 @@ export class MockCandidate implements Candidate {
       abandonedDate: null,
       candidateNotes: '',
       completedDate: null,
-      dueDate: new Date('2024-06-25'),
+      dueDate: new Date('2099-06-25'),
       status: Status.active,
       task: {
         id: 2,
@@ -162,7 +162,7 @@ export class MockCandidate implements Candidate {
       abandonedDate: null,
       candidateNotes: '',
       completedDate: null,
-      dueDate: new Date('2024-07-05'),
+      dueDate: new Date('2099-07-05'),
       status: Status.active,
       task: {
         id: 3,
