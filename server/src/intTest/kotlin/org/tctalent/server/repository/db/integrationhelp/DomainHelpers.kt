@@ -755,3 +755,22 @@ fun getSavedCandidateExam(repo: CandidateExamRepository): CandidateExam =
  * @return A new CandidateExam instance.
  */
 fun getCandidateExam(): CandidateExam = CandidateExam().apply { exam = Exam.OET }
+
+/**
+ * Retrieves a saved HelpLink instance after saving it to the repository.
+ *
+ * @param repo The repository where the help link will be saved.
+ * @return The saved HelpLink instance.
+ */
+fun getSavedHelpLink(repo: HelpLinkRepository): HelpLink = saveHelperObject(repo, getHelpLink())
+
+/**
+ * Retrieves a new HelpLink instance initialized with a default link and label.
+ *
+ * @return A new HelpLink instance.
+ */
+fun getHelpLink(): HelpLink =
+  HelpLink().apply {
+    link = "TEST_HELP_LINK"
+    label = "TEST LABEL"
+  }
