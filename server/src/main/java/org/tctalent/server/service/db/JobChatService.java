@@ -38,6 +38,10 @@ public interface JobChatService {
      */
     DtoBuilder getJobChatDtoBuilder();
 
+//    TODO: doc and place at end
+    @Nullable
+    public JobChat getCandidateProspectChat(long candidateId);
+
     /**
      * Finds a job chat matching the given type and paramteres, creating one if needed.
      * <p/>

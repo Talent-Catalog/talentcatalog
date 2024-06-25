@@ -97,6 +97,10 @@ export class ChatService implements OnDestroy {
     return this.http.post<JobChat>(`${this.apiUrl}`, request);
   }
 
+  getCandidateProspectChat(candidateId: number): Observable<JobChat> {
+    return this.http.get<JobChat>(`${this.apiUrl}/{candidateId}/get-cp-chat`);
+  }
+
   getOrCreate(request: CreateChatRequest): Observable<JobChat> {
 
     //Typescript Maps hash on object reference (!), so can't use actual request object as key to map

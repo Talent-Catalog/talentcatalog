@@ -86,10 +86,9 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     this.refreshCandidateInfo();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
-    this.checkVisibility();
   }
   private checkVisibility() {
-    const candidatePartner = this.candidate?.user?.partner;
+    const candidatePartner = this.candidate.user?.partner;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
 
     //User is source partner responsible for candidate or default source partner
@@ -97,6 +96,12 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
       loggedInPartner.defaultSourcePartner || loggedInPartner.id == candidatePartner?.id;
 
     this.candidateProspectTabVisible = userIsCandidatePartner;
+
+    if (this.candidateProspectTabVisible) {
+      this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
+        // if it returns null, display the button; if there's a chat, display that
+      })
+    }
   }
 
   refreshCandidateInfo() {
@@ -115,6 +120,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
           this.setCandidate(candidate);
           this.loadLists();
           this.generateToken();
+          // We need the returned candidate object before firing this method:
+          this.checkVisibility();
         }
       }, error => {
         this.loadingError = true;

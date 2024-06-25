@@ -111,6 +111,14 @@ public class JobChatServiceImpl implements JobChatService {
     }
 
     @Override
+    @Nullable
+    public JobChat getCandidateProspectChat(long candidateId) {
+        return jobChatRepository.findByTypeAndCandidate(
+            JobChatType.CandidateProspect, candidateId
+        );
+    }
+
+    @Override
     @NonNull
     public JobChat getOrCreateJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
         @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate)
