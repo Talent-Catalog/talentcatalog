@@ -91,11 +91,7 @@ class PartnerSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = PartnerSpecification.buildSearchQuery(request)
     val result = repo.findAll(spec)
     assertNotNull(result)
-    assertTrue(result.isNotEmpty())
-    val ids = result.map { it.id }
-
-    // Note, do not expect the result to be in this list.
-    assertFalse(ids.contains(partner.id))
+    assertTrue(result.isEmpty())
   }
 
   @Test
