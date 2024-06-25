@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.*
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
@@ -24,7 +25,6 @@ import org.tctalent.server.model.db.Status
 import org.tctalent.server.model.db.User
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedUser
-import kotlin.test.*
 
 class UserRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: UserRepository

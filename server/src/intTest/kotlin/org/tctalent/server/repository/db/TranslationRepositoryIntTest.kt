@@ -16,12 +16,12 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.jvm.optionals.getOrNull
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Translation
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedTranslation
-import kotlin.jvm.optionals.getOrNull
-import kotlin.test.*
 
 class TranslationRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: TranslationRepository

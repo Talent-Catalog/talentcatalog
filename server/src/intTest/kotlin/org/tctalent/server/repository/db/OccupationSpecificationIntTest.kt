@@ -16,13 +16,13 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Occupation
 import org.tctalent.server.model.db.Status
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedOccupation
 import org.tctalent.server.request.occupation.SearchOccupationRequest
-import kotlin.test.*
 
 class OccupationSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: OccupationRepository

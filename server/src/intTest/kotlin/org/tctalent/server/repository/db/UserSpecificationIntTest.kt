@@ -16,6 +16,10 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Role
@@ -24,10 +28,6 @@ import org.tctalent.server.model.db.User
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getUser
 import org.tctalent.server.request.user.SearchUserRequest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 /**
  * NOTE: The results list will return 2, that's because there is the system admin user in the

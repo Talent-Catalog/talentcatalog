@@ -16,12 +16,12 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.SurveyType
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedSurveyType
 import org.tctalent.server.request.survey.SearchSurveyTypeRequest
-import kotlin.test.*
 
 class SurveyTypeSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var repo: SurveyTypeRepository

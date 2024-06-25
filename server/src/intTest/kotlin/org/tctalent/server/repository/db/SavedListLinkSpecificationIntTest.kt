@@ -16,31 +16,27 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.*
-import org.springframework.beans.factory.annotation.Autowired
-import org.tctalent.server.model.db.SavedListLink
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getSavedSavedListLink
 
 /** Does not appear to be used, similar to the repo. */
 class SavedListLinkSpecificationIntTest : BaseDBIntegrationTest() {
-  @Autowired lateinit var repo: SavedListLinkRepository
-  @Autowired lateinit var savedListRepository: SavedListRepository
-  private lateinit var savedListLink: SavedListLink
-
-  @BeforeTest
-  fun setup() {
-    assertTrue { isContainerInitialized() }
-    savedListLink = getSavedSavedListLink(repo)
-  }
-
-  @Test
-  fun `test keyword`() {
-    assertTrue { true }
-  }
-
-  @Test
-  fun `test keyword fail`() {
-    assertTrue { true }
-  }
+  //  @Autowired lateinit var repo: SavedListLinkRepository
+  //  @Autowired lateinit var savedListRepository: SavedListRepository
+  //  private lateinit var savedListLink: SavedListLink
+  //
+  //  @BeforeTest
+  //  fun setup() {
+  //    assertTrue { isContainerInitialized() }
+  //    savedListLink = getSavedSavedListLink(repo)
+  //  }
+  //
+  //  @Test
+  //  fun `test keyword`() {
+  //    assertTrue { true }
+  //  }
+  //
+  //  @Test
+  //  fun `test keyword fail`() {
+  //    assertTrue { true }
+  //  }
 }
