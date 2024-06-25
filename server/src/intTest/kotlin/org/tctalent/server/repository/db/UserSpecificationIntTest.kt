@@ -16,19 +16,24 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Role
 import org.tctalent.server.model.db.Status
 import org.tctalent.server.model.db.User
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getSavedUser
+import org.tctalent.server.repository.db.integrationhelp.getUser
 import org.tctalent.server.request.user.SearchUserRequest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
+/**
+ * NOTE: The results list will return 2, that's because there is the system admin user in the
+ * database as a starting point, before adding the user within the test case. It also means checking
+ * the 'last' item in the array as there is no sorting so the system admin will be first.
+ */
 class UserSpecificationTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: UserRepository
   private lateinit var testUser: User
@@ -36,7 +41,8 @@ class UserSpecificationTest : BaseDBIntegrationTest() {
   @BeforeEach
   fun setup() {
     assertTrue { isContainerInitialized() }
-    testUser = getSavedUser(repo)
+    testUser = getUser()
+    repo.save(testUser.apply { role = Role.admin })
     assertTrue { testUser.id > 0 }
   }
 
@@ -62,7 +68,8 @@ class UserSpecificationTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test build search query with role`() {
-    val request = SearchUserRequest().apply { role = listOf(Role.admin) }
+    repo.save(testUser.apply { role = Role.user })
+    val request = SearchUserRequest().apply { role = listOf(Role.user) }
     val spec = UserSpecification.buildSearchQuery(request)
     val result = repo.findAll(spec)
     assertNotNull(result)
@@ -78,20 +85,19 @@ class UserSpecificationTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue(result.isNotEmpty())
-    assertEquals(1, result.size)
-    assertEquals(testUser.id, result.first().id)
+    assertEquals(2, result.size)
+    assertEquals(testUser.id, result.last().id)
   }
 
   @Test
   fun `test build search query with partnerId`() {
     val request = SearchUserRequest().apply { partnerId = testUser.partner.id }
-
     val spec = UserSpecification.buildSearchQuery(request)
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue(result.isNotEmpty())
-    assertEquals(1, result.size)
-    assertEquals(testUser.id, result.first().id)
+    assertEquals(2, result.size)
+    assertEquals(testUser.id, result.last().id)
   }
 
   @Test
@@ -101,7 +107,16 @@ class UserSpecificationTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue(result.isNotEmpty())
-    assertEquals(1, result.size)
-    assertEquals(testUser.id, result.first().id)
+    assertEquals(2, result.size)
+    assertEquals(testUser.id, result.last().id)
+  }
+
+  @Test
+  fun `test build search query with status fail`() {
+    val request = SearchUserRequest().apply { status = Status.deleted }
+    val spec = UserSpecification.buildSearchQuery(request)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isEmpty())
   }
 }
