@@ -57,4 +57,13 @@ class SurveyTypeSpecificationIntTest : BaseDBIntegrationTest() {
     assertEquals(1, result.size)
     assertEquals(st.id, result.first().id)
   }
+
+  @Test
+  fun `test keyword fail`() {
+    val request = SearchSurveyTypeRequest().apply { keyword = "" }
+    val spec = SurveyTypeSpecification.buildSearchQuery(request)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
+  }
 }
