@@ -27,7 +27,7 @@ import org.tctalent.server.request.helplink.SearchHelpLinkRequest
 class HelpLinkSettingsSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: HelpLinkRepository
   @Autowired lateinit var countryRepo: CountryRepository
-  lateinit var helpLink: HelpLink
+  private lateinit var helpLink: HelpLink
 
   @BeforeTest
   fun setup() {
