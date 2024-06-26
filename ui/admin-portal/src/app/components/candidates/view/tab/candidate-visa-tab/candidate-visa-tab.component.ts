@@ -23,9 +23,7 @@ import {
   CreateCandidateVisaCheckRequest
 } from '../../../../../services/candidate-visa-check.service';
 import {Country} from '../../../../../model/country';
-import {
-  HasNameSelectorComponent
-} from '../../../../util/has-name-selector/has-name-selector.component';
+import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../model/candidate';
@@ -75,7 +73,7 @@ export class CandidateVisaTabComponent implements OnInit {
        * todo: Remove/alter this filter once no longer needed or find other solution.
        * It is a temporary filter to only display the TBB destinations (Australia & Canada) that have functioning visa checks.
        */
-      this.tbbDestinations = results.filter(c => c.id == 6191 || c.id == 6216);
+      this.tbbDestinations = results.filter(c => c.id == 6191 || c.id == 6216 || c.id == 6179);
     })
 
     this.reloadAndSelectVisaCheck(0)
