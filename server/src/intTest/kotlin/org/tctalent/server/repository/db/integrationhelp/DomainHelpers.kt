@@ -485,6 +485,15 @@ fun getSavedSearch(): SavedSearch =
   }
 
 /**
+ * Retrieves a saved CandidateOpportunity instance after saving it to the repository.
+ *
+ * @param repo The repository where the candidate opportunity will be saved.
+ * @return The saved CandidateOpportunity instance.
+ */
+fun getSavedCandidateOpportunity(repo: CandidateOpportunityRepository): CandidateOpportunity =
+  saveHelperObject(repo, getCandidateOpportunity())
+
+/**
  * Retrieves a new CandidateOpportunity instance initialized with default stage and closing
  * comments.
  *
@@ -777,7 +786,15 @@ fun getHelpLink(): HelpLink =
     label = "TEST LABEL"
   }
 
-fun getCandidateSavedList(candidate: Candidate, savedList: SavedList) =
+/**
+ * Retrieves a new CandidateSavedList instance initialized with a given candidate, saved list, and a
+ * default context note.
+ *
+ * @param candidate The candidate associated with the saved list.
+ * @param savedList The saved list associated with the candidate.
+ * @return A new CandidateSavedList instance.
+ */
+fun getCandidateSavedList(candidate: Candidate, savedList: SavedList): CandidateSavedList =
   CandidateSavedList().apply {
     contextNote = "CONTEXT NOTE"
     this.candidate = candidate
