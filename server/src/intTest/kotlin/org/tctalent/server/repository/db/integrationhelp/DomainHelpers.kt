@@ -135,7 +135,9 @@ fun getSavedList() =
     description = "SavedList"
     name = "SavedList"
     tbbShortName = "TEST_TBB_SHORT_NAME"
+    global = true
     registeredJob = true
+    fixed = true
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
   }
