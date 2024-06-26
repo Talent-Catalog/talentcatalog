@@ -16,12 +16,15 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.SalesforceJobOpp
 import org.tctalent.server.model.db.SavedList
-import org.tctalent.server.repository.db.integrationhelp.*
+import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
+import org.tctalent.server.repository.db.integrationhelp.getSavedSavedList
+import org.tctalent.server.repository.db.integrationhelp.getSavedSfJobOpp
+import org.tctalent.server.repository.db.integrationhelp.systemUser
 import org.tctalent.server.request.list.SearchSavedListRequest
+import kotlin.test.*
 
 class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: SavedListRepository
@@ -77,6 +80,8 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
     assertEquals(savedList.id, result.first().id)
   }
 
+  // TODO (the query is broken as it uses a method call as an attribute)
+  // Requires confirmation and fixing.
   @Test
   fun `test sfOppClosed`() {
     testSFJobOpp = getSavedSfJobOpp(sfJobOppRepository).apply { isClosed = true }
@@ -116,7 +121,7 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test shared`() {
-    val loggedInUser = systemUser().apply { sharedLists = setOf(getSavedList()) }
+    val loggedInUser = systemUser().apply { sharedLists = setOf(savedList) }
     val request = SearchSavedListRequest().apply { shared = true }
     val spec = GetSavedListsQuery(request, loggedInUser)
     val result = repo.findAll(spec)
