@@ -93,8 +93,9 @@ public class ChatAdminApi implements
 
     @Nullable
     @GetMapping("{candidateId}/get-cp-chat")
-    public JobChat getCandidateProspectChat(@PathVariable("candidateId") long candidateId) {
-        return chatService.getCandidateProspectChat(candidateId);
+    public Map<String, Object> getCandidateProspectChat(@PathVariable("candidateId") long candidateId) {
+        JobChat jobChat = chatService.getCandidateProspectChat(candidateId);
+        return jobChat == null ? null : chatService.getJobChatDtoBuilder().build(jobChat);
     }
 
     @NonNull

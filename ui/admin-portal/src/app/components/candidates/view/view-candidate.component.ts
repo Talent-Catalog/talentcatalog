@@ -83,11 +83,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   ngOnInit() {
-    this.refreshCandidateInfo();
+    this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
   }
-  private checkVisibility() {
+  private setChatAccess() {
     const candidatePartner = this.candidate.user?.partner;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
 
@@ -99,12 +99,12 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
     if (this.candidateProspectTabVisible) {
       this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
-        // if it returns null, display the button; if there's a chat, display that
+        this.candidateChat = result;
       })
     }
   }
 
-  refreshCandidateInfo() {
+  refreshCandidateProfile() {
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
@@ -121,7 +121,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
           this.loadLists();
           this.generateToken();
           // We need the returned candidate object before firing this method:
-          this.checkVisibility();
+          this.setChatAccess();
         }
       }, error => {
         this.loadingError = true;
@@ -209,26 +209,22 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     } else {
       this.titleService.setTitle(this.candidate.candidateNumber);
     }
-
-    this.fetchChat();
   }
 
-  fetchChat() {
-    if (this.candidate) {
-      this.loading = true;
-      this.error = null;
+  createChat() {
+    this.loading = true;
+    this.error = null;
 
-      const candidateProspectChatRequest: CreateChatRequest = {
-        type: JobChatType.CandidateProspect,
-        candidateId: this.candidate.id,
-      }
-      this.chatService.getOrCreate(candidateProspectChatRequest).subscribe(
-        {
-          next: (chat) => {this.candidateChat = chat; this.loading = false},
-          error: (error) => {this.error = error; this.loading = false}
-        }
-      )
+    const candidateProspectChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateProspect,
+      candidateId: this.candidate.id,
     }
+    this.chatService.create(candidateProspectChatRequest).subscribe(
+      {
+        next: (chat) => {this.candidateChat = chat; this.loading = false},
+        error: (error) => {this.error = error; this.loading = false}
+      }
+    )
   }
 
   downloadCV() {

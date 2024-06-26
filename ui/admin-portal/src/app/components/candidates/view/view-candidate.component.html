@@ -238,18 +238,29 @@
 
           <!-- Chat between source partner candidate-->
           <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
-            <a ngbNavLink>Chat with candidate
-              <app-chat-read-status *ngIf="candidateChat"
-                                    [chats]="[candidateChat]"
-              >
-              </app-chat-read-status>
-            </a>
-            <ng-template ngbNavContent>
-              <app-view-chat-posts
-                [chat]="candidateChat"
-              >
-              </app-view-chat-posts>
-            </ng-template>
+              <a ngbNavLink *ngIf="candidateChat; else noChat">
+                  Chat With Candidate
+                  <app-chat-read-status *ngIf="candidateChat" [chats]="[candidateChat]">
+                  </app-chat-read-status>
+              </a>
+
+              <ng-template #noChat>
+                <a ngbNavLink (click)="createChat()">
+                  Create Chat
+                </a>
+              </ng-template>
+
+              <ng-template ngbNavContent>
+                <app-view-chat-posts *ngIf="candidateChat; else createChatHelp"
+                                     [chat]="candidateChat">
+                </app-view-chat-posts>
+                <!--If this tab opens first from a previous candidate view, user may need guidance:-->
+                <ng-template #createChatHelp>
+                  <div class="text-muted py-3 fw-light text-center fs-6">
+                    Click the tab header to create a chat with this candidate.
+                  </div>
+                </ng-template>
+              </ng-template>
           </ng-container>
 
         </nav>
