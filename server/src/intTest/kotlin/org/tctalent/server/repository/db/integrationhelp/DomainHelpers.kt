@@ -776,3 +776,11 @@ fun getHelpLink(): HelpLink =
     link = "TEST_HELP_LINK"
     label = "TEST LABEL"
   }
+
+fun getCandidateSavedList(candidate: Candidate, savedList: SavedList) =
+  CandidateSavedList().apply {
+    contextNote = "CONTEXT NOTE"
+    this.candidate = candidate
+    this.savedList = savedList
+    this.id = CandidateSavedListKey(candidate.id, savedList.id)
+  }

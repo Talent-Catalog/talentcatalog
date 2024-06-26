@@ -123,7 +123,7 @@ class SavedListRepositoryIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test find registered job list`() {
     repo.save(savedList.apply { sfJobOpp = testSFJobOpp })
-    val results = repo.findRegisteredJobList(savedList.sfJobOpp.sfId).getOrNull()
+    val results = repo.findRegisteredJobList(savedList.sfJobOpp?.sfId ?: fail()).getOrNull()
     assertNotNull(results)
     assertEquals(savedList.id, results.id)
   }
@@ -168,7 +168,6 @@ class SavedListRepositoryIntTest : BaseDBIntegrationTest() {
     val result = repo.findListsWithJobs()
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    val ids = result.map { it.id }
     assertEquals(savedList.id, result.first().id)
   }
 
