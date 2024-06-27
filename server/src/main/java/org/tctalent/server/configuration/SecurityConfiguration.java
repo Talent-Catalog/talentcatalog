@@ -178,6 +178,12 @@ public class SecurityConfiguration {
                 // DELETE: DELETE USER (ADDED AUTHORISATION ON SERVER FOR SOURCE PARTNER ADMINS)
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/user/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
 
+                // DELETE: DELETE VISA CHECK
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-visa-check/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
+
+                // DELETE: DELETE VISA JOB CHECK
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-visa-job/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
+
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasAnyRole("SYSTEMADMIN", "ADMIN")
