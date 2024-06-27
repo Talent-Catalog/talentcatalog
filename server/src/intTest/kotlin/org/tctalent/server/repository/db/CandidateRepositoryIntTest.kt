@@ -257,4 +257,67 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
     assertNotNull(result)
     assertTrue { result.content.isEmpty() }
   }
+
+  @Test
+  fun `test find by id load user`() {
+    val testCountry = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { country = testCountry })
+    val result = repo.findByIdLoadUser(testCandidate.id, setOf(testCountry))
+    assertTrue(result.isPresent)
+    assertEquals(testCandidate.id, result.get().id)
+  }
+
+  @Test
+  fun `test find by id load user fail`() {
+    val result = repo.findByIdLoadUser(99999L, setOf(getSavedCountry(countryRepository)))
+    assertFalse(result.isPresent)
+  }
+
+  //  @Test
+  //  fun `test find by nationality id`() {
+  //    val x = repo.save(testCandidate.apply { nationality = x })
+  //    val result = repo.findByNationalityId(testCandidate.nationality.id)
+  //    assertNotNull(result)
+  //    assertTrue { result.isNotEmpty() }
+  //    assertEquals(testCandidate.id, result.first().id)
+  //  }
+
+  // Nationality query doesn't appear to be used.
+  // TOOD (Check this)
+  @Test
+  fun `test find by nationality id fail`() {
+    val result = repo.findByNationalityId(99999L) // Assuming 99999L is an invalid ID
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
+  }
+
+  @Test
+  fun `test find by country id`() {
+    val testCountry = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { country = testCountry })
+    val result = repo.findByCountryId(testCountry.id)
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(testCandidate.id, result.first().id)
+  }
+
+  @Test
+  fun `test find by country id fail`() {
+    val result = repo.findByCountryId(99999L) // Assuming 99999L is an invalid ID
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
+  }
+
+  @Test
+  fun `test find by candidate number`() {
+    val result = repo.findByCandidateNumber(testCandidate.candidateNumber)
+    assertNotNull(result)
+    assertEquals(testCandidate.id, result.id)
+  }
+
+  @Test
+  fun `test find by candidate number fail`() {
+    val result = repo.findByCandidateNumber("INVALID_NUMBER")
+    assertNull(result)
+  }
 }
