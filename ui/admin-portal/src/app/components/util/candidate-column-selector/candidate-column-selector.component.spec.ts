@@ -21,8 +21,7 @@ import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {DragulaModule, DragulaService} from "ng2-dragula";
-import {CandidateFieldInfo} from "../../../model/candidate-field-info";
-import {of} from "rxjs";
+
 
 fdescribe('CandidateColumnSelectorComponent', () => {
   let component: CandidateColumnSelectorComponent;

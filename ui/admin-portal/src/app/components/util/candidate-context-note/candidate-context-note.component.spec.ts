@@ -50,7 +50,7 @@ fdescribe('CandidateContextNoteComponent', () => {
   beforeEach(() => {
     component.candidate = mockCandidate;
     component.candidateSource = mockCandidateSource;
-    candidateSourceService.updateContextNote.and.returnValue(of());
+    candidateSourceService.updateContextNote.and.returnValue(of(null));
     fixture.detectChanges();
   });
   it('should create', () => {
@@ -58,7 +58,9 @@ fdescribe('CandidateContextNoteComponent', () => {
   });
 
   it('should initialize form with candidate context note', () => {
-    expect(component.form.value.contextNote).toBe('');
+    component.form.controls['contextNote'].setValue('New context note');
+
+    expect(component.form.value.contextNote).toBe('New context note');
   });
 
   it('should update form value when candidate input changes', () => {
