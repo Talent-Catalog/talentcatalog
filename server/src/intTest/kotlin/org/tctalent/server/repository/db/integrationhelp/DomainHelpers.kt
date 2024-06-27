@@ -111,6 +111,7 @@ fun getCandidate() =
     contactConsentPartners = true
     contactConsentRegistration = true
     workAbroadNotes = "GOOD FOR TEST"
+    whatsapp = "WHATSAPP"
     status = CandidateStatus.active
     createdBy = systemUser()
     createdDate = OffsetDateTime.now()
