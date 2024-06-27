@@ -42,8 +42,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,6 +61,7 @@ import org.tctalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateLanguage;
@@ -124,9 +124,8 @@ import reactor.core.publisher.Mono;
  * https://trailhead.salesforce.com/content/learn/modules/api_basics/api_basics_overview
  */
 @Service
+@Slf4j
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
-
-    private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
     private static final String apiVersion = "v58.0";
 
     /*
@@ -316,9 +315,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             if (result.isSuccess()) {
                 contact.setId(result.getId());
             } else {
-                log.error("Update failed for candidate "
-                    + candidate.getCandidateNumber()
-                    + ": " + result.getErrorMessage());
+                LogBuilder.builder(log)
+                    .action("CreateOrUpdateContacts")
+                    .message("Update failed for candidate "
+                        + candidate.getCandidateNumber()
+                        + ": " + result.getErrorMessage())
+                    .logError();
             }
             contacts.add(contact);
         }
@@ -357,7 +359,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         SalesforceJobOpp jobOpportunity)
         throws WebClientException, SalesforceException {
 
-        log.info("Looking for opps for " + candidates.size() +" candidates");
+        LogBuilder.builder(log)
+            .action("CreateOrUpdateCandidateOpportunities")
+            .message("Looking for opps for " + candidates.size() +" candidates")
+            .logInfo();
 
         //Find out which candidates already have opportunities (so just need to be updated)
         //and which need opportunities to be created.
@@ -366,7 +371,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Hibernate proxies of entities do not equal the actual entities.
         List<String> candidateNumbersWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
 
-        log.info("Need to create opps for " + candidateNumbersWithNoOpp.size() +" candidates");
+        LogBuilder.builder(log)
+            .action("CreateOrUpdateCandidateOpportunities")
+            .message("Need to create opps for " + candidateNumbersWithNoOpp.size() + " candidates")
+            .logInfo();
 
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
@@ -375,7 +383,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         for (Candidate candidate : candidates) {
             boolean create = candidateNumbersWithNoOpp.contains(candidate.getCandidateNumber());
 
-            log.info( (create ? "Create" : "Update") + " opp for " + candidate.getCandidateNumber());
+            LogBuilder.builder(log)
+                .action("CreateOrUpdateCandidateOpportunities")
+                .message((create ? "Create" : "Update") + " opp for " + candidate.getCandidateNumber())
+                .logInfo();
 
             //Build candidate opportunity request (create or update as needed)
             CandidateOpportunityRecordComposite opportunityRequest =
@@ -449,7 +460,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Now find the ids we actually have for candidate opportunities for this job.
         List<Opportunity> opps = findCandidateOpportunitiesByJobOpps(jobOpportunity.getSfId());
 
-        log.info("Found " + opps.size() + " candidate opps on SF for job " + jobOpportunity.getId());
+        LogBuilder.builder(log)
+            .action("SelectCandidatesWithNoOpp")
+            .message("Found " + opps.size() + " candidate opps on SF for job " + jobOpportunity.getId())
+            .logInfo();
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
@@ -513,7 +527,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         final List<Opportunity> opportunities = findCandidateOpportunities(
             candidateOpportunitySFFieldName + "='" + externalId + "'");
         if (opportunities.size() > 1) {
-            log.error("Multiple SF candidate opportunities for externalId " + externalId);
+            LogBuilder.builder(log)
+                .action("FindCandidateOpportunity")
+                .message("Multiple SF candidate opportunities for externalId " + externalId)
+                .logError();
         }
         return opportunities.size() == 0 ? null : opportunities.get(0);
     }
@@ -809,9 +826,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         for (CandidateOpportunityRecordComposite request : requests) {
             UpsertResult result = results[count++];
             if (!result.isSuccess()) {
-                log.error("Update failed for opportunity "
-                    + request.getName()
-                    + ": " + result.getErrorMessage());
+                LogBuilder.builder(log)
+                    .action("ExecuteCandidateOpportunityRequests")
+                    .message("Update failed for opportunity "
+                        + request.getName()
+                        + ": " + result.getErrorMessage())
+                    .logError();
             }
         }
     }
@@ -1114,21 +1134,34 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             clientResponse = spec.exchange().block();
         } catch (Exception ex) {
             //Do one automatic retry after a wait.
-            log.warn("Problem with Salesforce connection" + ex);
+            LogBuilder.builder(log)
+                .action("ExecuteWithRetry")
+                .message("Problem with Salesforce connection")
+                .logWarn(ex);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                log.warn("Interrupted wait for Salesforce retry", ex);
+                LogBuilder.builder(log)
+                    .action("ExecuteWithRetry")
+                    .message("Interrupted wait for Salesforce retry")
+                    .logWarn(e);
             }
             clientResponse = spec.exchange().block();
         }
         if (clientResponse == null || clientResponse.statusCode() == HttpStatus.UNAUTHORIZED) {
-            log.info("Getting new token from Salesforce");
+            LogBuilder.builder(log)
+                .action("ExecuteWithRetry")
+                .message("Getting new token from Salesforce")
+                .logInfo();
+
             //Get new token and try again
             accessToken = requestAccessToken();
             spec.headers(headers -> headers.put("Authorization",
                 Collections.singletonList("Bearer " + accessToken)));
-            log.info("Connecting to Salesforce with new token");
+            LogBuilder.builder(log)
+                .action("ExecuteWithRetry")
+                .message("Connecting to Salesforce with new token")
+                .logInfo();
             clientResponse = spec.exchange().block();
         }
 

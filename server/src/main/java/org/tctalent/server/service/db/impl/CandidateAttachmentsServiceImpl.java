@@ -40,6 +40,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -189,7 +190,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), source);
             // Copy the file from temp folder in s3 into the candidate's folder on S3
             this.s3ResourceHelper.copyObject(source, destination);
-            log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("CreateCandidateAttachment")
+                .message("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]")
+                .logInfo();
 
             // The location is set to the filename because we can derive it's location from the candidate number
             attachment.setLocation(uniqueFilename);

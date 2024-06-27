@@ -16,8 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import io.jsonwebtoken.lang.Collections;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Status;
@@ -39,8 +40,6 @@ import org.tctalent.server.request.language.level.SearchLanguageLevelRequest;
 import org.tctalent.server.request.language.level.UpdateLanguageLevelRequest;
 import org.tctalent.server.service.db.LanguageLevelService;
 import org.tctalent.server.service.db.TranslationService;
-
-import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class LanguageLevelServiceImpl implements LanguageLevelService {
@@ -72,7 +71,11 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     public Page<LanguageLevel> searchLanguageLevels(SearchLanguageLevelRequest request) {
         Page<LanguageLevel> languageLevels = languageLevelRepository.findAll(
                 LanguageLevelSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + languageLevels.getTotalElements() + " language levels in search");
+        LogBuilder.builder(log)
+            .action("SearchLanguageLevels")
+            .message("Found " + languageLevels.getTotalElements() + " language levels in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(languageLevels.getContent(), "language_level", request.getLanguage());
         }

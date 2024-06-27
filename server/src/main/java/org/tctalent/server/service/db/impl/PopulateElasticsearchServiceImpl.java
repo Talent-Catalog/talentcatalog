@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.service.db.CandidateService;
@@ -53,17 +54,31 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
     public void populateElasticCandidates(
         boolean deleteExisting, boolean createElastic, Integer fromPage, Integer toPage) {
         if (deleteExisting) {
-            log.info("Replace all candidates in Elasticsearch - deleting old candidates");
+
+            LogBuilder.builder(log)
+                .action("PopulateElasticCandidates")
+                .message("Replace all candidates in Elasticsearch - deleting old candidates")
+                .logInfo();
+
             candidateRepository.clearAllCandidateTextSearchIds();
             try {
                 candidateEsRepository.deleteAll();
             } catch (Exception ex) {
-                log.error("ElasticSearch deleteAll failed", ex);
+                LogBuilder.builder(log)
+                    .action("PopulateElasticCandidates")
+                    .message("ElasticSearch deleteAll failed")
+                    .logError(ex);
             }
-            log.info("Old candidates deleted.");
+            LogBuilder.builder(log)
+                .action("PopulateElasticCandidates")
+                .message("Old candidates deleted")
+                .logInfo();
         }
 
-        log.info("Loading candidates.");
+        LogBuilder.builder(log)
+            .action("PopulateElasticCandidates")
+            .message("Loading candidates")
+            .logInfo();
 
         Instant overallStart = Instant.now();
 
@@ -87,23 +102,36 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
             page = page.next();
             int pageNum = page.getPageNumber();
             if (pageNum % 5 == 0) {
-                log.info(count + " candidates (up to page " + (pageNum-1) + ") " + verb
-                        + " to Elasticsearch");
+                LogBuilder.builder(log)
+                    .action("PopulateElasticCandidates")
+                    .message(count + " candidates (up to page " + (pageNum-1) + ") " + verb
+                        + " to Elasticsearch")
+                    .logInfo();
             }
         } while (nUpdated > 0 && (toPage == null || page.getPageNumber() <= toPage));
 
-        log.info("Done: " + count + " candidates " + verb + " to Elasticsearch");
+        LogBuilder.builder(log)
+            .action("PopulateElasticCandidates")
+            .message("Done: " + count + " candidates " + verb + " to Elasticsearch")
+            .logInfo();
 
         Instant overallEnd = Instant.now();
         Duration overallTimeElapsed = Duration.between(overallStart, overallEnd);
-      log.info("Overall the indexing took {} minutes.", overallTimeElapsed.toMinutes());
+
+      LogBuilder.builder(log)
+          .action("PopulateElasticCandidates")
+          .message("Overall the indexing took " + overallTimeElapsed.toMinutes() + " minutes.")
+          .logInfo();
     }
 
     @Async
     @Override
     public void populateCandidateFromElastic() {
 
-        log.info("Loading candidates.");
+        LogBuilder.builder(log)
+            .action("PopulateCandidateFromElastic")
+            .message("Loading candidates")
+            .logInfo();
 
         final int pageSize = 20;
 
@@ -120,10 +148,16 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
             page = page.next();
             int pageNum = page.getPageNumber();
             if (pageNum % 5 == 0) {
-                log.info(count + " candidates (" + pageNum + " pages) updated.");
+                LogBuilder.builder(log)
+                    .action("PopulateCandidateFromElastic")
+                    .message(count + " candidates (" + pageNum + " pages) updated.")
+                    .logInfo();
             }
         } while (nUpdated > 0);
 
-        log.info("Done: " + count + " candidates updated");
+        LogBuilder.builder(log)
+            .action("PopulateCandidateFromElastic")
+            .message("Done: " + count + " candidates updated")
+            .logInfo();
     }
 }

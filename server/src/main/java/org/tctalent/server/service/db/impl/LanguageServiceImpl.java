@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Language;
@@ -231,7 +232,11 @@ public class LanguageServiceImpl implements LanguageService {
     public Page<Language> searchLanguages(SearchLanguageRequest request) {
         Page<Language> languages = languageRepository.findAll(
                 LanguageSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + languages.getTotalElements() + " languages in search");
+        LogBuilder.builder(log)
+            .action("SearchLanguages")
+            .message("Found " + languages.getTotalElements() + " languages in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(languages.getContent(), "language", request.getLanguage());
         }

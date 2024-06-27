@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -48,8 +49,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -75,6 +74,7 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -140,9 +140,8 @@ import org.tctalent.server.service.db.email.EmailHelper;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SavedSearchServiceImpl implements SavedSearchService {
-
-    private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
@@ -206,7 +205,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearches = savedSearchRepository.findAll(
                 SavedSearchSpecification.buildSearchQuery(request, loggedInUser));
         }
-        log.info("Found " + savedSearches.size() + " savedSearches in search");
+        LogBuilder.builder(log)
+            .action("SearchSavedSearches")
+            .message("Found " + savedSearches.size() + " savedSearches in search")
+            .logInfo();
 
         for (SavedSearch savedSearch: savedSearches) {
             savedSearch.parseType();
@@ -237,7 +239,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     SavedSearchSpecification.buildSearchQuery(request, loggedInUser),
                 request.getPageRequest());
         }
-        log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
+        LogBuilder.builder(log)
+            .action("SearchSavedSearches")
+            .message("Found " + savedSearches.getTotalElements() + " savedSearches in search")
+            .logInfo();
 
         for (SavedSearch savedSearch: savedSearches) {
             savedSearch.parseType();
@@ -327,7 +332,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 candidateIds.add(candidate.getId());
             }
         }
-        log.info("Found " + candidateIds.size() + " candidates in search");
+        LogBuilder.builder(log)
+            .searchId(savedSearchId)
+            .action("SearchCandidates")
+            .message("Found " + candidateIds.size() + " candidates in search")
+            .logInfo();
+
         return candidateIds;
     }
 
@@ -615,7 +625,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
                 return savedSearchRepository.save(savedSearch);
             } else {
-                log.warn("Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName());
+                LogBuilder.builder(log)
+                    .searchId(savedSearch.getId())
+                    .action("UpdateSavedSearch")
+                    .message("Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName())
+                    .logWarn();
+
                 return savedSearch;
             }
         }
@@ -1457,7 +1472,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNull();
             Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
 
-            log.info("Notify watchers: running " + searches.size() + " searches");
+            LogBuilder.builder(log)
+                .action("notifySearchWatchers")
+                .message("Notify watchers: running " + searches.size() + " searches")
+                .logInfo();
 
             int count = 0;
 
@@ -1470,7 +1488,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
                 count++;
                 currentSearch = savedSearch.getName() + " (" + savedSearch.getId() + ")";
-                log.info("Running search " + count + ": " + currentSearch);
+
+                LogBuilder.builder(log)
+                    .action("notifySearchWatchers")
+                    .message("Running search " + count + ": " + currentSearch)
+                    .logInfo();
 
                 SearchCandidateRequest searchCandidateRequest =
                     convertToSearchCandidateRequest(savedSearch);
@@ -1508,11 +1530,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 String s = savedSearches.stream()
                     .map(SavedSearch::getName)
                     .collect(Collectors.joining("/"));
-                log.info("Tell user " + userId + " about searches " + s);
+
+                LogBuilder.builder(log)
+                    .action("notifySearchWatchers")
+                    .message("Tell user " + userId + " about searches " + s)
+                    .logInfo();
+
                 User user = this.userRepository.findById(userId).orElse(null);
                 if (user == null) {
                     final String mess = "Unknown user watcher id " + userId + " watching searches " + s;
-                    log.warn(mess);
+                    LogBuilder.builder(log)
+                        .action("notifySearchWatchers")
+                        .message(mess)
+                        .logWarn();
+
                     emailHelper.sendAlert(mess);
                 } else {
                     emailHelper.sendWatcherEmail(user, savedSearches);
@@ -1520,7 +1551,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         } catch (Exception ex) {
             String mess = "Watcher notification failure (" + currentSearch + ")";
-            log.error(mess, ex);
+            LogBuilder.builder(log)
+                .action("notifySearchWatchers")
+                .message(mess)
+                .logError(ex);
+
             emailHelper.sendAlert(mess, ex);
         }
     }
@@ -1720,8 +1755,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            log.info("Elasticsearch query:\n" + boolQueryBuilder);
-            log.info("Elasticsearch sort:\n" + req);
+            LogBuilder.builder(log)
+                .action("doSearchCandidates")
+                .message("Elasticsearch query:\n" + boolQueryBuilder)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("doSearchCandidates")
+                .message("Elasticsearch sort:\n" + req)
+                .logInfo();
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
@@ -1761,7 +1803,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
         }
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        LogBuilder.builder(log)
+            .action("doSearchCandidates")
+            .message("Found " + candidates.getTotalElements() + " candidates in search")
+            .logInfo();
+
         return candidates;
     }
 

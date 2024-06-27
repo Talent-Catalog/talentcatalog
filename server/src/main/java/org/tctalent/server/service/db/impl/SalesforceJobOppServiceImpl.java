@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Opportunity;
@@ -102,7 +103,11 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             if (jobOpp == null) {
                 //Create one if none exists
                 jobOpp = createJobOpp(sfId);
-                log.info("Created job " + jobOpp.getName() + "(" + jobOpp.getId() + ")");
+
+                LogBuilder.builder(log)
+                    .action("CreateJobOppFromId")
+                    .message("Created job " + jobOpp.getName() + "(" + jobOpp.getId() + ")")
+                    .logInfo();
             }
         }
         return jobOpp;
@@ -136,12 +141,19 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     @Override
     public void updateJobs(Collection<String> sfIds) throws SalesforceException {
         if (sfIds != null && !sfIds.isEmpty()) {
-            log.info("Updating job opportunities from Salesforce");
+            LogBuilder.builder(log)
+                .action("UpdateJobs")
+                .message("Updating job opportunities from Salesforce")
+                .logInfo();
 
             //Get SF opportunities from SF that we will use to do the updates
             List<Opportunity> ops = salesforceService.fetchJobOpportunitiesByIdOrOpenOnSF(sfIds);
 
-            log.info("Loaded " + ops.size() + " job opportunities from Salesforce");
+            LogBuilder.builder(log)
+                .action("UpdateJobs")
+                .message("Loaded " + ops.size() + " job opportunities from Salesforce")
+                .logInfo();
+
             int count = 0;
             int updates = 0;
             for (Opportunity op : ops) {
@@ -156,10 +168,16 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
                 }
                 count++;
                 if (count%100 == 0) {
-                    log.info("Processed " + count + " job opportunities from Salesforce");
+                    LogBuilder.builder(log)
+                        .action("UpdateJobs")
+                        .message("Processed " + count + " job opportunities from Salesforce")
+                        .logInfo();
                 }
             }
-            log.info("Updated " + updates + " job opportunities from Salesforce");
+            LogBuilder.builder(log)
+                .action("UpdateJobs")
+                .message("Updated " + updates + " job opportunities from Salesforce")
+                .logInfo();
         }
     }
 
@@ -183,7 +201,11 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
         try {
             stage = JobOpportunityStage.textToEnum(op.getStageName());
         } catch (IllegalArgumentException e) {
-            log.error("Error decoding stage in update: " + op.getStageName(), e);
+            LogBuilder.builder(log)
+                .action("UpdateJobOpp")
+                .message("Error decoding stage in update: " + op.getStageName())
+                .logError(e);
+
             stage = JobOpportunityStage.prospect;
         }
         salesforceJobOpp.setStage(stage);
@@ -193,7 +215,10 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             try {
                 salesforceJobOpp.setNextStepDueDate(LocalDate.parse(nextStepDueDate));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding nextStepDueDate: " + nextStepDueDate + " in job op " + op.getName());
+                LogBuilder.builder(log)
+                    .action("UpdateJobOpp")
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate + " in job op " + op.getName())
+                    .logError(ex);
             }
         }
 
@@ -211,7 +236,10 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
                     }
                 }
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding createdDate from SF: " + createdDate + " in job op " + op.getName());
+                LogBuilder.builder(log)
+                    .action("UpdateJobOpp")
+                    .message("Error decoding createdDate from SF: " + createdDate + " in job op " + op.getName())
+                    .logError(ex);
             }
         }
 
@@ -221,7 +249,10 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
                 //Parse special non-standard Salesforce offset date time format
                 salesforceJobOpp.setUpdatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(lastModifiedDate));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding lastModifiedDate: " + lastModifiedDate + " in job op " + op.getName());
+                LogBuilder.builder(log)
+                    .action("UpdateJobOpp")
+                    .message("Error decoding lastModifiedDate: " + lastModifiedDate + " in job op " + op.getName())
+                    .logError(ex);
             }
         }
     }

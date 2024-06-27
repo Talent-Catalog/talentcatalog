@@ -16,9 +16,29 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
@@ -35,6 +55,7 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
@@ -87,29 +108,8 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
-
 @Service
+@Slf4j
 public class JobServiceImpl implements JobService {
 
     /**
@@ -143,8 +143,6 @@ public class JobServiceImpl implements JobService {
     private final SavedSearchService savedSearchService;
     private final JobOppIntakeService jobOppIntakeService;
     private final ChatPostService chatPostService;
-
-    private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     public JobServiceImpl(
             AuthService authService, CandidateOpportunityService candidateOpportunityService,
@@ -528,7 +526,11 @@ public class JobServiceImpl implements JobService {
     @Override
     public void loadJobOppsAndCandidateOpps() {
 
-        log.info("Loading candidate opportunities from Salesforce");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("LoadJobOppsAndCandidateOpps")
+            .message("Loading candidate opportunities from Salesforce")
+            .logInfo();
 
         final int limit = 100;
 
@@ -537,19 +539,34 @@ public class JobServiceImpl implements JobService {
         int nOpps = -1;
         while (nOpps != 0) {
 
-            log.info("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId));
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadJobOppsAndCandidateOpps")
+                .message("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId))
+                .logInfo();
+
             List<Opportunity> ops = salesforceService.findCandidateOpportunities(
                 lastId == null ? null : "Id > '" + lastId + "'", limit);
             nOpps = ops.size();
             totalOpps += nOpps;
-            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps);
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadJobOppsAndCandidateOpps")
+                .message("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps)
+                .logInfo();
+
             if (nOpps > 0) {
                 lastId = ops.get(nOpps - 1).getId();
 
                 for (Opportunity op : ops) {
                     String jobOppId = op.getParentOpportunityId();
                     if (jobOppId == null) {
-                        log.warn("Candidate opportunity without parent job opp: " + op.getName());
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("LoadJobOppsAndCandidateOpps")
+                            .message("Candidate opportunity without parent job opp: " + op.getName())
+                            .logWarn();
                     } else {
                         CandidateOpportunity candidateOpp =
                             candidateOpportunityService.loadCandidateOpportunity(op);
@@ -921,7 +938,13 @@ public class JobServiceImpl implements JobService {
                 //Log no closing logic
                 String errorMessage = "No closing logic for job stage " + jobCloseStage +
                     " of opportunity " + job.getName() + " (" + job.getId() + ")";
-                log.error(errorMessage);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("CloseUnclosedCandidateOppsForJob")
+                    .message(errorMessage)
+                    .logError();
+
                 emailHelper.sendAlert(errorMessage);
             } else {
                 for (CandidateOpportunity activeOpp : activeOpps) {
@@ -929,9 +952,13 @@ public class JobServiceImpl implements JobService {
                         activeOpp.getStage());
                     if (closingStage == null) {
                         //Missing logic
-                        log.warn(
-                            "Closing logic missing case for job closing stage " + jobCloseStage +
-                                " and candidate in stage " + activeOpp.getStage());
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("CloseUnclosedCandidateOppsForJob")
+                            .message("Closing logic missing case for job closing stage " + jobCloseStage +
+                                " and candidate in stage " + activeOpp.getStage())
+                            .logWarn();
+
                         //Default to closing candidate opp as notFitForRole
                         closingStage = CandidateOpportunityStage.notFitForRole;
                     }
@@ -953,10 +980,13 @@ public class JobServiceImpl implements JobService {
                         stageListEntry.getValue(), job, params);
                 }
 
-                log.info("Closed opps for candidates going for job  " + job.getId() + ": "
-                    + activeOpps.stream().map(opp -> opp.getCandidate().getCandidateNumber())
-                    .collect(Collectors.joining(",")));
-
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("CloseUnclosedCandidateOppsForJob")
+                    .message("Closed opps for candidates going for job  " + job.getId() + ": "
+                        + activeOpps.stream().map(opp -> opp.getCandidate().getCandidateNumber())
+                        .collect(Collectors.joining(",")))
+                    .logInfo();
             }
         }
     }

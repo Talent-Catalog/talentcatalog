@@ -22,9 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
@@ -50,9 +50,8 @@ import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.util.locale.LocaleHelper;
 
 @Service
+@Slf4j
 public class CountryServiceImpl implements CountryService, InitializingBean {
-
-    private static final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
 
     @Value("${tbb.destinations}")
     private String[] tbbDestinations;
@@ -82,8 +81,11 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
         for (String tbbDestination : tbbDestinations) {
             Country country = countryRepository.findByNameIgnoreCase(tbbDestination);
             if (country == null) {
-                log.error("Error in application.yml file. See tbb.destinations. " +
-                        "No country found called " + tbbDestination);
+                LogBuilder.builder(log)
+                    .action("CountryServiceImpl")
+                    .message("Error in application.yml file. See tbb.destinations. " +
+                            "No country found called " + tbbDestination)
+                    .logError();
             } else {
                 tbbDestinationCountries.add(country);
             }
@@ -136,7 +138,13 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     public Page<Country> searchCountries(SearchCountryRequest request) {
         Page<Country> countries = countryRepository.findAll(
                 CountrySpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + countries.getTotalElements() + " countries in search");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("searchCountries")
+            .message("Found " + countries.getTotalElements() + " countries in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(countries.getContent(), "country", request.getLanguage());
         }

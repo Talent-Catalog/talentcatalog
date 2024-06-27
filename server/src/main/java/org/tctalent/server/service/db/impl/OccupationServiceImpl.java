@@ -16,8 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import io.jsonwebtoken.lang.Collections;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +29,7 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.NotImplementedException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.Status;
@@ -40,8 +41,6 @@ import org.tctalent.server.request.occupation.SearchOccupationRequest;
 import org.tctalent.server.request.occupation.UpdateOccupationRequest;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.TranslationService;
-
-import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class OccupationServiceImpl implements OccupationService {
@@ -72,7 +71,12 @@ public class OccupationServiceImpl implements OccupationService {
     public Page<Occupation> searchOccupations(SearchOccupationRequest request) {
         Page<Occupation> occupations = occupationRepository.findAll(
                 OccupationSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + occupations.getTotalElements() + " occupations in search");
+
+        LogBuilder.builder(log)
+            .action("SearchOccupations")
+            .message("Found " + occupations.getTotalElements() + " occupations in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(occupations.getContent(), "occupation", request.getLanguage());
         }

@@ -16,6 +16,11 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,11 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.OccupationRepository;
@@ -34,16 +44,6 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOccupationService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateOccupation;
-import org.tctalent.server.model.db.Occupation;
-import org.tctalent.server.model.db.User;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -182,17 +182,31 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         Map<Long, CandidateOccupation> map = candidateOccupations.stream().collect( Collectors.toMap(CandidateOccupation::getId,
                 Function.identity()) );
 
-        log.info("Update candidate occupations request" + request.getUpdates());
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateCandidateOccupations")
+            .message("Update candidate occupations request" + request.getUpdates())
+            .logInfo();
 
         for (UpdateCandidateOccupationRequest update : request.getUpdates()) {
             /* Check if candidate occupation has been previously saved */
             CandidateOccupation candidateOccupation = update.getId() != null ? map.get(update.getId()) : null;
             if (candidateOccupation != null){
                 if(update.getOccupationId() == null) {
-                    log.warn("NULL-AVOID: update.getOccupationId. Updating " + update.getId() + ", for candidate id: " + candidate.getId());
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("UpdateCandidateOccupations")
+                        .message("NULL-AVOID: update.getOccupationId. Updating " + update.getId() + ", for candidate id: " + candidate.getId())
+                        .logWarn();
+
                     emailHelper.sendAlert("Avoided Null Pointer exception, check logs for warning. Search NULL-AVOID to find.");
                 } else if (candidateOccupation.getOccupation() == null) {
-                    log.warn("NULL-AVOID: candidateOccupation.getOccupation. Updating " + update.getId() + ", for candidate id: " + candidate.getId());
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("UpdateCandidateOccupations")
+                        .message("NULL-AVOID: candidateOccupation.getOccupation. Updating " + update.getId() + ", for candidate id: " + candidate.getId())
+                        .logWarn();
+
                     emailHelper.sendAlert("Avoided Null Pointer exception, check logs for warning. Search NULL-AVOID to find.");
                 } else {
                     /* Check if the occupation has changed on existing candidate occupation and update */
@@ -200,7 +214,12 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                         Occupation occupation = occupationRepository.findById(update.getOccupationId())
                                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
                         candidateOccupation.setOccupation(occupation);
-                        log.info("Set new Occupation to on existing candidate occupation " + occupation.getName());
+
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("UpdateCandidateOccupations")
+                            .message("Set new Occupation to an existing candidate occupation " + occupation.getName())
+                            .logInfo();
                     }
                     candidateOccupation.setYearsExperience(update.getYearsExperience());
                 }
@@ -215,16 +234,32 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 if (candidateOccupation != null) {
                     // If candidate has candidateOccupation with same occupation, just update that one.
                     candidateOccupation.setYearsExperience(update.getYearsExperience());
-                    log.info("Updated existing candidate occupation " + candidateOccupation.getOccupation().getName());
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("UpdateCandidateOccupations")
+                        .message("Updated existing candidate occupation " + candidateOccupation.getOccupation().getName())
+                        .logInfo();
                 } else {
                     // If candidate has not got that occupation, create new occupation.
                     candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
-                    log.info("Created new candidate occupation " + candidateOccupation.getOccupation().getName());
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("UpdateCandidateOccupations")
+                        .message("Created new candidate occupation " + candidateOccupation.getOccupation().getName())
+                        .logInfo();
                 }
 
             }
             updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
-            log.info("Saved candidate " + candidate.getId() + " occupation " + candidateOccupation.getOccupation().getName());
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("UpdateCandidateOccupations")
+                .message("Saved candidate " + candidate.getId() + " occupation " + candidateOccupation.getOccupation().getName())
+                .logInfo();
+
             updatedOccupationIds.add(candidateOccupation.getId());
         }
 
