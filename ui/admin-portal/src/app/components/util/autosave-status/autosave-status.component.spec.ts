@@ -13,21 +13,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {AutosaveStatusComponent} from './autosave-status.component';
-
-describe('AutosaveStatusComponent', () => {
+import {AutosaveStatusComponent} from "./autosave-status.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {By} from '@angular/platform-browser';
+fdescribe('AutosaveStatusComponent', () => {
   let component: AutosaveStatusComponent;
   let fixture: ComponentFixture<AutosaveStatusComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AutosaveStatusComponent ]
-    })
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AutosaveStatusComponent],
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AutosaveStatusComponent);
@@ -37,5 +34,47 @@ describe('AutosaveStatusComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should display typing icon when typing is true', () => {
+    component.typing = true;
+    component.saving = false;
+    fixture.detectChanges();
+
+    const typingIcon = fixture.debugElement.query(By.css('.fa-keyboard'));
+    const savingIcon = fixture.debugElement.query(By.css('.fa-spinner'));
+    const savedIcon = fixture.debugElement.query(By.css('.fa-save'));
+
+    expect(typingIcon).toBeTruthy();
+    expect(savingIcon).toBeFalsy();
+    expect(savedIcon).toBeFalsy();
+  });
+
+  it('should display saving icon when saving is true', () => {
+    component.typing = false;
+    component.saving = true;
+    fixture.detectChanges();
+
+    const typingIcon = fixture.debugElement.query(By.css('.fa-keyboard'));
+    const savingIcon = fixture.debugElement.query(By.css('.fa-spinner'));
+    const savedIcon = fixture.debugElement.query(By.css('.fa-save'));
+
+    expect(typingIcon).toBeFalsy();
+    expect(savingIcon).toBeTruthy();
+    expect(savedIcon).toBeFalsy();
+  });
+
+  it('should display saved icon when not typing and not saving', () => {
+    component.typing = false;
+    component.saving = false;
+    fixture.detectChanges();
+
+    const typingIcon = fixture.debugElement.query(By.css('.fa-keyboard'));
+    const savingIcon = fixture.debugElement.query(By.css('.fa-spinner'));
+    const savedIcon = fixture.debugElement.query(By.css('.fa-save'));
+
+    expect(typingIcon).toBeFalsy();
+    expect(savingIcon).toBeFalsy();
+    expect(savedIcon).toBeTruthy();
   });
 });
