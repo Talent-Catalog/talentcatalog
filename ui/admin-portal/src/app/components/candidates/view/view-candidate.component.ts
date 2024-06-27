@@ -55,6 +55,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
   activeTabId: string;
   loading: boolean;
+  loadingButton: boolean;
   savingList: boolean;
   loadingError: boolean;
   error;
@@ -212,7 +213,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   createChat() {
-    this.loading = true;
+    this.loadingButton = true;
     this.error = null;
 
     const candidateProspectChatRequest: CreateChatRequest = {
