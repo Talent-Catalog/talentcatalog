@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -30,8 +30,6 @@ import {FileSelectorComponent} from "../../util/file-selector/file-selector.comp
 })
 export class CreateUpdatePostComponent implements OnInit {
   @Input() chat: JobChat;
-
-  @ViewChild('editorPickerSpan') editorPickerSpan: ElementRef;
 
   error: any;
   saving: any;
@@ -124,10 +122,10 @@ export class CreateUpdatePostComponent implements OnInit {
     this.quillEditorRef.setSelection(index + 2, 0);
   }
 
-  // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
-  public onClickEmojiBtn() {
+  // Toggles the emoji picker on or off and focuses the caret.
+  public toggleEmojiPicker() {
     this.emojiPickerVisible = !this.emojiPickerVisible;
-    // If closing the picker, focus the caret in editor.
+    // When closing, focus the caret in editor.
     if(!this.emojiPickerVisible) {
       const index: number = this.quillEditorRef.selection.savedRange.index;
       this.quillEditorRef.setSelection(index, 0);

@@ -22,7 +22,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateReactionRequest {
+public class AddReactionRequest {
 
     @NotBlank
     private String emoji;

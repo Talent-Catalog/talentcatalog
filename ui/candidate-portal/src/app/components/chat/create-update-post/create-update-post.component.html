@@ -41,7 +41,7 @@
         <button
           id="emojiBtn"
           [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
-          (click)="onClickEmojiBtn()">
+          (click)="toggleEmojiPicker()">
           <fa-icon icon="face-smile" size="xs"></fa-icon>
         </button>
       </div>
@@ -66,4 +66,4 @@
   [perLine]="8"
 ></emoji-mart>
 
-<div *ngIf="emojiPickerVisible" class="overlay"></div>
+<div *ngIf="emojiPickerVisible" class="overlay" (click)="toggleEmojiPicker()"></div>
