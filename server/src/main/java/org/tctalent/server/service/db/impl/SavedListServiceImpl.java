@@ -52,6 +52,7 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.ExportColumn;
@@ -229,7 +230,10 @@ public class SavedListServiceImpl implements SavedListService {
 
             deactivateIncompleteCandidateListTasks(savedList, candidate);
         } catch (Exception ex) {
-            log.warn("Could not delete candidate saved list " + csl.getId(), ex);
+            LogBuilder.builder(log)
+                .action("RemoveCandidateFromList")
+                .message("Could not delete candidate saved list " + csl.getId())
+                .logWarn(ex);
         }
     }
 

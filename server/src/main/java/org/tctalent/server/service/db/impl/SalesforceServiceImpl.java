@@ -503,7 +503,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                         //TBB candidate. There should only be one.
                         final String msg = "Candidate number " + candidateNumber +
                             " has more than one Contact record on Salesforce";
-                        log.warn(msg);
+
+                        LogBuilder.builder(log)
+                            .action("FindContact")
+                            .message(msg)
+                            .logWarn();
+
                         if (!alertedDuplicateSFRecord) {
                             emailHelper.sendAlert(msg);
                             alertedDuplicateSFRecord = true;

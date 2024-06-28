@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.PartnerJobRelation;
@@ -143,7 +144,10 @@ public class PartnerServiceImpl implements PartnerService {
             partner = partnerRepository.findByAbbreviation(partnerAbbreviation).orElse(null);
             if (partner == null) {
                 //Log a warning.
-                log.warn("Could not find partner matching abbreviation: " + partnerAbbreviation);
+                LogBuilder.builder(log)
+                    .action("GetPartnerFromAbbreviation")
+                    .message("Could not find partner matching abbreviation: " + partnerAbbreviation)
+                    .logWarn();
             }
         }
         return partner;

@@ -29,6 +29,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Country;
@@ -101,8 +102,11 @@ public class HelpLinkServiceImpl implements HelpLinkService {
             if (standardDocLink != null) {
                 helpLinks.add(standardDocLink);
             } else {
-               log.warn("Could not find standard stage doc " +
-                   (caseStage != null ? caseStage : jobStage));
+               LogBuilder.builder(log)
+                   .action("FetchHelp")
+                   .message("Could not find standard stage doc " +
+                       (caseStage != null ? caseStage : jobStage))
+                   .logWarn();
             }
         }
 

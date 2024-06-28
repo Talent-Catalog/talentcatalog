@@ -110,7 +110,10 @@ public class LanguageServiceImpl implements LanguageService {
         for (Country country : countries) {
             String value = xlCountry.get(country.getIsoCode());
             if (value == null) {
-                log.warn("Missing translation for country " + country);
+                LogBuilder.builder(log)
+                    .action("AddSystemLanguage")
+                    .message("Missing translation for country " + country)
+                    .logWarn();
             } else {
                 request.setObjectId(country.getId());
                 request.setValue(value);
@@ -129,7 +132,10 @@ public class LanguageServiceImpl implements LanguageService {
         for (Language language : languages) {
             String value = xlLang.get(language.getIsoCode());
             if (value == null) {
-                log.warn("Missing translation for language " + language);
+                LogBuilder.builder(log)
+                    .action("AddSystemLanguage")
+                    .message("Missing translation for language " + language)
+                    .logWarn();
             } else {
                 request.setObjectId(language.getId());
                 request.setValue(value);
