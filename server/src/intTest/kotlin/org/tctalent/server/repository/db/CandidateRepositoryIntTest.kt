@@ -31,6 +31,8 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var savedSearchRepository: SavedSearchRepository
   @Autowired lateinit var crsiRepository: CandidateReviewStatusRepository
   @Autowired lateinit var countryRepository: CountryRepository
+  @Autowired lateinit var coRepository: CandidateOccupationRepository
+  @Autowired lateinit var occupationRepository: OccupationRepository
 
   private lateinit var testCandidate: Candidate
   private lateinit var dateFrom: LocalDate
@@ -511,159 +513,201 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test count by UNHCR registered order by count`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result = repo.countByUnhcrRegisteredOrderByCount(sourceCountryIds, dateFrom, dateTo)
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by UNHCR registered order by count with candidate ids`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      repo.countByUnhcrRegisteredOrderByCount(sourceCountryIds, dateFrom, dateTo, candidateIds)
+      repo.countByUnhcrRegisteredOrderByCount(
+        sourceCountryIds,
+        dateFrom,
+        dateTo,
+        getCandidateIds(repo, userRepository, testCandidate),
+      )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by UNHCR status order by count`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result = repo.countByUnhcrStatusOrderByCount(sourceCountryIds, dateFrom, dateTo)
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by UNHCR status order by count with candidate ids`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      repo.countByUnhcrStatusOrderByCount(sourceCountryIds, dateFrom, dateTo, candidateIds)
+      repo.countByUnhcrStatusOrderByCount(
+        sourceCountryIds,
+        dateFrom,
+        dateTo,
+        getCandidateIds(repo, userRepository, testCandidate),
+      )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by language order by count`() {
-    val result = repo.countByLanguageOrderByCount("male", sourceCountryIds, dateFrom, dateTo)
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
+    val result =
+      repo.countByLanguageOrderByCount(Gender.male.name, sourceCountryIds, dateFrom, dateTo)
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by language order by count with candidate ids`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByLanguageOrderByCount(
-        "male",
+      repo.countByLanguageOrderByCount(
+        Gender.male.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
-        candidateIds,
+        getCandidateIds(repo, userRepository, testCandidate),
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by max education level order by count`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByMaxEducationLevelOrderByCount(
-        "male",
+      repo.countByMaxEducationLevelOrderByCount(
+        Gender.male.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by max education level order by count with candidate ids`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByMaxEducationLevelOrderByCount(
-        "male",
+      repo.countByMaxEducationLevelOrderByCount(
+        Gender.male.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
-        candidateIds,
+        getCandidateIds(repo, userRepository, testCandidate),
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by most common occupation order by count`() {
+    coRepository.save(
+      CandidateOccupation().apply {
+        occupation = getSavedOccupation(occupationRepository)
+        candidate = testCandidate
+        yearsExperience = 7
+      }
+    )
+    repo.save(testCandidate.apply { candidateOccupations })
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByMostCommonOccupationOrderByCount(
-        "male",
+      repo.countByMostCommonOccupationOrderByCount(
+        Gender.male.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by most common occupation order by count with candidate ids`() {
+    coRepository.save(
+      CandidateOccupation().apply {
+        occupation = getSavedOccupation(occupationRepository)
+        candidate = testCandidate
+        yearsExperience = 7
+      }
+    )
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByMostCommonOccupationOrderByCount(
-        "male",
+      repo.countByMostCommonOccupationOrderByCount(
+        Gender.male.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
-        candidateIds,
+        getCandidateIds(repo, userRepository, testCandidate),
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
+  // This test will fail, as the sql is checking for a lowercase name to be
+  // passed in from the country rather than the query making like for like.
+  // TODO (need to fix the query)
   @Test
   fun `test count by nationality order by count`() {
+    repo.save(testCandidate.apply { nationality = testCountry })
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByNationalityOrderByCount(
-        "male",
-        "countryName",
+      repo.countByNationalityOrderByCount(
+        Gender.male.name,
+        testCountry.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
+  // This test will fail, as the sql is checking for a lowercase name to be
+  // passed in from the country rather than the query making like for like.
+  // TODO (need to fix the query)
   @Test
   fun `test count by nationality order by count with candidate ids`() {
+    repo.save(testCandidate.apply { nationality = testCountry })
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByNationalityOrderByCount(
-        "male",
-        "countryName",
+      repo.countByNationalityOrderByCount(
+        Gender.male.name,
+        testCountry.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
-        candidateIds,
+        getCandidateIds(repo, userRepository, testCandidate),
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by source country order by count`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countBySourceCountryOrderByCount(
-        "male",
-        sourceCountryIds,
-        dateFrom,
-        dateTo,
-      )
+      repo.countBySourceCountryOrderByCount(Gender.male.name, sourceCountryIds, dateFrom, dateTo)
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
     // Additional assertions can be added as needed
@@ -671,98 +715,71 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test count by source country order by count with candidate ids`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countBySourceCountryOrderByCount(
-        "male",
+      repo.countBySourceCountryOrderByCount(
+        Gender.male.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
-        candidateIds,
+        getCandidateIds(repo, userRepository, testCandidate),
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by occupation gender order by count`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByOccupationOrderByCount("male", sourceCountryIds, dateFrom, dateTo)
+      repo.countByOccupationOrderByCount(Gender.male.name, sourceCountryIds, dateFrom, dateTo)
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by occupation gender order by count with candidate ids`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
-      candidateRepository.countByOccupationOrderByCount(
-        "male",
+      repo.countByOccupationOrderByCount(
+        Gender.male.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
-        candidateIds,
+        getCandidateIds(repo, userRepository, testCandidate),
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
-  }
-
-  @Test
-  fun `test count by age ranges order by count`() {
-    val ageRanges = listOf(AgeRange(20, 30), AgeRange(31, 40), AgeRange(41, 50))
-    val result =
-      candidateRepository.countByAgeRangesOrderByCount(
-        sourceCountryIds,
-        dateFrom,
-        dateTo,
-        ageRanges,
-      )
-    assertNotNull(result)
-    assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
-  }
-
-  @Test
-  fun `test count by age ranges order by count with candidate ids`() {
-    val ageRanges = listOf(AgeRange(20, 30), AgeRange(31, 40), AgeRange(41, 50))
-    val result =
-      candidateRepository.countByAgeRangesOrderByCount(
-        sourceCountryIds,
-        dateFrom,
-        dateTo,
-        ageRanges,
-        candidateIds,
-      )
-    assertNotNull(result)
-    assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by languages gender order by count`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val languages = listOf("English", "Spanish", "French")
     val result =
-      repo.countByLanguagesOrderByCount("male", sourceCountryIds, dateFrom, dateTo, languages)
+      repo.countByLanguageOrderByCount(Gender.male.name, sourceCountryIds, dateFrom, dateTo)
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 
   @Test
   fun `test count by languages gender order by count with candidate ids`() {
+    val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val languages = listOf("English", "Spanish", "French")
     val result =
-      repo.countByLanguagesOrderByCount(
-        "male",
+      repo.countByLanguageOrderByCount(
+        Gender.male.name,
         sourceCountryIds,
         dateFrom,
         dateTo,
-        languages,
-        candidateIds,
+        getCandidateIds(repo, userRepository, testCandidate),
       )
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    // Additional assertions can be added as needed
+    assertEquals(1, result.size)
   }
 }

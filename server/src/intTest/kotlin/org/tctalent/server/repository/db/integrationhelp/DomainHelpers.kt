@@ -113,6 +113,7 @@ fun getCandidate() =
     workAbroadNotes = "GOOD FOR TEST%04d".format(Random.nextInt(10000))
     whatsapp = "WHATSAPP%04d".format(Random.nextInt(10000))
     status = CandidateStatus.active
+    unhcrStatus = UnhcrStatus.Unsure
     gender = Gender.male
     linkedInLink = "LINKEDIN"
     dob = OffsetDateTime.now().minusYears(35).toLocalDate()
@@ -860,3 +861,5 @@ fun getCandidateIds(
     )
     .map { it.id }
     .toMutableSet()
+
+fun getCandidateOccupation() = CandidateOccupation().apply { yearsExperience = 5 }
