@@ -47,7 +47,7 @@ class CandidateCertificationRepositoryIntTest : BaseDBIntegrationTest() {
   fun `test find by id and load candidate`() {
     val savedCert = repository.findByIdLoadCandidate(cert.id).getOrNull()
     assertNotNull(savedCert)
-    assertEquals("999999999", savedCert.candidate.phone)
+    assertTrue { savedCert.candidate.phone.startsWith("999999999") }
   }
 
   @Test

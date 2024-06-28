@@ -438,7 +438,7 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
     val result =
       repo.countByStatusOrderByCount(
         Gender.male.name,
-        testCountry.name,
+        testCountry.name.lowercase(),
         listOf(testCountry.id),
         dateFrom,
         dateTo,
@@ -457,7 +457,7 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
     val result =
       repo.countByStatusOrderByCount(
         Gender.male.name,
-        testCountry.name,
+        testCountry.name.lowercase(),
         sourceIds,
         dateFrom,
         dateTo,
@@ -478,7 +478,7 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
     val result =
       repo.countByReferrerOrderByCount(
         Gender.male.name,
-        testCountry.name,
+        testCountry.name.lowercase(),
         sourceIds,
         dateFrom,
         dateTo,
@@ -498,7 +498,7 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
     val result =
       repo.countByReferrerOrderByCount(
         Gender.male.name,
-        testCountry.name,
+        testCountry.name.lowercase(),
         sourceIds,
         dateFrom,
         dateTo,
