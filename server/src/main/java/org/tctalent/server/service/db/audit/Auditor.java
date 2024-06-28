@@ -17,31 +17,29 @@
 package org.tctalent.server.service.db.audit;
 
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AbstractDomainObject;
 import org.tctalent.server.model.db.AuditLog;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.AuditLogRepository;
 import org.tctalent.server.security.AuthService;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 @Aspect
 @Component
+@Slf4j
 public class Auditor {
-
-    private static final Logger log = LoggerFactory.getLogger(Auditor.class);
 
     private final AuditLogRepository auditLogRepository;
     private final AuthService authService;
@@ -82,7 +80,11 @@ public class Auditor {
             // error prevention
             if (objectRef == null)
             {
-                log.warn("unable to create audit log entry for: audit=" + audit + ", inputValue=" + inputValue + ", returnValue=" + returnValue);
+                LogBuilder.builder(log)
+                    .action("AuditLog")
+                    .message("Unable to create audit log entry for: audit=" + audit + ", inputValue=" + inputValue + ", returnValue=" + returnValue)
+                    .logWarn();
+
                 return;
             }
 
@@ -143,7 +145,10 @@ public class Auditor {
 
 
         } catch (Exception e) {
-            log.warn("unable to log audit event '" + audit + "' for input '" + inputValue + "' and return '" + returnValue + "'", e);
+            LogBuilder.builder(log)
+                .action("AuditLog")
+                .message("Unable to log audit event '" + audit + "' for input '" + inputValue + "' and return '" + returnValue + "'")
+                .logWarn(e);
         }
     }
 
