@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.UserRepository;
 
@@ -49,7 +50,11 @@ public class TcUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No user found for: " + username);
         }
 
-        log.debug("Found user with ID {} for username '{}'", user.getId(), username);
+        LogBuilder.builder(log)
+            .action("loadUserByUsername")
+            .message("Found user with ID " + user.getId() + " for username '" + username + "'")
+            .logDebug();
+
         return new TcUserDetails(user);
     }
 

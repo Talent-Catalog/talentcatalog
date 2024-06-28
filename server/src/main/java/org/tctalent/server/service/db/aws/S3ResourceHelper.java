@@ -90,7 +90,10 @@ public class S3ResourceHelper {
             // blocking wait
             download.waitForCompletion();
 
-            log.debug("downloaded key {} to {}", key, downloadFile.getAbsolutePath());
+            LogBuilder.builder(log)
+                .action("DownloadFile")
+                .message("Downloaded key " + key + " to " + downloadFile.getAbsolutePath())
+                .logDebug();
 
         } catch (Exception e) {
             LogBuilder.builder(log)
@@ -111,7 +114,10 @@ public class S3ResourceHelper {
             // blocking wait
             download.waitForCompletion();
 
-            log.debug("downloaded key {} to {}", key, downloadFile.getAbsolutePath());
+            LogBuilder.builder(log)
+                .action("DownloadResource")
+                .message("Downloaded key " + key + " to " + downloadFile.getAbsolutePath())
+                .logDebug();
 
             // convert to resource
             resource = new FileSystemResource(downloadFile);
@@ -136,7 +142,10 @@ public class S3ResourceHelper {
             // blocking wait
             download.waitForCompletion();
 
-            log.debug("downloaded key {} to {}", key, downloadFile.getAbsolutePath());
+            LogBuilder.builder(log)
+                .action("DownloadResource")
+                .message("Downloaded key " + key + " to " + downloadFile.getAbsolutePath())
+                .logDebug();
 
             // convert to resource
             resource = new FileSystemResource(downloadFile);
@@ -168,7 +177,10 @@ public class S3ResourceHelper {
             // blocking wait, though we could let uploads just run in background
             upload.waitForCompletion();
 
-            log.debug("uploaded file {} to {}", file.getAbsolutePath(), key);
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Uploaded file " + file.getAbsolutePath() + " to " + key)
+                .logDebug();
 
         } catch (Exception e) {
             LogBuilder.builder(log)
@@ -212,7 +224,10 @@ public class S3ResourceHelper {
             // blocking wait, though we could let uploads just run in background
             upload.waitForCompletion();
 
-            log.debug("uploaded MultipartFile to {}", key);
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Uploaded MultipartFile to: " + key)
+                .logDebug();
 
         } catch (Exception e) {
             LogBuilder.builder(log)
@@ -271,7 +286,10 @@ public class S3ResourceHelper {
             // blocking wait, though we could let uploads just run in background
             upload.waitForCompletion();
 
-            log.debug("uploaded string content to {}", key);
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Uploaded string content to: " + key)
+                .logDebug();
 
         } catch (Exception e) {
             LogBuilder.builder(log)
