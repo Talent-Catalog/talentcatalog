@@ -107,14 +107,17 @@ fun getCandidateCert() = CandidateCertification().apply { name = "GREAT CERT" }
 fun getCandidate() =
   Candidate().apply {
     candidateNumber = "TEMP%04d".format(Random.nextInt(10000))
-    phone = "999999999"
+    phone = "999999999%04d".format(Random.nextInt(10000))
     contactConsentPartners = true
     contactConsentRegistration = true
-    workAbroadNotes = "GOOD FOR TEST"
-    whatsapp = "WHATSAPP"
+    workAbroadNotes = "GOOD FOR TEST%04d".format(Random.nextInt(10000))
+    whatsapp = "WHATSAPP%04d".format(Random.nextInt(10000))
     status = CandidateStatus.active
+    gender = Gender.male
+    linkedInLink = "LINKEDIN"
+    dob = OffsetDateTime.now().minusYears(35).toLocalDate()
     createdBy = systemUser()
-    createdDate = OffsetDateTime.now()
+    createdDate = OffsetDateTime.now().minusDays(5)
   }
 
 /**
@@ -273,6 +276,7 @@ fun getUser(idToUse: Long? = null) =
     status = Status.active
     usingMfa = false
     partner = PartnerImpl().apply { id = 1L } // This is TBB in the dump.
+    createdDate = OffsetDateTime.now().minusYears(1)
   }
 
 /**
@@ -802,3 +806,57 @@ fun getCandidateSavedList(candidate: Candidate, savedList: SavedList): Candidate
     this.savedList = savedList
     this.id = CandidateSavedListKey(candidate.id, savedList.id)
   }
+
+/**
+ * Retrieves a list of country IDs including newly saved countries and existing ones.
+ *
+ * @param repo The repository used to save and fetch countries.
+ * @param existing A list of existing countries to include.
+ * @return A list of country IDs.
+ */
+fun getSourceCountryIds(
+  repo: CountryRepository,
+  existing: List<Country> = emptyList(),
+): List<Long> {
+  val x = mutableListOf(getSavedCountry(repo), getSavedCountry(repo))
+  x.addAll(existing)
+  return x.map { it.id }
+}
+
+/**
+ * Retrieves a list of country IDs including newly saved countries and an existing country.
+ *
+ * @param repo The repository used to save and fetch countries.
+ * @param existing An existing country to include.
+ * @return A list of country IDs.
+ */
+fun getSourceCountryIds(repo: CountryRepository, existing: Country): List<Long> =
+  listOf(getSavedCountry(repo), getSavedCountry(repo), existing).map { it.id }
+
+/**
+ * Retrieves a set of candidate IDs after saving new candidates.
+ *
+ * @param repo The repository used to save and fetch candidates.
+ * @param userRepo The repository used to save and fetch users.
+ * @return A mutable set of candidate IDs.
+ */
+fun getCandidateIds(repo: CandidateRepository, userRepo: UserRepository): MutableSet<Long> =
+  mutableSetOf(
+      getSavedCandidate(repo, getSavedUser(userRepo)),
+      getSavedCandidate(repo, getSavedUser(userRepo)),
+    )
+    .map { it.id }
+    .toMutableSet()
+
+fun getCandidateIds(
+  repo: CandidateRepository,
+  userRepo: UserRepository,
+  existing: Candidate,
+): MutableSet<Long> =
+  mutableSetOf(
+      getSavedCandidate(repo, getSavedUser(userRepo)),
+      getSavedCandidate(repo, getSavedUser(userRepo)),
+      existing,
+    )
+    .map { it.id }
+    .toMutableSet()

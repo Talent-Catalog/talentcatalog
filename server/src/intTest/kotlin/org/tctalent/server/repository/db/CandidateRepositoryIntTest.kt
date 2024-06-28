@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db
 
+import java.time.LocalDate
+import java.time.OffsetDateTime
 import kotlin.jvm.optionals.getOrNull
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,11 +33,19 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var countryRepository: CountryRepository
 
   private lateinit var testCandidate: Candidate
+  private lateinit var dateFrom: LocalDate
+  private lateinit var dateTo: LocalDate
+  private lateinit var testCountry: Country
 
   @BeforeTest
   fun setup() {
     assertTrue { isContainerInitialized() }
+    testCountry = getSavedCountry(countryRepository)
     testCandidate = getSavedCandidate(repo, getSavedUser(userRepository))
+    repo.save(testCandidate.apply { country = testCountry })
+
+    dateFrom = OffsetDateTime.now().minusYears(4).toLocalDate()
+    dateTo = OffsetDateTime.now().minusDays(10).toLocalDate()
   }
 
   @Test
@@ -221,28 +231,29 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by candidate number restricted`() {
-    val country = getSavedCountry(countryRepository)
-    repo.save(testCandidate.apply { this.country = country })
+    testCountry = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { this.country = testCountry })
 
-    val result = repo.findByCandidateNumberRestricted(testCandidate.candidateNumber, setOf(country))
+    val result =
+      repo.findByCandidateNumberRestricted(testCandidate.candidateNumber, setOf(testCountry))
     assertTrue(result.isPresent)
     assertEquals(testCandidate.id, result.get().id)
   }
 
   @Test
   fun `test find by candidate number restricted fail`() {
-    val country = getSavedCountry(countryRepository)
-    repo.save(testCandidate.apply { this.country = country })
-    val result = repo.findByCandidateNumberRestricted("INVALID_NUMBER", setOf(country))
+    testCountry = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { this.country = testCountry })
+    val result = repo.findByCandidateNumberRestricted("INVALID_NUMBER", setOf(testCountry))
     assertFalse(result.isPresent)
   }
 
   @Test
   fun `test search candidate email`() {
-    val country = getSavedCountry(countryRepository)
-    repo.save(testCandidate.apply { this.country = country })
+    testCountry = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { this.country = testCountry })
     val result =
-      repo.searchCandidateEmail(testCandidate.user.email, setOf(country), Pageable.unpaged())
+      repo.searchCandidateEmail(testCandidate.user.email, setOf(testCountry), Pageable.unpaged())
     assertNotNull(result)
     assertTrue { result.content.isNotEmpty() }
     assertEquals(testCandidate.id, result.content.first().id)
@@ -250,17 +261,17 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test search candidate email fail`() {
-    val country = getSavedCountry(countryRepository)
-    repo.save(testCandidate.apply { this.country = country })
+    testCountry = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { this.country = testCountry })
     val result =
-      repo.searchCandidateEmail("invalid@example.com", setOf(country), Pageable.unpaged())
+      repo.searchCandidateEmail("invalid@example.com", setOf(testCountry), Pageable.unpaged())
     assertNotNull(result)
     assertTrue { result.content.isEmpty() }
   }
 
   @Test
   fun `test find by id load user`() {
-    val testCountry = getSavedCountry(countryRepository)
+    testCountry = getSavedCountry(countryRepository)
     repo.save(testCandidate.apply { country = testCountry })
     val result = repo.findByIdLoadUser(testCandidate.id, setOf(testCountry))
     assertTrue(result.isPresent)
@@ -293,7 +304,7 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test find by country id`() {
-    val testCountry = getSavedCountry(countryRepository)
+    testCountry = getSavedCountry(countryRepository)
     repo.save(testCandidate.apply { country = testCountry })
     val result = repo.findByCountryId(testCountry.id)
     assertNotNull(result)
@@ -319,5 +330,182 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
   fun `test find by candidate number fail`() {
     val result = repo.findByCandidateNumber("INVALID_NUMBER")
     assertNull(result)
+  }
+
+  @Test
+  fun `test count by birth year order by year`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result = repo.countByBirthYearOrderByYear(Gender.male.name, sourceIds, dateFrom, dateTo)
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  @Test
+  fun `test count by birth year order by year with candidate ids`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result =
+      repo.countByBirthYearOrderByYear(
+        Gender.male.name,
+        sourceIds,
+        dateFrom,
+        dateTo,
+        getCandidateIds(repo, userRepository, testCandidate),
+      )
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  @Test
+  fun `test count by created date order by count`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result = repo.countByCreatedDateOrderByCount(sourceIds, dateFrom, dateTo)
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  @Test
+  fun `test count by created date order by count with candidate ids`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result =
+      repo.countByCreatedDateOrderByCount(
+        sourceIds,
+        dateFrom,
+        dateTo,
+        getCandidateIds(repo, userRepository, testCandidate),
+      )
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  @Test
+  fun `test count LinkedIn by created date order by count`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result = repo.countLinkedInByCreatedDateOrderByCount(sourceIds, dateFrom, dateTo)
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  @Test
+  fun `test count LinkedIn by created date order by count with candidate ids`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result =
+      repo.countLinkedInByCreatedDateOrderByCount(
+        sourceIds,
+        dateFrom,
+        dateTo,
+        getCandidateIds(repo, userRepository, testCandidate),
+      )
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  @Test
+  fun `test count by gender order by count`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result = repo.countByGenderOrderByCount(sourceIds, dateFrom, dateTo)
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  @Test
+  fun `test count by gender order by count with candidate ids`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result =
+      repo.countByGenderOrderByCount(
+        sourceIds,
+        dateFrom,
+        dateTo,
+        getCandidateIds(repo, userRepository, testCandidate),
+      )
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  // This test will fail, as the sql is checking for a lowercase name to be
+  // passed in from the country rather than the query making like for like.
+  // TODO (need to fix the query)
+  @Test
+  fun `test count by status order by count`() {
+
+    val result =
+      repo.countByStatusOrderByCount(
+        Gender.male.name,
+        testCountry.name,
+        listOf(testCountry.id),
+        dateFrom,
+        dateTo,
+      )
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  // This test will fail, as the sql is checking for a lowercase name to be
+  // passed in from the country rather than the query making like for like.
+  // TODO (need to fix the query)
+  @Test
+  fun `test count by status order by count with candidate ids`() {
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result =
+      repo.countByStatusOrderByCount(
+        Gender.male.name,
+        testCountry.name,
+        sourceIds,
+        dateFrom,
+        dateTo,
+        getCandidateIds(repo, userRepository, testCandidate),
+      )
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  // This test will fail, as the sql is checking for a lowercase name to be
+  // passed in from the country rather than the query making like for like.
+  // TODO (need to fix the query)
+  @Test
+  fun `test count by referrer order by count`() {
+    testCandidate.apply { regoReferrerParam = "REGOREFERRER" }
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result =
+      repo.countByReferrerOrderByCount(
+        Gender.male.name,
+        testCountry.name,
+        sourceIds,
+        dateFrom,
+        dateTo,
+      )
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+  }
+
+  // This test will fail, as the sql is checking for a lowercase name to be
+  // passed in from the country rather than the query making like for like.
+  // TODO (need to fix the query)
+  @Test
+  fun `test count by referrer order by count with candidate ids`() {
+    testCandidate.apply { regoReferrerParam = "REGOREFERRER" }
+    val sourceIds = getSourceCountryIds(countryRepository, testCountry)
+    val result =
+      repo.countByReferrerOrderByCount(
+        Gender.male.name,
+        testCountry.name,
+        sourceIds,
+        dateFrom,
+        dateTo,
+        getCandidateIds(repo, userRepository, testCandidate),
+      )
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
   }
 }
