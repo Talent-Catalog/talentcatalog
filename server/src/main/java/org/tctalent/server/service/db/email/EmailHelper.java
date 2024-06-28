@@ -78,7 +78,11 @@ public class EmailHelper {
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending confirm registration email", e);
+            LogBuilder.builder(log)
+                .action("RegistrationEmail")
+                .message("error sending confirm registration email")
+                .logError(e);
+
             throw new EmailSendFailedException(e);
         }
     }
@@ -108,7 +112,11 @@ public class EmailHelper {
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending reset password email", e);
+            LogBuilder.builder(log)
+                .action("ResetPasswordEmail")
+                .message("error sending reset password email")
+                .logError(e);
+
             throw new EmailSendFailedException(e);
         }
     }
@@ -137,7 +145,11 @@ public class EmailHelper {
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending confirm registration email", e);
+            LogBuilder.builder(log)
+                .action("IncompleteApplicationEmail")
+                .message("error sending incomplete application email")
+                .logError(e);
+
             throw new EmailSendFailedException(e);
         }
     }
@@ -164,29 +176,29 @@ public class EmailHelper {
             bodyHtml = htmlTemplateEngine.process("candidate-chat-notification", ctx);
 
             LogBuilder.builder(log)
-                .action("Email")
+                .action("ChatPostsEmail")
                 .message("Sending email to " + email)
                 .logInfo();
 
             LogBuilder.builder(log)
-                .action("Email")
+                .action("ChatPostsEmail")
                 .message("Subject: " + subject)
                 .logInfo();
 
             LogBuilder.builder(log)
-                .action("Email")
+                .action("ChatPostsEmail")
                 .message("Text\n" + bodyText)
                 .logInfo();
 
             LogBuilder.builder(log)
-                .action("Email")
+                .action("ChatPostsEmail")
                 .message("Html\n" + bodyHtml)
                 .logInfo();
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
             LogBuilder.builder(log)
-                .action("Email")
+                .action("ChatPostsEmail")
                 .message("error sending candidate chat notification email to " + email)
                 .logError();
 
@@ -215,7 +227,11 @@ public class EmailHelper {
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending watcher email", e);
+            LogBuilder.builder(log)
+                .action("WatcherEmail")
+                .message("error sending watcher email")
+                .logError(e);
+
             throw new EmailSendFailedException(e);
         }
     }

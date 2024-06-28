@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.util.SalesforceHelper;
 
@@ -62,16 +63,23 @@ public class CandidateOpportunityStageHistory {
             try {
                 setTimeStamp(SalesforceHelper.parseSalesforceOffsetDateTime(sfDateStamp));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding timeStamp from SF opp history: " + sfDateStamp +
-                    " in candidate opp " + oppId);
+                LogBuilder.builder(log)
+                    .action("DecodeCandidateOpportunityStageHistory")
+                    .message("Error decoding timeStamp from SF opp history: " + sfDateStamp +
+                        " in candidate opp " + oppId)
+                    .logError();
             }
         }
         CandidateOpportunityStage stage;
         try {
             stage = CandidateOpportunityStage.textToEnum(sfHistory.getStageName());
         } catch (IllegalArgumentException e) {
-            log.error("Error decoding stage in load: " + sfHistory.getStageName() +
-                " in candidate opp " + oppId);
+            LogBuilder.builder(log)
+                .action("DecodeCandidateOpportunityStageHistory")
+                .message("Error decoding stage in load: " + sfHistory.getStageName() +
+                    " in candidate opp " + oppId)
+                .logError();
+
             stage = CandidateOpportunityStage.prospect;
         }
         setStage(stage);

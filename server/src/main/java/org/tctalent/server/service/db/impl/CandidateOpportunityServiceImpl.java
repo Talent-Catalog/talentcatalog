@@ -147,8 +147,12 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
             String sfId = fetchSalesforceId(candidate, jobOpp);
             if (sfId == null) {
-                log.error("Could not find SF candidate opp for candidate "
-                    + candidate.getCandidateNumber() + " job " + jobOpp.getId());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("createOrUpdateCandidateOpportunity")
+                    .message("Could not find SF candidate opp for candidate "
+                        + candidate.getCandidateNumber() + " job " + jobOpp.getId())
+                    .logError();
             }
             opp.setSfId(sfId);
         }
@@ -352,7 +356,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             jobOpp = salesforceJobOppService.getJobOppById(jobOppSfid);
         }
         if (jobOpp == null) {
-            log.error("Could not find job opp: " + jobOppSfid + " parent of " + op.getName());
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadCandidateOpportunity")
+                .message("Could not find job opp: " + jobOppSfid + " parent of " + op.getName())
+                .logError();
         }
         candidateOpportunity.setJobOpp(jobOpp);
 
@@ -360,7 +368,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         String candidateNumber = op.getCandidateId();
         Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
         if (candidate == null) {
-            log.error("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName());
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadCandidateOpportunity")
+                .message("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName())
+                .logError();
         }
         candidateOpportunity.setCandidate(candidate);
 
@@ -377,7 +389,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 candidateOpportunity.setNextStepDueDate(
                     LocalDate.parse(nextStepDueDate));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName())
+                    .logError();
             }
         }
 
@@ -386,7 +402,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             try {
                 candidateOpportunity.setCreatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(createdDate));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding createdDate from SF: " + createdDate + " in candidate op " + op.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding createdDate from SF: " + createdDate + " in candidate op " + op.getName())
+                    .logError();
             }
         }
 
@@ -395,7 +415,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             try {
                 candidateOpportunity.setUpdatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(lastModifiedDate));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + op.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + op.getName())
+                    .logError();
             }
         }
         candidateOpportunity.setSfId(op.getId());
@@ -403,7 +427,12 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         try {
             stage = CandidateOpportunityStage.textToEnum(op.getStageName());
         } catch (IllegalArgumentException e) {
-            log.error("Error decoding stage in load: " + op.getStageName() + " in candidate op " + op.getName());
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadCandidateOpportunity")
+                .message("Error decoding stage in load: " + op.getStageName() + " in candidate op " + op.getName())
+                .logError();
+
             stage = CandidateOpportunityStage.prospect;
         }
         candidateOpportunity.setStage(stage);

@@ -330,7 +330,12 @@ public class JobServiceImpl implements JobService {
            exclusionList =
                salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
         } catch (Exception ex) {
-            log.error("CreateJob: Could not create exclusion list", ex);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("CreateJob")
+                .message("Could not create exclusion list: " + ex.getMessage())
+                .logError(ex);
+
             UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
             req.setName(exclusionListName);
             exclusionList = savedListService.createSavedList(req);
@@ -445,7 +450,11 @@ public class JobServiceImpl implements JobService {
             try {
                 checkEmployerEntity(job);
             } catch (NoSuchObjectException ex) {
-                log.error("Could not create employer for job " + job.getId(), ex);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("CheckEmployerEntities")
+                    .message("Could not create employer for job " + job.getId())
+                    .logError(ex);
             }
         }
     }
@@ -1022,7 +1031,11 @@ public class JobServiceImpl implements JobService {
             //Now update them from Salesforce
             salesforceJobOppService.updateJobs(sfIds);
         } catch (Exception e) {
-            log.error("JobService.updateOpenJobs failed", e);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("JobService.updateOpenJobs")
+                .message("Failed to update open jobs")
+                .logError(e);
         }
     }
 
@@ -1091,7 +1104,11 @@ public class JobServiceImpl implements JobService {
 
         //Delete tempfile
         if (!tempFile.delete()) {
-            log.error("Failed to delete temporary file " + tempFile);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("UploadFile")
+                .message("Failed to delete temporary file " + tempFile)
+                .logError();
         }
 
         return uploadedFile;

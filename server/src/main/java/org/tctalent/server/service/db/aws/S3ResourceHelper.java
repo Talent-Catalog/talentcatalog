@@ -22,8 +22,24 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.internal.Mimetypes;
-import com.amazonaws.services.s3.model.*;
-import com.amazonaws.services.s3.transfer.*;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.transfer.Download;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.TransferManagerConfiguration;
+import com.amazonaws.services.s3.transfer.Upload;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +49,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.FileDownloadException;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.tctalent.server.logging.LogBuilder;
 
 public class S3ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger(S3ResourceHelper.class);
@@ -84,7 +93,11 @@ public class S3ResourceHelper {
             log.debug("downloaded key {} to {}", key, downloadFile.getAbsolutePath());
 
         } catch (Exception e) {
-            log.error("Error downloading file to: " + key, e);
+            LogBuilder.builder(log)
+                .action("DownloadFile")
+                .message("Error downloading file to: " + key)
+                .logError(e);
+
             throw new FileDownloadException("Error downloading file from: " + key, e);
         }
         return downloadFile;
@@ -103,7 +116,11 @@ public class S3ResourceHelper {
             // convert to resource
             resource = new FileSystemResource(downloadFile);
         } catch (Exception e) {
-            log.error("Error downloading file to: " + key, e);
+            LogBuilder.builder(log)
+                .action("DownloadResource")
+                .message("Error downloading file to: " + key)
+                .logError(e);
+
             throw new FileDownloadException("Error downloading file from: " + key, e);
         }
         return resource;
@@ -124,7 +141,11 @@ public class S3ResourceHelper {
             // convert to resource
             resource = new FileSystemResource(downloadFile);
         } catch (Exception e) {
-            log.error("Error downloading file to: " + key, e);
+            LogBuilder.builder(log)
+                .action("DownloadResource")
+                .message("Error downloading file to: " + key)
+                .logError(e);
+
             throw new FileDownloadException("Error downloading file from: " + key, e);
         }
         return resource;
@@ -150,7 +171,11 @@ public class S3ResourceHelper {
             log.debug("uploaded file {} to {}", file.getAbsolutePath(), key);
 
         } catch (Exception e) {
-            log.error("Error uploading file to: " + key, e);
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Error uploading file to: " + key)
+                .logError(e);
+
             throw new FileUploadException("Error uploading file to: " + key, e);
         }
     }
@@ -162,7 +187,11 @@ public class S3ResourceHelper {
             uploadFile(s3Bucket, key, source);
 
         } catch (Exception e) {
-            log.error("Error uploading file to: " + key, e);
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Error uploading file to: " + key)
+                .logError(e);
+
             throw new FileUploadException("Error uploading file to: " + key, e);
         }
     }
@@ -186,7 +215,11 @@ public class S3ResourceHelper {
             log.debug("uploaded MultipartFile to {}", key);
 
         } catch (Exception e) {
-            log.error("Error uploading file to: " + key, e);
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Error uploading file to: " + key)
+                .logError(e);
+
             throw new FileUploadException("Error uploading file to: " + key, e);
         }
     }
@@ -199,7 +232,11 @@ public class S3ResourceHelper {
             uploadFile(s3Bucket, content, key, contentType);
 
         } catch (Exception e) {
-            log.error("Error uploading file to: " + key, e);
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Error uploading file to: " + key)
+                .logError(e);
+
             throw new FileUploadException("Error uploading file to: " + key, e);
         }
     }
@@ -237,7 +274,11 @@ public class S3ResourceHelper {
             log.debug("uploaded string content to {}", key);
 
         } catch (Exception e) {
-            log.error("Error uploading string content to: " + key, e);
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Error uploading file to: " + key)
+                .logError(e);
+
             throw new FileUploadException("Error uploading string content to: " + key, e);
         }
     }

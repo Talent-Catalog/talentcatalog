@@ -399,7 +399,11 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     private void reportError(String s, @Nullable Exception ex) {
-        log.error(s, ex);
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message(s)
+            .logError(ex);
+
         if (emailSender != null) {
             emailSender.sendAlert( s, ex);
         }

@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
@@ -1563,7 +1564,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                     break;
                 default:
                     registered = null;
-                    log.error("Unhandled UNHCRStatus: " + status);
+                    LogBuilder.builder(log)
+                        .message("Unhandled UNHCRStatus: " + status)
+                        .action("GetUnhcrRegistered")
+                        .logError();
             }
         }
         return registered;

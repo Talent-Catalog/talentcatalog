@@ -24,10 +24,9 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -65,9 +64,8 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @Service
+@Slf4j
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
-
-    private static final Logger log = LoggerFactory.getLogger(CandidateAttachmentsServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
@@ -212,7 +210,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                         candidateAttachmentRepository.save(attachment);
                     }
                 } catch (Exception e) {
-                    log.error("Could not extract text from uploaded cv file", e);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("CreateCandidateAttachment")
+                        .message("Could not extract text from uploaded cv file")
+                        .logError(e);
+
                     attachment.setTextExtract(null);
                 }
                 attachment.setCv(request.getCv());
@@ -293,13 +296,21 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                         try {
                             fileSystemService.renameFile(fsf);
                         } catch (IOException e) {
-                            log.error("Could not rename attachment in Google Drive: " + candidateAttachment.getName(), e);
+                            LogBuilder.builder(log)
+                                .user(authService.getLoggedInUser())
+                                .action("DeleteCandidateAttachment")
+                                .message("Could not rename attachment in Google Drive: " + candidateAttachment.getName())
+                                .logError(e);
                         }
                     } else {
                         try {
                             fileSystemService.deleteFile(fsf);
                         } catch (IOException e) {
-                            log.error("Could not delete attachment from Google Drive: " + fsf, e);
+                            LogBuilder.builder(log)
+                                .user(authService.getLoggedInUser())
+                                .action("DeleteCandidateAttachment")
+                                .message("Could not delete attachment from Google Drive: " + fsf)
+                                .logError(e);
                         }
 
                     }
@@ -402,9 +413,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                             candidateAttachmentRepository.save(candidateAttachment);
                         }
                     } catch (Exception e) {
-                        log.error(
-                            "Unable to extract text from file " + candidateAttachment.getLocation(),
-                            e.getMessage());
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("UpdateCandidateAttachment")
+                            .message("Unable to extract text from file " + candidateAttachment.getLocation())
+                            .logError(e);
+
                         candidateAttachment.setTextExtract(null);
                     }
                 }
@@ -485,13 +499,21 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 textExtract = textExtractHelper
                     .getTextExtractFromFile(tempFile, fileType);
             } catch (Exception e) {
-                log.error("Could not extract text from uploaded file", e);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("UploadAttachment")
+                    .message("Could not extract text from uploaded file")
+                    .logError(e);
             }
         }
 
         //Delete tempfile
         if (!tempFile.delete()) {
-            log.error("Failed to delete temporary file " + tempFile);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("UploadAttachment")
+                .message("Failed to delete temporary file " + tempFile)
+                .logError();
         }
 
         //Now create corresponding CandidateAttachment record.

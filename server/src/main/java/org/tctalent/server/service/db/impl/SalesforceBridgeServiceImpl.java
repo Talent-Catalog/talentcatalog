@@ -17,13 +17,13 @@
 package org.tctalent.server.service.db.impl;
 
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.sf.Opportunity;
@@ -34,8 +34,8 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 
 @Service
+@Slf4j
 public class SalesforceBridgeServiceImpl implements SalesforceBridgeService {
-    private static final Logger log = LoggerFactory.getLogger(SalesforceBridgeServiceImpl.class);
 
     private final CandidateService candidateService;
     private final SalesforceService salesforceService;
@@ -62,8 +62,11 @@ public class SalesforceBridgeServiceImpl implements SalesforceBridgeService {
             String candidateNumber = opp.getCandidateId();
             Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
             if (candidate == null) {
-                log.error("Candidate number " + candidateNumber +
-                    " referred to in Salesforce opp " + opp.getName() + " not found on TC");
+                LogBuilder.builder(log)
+                    .action("SalesforceBridgeServiceImpl")
+                    .message("Candidate number " + candidateNumber +
+                        " referred to in Salesforce opp " + opp.getName() + " not found on TC")
+                    .logError();
             } else {
                 String contextNote = "Considered for role: " + opp.getName();
                 savedListService.addCandidateToList(list, candidate, contextNote);

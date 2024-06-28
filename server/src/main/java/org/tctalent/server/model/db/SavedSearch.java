@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+import org.tctalent.server.logging.LogBuilder;
 
 @Entity
 @Table(name = "saved_search")
@@ -591,7 +592,10 @@ public class SavedSearch extends AbstractCandidateSource {
                     setSavedSearchSubtype(savedSearchSubtype);
                 }
             } catch (IllegalArgumentException ex) {
-                log.error("Bad type '" + type + "' of saved search " + getId(), ex);
+                LogBuilder.builder(log)
+                    .action("SavedSearchType")
+                    .message("Bad type '" + type + "' of saved search " + getId())
+                    .logError(ex);
             }
         }
     }
