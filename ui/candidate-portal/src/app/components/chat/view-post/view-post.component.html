@@ -10,7 +10,7 @@
     id="reactionBtn"
     [ngClass]="!this.reactionPickerVisible ?
     'reaction-btn' : 'reaction-btn-selected'"
-    (click)="onClickReactionBtn()">
+    (click)="toggleReactionPicker()">
       <fa-icon id="reactionBtnSmiley" icon="face-smile" size="xs"></fa-icon>+
     </button>
     <button
@@ -41,4 +41,4 @@
   [autoFocus]="true"
 ></emoji-mart>
 
-<div *ngIf="reactionPickerVisible" class="overlay"></div>
+<div *ngIf="reactionPickerVisible" class="overlay" (click)="toggleReactionPicker()"></div>
