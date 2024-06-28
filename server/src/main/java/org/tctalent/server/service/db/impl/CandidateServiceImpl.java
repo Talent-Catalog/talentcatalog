@@ -49,6 +49,7 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -64,6 +65,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -80,6 +82,7 @@ import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
@@ -2800,7 +2803,7 @@ public class CandidateServiceImpl implements CandidateService {
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
                     .action("Resolve Outstanding Task Assignments")
-                    .message("No candidate exists for id " + id)
+                    .message("updateCandidateStatus: No candidate exists for id " + id)
                     .logError();
             } else {
                 resolveOutstandingRequiredTaskAssignments(candidate);
@@ -2824,18 +2827,28 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-//    TODO implement this with appropriate arguments if investigation successful
-//    @Transactional
-//    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
-//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-//        lockAtMostFor = "PT23H")
-//    public void scheduledSfCandidateSync() {
-//        // We only want to run this in prod due to SF sandbox object limit of 10,000
-//        // Using a very high noOfPagesRequested, the method will revert to the limit set by total pages.
-//        if (environment.equalsIgnoreCase(Environment.prod.name())) {
-//            syncCandidatesToSf(50, 0, 10000);
-//        }
-//    }
+    @Transactional
+    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfProdCandidateSync() {
+        // We only want to run the full sync in prod, due to SF sandbox object limit of 10,000.
+        // We're passing a very high noOfPagesRequested, so that totalPages is used instead.
+        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+            syncCandidatesToSf(200, 0, 100000);
+        }
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfSandboxCandidateSync() {
+        // Scaled-down replica of prod for testing purposes (4,000 candidates)
+        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+            syncCandidatesToSf(200, 0, 20);
+        }
+    }
 
     @Override
     public void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPagesRequested)
@@ -2900,6 +2913,7 @@ public class CandidateServiceImpl implements CandidateService {
             Instant start = Instant.now();
             List<Candidate> candidateList = candidatePage.getContent();
             upsertCandidatesToSf(candidateList);
+            // Clears the persistence context of managed entities that would otherwise pile up.
             entityManager.clear();
             candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
                 statuses, candidatePage.nextPageable());
@@ -2911,7 +2925,7 @@ public class CandidateServiceImpl implements CandidateService {
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("Sync Candidates to Salesforce")
-                .message("Upserted page " + pagesProcessed + " of " + noOfPagesToProcess +
+                .message("Processed page " + pagesProcessed + " of " + noOfPagesToProcess +
                     " in " + timeElapsed.toSeconds() + " seconds.")
                 .logInfo();
         }
@@ -2923,35 +2937,18 @@ public class CandidateServiceImpl implements CandidateService {
             .user(authService.getLoggedInUser())
             .action("Sync Candidates to Salesforce")
             .message("With these parameters it took " + timeElapsedOverall.toMinutes() +
-                " minutes to upsert " + (noOfPagesToProcess * pageSize) + " candidates.")
-            .logInfo();
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("Finished TC-SF candidate sync")
+                " minutes to process " + (noOfPagesToProcess * pageSize) + " candidates.")
             .logInfo();
     }
 
     @Override
     public void upsertCandidatesToSf(List<Candidate> orderedCandidates)
         throws SalesforceException, WebClientException {
-        Instant start = Instant.now();
         // Update Salesforce contacts
         List<Contact> contacts =
             salesforceService.createOrUpdateContacts(orderedCandidates);
-        Instant end = Instant.now();
-        Duration timeElapsed = Duration.between(start, end);
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Upsert Candidates to Salesforce")
-            .message("salesforceService.createOrUpdateContacts(orderedCandidates) upserted "
-                + contacts.size() + " contacts in " + timeElapsed.toSeconds() + " seconds.")
-            .logInfo();
 
         // Update the sfLink in all implicated TC candidate records
-        start = Instant.now();
         int nCandidates = orderedCandidates.size();
         for (int i = 0; i < nCandidates; i++) {
             Contact contact = contacts.get(i);
@@ -2961,13 +2958,5 @@ public class CandidateServiceImpl implements CandidateService {
                     contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
-        end = Instant.now();
-        timeElapsed = Duration.between(start, end);
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Upsert Candidates to Salesforce")
-            .message("Updating all the sfLinks took " + timeElapsed.toSeconds() +  " seconds.")
-            .logInfo();
     }
 }

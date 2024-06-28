@@ -342,6 +342,11 @@ public class JobServiceImpl implements JobService {
         }
         job.setExclusionList(exclusionList);
 
+        //If copying an existing job, copy across those fields.
+        if (request.getJobToCopyId() != null) {
+            copyJobFields(request.getJobToCopyId(), job);
+        }
+
         job = salesforceJobOppRepository.save(job);
 
         //Create the chats associated with this job
@@ -1178,5 +1183,44 @@ public class JobServiceImpl implements JobService {
         GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
         setJobMouLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
+    }
+
+    /**
+     * When creating a job, a user can select to copy from existing job. This will create a new job but also copy the
+     * following from the job to copy:
+     * - Job uploads
+     * - Job summary
+     * - JOI fields
+     * @param jobToCopyId id of selected job to copy from.
+     * @param job job that is being created and fields are being copied across to.
+     */
+    private void copyJobFields(long jobToCopyId, SalesforceJobOpp job) {
+        SalesforceJobOpp jobToCopy = salesforceJobOppService.getJobOpp(jobToCopyId);
+
+        // Copy job summary
+        job.setJobSummary(jobToCopy.getJobSummary());
+
+        // Copy JOI data
+        if (jobToCopy.getJobOppIntake() != null) {
+            JobOppIntake copiedIntake = jobOppIntakeService.create(jobToCopy.getJobOppIntake());
+            job.setJobOppIntake(copiedIntake);
+        }
+
+        // Copy all associated job uploads
+        SavedList submissionListToCopy = jobToCopy.getSubmissionList();
+        SavedList submissionList = job.getSubmissionList();
+
+        // Copy JD file
+        submissionList.setFileJdLink(submissionListToCopy.getFileJdLink());
+        submissionList.setFileJdName(submissionListToCopy.getFileJdName());
+        // Copy JOI file
+        submissionList.setFileJoiLink(submissionListToCopy.getFileJoiLink());
+        submissionList.setFileJoiName(submissionListToCopy.getFileJoiName());
+        // Copy MOU file
+        submissionList.setFileMouLink(submissionListToCopy.getFileMouLink());
+        submissionList.setFileMouName(submissionListToCopy.getFileMouName());
+        // Copy Interview Guidance file
+        submissionList.setFileInterviewGuidanceLink(submissionListToCopy.getFileInterviewGuidanceLink());
+        submissionList.setFileInterviewGuidanceName(submissionListToCopy.getFileInterviewGuidanceName());
     }
 }

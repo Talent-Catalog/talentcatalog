@@ -60,8 +60,6 @@ export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
         //Construct single observable to monitor.
         const chatReadStatus$
           = this.chatService.combineChatReadStatuses(this.chats);
-        console.log('ChatReadStatus subscribing to chats ' +
-          this.chats.map(chat => chat.id).join(','))
         this.subscribeToObservable(chatReadStatus$)
       }
     }

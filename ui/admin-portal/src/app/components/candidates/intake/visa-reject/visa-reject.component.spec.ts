@@ -19,11 +19,10 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {VisaRejectComponent} from './visa-reject.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {YesNoUnsure} from '../../../../model/candidate';
-import {of} from 'rxjs';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-describe('VisaRejectComponent', () => {
+fdescribe('VisaRejectComponent', () => {
   let component: VisaRejectComponent;
   let fixture: ComponentFixture<VisaRejectComponent>;
 

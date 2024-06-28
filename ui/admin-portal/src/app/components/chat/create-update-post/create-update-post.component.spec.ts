@@ -1,25 +1,152 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {CreateUpdatePostComponent} from "./create-update-post.component";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {RxStompService} from "../../../services/rx-stomp.service";
+import {ChatPostService} from "../../../services/chat-post.service";
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular/core/testing";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {QuillModule} from "ngx-quill";
+import {of} from "rxjs";
+import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
-import {CreateUpdatePostComponent} from './create-update-post.component';
-
-describe('CreateUpdatePostComponent', () => {
+fdescribe('CreateUpdatePostComponent', () => {
   let component: CreateUpdatePostComponent;
   let fixture: ComponentFixture<CreateUpdatePostComponent>;
+  let modalService: jasmine.SpyObj<NgbModal>;
+  let rxStompService: jasmine.SpyObj<RxStompService>;
+  let chatPostService: jasmine.SpyObj<ChatPostService>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ CreateUpdatePostComponent ]
-    })
-    .compileComponents();
-  });
+  beforeEach(waitForAsync(() => {
+    const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
+    const rxStompServiceSpy = jasmine.createSpyObj('RxStompService', ['publish']);
+    const chatPostServiceSpy = jasmine.createSpyObj('ChatPostService', ['uploadFile']);
+
+    TestBed.configureTestingModule({
+      declarations: [CreateUpdatePostComponent],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,QuillModule],
+      providers: [
+        { provide: NgbModal, useValue: modalServiceSpy },
+        { provide: RxStompService, useValue: rxStompServiceSpy },
+        { provide: ChatPostService, useValue: chatPostServiceSpy }
+      ]
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CreateUpdatePostComponent);
     component = fixture.componentInstance;
+    modalService = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
+    rxStompService = TestBed.inject(RxStompService) as jasmine.SpyObj<RxStompService>;
+    chatPostService = TestBed.inject(ChatPostService) as jasmine.SpyObj<ChatPostService>;
+    // Mock quillEditorRef with selection property
+    component.quillEditorRef = {
+      selection: {
+        savedRange: {
+          index: 0
+        }
+      },
+      insertText: jasmine.createSpy('insertText')
+    };
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize postForm with content control', () => {
+    expect(component.postForm).toBeDefined();
+    expect(component.postForm.get('content')).toBeTruthy();
+  });
+
+  it('should be invalid if content is empty', () => {
+    const contentControl = component.postForm.get('content');
+    expect(contentControl.valid).toBeFalsy();
+  });
+
+  it('should be valid if content is not empty', () => {
+    const contentControl = component.postForm.get('content');
+    contentControl.setValue('Test content');
+    expect(contentControl.valid).toBeTruthy();
+  });
+
+  it('should send a post', () => {
+    component.chat = { id: 1 }; // Mock chat object
+    const content = 'Test content';
+    component.postForm.get('content').setValue(content);
+    component.onSend();
+    expect(rxStompService.publish).toHaveBeenCalledWith({ destination: '/app/chat/1', body: JSON.stringify({ content }) });
+    expect(component.postForm.get('content').value).toBeNull(); // Should clear content after sending
+  });
+
+
+  it('should upload a file', fakeAsync(() => {
+    const file = new File(['file content'], 'test.txt');
+
+    // Mock NgbModalRef with result property
+    const modalRef: Partial<NgbModalRef> = {
+      close: jasmine.createSpy('close'),
+      componentInstance: {
+        maxFiles: 1,
+        closeButtonLabel: "Upload",
+        title: "Select file to upload"
+      },
+      result: Promise.resolve([file])
+    }; // Mock NgbModalRef
+
+    modalService.open.and.returnValue(modalRef as NgbModalRef);
+    chatPostService.uploadFile.and.returnValue(of({ url: 'file_url' }));
+
+    // Initialize the chat object
+    component.chat = { id: 1 };
+
+
+    component.uploadFile();
+    tick(); // Flush pending asynchronous operations
+
+    expect(modalService.open).toHaveBeenCalledWith(FileSelectorComponent, jasmine.any(Object));
+
+    tick(); // Ensure promise resolution
+
+    expect(chatPostService.uploadFile).toHaveBeenCalled();
+    expect(component.error).toBeNull();
+    expect(component.saving).toBeFalsy();
+  }));
+
+
+  it('should handle emoji selection', () => {
+    const quillEditorRefSpy = jasmine.createSpyObj('Quill', ['insertText', 'setSelection'],['savedRange']);
+    quillEditorRefSpy.selection = {
+      savedRange: {
+        index: 0
+      }
+    };
+
+    component.quillEditorRef = quillEditorRefSpy;
+
+    const event = { emoji: { native: '😊' } };
+    component.onSelectEmoji(event);
+    expect(component.emojiPickerVisible).toBe(false); // Emoji picker should be closed after selection
+    expect(quillEditorRefSpy.insertText).toHaveBeenCalledWith(jasmine.any(Number), '😊', 'user');
+    expect(quillEditorRefSpy.setSelection).toHaveBeenCalledWith(2, 0); // Concrete values here
+  });
+
+  it('should toggle emoji picker', () => {
+    const quillEditorRefSpy = jasmine.createSpyObj('Quill', ['setSelection']);
+    quillEditorRefSpy.selection = {
+      savedRange: {
+        index: 0
+      }
+    };
+    component.quillEditorRef = quillEditorRefSpy;
+
+    component.emojiPickerVisible = false;
+    component.onClickEmojiBtn();
+    expect(component.emojiPickerVisible).toBe(true);
+    expect(quillEditorRefSpy.setSelection).not.toHaveBeenCalled(); // Should not refocus caret if picker is opening
+
+    component.onClickEmojiBtn();
+    expect(component.emojiPickerVisible).toBe(false);
+    expect(quillEditorRefSpy.setSelection).toHaveBeenCalled(); // Should refocus caret if picker is closing
   });
 });

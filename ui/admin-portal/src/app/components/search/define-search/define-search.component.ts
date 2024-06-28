@@ -25,7 +25,7 @@ import {
   ViewChild
 } from '@angular/core';
 
-import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
+import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -53,7 +53,9 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -125,7 +127,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
   genderOptions: EnumOption[] = enumOptions(Gender);
-  candidateFilterByOppsOptions: EnumOption[] = enumOptions(CandidateFilterByOpps);
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
@@ -198,7 +199,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       regoReferrerParam: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
-      candidateFilterByOpps: [null],
       exclusionListId: [null],
       unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});

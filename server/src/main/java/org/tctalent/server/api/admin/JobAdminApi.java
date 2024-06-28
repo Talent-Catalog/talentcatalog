@@ -16,6 +16,13 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,14 +44,6 @@ import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
 
 @RestController()
 @RequestMapping("/api/admin/job")
@@ -120,6 +119,14 @@ public class JobAdminApi implements
             Boolean.TRUE.equals(request.getJobNameAndIdOnly()) ? jobNameAndIdDto() : jobDto();
         final Map<String, Object> objectMap = builder.buildPage(jobs);
         return objectMap;
+    }
+
+    @Override
+    public @NotNull List<Map<String, Object>> search(@Valid SearchJobRequest request) {
+        List<SalesforceJobOpp> jobs = jobService.searchJobsUnpaged(request);
+        final DtoBuilder builder =
+                Boolean.TRUE.equals(request.getJobNameAndIdOnly()) ? jobNameAndIdDto() : jobDto();
+        return builder.buildList(jobs);
     }
 
     @Override

@@ -303,8 +303,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         Set<Long> candidateIds = new HashSet<>();
         String simpleQueryString = searchRequest.getSimpleQueryString();
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            // This is an elasticsearch request
+        if (
+            (simpleQueryString != null && !simpleQueryString.isEmpty()) ||
+                !searchRequest.getSearchJoinRequests().isEmpty()
+        ) {
+            // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
             BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
@@ -962,7 +965,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         // Not every base search will contain an elastic search term, since we're processing
         // joined regular searches here too — so we need a safe escape here
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
+        if (simpleQueryString != null && !simpleQueryString.isEmpty()) {
             // Create a simple query string builder from the given string
             SimpleQueryStringBuilder simpleQueryStringBuilder =
                 QueryBuilders.simpleQueryStringQuery(simpleQueryString);
@@ -1612,6 +1615,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
 
             //Save Boolean filters corresponding to enum name
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
             final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
             if (candidateFilterByOpps == null) {
                 savedSearch.setAnyOpps(null);
@@ -1683,6 +1687,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
 
+        // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
         CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
             search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
         searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
@@ -1745,8 +1750,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         addDefaultsToSearchCandidateRequest(searchRequest);
 
         String simpleQueryString = searchRequest.getSimpleQueryString();
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            // This is an elasticsearch request
+        if (
+            (simpleQueryString != null && !simpleQueryString.isEmpty()) ||
+                !searchRequest.getSearchJoinRequests().isEmpty()
+        ) {
+            // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
             BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,

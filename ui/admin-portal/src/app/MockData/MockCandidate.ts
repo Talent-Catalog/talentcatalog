@@ -17,9 +17,11 @@
 
 import {
   Candidate,
-  DrivingLicenseStatus, Exam,
+  DrivingLicenseStatus,
+  Exam,
   Gender,
-  MaritalStatus, UnhcrStatus,
+  MaritalStatus,
+  UnhcrStatus,
   YesNo,
   YesNoUnsure
 } from "../model/candidate";
@@ -33,6 +35,7 @@ import {CandidateLanguage} from "../model/candidate-language";
 import {CandidateOccupation} from "../model/candidate-occupation";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {Status} from "../model/base";
+
 const mockUser = new MockUser();
 export class MockCandidate implements Candidate {
 
@@ -139,7 +142,7 @@ export class MockCandidate implements Candidate {
       abandonedDate: null,
       candidateNotes: '',
       completedDate: null,
-      dueDate: new Date('2024-06-25'),
+      dueDate: new Date('2099-06-25'),
       status: Status.active,
       task: {
         id: 2,
@@ -162,7 +165,7 @@ export class MockCandidate implements Candidate {
       abandonedDate: null,
       candidateNotes: '',
       completedDate: null,
-      dueDate: new Date('2024-07-05'),
+      dueDate: new Date('2099-07-05'),
       status: Status.active,
       task: {
         id: 3,
