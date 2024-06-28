@@ -81,6 +81,7 @@ public class Auditor {
             if (objectRef == null)
             {
                 LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
                     .action("AuditLog")
                     .message("Unable to create audit log entry for: audit=" + audit + ", inputValue=" + inputValue + ", returnValue=" + returnValue)
                     .logWarn();
@@ -146,6 +147,7 @@ public class Auditor {
 
         } catch (Exception e) {
             LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
                 .action("AuditLog")
                 .message("Unable to log audit event '" + audit + "' for input '" + inputValue + "' and return '" + returnValue + "'")
                 .logWarn(e);
