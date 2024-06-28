@@ -21,25 +21,25 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Reaction;
-import org.tctalent.server.request.chat.reaction.CreateReactionRequest;
+import org.tctalent.server.request.chat.reaction.AddReactionRequest;
 
 public interface ReactionService {
 
     /**
-     * Creates a new reaction from the emoji in the given request, or calls update if that emoji
+     * Adds a new reaction with the emoji in the given request, or calls modify if that emoji
      * was already associated with a reaction.
      * @param chatPostId id of the parent chat post
-     * @param request {@link CreateReactionRequest} containing the emoji.
+     * @param request {@link AddReactionRequest} containing the emoji.
      * @return list of reactions belonging to given chat post
-     * @throws NoSuchObjectException if post or reaction (if update called) not found
+     * @throws NoSuchObjectException if post or reaction (if modify called) not found
      * @throws InvalidRequestException if not authorised to delete (if delete method called)
      * @throws EntityExistsException if reaction already exists
      */
-    List<Reaction> createReaction(long chatPostId, CreateReactionRequest request)
+    List<Reaction> addReaction(long chatPostId, AddReactionRequest request)
             throws NoSuchObjectException, InvalidRequestException, EntityExistsException;
 
     /**
-     * Updates the reaction associated with the ID provided:
+     * Modifies the reaction associated with the ID provided:
      * delete the reaction altogether if the only associated user;
      * if an associated user but not the only one, remove them and save the reaction;
      * if not an associated user, add them and save.
@@ -48,6 +48,6 @@ public interface ReactionService {
      * @throws NoSuchObjectException if the there is no Reaction record with the given ID
      * @throws InvalidRequestException if not authorised to delete (if delete method called)
      */
-    List<Reaction> updateReaction(long id) throws NoSuchObjectException;
+    List<Reaction> modifyReaction(long id) throws NoSuchObjectException;
 
 }

@@ -14,7 +14,7 @@
       <fa-icon id="reactionBtnSmiley" icon="face-smile" size="xs"></fa-icon>+
     </button>
     <button
-    class="update-reaction-btn"
+    class="modify-reaction-btn"
     *ngFor="let reaction of post.reactions"
     (click)="onSelectReaction(reaction)">
       <span [ngbTooltip]="reactionToolTip">

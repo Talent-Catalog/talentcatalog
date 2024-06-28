@@ -1,6 +1,6 @@
 import {ViewPostComponent} from "./view-post.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {CreateReactionRequest, ReactionService} from "../../../services/reaction.service";
+import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {ChatPost} from "../../../model/chat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
@@ -15,7 +15,7 @@ fdescribe('ViewPostComponent', () => {
   let reactionServiceSpy: jasmine.SpyObj<ReactionService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('ReactionService', ['createReaction', 'updateReaction']);
+    const spy = jasmine.createSpyObj('ReactionService', ['addReaction', 'modifyReaction']);
 
     await TestBed.configureTestingModule({
       declarations: [ ViewPostComponent ],
@@ -69,23 +69,23 @@ fdescribe('ViewPostComponent', () => {
     const event = { emoji: { native: '😊' } };
 
 
-    reactionServiceSpy.createReaction.and.returnValue(of(MOCK_REACTIONS));
+    reactionServiceSpy.addReaction.and.returnValue(of(MOCK_REACTIONS));
 
     component.onSelectEmoji(event);
 
     expect(component.reactionPickerVisible).toBeFalse();
-    expect(reactionServiceSpy.createReaction).toHaveBeenCalledWith(component.post.id, { emoji: '😊' } as CreateReactionRequest);
+    expect(reactionServiceSpy.addReaction).toHaveBeenCalledWith(component.post.id, { emoji: '😊' } as AddReactionRequest);
     expect(component.post.reactions.length).toBe(3);
     expect(component.post.reactions[0].emoji).toBe('😊');
   });
 
   it('should update reaction when a reaction button is clicked', () => {
     const reaction: Reaction = MOCK_REACTIONS[0];
-    reactionServiceSpy.updateReaction.and.returnValue(of(MOCK_REACTIONS));
+    reactionServiceSpy.modifyReaction.and.returnValue(of(MOCK_REACTIONS));
 
     component.onSelectReaction(reaction);
 
-    expect(reactionServiceSpy.updateReaction).toHaveBeenCalledWith(reaction.id);
+    expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(reaction.id);
     expect(component.post.reactions.length).toBe(3);
     expect(component.post.reactions[0].users.length).toBe(2);
   });
