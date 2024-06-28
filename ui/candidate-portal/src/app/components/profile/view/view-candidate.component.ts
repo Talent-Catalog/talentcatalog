@@ -76,11 +76,11 @@ export class ViewCandidateComponent implements OnInit {
 
   private setCandidate(candidate: Candidate) {
     this.candidate = candidate;
-    this.fetchCandidateProspectChat();
+    this.getCandidateProspectChat();
     this.fetchAllOpportunityChats();
   }
 
-  private fetchCandidateProspectChat() {
+  private getCandidateProspectChat() {
     this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
       if (result) {
         this.setSourceChat(result);

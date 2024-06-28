@@ -97,6 +97,7 @@ export class ChatService implements OnDestroy {
     return this.http.post<JobChat>(`${this.apiUrl}`, request);
   }
 
+  // Returns null if there isn't one already
   getCandidateProspectChat(candidateId: number): Observable<JobChat> {
     return this.http.get<JobChat>(`${this.apiUrl}/${candidateId}/get-cp-chat`);
   }

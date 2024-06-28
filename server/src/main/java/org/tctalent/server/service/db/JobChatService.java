@@ -38,10 +38,6 @@ public interface JobChatService {
      */
     DtoBuilder getJobChatDtoBuilder();
 
-//    TODO: doc and place at end
-    @Nullable
-    public JobChat getCandidateProspectChat(long candidateId);
-
     /**
      * Finds a job chat matching the given type and paramteres, creating one if needed.
      * <p/>
@@ -137,4 +133,13 @@ public interface JobChatService {
      */
     @NonNull
     List<JobChat> listJobChats();
+
+    /**
+     * Gets the {@link JobChatType#CandidateProspect} type {@link JobChat} for candidate with given ID,
+     * if there is one.
+     * @param candidateId
+     * @return null if there is no chat yet, or {@link JobChat} if there is
+     */
+    @Nullable
+    JobChat getCandidateProspectChat(long candidateId);
 }

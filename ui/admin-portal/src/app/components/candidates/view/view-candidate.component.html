@@ -236,67 +236,41 @@
             </ng-template>
           </ng-container>
 
-<!--           Chat between source partner candidate-->
+          <!-- Chat between source partner and candidate, or the option to create one -->
           <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
-              <a ngbNavLink *ngIf="candidateChat; else noChat">
-                  Chat With Candidate
-                  <app-chat-read-status *ngIf="candidateChat" [chats]="[candidateChat]">
-                  </app-chat-read-status>
-              </a>
-
-              <ng-template #noChat>
-                <a ngbNavLink (click)="createChat()">
-                  Create Chat
-                </a>
+            <!-- Tab header -->
+            <a ngbNavLink>
+              Chat With Candidate
+              <app-chat-read-status *ngIf="candidateChat" [chats]="[candidateChat]">
+              </app-chat-read-status>
+            </a>
+            <!-- Tab content — either the chats or a button to create one with help text -->
+            <ng-template ngbNavContent>
+              <app-view-chat-posts *ngIf="candidateChat; else createChatButton"
+                                   [chat]="candidateChat">
+              </app-view-chat-posts>
+              <ng-template #createChatButton>
+                <div class="text-center mt-5 mb-4">
+                  <button class="btn btn-secondary mb-1" (click)="createChat()">
+                  <span *ngIf="loadingButton; else elseBlock">
+                    <i class="fas fa-spinner fa-spin"></i>
+                  </span>
+                  <ng-template #elseBlock>
+                    <i class="fa-regular fa-comment"></i>
+                  </ng-template>
+                    Create Chat
+                  </button>
+                </div>
+                <div class="text-muted fw-light text-center fs-6">
+                  Click the button to create a chat with this candidate.
+                  <br><br>
+                  They will not see the chat until you have posted, at which point the Chat tab
+                  will appear on their candidate portal profile. Candidates are notified via email
+                  when new posts are added.
+                </div>
               </ng-template>
-
-              <ng-template ngbNavContent>
-                <app-view-chat-posts *ngIf="candidateChat; else createChatHelp"
-                                     [chat]="candidateChat">
-                </app-view-chat-posts>
-                <!--If this tab opens first from a previous candidate view, user may need guidance:-->
-                <ng-template #createChatHelp>
-                  <div class="text-muted py-3 fw-light text-center fs-6">
-                    Click the tab header to create a chat with this candidate.
-                  </div>
-                </ng-template>
-              </ng-template>
+            </ng-template>
           </ng-container>
-
-          <!-- Chat between source partner candidate-->
-<!--          <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">-->
-<!--            <a ngbNavLink>-->
-<!--              Chat With Candidate-->
-<!--              <app-chat-read-status *ngIf="candidateChat" [chats]="[candidateChat]">-->
-<!--              </app-chat-read-status>-->
-<!--            </a>-->
-
-<!--            <ng-template ngbNavContent>-->
-<!--              <app-view-chat-posts *ngIf="candidateChat; else createChatButton"-->
-<!--                                   [chat]="candidateChat">-->
-<!--              </app-view-chat-posts>-->
-<!--              <ng-template #createChatButton>-->
-<!--                <div class="text-center mt-5 mb-4">-->
-<!--                  <button class="btn btn-secondary mb-1" (click)="createChat()">-->
-<!--                  <span *ngIf="loadingButton; else elseBlock">-->
-<!--                    <i class="fas fa-spinner fa-spin"></i>-->
-<!--                  </span>-->
-<!--                  <ng-template #elseBlock>-->
-<!--                    <i class="fa-regular fa-comment"></i>-->
-<!--                  </ng-template>-->
-<!--                    Create Chat-->
-<!--                  </button>-->
-<!--                </div>-->
-<!--                <div class="text-muted fw-light text-center fs-6">-->
-<!--                  Click the button to create a chat with this candidate.-->
-<!--                  <br><br>-->
-<!--                  They will not see the chat until you have posted, at which point the Chat tab-->
-<!--                  will appear on their candidate portal profile. Candidates are notified via email-->
-<!--                  when new posts are added.-->
-<!--                </div>-->
-<!--              </ng-template>-->
-<!--            </ng-template>-->
-<!--          </ng-container>-->
 
         </nav>
         <div [ngbNavOutlet]="nav" class="mt-2"></div>

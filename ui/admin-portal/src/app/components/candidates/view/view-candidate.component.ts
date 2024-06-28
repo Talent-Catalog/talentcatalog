@@ -98,6 +98,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
     this.candidateProspectTabVisible = userIsCandidatePartner;
 
+    // May return null, in which case 'Create Chat' button displayed instead of chat
     if (this.candidateProspectTabVisible) {
       this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
         this.candidateChat = result;
@@ -121,7 +122,6 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
           this.setCandidate(candidate);
           this.loadLists();
           this.generateToken();
-          // We need the returned candidate object before firing this method:
           this.setChatAccess();
         }
       }, error => {
@@ -220,10 +220,9 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
       type: JobChatType.CandidateProspect,
       candidateId: this.candidate.id,
     }
-    this.chatService.create(candidateProspectChatRequest).subscribe(
-      {
-        next: (chat) => {this.candidateChat = chat; this.loading = false},
-        error: (error) => {this.error = error; this.loading = false}
+    this.chatService.create(candidateProspectChatRequest).subscribe({
+        next: (chat) => {this.candidateChat = chat; this.loadingButton = false},
+        error: (error) => {this.error = error; this.loadingButton = false}
       }
     )
   }
