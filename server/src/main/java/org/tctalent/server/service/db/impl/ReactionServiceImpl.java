@@ -28,7 +28,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Reaction;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.ReactionRepository;
-import org.tctalent.server.request.chat.reaction.CreateReactionRequest;
+import org.tctalent.server.request.chat.reaction.AddReactionRequest;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.ReactionService;
 import org.tctalent.server.service.db.UserService;
@@ -46,15 +46,15 @@ public class ReactionServiceImpl implements ReactionService {
     private final ChatPostService chatPostService;
 
     @Override
-    public List<Reaction> createReaction(long chatPostId, CreateReactionRequest request)
+    public List<Reaction> addReaction(long chatPostId, AddReactionRequest request)
             throws NoSuchObjectException, InvalidRequestException, EntityExistsException {
 
-        // If user selected emoji matching existing reaction, call update and return updated record.
+        // If user selected emoji matching existing reaction, call modify and return modified record.
         Optional<Reaction> matchingReaction =
             reactionRepository.findByEmojiAndChatPostId(request.getEmoji(), chatPostId);
 
         if (matchingReaction.isPresent()) {
-            updateReaction(matchingReaction.get().getId());
+            modifyReaction(matchingReaction.get().getId());
         } else {
             // Otherwise, create a new reaction for the given emoji.
             Reaction reaction = new Reaction();
@@ -78,7 +78,7 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
-    public List<Reaction> updateReaction(long id)
+    public List<Reaction> modifyReaction(long id)
             throws NoSuchObjectException, InvalidRequestException {
         final User loggedInUser = userService.getLoggedInUser();
         final Reaction reaction = reactionRepository.findById(id)
