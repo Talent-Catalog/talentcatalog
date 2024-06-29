@@ -376,6 +376,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
+            .listId(savedList.getId())
             .action("Get Saved List Candidates")
             .message("Found " + candidatesPage.getTotalElements() + " candidates in list")
             .logInfo();
@@ -391,6 +392,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
+            .listId(savedList.getId())
             .action("Get Saved List Candidates")
             .message("Found " + candidates.size() + " candidates in list")
             .logInfo();
@@ -2898,7 +2900,7 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             noOfPagesToProcess = noOfPagesRequested;
         }
-
+        
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
             .action("Sync Candidates to Salesforce")
