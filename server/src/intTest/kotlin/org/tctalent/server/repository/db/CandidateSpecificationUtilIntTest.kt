@@ -16,24 +16,19 @@
 
 package org.tctalent.server.repository.db
 
-import org.mockito.Mockito.mock
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Sort
-import org.springframework.data.jpa.domain.JpaSort
-import org.tctalent.server.model.db.Candidate
-import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.request.PagedSearchRequest
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Join
-import javax.persistence.criteria.Root
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import javax.persistence.criteria.*
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.springframework.data.domain.Sort
+import org.tctalent.server.model.db.Candidate
+import org.tctalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders
+import org.tctalent.server.request.PagedSearchRequest
 
-class CandidateSpecificationUtilIntTest : BaseDBIntegrationTest() {
-  @Autowired private lateinit var repo: CandidateRepository
-  @Autowired private lateinit var userRepository: UserRepository
+class CandidateSpecificationUtilIntTest {
   private lateinit var candidate: Root<Candidate>
   private lateinit var request: PagedSearchRequest
   private lateinit var builder: CriteriaBuilder
@@ -45,28 +40,33 @@ class CandidateSpecificationUtilIntTest : BaseDBIntegrationTest() {
 
   @BeforeTest
   fun setup() {
-    assertTrue { isContainerInitialized() }
-    request = PagedSearchRequest()
-    candidate = mock(Root::class.java) as Root<Candidate>
-    builder = mock(CriteriaBuilder::class.java)
-    user = mock(Join::class.java) as Join<Any, Any>
-    partner = mock(Join::class.java) as Join<Any, Any>
-    nationality = mock(Join::class.java) as Join<Any, Any>
-    country = mock(Join::class.java) as Join<Any, Any>
-    educationLevel = mock(Join::class.java) as Join<Any, Any>
+    request = mockk()
+    candidate = mockk()
+    builder = mockk()
+    user = mockk()
+    partner = mockk()
+    nationality = mockk()
+    country = mockk()
+    educationLevel = mockk()
   }
 
   @Test
-  fun testGetOrderByOrders_withUserPartnerSort() {
-    request.sortFields = arrayOf<String>("user.partner.name")
-    request.sortDirection = Sort.Direction.ASC
-    val path: JpaSort.Path<Any> = mock(Path::class.java)
+  fun `sorts by user partner in ascending order`() {
+    val pathAsc = mockk<Path<String>>()
+    val pathId = mockk<Path<String>>()
+    val ascOrder = mockk<Order>()
+    val descOrder = mockk<Order>()
 
-    //        when(partner.get("name")).thenReturn(path)
-    //        `when`(builder.asc(path)).thenReturn(mock(Order::class.java))
+    every { request.sortFields } returns arrayOf("user.partner.name")
+    every { request.sortDirection } returns Sort.Direction.ASC
+    every { partner.get<String>("name") } returns pathAsc
+    every { builder.asc(pathAsc) } returns ascOrder
+    every { candidate.get<String>("id") } returns pathId
+    every { builder.asc(any()) } answers { ascOrder }
+    every { builder.desc(any()) } answers { descOrder }
 
     val orders =
-      CandidateSpecificationUtil.getOrderByOrders(
+      getOrderByOrders(
         request,
         candidate,
         builder,
@@ -77,170 +77,229 @@ class CandidateSpecificationUtilIntTest : BaseDBIntegrationTest() {
         educationLevel,
       )
 
-    //    verify(partner).get("name")
-    //    verify(builder).asc(path)
-    assertEquals(2, orders.size) // Includes the default sort by id desc
+    verify {
+      builder.asc(any())
+      partner.get<String>("name")
+      request.sortFields
+      request.sortDirection
+      candidate.get<String>("id")
+    }
+    assertEquals(2, orders.size)
   }
-  //
-  //  @Test
-  //  fun testGetOrderByOrders_withUserSort() {
-  //    request.setSortFields(arrayOf<String>("user.email"))
-  //    request.setSortDirection(Sort.Direction.DESC)
-  //
-  //    val path: Path<Any> = mock(Path::class.java)
-  //    `when`(user.get("email")).thenReturn(path)
-  //    `when`(builder.desc(path)).thenReturn(mock(Order::class.java))
-  //
-  //    val orders: List<Order> =
-  //      CandidateSpecificationUtil.getOrderByOrders(
-  //        request,
-  //        candidate,
-  //        builder,
-  //        user,
-  //        partner,
-  //        nationality,
-  //        country,
-  //        educationLevel,
-  //      )
-  //
-  //    verify(user).get("email")
-  //    verify(builder).desc(path)
-  //    assertEquals(2, orders.size) // Includes the default sort by id desc
-  //  }
-  //
-  //  @Test
-  //  fun testGetOrderByOrders_withNationalitySort() {
-  //    request.setSortFields(arrayOf<String>("nationality.name"))
-  //    request.setSortDirection(Sort.Direction.ASC)
-  //
-  //    val path: Path<Any> = mock(Path::class.java)
-  //    `when`(nationality.get("name")).thenReturn(path)
-  //    `when`(builder.asc(path)).thenReturn(mock(Order::class.java))
-  //
-  //    val orders: List<Order> =
-  //      CandidateSpecificationUtil.getOrderByOrders(
-  //        request,
-  //        candidate,
-  //        builder,
-  //        user,
-  //        partner,
-  //        nationality,
-  //        country,
-  //        educationLevel,
-  //      )
-  //
-  //    verify(nationality).get("name")
-  //    verify(builder).asc(path)
-  //    assertEquals(2, orders.size) // Includes the default sort by id desc
-  //  }
-  //
-  //  @Test
-  //  fun testGetOrderByOrders_withCountrySort() {
-  //    request.setSortFields(arrayOf<String>("country.name"))
-  //    request.setSortDirection(Sort.Direction.DESC)
-  //
-  //    val path: Path<Any> = mock(Path::class.java)
-  //    `when`(country.get("name")).thenReturn(path)
-  //    `when`(builder.desc(path)).thenReturn(mock(Order::class.java))
-  //
-  //    val orders: List<Order> =
-  //      CandidateSpecificationUtil.getOrderByOrders(
-  //        request,
-  //        candidate,
-  //        builder,
-  //        user,
-  //        partner,
-  //        nationality,
-  //        country,
-  //        educationLevel,
-  //      )
-  //
-  //    verify(country).get("name")
-  //    verify(builder).desc(path)
-  //    assertEquals(2, orders.size) // Includes the default sort by id desc
-  //  }
-  //
-  //  @Test
-  //  fun testGetOrderByOrders_withEducationLevelSort() {
-  //    request.setSortFields(arrayOf<String>("maxEducationLevel.level"))
-  //    request.setSortDirection(Sort.Direction.ASC)
-  //
-  //    val path: Path<Any> = mock(Path::class.java)
-  //    `when`(educationLevel.get("level")).thenReturn(path)
-  //    `when`(builder.asc(path)).thenReturn(mock(Order::class.java))
-  //
-  //    val orders: List<Order> =
-  //      CandidateSpecificationUtil.getOrderByOrders(
-  //        request,
-  //        candidate,
-  //        builder,
-  //        user,
-  //        partner,
-  //        nationality,
-  //        country,
-  //        educationLevel,
-  //      )
-  //
-  //    verify(educationLevel).get("level")
-  //    verify(builder).asc(path)
-  //    assertEquals(2, orders.size) // Includes the default sort by id desc
-  //  }
-  //
-  //  @Test
-  //  fun testGetOrderByOrders_withIdSort() {
-  //    request.setSortFields(arrayOf<String>("id"))
-  //    request.setSortDirection(Sort.Direction.ASC)
-  //
-  //    val path: Path<Any> = mock(Path::class.java)
-  //    `when`(candidate.get("id")).thenReturn(path)
-  //    `when`(builder.asc(path)).thenReturn(mock(Order::class.java))
-  //
-  //    val orders: List<Order> =
-  //      CandidateSpecificationUtil.getOrderByOrders(
-  //        request,
-  //        candidate,
-  //        builder,
-  //        user,
-  //        partner,
-  //        nationality,
-  //        country,
-  //        educationLevel,
-  //      )
-  //
-  //    verify(candidate).get("id")
-  //    verify(builder).asc(path)
-  //    assertEquals(1, orders.size) // No additional id sort required
-  //  }
-  //
-  //  @Test
-  //  fun testGetOrderByOrders_withoutIdSort() {
-  //    request.setSortFields(arrayOf<String>("user.email"))
-  //    request.setSortDirection(Sort.Direction.ASC)
-  //
-  //    val emailPath: Path<Any> = mock(Path::class.java)
-  //    `when`(user.get("email")).thenReturn(emailPath)
-  //    `when`(builder.asc(emailPath)).thenReturn(mock(Order::class.java))
-  //
-  //    val idPath: Path<Any> = mock(Path::class.java)
-  //    `when`(candidate.get("id")).thenReturn(idPath)
-  //    `when`(builder.desc(idPath)).thenReturn(mock(Order::class.java))
-  //
-  //    val orders: List<Order> =
-  //      CandidateSpecificationUtil.getOrderByOrders(
-  //        request,
-  //        candidate,
-  //        builder,
-  //        user,
-  //        partner,
-  //        nationality,
-  //        country,
-  //        educationLevel,
-  //      )
-  //
-  //    verify(user).get("email")
-  //    verify(builder).asc(emailPath)
-  //    verify(candidate).get("id")
-  //    verify(builder).desc(idPath)
-  //    assertEquals(2, orders.size) // Includes the default sort by id desc
-  //  }
+
+  @Test
+  fun `sorts by user email order desc`() {
+    val pathAsc = mockk<Path<String>>()
+    val pathId = mockk<Path<String>>()
+    val ascOrder = mockk<Order>()
+    val descOrder = mockk<Order>()
+
+    every { request.sortFields } returns arrayOf("user.email")
+    every { request.sortDirection } returns Sort.Direction.DESC
+    every { user.get<String>("email") } returns pathAsc
+    every { builder.asc(pathAsc) } returns ascOrder
+    every { candidate.get<String>("id") } returns pathId
+    every { builder.asc(any()) } answers { ascOrder }
+    every { builder.desc(any()) } answers { descOrder }
+
+    val orders =
+      getOrderByOrders(
+        request,
+        candidate,
+        builder,
+        user,
+        partner,
+        nationality,
+        country,
+        educationLevel,
+      )
+
+    verify {
+      user.get<String>("email")
+      request.sortFields
+      request.sortDirection
+      candidate.get<String>("id")
+      builder.desc(any())
+    }
+    assertEquals(2, orders.size)
+  }
+
+  @Test
+  fun `sorts by user in ascending order`() {
+    val pathAsc = mockk<Path<String>>()
+    val pathId = mockk<Path<String>>()
+    val ascOrder = mockk<Order>()
+    val descOrder = mockk<Order>()
+
+    every { request.sortFields } returns arrayOf("user.name")
+    every { request.sortDirection } returns Sort.Direction.ASC
+    every { user.get<String>("name") } returns pathAsc
+    every { builder.asc(pathAsc) } returns ascOrder
+    every { candidate.get<String>("id") } returns pathId
+    every { builder.asc(any()) } answers { ascOrder }
+    every { builder.desc(any()) } answers { descOrder }
+
+    val orders =
+      getOrderByOrders(
+        request,
+        candidate,
+        builder,
+        user,
+        partner,
+        nationality,
+        country,
+        educationLevel,
+      )
+
+    verify {
+      builder.asc(any())
+      user.get<String>("name")
+      request.sortFields
+      request.sortDirection
+      candidate.get<String>("id")
+    }
+    assertEquals(2, orders.size)
+  }
+
+  @Test
+  fun `sorts by user nationality property in ascending order`() {
+    val pathAsc = mockk<Path<String>>()
+    val pathId = mockk<Path<String>>()
+    val ascOrder = mockk<Order>()
+    val descOrder = mockk<Order>()
+
+    every { request.sortFields } returns arrayOf("nationality.name")
+    every { request.sortDirection } returns Sort.Direction.ASC
+    every { nationality.get<String>("name") } returns pathAsc
+    every { builder.asc(pathAsc) } returns ascOrder
+    every { candidate.get<String>("id") } returns pathId
+    every { builder.asc(any()) } answers { ascOrder }
+    every { builder.desc(any()) } answers { descOrder }
+
+    val orders =
+      getOrderByOrders(
+        request,
+        candidate,
+        builder,
+        user,
+        partner,
+        nationality,
+        country,
+        educationLevel,
+      )
+
+    verify {
+      builder.asc(any())
+      nationality.get<String>("name")
+      request.sortFields
+      request.sortDirection
+      candidate.get<String>("id")
+    }
+    assertEquals(2, orders.size)
+  }
+
+  @Test
+  fun `sorts by country in ascending order`() {
+    val pathAsc = mockk<Path<String>>()
+    val pathId = mockk<Path<String>>()
+    val ascOrder = mockk<Order>()
+    val descOrder = mockk<Order>()
+
+    every { request.sortFields } returns arrayOf("country.name")
+    every { request.sortDirection } returns Sort.Direction.ASC
+    every { country.get<String>("name") } returns pathAsc
+    every { builder.asc(pathAsc) } returns ascOrder
+    every { candidate.get<String>("id") } returns pathId
+    every { builder.asc(any()) } answers { ascOrder }
+    every { builder.desc(any()) } answers { descOrder }
+
+    val orders =
+      getOrderByOrders(
+        request,
+        candidate,
+        builder,
+        user,
+        partner,
+        nationality,
+        country,
+        educationLevel,
+      )
+
+    verify {
+      builder.asc(any())
+      country.get<String>("name")
+      request.sortFields
+      request.sortDirection
+      candidate.get<String>("id")
+    }
+    assertEquals(2, orders.size)
+  }
+
+  @Test
+  fun `sorts by user education level in ascending order`() {
+    val pathAsc = mockk<Path<String>>()
+    val pathId = mockk<Path<String>>()
+    val ascOrder = mockk<Order>()
+    val descOrder = mockk<Order>()
+
+    every { request.sortFields } returns arrayOf("maxEducationLevel.name")
+    every { request.sortDirection } returns Sort.Direction.ASC
+    every { educationLevel.get<String>("name") } returns pathAsc
+    every { candidate.get<String>("id") } returns pathId
+    every { builder.asc(any()) } answers { ascOrder }
+    every { builder.desc(any()) } answers { descOrder }
+
+    val orders =
+      getOrderByOrders(
+        request,
+        candidate,
+        builder,
+        user,
+        partner,
+        nationality,
+        country,
+        educationLevel,
+      )
+
+    verify {
+      builder.asc(any())
+      educationLevel.get<String>("name")
+      request.sortFields
+      request.sortDirection
+      candidate.get<String>("id")
+    }
+    assertEquals(2, orders.size)
+  }
+
+  @Test
+  fun `sorts by user id in ascending order`() {
+    val pathId = mockk<Path<String>>()
+    val ascOrder = mockk<Order>()
+
+    every { request.sortFields } returns arrayOf("id")
+    every { request.sortDirection } returns Sort.Direction.ASC
+
+    every { candidate.get<String>("id") } returns pathId
+    every { builder.asc(any()) } answers { ascOrder }
+
+    val orders =
+      getOrderByOrders(
+        request,
+        candidate,
+        builder,
+        user,
+        partner,
+        nationality,
+        country,
+        educationLevel,
+      )
+
+    verify {
+      builder.asc(any())
+      request.sortFields
+      request.sortDirection
+      candidate.get<String>("id")
+    }
+    assertEquals(1, orders.size)
+  }
 }
