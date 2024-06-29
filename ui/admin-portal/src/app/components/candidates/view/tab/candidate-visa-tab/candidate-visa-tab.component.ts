@@ -71,7 +71,7 @@ export class CandidateVisaTabComponent implements OnInit {
     this.countryService.listTBBDestinations().subscribe((results) => {
       /**
        * todo: Remove/alter this filter once no longer needed or find other solution.
-       * It is a temporary filter to only display the TBB destinations (Australia & Canada) that have functioning visa checks.
+       * It is a temporary filter to only display the TBB destinations (Australia, Canada & UK) that have functioning visa checks.
        */
       this.tbbDestinations = results.filter(c => c.id == 6191 || c.id == 6216 || c.id == 6179);
     })
