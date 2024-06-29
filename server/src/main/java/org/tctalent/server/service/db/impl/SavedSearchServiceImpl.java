@@ -44,11 +44,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.common.bytes.BytesReference;
+import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentFactory;
+import org.elasticsearch.xcontent.XContentType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -125,6 +130,7 @@ import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateReviewStatusService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
@@ -170,6 +176,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
     private final EntityManager entityManager;
+    private final AuthService authService;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
@@ -206,6 +213,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 SavedSearchSpecification.buildSearchQuery(request, loggedInUser));
         }
         LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
             .action("SearchSavedSearches")
             .message("Found " + savedSearches.size() + " savedSearches in search")
             .logInfo();
@@ -240,6 +248,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 request.getPageRequest());
         }
         LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
             .action("SearchSavedSearches")
             .message("Found " + savedSearches.getTotalElements() + " savedSearches in search")
             .logInfo();
@@ -336,6 +345,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         }
         LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
             .searchId(savedSearchId)
             .action("SearchCandidates")
             .message("Found " + candidateIds.size() + " candidates in search")
@@ -629,6 +639,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 return savedSearchRepository.save(savedSearch);
             } else {
                 LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
                     .searchId(savedSearch.getId())
                     .action("UpdateSavedSearch")
                     .message("Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName())
@@ -1476,6 +1487,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
 
             LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
                 .action("notifySearchWatchers")
                 .message("Notify watchers: running " + searches.size() + " searches")
                 .logInfo();
@@ -1493,6 +1505,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 currentSearch = savedSearch.getName() + " (" + savedSearch.getId() + ")";
 
                 LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
                     .action("notifySearchWatchers")
                     .message("Running search " + count + ": " + currentSearch)
                     .logInfo();
@@ -1535,6 +1548,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     .collect(Collectors.joining("/"));
 
                 LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
                     .action("notifySearchWatchers")
                     .message("Tell user " + userId + " about searches " + s)
                     .logInfo();
@@ -1543,6 +1557,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 if (user == null) {
                     final String mess = "Unknown user watcher id " + userId + " watching searches " + s;
                     LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
                         .action("notifySearchWatchers")
                         .message(mess)
                         .logWarn();
@@ -1555,6 +1570,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         } catch (Exception ex) {
             String mess = "Watcher notification failure (" + currentSearch + ")";
             LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
                 .action("notifySearchWatchers")
                 .message(mess)
                 .logError(ex);
@@ -1763,14 +1779,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
+            // Convert BoolQueryBuilder to a compact JSON string
+            String boolQueryJson = convertToJson(boolQueryBuilder);
+
             LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .searchId(searchRequest.getSavedSearchId())
                 .action("doSearchCandidates")
-                .message("Elasticsearch query:\n" + boolQueryBuilder)
+                .message("Elasticsearch query: " + boolQueryJson)
                 .logInfo();
 
             LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .searchId(searchRequest.getSavedSearchId())
                 .action("doSearchCandidates")
-                .message("Elasticsearch sort:\n" + req)
+                .message("Elasticsearch sort: " + req)
                 .logInfo();
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
@@ -1812,6 +1835,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
         }
         LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .searchId(searchRequest.getSavedSearchId())
             .action("doSearchCandidates")
             .message("Found " + candidates.getTotalElements() + " candidates in search")
             .logInfo();
@@ -1892,4 +1917,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return boolQueryBuilder;
     }
 
+    private String convertToJson(BoolQueryBuilder boolQueryBuilder) {
+        try {
+            XContentBuilder builder = XContentFactory.jsonBuilder();
+            boolQueryBuilder.toXContent(builder, null);
+            builder.close();
+            BytesReference bytes = BytesReference.bytes(builder);
+            return XContentHelper.convertToJson(bytes, false, XContentType.JSON);
+        } catch (IOException e) {
+            logConversionFailure(e);
+            return boolQueryBuilder.toString();
+        }
+    }
+
+    private void logConversionFailure(Exception e) {
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("convertToJson")
+            .message("Failed to convert BoolQueryBuilder to compact JSON: " + e.getMessage())
+            .logWarn();
+    }
 }
