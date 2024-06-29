@@ -267,6 +267,7 @@ public class CandidateBuilderSelector {
             .add("id")
             .add("name")
             .add("submissionList", savedListDto())
+            .add("country", countryDto())
             ;
     }
 
