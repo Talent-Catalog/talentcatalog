@@ -2893,14 +2893,8 @@ public class CandidateServiceImpl implements CandidateService {
                 totalPages + " pages.")
             .logInfo();
 
-        int noOfPagesToProcess;
+        int noOfPagesToProcess = Math.min(totalPages - firstPageIndex, noOfPagesRequested);
 
-        if (totalPages - firstPageIndex < noOfPagesRequested) {
-            noOfPagesToProcess = totalPages - firstPageIndex;
-        } else {
-            noOfPagesToProcess = noOfPagesRequested;
-        }
-        
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
             .action("Sync Candidates to Salesforce")
