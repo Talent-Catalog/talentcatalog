@@ -1738,19 +1738,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     List<CandidateStatus> getStatusListFromString(String statusList){
         return statusList != null ? Stream.of(statusList.split(","))
-                .map(s -> CandidateStatus.valueOf(s))
+                .map(CandidateStatus::valueOf)
                 .collect(Collectors.toList()) : null;
     }
 
     String getUnhcrStatusListAsString(List<UnhcrStatus> unhcrStatuses){
         return !CollectionUtils.isEmpty(unhcrStatuses) ? unhcrStatuses.stream().map(
-                status -> status.name())
+                Enum::name)
             .collect(Collectors.joining(",")) : null;
     }
 
     List<UnhcrStatus> getUnhcrStatusListFromString(String unhcrStatusList){
         return unhcrStatusList != null ? Stream.of(unhcrStatusList.split(","))
-            .map(s -> UnhcrStatus.valueOf(s))
+            .map(UnhcrStatus::valueOf)
             .collect(Collectors.toList()) : null;
     }
 
