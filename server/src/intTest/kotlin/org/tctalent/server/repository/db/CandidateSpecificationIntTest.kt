@@ -16,6 +16,10 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Candidate
 import org.tctalent.server.model.db.CandidateStatus
@@ -23,10 +27,6 @@ import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedCandidate
 import org.tctalent.server.repository.db.integrationhelp.getSavedUser
 import org.tctalent.server.request.candidate.SearchCandidateRequest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: CandidateRepository
@@ -44,7 +44,6 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val request = SearchCandidateRequest().apply { keyword = "" }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
-    // TODO: Assert based on your implementation (should it return all or no results?)
   }
 
   @Test
@@ -68,7 +67,6 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    // Assert if results have specified occupation and experience range
   }
 
   @Test
@@ -77,7 +75,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isEmpty()) // May need adjustment based on implementation
+    assertTrue(results.isEmpty())
   }
 
   @Test
@@ -91,7 +89,6 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    // Assert if results have specified status and experience range
   }
 
   @Test
@@ -100,7 +97,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isEmpty()) // May need adjustment based on implementation
+    assertTrue(results.isEmpty())
   }
 
   @Test
@@ -109,7 +106,6 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    // Assert if results have experience greater than or equal to 2 years
   }
 
   @Test
@@ -118,7 +114,6 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    // Assert if results have experience less than or equal to 5 years
   }
 
   @Test
@@ -131,9 +126,6 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isEmpty()) // No results expected
+    assertTrue(results.isEmpty())
   }
-
-  // ... Add test cases for combinations and empty input as mentioned before
-
 }
