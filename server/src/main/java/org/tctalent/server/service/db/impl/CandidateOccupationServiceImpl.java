@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
@@ -46,9 +45,8 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 @Service
+@Slf4j
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
-
-    private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final OccupationRepository occupationRepository;

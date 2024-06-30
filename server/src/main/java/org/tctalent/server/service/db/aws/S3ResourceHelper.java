@@ -40,9 +40,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -51,8 +50,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.FileDownloadException;
 import org.tctalent.server.logging.LogBuilder;
 
+@Slf4j
 public class S3ResourceHelper {
-    private static final Logger log = LoggerFactory.getLogger(S3ResourceHelper.class);
     public static long FILE_PART_SIZE = 5 * 1024 * 1024; // 5MB
 
     private AmazonS3 amazonS3;

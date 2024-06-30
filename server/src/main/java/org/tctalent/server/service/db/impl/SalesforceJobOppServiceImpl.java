@@ -23,8 +23,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -44,8 +43,9 @@ import org.tctalent.server.util.SalesforceHelper;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
-    private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
+
     private static final OffsetDateTime FIRST_PUBLISHED_JOB_DATE =
         OffsetDateTime.parse("2022-11-01T00:00:00Z", DateTimeFormatter.ISO_DATE_TIME);
     private final SalesforceJobOppRepository salesforceJobOppRepository;

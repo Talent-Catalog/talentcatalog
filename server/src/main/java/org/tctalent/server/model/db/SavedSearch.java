@@ -33,8 +33,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.logging.LogBuilder;
@@ -42,8 +41,8 @@ import org.tctalent.server.logging.LogBuilder;
 @Entity
 @Table(name = "saved_search")
 @SequenceGenerator(name = "seq_gen", sequenceName = "saved_search_id_seq", allocationSize = 1)
+@Slf4j
 public class SavedSearch extends AbstractCandidateSource {
-    private static final Logger log = LoggerFactory.getLogger(SavedSearch.class);
 
     private String type;
 

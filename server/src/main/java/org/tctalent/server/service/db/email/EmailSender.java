@@ -37,9 +37,8 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.annotation.PostConstruct;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
@@ -48,9 +47,9 @@ import org.tctalent.server.logging.LogBuilder;
 
 @Setter
 @Service
+@Slf4j
 public class EmailSender {
 
-    private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
     private final String alertSubject = "Talent Catalog Alert";
 
     public enum EmailType {

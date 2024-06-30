@@ -38,9 +38,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
@@ -94,8 +93,8 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
-    private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateService candidateService;
     private final EmailHelper emailHelper;

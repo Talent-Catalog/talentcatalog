@@ -30,9 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -61,9 +60,8 @@ import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.util.locale.LocaleHelper;
 
 @Service
+@Slf4j
 public class LanguageServiceImpl implements LanguageService {
-
-    private static final Logger log = LoggerFactory.getLogger(LanguageServiceImpl.class);
 
     private final LanguageRepository languageRepository;
     private final CandidateLanguageRepository candidateLanguageRepository;

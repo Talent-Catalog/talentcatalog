@@ -18,8 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import java.time.Duration;
 import java.time.Instant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +32,8 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
 
 @Service
+@Slf4j
 public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchService {
-    private static final Logger log = LoggerFactory.getLogger(PopulateElasticsearchServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;

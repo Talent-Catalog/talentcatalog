@@ -20,8 +20,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.util.SalesforceHelper;
@@ -35,8 +34,8 @@ import org.tctalent.server.util.SalesforceHelper;
  */
 @Getter
 @Setter
+@Slf4j
 public class CandidateOpportunityStageHistory {
-    private static final Logger log = LoggerFactory.getLogger(CandidateOpportunityStageHistory.class);
 
     /**
      * Stage

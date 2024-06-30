@@ -35,9 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -107,6 +106,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
  * @author John Cameron
  */
 @Service
+@Slf4j
 public class SavedListServiceImpl implements SavedListService {
 
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
@@ -125,7 +125,6 @@ public class SavedListServiceImpl implements SavedListService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
     private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
 
     @Autowired

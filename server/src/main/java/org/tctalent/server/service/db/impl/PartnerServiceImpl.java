@@ -20,8 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -48,11 +47,11 @@ import org.tctalent.server.service.db.PartnerService;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PartnerServiceImpl implements PartnerService {
     private final PartnerRepository partnerRepository;
     private final PartnerJobRelationRepository partnerJobRelationRepository;
     private final CountryService countryService;
-    private static final Logger log = LoggerFactory.getLogger(PartnerServiceImpl.class);
 
     @Override
     public @NonNull PartnerImpl create(UpdatePartnerRequest request)

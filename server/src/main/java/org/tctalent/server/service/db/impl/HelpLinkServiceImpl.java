@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -48,13 +47,12 @@ import org.tctalent.server.service.db.JobService;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HelpLinkServiceImpl implements HelpLinkService {
     private final HelpLinkRepository helpLinkRepository;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CountryService countryService;
     private final JobService jobService;
-
-    private static final Logger log = LoggerFactory.getLogger(HelpLinkServiceImpl.class);
 
     @Override
     public @NotNull HelpLink createHelpLink(UpdateHelpLinkRequest request)  throws NoSuchObjectException {

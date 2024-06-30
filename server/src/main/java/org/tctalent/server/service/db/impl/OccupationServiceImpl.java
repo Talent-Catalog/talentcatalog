@@ -18,9 +18,8 @@ package org.tctalent.server.service.db.impl;
 
 import io.jsonwebtoken.lang.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -43,9 +42,8 @@ import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.TranslationService;
 
 @Service
+@Slf4j
 public class OccupationServiceImpl implements OccupationService {
-
-    private static final Logger log = LoggerFactory.getLogger(OccupationService.class);
 
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final OccupationRepository occupationRepository;
