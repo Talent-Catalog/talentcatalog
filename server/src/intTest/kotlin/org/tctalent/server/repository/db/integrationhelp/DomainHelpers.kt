@@ -116,7 +116,7 @@ fun getCandidate() =
     unhcrStatus = UnhcrStatus.Unsure
     gender = Gender.male
     linkedInLink = "LINKEDIN"
-    dob = OffsetDateTime.now().minusYears(35).toLocalDate()
+    dob = OffsetDateTime.now().minusYears(28).toLocalDate()
     createdBy = systemUser()
     createdDate = OffsetDateTime.now().minusDays(5)
   }
