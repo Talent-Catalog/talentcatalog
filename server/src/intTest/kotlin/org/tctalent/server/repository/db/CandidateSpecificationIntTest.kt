@@ -28,15 +28,28 @@ import org.tctalent.server.repository.db.integrationhelp.*
 import org.tctalent.server.request.candidate.SearchCandidateRequest
 
 class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
-  @Autowired lateinit var repo: CandidateRepository
-  @Autowired lateinit var userRepository: UserRepository
-  @Autowired lateinit var educationLevelRepository: EducationLevelRepository
+  @Autowired private lateinit var repo: CandidateRepository
+  @Autowired private lateinit var userRepository: UserRepository
+  @Autowired private lateinit var countryRepository: CountryRepository
+  @Autowired private lateinit var educationLevelRepository: EducationLevelRepository
+  @Autowired private lateinit var languageRepository: LanguageRepository
+  @Autowired private lateinit var languageLevelRepository: LanguageLevelRepository
+  @Autowired private lateinit var candidateLanguageRepository: CandidateLanguageRepository
+  @Autowired lateinit var occupationRepository: OccupationRepository
+  @Autowired lateinit var candidateOccupationRepository: CandidateOccupationRepository
   private lateinit var testCandidate: Candidate
 
   @BeforeTest
   fun setup() {
     assertTrue { isContainerInitialized() }
     testCandidate = getSavedCandidate(repo, getSavedUser(userRepository))
+    repo.save(
+      testCandidate.apply {
+        nationality = getSavedCountry(countryRepository)
+        country = getSavedCountry(countryRepository)
+        maxEducationLevel = getSavedEducationLevel(educationLevelRepository)
+      }
+    )
   }
 
   @Test
@@ -44,12 +57,16 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val request = SearchCandidateRequest().apply { keyword = "" }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
-    assertTrue { results.isEmpty() }
+    assertNotNull(results)
+    assertTrue { results.isNotEmpty() }
+    assertEquals(1, results.count())
   }
 
   @Test
   fun `test keyword case insensitive`() {
-    val request = SearchCandidateRequest().apply { keyword = testCandidate.user.firstName }
+
+    val request =
+      SearchCandidateRequest().apply { keyword = testCandidate.user.firstName.uppercase() }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
@@ -60,20 +77,23 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test empty status with additional filters`() {
+
     val request =
       SearchCandidateRequest().apply {
-        occupationIds = listOf(1) // Replace 1 with a valid occupation id
         minYrs = 2
         maxYrs = 5
       }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    fail("Not implemented completely.")
+    assertTrue(results.isNotEmpty())
+    assertEquals(1, results.size)
+    assertEquals(testCandidate.id, results.first().id)
   }
 
   @Test
   fun `test OK status`() {
+
     val request = SearchCandidateRequest().apply { statuses = listOf(CandidateStatus.active) }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
@@ -85,6 +105,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test invalid status`() {
+
     val request = SearchCandidateRequest().apply { statuses = listOf(CandidateStatus.ineligible) }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
@@ -94,13 +115,16 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test occupation with additional filters`() {
-    val request =
-      SearchCandidateRequest().apply {
-        statuses = listOf(CandidateStatus.employed)
-        minYrs = 2
-        maxYrs = 5
-        occupationIds = testCandidate.candidateOccupations.map { it.id }
+    val occ1 = getOccupation()
+    occupationRepository.save(occ1)
+    val co =
+      getCandidateOccupation().apply {
+        candidate = testCandidate
+        occupation = occ1
       }
+    candidateOccupationRepository.save(co)
+
+    val request = SearchCandidateRequest().apply { occupationIds = listOf(co.id) }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
@@ -109,6 +133,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test invalid occupation id`() {
+
     val request = SearchCandidateRequest().apply { occupationIds = listOf(-1) } // Invalid id
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
@@ -118,11 +143,17 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test min yrs experience only`() {
+
+    val occ1 = getCandidateOccupation()
+    val occ2 = getCandidateOccupation()
+    repo.save(testCandidate.apply { candidateOccupations = listOf(occ1, occ2) })
     val request = SearchCandidateRequest().apply { minYrs = 2 }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    fail("Not implemented completely.")
+    assertTrue(results.isNotEmpty())
+    println(results.first().candidateOccupations.first().yearsExperience)
+    assertEquals(1, results.size)
   }
 
   @Test
@@ -151,6 +182,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
   /**  */
   @Test
   fun `test nationality search`() {
+
     val request =
       SearchCandidateRequest().apply { nationalityIds = listOf(testCandidate.nationality.id) }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
@@ -217,16 +249,28 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test language search`() {
+    val cl =
+      candidateLanguageRepository.save(
+        getCandidateLanguage().apply {
+          candidate = testCandidate
+          language = getSavedLanguage(languageRepository)
+          writtenLevel = getSavedLanguageLevel(languageLevelRepository)
+          spokenLevel = getSavedLanguageLevel(languageLevelRepository)
+        }
+      )
+
+    repo.save(testCandidate.apply {})
+
     val request =
       SearchCandidateRequest().apply {
-        englishMinWrittenLevel = testCandidate.candidateLanguages.first().writtenLevel.level
-        englishMinSpokenLevel = testCandidate.candidateLanguages.first().spokenLevel.level
+        englishMinWrittenLevel = cl.writtenLevel.level
+        englishMinSpokenLevel = cl.spokenLevel.level
       }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val result = repo.findAll(spec)
 
     assertNotNull(result)
-    assertTrue(result.isNotEmpty())
+    assertTrue(result.isNotEmpty(), "Expected results in the list.")
     assertTrue(
       result.any {
         it.candidateLanguages.any { cl ->

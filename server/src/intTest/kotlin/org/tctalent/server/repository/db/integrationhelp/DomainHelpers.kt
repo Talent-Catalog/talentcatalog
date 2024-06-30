@@ -849,6 +849,14 @@ fun getCandidateIds(repo: CandidateRepository, userRepo: UserRepository): Mutabl
     .map { it.id }
     .toMutableSet()
 
+/**
+ * Retrieves a set of candidate IDs including newly saved candidates and an existing candidate.
+ *
+ * @param repo The repository used to save and fetch candidates.
+ * @param userRepo The repository used to save and fetch users.
+ * @param existing An existing candidate to include.
+ * @return A mutable set of candidate IDs.
+ */
 fun getCandidateIds(
   repo: CandidateRepository,
   userRepo: UserRepository,
@@ -862,4 +870,19 @@ fun getCandidateIds(
     .map { it.id }
     .toMutableSet()
 
-fun getCandidateOccupation() = CandidateOccupation().apply { yearsExperience = 5 }
+/**
+ * Retrieves a new CandidateOccupation instance initialized with a default years of experience.
+ *
+ * @return A new CandidateOccupation instance.
+ */
+fun getCandidateOccupation(): CandidateOccupation =
+  CandidateOccupation().apply { yearsExperience = 5 }
+
+/**
+ * Retrieves a new LanguageLevel instance initialized with a default level.
+ *
+ * @return A new LanguageLevel instance.
+ */
+fun getWrittenLevel(): LanguageLevel = LanguageLevel().apply { level = 9 }
+
+fun getCandidateLanguage() = CandidateLanguage().apply { migrationLanguage = "ENGLISH" }
