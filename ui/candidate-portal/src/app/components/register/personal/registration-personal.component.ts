@@ -38,6 +38,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   @Output() onSave = new EventEmitter();
 
+  @Output() onPartnerAssignment = new EventEmitter();
+
   static afghanistanId = 6180;
   static ukraineId = 6406;
   static usaId = 6178;
@@ -226,6 +228,11 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
         this.saving = false;
         if (dir === 'next') {
           this.onSave.emit();
+          // Now that we have the candidate's location, their managing partner will be accurately
+          // assigned, so our parent component is notified to get and set its partnerName property,
+          // which it uses for subsequent registration steps.
+          // (partnerId is set on the candidate's User, so we can't simply pass it to the parent.)
+          this.onPartnerAssignment.emit();
           this.registrationService.next();
         } else {
           this.registrationService.back();

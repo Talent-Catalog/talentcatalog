@@ -19,6 +19,7 @@ import {RegistrationService} from "../../services/registration.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LanguageService} from "../../services/language.service";
 import {AuthenticationService} from "../../services/authentication.service";
+import {BrandingService} from "../../services/branding.service";
 
 @Component({
   selector: 'app-register',
@@ -27,10 +28,13 @@ import {AuthenticationService} from "../../services/authentication.service";
 })
 export class RegisterComponent implements OnInit, OnDestroy {
 
+  partnerName: string;
+
   constructor(public registrationService: RegistrationService,
               public authenticationService: AuthenticationService,
               private route: ActivatedRoute,
               private languageService: LanguageService,
+              private brandingService: BrandingService,
               public router: Router) { }
 
   ngOnInit() {
@@ -54,6 +58,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   logout() {
     this.authenticationService.logout();
+  }
+
+  setPartnerName(): void {
+    this.brandingService.getBrandingInfo().subscribe(
+      (brandingInfo) => this.partnerName = brandingInfo.partnerName);
+  }
+
+  getPartnerName(): string {
+    return this.partnerName;
   }
 }
 

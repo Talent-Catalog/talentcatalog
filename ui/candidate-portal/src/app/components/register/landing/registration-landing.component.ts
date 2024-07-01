@@ -24,6 +24,7 @@ import {RegistrationService} from '../../../services/registration.service';
 })
 
 //todo this component is no longer used - can be removed. Replaced by squarespace website.
+//NB: remember also to remove the translations, which are prone to cause confusion if retained.
 export class RegistrationLandingComponent implements OnInit {
 
   constructor(private registrationService: RegistrationService) { }
