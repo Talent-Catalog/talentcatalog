@@ -22,11 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.SavedSearch
 import org.tctalent.server.model.db.SavedSearchType
 import org.tctalent.server.model.db.User
-import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getSavedSearch
-import org.tctalent.server.repository.db.integrationhelp.getSavedUser
+import org.tctalent.server.repository.db.integrationhelp.*
 import org.tctalent.server.request.search.SearchSavedSearchRequest
 
+/**
+ * In tests designed to check failure, set default = true, else a result will always be returned.
+ */
 class SavedSearchSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var repo: SavedSearchRepository
   @Autowired private lateinit var userRepository: UserRepository
@@ -86,6 +87,117 @@ class SavedSearchSpecificationIntTest : BaseDBIntegrationTest() {
   fun `test search type fail`() {
     repo.save(savedSearch.apply { type = SavedSearchType.job.name })
     val request = SearchSavedSearchRequest().apply { savedSearchType = SavedSearchType.profession }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isEmpty())
+  }
+
+  @Test
+  fun `test fixed`() {
+    repo.save(savedSearch.apply { fixed = true })
+    val request = SearchSavedSearchRequest().apply { fixed = true }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isNotEmpty())
+    assertEquals(1, result.size)
+    assertEquals(savedSearch.id, result.first().id)
+  }
+
+  @Test
+  fun `test fixed false`() {
+    repo.save(savedSearch.apply { defaultSearch = true })
+    val request = SearchSavedSearchRequest().apply { fixed = false }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isEmpty())
+  }
+
+  @Test
+  fun `test global`() {
+    repo.save(savedSearch.apply { global = true })
+    val request = SearchSavedSearchRequest().apply { global = true }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isNotEmpty())
+    assertEquals(1, result.size)
+    assertEquals(savedSearch.id, result.first().id)
+  }
+
+  @Test
+  fun `test global false`() {
+    val request =
+      SearchSavedSearchRequest().apply {
+        keyword = "NOTHING"
+        global = false
+      }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isEmpty())
+  }
+
+  @Test
+  fun `test owned`() {
+    repo.save(savedSearch.apply { createdBy = loggedInUser })
+    val request = SearchSavedSearchRequest().apply { owned = true }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isNotEmpty())
+    assertEquals(1, result.size)
+    assertEquals(savedSearch.id, result.first().id)
+  }
+
+  @Test
+  fun `test owned fail`() {
+    repo.save(savedSearch.apply { defaultSearch = true })
+    val request = SearchSavedSearchRequest().apply { owned = false }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isEmpty())
+  }
+
+  @Test
+  fun `test owned no loggedin user`() {
+    repo.save(savedSearch.apply { defaultSearch = true })
+    val request = SearchSavedSearchRequest().apply { owned = false }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, null)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isEmpty())
+  }
+
+  @Test
+  fun `test shared`() {
+    userRepository.save(loggedInUser.apply { sharedSearches = setOf(savedSearch) })
+    val request = SearchSavedSearchRequest().apply { shared = true }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isNotEmpty())
+    assertEquals(1, result.size)
+    assertEquals(savedSearch.id, result.first().id)
+  }
+
+  @Test
+  fun `test shared empty`() {
+    userRepository.save(loggedInUser.apply { sharedSearches = emptySet() })
+    val request = SearchSavedSearchRequest().apply { shared = true }
+    val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue(result.isNotEmpty())
+  }
+
+  @Test
+  fun `test shared false`() {
+    repo.save(savedSearch.apply { defaultSearch = true })
+    val request = SearchSavedSearchRequest().apply { shared = false }
     val spec = SavedSearchSpecification.buildSearchQuery(request, loggedInUser)
     val result = repo.findAll(spec)
     assertNotNull(result)
