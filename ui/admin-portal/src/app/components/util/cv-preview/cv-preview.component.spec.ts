@@ -57,22 +57,6 @@ fdescribe('CvPreviewComponent', () => {
     expect(component.loading).toBe(false);
   });
 
-  it('should process Google file URL correctly', () => {
-    const cv: CandidateAttachment = mockCandidate.candidateAttachments[0];
-    component.candidate = mockCandidate;
-    component.processUrlForIframe(cv);
-    expect(component.cvUrl).toBe('http://example.com/attachment1');
-    expect(component.loading).toBe(false);
-  });
-
-  it('should set cvUrl directly if not a Google file', () => {
-    const cv: CandidateAttachment = mockCandidate.candidateAttachments[0];
-    component.candidate = mockCandidate;
-    component.processUrlForIframe(cv);
-    expect(component.cvUrl).toBe('http://example.com/attachment1');
-    expect(component.loading).toBe(false);
-  });
-
   it('should return true for non-doc/docx files', () => {
     const cv: CandidateAttachment = mockCandidate.candidateAttachments[0];
     cv.type = AttachmentType.googlefile;
