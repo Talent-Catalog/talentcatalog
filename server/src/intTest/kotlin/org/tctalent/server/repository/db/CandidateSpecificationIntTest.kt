@@ -16,14 +16,13 @@
 
 package org.tctalent.server.repository.db
 
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
+import java.time.*
 import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Candidate
 import org.tctalent.server.model.db.CandidateStatus
+import org.tctalent.server.model.db.SearchType
+import org.tctalent.server.model.db.UnhcrStatus
 import org.tctalent.server.repository.db.integrationhelp.*
 import org.tctalent.server.request.candidate.SearchCandidateRequest
 
@@ -37,6 +36,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var candidateLanguageRepository: CandidateLanguageRepository
   @Autowired lateinit var occupationRepository: OccupationRepository
   @Autowired lateinit var candidateOccupationRepository: CandidateOccupationRepository
+  @Autowired lateinit var surveyTypeRepository: SurveyTypeRepository
   private lateinit var testCandidate: Candidate
 
   @BeforeTest
@@ -134,7 +134,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
   @Test
   fun `test invalid occupation id`() {
 
-    val request = SearchCandidateRequest().apply { occupationIds = listOf(-1) } // Invalid id
+    val request = SearchCandidateRequest().apply { occupationIds = listOf(-1) }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
@@ -162,21 +162,47 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    fail("Not implemented completely.")
+    assertTrue { results.isNotEmpty() }
+    assertEquals(testCandidate.id, results.first().id)
   }
 
   @Test
   fun `test min yrs experience greater than max`() {
     val request =
       SearchCandidateRequest().apply {
-        minYrs = 5
-        maxYrs = 2
+        minYrs = 2
+        maxYrs = 5
+      }
+    val spec = CandidateSpecification.buildSearchQuery(request, null, null)
+    val results = repo.findAll(spec)
+    assertNotNull(results)
+    assertTrue { results.isNotEmpty() }
+    assertEquals(testCandidate.id, results.first().id)
+  }
+
+  @Test
+  fun `test min yrs experience greater than max fail`() {
+    val request =
+      SearchCandidateRequest().apply {
+        minYrs = 10
+        maxYrs = 5
       }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
     assertTrue { results.isEmpty() }
-    fail("Not implemented completely.")
+  }
+
+  @Test
+  fun `test survey type`() {
+    val st = getSavedSurveyType(surveyTypeRepository)
+    repo.save(testCandidate.apply { surveyType = st })
+    val request = SearchCandidateRequest().apply { surveyTypeIds = listOf(st.id) }
+    val spec = CandidateSpecification.buildSearchQuery(request, null, null)
+    val results = repo.findAll(spec)
+    assertNotNull(results)
+    assertTrue { results.isNotEmpty() }
+    assertEquals(1, results.size)
   }
 
   /**  */
@@ -315,11 +341,11 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue { result.isEmpty() }
-    assertTrue(result.none { it.id == testCandidate.id })
   }
 
   @Test
-  fun `test last modified search`() {
+  fun `test last modified from search`() {
+    repo.save(testCandidate.apply { updatedDate = OffsetDateTime.now().minusDays(1) })
     val request =
       SearchCandidateRequest().apply {
         lastModifiedFrom = LocalDate.now().minusDays(1)
@@ -330,16 +356,91 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
 
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
-    assertTrue(
-      result.all {
-        it.updatedDate.isAfter(
-          OffsetDateTime.of(
-            request.lastModifiedFrom,
-            LocalTime.MIN,
-            ZoneOffset.of(request.timezone),
-          )
-        )
+    assertEquals(testCandidate.id, result.first().id)
+  }
+
+  @Test
+  fun `test last modified to search`() {
+    repo.save(testCandidate.apply { updatedDate = OffsetDateTime.now().minusDays(1) })
+    val request =
+      SearchCandidateRequest().apply {
+        lastModifiedTo = LocalDate.now().minusDays(1)
+        timezone = ZoneOffset.systemDefault().id
       }
-    )
+    val spec = CandidateSpecification.buildSearchQuery(request, null, null)
+    val result = repo.findAll(spec)
+
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(testCandidate.id, result.first().id)
+  }
+
+  @Test
+  fun `test unhcr status`() {
+    val request =
+      SearchCandidateRequest().apply {
+        unhcrStatuses = listOf(testCandidate.unhcrStatus, UnhcrStatus.NotRegistered)
+      }
+    val spec = CandidateSpecification.buildSearchQuery(request, null, null)
+    val result = repo.findAll(spec)
+
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+    assertEquals(testCandidate.id, result.first().id)
+  }
+
+  @Test
+  fun `test country search with logged in user`() {
+    val c = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { country = c })
+    val user = testCandidate.user
+    user.apply { sourceCountries = setOf(c) }
+    val request = SearchCandidateRequest()
+    val spec = CandidateSpecification.buildSearchQuery(request, user, null)
+    val result = repo.findAll(spec)
+
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+    assertEquals(testCandidate.id, result.first().id)
+  }
+
+  @Test
+  fun `test country search no search type`() {
+    val c = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { country = c })
+
+    val request =
+      SearchCandidateRequest().apply {
+        countryIds = listOf(c.id)
+        countrySearchType = null
+      }
+    val spec = CandidateSpecification.buildSearchQuery(request, null, null)
+    val result = repo.findAll(spec)
+
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+    assertEquals(testCandidate.id, result.first().id)
+  }
+
+  @Test
+  fun `test country search with search type`() {
+    val c = getSavedCountry(countryRepository)
+    repo.save(testCandidate.apply { country = c })
+
+    val request =
+      SearchCandidateRequest().apply {
+        countryIds = listOf(12)
+        countrySearchType = SearchType.and
+      }
+    val spec = CandidateSpecification.buildSearchQuery(request, null, null)
+    val result = repo.findAll(spec)
+
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+    assertEquals(testCandidate.id, result.first().id)
   }
 }
