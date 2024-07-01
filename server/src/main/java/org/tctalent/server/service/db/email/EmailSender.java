@@ -35,23 +35,21 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import javax.annotation.PostConstruct;
-
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 
 @Setter
 @Service
+@Slf4j
 public class EmailSender {
 
-    private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
     private final String alertSubject = "Talent Catalog Alert";
 
     public enum EmailType {
@@ -84,11 +82,22 @@ public class EmailSender {
     @PostConstruct
     public void init() {
         if (type == EmailType.SMTP) {
-            log.info("email configured to use SMTP with host " + host + " and port " + port);
+            LogBuilder.builder(log)
+                .action("EmailSender")
+                .message("Email configured to use SMTP with host " + host + " and port " + port)
+                .logInfo();
+
         } else if (type == EmailType.STUB) {
-            log.info("email configured to use STUB, emails will be printed to the log file");
+            LogBuilder.builder(log)
+                .action("EmailSender")
+                .message("Email configured to use STUB, emails will be printed to the log file")
+                .logInfo();
+
         } else if (type == EmailType.MANDRILL) {
-            log.info("email configured to use MANDRILL, emails will be sent via Mandrill");
+            LogBuilder.builder(log)
+                .action("EmailSender")
+                .message("Email configured to use MANDRILL, emails will be sent via Mandrill")
+                .logInfo();
         }
 
         this.session = emailSession();
@@ -127,8 +136,10 @@ public class EmailSender {
                            String subject,
                            String contentText,
                            String contentHtml) {
-
-        log.info("sending email to " + emailTo + " with subject '" + subject + "'");
+        LogBuilder.builder(log)
+            .action("Email")
+            .message("Sending email to " + emailTo  + " with subject '" + subject + "'")
+            .logInfo();
 
         MimeMessage email = new MimeMessage(session);
         try {
@@ -141,7 +152,10 @@ public class EmailSender {
 
             return true;
         } catch (MessagingException e) {
-            log.error("Error sending email to " + emailTo, e);
+            LogBuilder.builder(log)
+                .action("Email")
+                .message("Error sending email to " + emailTo)
+                .logError(e);
         }
 
         return false;
@@ -267,9 +281,16 @@ public class EmailSender {
                 if (MAIL.size() < 20) {
                     MAIL.add(part.getContent().toString());
                 }
-                log.info("Email received (sent to: " + addresses[0] + "): \n\n" + part.getContent());
+                LogBuilder.builder(log)
+                    .action("Email")
+                    .message("Email received (sent to: " + addresses[0] + "): \n\n" + part.getContent())
+                    .logInfo();
+
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                LogBuilder.builder(log)
+                    .action("Email")
+                    .message("Error sending email: " + e.getMessage())
+                    .logError(e);
             }
         }
     }

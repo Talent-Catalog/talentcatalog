@@ -14,12 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule, FormBuilder} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {SecurityRiskComponent} from './security-risk.component';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+
 fdescribe('SecurityRiskComponent', () => {
   let component: SecurityRiskComponent;
   let fixture: ComponentFixture<SecurityRiskComponent>;

@@ -22,6 +22,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {EducationLevel} from "../../../../model/education-level";
 import {of, throwError} from "rxjs";
+
 fdescribe('EditEducationLevelComponent', () => {
   let component: EditEducationLevelComponent;
   let fixture: ComponentFixture<EditEducationLevelComponent>;

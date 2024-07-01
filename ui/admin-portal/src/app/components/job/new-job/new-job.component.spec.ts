@@ -1,14 +1,14 @@
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {ReactiveFormsModule, FormBuilder, FormsModule} from '@angular/forms';
+import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NewJobComponent} from './new-job.component';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {JobService} from '../../../services/job.service';
- import {SavedListService} from '../../../services/saved-list.service';
+import {SavedListService} from '../../../services/saved-list.service';
 import {SlackService} from '../../../services/slack.service';
- import {of} from 'rxjs';
+import {of} from 'rxjs';
 import {UpdateJobRequest} from "../../../model/job";
 import {Progress} from "../../../model/base";
 import {SalesforceService} from "../../../services/salesforce.service";

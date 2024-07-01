@@ -17,9 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Industry;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -39,9 +38,8 @@ import org.tctalent.server.service.db.IndustryService;
 import org.tctalent.server.service.db.TranslationService;
 
 @Service
+@Slf4j
 public class IndustryServiceImpl implements IndustryService {
-
-    private static final Logger log = LoggerFactory.getLogger(IndustryServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
     private final IndustryRepository industryRepository;
@@ -67,7 +65,11 @@ public class IndustryServiceImpl implements IndustryService {
     public Page<Industry> searchIndustries(SearchIndustryRequest request) {
         Page<Industry> industries = industryRepository.findAll(
                 IndustrySpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + industries.getTotalElements() + " industries in search");
+        LogBuilder.builder(log)
+            .action("SearchIndustries")
+            .message("Found " + industries.getTotalElements() + " industries in search")
+            .logInfo();
+
         return industries;
     }
 

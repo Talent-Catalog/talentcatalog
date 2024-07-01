@@ -36,6 +36,7 @@ import {
   DateRangePickerComponent
 } from "../../util/form/date-range-picker/date-range-picker.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
+
 fdescribe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
   let fixture: ComponentFixture<DefineSearchComponent>;

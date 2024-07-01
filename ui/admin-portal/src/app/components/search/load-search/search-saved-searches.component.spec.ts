@@ -27,6 +27,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {CandidateSourceComponent} from "../../util/candidate-source/candidate-source.component";
 import {LocalStorageModule} from "angular-2-local-storage";
+
 const mockSearchResult:SearchResults<SavedSearch> = {
   number : 1,
   size : 10,

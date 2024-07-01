@@ -23,8 +23,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.model.db.Candidate;
@@ -34,9 +33,8 @@ import org.tctalent.server.service.db.impl.GoogleFileSystemServiceImpl;
 
 
 // @SpringBootTest
+@Slf4j
 public class MigrateDriveTest {
-
-    private static final Logger log = LoggerFactory.getLogger(MigrateDriveTest.class);
 
     @Autowired
     private GoogleDriveConfig googleDriveConfig;

@@ -35,9 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,6 +51,7 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.ExportColumn;
@@ -106,6 +106,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
  * @author John Cameron
  */
 @Service
+@Slf4j
 public class SavedListServiceImpl implements SavedListService {
 
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
@@ -124,7 +125,6 @@ public class SavedListServiceImpl implements SavedListService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
     private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
 
     @Autowired
@@ -229,7 +229,10 @@ public class SavedListServiceImpl implements SavedListService {
 
             deactivateIncompleteCandidateListTasks(savedList, candidate);
         } catch (Exception ex) {
-            log.warn("Could not delete candidate saved list " + csl.getId(), ex);
+            LogBuilder.builder(log)
+                .action("RemoveCandidateFromList")
+                .message("Could not delete candidate saved list " + csl.getId())
+                .logWarn(ex);
         }
     }
 

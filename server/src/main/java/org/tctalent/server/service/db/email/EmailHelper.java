@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedSearch;
@@ -77,7 +78,11 @@ public class EmailHelper {
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending confirm registration email", e);
+            LogBuilder.builder(log)
+                .action("RegistrationEmail")
+                .message("error sending confirm registration email")
+                .logError(e);
+
             throw new EmailSendFailedException(e);
         }
     }
@@ -107,7 +112,11 @@ public class EmailHelper {
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending reset password email", e);
+            LogBuilder.builder(log)
+                .action("ResetPasswordEmail")
+                .message("error sending reset password email")
+                .logError(e);
+
             throw new EmailSendFailedException(e);
         }
     }
@@ -136,7 +145,11 @@ public class EmailHelper {
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending confirm registration email", e);
+            LogBuilder.builder(log)
+                .action("IncompleteApplicationEmail")
+                .message("error sending incomplete application email")
+                .logError(e);
+
             throw new EmailSendFailedException(e);
         }
     }
@@ -162,14 +175,33 @@ public class EmailHelper {
             bodyText = textTemplateEngine.process("candidate-chat-notification", ctx);
             bodyHtml = htmlTemplateEngine.process("candidate-chat-notification", ctx);
 
-            log.info("Sending email to " + email);
-            log.info("Subject: " + subject);
-            log.info("Text\n" + bodyText);
-            log.info("Html\n" + bodyHtml);
+            LogBuilder.builder(log)
+                .action("ChatPostsEmail")
+                .message("Sending email to " + email)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("ChatPostsEmail")
+                .message("Subject: " + subject)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("ChatPostsEmail")
+                .message("Text\n" + bodyText)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("ChatPostsEmail")
+                .message("Html\n" + bodyHtml)
+                .logInfo();
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending candidate chat notification email", e);
+            LogBuilder.builder(log)
+                .action("ChatPostsEmail")
+                .message("error sending candidate chat notification email to " + email)
+                .logError();
+
             throw new EmailSendFailedException(e);
         }
     }
@@ -195,7 +227,11 @@ public class EmailHelper {
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
-            log.error("error sending watcher email", e);
+            LogBuilder.builder(log)
+                .action("WatcherEmail")
+                .message("error sending watcher email")
+                .logError(e);
+
             throw new EmailSendFailedException(e);
         }
     }

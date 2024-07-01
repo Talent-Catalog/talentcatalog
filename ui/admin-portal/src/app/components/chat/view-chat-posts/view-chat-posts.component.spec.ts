@@ -2,7 +2,7 @@ import {ViewChatPostsComponent} from "./view-chat-posts.component";
 import {ChatService} from "../../../services/chat.service";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {NO_ERRORS_SCHEMA, QueryList} from "@angular/core";
+import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {CreateUpdatePostComponent} from "../create-update-post/create-update-post.component";
 import {ViewPostComponent} from "../view-post/view-post.component";

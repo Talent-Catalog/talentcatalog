@@ -44,14 +44,14 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Formula;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
@@ -59,8 +59,8 @@ import org.tctalent.server.util.SalesforceHelper;
 @Entity
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
+@Slf4j
 public class Candidate extends AbstractAuditableDomainObject<Long> {
-    private static final Logger log = LoggerFactory.getLogger(Candidate.class);
 
     private String candidateNumber;
 
@@ -1563,7 +1563,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                     break;
                 default:
                     registered = null;
-                    log.error("Unhandled UNHCRStatus: " + status);
+                    LogBuilder.builder(log)
+                        .message("Unhandled UNHCRStatus: " + status)
+                        .action("GetUnhcrRegistered")
+                        .logError();
             }
         }
         return registered;

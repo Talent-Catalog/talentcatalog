@@ -24,6 +24,7 @@ import {of, throwError} from "rxjs";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {JobNameAndId} from "../../../model/job";
 import {NgSelectModule} from "@ng-select/ng-select";
+
 fdescribe('SelectListComponent', () => {
   let component: SelectListComponent;
   let fixture: ComponentFixture<SelectListComponent>;

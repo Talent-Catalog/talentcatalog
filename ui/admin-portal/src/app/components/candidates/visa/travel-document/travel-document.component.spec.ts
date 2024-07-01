@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule, FormBuilder} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {TravelDocumentComponent} from './travel-document.component';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";

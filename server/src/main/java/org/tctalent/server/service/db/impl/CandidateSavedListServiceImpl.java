@@ -16,8 +16,11 @@
 
 package org.tctalent.server.service.db.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,12 +57,8 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 @Service
+@Slf4j
 public class CandidateSavedListServiceImpl implements CandidateSavedListService {
     private final AuthService authService;
     private final CandidateService candidateService;
@@ -70,7 +69,6 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     private final UserService userService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateSavedListRepository candidateSavedListRepository;
-    private static final Logger log = LoggerFactory.getLogger(CandidateSavedListServiceImpl.class);
 
     public CandidateSavedListServiceImpl(
         AuthService authService, CandidateService candidateService,

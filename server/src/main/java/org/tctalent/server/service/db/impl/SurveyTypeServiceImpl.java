@@ -16,12 +16,13 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
@@ -30,12 +31,9 @@ import org.tctalent.server.request.survey.SearchSurveyTypeRequest;
 import org.tctalent.server.service.db.SurveyTypeService;
 import org.tctalent.server.service.db.TranslationService;
 
-import java.util.List;
-
 @Service
+@Slf4j
 public class SurveyTypeServiceImpl implements SurveyTypeService {
-
-    private static final Logger log = LoggerFactory.getLogger(SurveyTypeServiceImpl.class);
 
     private final SurveyTypeRepository surveyTypeRepository;
     private final TranslationService translationService;
@@ -59,7 +57,12 @@ public class SurveyTypeServiceImpl implements SurveyTypeService {
         request.setStatus(Status.active);
         Page<SurveyType> surveyTypes = surveyTypeRepository.findAll(
                 SurveyTypeSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + surveyTypes.getTotalElements() + " survey types in search");
+
+        LogBuilder.builder(log)
+            .action("SearchActiveSurveyTypes")
+            .message("Found " + surveyTypes.getTotalElements() + " survey types in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(surveyTypes.getContent(), "survey_type", request.getLanguage());
         }

@@ -17,10 +17,8 @@
 package org.tctalent.server.service.db.impl;
 
 import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.repository.db.CandidateEducationRepository;
@@ -40,9 +39,8 @@ import org.tctalent.server.service.db.EducationMajorService;
 import org.tctalent.server.service.db.TranslationService;
 
 @Service
+@Slf4j
 public class EducationMajorServiceImpl implements EducationMajorService {
-
-    private static final Logger log = LoggerFactory.getLogger(LanguageLevelServiceImpl.class);
 
     private final CandidateEducationRepository candidateEducationRepository;
     private final EducationMajorRepository educationMajorRepository;
@@ -68,7 +66,11 @@ public class EducationMajorServiceImpl implements EducationMajorService {
     public Page<EducationMajor> searchEducationMajors(SearchEducationMajorRequest request) {
         Page<EducationMajor> educationMajors = educationMajorRepository.findAll(
                 EducationMajorSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + educationMajors.getTotalElements() + " education majors in search");
+        LogBuilder.builder(log)
+            .action("SearchEducationMajors")
+            .message("Found " + educationMajors.getTotalElements() + " education majors in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(educationMajors.getContent(), "education_major", request.getLanguage());
         }

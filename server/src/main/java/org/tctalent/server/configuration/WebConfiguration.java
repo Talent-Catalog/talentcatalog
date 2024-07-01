@@ -16,8 +16,7 @@
 
 package org.tctalent.server.configuration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -25,6 +24,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
+import org.tctalent.server.logging.LogBuilder;
 
 /**
  * This defines some redirections and also where the Angular jars
@@ -35,9 +35,8 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
  * candidate-portal and one for admin-portal.
  */
 @Configuration
+@Slf4j
 public class WebConfiguration implements WebMvcConfigurer {
-
-    private static final Logger log = LoggerFactory.getLogger(WebConfiguration.class);
 
     /**
      * This defines the location of the compiled Angular for the candidate (front end,
@@ -62,7 +61,10 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         for (UIBundle uiBundle : uiBundles) {
 
-            log.info("Adding UI Bundle: " + uiBundle.url + " => " + uiBundle.module);
+            LogBuilder.builder(log)
+                .action("WebConfiguration")
+                .message("Adding UI Bundle: " + uiBundle.url + " => " + uiBundle.module)
+                .logInfo();
 
             registry.addResourceHandler("/" + uiBundle.url + "/*.*")
                     .setCachePeriod(0)

@@ -28,6 +28,24 @@ import org.tctalent.server.model.db.User;
  * The {@code LogBuilder} class is used to construct log messages with standardised fields
  * and log them using SLF4J. The fields are specified using the {@link LogField} enum and are
  * included in the log messages based on their sort order.
+ * <p>
+ * Example Usage:
+ *
+ * <pre>
+ * {@code
+ * LogBuilder.builder(logger)
+ *     .user(authService.getLoggedInUser())
+ *     .jobId(300L)
+ *     .action("CreateJob")
+ *     .message("Creating a new job entry")
+ *     .logInfo();
+ * }
+ * </pre>
+ *
+ * // Output: uid: 12345 | jid: 200 | action: CreateJob | msg: Creating a new job entry
+ * <p>
+ * In this example, a log message is constructed with the user ID, job ID, action, and a custom
+ * message, and then logged at the INFO level using SLF4J.
  *
  * @author sadatmalik
  */
@@ -147,10 +165,31 @@ public class LogBuilder {
   }
 
   /**
+   * Logs the constructed message at the WARN level.
+   */
+  public void logWarn() {
+    logger.warn(buildLogMessage());
+  }
+
+  /**
+   * Logs the constructed message with exception at the WARN level.
+   */
+  public void logWarn(Exception e) {
+    logger.warn(buildLogMessage(), e);
+  }
+
+  /**
    * Logs the constructed message at the ERROR level.
    */
   public void logError() {
     logger.error(buildLogMessage());
+  }
+
+  /**
+   * Logs the constructed message with exception at the ERROR level.
+   */
+  public void logError(Exception e) {
+    logger.error(buildLogMessage(), e);
   }
 
   /**

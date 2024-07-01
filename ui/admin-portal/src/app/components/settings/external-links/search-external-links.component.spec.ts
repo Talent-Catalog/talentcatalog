@@ -23,7 +23,6 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {SearchResults} from "../../../model/search-results";
-import {EducationLevel} from "../../../model/education-level";
 import {SavedList} from "../../../model/saved-list";
 import {MockUser} from "../../../MockData/MockUser";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";

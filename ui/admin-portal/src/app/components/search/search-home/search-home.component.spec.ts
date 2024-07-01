@@ -23,6 +23,7 @@ import {SearchHomeComponent} from './search-home.component';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import MockSavedSearchTypeInfo from "../../../MockData/MockSavedSearchTypeInfo";
 import {MockUser} from "../../../MockData/MockUser";
+
 fdescribe('SearchHomeComponent', () => {
   let component: SearchHomeComponent;
   let fixture: ComponentFixture<SearchHomeComponent>;

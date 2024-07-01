@@ -20,8 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -29,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.PartnerJobRelation;
@@ -47,11 +47,11 @@ import org.tctalent.server.service.db.PartnerService;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PartnerServiceImpl implements PartnerService {
     private final PartnerRepository partnerRepository;
     private final PartnerJobRelationRepository partnerJobRelationRepository;
     private final CountryService countryService;
-    private static final Logger log = LoggerFactory.getLogger(PartnerServiceImpl.class);
 
     @Override
     public @NonNull PartnerImpl create(UpdatePartnerRequest request)
@@ -143,7 +143,10 @@ public class PartnerServiceImpl implements PartnerService {
             partner = partnerRepository.findByAbbreviation(partnerAbbreviation).orElse(null);
             if (partner == null) {
                 //Log a warning.
-                log.warn("Could not find partner matching abbreviation: " + partnerAbbreviation);
+                LogBuilder.builder(log)
+                    .action("GetPartnerFromAbbreviation")
+                    .message("Could not find partner matching abbreviation: " + partnerAbbreviation)
+                    .logWarn();
             }
         }
         return partner;

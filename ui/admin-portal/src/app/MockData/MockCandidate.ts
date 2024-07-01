@@ -17,9 +17,11 @@
 
 import {
   Candidate,
-  DrivingLicenseStatus, Exam,
+  DrivingLicenseStatus,
+  Exam,
   Gender,
-  MaritalStatus, UnhcrStatus,
+  MaritalStatus,
+  UnhcrStatus,
   YesNo,
   YesNoUnsure
 } from "../model/candidate";
@@ -33,6 +35,7 @@ import {CandidateLanguage} from "../model/candidate-language";
 import {CandidateOccupation} from "../model/candidate-occupation";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {Status} from "../model/base";
+
 const mockUser = new MockUser();
 export class MockCandidate implements Candidate {
 

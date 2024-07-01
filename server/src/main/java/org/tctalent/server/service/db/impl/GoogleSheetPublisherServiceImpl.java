@@ -51,12 +51,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.GoogleDriveConfig;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.PublishedDocBuilderService;
 import org.tctalent.server.request.candidate.PublishedDocColumnDef;
@@ -73,10 +73,8 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
  * @author John Cameron
  */
 @Service
+@Slf4j
 public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
-
-    private static final Logger log = LoggerFactory.getLogger(
-        GoogleSheetPublisherServiceImpl.class);
 
     private final CandidateService candidateService;
     private final GoogleDriveConfig googleDriveConfig;
@@ -171,9 +169,12 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
 
         BatchUpdateValuesResponse res = service.spreadsheets().values()
             .batchUpdate(spreadsheetId, body).execute();
-        log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: "
-            + sheet.getUrl());
 
+        LogBuilder.builder(log)
+            .action("WriteCandidateDataToDoc")
+            .message("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: "
+                + sheet.getUrl())
+            .logInfo();
     }
 
     @Override
@@ -231,8 +232,12 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
             .setData(data);
         BatchUpdateValuesResponse res = service.spreadsheets().values()
             .batchUpdate(spreadsheetId, body).execute();
-        log.info("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: "
-            + file.getUrl());
+
+        LogBuilder.builder(log)
+            .action("CreatePublishedDoc")
+            .message("Created " + res.getTotalUpdatedCells() + " cells in spreadsheet with link: "
+                + file.getUrl())
+            .logInfo();
 
         //Now batch various other update requests which involve configuring drop down data entry and
         //protecting parts of the sheet.
@@ -281,7 +286,10 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
         BatchUpdateSpreadsheetResponse res2 =
             service.spreadsheets().batchUpdate(spreadsheetId, content).execute();
 
-        log.info(res2.getReplies().size() + " batch update responses received");
+        LogBuilder.builder(log)
+            .action("CreatePublishedDoc")
+            .message(res2.getReplies().size() + " batch update responses received")
+            .logInfo();
 
         //File is already public - ie viewable by anyone with the link - because of the folder where
         //it is located

@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.security.CandidateTokenProvider;
@@ -34,9 +34,8 @@ import org.tctalent.server.security.CandidateTokenProvider;
  * @author John Cameron
  */
 @Service
+@Slf4j
 public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderService {
-  private static final Logger log = LoggerFactory.getLogger(PublishedDocBuilderServiceImpl.class);
-
   private final CandidateTokenProvider candidateTokenProvider;
 
   public PublishedDocBuilderServiceImpl(
@@ -91,7 +90,10 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
     final String propertyName = valueSource.getPropertyName();
     if (fieldName != null) {
       if (candidate == null) {
-        log.error("Cannot extract field " + fieldName + " from null candidate");
+        LogBuilder.builder(log)
+            .action("PublishedDocBuilderService")
+            .message("Cannot extract field " + fieldName + " from null candidate")
+            .logError();
       } else {
         try {
           // Get the list specific shareable CV or Doc if exists, otherwise get the field name supplied.
@@ -116,7 +118,10 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
             val = candidate.extractField(fieldName);
           }
         } catch (Exception e) {
-          log.error("Error extracting field " + fieldName + " from candidate " + candidate.getCandidateNumber());
+          LogBuilder.builder(log)
+              .action("PublishedDocBuilderService")
+              .message("Error extracting field " + fieldName + " from candidate " + candidate.getCandidateNumber())
+              .logError();
         }
       }
     } else if (propertyName != null) {

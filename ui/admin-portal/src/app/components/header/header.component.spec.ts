@@ -19,7 +19,6 @@ import {AuthorizationService} from "../../services/authorization.service";
 import {CandidateService} from "../../services/candidate.service";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
-import {Router} from "@angular/router";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbCollapseModule, NgbTypeaheadModule} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";

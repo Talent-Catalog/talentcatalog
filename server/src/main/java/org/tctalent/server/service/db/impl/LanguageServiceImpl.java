@@ -30,9 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -40,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Language;
@@ -60,9 +60,8 @@ import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.util.locale.LocaleHelper;
 
 @Service
+@Slf4j
 public class LanguageServiceImpl implements LanguageService {
-
-    private static final Logger log = LoggerFactory.getLogger(LanguageServiceImpl.class);
 
     private final LanguageRepository languageRepository;
     private final CandidateLanguageRepository candidateLanguageRepository;
@@ -109,7 +108,10 @@ public class LanguageServiceImpl implements LanguageService {
         for (Country country : countries) {
             String value = xlCountry.get(country.getIsoCode());
             if (value == null) {
-                log.warn("Missing translation for country " + country);
+                LogBuilder.builder(log)
+                    .action("AddSystemLanguage")
+                    .message("Missing translation for country " + country)
+                    .logWarn();
             } else {
                 request.setObjectId(country.getId());
                 request.setValue(value);
@@ -128,7 +130,10 @@ public class LanguageServiceImpl implements LanguageService {
         for (Language language : languages) {
             String value = xlLang.get(language.getIsoCode());
             if (value == null) {
-                log.warn("Missing translation for language " + language);
+                LogBuilder.builder(log)
+                    .action("AddSystemLanguage")
+                    .message("Missing translation for language " + language)
+                    .logWarn();
             } else {
                 request.setObjectId(language.getId());
                 request.setValue(value);
@@ -231,7 +236,11 @@ public class LanguageServiceImpl implements LanguageService {
     public Page<Language> searchLanguages(SearchLanguageRequest request) {
         Page<Language> languages = languageRepository.findAll(
                 LanguageSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + languages.getTotalElements() + " languages in search");
+        LogBuilder.builder(log)
+            .action("SearchLanguages")
+            .message("Found " + languages.getTotalElements() + " languages in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(languages.getContent(), "language", request.getLanguage());
         }

@@ -21,13 +21,13 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.User;
 
 /**
@@ -37,9 +37,8 @@ import org.tctalent.server.model.db.User;
  * This matches up with the language.interceptor.ts class on the
  * browser (Angular) side.
  */
+@Slf4j
 public class LanguageFilter extends OncePerRequestFilter {
-
-    private static final Logger logger = LoggerFactory.getLogger(LanguageFilter.class);
 
     @Override
     protected void doFilterInternal(
@@ -61,7 +60,10 @@ public class LanguageFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception ex) {
-            logger.error("Could not set user language in security context", ex);
+            LogBuilder.builder(log)
+                .action("doFilterInternal")
+                .message("Could not set user language in security context")
+                .logError(ex);
         }
 
         filterChain.doFilter(request, response);

@@ -18,6 +18,7 @@ import {ChartComponent} from "./chart.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {DataRow} from "../../../model/data-row";
 import {ChartsModule} from "ng2-charts";
+
 fdescribe('ChartComponent', () => {
   let component: ChartComponent;
   let fixture: ComponentFixture<ChartComponent>;
