@@ -1918,10 +1918,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     private String convertToJson(BoolQueryBuilder boolQueryBuilder) {
-        try {
-            XContentBuilder builder = XContentFactory.jsonBuilder();
+        try (XContentBuilder builder = XContentFactory.jsonBuilder()) {
             boolQueryBuilder.toXContent(builder, null);
-            builder.close();
             BytesReference bytes = BytesReference.bytes(builder);
             return XContentHelper.convertToJson(bytes, false, XContentType.JSON);
         } catch (IOException e) {
