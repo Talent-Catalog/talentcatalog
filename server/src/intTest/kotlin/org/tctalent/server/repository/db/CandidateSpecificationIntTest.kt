@@ -70,7 +70,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isNotEmpty())
+    assertTrue { results.isNotEmpty() }
     assertEquals(1, results.size)
     assertEquals(testCandidate.id, results.first().id)
   }
@@ -86,7 +86,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isNotEmpty())
+    assertTrue { results.isNotEmpty() }
     assertEquals(1, results.size)
     assertEquals(testCandidate.id, results.first().id)
   }
@@ -98,7 +98,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isNotEmpty())
+    assertTrue { results.isNotEmpty() }
     assertEquals(1, results.size)
     assertEquals(testCandidate.id, results.first().id)
   }
@@ -110,7 +110,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isEmpty())
+    assertTrue { results.isEmpty() }
   }
 
   @Test
@@ -138,7 +138,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isEmpty())
+    assertTrue { results.isEmpty() }
   }
 
   @Test
@@ -151,7 +151,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isNotEmpty())
+    assertTrue { results.isNotEmpty() }
     println(results.first().candidateOccupations.first().yearsExperience)
     assertEquals(1, results.size)
   }
@@ -175,7 +175,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val results = repo.findAll(spec)
     assertNotNull(results)
-    assertTrue(results.isEmpty())
+    assertTrue { results.isEmpty() }
     fail("Not implemented completely.")
   }
 
@@ -189,7 +189,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
 
     assertNotNull(result)
-    assertTrue(result.isNotEmpty())
+    assertTrue { result.isNotEmpty() }
     assertEquals(1, result.size)
     assertTrue(result.any { it.nationality.id == testCandidate.nationality.id })
   }
@@ -201,7 +201,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
 
     assertNotNull(result)
-    assertTrue(result.isNotEmpty())
+    assertTrue { result.isNotEmpty() }
     assertTrue(result.all { it.dob?.isBefore(LocalDate.now().minusYears(18)) ?: true })
   }
 
@@ -227,7 +227,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
 
     assertNotNull(result)
-    assertTrue(result.isNotEmpty())
+    assertTrue { result.isNotEmpty() }
     assertEquals(1, result.size)
     assertTrue(result.any { it.gender == testCandidate.gender })
   }
@@ -242,13 +242,47 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
 
     assertNotNull(result)
-    assertTrue(result.isNotEmpty())
+    assertTrue { result.isNotEmpty() }
     assertEquals(1, result.size)
     assertTrue(result.any { it.maxEducationLevel.level >= testCandidate.maxEducationLevel.level })
   }
 
+  /**
+   * I think this test is problematic also. The query has 'english' hardcoded against the language.
+   */
   @Test
   fun `test language search`() {
+    val savedLanguage = languageRepository.save(getLanguage().apply { name = "english" })
+    val cl =
+      candidateLanguageRepository.save(
+        getCandidateLanguage().apply {
+          candidate = testCandidate
+          language = savedLanguage
+          writtenLevel = getSavedLanguageLevel(languageLevelRepository)
+          spokenLevel = getSavedLanguageLevel(languageLevelRepository)
+        }
+      )
+
+    repo.save(testCandidate.apply {})
+
+    val request =
+      SearchCandidateRequest().apply {
+        englishMinWrittenLevel = cl.writtenLevel.level
+        englishMinSpokenLevel = cl.spokenLevel.level
+      }
+    val spec = CandidateSpecification.buildSearchQuery(request, null, null)
+    val result = repo.findAll(spec)
+
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(testCandidate.id, result.first().id)
+  }
+
+  /**
+   * I think this test is problematic also. The query has 'english' hardcoded against the language.
+   */
+  @Test
+  fun `test language search not english fails`() {
     val cl =
       candidateLanguageRepository.save(
         getCandidateLanguage().apply {
@@ -270,16 +304,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
 
     assertNotNull(result)
-    assertTrue(result.isNotEmpty(), "Expected results in the list.")
-    assertTrue(
-      result.any {
-        it.candidateLanguages.any { cl ->
-          cl.language.name.equals("english", ignoreCase = true) &&
-            cl.writtenLevel.level >= request.englishMinWrittenLevel!! &&
-            cl.spokenLevel.level >= request.englishMinSpokenLevel!!
-        }
-      }
-    )
+    assertTrue { result.isEmpty() }
   }
 
   @Test
@@ -289,7 +314,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val spec = CandidateSpecification.buildSearchQuery(request, null, excludedCandidates)
     val result = repo.findAll(spec)
     assertNotNull(result)
-    assertTrue(result.isEmpty())
+    assertTrue { result.isEmpty() }
     assertTrue(result.none { it.id == testCandidate.id })
   }
 
@@ -304,7 +329,7 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
     val result = repo.findAll(spec)
 
     assertNotNull(result)
-    assertTrue(result.isNotEmpty())
+    assertTrue { result.isNotEmpty() }
     assertTrue(
       result.all {
         it.updatedDate.isAfter(
