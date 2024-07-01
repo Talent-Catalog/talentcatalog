@@ -104,11 +104,14 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
     val request = SearchSavedListRequest().apply { sfOppClosed = true }
     repo.save(savedList)
     val spec = GetSavedListsQuery(request, null)
-    val result = repo.findAll(spec)
-    assertNotNull(result)
-    assertTrue { result.isNotEmpty() }
-    assertEquals(1, result.size)
-    assertEquals(savedList.id, result.first().id)
+    fail(
+      "Expect to fail - query uses a method in place of an attribute so can't work? Should be fixed."
+    )
+    //    val result = repo.findAll(spec)
+    //    assertNotNull(result)
+    //    assertTrue { result.isNotEmpty() }
+    //    assertEquals(1, result.size)
+    //    assertEquals(savedList.id, result.first().id)
   }
 
   @Test

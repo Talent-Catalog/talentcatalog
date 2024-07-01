@@ -677,9 +677,10 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
         dateFrom,
         dateTo,
       )
-    assertNotNull(result)
-    assertTrue { result.isNotEmpty() }
-    assertEquals(1, result.size)
+    fail("Expect to fail - lowercase hardcoded in query. Should be fixed?")
+    //    assertNotNull(result)
+    //    assertTrue { result.isNotEmpty() }
+    //    assertEquals(1, result.size)
   }
 
   // This test will fail, as the sql is checking for a lowercase name to be
@@ -698,9 +699,10 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
         dateTo,
         getCandidateIds(repo, userRepository, testCandidate),
       )
-    assertNotNull(result)
-    assertTrue { result.isNotEmpty() }
-    assertEquals(1, result.size)
+    fail("Expect to fail - lowercase hardcoded in query. Should be fixed?")
+    //    assertNotNull(result)
+    //    assertTrue { result.isNotEmpty() }
+    //    assertEquals(1, result.size)
   }
 
   @Test
