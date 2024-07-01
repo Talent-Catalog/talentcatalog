@@ -108,5 +108,5 @@ fdescribe('DatePickerComponent', () => {
       clearButton.nativeElement.click();
       expect(component.clear).toHaveBeenCalled();
     });
-    
+
 });
