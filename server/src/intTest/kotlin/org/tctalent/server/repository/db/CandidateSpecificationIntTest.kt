@@ -16,8 +16,6 @@
 
 package org.tctalent.server.repository.db
 
-import java.time.*
-import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.Candidate
 import org.tctalent.server.model.db.CandidateStatus
@@ -25,6 +23,10 @@ import org.tctalent.server.model.db.SearchType
 import org.tctalent.server.model.db.UnhcrStatus
 import org.tctalent.server.repository.db.integrationhelp.*
 import org.tctalent.server.request.candidate.SearchCandidateRequest
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import kotlin.test.*
 
 class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var repo: CandidateRepository
@@ -434,6 +436,24 @@ class CandidateSpecificationIntTest : BaseDBIntegrationTest() {
       SearchCandidateRequest().apply {
         countryIds = listOf(12)
         countrySearchType = SearchType.and
+      }
+    val spec = CandidateSpecification.buildSearchQuery(request, null, null)
+    val result = repo.findAll(spec)
+
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+    assertEquals(testCandidate.id, result.first().id)
+  }
+
+  @Test
+  fun `test referrer search`() {
+    val referParam = "REFER"
+    repo.save(testCandidate.apply { regoReferrerParam = referParam })
+
+    val request =
+      SearchCandidateRequest().apply {
+        regoReferrerParam = referParam
       }
     val spec = CandidateSpecification.buildSearchQuery(request, null, null)
     val result = repo.findAll(spec)
