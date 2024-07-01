@@ -35,8 +35,8 @@ import org.tctalent.server.request.opportunity.OpportunityOwnershipType
 class CandidateOpportunitySpecificationIntTest : BaseDBIntegrationTest() {
   @Autowired private lateinit var repo: CandidateOpportunityRepository
   @Autowired private lateinit var candidateRepo: CandidateRepository
-  @Autowired private lateinit var jobChatRepository: JobChatRepository
   @Autowired private lateinit var userRepository: UserRepository
+  @Autowired private lateinit var jobChatRepository: JobChatRepository
   @Autowired private lateinit var jcuRepository: JobChatUserRepository
   @Autowired private lateinit var sfJobOpportunityRepository: SalesforceJobOppRepository
   @Autowired private lateinit var chatPostRepository: ChatPostRepository

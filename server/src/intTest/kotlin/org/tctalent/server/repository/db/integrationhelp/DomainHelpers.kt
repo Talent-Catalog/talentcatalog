@@ -315,6 +315,7 @@ fun getCandidateDependent() =
 fun getSalesforceJobOpp() =
   SalesforceJobOpp().apply {
     description = "SF TEST JOB"
+    name = "SF test JOB"
     employer = "Seraco Pty Ltd"
     country = Country().apply { id = 6192 } // Australia
     sfId = "TESTSFID"

@@ -16,15 +16,12 @@
 
 package org.tctalent.server.repository.db
 
+import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.SalesforceJobOpp
 import org.tctalent.server.model.db.SavedList
-import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
-import org.tctalent.server.repository.db.integrationhelp.getSavedSavedList
-import org.tctalent.server.repository.db.integrationhelp.getSavedSavedSearch
-import org.tctalent.server.repository.db.integrationhelp.systemUser
+import org.tctalent.server.repository.db.integrationhelp.*
 import org.tctalent.server.request.list.SearchSavedListRequest
-import kotlin.test.*
 
 /** For testing specific cases set saved search so that results aren't returned. */
 class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
@@ -99,20 +96,20 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
 
   // TODO (the query is broken as it uses a method call as an attribute)
   // Requires confirmation and fixing.
-  //  @Test
-  //  fun `test sfOppClosed`() {
-  //    testSFJobOpp = getSavedSfJobOpp(sfJobOppRepository).apply { isClosed = true }
-  //    repo.save(savedList.apply { savedList.sfJobOpp = testSFJobOpp })
-  //
-  //    val request = SearchSavedListRequest().apply { sfOppClosed = true }
-  //    repo.save(savedList)
-  //    val spec = GetSavedListsQuery(request, null)
-  //    val result = repo.findAll(spec)
-  //    assertNotNull(result)
-  //    assertTrue { result.isNotEmpty() }
-  //    assertEquals(1, result.size)
-  //    assertEquals(savedList.id, result.first().id)
-  //  }
+  @Test
+  fun `test sfOppClosed`() {
+    testSFJobOpp = getSavedSfJobOpp(sfJobOppRepository).apply { isClosed = true }
+    repo.save(savedList.apply { savedList.sfJobOpp = testSFJobOpp })
+
+    val request = SearchSavedListRequest().apply { sfOppClosed = true }
+    repo.save(savedList)
+    val spec = GetSavedListsQuery(request, null)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
+    assertEquals(1, result.size)
+    assertEquals(savedList.id, result.first().id)
+  }
 
   @Test
   fun `test shortName`() {
