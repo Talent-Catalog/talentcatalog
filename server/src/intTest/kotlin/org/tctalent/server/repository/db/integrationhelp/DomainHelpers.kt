@@ -885,4 +885,10 @@ fun getCandidateOccupation(): CandidateOccupation =
  */
 fun getWrittenLevel(): LanguageLevel = LanguageLevel().apply { level = 9 }
 
-fun getCandidateLanguage() = CandidateLanguage().apply { migrationLanguage = "ENGLISH" }
+/**
+ * Retrieves a new CandidateLanguage instance initialized with a default migration language.
+ *
+ * @return A new CandidateLanguage instance.
+ */
+fun getCandidateLanguage(): CandidateLanguage =
+  CandidateLanguage().apply { migrationLanguage = "ENGLISH" }

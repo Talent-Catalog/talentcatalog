@@ -16,18 +16,21 @@
 
 package org.tctalent.server.repository.db
 
-import kotlin.test.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.tctalent.server.model.db.SalesforceJobOpp
 import org.tctalent.server.model.db.SavedList
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest
 import org.tctalent.server.repository.db.integrationhelp.getSavedSavedList
+import org.tctalent.server.repository.db.integrationhelp.getSavedSavedSearch
 import org.tctalent.server.repository.db.integrationhelp.systemUser
 import org.tctalent.server.request.list.SearchSavedListRequest
+import kotlin.test.*
 
+/** For testing specific cases set saved search so that results aren't returned. */
 class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
   @Autowired lateinit var repo: SavedListRepository
   @Autowired private lateinit var sfJobOppRepository: SalesforceJobOppRepository
+  @Autowired private lateinit var savedSearchRepository: SavedSearchRepository
   private lateinit var savedList: SavedList
   private lateinit var testSFJobOpp: SalesforceJobOpp
 
@@ -50,6 +53,8 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
 
   @Test
   fun `test keyword fail`() {
+    val ss = getSavedSavedSearch(savedSearchRepository)
+    repo.save(savedList.apply { savedSearch = ss })
     val request = SearchSavedListRequest().apply { keyword = "NOTHING" }
     val spec = GetSavedListsQuery(request, null)
     val result = repo.findAll(spec)
@@ -63,9 +68,22 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
     val spec = GetSavedListsQuery(request, null)
     val result = repo.findAll(spec)
     assertNotNull(result)
+    assertNotNull(result)
     assertTrue { result.isNotEmpty() }
     assertEquals(1, result.size)
     assertEquals(savedList.id, result.first().id)
+  }
+
+  @Test
+  fun `test fixed false`() {
+    val ss = getSavedSavedSearch(savedSearchRepository)
+    repo.save(savedList.apply { savedSearch = ss })
+    val request = SearchSavedListRequest().apply { fixed = false }
+    val spec = GetSavedListsQuery(request, null)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
   }
 
   @Test
@@ -108,6 +126,17 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
   }
 
   @Test
+  fun `test shortName false`() {
+    val ss = getSavedSavedSearch(savedSearchRepository)
+    repo.save(savedList.apply { savedSearch = ss })
+    val request = SearchSavedListRequest().apply { shortName = false }
+    val spec = GetSavedListsQuery(request, null)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
+  }
+
+  @Test
   fun `test global`() {
     val request = SearchSavedListRequest().apply { global = true }
     val spec = GetSavedListsQuery(request, null)
@@ -116,6 +145,15 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
     assertTrue { result.isNotEmpty() }
     assertEquals(1, result.size)
     assertEquals(savedList.id, result.first().id)
+  }
+
+  @Test
+  fun `test global false`() {
+    val request = SearchSavedListRequest().apply { global = false }
+    val spec = GetSavedListsQuery(request, null)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue { result.isNotEmpty() }
   }
 
   @Test
@@ -131,13 +169,49 @@ class GetSavedListsQueryIntTest : BaseDBIntegrationTest() {
   }
 
   @Test
+  fun `test shared false`() {
+    val ss = getSavedSavedSearch(savedSearchRepository)
+    repo.save(savedList.apply { savedSearch = ss })
+    val loggedInUser = systemUser().apply { sharedLists = setOf(savedList) }
+    val request = SearchSavedListRequest().apply { shared = false }
+    val spec = GetSavedListsQuery(request, loggedInUser)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
+  }
+
+  @Test
   fun `test owned`() {
+    val loggedInUser = systemUser().apply { sharedLists = setOf(savedList) }
+    repo.save(savedList.apply { createdBy = loggedInUser })
     val request = SearchSavedListRequest().apply { owned = true }
-    val spec = GetSavedListsQuery(request, null)
+    val spec = GetSavedListsQuery(request, loggedInUser)
     val result = repo.findAll(spec)
     assertNotNull(result)
     assertTrue { result.isNotEmpty() }
     assertEquals(1, result.size)
     assertEquals(savedList.id, result.first().id)
+  }
+
+  @Test
+  fun `test owned false`() {
+    val ss = getSavedSavedSearch(savedSearchRepository)
+    repo.save(savedList.apply { savedSearch = ss })
+    val request = SearchSavedListRequest().apply { owned = false }
+    val spec = GetSavedListsQuery(request, null)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
+  }
+
+  @Test
+  fun `test owned no logged in user`() {
+    val ss = getSavedSavedSearch(savedSearchRepository)
+    repo.save(savedList.apply { savedSearch = ss })
+    val request = SearchSavedListRequest().apply { owned = false }
+    val spec = GetSavedListsQuery(request, null)
+    val result = repo.findAll(spec)
+    assertNotNull(result)
+    assertTrue { result.isEmpty() }
   }
 }
