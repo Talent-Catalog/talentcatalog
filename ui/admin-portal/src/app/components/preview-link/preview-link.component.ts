@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {WebScraperService} from "../../services/web-scraper.service";
 
 @Component({
   selector: 'app-preview-link',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PreviewLinkComponent implements OnInit {
 
-  constructor() { }
+  @Input() link: string;
+
+  constructor(private webScraperService: WebScraperService) { }
 
   ngOnInit(): void {
+    console.log(this.link)
   }
+
 
 }
