@@ -17,9 +17,11 @@ buildscript {
     ext {
         springBootVersion = '2.7.13'
         isDev = System.properties['env'] == 'dev'
-        javaTargetVersion = JavaVersion.VERSION_21
+        javaTargetVersion = JavaVersion.VERSION_17
+        kotlinTargetVersion = JavaVersion.VERSION_17
         lombokVersion = "1.18.30"
-        ext['spring-security.version']='5.8.12'
+        mockkVersion = "1.13.11"
+        ext['spring-security.version'] = '5.8.12'
     }
     repositories {
         mavenCentral()
@@ -32,17 +34,25 @@ buildscript {
 plugins {
     id "org.springframework.boot" version "${springBootVersion}"
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.jetbrains.kotlin.jvm' version '2.0.0'
     id 'java'
     id 'idea'
     id 'com.google.cloud.tools.jib' version '3.4.0'
+    id "com.diffplug.spotless" version "7.0.0.BETA1"
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of('21'))
+        languageVersion.set(JavaLanguageVersion.of(javaTargetVersion.toString()))
     }
-    sourceCompatibility = 21
-    targetCompatibility = 21
+    sourceCompatibility = javaTargetVersion
+    targetCompatibility = javaTargetVersion
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(kotlinTargetVersion.majorVersion))
+    }
 }
 
 //Yes - you do have to declare this again (even though it is declared in the
@@ -52,8 +62,12 @@ repositories {
     mavenCentral()
 }
 
-configurations.configureEach {
-    exclude group: "commons-logging", module: "commons-logging"
+configurations {
+    intTestImplementation.extendsFrom testImplementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+    configureEach {
+        exclude group: "commons-logging", module: "commons-logging"
+    }
 }
 
 dependencies {
@@ -138,16 +152,28 @@ dependencies {
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
 
-    // Temp to update spring thymeleaf as indepdendent unit until all spring is done.
+    // Temp to update spring thymeleaf as independent unit until all spring is done.
     implementation("org.thymeleaf:thymeleaf-spring6:3.1.2.RELEASE")
 
+    // Logging in kotlin
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
 
     // Caching
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
-    // Testing
+    // Test containers
+    testImplementation("org.testcontainers:postgresql:1.19.8")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+
+    // Testing frameworks
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.springframework.security:spring-security-test:5.8.12")
+
+    // Integration Testing
+    intTestImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    testImplementation("io.mockk:mockk:${mockkVersion}")
+    intTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
@@ -156,9 +182,6 @@ dependencies {
 }
 
 jib {
-    from {
-        image = "eclipse-temurin:21-jre"
-    }
     to {
         if (project.hasProperty("test-tc-system")) {
             image = "231168606641.dkr.ecr.us-east-1.amazonaws.com/test-ecs"
@@ -169,8 +192,52 @@ jib {
     }
 }
 
+sourceSets {
+    main {
+        java.srcDirs("src/main/java")
+        kotlin.srcDirs("src/main/kotlin")
+    }
+    test {
+        java.srcDirs("src/test/java")
+        kotlin.srcDirs("src/test/kotlin")
+    }
+    create("intTest") {
+        kotlin.srcDir("src/intTest/kotlin")
+        compileClasspath += sourceSets["main"].output + configurations["testCompileClasspath"]
+        runtimeClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+    }
+}
+
+// This is required to ensure intellij project settings are correct and align
+// to gradle.
+idea {
+    module {
+        testSources.from(sourceSets.intTest.kotlin.srcDirs)
+        testResources.from(sourceSets.intTest.resources.srcDirs)
+    }
+}
+
 test {
     useJUnitPlatform()
+    testLogging {
+        events("failed")
+    }
+}
+
+tasks.register("intTest", Test) {
+    description = "Run integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    shouldRunAfter(tasks.named("test"))
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "failed")
+    }
+}
+
+tasks.named("check") {
+    dependsOn("intTest")
 }
 
 bootJar {
@@ -182,4 +249,10 @@ bootJar {
 // Parameter flag required for SpringBoot3+ (Spring 6.1+)
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add("-parameters")
+}
+
+spotless {
+    kotlin {
+        ktfmt().googleStyle()
+    }
 }
