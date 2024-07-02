@@ -546,6 +546,7 @@ import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {LanguageLoader} from "./services/language.loader";
 import {SfJoblinkComponent} from './components/util/sf-joblink/sf-joblink.component';
 import {SelectJobCopyComponent} from './components/util/select-job-copy/select-job-copy.component';
+import { PreviewLinkComponent } from './components/preview-link/preview-link.component';
 
 @NgModule({
   declarations: [
@@ -867,7 +868,8 @@ import {SelectJobCopyComponent} from './components/util/select-job-copy/select-j
     SearchHelpLinksComponent,
     CreateUpdateHelpLinkComponent,
     SfJoblinkComponent,
-    SelectJobCopyComponent
+    SelectJobCopyComponent,
+    PreviewLinkComponent
   ],
   imports: [
     BrowserModule,

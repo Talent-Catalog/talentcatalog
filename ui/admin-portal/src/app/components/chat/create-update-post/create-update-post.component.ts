@@ -20,6 +20,8 @@ export class CreateUpdatePostComponent implements OnInit {
   postForm: FormGroup;
   quillEditorRef: Quill;
   public emojiPickerVisible: boolean = false;
+  regexpLink: RegExp;
+  links: string[];
 
   constructor(
     private fb: FormBuilder,
@@ -32,6 +34,7 @@ export class CreateUpdatePostComponent implements OnInit {
     this.postForm = this.fb.group({
       content: ["", Validators.required]
     });
+    this.regexpLink = new RegExp('<a href="(\\S+)"', 'gi');
   }
 
   editorCreated(quill: Quill) {
@@ -109,6 +112,17 @@ export class CreateUpdatePostComponent implements OnInit {
       const index: number = this.quillEditorRef.selection.savedRange.index;
       this.quillEditorRef.setSelection(index, 0);
     }
+  }
+
+  checkForLinks(event) {
+    const editorHtmlContent = event.html
+    const regexpCaptures: any[] = [...editorHtmlContent.matchAll(this.regexpLink)]
+    console.log(regexpCaptures)
+    while (regexpCaptures != this.links) {
+      this.links = regexpCaptures;
+    }
+    // TODO: in template, iterate over links array, providing url from each to create an instance
+    //  of the preview-link component
   }
 
 }

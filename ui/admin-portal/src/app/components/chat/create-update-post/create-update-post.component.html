@@ -10,7 +10,8 @@
     <quill-editor id="content"
                   placeholder="Write your message..."
                   [formControlName]="'content'"
-                  (onEditorCreated)="editorCreated($event)">
+                  (onEditorCreated)="editorCreated($event)"
+                  (onContentChanged)="checkForLinks($event)">
       <div quill-editor-toolbar id="quillToolbar">
           <button class="ql-list" value="ordered" title="Ordered list"></button>
           <button class="ql-list" value="bullet" title="Bullet list"></button>
@@ -42,6 +43,10 @@
           ></emoji-mart>
         </div>
     </quill-editor>
+  </div>
+
+  <div *ngFor="let link of links">
+    <app-preview-link [url]="link[0]"></app-preview-link>
   </div>
 
   <div class="d-flex justify-content-end">
