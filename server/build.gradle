@@ -20,6 +20,7 @@ buildscript {
         javaTargetVersion = JavaVersion.VERSION_17
         kotlinTargetVersion = JavaVersion.VERSION_17
         lombokVersion = "1.18.30"
+        mockkVersion = "1.13.11"
         ext['spring-security.version'] = '5.8.12'
     }
     repositories {
@@ -171,6 +172,7 @@ dependencies {
 
     // Integration Testing
     intTestImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    testImplementation("io.mockk:mockk:${mockkVersion}")
     intTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
