@@ -175,9 +175,11 @@ fdescribe('CandidateSourceComponent', () => {
   });
 
   it('should show list folder', () => {
+    spyOn(window, 'open'); // Spy on window.open
     savedListService.createFolder.and.returnValue(of(MockSavedList));
     component.doShowListFolder();
     expect(savedListService.createFolder).toHaveBeenCalled();
+    expect(window.open).toHaveBeenCalled(); // Check if window.open was called
   });
 
   it('should fetch saved search on init', () => {
