@@ -28,14 +28,19 @@ fdescribe('ExportPdfComponent', () => {
 
   it('should set saving to true when exportAsPdf is called', () => {
     const formName = 'testForm';
-    const element = document.createElement('div');
-    element.id = formName;
-    document.body.appendChild(element);
+    const mockCanvas = document.createElement('canvas');
+    document.body.appendChild(mockCanvas);
+
+    mockCanvas.width = 600;
+    mockCanvas.height = 1200;
+    window['scrollY'] = -1;
+    spyOn(document, 'getElementById').and.returnValue(mockCanvas); // Mock getElementById
 
     component.exportAsPdf(formName);
 
     expect(component.saving).toBeTrue();
-    document.body.removeChild(element);
-  });
+    expect(document.getElementById).toHaveBeenCalledWith(formName);
+    document.body.removeChild(mockCanvas);
 
+  });
 });
