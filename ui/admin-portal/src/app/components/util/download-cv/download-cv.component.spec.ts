@@ -10,7 +10,7 @@ fdescribe('DownloadCvComponent', () => {
   let fixture: ComponentFixture<DownloadCvComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-
+  let windowOpenSpy: jasmine.Spy;
   beforeEach(async () => {
     const candidateService = jasmine.createSpyObj('CandidateService', ['downloadCv']);
     const activeModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
@@ -29,7 +29,7 @@ fdescribe('DownloadCvComponent', () => {
     component = fixture.componentInstance;
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-
+    windowOpenSpy = spyOn(window, 'open').and.returnValue({ location: { href: '' } } as Window);
     fixture.detectChanges();
   });
 
@@ -46,17 +46,16 @@ fdescribe('DownloadCvComponent', () => {
     const request: DownloadCVRequest = {
       candidateId: component.candidateId,
       showName: false,
-      showContact: false
+      showContact: false,
     };
     const fakeBlob = new Blob();
-    const tabSpy = { location: { href: '' } };
-    spyOn(window, 'open').and.returnValue(tabSpy as any);
 
     candidateServiceSpy.downloadCv.and.returnValue(of(fakeBlob));
     component.onSave();
 
     expect(candidateServiceSpy.downloadCv).toHaveBeenCalledWith(request);
     expect(activeModalSpy.close).toHaveBeenCalled();
+    expect(windowOpenSpy).toHaveBeenCalled(); // Ensure window.open was called
   });
 
   it('should set error message on failure', () => {
@@ -64,6 +63,7 @@ fdescribe('DownloadCvComponent', () => {
     candidateServiceSpy.downloadCv.and.returnValue(throwError(errorResponse));
     component.onSave();
     expect(component.error).toBe(errorResponse);
+    expect(activeModalSpy.close).not.toHaveBeenCalled(); // Modal should not be closed on error
   });
 
   it('should close the modal', () => {

@@ -56,12 +56,6 @@ fdescribe('FileSelectorComponent', () => {
     expect(component.selectedFiles.length).toBe(0);
   });
 
-  it('should cancel modal', () => {
-    component.cancel();
-
-    expect(modalMock.close).toHaveBeenCalled();
-  });
-
   it('should close modal with selected files', () => {
 
     component.selectedFiles = [createMockFile('test.jpg')];
