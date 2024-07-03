@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { By } from '@angular/platform-browser';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {ReactiveFormsModule} from '@angular/forms';
+import {By} from '@angular/platform-browser';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {NgSelectComponent, NgSelectModule} from '@ng-select/ng-select';
-import { HasNameSelectorComponent } from './has-name-selector.component';
-import { HasName } from '../../../model/base';
+import {HasNameSelectorComponent} from './has-name-selector.component';
+import {HasName} from '../../../model/base';
 
 fdescribe('HasNameSelectorComponent', () => {
   let component: HasNameSelectorComponent;
