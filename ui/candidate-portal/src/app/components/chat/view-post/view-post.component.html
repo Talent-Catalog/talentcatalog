@@ -6,17 +6,14 @@
   <p class="content" *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></p>
 
   <div class="d-flex flex-row-reverse flex-wrap">
-    <button
-    id="reactionBtn"
-    [ngClass]="!this.reactionPickerVisible ?
-    'reaction-btn' : 'reaction-btn-selected'"
-    (click)="onClickReactionBtn()">
+    <button id="reactionBtn"
+            [ngClass]="!this.reactionPickerVisible ? 'reaction-btn' : 'reaction-btn-selected'"
+            (click)="toggleReactionPicker()">
       <fa-icon id="reactionBtnSmiley" icon="face-smile" size="xs"></fa-icon>+
     </button>
-    <button
-    class="modify-reaction-btn"
-    *ngFor="let reaction of post.reactions"
-    (click)="onSelectReaction(reaction)">
+    <button class="modify-reaction-btn"
+            *ngFor="let reaction of post.reactions"
+            (click)="onSelectReaction(reaction)">
       <span [ngbTooltip]="reactionToolTip">
         {{reaction.emoji}} {{reaction.users.length}}
       </span>
@@ -41,4 +38,4 @@
   [autoFocus]="true"
 ></emoji-mart>
 
-<div *ngIf="reactionPickerVisible" class="overlay"></div>
+<div *ngIf="reactionPickerVisible" class="overlay" (click)="toggleReactionPicker()"></div>
