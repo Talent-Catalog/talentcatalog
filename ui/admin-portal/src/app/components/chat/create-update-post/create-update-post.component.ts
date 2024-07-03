@@ -67,6 +67,7 @@ export class CreateUpdatePostComponent implements OnInit {
     if (this.chat) {
       const post: Post = {
         content: this.contentControl.value
+        // TODO add html link preview here if it is to be added
       }
       const body = JSON.stringify(post);
       //todo See retryIfDisconnected in publish doc
@@ -121,8 +122,6 @@ export class CreateUpdatePostComponent implements OnInit {
     while (regexpCaptures != this.links) {
       this.links = regexpCaptures;
     }
-    // TODO: in template, iterate over links array, providing url from each to create an instance
-    //  of the preview-link component
   }
 
 }
