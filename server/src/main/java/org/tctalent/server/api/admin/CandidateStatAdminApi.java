@@ -106,6 +106,8 @@ public class CandidateStatAdminApi {
 
             //Get candidates from search
             candidateIds = savedSearchService.searchCandidates(request.getSearchId());
+
+            //Warning that the above call clears the JPA persistence context - see its JavaDoc
         }
 
         convertDateRangeDefaults(request);
