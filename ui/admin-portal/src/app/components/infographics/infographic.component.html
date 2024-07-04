@@ -23,6 +23,10 @@
   </ol>
 </nav>
 
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
 <form [formGroup]="statsFilter">
   <div class="container-fluid">
 
