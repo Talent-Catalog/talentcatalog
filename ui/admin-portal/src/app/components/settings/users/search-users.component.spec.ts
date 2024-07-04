@@ -19,11 +19,10 @@ import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {UserService} from "../../../services/user.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbModalRef, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 import {Role, User} from "../../../model/user";
 import {CreateUpdateUserComponent} from "./create-update-user/create-update-user.component";
@@ -62,8 +61,7 @@ fdescribe('SearchUsersComponent', () => {
         { provide: AuthorizationService, useValue: authorizeServiceSpyObj },
         { provide: AuthenticationService, useValue: authServiceSpyObj },
         NgbModal
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+      ]
     }).compileComponents();
 
     userServiceSpy = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
@@ -103,28 +101,44 @@ fdescribe('SearchUsersComponent', () => {
   });
 
   it('should call addUser and open CreateUpdateUserComponent modal', () => {
-    spyOn(modalService, 'open').and.callThrough();
+    spyOn(modalService, 'open').and.returnValue({
+      componentInstance: {},
+      result: Promise.resolve('some result'),
+      close: () => {}, // Mock close method
+    } as NgbModalRef);
     component.addUser();
     expect(modalService.open).toHaveBeenCalledWith(CreateUpdateUserComponent, { centered: true, backdrop: 'static' });
   });
 
   it('should call editUser and open CreateUpdateUserComponent modal', () => {
     const user = { id: 1 } as User;
-    spyOn(modalService, 'open').and.callThrough();
+    spyOn(modalService, 'open').and.returnValue({
+      componentInstance: {},
+      result: Promise.resolve('some result'),
+      close: () => {}, // Mock close method
+    } as NgbModalRef);
     component.editUser(user);
     expect(modalService.open).toHaveBeenCalledWith(CreateUpdateUserComponent, { centered: true, backdrop: 'static' });
   });
 
   it('should call deleteUser and open ConfirmationComponent modal', () => {
     const user = { id: 1 } as User;
-    spyOn(modalService, 'open').and.callThrough();
+    spyOn(modalService, 'open').and.returnValue({
+      componentInstance: {},
+      result: Promise.resolve('some result'),
+      close: () => {}, // Mock close method
+    } as NgbModalRef);
     component.deleteUser(user);
     expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, { centered: true, backdrop: 'static' });
   });
 
   it('should call updatePassword and open ChangePasswordComponent modal', () => {
     const user = { id: 1 } as User;
-    spyOn(modalService, 'open').and.callThrough();
+    spyOn(modalService, 'open').and.returnValue({
+      componentInstance: {},
+      result: Promise.resolve('some result'),
+      close: () => {}, // Mock close method
+    } as NgbModalRef);
     component.updatePassword(user);
     expect(modalService.open).toHaveBeenCalledWith(ChangePasswordComponent, { centered: true, backdrop: 'static' });
   });
