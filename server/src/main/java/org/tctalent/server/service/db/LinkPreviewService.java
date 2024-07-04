@@ -16,22 +16,39 @@
 
 package org.tctalent.server.service.db;
 
-import java.io.IOException;
-import org.jsoup.nodes.Document;
+import org.tctalent.server.exception.EntityReferencedException;
+import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.LinkPreview;
+import org.tctalent.server.request.chat.link_preview.CreateLinkPreviewRequest;
 
 public interface LinkPreviewService {
 
-  String buildLinkPreview(String url) throws IOException;
+  /**
+   * TODO doc
+   * @param url
+   * @return
+   */
+  LinkPreview buildLinkPreview(String url);
 
-  private String getTitle(Document document) {
-    return "";
-  }
+  /**
+   * TODO doc
+   * @param chatPostId
+   * @param request
+   * @return
+   * @throws NoSuchObjectException
+   */
+  LinkPreview createLinkPreview(long chatPostId, CreateLinkPreviewRequest request)
+      throws NoSuchObjectException;
 
-  private String getDescription(Document document) {
-    return "";
-  }
+  /**
+   * TODO doc
+   * @param linkPreviewId
+   * @return
+   * @throws EntityReferencedException
+   * @throws InvalidRequestException
+   */
+  boolean deleteLinkPreview(long linkPreviewId)
+    throws EntityReferencedException, InvalidRequestException;
 
-  private String getImageUrl(Document document) {
-    return "";
-  }
 }

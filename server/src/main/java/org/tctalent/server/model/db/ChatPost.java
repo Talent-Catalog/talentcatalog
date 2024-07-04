@@ -48,6 +48,9 @@ public class ChatPost extends AbstractAuditableDomainObject<Long> {
     @OneToMany(mappedBy = "chatPost", cascade = CascadeType.ALL)
     private List<Reaction> reactions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "chatPost", cascade = CascadeType.ALL)
+    private List<LinkPreview> linkPreviews = new ArrayList<>();
+
     //Author of post is stored in inherited createdBy
     //Timestamp of post is stored in inherited createdDate
 }

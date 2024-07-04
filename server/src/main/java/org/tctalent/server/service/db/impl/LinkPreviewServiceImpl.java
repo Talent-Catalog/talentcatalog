@@ -16,16 +16,77 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.io.IOException;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.exception.EntityReferencedException;
+import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.ChatPost;
+import org.tctalent.server.model.db.LinkPreview;
+import org.tctalent.server.model.db.LinkPreviewRepository;
+import org.tctalent.server.repository.db.ChatPostRepository;
+import org.tctalent.server.request.chat.link_preview.CreateLinkPreviewRequest;
 import org.tctalent.server.service.db.LinkPreviewService;
 
 @Service
 public class LinkPreviewServiceImpl implements LinkPreviewService {
 
+  private final ChatPostRepository chatPostRepository;
+  private final LinkPreviewRepository linkPreviewRepository;
+
+  public LinkPreviewServiceImpl(ChatPostRepository chatPostRepository,
+      LinkPreviewRepository linkPreviewRepository) {
+    this.chatPostRepository = chatPostRepository;
+    this.linkPreviewRepository = linkPreviewRepository;
+  }
+
   @Override
-  public String buildLinkPreview(String url) throws IOException {
-    // TODO: may need to utilise cross-site scripting safety measures in HtmlSanitizer before doing any parsing - read up on this
+  public LinkPreview createLinkPreview(long chatPostId, CreateLinkPreviewRequest request)
+      throws NoSuchObjectException {
+
+    ChatPost chatPost = chatPostRepository.findById(chatPostId)
+        .orElseThrow(() -> new NoSuchObjectException(ChatPost.class, chatPostId));
+
+    LinkPreview linkPreview = new LinkPreview();
+
+    linkPreview.setChatPost(chatPost);
+    linkPreview.setTitle(request.getTitle());
+    linkPreview.setUrl(request.getUrl());
+    linkPreview.setDescription(request.getDescription());
+    linkPreview.setImageUrl(request.getImageUrl());
+
+    return linkPreviewRepository.save(linkPreview);
+  }
+
+  @Override
+  public boolean deleteLinkPreview(long linkPreviewId)
+      throws EntityReferencedException, InvalidRequestException {
+    linkPreviewRepository.deleteById(linkPreviewId);
+    return true;
+  }
+
+  @Override
+  public LinkPreview buildLinkPreview(String url) {
+    LinkPreview linkPreview = new LinkPreview();
+    linkPreview.setUrl("www.nonsense.com");
+    linkPreview.setTitle("A made-up webpage about nothing");
+    linkPreview.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque mollis pretium quis.");
+    linkPreview.setImageUrl("https://ipsumfactory.com/wp-content/uploads/2023/04/ipsum-factory-150x150.png");
+    return linkPreview;
+  }
+
+  private String getTitle(Document document) {
+    // implement JSoup scraping w JC link as code guidance
     return "";
   }
+
+  private String getDescription(Document document) {
+    // implement JSoup scraping w JC link as code guidance
+    return "";
+  }
+
+  private String getImageUrl(Document document) {
+    // implement JSoup scraping w JC link as code guidance
+    return "";
+  }
+
 }
