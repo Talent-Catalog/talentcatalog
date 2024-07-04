@@ -39,10 +39,10 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(javaTargetVersion.toString()))
+        languageVersion = JavaLanguageVersion.of(17)
     }
-    sourceCompatibility = javaTargetVersion
-    targetCompatibility = javaTargetVersion
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 //Yes - you do have to declare this again (even though it is declared in the
