@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.service.db.RootRequestService;
@@ -74,11 +75,17 @@ public class RootRouteAdminApi {
 
         if (showHeaders != null) {
             headers.forEach((key, value) ->
-                log.info(String.format(
-                    "Header '%s' = %s", key, String.join("|", value))));
+                LogBuilder.builder(log)
+                    .action("Route")
+                    .message(String.format("Header '%s' = %s", key, String.join("|", value)))
+                    .logInfo());
+
             String ipAddress = request.getHeader("X-Forward-For");
             if(ipAddress == null) {
-                log.info("Ip address: " + request.getRemoteAddr());
+                LogBuilder.builder(log)
+                    .action("Route")
+                    .message("Ip address: " + request.getRemoteAddr())
+                    .logInfo();
             }
         }
 
@@ -95,7 +102,11 @@ public class RootRouteAdminApi {
                 if (queryString != null) {
                     redirectUrl += "&" + queryString;
                 }
-                log.info("Redirecting to: " + redirectUrl);
+                LogBuilder.builder(log)
+                    .action("Route")
+                    .message("Redirecting to: " + redirectUrl)
+                    .logInfo();
+
                 return new ModelAndView("redirect:" + redirectUrl);
             }
         }
@@ -122,8 +133,16 @@ public class RootRouteAdminApi {
                 infoMess += ": Host " + host;
             }
             infoMess += ", Partner specified 'p=" + partnerParam + "'";
-            log.info(infoMess);
-            log.info("Routing to landing page: " + routingUrl);
+
+            LogBuilder.builder(log)
+                .action("Route")
+                .message(infoMess)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("Route")
+                .message("Routing to landing page: " + routingUrl)
+                .logInfo();
         }
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();

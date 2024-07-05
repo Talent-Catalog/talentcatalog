@@ -19,13 +19,7 @@ import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
-import {
-  AvailImmediateReason,
-  CandidateCitizenship, CandidateExam,
-  CandidateIntakeData,
-  CandidateVisa,
-  CandidateVisaJobCheck, Exam, HasPassport, YesNoUnsure
-} from "../../../../../../model/candidate";
+import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -82,5 +76,5 @@ fdescribe('VisaCheckAuComponent', () => {
   it('should select the first job by default', () => {
     expect(component.selectedJob).toBe(component.visaCheckRecord.candidateVisaJobChecks[0]);
   });
-  
+
 });

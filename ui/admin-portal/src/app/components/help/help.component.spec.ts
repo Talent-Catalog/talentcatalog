@@ -1,9 +1,9 @@
 import {HelpComponent} from "./help.component";
-import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {HelpLinkService} from "../../services/help-link.service";
 import {of, throwError} from "rxjs";
 import {By} from "@angular/platform-browser";
-import {MOCK_HELP_LINK, MockHelpLink} from "../../MockData/MockHelpLink";
+import {MOCK_HELP_LINK} from "../../MockData/MockHelpLink";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {SearchHelpLinkRequest} from "../../model/help-link";
 
