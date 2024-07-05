@@ -65,7 +65,7 @@ public class DBContainer {
   /**
    * Starts the database container and initializes the database.
    */
-  public static void startDBContainer() {
+  public static void startDBContainer() throws IOException, InterruptedException {
     db.start();
     createDbObjects();
     loadDb();
@@ -75,12 +75,15 @@ public class DBContainer {
   /**
    * Imports the database dump file to the database container.
    */
-  private static void importDumpFileToDatabase() {
+  private static void importDumpFileToDatabase() throws IOException, InterruptedException {
     log.info("Importing the database dump.");
     try {
       db.execInContainer(psqlCommand());
     } catch (IOException | InterruptedException e) {
       log.error("Could not import the database dump file.{}", e.getMessage());
+      if (e instanceof InterruptedException) {
+        throw e;
+      }
     }
     log.info("Done importing the database dump. Connection is: {}", db.getJdbcUrl());
     log.info("Ready to use: {}", db.isRunning());
@@ -89,7 +92,7 @@ public class DBContainer {
   /**
    * Creates database objects and users in the database container.
    */
-  private static void createDbObjects() {
+  private static void createDbObjects() throws IOException, InterruptedException {
     log.info("Creating database objects");
     try {
       db.execInContainer(createDbCommands());
@@ -97,6 +100,9 @@ public class DBContainer {
       db.execInContainer(superUserCommand());
     } catch (InterruptedException | IOException e) {
       log.error("Error creating database objects", e);
+      if (e instanceof InterruptedException) {
+        throw e;
+      }
     }
     log.info("Database container started. DB and user created.");
   }

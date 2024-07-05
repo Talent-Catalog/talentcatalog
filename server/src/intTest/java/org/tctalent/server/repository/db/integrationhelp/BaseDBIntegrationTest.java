@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db.integrationhelp;
 
+import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -38,7 +39,7 @@ public abstract class BaseDBIntegrationTest {
    * Starts the database container before all tests.
    */
   @BeforeAll
-  public static void startDBContainer() {
+  public static void startDBContainer() throws IOException, InterruptedException {
     DBContainer.startDBContainer();
   }
 
