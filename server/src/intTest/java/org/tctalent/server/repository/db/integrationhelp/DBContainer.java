@@ -62,6 +62,9 @@ public class DBContainer {
     log.info("Container mount path: " + containerMountPath());
   }
 
+  /**
+   * Starts the database container and initializes the database.
+   */
   public static void startDBContainer() {
     db.start();
     createDbObjects();
@@ -69,6 +72,9 @@ public class DBContainer {
     importDumpFileToDatabase();
   }
 
+  /**
+   * Imports the database dump file to the database container.
+   */
   private static void importDumpFileToDatabase() {
     log.info("Importing the database dump.");
     try {
@@ -80,6 +86,9 @@ public class DBContainer {
     log.info("Ready to use: {}", db.isRunning());
   }
 
+  /**
+   * Creates database objects and users in the database container.
+   */
   private static void createDbObjects() {
     log.info("Creating database objects");
     try {
@@ -92,46 +101,89 @@ public class DBContainer {
     log.info("Database container started. DB and user created.");
   }
 
+  /**
+   * Copies the database dump file to the database container.
+   */
   private static void loadDb() {
     log.info("Copying dump file to the container.");
     db.copyFileToContainer(MountableFile.forHostPath(dumpFilePath()), containerMountPath());
     log.info("Dump file copied to the database");
   }
 
+  /**
+   * Registers the database container properties with the Spring context.
+   *
+   * @param registry The DynamicPropertyRegistry to register the database container with.
+   */
   public static void registerDBContainer(DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", db::getJdbcUrl);
     registry.add("spring.datasource.username", db::getUsername);
     registry.add("spring.datasource.password", db::getPassword);
   }
 
+  /**
+   * Retrieves the PostgreSQL container image.
+   *
+   * @return The PostgreSQL container image.
+   */
   private static String pgContainerImage() {
     return "postgres:14";
   }
 
+  /**
+   * Retrieves the commands to create the database.
+   *
+   * @return An array of commands to create the database.
+   */
   private static String[] createDbCommands() {
     return new String[]{"psql", "-U", "postgres", "-c", "CREATE DATABASE tctalent;"};
   }
 
+  /**
+   * Retrieves the commands to create the database user.
+   *
+   * @return An array of commands to create the database user.
+   */
   private static String[] createUserCommands() {
     return new String[]{"psql", "-U", "postgres", "-c",
         "CREATE USER tctalent WITH PASSWORD 'tctalent';"};
   }
 
+  /**
+   * Retrieves the command to grant superuser privileges to the database user.
+   *
+   * @return An array of commands to grant superuser privileges to the database user.
+   */
   private static String[] superUserCommand() {
     return new String[]{"psql", "-U", "postgres", "-c", "ALTER USER tctalent WITH SUPERUSER;"};
   }
 
+  /**
+   * Retrieves the path to the dump file.
+   *
+   * @return The path to the dump file.
+   */
   private static String dumpFilePath() {
     TestcontainersConfiguration tcContainerConfig = TestcontainersConfiguration.getInstance();
     return tcContainerConfig.getEnvVarOrProperty(TEST_CONTAINERS_DUMP, DEFAULT_DUMP);
   }
 
+  /**
+   * Retrieves the mount path in the container.
+   *
+   * @return The mount path in the container.
+   */
   private static String containerMountPath() {
     TestcontainersConfiguration tcContainerConfig = TestcontainersConfiguration.getInstance();
     return tcContainerConfig.getEnvVarOrProperty(TEST_CONTAINERS_MOUNT,
         "ERROR: Container mount point is not set.");
   }
 
+  /**
+   * Retrieves the command to import the database dump file.
+   *
+   * @return An array of commands to import the database dump file.
+   */
   private static String[] psqlCommand() {
     return new String[]{"psql", "-d", "tctalent", "-U", "tctalent", "-f", containerMountPath()};
   }

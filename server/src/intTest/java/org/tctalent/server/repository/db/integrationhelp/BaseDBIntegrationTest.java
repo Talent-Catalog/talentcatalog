@@ -33,16 +33,30 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public abstract class BaseDBIntegrationTest {
 
+
+  /**
+   * Starts the database container before all tests.
+   */
   @BeforeAll
   public static void startDBContainer() {
     DBContainer.startDBContainer();
   }
 
+  /**
+   * Registers the database container with the DynamicPropertyRegistry.
+   *
+   * @param registry The DynamicPropertyRegistry to register the database container with.
+   */
   @DynamicPropertySource
   public static void registerDBContainer(DynamicPropertyRegistry registry) {
     DBContainer.registerDBContainer(registry);
   }
 
+  /**
+   * Checks if the database container is running. Useful to call before each test.
+   *
+   * @return true if the database container is running, false otherwise.
+   */
   public boolean isContainerInitialised() {
     return DBContainer.db.isRunning();
   }
