@@ -16,11 +16,12 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.LinkPreview;
-import org.tctalent.server.request.chat.link_preview.CreateLinkPreviewRequest;
 
 public interface LinkPreviewService {
 
@@ -33,12 +34,11 @@ public interface LinkPreviewService {
 
   /**
    * TODO doc
-   * @param chatPostId
-   * @param request
-   * @return
+   * @param
+   * @param
    * @throws NoSuchObjectException
    */
-  LinkPreview createLinkPreview(long chatPostId, CreateLinkPreviewRequest request)
+  void attach(ChatPost chatPost, List<LinkPreview> linkPreviews)
       throws NoSuchObjectException;
 
   /**

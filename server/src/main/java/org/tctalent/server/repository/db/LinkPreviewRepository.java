@@ -14,10 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.tctalent.server.model.db.LinkPreview;
 
 public interface LinkPreviewRepository extends JpaRepository<LinkPreview, Long>,
-    JpaSpecificationExecutor<Reaction> { }
+    JpaSpecificationExecutor<LinkPreview> { }

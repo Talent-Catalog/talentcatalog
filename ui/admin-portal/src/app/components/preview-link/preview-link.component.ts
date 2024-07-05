@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {WebScraperService} from "../../services/web-scraper.service";
+import {LinkPreview} from "../../model/link-preview";
 
 @Component({
   selector: 'app-preview-link',
@@ -8,13 +9,16 @@ import {WebScraperService} from "../../services/web-scraper.service";
 })
 export class PreviewLinkComponent implements OnInit {
 
-  @Input() link: string;
+  @Input() linkPreview: LinkPreview;
 
   constructor(private webScraperService: WebScraperService) { }
 
-  ngOnInit(): void {
-    console.log(this.link)
-  }
+  ngOnInit(): void { }
 
+  blockPreview(event: Event): void {
+    event.stopPropagation()
+    event.preventDefault();
+    this.linkPreview.blocked = true;
+  }
 
 }

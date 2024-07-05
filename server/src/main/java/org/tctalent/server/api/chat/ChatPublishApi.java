@@ -27,6 +27,7 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.LinkPreviewService;
 import org.tctalent.server.service.db.UserService;
 
 /**

@@ -43,6 +43,7 @@ import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.LinkPreviewService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -58,6 +59,7 @@ public class ChatPostServiceImpl implements ChatPostService {
     private final JobChatRepository jobChatRepository;
     private final CandidateService candidateService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final LinkPreviewService linkPreviewService;
 
     private static final Logger log = LoggerFactory.getLogger(ChatPostServiceImpl.class);
 
@@ -69,7 +71,13 @@ public class ChatPostServiceImpl implements ChatPostService {
         chatPost.setCreatedDate(OffsetDateTime.now());
         chatPost.setCreatedBy(user);
 
+        // TODO run this by Sadat/John, it's a bit weird!
         chatPost = chatPostRepository.save(chatPost);
+
+        linkPreviewService.attach(chatPost, post.getLinkPreviews());
+
+        chatPost = chatPostRepository.save(chatPost);
+
         return chatPost;
     }
 
@@ -91,6 +99,17 @@ public class ChatPostServiceImpl implements ChatPostService {
             .add("updatedDate")
             .add("updatedBy", userDto())
             .add("reactions", reactionDto())
+            .add("linkPreviews", linkPreviewDto())
+            ;
+    }
+
+    private DtoBuilder linkPreviewDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("url")
+            .add("title")
+            .add("description")
+            .add("imageUrl")
             ;
     }
 

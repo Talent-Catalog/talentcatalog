@@ -16,45 +16,33 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.LinkPreview;
-import org.tctalent.server.model.db.LinkPreviewRepository;
+import org.tctalent.server.repository.db.LinkPreviewRepository;
 import org.tctalent.server.repository.db.ChatPostRepository;
-import org.tctalent.server.request.chat.link_preview.CreateLinkPreviewRequest;
 import org.tctalent.server.service.db.LinkPreviewService;
 
+@RequiredArgsConstructor
 @Service
 public class LinkPreviewServiceImpl implements LinkPreviewService {
 
-  private final ChatPostRepository chatPostRepository;
   private final LinkPreviewRepository linkPreviewRepository;
 
-  public LinkPreviewServiceImpl(ChatPostRepository chatPostRepository,
-      LinkPreviewRepository linkPreviewRepository) {
-    this.chatPostRepository = chatPostRepository;
-    this.linkPreviewRepository = linkPreviewRepository;
-  }
-
   @Override
-  public LinkPreview createLinkPreview(long chatPostId, CreateLinkPreviewRequest request)
+  public void attach(ChatPost chatPost, List<LinkPreview> linkPreviews)
       throws NoSuchObjectException {
 
-    ChatPost chatPost = chatPostRepository.findById(chatPostId)
-        .orElseThrow(() -> new NoSuchObjectException(ChatPost.class, chatPostId));
-
-    LinkPreview linkPreview = new LinkPreview();
-
-    linkPreview.setChatPost(chatPost);
-    linkPreview.setTitle(request.getTitle());
-    linkPreview.setUrl(request.getUrl());
-    linkPreview.setDescription(request.getDescription());
-    linkPreview.setImageUrl(request.getImageUrl());
-
-    return linkPreviewRepository.save(linkPreview);
+    linkPreviews.forEach(linkPreview -> {
+      linkPreview.setChatPost(chatPost);
+      linkPreviewRepository.save(linkPreview);
+    });
   }
 
   @Override
@@ -67,7 +55,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   @Override
   public LinkPreview buildLinkPreview(String url) {
     LinkPreview linkPreview = new LinkPreview();
-    linkPreview.setUrl("www.nonsense.com");
+    linkPreview.setUrl(url);
     linkPreview.setTitle("A made-up webpage about nothing");
     linkPreview.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque mollis pretium quis.");
     linkPreview.setImageUrl("https://ipsumfactory.com/wp-content/uploads/2023/04/ipsum-factory-150x150.png");

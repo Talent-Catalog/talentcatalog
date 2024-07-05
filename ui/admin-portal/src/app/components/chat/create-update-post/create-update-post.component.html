@@ -45,15 +45,17 @@
     </quill-editor>
   </div>
 
-  <div *ngFor="let link of links">
-    <app-preview-link [link]="link[1]"></app-preview-link>
-  </div>
-
   <div class="d-flex justify-content-end">
     <button type="button" class="btn btn-success " (click)="onSend()"
             [disabled]="postForm.invalid">
       Send <i class="fa-solid fa-paper-plane"></i>
     </button>
+  </div>
+
+  <div class="d-flex flex-wrap flex-row-reverse">
+    <div *ngFor="let linkPreview of linkPreviews">
+      <app-preview-link [linkPreview]="linkPreview"></app-preview-link>
+    </div>
   </div>
 
 </form>

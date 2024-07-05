@@ -19,6 +19,7 @@ package org.tctalent.server.request.chat.link_preview;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
@@ -26,12 +27,12 @@ public class CreateLinkPreviewRequest {
     @NotBlank
     private String url;
 
-    @NotBlank
+    @Nullable
     private String title;
 
-    @NotBlank
+    @Nullable
     private String description;
 
-    @NotBlank
+    @Nullable
     private String imageUrl;
 }

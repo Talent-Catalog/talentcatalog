@@ -21,11 +21,11 @@ package org.tctalent.server.api.admin;
  import javax.validation.constraints.NotNull;
  import lombok.RequiredArgsConstructor;
  import org.springframework.web.bind.annotation.PostMapping;
+ import org.springframework.web.bind.annotation.RequestBody;
  import org.springframework.web.bind.annotation.RequestMapping;
  import org.springframework.web.bind.annotation.RestController;
  import org.tctalent.server.exception.EntityReferencedException;
  import org.tctalent.server.exception.InvalidRequestException;
- import org.tctalent.server.exception.NoSuchObjectException;
  import org.tctalent.server.model.db.LinkPreview;
  import org.tctalent.server.request.chat.link_preview.CreateLinkPreviewRequest;
  import org.tctalent.server.service.db.LinkPreviewService;
@@ -40,34 +40,39 @@ package org.tctalent.server.api.admin;
 
      private final LinkPreviewService linkPreviewService;
 
-     /**
-      * TODO doc
-      */
-     @PostMapping("/build-link-preview")
-     public @NotNull Map<String, Object> buildLinkPreview(@NotNull String url) {
-       LinkPreview linkPreview = this.linkPreviewService.buildLinkPreview(url);
-       return this.linkPreviewDto().build(linkPreview);
-     }
-
-   /**
-    * TODO doc
-    * @param chatPostId ID of parent record
-    * @param request Request containing details from which the record is created.
-    * @return
-    * @throws NoSuchObjectException
-    */
-     @Override
-     public @NotNull Map<String, Object> create(
-         long chatPostId, @Valid CreateLinkPreviewRequest request
-     ) throws NoSuchObjectException {
-       LinkPreview linkPreview = linkPreviewService.createLinkPreview(chatPostId, request);
-       return linkPreviewDto().build(linkPreview);
-     }
+////     TODO rather than the standard implementation of create here, we're going to want a method
+////      that takes a list of CreateLinkPreviewRequests - it can be void. Delete is still needed, the
+////      sending user should be able to delete them from their own sent posts.
+//   /**
+//    *TODO doc
+//    * @param chatPostId ID of parent record
+//    * @param request Request containing details from which the record is created.
+//    * @return
+//    * @throws NoSuchObjectException
+//    */
+//     @PostMapping("{chatPostId}/attach")
+//     public @NotNull boolean attach(
+//         long chatPostId, @Valid List<CreateLinkPreviewRequest> requests
+//     ) throws NoSuchObjectException {
+//       return linkPreviewService.attach(chatPostId, requests);
+//     }
 
      @Override
      public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
        return linkPreviewService.deleteLinkPreview(id);
      }
+
+   /**
+    * TODO doc
+    * @param
+    * @return
+    */
+   @PostMapping("/build-link-preview")
+   public @NotNull Map<String, Object> buildLinkPreview(
+       @Valid @RequestBody CreateLinkPreviewRequest request) {
+     LinkPreview linkPreview = this.linkPreviewService.buildLinkPreview(request.getUrl());
+     return this.linkPreviewDto().build(linkPreview);
+   }
 
      private DtoBuilder linkPreviewDto() {
          return new DtoBuilder()

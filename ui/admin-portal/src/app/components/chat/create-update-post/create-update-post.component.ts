@@ -6,6 +6,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
 import Quill from 'quill';
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {LinkPreview} from "../../../model/link-preview";
+import {CreateLinkPreviewRequest, LinkPreviewService} from "../../../services/link-preview.service";
 
 @Component({
   selector: 'app-create-update-post',
@@ -21,13 +23,15 @@ export class CreateUpdatePostComponent implements OnInit {
   quillEditorRef: Quill;
   public emojiPickerVisible: boolean = false;
   regexpLink: RegExp;
-  links: string[];
+  storedMatches: string[][] = [];
+  linkPreviews: LinkPreview[] = [];
 
   constructor(
     private fb: FormBuilder,
     private rxStompService: RxStompService,
     private modalService: NgbModal,
-    private chatPostService: ChatPostService
+    private chatPostService: ChatPostService,
+    private linkPreviewService: LinkPreviewService,
   ) {}
 
   ngOnInit() {
@@ -66,7 +70,8 @@ export class CreateUpdatePostComponent implements OnInit {
   onSend() {
     if (this.chat) {
       const post: Post = {
-        content: this.contentControl.value
+        content: this.contentControl.value,
+        linkPreviews: this.linkPreviews
         // TODO add html link preview here if it is to be added
       }
       const body = JSON.stringify(post);
@@ -117,10 +122,43 @@ export class CreateUpdatePostComponent implements OnInit {
 
   checkForLinks(event) {
     const editorHtmlContent = event.html
-    const regexpCaptures: any[] = [...editorHtmlContent.matchAll(this.regexpLink)]
-    console.log(regexpCaptures)
-    while (regexpCaptures != this.links) {
-      this.links = regexpCaptures;
+    const liveMatches: string[][] = [...editorHtmlContent.matchAll(this.regexpLink)]
+    if (liveMatches.length !== this.storedMatches.length) {
+      // The liveMatches and storedMatches have diverged, so we run further checks.
+
+      if (liveMatches.length > this.storedMatches.length) {
+        // There are more liveMatches than storedMatches, so we build and add the right linkPreview.
+        for (const match of liveMatches) {
+          if (!this.storedMatches.includes(match)) {
+            this.storedMatches.push(match);
+            let request: CreateLinkPreviewRequest = {url: match[1]};
+            this.linkPreviewService.buildLinkPreview(request).subscribe(
+              linkPreview => this.linkPreviews.push(linkPreview)
+            )
+          }
+        }
+      }
+
+      if (this.storedMatches.length > liveMatches.length) {
+        // There are more storedMatches than liveMatches, so we remove the right linkPreview.
+        for (const match of this.storedMatches) {
+          const index = this.storedMatches.indexOf(match);
+
+          if (index > -1) {
+            this.storedMatches.splice(index, 1);
+            this.linkPreviews.forEach(
+              linkPreview => {
+                if (linkPreview.url === match[1]) {
+                  const index = this.linkPreviews.indexOf(linkPreview);
+
+                  if (index > -1) {
+                    this.linkPreviews.splice(index, 1);
+                  }
+                }
+              })
+          }
+        }
+      }
     }
   }
 

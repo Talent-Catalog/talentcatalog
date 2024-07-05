@@ -1,1 +1,10 @@
-<p>{{ link }}</p>
+<div class="link-preview" *ngIf="!linkPreview.blocked">
+  <i class="fa-solid fa-xmark block-button" (click)="blockPreview($event)"></i>
+  <a href="{{linkPreview.url}}" target="_blank">
+  <img src="{{linkPreview.imageUrl}}" alt="Preview image">
+  <div class="content">
+    <div class="title">{{linkPreview.title}}</div>
+    <div class="description">{{linkPreview.description}}</div>
+  </div>
+  </a>
+</div>
