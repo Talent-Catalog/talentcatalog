@@ -174,6 +174,9 @@ public class DomainHelpers {
     return repo.saveAndFlush(entity);
   }
 
+  public static User getUser() {
+    return getUser(99999L);
+  }
   public static User getUser(Long idToUse) {
     User user = new User();
     user.setId(idToUse);
