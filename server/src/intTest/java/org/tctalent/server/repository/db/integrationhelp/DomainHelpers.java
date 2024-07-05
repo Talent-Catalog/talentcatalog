@@ -19,6 +19,7 @@ package org.tctalent.server.repository.db.integrationhelp;
 import java.time.OffsetDateTime;
 import java.util.Random;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.*;
 import org.tctalent.server.repository.db.*;
 import org.tctalent.server.service.db.audit.AuditAction;
@@ -51,7 +52,7 @@ public class DomainHelpers {
   }
 
   public static User getSavedUser(UserRepository userRepo) {
-    return userRepo.save(getUser(null));
+    return userRepo.save(getUser());
   }
 
   public static Candidate getSavedCandidate(CandidateRepository repo, User savedUser) {
@@ -175,11 +176,7 @@ public class DomainHelpers {
   }
 
   public static User getUser() {
-    return getUser(99999L);
-  }
-  public static User getUser(Long idToUse) {
     User user = new User();
-    user.setId(idToUse);
     user.setUsername("JO BLOGS");
     user.setEmail("JO.BLOgs@email.com");
     user.setFirstName("jo");
