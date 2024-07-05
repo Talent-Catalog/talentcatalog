@@ -190,6 +190,14 @@ sourceSets {
     }
 }
 
+// Ensure IntelliJ configures itself properly with new test sources.
+idea {
+    module {
+        testSources.from(sourceSets.intTest.java.srcDirs)
+        testResources.from(sourceSets.intTest.resources.srcDirs)
+    }
+}
+
 test {
     useJUnitPlatform()
     testLogging {
