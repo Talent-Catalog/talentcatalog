@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.tctalent.server.repository.db.integrationhelp.DomainHelpers.getSavedTranslation;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tctalent.server.model.db.Translation;
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest;
-import org.tctalent.server.repository.db.integrationhelp.DomainHelpers;
 
 public class TranslationRepositoryIntTest extends BaseDBIntegrationTest {
 
@@ -39,7 +39,7 @@ public class TranslationRepositoryIntTest extends BaseDBIntegrationTest {
   @BeforeEach
   public void setup() {
     assertTrue(isContainerInitialised());
-    translation = new DomainHelpers().getSavedTranslation(repo);
+    translation = getSavedTranslation(repo);
   }
 
   @Test
