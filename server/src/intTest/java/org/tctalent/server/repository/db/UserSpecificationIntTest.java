@@ -58,7 +58,6 @@ public class UserSpecificationIntTest extends BaseDBIntegrationTest {
     spec = UserSpecification.buildSearchQuery(request);
 
     List<User> results = repo.findAll(spec);
-    results.forEach(u -> System.out.println((u.getId())));
     assertNotNull(results);
     assertFalse(results.isEmpty());
     assertEquals(1, results.size());
@@ -84,7 +83,6 @@ public class UserSpecificationIntTest extends BaseDBIntegrationTest {
     spec = UserSpecification.buildSearchQuery(request);
 
     List<User> results = repo.findAll(spec);
-    results.forEach(u -> System.out.println((u.getId())));
     assertNotNull(results);
     assertFalse(results.isEmpty());
     assertEquals(1, results.size());
