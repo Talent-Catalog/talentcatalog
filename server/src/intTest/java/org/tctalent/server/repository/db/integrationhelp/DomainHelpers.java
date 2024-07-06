@@ -454,7 +454,7 @@ public class DomainHelpers {
    * @param repository The repository where the partner will be saved.
    * @return The saved Partner instance.
    */
-  public PartnerImpl getSavedPartner(PartnerRepository repository) {
+  public static PartnerImpl getSavedPartner(PartnerRepository repository) {
     return saveHelperObject(repository, getPartner());
   }
 
@@ -463,7 +463,7 @@ public class DomainHelpers {
    *
    * @return A new PartnerImpl instance.
    */
-  public PartnerImpl getPartner() {
+  public static PartnerImpl getPartner() {
     PartnerImpl partner = new PartnerImpl();
     partner.setName("GREAT TEST PARTNER");
     partner.setStatus(Status.active);
@@ -480,7 +480,7 @@ public class DomainHelpers {
    * @param repo The repository where the country will be saved.
    * @return The saved Country instance.
    */
-  public Country getSavedCountry(CountryRepository repo) {
+  public static Country getSavedCountry(CountryRepository repo) {
     return saveHelperObject(repo, getCountry());
   }
 
@@ -489,7 +489,7 @@ public class DomainHelpers {
    *
    * @return A new Country instance.
    */
-  public Country getCountry() {
+  public static Country getCountry() {
     Country country = new Country();
     country.setIsoCode("ISOCODE");
     country.setName("NewAustralia");
@@ -502,7 +502,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateVisaCheck instance.
    */
-  public CandidateVisaCheck getCandidateVisaCheck() {
+  public static CandidateVisaCheck getCandidateVisaCheck() {
     CandidateVisaCheck visaCheck = new CandidateVisaCheck();
     visaCheck.setProtection(YesNo.Yes);
     return visaCheck;
@@ -514,7 +514,7 @@ public class DomainHelpers {
    * @param repo The repository where the industry will be saved.
    * @return The saved Industry instance.
    */
-  public Industry getSavedIndustry(IndustryRepository repo) {
+  public static Industry getSavedIndustry(IndustryRepository repo) {
     return saveHelperObject(repo, getIndustry());
   }
 
@@ -523,7 +523,7 @@ public class DomainHelpers {
    *
    * @return A new Industry instance.
    */
-  public Industry getIndustry() {
+  public static Industry getIndustry() {
     Industry industry = new Industry();
     industry.setStatus(Status.active);
     industry.setName("TestIndustry");
@@ -536,7 +536,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateVisaJobCheck instance.
    */
-  public CandidateVisaJobCheck getCandidateVisaJobCheck() {
+  public static CandidateVisaJobCheck getCandidateVisaJobCheck() {
     CandidateVisaJobCheck visaJobCheck = new CandidateVisaJobCheck();
     visaJobCheck.setName("TestCandidateVisaJobCheck");
     visaJobCheck.setInterest(YesNo.Yes);
@@ -549,7 +549,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateReviewStatusItem instance.
    */
-  public CandidateReviewStatusItem getCandidateReviewStatusItem() {
+  public static CandidateReviewStatusItem getCandidateReviewStatusItem() {
     CandidateReviewStatusItem reviewStatusItem = new CandidateReviewStatusItem();
     reviewStatusItem.setComment("TestCandidateReviewStatusItem");
     reviewStatusItem.setReviewStatus(ReviewStatus.verified);
@@ -562,7 +562,7 @@ public class DomainHelpers {
    * @param repository The repository where the saved search will be saved.
    * @return The saved SavedSearch instance.
    */
-  public SavedSearch getSavedSavedSearch(SavedSearchRepository repository) {
+  public static SavedSearch getSavedSavedSearch(SavedSearchRepository repository) {
     return saveHelperObject(repository, getSavedSearch());
   }
 
@@ -571,7 +571,7 @@ public class DomainHelpers {
    *
    * @return A new SavedSearch instance.
    */
-  public SavedSearch getSavedSearch() {
+  public static SavedSearch getSavedSearch() {
     SavedSearch savedSearch = new SavedSearch();
     savedSearch.setType("TestSavedSearch");
     savedSearch.setStatus(Status.active);
@@ -588,7 +588,8 @@ public class DomainHelpers {
    * @param repo The repository where the candidate opportunity will be saved.
    * @return The saved CandidateOpportunity instance.
    */
-  public CandidateOpportunity getSavedCandidateOpportunity(CandidateOpportunityRepository repo) {
+  public static CandidateOpportunity getSavedCandidateOpportunity(
+      CandidateOpportunityRepository repo) {
     return saveHelperObject(repo, getCandidateOpportunity());
   }
 
@@ -598,7 +599,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateOpportunity instance.
    */
-  public CandidateOpportunity getCandidateOpportunity() {
+  public static CandidateOpportunity getCandidateOpportunity() {
     CandidateOpportunity candidateOpportunity = new CandidateOpportunity();
     candidateOpportunity.setStage(CandidateOpportunityStage.cvPreparation);
     candidateOpportunity.setClosingCommentsForCandidate("WELLDONE");
@@ -611,7 +612,7 @@ public class DomainHelpers {
    * @param repo The repository where the Salesforce job opportunity will be saved.
    * @return The saved SalesforceJobOpp instance.
    */
-  public SalesforceJobOpp getSavedSfJobOpp(SalesforceJobOppRepository repo) {
+  public static SalesforceJobOpp getSavedSfJobOpp(SalesforceJobOppRepository repo) {
     return saveHelperObject(repo, getSalesforceJobOpp());
   }
 
@@ -630,7 +631,7 @@ public class DomainHelpers {
    * @param repo The repository where the language level will be saved.
    * @return The saved LanguageLevel instance.
    */
-  public LanguageLevel getSavedLanguageLevel(LanguageLevelRepository repo) {
+  public static LanguageLevel getSavedLanguageLevel(LanguageLevelRepository repo) {
     return saveHelperObject(repo, getLanguageLevel());
   }
 
@@ -639,7 +640,7 @@ public class DomainHelpers {
    *
    * @return A new LanguageLevel instance.
    */
-  public LanguageLevel getLanguageLevel() {
+  public static LanguageLevel getLanguageLevel() {
     LanguageLevel languageLevel = new LanguageLevel();
     languageLevel.setLevel(1);
     languageLevel.setStatus(Status.active);
@@ -652,7 +653,7 @@ public class DomainHelpers {
    *
    * @return A new Occupation instance.
    */
-  public Occupation getOccupation() {
+  public static Occupation getOccupation() {
     Occupation occupation = new Occupation();
     occupation.setStatus(Status.active);
     occupation.setName(String.format("TEST_OCCUPATION%04d", new Random().nextInt(10000)));
@@ -665,7 +666,7 @@ public class DomainHelpers {
    * @param repo The repository where the occupation will be saved.
    * @return The saved Occupation instance.
    */
-  public Occupation getSavedOccupation(OccupationRepository repo) {
+  public static Occupation getSavedOccupation(OccupationRepository repo) {
     return saveHelperObject(repo, getOccupation());
   }
 
@@ -675,7 +676,7 @@ public class DomainHelpers {
    * @param repo The repository where the language will be saved.
    * @return The saved Language instance.
    */
-  public Language getSavedLanguage(LanguageRepository repo) {
+  public static Language getSavedLanguage(LanguageRepository repo) {
     return saveHelperObject(repo, getLanguage());
   }
 
@@ -684,7 +685,7 @@ public class DomainHelpers {
    *
    * @return A new Language instance.
    */
-  public Language getLanguage() {
+  public static Language getLanguage() {
     Language language = new Language();
     language.setStatus(Status.active);
     language.setName(String.format("TEST_LANGUAGE%04d", new Random().nextInt(10000)));
@@ -697,7 +698,7 @@ public class DomainHelpers {
    * @param repo The repository where the translation will be saved.
    * @return The saved Translation instance.
    */
-  public Translation getSavedTranslation(TranslationRepository repo) {
+  public static Translation getSavedTranslation(TranslationRepository repo) {
     return saveHelperObject(repo, getTranslation());
   }
 
@@ -707,7 +708,7 @@ public class DomainHelpers {
    *
    * @return A new Translation instance.
    */
-  public Translation getTranslation() {
+  public static Translation getTranslation() {
     Translation translation = new Translation();
     translation.setObjectId(1L);
     translation.setObjectType("country");
@@ -722,7 +723,7 @@ public class DomainHelpers {
    * @param repo The repository where the education major will be saved.
    * @return The saved EducationMajor instance.
    */
-  public EducationMajor getSavedEducationMajor(EducationMajorRepository repo) {
+  public static EducationMajor getSavedEducationMajor(EducationMajorRepository repo) {
     return saveHelperObject(repo, getEducationMajor());
   }
 
@@ -731,7 +732,7 @@ public class DomainHelpers {
    *
    * @return A new EducationMajor instance.
    */
-  public EducationMajor getEducationMajor() {
+  public static EducationMajor getEducationMajor() {
     EducationMajor educationMajor = new EducationMajor();
     educationMajor.setStatus(Status.active);
     educationMajor.setName(String.format("TEST_EDUCATION_MAJOR%04d", new Random().nextInt(10000)));
@@ -744,7 +745,7 @@ public class DomainHelpers {
    * @param repo The repository where the search join will be saved.
    * @return The saved SearchJoin instance.
    */
-  public SearchJoin getSavedSearchJoin(SearchJoinRepository repo) {
+  public static SearchJoin getSavedSearchJoin(SearchJoinRepository repo) {
     return saveHelperObject(repo, getSearchJoin());
   }
 
@@ -753,7 +754,7 @@ public class DomainHelpers {
    *
    * @return A new SearchJoin instance.
    */
-  public SearchJoin getSearchJoin() {
+  public static SearchJoin getSearchJoin() {
     SearchJoin searchJoin = new SearchJoin();
     searchJoin.setSearchType(SearchType.or);
     return searchJoin;
@@ -765,7 +766,7 @@ public class DomainHelpers {
    * @param repo The repository where the saved list link will be saved.
    * @return The saved SavedListLink instance.
    */
-  public SavedListLink getSavedSavedListLink(SavedListLinkRepository repo) {
+  public static SavedListLink getSavedSavedListLink(SavedListLinkRepository repo) {
     return saveHelperObject(repo, getSavedListLink());
   }
 
@@ -774,7 +775,7 @@ public class DomainHelpers {
    *
    * @return A new SavedListLink instance.
    */
-  public SavedListLink getSavedListLink() {
+  public static SavedListLink getSavedListLink() {
     SavedListLink savedListLink = new SavedListLink();
     savedListLink.setLink("TEST_SAVED_LINK");
     return savedListLink;
@@ -786,7 +787,7 @@ public class DomainHelpers {
    * @param repo The repository where the root request will be saved.
    * @return The saved RootRequest instance.
    */
-  public RootRequest getSavedRootRequest(RootRequestRepository repo) {
+  public static RootRequest getSavedRootRequest(RootRequestRepository repo) {
     return saveHelperObject(repo, getRootRequest());
   }
 
@@ -796,7 +797,7 @@ public class DomainHelpers {
    *
    * @return A new RootRequest instance.
    */
-  public RootRequest getRootRequest() {
+  public static RootRequest getRootRequest() {
     RootRequest rootRequest = new RootRequest();
     rootRequest.setTimestamp(Instant.now());
     rootRequest.setPartnerAbbreviation("TEST_PARTNER_ABBREVIATION");
@@ -810,7 +811,7 @@ public class DomainHelpers {
    * @param report The repository where the education level will be saved.
    * @return The saved EducationLevel instance.
    */
-  public EducationLevel getSavedEducationLevel(EducationLevelRepository report) {
+  public static EducationLevel getSavedEducationLevel(EducationLevelRepository report) {
     return saveHelperObject(report, getEducationLevel());
   }
 
@@ -819,7 +820,7 @@ public class DomainHelpers {
    *
    * @return A new EducationLevel instance.
    */
-  public EducationLevel getEducationLevel() {
+  public static EducationLevel getEducationLevel() {
     EducationLevel educationLevel = new EducationLevel();
     educationLevel.setName("TEST HIGH EDUCATION LEVEL");
     educationLevel.setStatus(Status.deleted);
@@ -833,7 +834,7 @@ public class DomainHelpers {
    * @param repo The repository where the candidate skill will be saved.
    * @return The saved CandidateSkill instance.
    */
-  public CandidateSkill getSavedCandidateSkill(CandidateSkillRepository repo) {
+  public static CandidateSkill getSavedCandidateSkill(CandidateSkillRepository repo) {
     return saveHelperObject(repo, getCandidateSkill());
   }
 
@@ -842,7 +843,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateSkill instance.
    */
-  public CandidateSkill getCandidateSkill() {
+  public static CandidateSkill getCandidateSkill() {
     CandidateSkill candidateSkill = new CandidateSkill();
     candidateSkill.setSkill("TEST SKILL");
     return candidateSkill;
@@ -854,7 +855,8 @@ public class DomainHelpers {
    * @param repo The repository where the candidate attachment will be saved.
    * @return The saved CandidateAttachment instance.
    */
-  public CandidateAttachment getSavedCandidateAttachment(CandidateAttachmentRepository repo) {
+  public static CandidateAttachment getSavedCandidateAttachment(
+      CandidateAttachmentRepository repo) {
     return saveHelperObject(repo, getCandidateAttachment());
   }
 
@@ -863,7 +865,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateAttachment instance.
    */
-  public CandidateAttachment getCandidateAttachment() {
+  public static CandidateAttachment getCandidateAttachment() {
     CandidateAttachment candidateAttachment = new CandidateAttachment();
     candidateAttachment.setName("TEST_ATTACHMENT.pdf");
     candidateAttachment.setType(AttachmentType.googlefile);
@@ -883,7 +885,7 @@ public class DomainHelpers {
    * @param repo The repository where the candidate education will be saved.
    * @return The saved CandidateEducation instance.
    */
-  public CandidateEducation getSavedCandidateEducation(CandidateEducationRepository repo) {
+  public static CandidateEducation getSavedCandidateEducation(CandidateEducationRepository repo) {
     return saveHelperObject(repo, getCandidateEducation());
   }
 
@@ -893,7 +895,7 @@ public class DomainHelpers {
    * @param repo The repository where the candidate exam will be saved.
    * @return The saved CandidateExam instance.
    */
-  public CandidateExam getSavedCandidateExam(CandidateExamRepository repo) {
+  public static CandidateExam getSavedCandidateExam(CandidateExamRepository repo) {
     return saveHelperObject(repo, getCandidateExam());
   }
 
@@ -902,7 +904,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateExam instance.
    */
-  public CandidateExam getCandidateExam() {
+  public static CandidateExam getCandidateExam() {
     CandidateExam candidateExam = new CandidateExam();
     candidateExam.setExam(Exam.OET);
     return candidateExam;
@@ -914,7 +916,7 @@ public class DomainHelpers {
    * @param repo The repository where the help link will be saved.
    * @return The saved HelpLink instance.
    */
-  public HelpLink getSavedHelpLink(HelpLinkRepository repo) {
+  public static HelpLink getSavedHelpLink(HelpLinkRepository repo) {
     return saveHelperObject(repo, getHelpLink());
   }
 
@@ -923,7 +925,7 @@ public class DomainHelpers {
    *
    * @return A new HelpLink instance.
    */
-  public HelpLink getHelpLink() {
+  public static HelpLink getHelpLink() {
     HelpLink helpLink = new HelpLink();
     helpLink.setLink("TEST_HELP_LINK");
     helpLink.setLabel("TEST LABEL");
@@ -931,14 +933,14 @@ public class DomainHelpers {
   }
 
   /**
-   * Retrieves a new CandidateSavedList instance initialized with a given candidate, saved list, and a
-   * default context note.
+   * Retrieves a new CandidateSavedList instance initialized with a given candidate, saved list, and
+   * a default context note.
    *
    * @param candidate The candidate associated with the saved list.
    * @param savedList The saved list associated with the candidate.
    * @return A new CandidateSavedList instance.
    */
-  public CandidateSavedList getCandidateSavedList(Candidate candidate, SavedList savedList) {
+  public static CandidateSavedList getCandidateSavedList(Candidate candidate, SavedList savedList) {
     CandidateSavedList candidateSavedList = new CandidateSavedList();
     candidateSavedList.setContextNote("CONTEXT NOTE");
     candidateSavedList.setCandidate(candidate);
@@ -950,12 +952,13 @@ public class DomainHelpers {
   /**
    * Retrieves a list of country IDs including newly saved countries and existing ones.
    *
-   * @param repo The repository used to save and fetch countries.
+   * @param repo     The repository used to save and fetch countries.
    * @param existing A list of existing countries to include.
    * @return A list of country IDs.
    */
-  public List<Long> getSourceCountryIds(CountryRepository repo, List<Country> existing) {
-    List<Country> countries = new ArrayList<>(Arrays.asList(getSavedCountry(repo), getSavedCountry(repo)));
+  public static List<Long> getSourceCountryIds(CountryRepository repo, List<Country> existing) {
+    List<Country> countries = new ArrayList<>(
+        Arrays.asList(getSavedCountry(repo), getSavedCountry(repo)));
     countries.addAll(existing);
     return countries.stream().map(Country::getId).collect(Collectors.toList());
   }
@@ -963,23 +966,24 @@ public class DomainHelpers {
   /**
    * Retrieves a list of country IDs including newly saved countries and an existing country.
    *
-   * @param repo The repository used to save and fetch countries.
+   * @param repo     The repository used to save and fetch countries.
    * @param existing An existing country to include.
    * @return A list of country IDs.
    */
-  public List<Long> getSourceCountryIds(CountryRepository repo, Country existing) {
-    List<Country> countries = new ArrayList<>(Arrays.asList(getSavedCountry(repo), getSavedCountry(repo), existing));
+  public static List<Long> getSourceCountryIds(CountryRepository repo, Country existing) {
+    List<Country> countries = new ArrayList<>(
+        Arrays.asList(getSavedCountry(repo), getSavedCountry(repo), existing));
     return countries.stream().map(Country::getId).collect(Collectors.toList());
   }
 
   /**
    * Retrieves a set of candidate IDs after saving new candidates.
    *
-   * @param repo The repository used to save and fetch candidates.
+   * @param repo     The repository used to save and fetch candidates.
    * @param userRepo The repository used to save and fetch users.
    * @return A mutable set of candidate IDs.
    */
-  public Set<Long> getCandidateIds(CandidateRepository repo, UserRepository userRepo) {
+  public static Set<Long> getCandidateIds(CandidateRepository repo, UserRepository userRepo) {
     Set<Candidate> candidates = new HashSet<>(Arrays.asList(
         getSavedCandidate(repo, getSavedUser(userRepo)),
         getSavedCandidate(repo, getSavedUser(userRepo))
@@ -990,12 +994,13 @@ public class DomainHelpers {
   /**
    * Retrieves a set of candidate IDs including newly saved candidates and an existing candidate.
    *
-   * @param repo The repository used to save and fetch candidates.
+   * @param repo     The repository used to save and fetch candidates.
    * @param userRepo The repository used to save and fetch users.
    * @param existing An existing candidate to include.
    * @return A mutable set of candidate IDs.
    */
-  public Set<Long> getCandidateIds(CandidateRepository repo, UserRepository userRepo, Candidate existing) {
+  public static Set<Long> getCandidateIds(CandidateRepository repo, UserRepository userRepo,
+      Candidate existing) {
     Set<Candidate> candidates = new HashSet<>(Arrays.asList(
         getSavedCandidate(repo, getSavedUser(userRepo)),
         getSavedCandidate(repo, getSavedUser(userRepo)),
@@ -1009,7 +1014,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateOccupation instance.
    */
-  public CandidateOccupation getCandidateOccupation() {
+  public static CandidateOccupation getCandidateOccupation() {
     CandidateOccupation candidateOccupation = new CandidateOccupation();
     candidateOccupation.setYearsExperience(5L);
     return candidateOccupation;
@@ -1020,7 +1025,7 @@ public class DomainHelpers {
    *
    * @return A new LanguageLevel instance.
    */
-  public LanguageLevel getWrittenLevel() {
+  public static LanguageLevel getWrittenLevel() {
     LanguageLevel languageLevel = new LanguageLevel();
     languageLevel.setLevel(9);
     return languageLevel;
@@ -1031,7 +1036,7 @@ public class DomainHelpers {
    *
    * @return A new CandidateLanguage instance.
    */
-  public CandidateLanguage getCandidateLanguage() {
+  public static CandidateLanguage getCandidateLanguage() {
     CandidateLanguage candidateLanguage = new CandidateLanguage();
     candidateLanguage.setMigrationLanguage("ENGLISH");
     return candidateLanguage;
