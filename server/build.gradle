@@ -52,8 +52,13 @@ repositories {
     mavenCentral()
 }
 
-configurations.configureEach {
-    exclude group: "commons-logging", module: "commons-logging"
+configurations {
+    intTestImplementation.extendsFrom testImplementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+    intTestAnnotationProcessor.extendsFrom testAnnotationProcessor
+    configureEach {
+        exclude group: "commons-logging", module: "commons-logging"
+    }
 }
 
 dependencies {
@@ -147,6 +152,10 @@ dependencies {
     // Testing
     testImplementation("org.springframework.security:spring-security-test:5.8.12")
 
+    // Testcontainers for integration testing
+    testImplementation("org.testcontainers:postgresql:1.19.8")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
     runtimeOnly('mysql:mysql-connector-java')
@@ -167,8 +176,49 @@ jib {
     }
 }
 
+sourceSets {
+    main {
+        java.srcDirs("src/main/java")
+    }
+    test {
+        java.srcDirs("src/test/java")
+    }
+    create("intTest") {
+        java.srcDir("src/intTest/java")
+        compileClasspath += sourceSets["main"].output + configurations["testCompileClasspath"]
+        runtimeClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+    }
+}
+
+// Ensure IntelliJ configures itself properly with new test sources.
+idea {
+    module {
+        testSources.from(sourceSets.intTest.java.srcDirs)
+        testResources.from(sourceSets.intTest.resources.srcDirs)
+    }
+}
+
 test {
     useJUnitPlatform()
+    testLogging {
+        events("failed")
+    }
+}
+
+tasks.register("intTest", Test) {
+    description = "Run integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    shouldRunAfter(tasks.named("test"))
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "failed")
+    }
+}
+
+tasks.named("check") {
+    dependsOn("intTest")
 }
 
 bootJar {
