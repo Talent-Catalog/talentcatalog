@@ -190,14 +190,10 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             candidate = candidateRepository.findById(candidateJobExperience.getCandidate().getId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateJobExperience.getCandidate().getId()));
         } else {
-            Long candidateId = authService.getLoggedInCandidateId();
-            if (candidateId == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
-            candidate = candidateRepository.findById(candidateId)
-                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+            candidate = candidateService.getLoggedInCandidate()
+                    .orElseThrow(() -> new InvalidSessionException("Not logged in"));
             // Check that the user is deleting their own attachment
-            if (!candidateId.equals(candidateJobExperience.getCandidate().getId())) {
+            if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");
             }
         }
