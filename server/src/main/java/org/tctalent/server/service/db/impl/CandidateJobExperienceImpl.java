@@ -81,12 +81,8 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         } else {
-            Long candidateId = authService.getLoggedInCandidateId();
-            if (candidateId == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
-            candidate = candidateRepository.findById(candidateId)
-                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
+            candidate = candidateService.getLoggedInCandidate()
+                    .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         }
 
         // Load the country from the database - throw an exception if not found
