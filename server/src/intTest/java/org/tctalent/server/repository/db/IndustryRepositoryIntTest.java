@@ -24,7 +24,6 @@ import static org.tctalent.server.repository.db.integrationhelp.DomainHelpers.ge
 import static org.tctalent.server.repository.db.integrationhelp.DomainHelpers.getSavedIndustry;
 
 import java.util.List;
-import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
