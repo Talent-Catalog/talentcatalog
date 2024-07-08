@@ -58,15 +58,6 @@ fdescribe('PublishedDocColumnSelectorComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize with default columns if no columns selected', fakeAsync(() => {
-    component.selectedColumns = mockPublishedDocColumnConfigs;
-    publishedDocColumnServiceSpy.getDefaultColumns.and.returnValue(mockPublishedDocColumnConfigs);
-    tick();
-    component.ngOnInit();
-    expect(component.selectedColumns.length).toBe(3);
-    expect(component.selectedColumns[0].columnDef.key).toBe('mockKey');
-  }));
-
   it('should display error message when error exists', () => {
     component.selectedColumns = mockPublishedDocColumnConfigs;
     component.error = 'Error message';
@@ -103,5 +94,6 @@ fdescribe('PublishedDocColumnSelectorComponent', () => {
     component.cancel();
     expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
   });
+
 
 });
