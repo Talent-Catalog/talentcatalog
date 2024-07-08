@@ -17,11 +17,12 @@
 package org.tctalent.server.repository.db;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.tctalent.server.repository.db.integrationhelp.DomainHelpers.getSavedSavedSearch;
 import static org.tctalent.server.repository.db.integrationhelp.DomainHelpers.getSearchJoin;
 
-import java.util.Optional;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,36 +35,33 @@ public class SearchJoinRepositoryIntTest extends BaseDBIntegrationTest {
   @Autowired
   private SearchJoinRepository repo;
   @Autowired
-  private SavedSearchRepository savedSearchRepo;
+  private SavedSearchRepository searchSavedRepository;
   private SavedSearch testSavedSearch;
 
   @BeforeEach
   public void setup() {
     assertTrue(isContainerInitialised());
-
-    testSavedSearch = getSavedSavedSearch(savedSearchRepo);
+    testSavedSearch = getSavedSavedSearch(searchSavedRepository);
     SearchJoin searchJoin = getSearchJoin();
     searchJoin.setSavedSearch(testSavedSearch);
     searchJoin.setChildSavedSearch(testSavedSearch);
-
     repo.save(searchJoin);
     assertTrue(searchJoin.getId() > 0);
   }
 
   @Test
   public void testDeleteBySearchId() {
-    // create a second item, so we know the delete does a single one.
-    SavedSearch newTSS = getSavedSavedSearch(savedSearchRepo);
+    SavedSearch newTSS = getSavedSavedSearch(searchSavedRepository);
     SearchJoin newSJ = getSearchJoin();
     newSJ.setSavedSearch(newTSS);
     newSJ.setChildSavedSearch(testSavedSearch);
-
     repo.save(newSJ);
     assertTrue(newSJ.getId() > 0);
 
     repo.deleteBySearchId(testSavedSearch.getId());
-    Optional<SearchJoin> savedResults = repo.findById(newSJ.getId());
-    assertTrue(savedResults.isPresent());
-    assertEquals(newSJ.getId(), savedResults.get().getId());
+    List<SearchJoin> saved = repo.findAll();
+    assertNotNull(saved);
+    assertEquals(1, saved.size());
+    assertEquals(newSJ.getId(), saved.getFirst().getId());
   }
 }
