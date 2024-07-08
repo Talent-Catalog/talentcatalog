@@ -625,7 +625,7 @@ class CandidateRepositoryIntTest : BaseDBIntegrationTest() {
         yearsExperience = 7
       }
     )
-    repo.save(testCandidate.apply { candidateOccupations })
+
     val sourceCountryIds = getSourceCountryIds(countryRepository, testCountry)
     val result =
       repo.countByMostCommonOccupationOrderByCount(

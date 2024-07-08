@@ -59,8 +59,9 @@ class SearchJoinRepositoryIntTest : BaseDBIntegrationTest() {
     assertTrue { newSJ.id > 0 }
 
     repo.deleteBySearchId(testSavedSearch.id)
-    val savedResults = repo.findById(newSJ.id).getOrNull()
+    val savedResults = repo.findAll()
     assertNotNull(savedResults)
-    assertEquals(newSJ.id, savedResults.id)
+    assertTrue { savedResults.size == 1 }
+    assertEquals(newSJ.id, savedResults.first().id)
   }
 }
