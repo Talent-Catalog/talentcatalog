@@ -36,7 +36,7 @@ import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.integrationhelp.BaseDBIntegrationTest;
 
-public class CandidateVisJobRepositoryIntTest extends BaseDBIntegrationTest {
+public class CandidateVisaJobRepositoryIntTest extends BaseDBIntegrationTest {
 
   @Autowired
   private CandidateVisaJobRepository repo;
