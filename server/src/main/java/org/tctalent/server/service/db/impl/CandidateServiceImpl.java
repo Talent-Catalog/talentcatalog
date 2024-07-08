@@ -2624,12 +2624,7 @@ public class CandidateServiceImpl implements CandidateService {
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, requestCandidateId));
         } else {
             // Coming from Candidate Portal
-            Long candidateId = authService.getLoggedInCandidateId();
-            if (candidateId == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
-            candidate = candidateRepository.findById(candidateId)
-                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+           candidate = getLoggedInCandidate().orElseThrow(() -> new InvalidSessionException("Not logged in"));
         }
         return candidate;
     }
