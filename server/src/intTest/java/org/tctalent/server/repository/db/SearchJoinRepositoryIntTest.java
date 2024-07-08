@@ -19,7 +19,6 @@ package org.tctalent.server.repository.db;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.tctalent.server.repository.db.integrationhelp.DomainHelpers.getSavedSavedSearch;
 import static org.tctalent.server.repository.db.integrationhelp.DomainHelpers.getSearchJoin;
 
@@ -37,14 +36,13 @@ public class SearchJoinRepositoryIntTest extends BaseDBIntegrationTest {
   private SearchJoinRepository repo;
   @Autowired
   private SavedSearchRepository searchSavedRepository;
-  private SearchJoin searchJoin;
   private SavedSearch testSavedSearch;
 
   @BeforeEach
   public void setup() {
     assertTrue(isContainerInitialised());
     testSavedSearch = getSavedSavedSearch(searchSavedRepository);
-    searchJoin = getSearchJoin();
+    SearchJoin searchJoin = getSearchJoin();
     searchJoin.setSavedSearch(testSavedSearch);
     searchJoin.setChildSavedSearch(testSavedSearch);
     repo.save(searchJoin);
