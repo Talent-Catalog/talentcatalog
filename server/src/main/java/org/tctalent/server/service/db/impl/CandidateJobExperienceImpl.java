@@ -22,6 +22,11 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateJobExperience;
+import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -32,11 +37,6 @@ import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateJobExperience;
-import org.tctalent.server.model.db.CandidateOccupation;
-import org.tctalent.server.model.db.Country;
-import org.tctalent.server.model.db.User;
 
 @Service
 public class CandidateJobExperienceImpl implements CandidateJobExperienceService {
@@ -81,10 +81,12 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         } else {
-            candidate = authService.getLoggedInCandidate();
-            if (candidate == null) {
+            Long candidateId = authService.getLoggedInCandidateId();
+            if (candidateId == null) {
                 throw new InvalidSessionException("Not logged in");
             }
+            candidate = candidateRepository.findById(candidateId)
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         }
 
         // Load the country from the database - throw an exception if not found
@@ -192,13 +194,14 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             candidate = candidateRepository.findById(candidateJobExperience.getCandidate().getId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateJobExperience.getCandidate().getId()));
         } else {
-            candidate = authService.getLoggedInCandidate();
-            if (candidate == null) {
+            Long candidateId = authService.getLoggedInCandidateId();
+            if (candidateId == null) {
                 throw new InvalidSessionException("Not logged in");
             }
-
+            candidate = candidateRepository.findById(candidateId)
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
             // Check that the user is deleting their own attachment
-            if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
+            if (!candidateId.equals(candidateJobExperience.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");
             }
         }
