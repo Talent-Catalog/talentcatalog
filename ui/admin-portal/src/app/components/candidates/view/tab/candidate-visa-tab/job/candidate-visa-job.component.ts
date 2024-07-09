@@ -72,7 +72,7 @@ export class CandidateVisaJobComponent implements OnInit {
 
       return this.candidate.candidateOpportunities
         .map(co => co.jobOpp)
-        .filter(jo => !existingJobIds.includes(jo.id) && jo.country == this.visaCheckRecord.country)
+        .filter(jo => !existingJobIds.includes(jo.id) && jo.country.id == this.visaCheckRecord.country.id)
     }
   }
 
