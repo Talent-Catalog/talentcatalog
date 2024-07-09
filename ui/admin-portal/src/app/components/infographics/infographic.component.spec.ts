@@ -17,16 +17,12 @@
 import {InfographicComponent} from "./infographic.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {CandidateStatService} from "../../services/candidate-stat.service";
-import {SavedListService} from "../../services/saved-list.service";
-import {SavedSearchService} from "../../services/saved-search.service";
 import {of, throwError} from "rxjs";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {NgbDatepickerModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {ActivatedRoute, convertToParamMap} from "@angular/router";
+import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
+import {ActivatedRoute} from "@angular/router";
 import {DatePickerComponent} from "../util/date-picker/date-picker.component";
-import {MockSavedList} from "../../MockData/MockSavedList";
-import {MockSavedSearch} from "../../MockData/MockSavedSearch";
 import {RouterLinkStubDirective} from "../login/login.component.spec";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 

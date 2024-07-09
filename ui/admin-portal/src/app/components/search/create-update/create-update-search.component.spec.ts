@@ -24,7 +24,6 @@ import {SalesforceService} from '../../../services/salesforce.service';
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {JoblinkComponent} from "../../util/joblink/joblink.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {SavedSearchSubtype} from "../../../model/saved-search";
 import MOCK_SAVED_SEARCH_TYPE_INFO from "../../../MockData/MockSavedSearchTypeInfo";
 
 fdescribe('CreateUpdateSearchComponent', () => {
