@@ -171,8 +171,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Fetch updated candidate object from the DB to collect all data updates that may have been made since logging in.
-        Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        Candidate candidate = candidateService.getCandidate(user.getCandidate().getId());
 
         List<CandidateOccupation> updatedOccupations = new ArrayList<>();
         List<Long> updatedOccupationIds = new ArrayList<>();
