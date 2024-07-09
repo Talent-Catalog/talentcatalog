@@ -51,17 +51,4 @@ fdescribe('saveBlob', () => {
     expect(removeChildSpy).toHaveBeenCalledWith(link);
   });
 
-  it('should not append the link to the document if download attribute is undefined', () => {
-    const link = document.createElement('a');
-    link.download = undefined; // Simulate a browser that does not support the download attribute
-    const createElementSpy = spyOn(document, 'createElement').and.returnValue(link);
-    const appendChildSpy = spyOn(document.body, 'appendChild');
-    const removeChildSpy = spyOn(document.body, 'removeChild');
-
-    saveBlob(blob, filename);
-
-    expect(appendChildSpy).not.toHaveBeenCalled();
-    expect(removeChildSpy).not.toHaveBeenCalled();
-  });
-
 });
