@@ -72,8 +72,7 @@ public class JwtTokenProvider implements InitializingBean {
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
         String subject = "";
 
-        if (authentication.getPrincipal() instanceof TcUserDetails) {
-            TcUserDetails user = (TcUserDetails) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof TcUserDetails user) {
             subject = user.getUsername();
 
             //Candidates can stay logged in forever
