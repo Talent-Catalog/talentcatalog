@@ -15,11 +15,7 @@
  */
 import {ListHomeComponent} from "./list-home.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {
-  SavedSearchService,
-  SavedSearchTypeInfo,
-  SavedSearchTypeSubInfo
-} from "../../../services/saved-search.service";
+import {SavedSearchService, SavedSearchTypeInfo} from "../../../services/saved-search.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -32,7 +28,7 @@ import {SavedSearchSubtype, SavedSearchType} from "../../../model/saved-search";
 import {
   BrowseCandidateSourcesComponent
 } from "../../candidates/show/browse/browse-candidate-sources.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {RouterTestingModule} from "@angular/router/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";

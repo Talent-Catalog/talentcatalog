@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-user-change-password',
@@ -18,6 +19,8 @@ export class UserChangePasswordComponent implements OnInit {
   updated: boolean;
   token: string;
 
+  backgroundImage: string;
+
   constructor(private fb: FormBuilder,
               private userService: UserService,
               private router: Router,
@@ -25,6 +28,8 @@ export class UserChangePasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
+
     this.loading = false;
     this.reset = false;
     this.error = null;

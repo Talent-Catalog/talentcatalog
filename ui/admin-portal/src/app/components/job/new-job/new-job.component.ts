@@ -1,7 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {PostJobToSlackRequest, Progress, UpdateEmployerOpportunityRequest} from "../../../model/base";
+import {
+  PostJobToSlackRequest,
+  Progress,
+  UpdateEmployerOpportunityRequest
+} from "../../../model/base";
 import {getCandidateSourceExternalHref} from "../../../model/saved-search";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";

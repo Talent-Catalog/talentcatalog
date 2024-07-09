@@ -1,4 +1,3 @@
-
 import {By} from '@angular/platform-browser';
 import {CandidateShareableNotesComponent} from "./candidate-shareable-notes.component";
 import {CandidateService} from "../../../services/candidate.service";

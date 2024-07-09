@@ -15,12 +15,13 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule, FormBuilder, FormsModule} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {CharacterAssessmentComponent} from './character-assessment.component';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+
 fdescribe('CharacterAssessmentComponent', () => {
   let component: CharacterAssessmentComponent;
   let fixture: ComponentFixture<CharacterAssessmentComponent>;

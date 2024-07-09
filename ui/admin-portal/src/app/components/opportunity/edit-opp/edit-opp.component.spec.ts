@@ -1,18 +1,12 @@
 import {EditOppComponent} from "./edit-opp.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {
-  NgbActiveModal,
-  NgbDatepickerModule,
-  NgbNavModule,
-  NgbPaginationModule, NgbTooltipModule
-} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../services/saved-list.service";
 import {
   CandidateSourceCandidateService
 } from "../../../services/candidate-source-candidate.service";
 import {JobService} from "../../../services/job.service";
-import {Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
-import {MockCandidateSource, MockOpportunityIds} from "../../../MockData/MockCandidateSource";
+import {OpportunityProgressParams} from "../../../model/opportunity";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {of, throwError} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";

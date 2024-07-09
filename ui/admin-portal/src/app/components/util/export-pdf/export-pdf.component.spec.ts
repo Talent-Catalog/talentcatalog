@@ -1,5 +1,5 @@
 import {ExportPdfComponent} from "./export-pdf.component";
-import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular/core/testing";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 
 fdescribe('ExportPdfComponent', () => {
