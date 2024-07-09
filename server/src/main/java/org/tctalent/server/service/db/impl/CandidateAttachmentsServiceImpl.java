@@ -143,9 +143,14 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         String textExtract;
+        Candidate candidate;
 
-        Candidate candidate = candidateRepository.findById(request.getCandidateId())
+        if (request.getCandidateId() != null) {
+            candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
+        } else {
+            throw new InvalidRequestException("Missing candidate ID");
+        }
 
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
