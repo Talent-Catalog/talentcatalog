@@ -142,8 +142,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        String textExtract;
         Candidate candidate;
+        String textExtract;
 
         if (request.getCandidateId() != null) {
             candidate = candidateRepository.findById(request.getCandidateId())
