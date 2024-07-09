@@ -96,7 +96,7 @@ public class WebSocketConfig2 implements WebSocketMessageBrokerConfigurer {
             }
 
             private void handleInvalidToken() {
-                throw new ExpiredTokenException(JwtTokenProvider.EXPIRED_OR_INVALID_JWT_TOKEN_MSG);
+                throw new ExpiredTokenException(JwtTokenProvider.EXPIRED_OR_INVALID_TOKEN_MSG);
             }
 
         });

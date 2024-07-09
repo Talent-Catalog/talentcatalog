@@ -49,7 +49,7 @@ import org.tctalent.server.model.db.Role;
 @Slf4j
 public class JwtTokenProvider implements InitializingBean {
 
-    public static final String EXPIRED_OR_INVALID_JWT_TOKEN_MSG = "Expired or invalid JWT token";
+    public static final String EXPIRED_OR_INVALID_TOKEN_MSG = "Expired or invalid JWT token";
 
     @Value("${jwt.secret}")
     private String jwtSecretBase64;
