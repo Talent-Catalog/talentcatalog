@@ -23,7 +23,7 @@ export class CreateUpdatePostComponent implements OnInit {
   quillEditorRef: Quill;
   public emojiPickerVisible: boolean = false;
   regexpLink: RegExp;
-  storedMatches: string[][] = [];
+  storedUrls: string[] = [];
   linkPreviews: LinkPreview[] = [];
 
   constructor(
@@ -125,49 +125,57 @@ export class CreateUpdatePostComponent implements OnInit {
       this.clearLinkPreviews()
     } else {
       const editorHtmlContent = event.html
+      const liveUrls: string[] = [];
       const liveMatches: string[][] = [...editorHtmlContent.matchAll(this.regexpLink)]
-      if (liveMatches.length !== this.storedMatches.length) {
-        // The liveMatches and storedMatches have diverged, so we run further checks.
+      if (liveMatches.length > 0) {
+        // More useful to have just the URLs vs the entire regex match array.
+        liveMatches.forEach(match => {
+          liveUrls.push(match[1]);
+        })
+      }
+      this.compareUrlArrays(liveUrls);
+    }
+  }
 
-        if (liveMatches.length > this.storedMatches.length) {
-          // There are more liveMatches than storedMatches, so we build and add the right linkPreview.
-          for (const match of liveMatches) {
-            if (!this.storedMatches.includes(match)) {
-              this.storedMatches.push(match);
-              let request: CreateLinkPreviewRequest = {url: match[1]};
-              this.linkPreviewService.buildLinkPreview(request).subscribe(
-                linkPreview => this.linkPreviews.push(linkPreview)
-              )
-            }
-          }
-        }
+  private compareUrlArrays(liveUrls: string[]) {
+    for (const url of liveUrls) {
+      if (!this.storedUrls.includes(url)) {
+        this.addLinkPreview(url)
+      }
+    }
 
-        if (this.storedMatches.length > liveMatches.length) {
-          // There are more storedMatches than liveMatches, so we remove the right linkPreview.
-          for (const match of this.storedMatches) {
-            const index = this.storedMatches.indexOf(match);
-
-            if (index > -1) {
-              this.storedMatches.splice(index, 1);
-              this.linkPreviews.forEach(
-                linkPreview => {
-                  if (linkPreview.url === match[1]) {
-                    const index = this.linkPreviews.indexOf(linkPreview);
-
-                    if (index > -1) {
-                      this.linkPreviews.splice(index, 1);
-                    }
-                  }
-                })
-            }
-          }
-        }
+    for (const url of this.storedUrls) {
+      if (!liveUrls.includes(url)) {
+        this.removeLinkPreview(url)
       }
     }
   }
 
+  private addLinkPreview(url: string) {
+    // Add to storedUrls array
+    this.storedUrls.push(url);
+
+    // Build and include its linkPreview
+    let request: CreateLinkPreviewRequest = {url: url};
+    this.linkPreviewService.buildLinkPreview(request).subscribe(
+      linkPreview => this.linkPreviews.push(linkPreview)
+    )
+  }
+
+  private removeLinkPreview(url: string) {
+    // Remove from storedUrls array
+    this.storedUrls.splice(this.storedUrls.indexOf(url), 1);
+
+    // Remove its linkPreview
+    this.linkPreviews.forEach(linkPreview => {
+      if (linkPreview.url === url) {
+        this.linkPreviews.splice(this.linkPreviews.indexOf(linkPreview), 1);
+      }
+    })
+  }
+
   private clearLinkPreviews() {
-    this.storedMatches = [];
+    this.storedUrls = [];
     this.linkPreviews = [];
   }
 

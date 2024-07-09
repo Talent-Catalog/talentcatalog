@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
+ import java.io.IOException;
  import java.util.Map;
  import javax.validation.Valid;
  import javax.validation.constraints.NotNull;
@@ -59,7 +60,7 @@ package org.tctalent.server.api.admin;
     */
    @PostMapping("/build-link-preview")
    public @NotNull Map<String, Object> buildLinkPreview(
-       @Valid @RequestBody CreateLinkPreviewRequest request) {
+       @Valid @RequestBody CreateLinkPreviewRequest request) throws IOException {
      LinkPreview linkPreview = linkPreviewService.buildLinkPreview(request.getUrl());
      return this.linkPreviewDto().build(linkPreview);
    }

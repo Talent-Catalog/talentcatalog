@@ -16,9 +16,12 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -41,18 +44,29 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   }
 
   @Override
-  public LinkPreview buildLinkPreview(String url) {
+  public LinkPreview buildLinkPreview(String url) throws IOException {
     LinkPreview linkPreview = new LinkPreview();
     linkPreview.setUrl(url);
-    linkPreview.setTitle("A made-up webpage about nothing");
     linkPreview.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque mollis pretium quis.");
     linkPreview.setImageUrl("https://ipsumfactory.com/wp-content/uploads/2023/04/ipsum-factory-150x150.png");
+
+    Document doc = Jsoup.connect(url).get();
+
+    linkPreview.setTitle(getTitle(doc));
+
     return linkPreview;
   }
 
   private String getTitle(Document document) {
-    // implement JSoup scraping w JC link as code guidance
-    return "";
+    String title = document.title();
+    if (title.length() > 0) return title;
+
+    Elements ogTitleElements = document.select("meta[property=\"og:title\"]");
+    if (ogTitleElements.size() > 0) {
+      String ogTitle = ogTitleElements.first().attr("content");
+      if (ogTitle.length() > 0) return ogTitle;
+    }
+
   }
 
   private String getDescription(Document document) {

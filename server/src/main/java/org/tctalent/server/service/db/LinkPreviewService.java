@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.model.db.LinkPreview;
@@ -27,7 +28,7 @@ public interface LinkPreviewService {
    * @param url
    * @return
    */
-  LinkPreview buildLinkPreview(String url);
+  LinkPreview buildLinkPreview(String url) throws IOException;
 
   /**
    * TODO doc
