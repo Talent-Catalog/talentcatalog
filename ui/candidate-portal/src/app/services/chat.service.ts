@@ -226,7 +226,7 @@ export class ChatService implements OnDestroy {
 
   private handleExpiredOrInvalidToken(): void {
     console.log('Expired or invalid JWT  - logging out');
-    // this.authenticationService.logout();
+    this.authenticationService.logout();
   }
 
   /**
