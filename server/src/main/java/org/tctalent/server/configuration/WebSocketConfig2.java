@@ -16,6 +16,7 @@
 
 package org.tctalent.server.configuration;
 
+import io.jsonwebtoken.JwtException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.TcUserDetailsService;
 
@@ -72,17 +74,32 @@ public class WebSocketConfig2 implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(@NotNull Message<?> message, @NotNull MessageChannel channel) {
                 StompHeaderAccessor accessor =
                     MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
                 if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String jwt = getAuthorizationToken(accessor);
-                    if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                        String username = tokenProvider.getUsernameFromJwt(jwt);
-                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        accessor.setUser(authentication);
+                    if (StringUtils.hasText(jwt)) {
+                        try {
+                            if (tokenProvider.validateToken(jwt)) {
+                                String username = tokenProvider.getUsernameFromJwt(jwt);
+                                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                                accessor.setUser(authentication);
+                            } else {
+                                handleInvalidToken();
+                            }
+                        } catch (JwtException | IllegalArgumentException e) {
+                            handleInvalidToken();
+                        }
                     }
                 }
                 return message;
             }
+
+            private void handleInvalidToken() {
+//                throw new MessagingException(JwtTokenProvider.EXPIRED_OR_INVALID_JWT_TOKEN_MSG);
+                throw new ExpiredTokenException(JwtTokenProvider.EXPIRED_OR_INVALID_JWT_TOKEN_MSG);
+            }
+
         });
     }
 
