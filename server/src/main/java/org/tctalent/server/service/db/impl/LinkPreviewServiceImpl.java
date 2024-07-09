@@ -58,15 +58,36 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   }
 
   private String getTitle(Document document) {
+    // TODO review potential null pointer exceptions
+
     String title = document.title();
-    if (title.length() > 0) return title;
+    if (!title.isEmpty()) return title;
 
     Elements ogTitleElements = document.select("meta[property=\"og:title\"]");
-    if (ogTitleElements.size() > 0) {
+    if (!ogTitleElements.isEmpty()) {
       String ogTitle = ogTitleElements.first().attr("content");
-      if (ogTitle.length() > 0) return ogTitle;
+      if (!ogTitle.isEmpty()) return ogTitle;
     }
 
+    Elements twitterTitleElements = document.select("meta[name=\"twitter:title\"]");
+    if (!twitterTitleElements.isEmpty()) {
+      String twitterTitle = twitterTitleElements.first().attr("content");
+      if (!twitterTitle.isEmpty()) return twitterTitle;
+    }
+
+    Elements h1Elements = document.select("h1");
+    if (!h1Elements.isEmpty()) {
+      String h1 = h1Elements.first().text();
+      if (!h1.isEmpty()) return h1;
+    }
+
+    Elements h2Elements = document.select("h2");
+    if (!h2Elements.isEmpty()) {
+      String h2 = h2Elements.first().text();
+      if (!h2.isEmpty()) return h2;
+    }
+
+    return null;
   }
 
   private String getDescription(Document document) {
