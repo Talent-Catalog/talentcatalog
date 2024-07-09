@@ -16,12 +16,12 @@
 
 package org.tctalent.server.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.UserRepository;
 
@@ -29,10 +29,9 @@ import org.tctalent.server.repository.db.UserRepository;
  * Implementation of Spring's {@link UserDetailsService}, returning {@link TcUserDetails}
  * objects.
  */
+@Slf4j
 @Component
 public class TcUserDetailsService implements UserDetailsService {
-
-    private static final Logger log = LoggerFactory.getLogger(TcUserDetailsService.class);
 
     private final UserRepository userRepository;
 
@@ -49,7 +48,11 @@ public class TcUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No user found for: " + username);
         }
 
-        log.debug("Found user with ID {} for username '{}'", user.getId(), username);
+        LogBuilder.builder(log)
+            .action("loadUserByUsername")
+            .message("Found user with ID " + user.getId() + " for username '" + username + "'")
+            .logDebug();
+
         return new TcUserDetails(user);
     }
 

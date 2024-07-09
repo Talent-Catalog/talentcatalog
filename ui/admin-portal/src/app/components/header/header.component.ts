@@ -170,6 +170,10 @@ export class HeaderComponent implements OnInit {
     return this.authService.canViewCandidateName();
   }
 
+  isEmployerPartner(): boolean {
+    return this.authService.isEmployerPartner();
+  }
+
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
   }

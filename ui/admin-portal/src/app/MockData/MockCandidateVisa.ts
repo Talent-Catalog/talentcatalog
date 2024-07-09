@@ -14,13 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  CandidateVisa,
-  TBBEligibilityAssessment,
-  VisaEligibility,
-  YesNo,
-  YesNoUnsure
-} from "../model/candidate";
+import {CandidateVisa, TBBEligibilityAssessment, YesNo, YesNoUnsure} from "../model/candidate";
 import {MockUser} from "./MockUser";
 import {MockJob} from "./MockJob";
 import {MockCandidateVisaJobCheck} from "./MockCandidateVisaCheck";

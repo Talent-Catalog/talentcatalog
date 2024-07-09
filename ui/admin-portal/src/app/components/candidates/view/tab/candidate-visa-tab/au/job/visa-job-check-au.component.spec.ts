@@ -20,25 +20,22 @@ import {OccupationService} from "../../../../../../../services/occupation.servic
 import {
   CandidateOccupationService
 } from "../../../../../../../services/candidate-occupation.service";
-import {Component, NO_ERRORS_SCHEMA, ViewChild} from "@angular/core";
+import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {
   mockCandidateIntakeData
 } from "../../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {MockCandidate} from "../../../../../../../MockData/MockCandidate";
-import {
-  Candidate, CandidateIntakeData,
-  CandidateVisa,
-  CandidateVisaJobCheck
-} from "../../../../../../../model/candidate";
-import {of, throwError} from "rxjs";
+import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../../model/candidate";
+import {of} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {CandidateService} from "../../../../../../../services/candidate.service";
 import {UpdatedByComponent} from "../../../../../../util/user/updated-by/updated-by.component";
-import {NgbAccordion, NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidateVisaJobCheck} from "../../../../../../../MockData/MockCandidateVisaCheck";
+
 fdescribe('VisaJobCheckAuComponent', () => {
   let component: VisaJobCheckAuComponent;
   let fixture: ComponentFixture<VisaJobCheckAuComponent>;

@@ -16,18 +16,19 @@
 
 package org.tctalent.server.service.db.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.transaction.Transactional;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -35,13 +36,9 @@ import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.util.textExtract.TextExtractHelper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 @SpringBootTest
+@Slf4j
 public class TextExtractHelperTest {
-    private static final Logger log = LoggerFactory.getLogger(TextExtractHelperTest.class);
 
     @Autowired
     private CandidateAttachmentRepository candidateAttachmentRepository;

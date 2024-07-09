@@ -21,8 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -50,13 +49,12 @@ import org.tctalent.server.util.dto.DtoBuilder;
  */
 @RestController()
 @RequestMapping("/api/admin/saved-search-candidate")
+@Slf4j
 public class SavedSearchCandidateAdminApi implements
     IManyToManyApi<SavedSearchGetRequest, UpdateSavedListContentsRequest> {
 
     private final SavedSearchService savedSearchService;
     private final CandidateBuilderSelector builderSelector;
-
-    private static final Logger log = LoggerFactory.getLogger(SavedSearchCandidateAdminApi.class);
 
     @Autowired
     public SavedSearchCandidateAdminApi(

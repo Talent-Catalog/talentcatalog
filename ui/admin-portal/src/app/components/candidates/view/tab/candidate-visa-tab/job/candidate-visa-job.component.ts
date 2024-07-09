@@ -1,19 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ShortJob} from "../../../../../../model/job";
-import {
-  HasNameSelectorComponent
-} from "../../../../../util/has-name-selector/has-name-selector.component";
+import {HasNameSelectorComponent} from "../../../../../util/has-name-selector/has-name-selector.component";
 import {
   CandidateVisaJobService,
   CreateCandidateVisaJobRequest
 } from "../../../../../../services/candidate-visa-job.service";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
-import {
-  Candidate,
-  CandidateIntakeData,
-  CandidateVisa,
-  CandidateVisaJobCheck
-} from "../../../../../../model/candidate";
+import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {CandidateVisaCheckService} from "../../../../../../services/candidate-visa-check.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -59,12 +52,17 @@ export class CandidateVisaJobComponent implements OnInit {
 
   private get filteredSfJobs(): ShortJob[] {
     /**
-     * IF there are no existing visa job checks, return all the jobs associated with the candidate's candidate opportunities.
-     * ELSE filter those jobs out from the jobs associated with their candidate opportunities
-     * SO that we avoid double ups of visa job checks for the same job.
+     * IF there are no existing visa job checks, return all the jobs associated with candidate's candidate opportunities
+     * but filtered by the same destination country as the specific visa check country.
+     * ELSE add additional filter removing completed visa job check jobs
+     * SO that we avoid double ups of visa job checks for the same job,
+     * and that jobs are only having visa checks for their appropriate destination country.
      */
     if (!this.hasJobChecks) {
-      return this.candidate.candidateOpportunities.map(co => co.jobOpp);
+      const ops = this.candidate.candidateOpportunities
+        .map(co => co.jobOpp)
+        .filter(jo => jo.country.id == this.visaCheckRecord.country.id);
+      return ops;
     } else {
       /**
        * NOTE: Some job checks don't have a SF Job Opp associated as these were entered in an earlier version of the code.
@@ -74,7 +72,7 @@ export class CandidateVisaJobComponent implements OnInit {
 
       return this.candidate.candidateOpportunities
         .map(co => co.jobOpp)
-        .filter(jo => !existingJobIds.includes(jo.id))
+        .filter(jo => !existingJobIds.includes(jo.id) && jo.country.id == this.visaCheckRecord.country.id)
     }
   }
 
@@ -89,7 +87,7 @@ export class CandidateVisaJobComponent implements OnInit {
   addJob() {
     const modal = this.modalService.open(HasNameSelectorComponent);
     modal.componentInstance.hasNames = this.filteredSfJobs;
-    modal.componentInstance.label = "Candidate's Job Opportunities";
+    modal.componentInstance.label = "Candidate's Job Opportunities for Destination: " + this.visaCheckRecord.country.name;
 
     modal.result
     .then((selection: ShortJob) => {

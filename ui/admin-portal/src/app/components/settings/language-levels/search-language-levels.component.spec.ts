@@ -15,7 +15,6 @@
  */
 
 import {SearchResults} from "../../../model/search-results";
-import {Industry} from "../../../model/industry";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";

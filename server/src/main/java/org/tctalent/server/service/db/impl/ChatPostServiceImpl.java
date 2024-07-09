@@ -24,8 +24,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
@@ -51,6 +51,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatPostServiceImpl implements ChatPostService {
 
     private final ChatPostRepository chatPostRepository;
@@ -60,8 +61,6 @@ public class ChatPostServiceImpl implements ChatPostService {
     private final CandidateService candidateService;
     private final SimpMessagingTemplate messagingTemplate;
     private final LinkPreviewService linkPreviewService;
-
-    private static final Logger log = LoggerFactory.getLogger(ChatPostServiceImpl.class);
 
     @Override
     public ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat, User user) {
@@ -221,7 +220,10 @@ public class ChatPostServiceImpl implements ChatPostService {
 
         //Delete tempfile
         if (!tempFile.delete()) {
-            log.error("Failed to delete temporary file " + tempFile);
+            LogBuilder.builder(log)
+                .action("UploadChatFile")
+                .message("Failed to delete temporary file " + tempFile)
+                .logError();
         }
 
         return uploadedFile;

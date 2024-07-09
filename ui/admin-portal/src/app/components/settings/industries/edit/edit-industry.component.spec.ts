@@ -22,6 +22,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {of, throwError} from "rxjs";
 import {Industry} from "../../../../model/industry";
+
 fdescribe('EditIndustryComponent', () => {
   let component: EditIndustryComponent;
   let fixture: ComponentFixture<EditIndustryComponent>;

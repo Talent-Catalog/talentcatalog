@@ -5,7 +5,6 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../util/enum";
-import {CandidateSource} from "../../../model/base";
 
 fdescribe('CandidateStatusSelectorComponent', () => {
   let component: CandidateStatusSelectorComponent;
