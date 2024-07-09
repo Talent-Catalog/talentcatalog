@@ -16,34 +16,22 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.LinkPreview;
 import org.tctalent.server.repository.db.LinkPreviewRepository;
-import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.service.db.LinkPreviewService;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class LinkPreviewServiceImpl implements LinkPreviewService {
 
   private final LinkPreviewRepository linkPreviewRepository;
-
-  @Override
-  public void attach(ChatPost chatPost, List<LinkPreview> linkPreviews)
-      throws NoSuchObjectException {
-
-    linkPreviews.forEach(linkPreview -> {
-      linkPreview.setChatPost(chatPost);
-      linkPreviewRepository.save(linkPreview);
-    });
-  }
 
   @Override
   public boolean deleteLinkPreview(long linkPreviewId)

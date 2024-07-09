@@ -184,6 +184,9 @@ public class SecurityConfiguration {
                 // DELETE: DELETE VISA JOB CHECK
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-visa-job/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
 
+                // DELETE: DELETE CHAT POST LINK PREVIEW
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/link-preview/*").permitAll()
+
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasAnyRole("SYSTEMADMIN", "ADMIN")

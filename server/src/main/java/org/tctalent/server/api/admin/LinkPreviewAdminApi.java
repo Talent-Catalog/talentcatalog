@@ -40,23 +40,13 @@ package org.tctalent.server.api.admin;
 
      private final LinkPreviewService linkPreviewService;
 
-////     TODO rather than the standard implementation of create here, we're going to want a method
-////      that takes a list of CreateLinkPreviewRequests - it can be void. Delete is still needed, the
-////      sending user should be able to delete them from their own sent posts.
-//   /**
-//    *TODO doc
-//    * @param chatPostId ID of parent record
-//    * @param request Request containing details from which the record is created.
-//    * @return
-//    * @throws NoSuchObjectException
-//    */
-//     @PostMapping("{chatPostId}/attach")
-//     public @NotNull boolean attach(
-//         long chatPostId, @Valid List<CreateLinkPreviewRequest> requests
-//     ) throws NoSuchObjectException {
-//       return linkPreviewService.attach(chatPostId, requests);
-//     }
-
+   /**
+    * TODO
+    * @param id ID of record to be deleted
+    * @return
+    * @throws EntityReferencedException
+    * @throws InvalidRequestException
+    */
      @Override
      public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
        return linkPreviewService.deleteLinkPreview(id);
@@ -70,7 +60,7 @@ package org.tctalent.server.api.admin;
    @PostMapping("/build-link-preview")
    public @NotNull Map<String, Object> buildLinkPreview(
        @Valid @RequestBody CreateLinkPreviewRequest request) {
-     LinkPreview linkPreview = this.linkPreviewService.buildLinkPreview(request.getUrl());
+     LinkPreview linkPreview = linkPreviewService.buildLinkPreview(request.getUrl());
      return this.linkPreviewDto().build(linkPreview);
    }
 

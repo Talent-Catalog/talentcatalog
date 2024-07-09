@@ -1118,7 +1118,7 @@ import { PreviewLinkComponent } from './components/preview-link/preview-link.com
     CreateUpdateHelpLinkComponent,
     SfJoblinkComponent,
     SelectJobCopyComponent,
-    VisaJobCheckUkComponent
+    VisaJobCheckUkComponent,
     PreviewLinkComponent
   ],
   imports: [

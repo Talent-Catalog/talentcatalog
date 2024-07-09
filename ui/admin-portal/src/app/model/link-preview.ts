@@ -15,8 +15,6 @@
  */
 
 export interface LinkPreview {
-  // id will not be included on the linkPreviews returned by buildLinkPreview()
-  // TODO check whether this ? is needed, how it's usually done
   id?: number;
   url: string;
   imageUrl: string;

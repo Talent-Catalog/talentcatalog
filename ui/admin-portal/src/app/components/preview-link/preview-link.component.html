@@ -1,5 +1,8 @@
-<div class="link-preview" *ngIf="!linkPreview.blocked">
-  <i class="fa-solid fa-xmark block-button" (click)="blockPreview($event)"></i>
+<div *ngIf="!linkPreview.blocked" class="link-preview">
+  <i *ngIf="userIsPostAuthor"
+     class="fa-solid fa-xmark block-button"
+     (click)="blockLinkPreview($event)"
+  ></i>
   <a href="{{linkPreview.url}}" target="_blank">
   <img src="{{linkPreview.imageUrl}}" alt="Preview image">
   <div class="content">

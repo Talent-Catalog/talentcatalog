@@ -34,10 +34,6 @@ export class LinkPreviewService {
 
   constructor(private http: HttpClient) {}
 
-  attach(chatPostId: number, requests: CreateLinkPreviewRequest[]): Observable<boolean> {
-    return this.http.post<boolean>(`${this.apiUrl}/${chatPostId}/attach`, requests);
-  }
-
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }

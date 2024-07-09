@@ -114,52 +114,61 @@ export class CreateUpdatePostComponent implements OnInit {
   // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
   public onClickEmojiBtn() {
     this.emojiPickerVisible = !this.emojiPickerVisible;
-    if(!this.emojiPickerVisible) {
+    if (!this.emojiPickerVisible) {
       const index: number = this.quillEditorRef.selection.savedRange.index;
       this.quillEditorRef.setSelection(index, 0);
     }
   }
 
-  checkForLinks(event) {
-    const editorHtmlContent = event.html
-    const liveMatches: string[][] = [...editorHtmlContent.matchAll(this.regexpLink)]
-    if (liveMatches.length !== this.storedMatches.length) {
-      // The liveMatches and storedMatches have diverged, so we run further checks.
+  public checkForLinks(event) {
+    if (event.html === null) {
+      this.clearLinkPreviews()
+    } else {
+      const editorHtmlContent = event.html
+      const liveMatches: string[][] = [...editorHtmlContent.matchAll(this.regexpLink)]
+      if (liveMatches.length !== this.storedMatches.length) {
+        // The liveMatches and storedMatches have diverged, so we run further checks.
 
-      if (liveMatches.length > this.storedMatches.length) {
-        // There are more liveMatches than storedMatches, so we build and add the right linkPreview.
-        for (const match of liveMatches) {
-          if (!this.storedMatches.includes(match)) {
-            this.storedMatches.push(match);
-            let request: CreateLinkPreviewRequest = {url: match[1]};
-            this.linkPreviewService.buildLinkPreview(request).subscribe(
-              linkPreview => this.linkPreviews.push(linkPreview)
-            )
+        if (liveMatches.length > this.storedMatches.length) {
+          // There are more liveMatches than storedMatches, so we build and add the right linkPreview.
+          for (const match of liveMatches) {
+            if (!this.storedMatches.includes(match)) {
+              this.storedMatches.push(match);
+              let request: CreateLinkPreviewRequest = {url: match[1]};
+              this.linkPreviewService.buildLinkPreview(request).subscribe(
+                linkPreview => this.linkPreviews.push(linkPreview)
+              )
+            }
           }
         }
-      }
 
-      if (this.storedMatches.length > liveMatches.length) {
-        // There are more storedMatches than liveMatches, so we remove the right linkPreview.
-        for (const match of this.storedMatches) {
-          const index = this.storedMatches.indexOf(match);
+        if (this.storedMatches.length > liveMatches.length) {
+          // There are more storedMatches than liveMatches, so we remove the right linkPreview.
+          for (const match of this.storedMatches) {
+            const index = this.storedMatches.indexOf(match);
 
-          if (index > -1) {
-            this.storedMatches.splice(index, 1);
-            this.linkPreviews.forEach(
-              linkPreview => {
-                if (linkPreview.url === match[1]) {
-                  const index = this.linkPreviews.indexOf(linkPreview);
+            if (index > -1) {
+              this.storedMatches.splice(index, 1);
+              this.linkPreviews.forEach(
+                linkPreview => {
+                  if (linkPreview.url === match[1]) {
+                    const index = this.linkPreviews.indexOf(linkPreview);
 
-                  if (index > -1) {
-                    this.linkPreviews.splice(index, 1);
+                    if (index > -1) {
+                      this.linkPreviews.splice(index, 1);
+                    }
                   }
-                }
-              })
+                })
+            }
           }
         }
       }
     }
+  }
+
+  private clearLinkPreviews() {
+    this.storedMatches = [];
+    this.linkPreviews = [];
   }
 
 }

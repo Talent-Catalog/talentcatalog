@@ -69,11 +69,7 @@ public class ChatPostServiceImpl implements ChatPostService {
         chatPost.setContent(post.getContent());
         chatPost.setCreatedDate(OffsetDateTime.now());
         chatPost.setCreatedBy(user);
-
-        // TODO run this by Sadat/John, it's a bit weird!
-        chatPost = chatPostRepository.save(chatPost);
-
-        linkPreviewService.attach(chatPost, post.getLinkPreviews());
+        chatPost.setLinkPreviews(post.getLinkPreviews());
 
         chatPost = chatPostRepository.save(chatPost);
 
