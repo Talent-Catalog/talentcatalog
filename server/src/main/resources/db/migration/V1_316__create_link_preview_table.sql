@@ -21,5 +21,6 @@ create table link_preview
     url                     text,
     title                   text,
     description             text,
-    image_url               text
+    image_url               text,
+    domain                  text
 );
