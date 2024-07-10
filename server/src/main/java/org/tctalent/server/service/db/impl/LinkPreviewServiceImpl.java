@@ -58,7 +58,6 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   }
 
   private String getTitle(Document document) {
-    // TODO review potential null pointer exceptions
 
     String title = document.title();
     if (!title.isEmpty()) return title;
