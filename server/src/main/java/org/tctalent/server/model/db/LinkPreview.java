@@ -21,8 +21,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
@@ -38,9 +40,11 @@ public class LinkPreview extends AbstractDomainObject<Long> {
     @JoinColumn(name = "chat_post_id")
     private ChatPost chatPost;
 
+    //TODO consider notblank / nullable here
     private String url;
     private String title;
     private String description;
     private String imageUrl;
     private String domain;
+    private String faviconUrl;
 }

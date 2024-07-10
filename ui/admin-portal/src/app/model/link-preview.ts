@@ -17,9 +17,10 @@
 export interface LinkPreview {
   id?: number;
   url: string;
-  imageUrl: string;
-  title: string;
-  description: string;
-  domain: string;
+  imageUrl?: string;
+  title?: string;
+  description?: string;
+  domain?: string;
+  faviconUrl?: string;
   blocked?: boolean;
 }

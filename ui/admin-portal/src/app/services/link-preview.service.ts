@@ -20,11 +20,8 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {LinkPreview} from "../model/link-preview";
 
-export interface CreateLinkPreviewRequest {
+export interface BuildLinkPreviewRequest {
   url: string;
-  imageUrl?: string;
-  title?: string;
-  description?: string;
 }
 
 @Injectable({providedIn: 'root'})
@@ -38,7 +35,7 @@ export class LinkPreviewService {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
 
-  buildLinkPreview(request: CreateLinkPreviewRequest): Observable<LinkPreview> {
+  buildLinkPreview(request: BuildLinkPreviewRequest): Observable<LinkPreview> {
     return this.http.post<LinkPreview>(`${this.apiUrl}/build-link-preview`, request)
   }
 }

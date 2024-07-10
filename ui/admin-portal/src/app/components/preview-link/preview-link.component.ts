@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {WebScraperService} from "../../services/web-scraper.service";
 import {LinkPreview} from "../../model/link-preview";
 import {LinkPreviewService} from "../../services/link-preview.service";
 

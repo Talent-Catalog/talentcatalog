@@ -105,6 +105,8 @@ public class ChatPostServiceImpl implements ChatPostService {
             .add("title")
             .add("description")
             .add("imageUrl")
+            .add("domain")
+            .add("faviconUrl")
             ;
     }
 

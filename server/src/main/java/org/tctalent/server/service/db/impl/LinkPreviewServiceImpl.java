@@ -16,11 +16,18 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static java.lang.Double.parseDouble;
+
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -47,12 +54,14 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   public LinkPreview buildLinkPreview(String url) throws IOException {
     LinkPreview linkPreview = new LinkPreview();
     linkPreview.setUrl(url);
-    linkPreview.setImageUrl("https://ipsumfactory.com/wp-content/uploads/2023/04/ipsum-factory-150x150.png");
 
     Document doc = Jsoup.connect(url).get();
 
     linkPreview.setDescription(getDescription(doc));
     linkPreview.setTitle(getTitle(doc));
+    linkPreview.setDomain(getDomain(doc, url));
+    linkPreview.setImageUrl(getImageUrl(doc));
+    linkPreview.setFaviconUrl(getFaviconUrl(doc));
 
     return linkPreview;
   }
@@ -118,9 +127,85 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
+  private String getDomain(Document document, String url) throws MalformedURLException {
+    Elements canonicalLinkElements = document.select("link[rel=canonical]");
+    if (!canonicalLinkElements.isEmpty()) {
+      String canonicalLink = canonicalLinkElements.first().attr("href");
+      if (!canonicalLink.isEmpty()) {
+        String domain = new URL(canonicalLink).getHost().replace("www.", "");
+        if (domain != null && !domain.isEmpty()) return domain;
+      }
+    }
+
+    Elements ogUrlMetaElements = document.select("meta[property=\"og:url\"]");
+    if (!ogUrlMetaElements.isEmpty()) {
+      String ogUrlMeta = ogUrlMetaElements.first().attr("content");
+      if (!ogUrlMeta.isEmpty()) {
+        String domain = new URL(ogUrlMeta).getHost().replace("www.", "");
+        if (domain != null && !domain.isEmpty()) return domain;
+      }
+    }
+
+    String domain = new URL(url).getHost().replace("www.", "");
+    if (domain != null && !domain.isEmpty()) return domain;
+
+    return null;
+  }
+
   private String getImageUrl(Document document) {
-    // implement JSoup scraping w JC link as code guidance
-    return "";
+
+    Elements ogImgElements = document.select("meta[property=\"og:image\"]");
+    if (!ogImgElements.isEmpty()) {
+      String ogImg = ogImgElements.first().attr("content");
+      if (!ogImg.isEmpty()) return ogImg;
+    }
+
+    Elements imgRelLinkElements = document.select("link[rel=\"image_src\"]");
+    if (!imgRelLinkElements.isEmpty()) {
+      String imgRelLink = imgRelLinkElements.first().attr("href");
+      if (!imgRelLink.isEmpty()) return imgRelLink;
+    }
+
+    Elements twitterImgElements = document.select("meta[name=\"twitter:image\"]");
+    if (!twitterImgElements.isEmpty()) {
+      String twitterImg = twitterImgElements.first().attr("content");
+      if (!twitterImg.isEmpty()) return twitterImg;
+    }
+
+    Elements images = document.getElementsByTag("img");
+    if (!images.isEmpty()) {
+      List<Element> qualifiedImages = images
+          .stream()
+          .filter(img -> img.hasAttr("width") && img.hasAttr("height"))
+          .filter(img ->
+              (parseDouble(img.attr("width").replace("px","")) /
+                  parseDouble(img.attr("height").replace("px",""))) < 3)
+          .filter(img ->
+              (parseDouble(img.attr("width").replace("px","")) > 50) &&
+                  (parseDouble(img.attr("height").replace("px","")) > 50))
+          .collect(
+          Collectors.toList());
+
+      if (!qualifiedImages.isEmpty()) {
+        return qualifiedImages.getFirst().attr("src");
+      }
+    }
+
+    return null;
+  }
+
+  private String getFaviconUrl(Document document) {
+    Element faviconLinkElement = document.head().select("link[href~=.*\\.(ico|png)]").first();
+    if (faviconLinkElement != null) {
+      return faviconLinkElement.attr("href");
+    }
+
+    Element faviconMetaElement = document.head().select("meta[itemprop=image]").first();
+    if (faviconMetaElement != null) {
+      return faviconMetaElement.attr("content");
+    }
+
+    return null;
   }
 
 }

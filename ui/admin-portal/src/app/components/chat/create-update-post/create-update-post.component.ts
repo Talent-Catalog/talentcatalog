@@ -7,7 +7,10 @@ import {ChatPostService} from "../../../services/chat-post.service";
 import Quill from 'quill';
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {LinkPreview} from "../../../model/link-preview";
-import {CreateLinkPreviewRequest, LinkPreviewService} from "../../../services/link-preview.service";
+import {
+  BuildLinkPreviewRequest,
+  LinkPreviewService
+} from "../../../services/link-preview.service";
 
 @Component({
   selector: 'app-create-update-post',
@@ -156,7 +159,7 @@ export class CreateUpdatePostComponent implements OnInit {
     this.storedUrls.push(url);
 
     // Build and include its linkPreview
-    let request: CreateLinkPreviewRequest = {url: url};
+    let request: BuildLinkPreviewRequest = {url: url};
     this.linkPreviewService.buildLinkPreview(request).subscribe(
       linkPreview => this.linkPreviews.push(linkPreview)
     )

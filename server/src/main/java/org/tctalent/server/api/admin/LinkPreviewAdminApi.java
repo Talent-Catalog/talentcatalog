@@ -28,7 +28,7 @@ package org.tctalent.server.api.admin;
  import org.tctalent.server.exception.EntityReferencedException;
  import org.tctalent.server.exception.InvalidRequestException;
  import org.tctalent.server.model.db.LinkPreview;
- import org.tctalent.server.request.chat.link_preview.CreateLinkPreviewRequest;
+ import org.tctalent.server.request.chat.link_preview.BuildLinkPreviewRequest;
  import org.tctalent.server.service.db.LinkPreviewService;
  import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -36,8 +36,8 @@ package org.tctalent.server.api.admin;
  @RequestMapping("/api/admin/link-preview")
  @RequiredArgsConstructor
  public class LinkPreviewAdminApi
-     implements IJoinedTableApi<CreateLinkPreviewRequest, CreateLinkPreviewRequest,
-     CreateLinkPreviewRequest> {
+     implements IJoinedTableApi<BuildLinkPreviewRequest, BuildLinkPreviewRequest,
+     BuildLinkPreviewRequest> {
 
      private final LinkPreviewService linkPreviewService;
 
@@ -60,7 +60,7 @@ package org.tctalent.server.api.admin;
     */
    @PostMapping("/build-link-preview")
    public @NotNull Map<String, Object> buildLinkPreview(
-       @Valid @RequestBody CreateLinkPreviewRequest request) throws IOException {
+       @Valid @RequestBody BuildLinkPreviewRequest request) throws IOException {
      LinkPreview linkPreview = linkPreviewService.buildLinkPreview(request.getUrl());
      return this.linkPreviewDto().build(linkPreview);
    }
@@ -72,6 +72,8 @@ package org.tctalent.server.api.admin;
                  .add("title")
                  .add("description")
                  .add("imageUrl")
+                 .add("domain")
+                 .add("faviconUrl")
                  ;
      }
 
