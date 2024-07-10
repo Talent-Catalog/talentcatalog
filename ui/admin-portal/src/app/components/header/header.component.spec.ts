@@ -53,7 +53,7 @@ fdescribe('HeaderComponent', () => {
     numberOfElements: candidates.length,
   };
   beforeEach(async () => {
-    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['canViewCandidateName', 'isAnAdmin', 'isSystemAdminOnly']);
+    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['canViewCandidateName', 'isAnAdmin', 'isSystemAdminOnly','isEmployerPartner']);
     const candidateServiceSpyObj = jasmine.createSpyObj('CandidateService', ['findByCandidateNumberOrName', 'findByExternalId', 'findByCandidateEmailOrPhone']);
     const brandingServiceSpyObj = jasmine.createSpyObj('BrandingService', ['getBrandingInfo']);
     const authenticationServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser', 'logout']);
