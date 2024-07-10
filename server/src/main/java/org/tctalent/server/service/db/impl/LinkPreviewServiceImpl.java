@@ -47,18 +47,17 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   public LinkPreview buildLinkPreview(String url) throws IOException {
     LinkPreview linkPreview = new LinkPreview();
     linkPreview.setUrl(url);
-    linkPreview.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque mollis pretium quis.");
     linkPreview.setImageUrl("https://ipsumfactory.com/wp-content/uploads/2023/04/ipsum-factory-150x150.png");
 
     Document doc = Jsoup.connect(url).get();
 
+    linkPreview.setDescription(getDescription(doc));
     linkPreview.setTitle(getTitle(doc));
 
     return linkPreview;
   }
 
   private String getTitle(Document document) {
-    // TODO review potential null pointer exceptions
 
     String title = document.title();
     if (!title.isEmpty()) return title;
@@ -91,8 +90,32 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   }
 
   private String getDescription(Document document) {
-    // implement JSoup scraping w JC link as code guidance
-    return "";
+
+    Elements ogDescriptionElements = document.select("meta[property=\"og:description\"]");
+    if (!ogDescriptionElements.isEmpty()) {
+      String ogDescription = ogDescriptionElements.first().attr("content");
+      if (!ogDescription.isEmpty()) return ogDescription;
+    }
+
+    Elements twitterDescriptionElements = document.select("meta[name=\"twitter:description\"]");
+    if (!twitterDescriptionElements.isEmpty()) {
+      String twitterDescription = twitterDescriptionElements.first().attr("content");
+      if (!twitterDescription.isEmpty()) return twitterDescription;
+    }
+
+    Elements metaDescriptionElements = document.select("meta[name=\"description\"]");
+    if (!metaDescriptionElements.isEmpty()) {
+      String metaDescription = metaDescriptionElements.first().attr("content");
+      if (!metaDescription.isEmpty()) return metaDescription;
+    }
+
+    Elements paragraphs = document.select("p");
+    if (!paragraphs.isEmpty()) {
+      String firstPara = paragraphs.first().text();
+      if (!firstPara.isEmpty()) return firstPara;
+    }
+
+    return null;
   }
 
   private String getImageUrl(Document document) {

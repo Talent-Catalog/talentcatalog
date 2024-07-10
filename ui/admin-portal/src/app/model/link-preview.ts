@@ -20,5 +20,6 @@ export interface LinkPreview {
   imageUrl: string;
   title: string;
   description: string;
+  domain: string;
   blocked?: boolean;
 }

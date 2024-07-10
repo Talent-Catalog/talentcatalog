@@ -42,4 +42,5 @@ public class LinkPreview extends AbstractDomainObject<Long> {
     private String title;
     private String description;
     private String imageUrl;
+    private String domain;
 }
