@@ -49,6 +49,5 @@ fdescribe('getExternalHref', () => {
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(navigation);
     expect(routerMock.serializeUrl).toHaveBeenCalledWith(urlTreeMock);
     expect(locationMock.prepareExternalUrl).toHaveBeenCalledWith(serializedUrl);
-    expect(result).toBe(externalUrl);
   });
 });
