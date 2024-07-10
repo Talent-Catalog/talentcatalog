@@ -42,6 +42,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.SearchType;
@@ -84,7 +85,10 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
 
-    log.info("Found candidate IDs: " + candidateIds);
+    LogBuilder.builder(log)
+        .action("ElasticsearchServiceImpl.findByName")
+        .message("Found candidate IDs: " + candidateIds)
+        .logInfo();
 
     return candidateIds;
   }
@@ -98,7 +102,10 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
 
-    log.info("Found candidate IDs: " + candidateIds);
+    LogBuilder.builder(log)
+        .action("ElasticsearchServiceImpl.findByNumber")
+        .message("Found candidate IDs: " + candidateIds)
+        .logInfo();
 
     return candidateIds;
   }
@@ -112,7 +119,10 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
 
-    log.info("Found candidate IDs: " + candidateIds);
+    LogBuilder.builder(log)
+        .action("ElasticsearchServiceImpl.findByPhoneOrEmail")
+        .message("Found candidate IDs: " + candidateIds)
+        .logInfo();
 
     return candidateIds;
   }
@@ -126,7 +136,10 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
 
-    log.info("Found candidate IDs: " + candidateIds);
+    LogBuilder.builder(log)
+        .action("ElasticsearchServiceImpl.findByExternalId")
+        .message("Found candidate IDs: " + candidateIds)
+        .logInfo();
 
     return candidateIds;
   }
@@ -146,7 +159,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     boolQuery = filterOnDeletedStatus(boolQuery);
     boolQuery = filterOnSourceCountryRestrictions(boolQuery);
 
-    log.debug("Elasticsearch query:\n" + boolQuery);
+    LogBuilder.builder(log)
+        .action("ElasticsearchServiceImpl.computeFindByNameQuery")
+        .message("Constructed Elasticsearch query:\n " + boolQuery)
+        .logDebug();
+
     return boolQuery;
   }
 
@@ -164,7 +181,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     boolQuery = filterOnDeletedStatus(boolQuery);
     boolQuery = filterOnSourceCountryRestrictions(boolQuery);
 
-    log.debug("Elasticsearch query:\n" + boolQuery);
+    LogBuilder.builder(log)
+        .action("ElasticsearchServiceImpl.computeFindByNumberQuery")
+        .message("Constructed Elasticsearch query:\n " + boolQuery)
+        .logDebug();
+
     return boolQuery;
   }
 
@@ -188,7 +209,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     boolQuery = filterOnDeletedStatus(boolQuery);
     boolQuery = filterOnSourceCountryRestrictions(boolQuery);
 
-    log.debug("Elasticsearch query:\n" + boolQuery);
+    LogBuilder.builder(log)
+        .action("ElasticsearchServiceImpl.computeFindByPhoneOrEmailQuery")
+        .message("Constructed Elasticsearch query:\n " + boolQuery)
+        .logDebug();
+
     return boolQuery;
   }
 
@@ -206,7 +231,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     boolQuery = filterOnDeletedStatus(boolQuery);
     boolQuery = filterOnSourceCountryRestrictions(boolQuery);
 
-    log.debug("Elasticsearch query:\n" + boolQuery);
+    LogBuilder.builder(log)
+        .action("ElasticsearchServiceImpl.computeFindByExternalIdQuery")
+        .message("Constructed Elasticsearch query:\n " + boolQuery)
+        .logDebug();
+
     return boolQuery;
   }
 

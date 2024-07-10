@@ -24,6 +24,7 @@ import {MockSavedList} from "../../../MockData/MockSavedList";
 import {of, throwError} from "rxjs";
 import {JoblinkComponent} from "../../util/joblink/joblink.component";
 import {JobNameAndId} from "../../../model/job";
+
 fdescribe('CreateUpdateListComponent', () => {
   let component: CreateUpdateListComponent;
   let fixture: ComponentFixture<CreateUpdateListComponent>;

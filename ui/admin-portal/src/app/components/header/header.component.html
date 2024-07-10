@@ -44,7 +44,7 @@
           <a title="Lists of Talent Catalog candidates"
              class="nav-link" [routerLink]="'/lists'" [routerLinkActive]="'active'">Lists</a>
         </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
+        <li class="nav-item" [routerLinkActive]="'active'" *ngIf="!isEmployerPartner()">
           <a title="Statistics about the Talent Catalog"
              class="nav-link" [routerLink]="'/infographics'" [routerLinkActive]="'active'">Stats</a>
         </li>

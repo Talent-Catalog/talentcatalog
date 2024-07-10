@@ -6,7 +6,7 @@ import {ChatPost} from "../../../model/chat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 import {of} from "rxjs";
 import {Reaction} from "../../../model/reaction";
-import {MOCK_REACTIONS, MockReactions} from "../../../MockData/MockReactions";
+import {MOCK_REACTIONS} from "../../../MockData/MockReactions";
 import {By} from "@angular/platform-browser";
 
 fdescribe('ViewPostComponent', () => {

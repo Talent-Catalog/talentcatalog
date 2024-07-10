@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {CandidateNameNumSearchComponent} from "./candidate-name-num-search.component";
-import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {Router} from "@angular/router";
