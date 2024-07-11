@@ -114,6 +114,10 @@ export class ChatService implements OnDestroy {
     return chat$;
   }
 
+  getCandidateProspectChat(candidateId: number): Observable<JobChat> {
+    return this.http.get<JobChat>(`${this.apiUrl}/${candidateId}/get-cp-chat`);
+  }
+
   getChatPosts$(chat:JobChat): Observable<ChatPost> {
      return this.watchChat(chat).pipe(
        map((message: Message) => {
