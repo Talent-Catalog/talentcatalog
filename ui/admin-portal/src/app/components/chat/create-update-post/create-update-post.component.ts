@@ -74,8 +74,7 @@ export class CreateUpdatePostComponent implements OnInit {
     if (this.chat) {
       const post: Post = {
         content: this.contentControl.value,
-        linkPreviews: this.linkPreviews
-        // TODO add html link preview here if it is to be added
+        linkPreviews: this.attachLinkPreviews()
       }
       const body = JSON.stringify(post);
       //todo See retryIfDisconnected in publish doc
@@ -180,6 +179,16 @@ export class CreateUpdatePostComponent implements OnInit {
   private clearLinkPreviews() {
     this.storedUrls = [];
     this.linkPreviews = [];
+  }
+
+  // We don't want to save any linkPreviews that the user has blocked
+  private attachLinkPreviews(): LinkPreview[] {
+    if (this.linkPreviews.length > 0) {
+      return this.linkPreviews.filter(
+        linkPreview => !linkPreview.blocked
+        )
+    }
+    return this.linkPreviews;
   }
 
 }
