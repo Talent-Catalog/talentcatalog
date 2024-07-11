@@ -103,6 +103,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
+import org.tctalent.server.service.db.cache.CacheService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -140,6 +141,7 @@ public class SystemAdminApi {
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
     private final S3ResourceHelper s3ResourceHelper;
+    private final CacheService cacheService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -186,7 +188,7 @@ public class SystemAdminApi {
             SavedListRepository savedListRepository, SavedSearchService savedSearchService,
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig) {
+            GoogleDriveConfig googleDriveConfig, CacheService cacheService) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -212,9 +214,19 @@ public class SystemAdminApi {
         this.chatPostRepository = chatPostRepository;
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
+        this.cacheService = cacheService;
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
+    @GetMapping("flush_user_cache")
+    public void flushUserCache() {
+        cacheService.flushUserCache();
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("FlushUserCache")
+            .message("User cache flushed")
+            .logInfo();
+    }
 
     @GetMapping("notifyOfChatsWithNewPosts")
     public void notifyOfNewChatPosts() {
