@@ -72,11 +72,18 @@ public class CandidateStatAdminApi {
             @RequestBody CandidateStatsRequest request)
             throws NoSuchObjectException {
 
+        //Convert null dates to default values
+        convertDateRangeDefaults(request);
+
         //Pick up any source country restrictions based on current user
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
 
+        List<StatReport> statReports;
+
         //Check whether the requested data to report on is from a set of candidates
         Set<Long> candidateIds = null;
+        String constraintSubqueryPredicate = "";
+        
         if (request.getListId() != null) {
 
             LogBuilder.builder(log)
@@ -94,6 +101,9 @@ public class CandidateStatAdminApi {
             for (Candidate candidate : candidates) {
                 candidateIds.add(candidate.getId());
             }
+            
+            statReports = createReports(request.getDateFrom(), request.getDateTo(),  
+                candidateIds, sourceCountryIds, constraintSubqueryPredicate);
 
         } else if (request.getSearchId() != null) {
 
@@ -108,16 +118,26 @@ public class CandidateStatAdminApi {
             candidateIds = savedSearchService.searchCandidates(request.getSearchId());
 
             //Warning that the above call clears the JPA persistence context - see its JavaDoc
-        }
-
-        convertDateRangeDefaults(request);
-
-        //Report based on set of candidates or date range
-        List<StatReport> statReports;
-        if (candidateIds != null) {
-            statReports = createReports(request.getDateFrom(), request.getDateTo(),  candidateIds, sourceCountryIds);
+            
+            if (hasElasticSearch(request.getSearchId())) {
+                //todo Need to retrieve candidate ids of elastic portion
+            } else {
+                constraintSubqueryPredicate = savedSearchService.
+                    loadSavedSearch(request.getSearchId()).extractPredicateSQL(true);
+                //TODO JC Could construct predicate
+                // id IN (SELECT id FROM candidate WHERE <constraintSubqueryPredicate>)
+            }
+            if (candidateIds != null) {
+                statReports = createReports(request.getDateFrom(), request.getDateTo(), 
+                    candidateIds, sourceCountryIds, constraintSubqueryPredicate);
+            } else {
+                statReports = createReports(request.getDateFrom(), request.getDateTo(), 
+                    sourceCountryIds, constraintSubqueryPredicate);
+            }
+            
         } else {
-            statReports = createReports(request.getDateFrom(), request.getDateTo(), sourceCountryIds);
+            statReports = createReports(request.getDateFrom(), request.getDateTo(),
+                sourceCountryIds, constraintSubqueryPredicate);
         }
 
         //Construct the dto - just a list of all individual report dtos
@@ -137,6 +157,11 @@ public class CandidateStatAdminApi {
         return dto;
     }
 
+    private boolean hasElasticSearch(Long searchId) {
+        //TODO JC Implement hasElasticSearch
+        return false;
+    }
+
     /**
      * Convert null dates to default values.
      */
@@ -153,10 +178,13 @@ public class CandidateStatAdminApi {
     private List<StatReport> createReports(
             LocalDate dateFrom,
             LocalDate dateTo,
-            List<Long> sourceCountryIds ) {
+            List<Long> sourceCountryIds, String constraintPredicate ) {
         String title;
         String chartType;
 
+        //TODO JC Compute subQuery from constraintPredicate and pass in to calls after sourceCountryIds
+        //TODO JC Or compute subquery outside
+        
         List<StatReport> statReports = new ArrayList<>();
 
         title = "Gender";
@@ -300,10 +328,14 @@ public class CandidateStatAdminApi {
         LocalDate dateFrom,
         LocalDate dateTo,
         Set<Long> candidateIds,
-        List<Long> sourceCountryIds) {
+        List<Long> sourceCountryIds,
+        String constraintPredicate) {
 
         String title;
         String chartType;
+
+        //TODO JC Compute subQuery from constraintPredicate and pass in to calls after sourceCountryIds
+        //TODO JC Or compute subquery outside
 
         List<StatReport> statReports = new ArrayList<>();
         chartType = "bar";
