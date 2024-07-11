@@ -153,6 +153,29 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     }
 
     /**
+     * Extracts the database SQL representing boolean logic in the WHERE clause of the SQL
+     * corresponding to the given search request.
+     *
+     * @param nativeQuery True if native database SQL is required, otherwise JPQL is returned
+     * @return String containing the SQL or JPQL
+     */
+    public String extractPredicateSQL(boolean nativeQuery) {
+
+        String s = "";
+        
+        // GENDER SEARCH
+        if (getGender() != null) {
+            if (nativeQuery) {
+                s += "candidate.gender = '" + getGender().name() + "'";
+            } else {
+                s += "candidate.gender = '" + getGender().name() + "'";
+            }
+        }
+        
+        return s;
+    }
+
+    /**
      * Merge in a SavedSearchGetRequest - eg paging info
      * @param request Request to merge in.
      */
