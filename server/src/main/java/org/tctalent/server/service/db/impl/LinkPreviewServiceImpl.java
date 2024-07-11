@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -55,6 +57,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     LinkPreview linkPreview = new LinkPreview();
     linkPreview.setUrl(url);
 
+    // TODO throws a 403
     Document doc = Jsoup.connect(url).get();
 
     linkPreview.setDescription(getDescription(doc));
@@ -152,29 +155,29 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private String getImageUrl(Document document) {
+  private String getImageUrl(Document document) throws IOException {
 
     Elements ogImgElements = document.select("meta[property=\"og:image\"]");
     if (!ogImgElements.isEmpty()) {
-      String ogImg = ogImgElements.first().attr("content");
-      if (!ogImg.isEmpty()) return ogImg;
+      String ogImg = selectImage("content", ogImgElements);
+      if (ogImg != null && !ogImg.isEmpty()) return ogImg;
     }
 
     Elements imgRelLinkElements = document.select("link[rel=\"image_src\"]");
     if (!imgRelLinkElements.isEmpty()) {
-      String imgRelLink = imgRelLinkElements.first().attr("href");
-      if (!imgRelLink.isEmpty()) return imgRelLink;
+      String imgRelLink = selectImage("href", imgRelLinkElements);
+      if (imgRelLink != null && !imgRelLink.isEmpty()) return imgRelLink;
     }
 
     Elements twitterImgElements = document.select("meta[name=\"twitter:image\"]");
     if (!twitterImgElements.isEmpty()) {
-      String twitterImg = twitterImgElements.first().attr("content");
-      if (!twitterImg.isEmpty()) return twitterImg;
+      String twitterImg = selectImage("content", twitterImgElements);
+      if (twitterImg != null && !twitterImg.isEmpty()) return twitterImg;
     }
 
     Elements images = document.getElementsByTag("img");
     if (!images.isEmpty()) {
-      List<Element> qualifiedImages = images
+      Elements qualifiedImages = images
           .stream()
           .filter(img -> img.hasAttr("width") && img.hasAttr("height"))
           .filter(img ->
@@ -183,29 +186,59 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
           .filter(img ->
               (parseDouble(img.attr("width").replace("px","")) > 50) &&
                   (parseDouble(img.attr("height").replace("px","")) > 50))
-          .collect(
-          Collectors.toList());
+          .collect(Collectors.toCollection(Elements::new));
 
       if (!qualifiedImages.isEmpty()) {
-        return qualifiedImages.getFirst().attr("src");
+        String qualifiedImage = selectImage("src", qualifiedImages);
+        if (qualifiedImage != null && !qualifiedImage.isEmpty()) return qualifiedImage;
       }
     }
 
     return null;
   }
 
-  private String getFaviconUrl(Document document) {
-    Element faviconLinkElement = document.head().select("link[href~=.*\\.(ico|png)]").first();
-    if (faviconLinkElement != null) {
-      return faviconLinkElement.attr("href");
+  private String getFaviconUrl(Document document) throws IOException {
+    Elements faviconLinkElements = document.head().select("link[href~=.*\\.(ico|png)]");
+    if (!faviconLinkElements.isEmpty()) {
+      String faviconLink = selectImage("href", faviconLinkElements);
+      if (faviconLink != null && !faviconLink.isEmpty()) return faviconLink;
     }
 
-    Element faviconMetaElement = document.head().select("meta[itemprop=image]").first();
-    if (faviconMetaElement != null) {
-      return faviconMetaElement.attr("content");
+    Elements faviconMetaElements = document.head().select("meta[itemprop=image]");
+    if (!faviconMetaElements.isEmpty()) {
+      String faviconMeta = selectImage("content", faviconMetaElements);
+      if (faviconMeta != null && !faviconMeta.isEmpty()) return faviconMeta;
     }
 
     return null;
   }
 
+  private @Nullable String selectImage(String attr, Elements elements) throws IOException {
+    int i = 0;
+    while (i < elements.size()) {
+      if (elements.get(i).hasAttr(attr) && elements.get(i).attr(attr).startsWith("http")) {
+        String imageUrl = elements.get(i).attr(attr);
+        if (checkImage(imageUrl)) return imageUrl;
+      }
+      i++;
+    }
+
+    return null;
+  }
+
+  private boolean checkImage(String imageUrl) throws IOException {
+    try {
+      Connection.Response response = Jsoup.connect(imageUrl)
+          .ignoreContentType(true)
+          .execute();
+
+      int statusCode = response.statusCode();
+      // Return true if status code is 200 (OK)
+      return statusCode == 200;
+    } catch (IOException e) {
+      System.err.println("Error checking image accessibility: " + e.getMessage());
+      // Return false if there was an exception or non-200 status
+      return false;
+    }
+  }
 }

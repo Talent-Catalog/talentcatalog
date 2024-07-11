@@ -1,5 +1,5 @@
 <div *ngIf="!linkPreview.blocked && linkPreview.title && linkPreview.description"
-     [ngClass]="linkPreview.id ? 'sent-link-preview' : 'draft-link-preview'"
+     class="link-preview"
 ><i *ngIf="userIsPostAuthor"
      class="fa-solid fa-xmark block-button"
      (click)="blockLinkPreview($event)"
