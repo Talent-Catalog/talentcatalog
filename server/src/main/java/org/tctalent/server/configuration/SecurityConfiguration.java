@@ -286,7 +286,10 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.POST, "/api/admin/reaction/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
                 .requestMatchers(HttpMethod.PUT, "/api/admin/reaction/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
 
-                /*
+                // CHAT LINK PREVIEWS - include USER but exclude READONLY
+                .requestMatchers(HttpMethod.POST, "/api/admin/link-preview/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
+
+            /*
                  * LIST ENDPOINTS
                  */
                 // POST: CREATE LIST

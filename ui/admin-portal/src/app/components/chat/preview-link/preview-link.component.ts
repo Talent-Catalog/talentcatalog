@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LinkPreview} from "../../model/link-preview";
-import {LinkPreviewService} from "../../services/link-preview.service";
+import {LinkPreview} from "../../../model/link-preview";
+import {LinkPreviewService} from "../../../services/link-preview.service";
 
 @Component({
   selector: 'app-preview-link',

@@ -795,7 +795,7 @@ import {SelectJobCopyComponent} from './components/util/select-job-copy/select-j
 import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
-import { PreviewLinkComponent } from './components/preview-link/preview-link.component';
+import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
 
 @NgModule({
   declarations: [

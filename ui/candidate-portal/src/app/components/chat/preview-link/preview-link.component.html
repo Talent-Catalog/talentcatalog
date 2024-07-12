@@ -1,0 +1,31 @@
+<a href="{{linkPreview.url}}" target="_blank" class="link-wrapper">
+  <div *ngIf="!linkPreview.blocked && linkPreview.title && linkPreview.description"
+       class="link-preview"
+  ><fa-icon *ngIf="userIsPostAuthor"
+            icon="xmark"
+            size="xs"
+            class="block-button"
+            (click)="blockLinkPreview($event)"
+  ></fa-icon>
+    <div class="content">
+      <div class="domain">
+        <img class="favicon"
+             *ngIf="linkPreview.faviconUrl; else linkIcon"
+             src="{{linkPreview.faviconUrl}}"
+             alt="{{linkPreview.domain}} favicon"
+        >
+        <ng-template #linkIcon><i class="fa-solid fa-link link-icon"></i></ng-template>
+        {{linkPreview.domain}}
+      </div>
+      <div class="title">{{linkPreview.title}}</div>
+      <div class="description">{{linkPreview.description}}</div>
+    </div>
+    <div>
+      <img class="preview-img"
+           *ngIf="linkPreview.imageUrl"
+           src="{{linkPreview.imageUrl}}"
+           alt="{{linkPreview.domain}} preview image"
+      >
+    </div>
+  </div>
+</a>

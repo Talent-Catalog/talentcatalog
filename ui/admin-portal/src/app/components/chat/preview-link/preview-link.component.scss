@@ -4,7 +4,12 @@
   color: inherit;
   cursor: pointer;
   position: relative;
-  z-index: 1
+  z-index: 1;
+  transition: transform 0.3s ease
+}
+
+.link-preview:hover {
+  transform: translateY(-3px); /* Subtle upward movement on hover */
 }
 
 // Indented grey line
@@ -70,11 +75,14 @@
   cursor: pointer;
   color: #64656d;
   z-index: 2;
-  display: none; /* Initially hidden */
+  opacity: 0; /* Initially hidden */
+  visibility: hidden; /* Initially hidden */
+  transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition */
 }
 
 .link-preview:hover .block-button {
-  display: block; /* Show block button on hover */
+  opacity: 1; /* Fully visible */
+  visibility: visible; /* Visible */
 }
 
 .block-button:hover {
