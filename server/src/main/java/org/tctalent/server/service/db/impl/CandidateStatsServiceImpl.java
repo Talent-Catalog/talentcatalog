@@ -66,14 +66,16 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         //Note that I have been forced to go to native queries for these more
         //complex queries. The non-native queries seem a bit buggy.
         //Anyway - I couldn't get them working. Simpler to use normal SQL. JC.
+        
         String countByBirthYearSelectSQL =
     """
             select cast(extract(year from dob) as bigint) as year, count(distinct candidate) as PeopleCount
                  from candidate left join users on candidate.user_id = users.id
                  where gender like :gender
-                 and dob is not null and extract(year from dob) > 1940 and
     """
-         + countingStandardFilter + dateConditionFilter;
+        //Ignore null birthdate and birth year that is not plausible  
+        + " and dob is not null and extract(year from dob) > 1940 and"
+        + countingStandardFilter + dateConditionFilter;
         if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
             countByBirthYearSelectSQL += sourceCountriesCondition;
         }
