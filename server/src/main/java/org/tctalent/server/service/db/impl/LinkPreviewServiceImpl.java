@@ -20,20 +20,21 @@ import static java.lang.Double.parseDouble;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
+import java.net.URI;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.protocol.HTTP;
 import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.LinkPreview;
 import org.tctalent.server.repository.db.LinkPreviewRepository;
 import org.tctalent.server.service.db.LinkPreviewService;
@@ -57,16 +58,27 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     LinkPreview linkPreview = new LinkPreview();
     linkPreview.setUrl(url);
 
-    // TODO throws a 403
-    Document doc = Jsoup.connect(url).get();
+    try {
+      Document doc = Jsoup.connect(url).get();
 
-    linkPreview.setDescription(getDescription(doc));
-    linkPreview.setTitle(getTitle(doc));
-    linkPreview.setDomain(getDomain(doc, url));
-    linkPreview.setImageUrl(getImageUrl(doc));
-    linkPreview.setFaviconUrl(getFaviconUrl(doc));
+      linkPreview.setDescription(getDescription(doc));
+      linkPreview.setTitle(getTitle(doc));
+      linkPreview.setDomain(getDomain(doc, url));
+      linkPreview.setImageUrl(getImageUrl(doc));
+      linkPreview.setFaviconUrl(getFaviconUrl(doc));
 
-    return linkPreview;
+      return linkPreview;
+    } catch (HttpStatusException e) {
+      LogBuilder.builder(log)
+          .action("BuildLinkPreview: Jsoup.connect(url).get()")
+          .message(
+              String.format("HTTP error fetching URL " + "(" + url + "): " + e.getStatusCode())
+          )
+          .logInfo();
+
+      return null;
+    }
+
   }
 
   private String getTitle(Document document) {
@@ -135,7 +147,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     if (!canonicalLinkElements.isEmpty()) {
       String canonicalLink = canonicalLinkElements.first().attr("href");
       if (!canonicalLink.isEmpty()) {
-        String domain = new URL(canonicalLink).getHost().replace("www.", "");
+        String domain = URI.create(canonicalLink).toURL().getHost().replace("www.", "");
         if (domain != null && !domain.isEmpty()) return domain;
       }
     }
@@ -144,18 +156,18 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     if (!ogUrlMetaElements.isEmpty()) {
       String ogUrlMeta = ogUrlMetaElements.first().attr("content");
       if (!ogUrlMeta.isEmpty()) {
-        String domain = new URL(ogUrlMeta).getHost().replace("www.", "");
+        String domain = URI.create(ogUrlMeta).toURL().getHost().replace("www.", "");
         if (domain != null && !domain.isEmpty()) return domain;
       }
     }
 
-    String domain = new URL(url).getHost().replace("www.", "");
+    String domain = URI.create(url).toURL().getHost().replace("www.", "");
     if (domain != null && !domain.isEmpty()) return domain;
 
     return null;
   }
 
-  private String getImageUrl(Document document) throws IOException {
+  private String getImageUrl(Document document) {
 
     Elements ogImgElements = document.select("meta[property=\"og:image\"]");
     if (!ogImgElements.isEmpty()) {
@@ -197,7 +209,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private String getFaviconUrl(Document document) throws IOException {
+  private String getFaviconUrl(Document document) {
     Elements faviconLinkElements = document.head().select("link[href~=.*\\.(ico|png)]");
     if (!faviconLinkElements.isEmpty()) {
       String faviconLink = selectImage("href", faviconLinkElements);
@@ -213,12 +225,12 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private @Nullable String selectImage(String attr, Elements elements) throws IOException {
+  private @Nullable String selectImage(String attr, Elements elements) {
     int i = 0;
     while (i < elements.size()) {
       if (elements.get(i).hasAttr(attr) && elements.get(i).attr(attr).startsWith("http")) {
         String imageUrl = elements.get(i).attr(attr);
-        if (checkImage(imageUrl)) return imageUrl;
+        if (checkImageIsAccessible(imageUrl)) return imageUrl;
       }
       i++;
     }
@@ -226,7 +238,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private boolean checkImage(String imageUrl) throws IOException {
+  private boolean checkImageIsAccessible(String imageUrl) {
     try {
       Connection.Response response = Jsoup.connect(imageUrl)
           .ignoreContentType(true)
@@ -236,7 +248,13 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       // Return true if status code is 200 (OK)
       return statusCode == 200;
     } catch (IOException e) {
-      System.err.println("Error checking image accessibility: " + e.getMessage());
+      LogBuilder.builder(log)
+          .action("CheckImageIsAccessible")
+          .message(
+              String.format("Error fetching image with URL " + imageUrl + ": " + e.getMessage())
+          )
+          .logInfo();
+
       // Return false if there was an exception or non-200 status
       return false;
     }

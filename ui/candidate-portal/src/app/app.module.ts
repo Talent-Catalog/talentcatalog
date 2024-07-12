@@ -125,7 +125,7 @@ import {
   faFaceSmile,
   faFileUpload,
   faFolderOpen,
-  faGlobe,
+  faGlobe, faLink,
   faPlus,
   faQuestion,
   faQuestionCircle,
@@ -343,7 +343,8 @@ export class AppModule {
       faFileUpload,
       faFaceSmile,
       faPlus,
-      faXmark
+      faXmark,
+      faLink
     );
   }
 }
