@@ -17,8 +17,12 @@
 package org.tctalent.server.request.candidate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.jsonwebtoken.lang.Collections;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
@@ -161,17 +165,82 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      */
     public String extractPredicateSQL(boolean nativeQuery) {
 
-        String s = "";
+        List<String> ands = new ArrayList<>();
+
+        // STATUS SEARCH
+        if (!Collections.isEmpty(getStatuses())) {
+            String values = getStatuses().stream()
+                .map(Enum::name).collect(Collectors.joining(","));
+            ands.add("candidate.status in (" + values + ")");
+        }
+
+        // Occupations SEARCH
+        if (!Collections.isEmpty(getOccupationIds())) {
+            String values = getOccupationIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("candidate_occupation.occupation_id in (" + values + ")");
+        }
+        //TODO JC Min and max years
+
+        // EXCLUDED CANDIDATES (eg from Review Status)
+        //TODO JC This can come from reviewed search - how do we handle that in stats?
+
+        // NATIONALITY SEARCH
+        if (!Collections.isEmpty(getNationalityIds())) {
+            String values = getNationalityIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            if (getNationalitySearchType() == null || getNationalitySearchType().equals(SearchType.or)) {
+                ands.add("candidate.nationality_id in (" + values + ")");
+            } else {
+                ands.add("candidate.nationality_id not in (" + values + ")");
+            }
+        }
+
+        // COUNTRY SEARCH - taking into account user source country limitations
+        // If request ids is NOT EMPTY we can just accept them because the options
+        // presented to the user will be limited to the allowed source countries
+        if (!Collections.isEmpty(getCountryIds())) {
+            String values = getCountryIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            if (getCountrySearchType() == null || getCountrySearchType().equals(SearchType.or)) {
+                ands.add("candidate.country_id in (" + values + ")");
+            } else {
+                ands.add("candidate.country_id not in (" + values + ")");
+            }
+        // If request ids IS EMPTY only show source countries
+        } else {
+            //TODO JC Logged in user is also input
+        }
+
+        // PARTNER SEARCH
+        if (!Collections.isEmpty(getPartnerIds())) {
+            String values = getPartnerIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("users.partner_id in (" + values + ")");
+        }
+
+        // SURVEY TYPE SEARCH
+        if (!Collections.isEmpty(getSurveyTypeIds())) {
+            String values = getSurveyTypeIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("candidate.survey_type_id in (" + values + ")");
+        }
+
+        // REFERRER
+        final String referrerParam = 
+            getRegoReferrerParam() == null ? null : getRegoReferrerParam().trim().toLowerCase();
+        if (referrerParam != null && !referrerParam.isEmpty()) {
+            ands.add("lower(candidate.rego_referrer_param) like '" + referrerParam + "'");
+        }
         
         // GENDER SEARCH
         if (getGender() != null) {
-            if (nativeQuery) {
-                s += "candidate.gender = '" + getGender().name() + "'";
-            } else {
-                s += "candidate.gender = '" + getGender().name() + "'";
-            }
+            ands.add("candidate.gender = '" + getGender().name() + "'");
         }
         
+        //TODO JC Modified from etc
+        
+        String s = String.join(" and ", ands);
         return s;
     }
 

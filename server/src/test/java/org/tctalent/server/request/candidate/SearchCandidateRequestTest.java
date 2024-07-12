@@ -18,9 +18,12 @@ package org.tctalent.server.request.candidate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 
 class SearchCandidateRequestTest {
@@ -50,4 +53,34 @@ class SearchCandidateRequestTest {
         String jpql = request.extractPredicateSQL(false);
         assertEquals("candidate.gender = '" + gender.name() + "'", jpql);
     }
+
+    @Test
+    @DisplayName("SQL generated from local collection")
+    void extractPredicateSQLFromLocalCollectionRequest() {
+        List<CandidateStatus> statuses = new ArrayList<CandidateStatus>();
+        statuses.add(CandidateStatus.active);
+        statuses.add(CandidateStatus.pending);
+        
+        request.setStatuses(statuses);
+        String sql = request.extractPredicateSQL(true);
+        assertEquals("candidate.status in (active,pending)", sql);
+    }
+
+    @Test
+    @DisplayName("And together multiple filters")
+    void extractPredicateSQLFromMultipleFiltersRequest() {
+        List<CandidateStatus> statuses = new ArrayList<CandidateStatus>();
+        statuses.add(CandidateStatus.active);
+        statuses.add(CandidateStatus.pending);
+        
+        request.setStatuses(statuses);
+
+        Gender gender = Gender.male;
+        request.setGender(gender);
+
+        String sql = request.extractPredicateSQL(true);
+        assertEquals("candidate.status in (active,pending) and candidate.gender = 'male'"
+            , sql);
+    }
+    
 }
