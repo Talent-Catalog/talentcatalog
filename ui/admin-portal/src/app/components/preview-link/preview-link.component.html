@@ -1,19 +1,29 @@
-<div *ngIf="!linkPreview.blocked && linkPreview.title && linkPreview.description"
-     class="link-preview"
-><i *ngIf="userIsPostAuthor"
-     class="fa-solid fa-xmark block-button"
-     (click)="blockLinkPreview($event)"
-  ></i>
-  <a href="{{linkPreview.url}}" target="_blank">
-  <div class="content">
-    <div class="domain">
-      <img class="favicon" *ngIf="linkPreview.faviconUrl; else linkIcon" src="{{linkPreview.faviconUrl}}">
-      <ng-template #linkIcon><i class="fa-solid fa-link"></i></ng-template>
-      {{linkPreview.domain}}
+<a href="{{linkPreview.url}}" target="_blank" class="link-wrapper">
+  <div *ngIf="!linkPreview.blocked && linkPreview.title && linkPreview.description"
+       class="link-preview"
+  ><i *ngIf="userIsPostAuthor"
+      class="fa-solid fa-xmark fa-xs block-button"
+      (click)="blockLinkPreview($event)"
+    ></i>
+    <div class="content">
+      <div class="domain">
+        <img class="favicon"
+             *ngIf="linkPreview.faviconUrl; else linkIcon"
+             src="{{linkPreview.faviconUrl}}"
+             alt="{{linkPreview.domain}} favicon"
+        >
+        <ng-template #linkIcon id="linkIcon"><i class="fa-solid fa-link"></i></ng-template>
+        {{linkPreview.domain}}
+      </div>
+      <div class="title">{{linkPreview.title}}</div>
+      <div class="description">{{linkPreview.description}}</div>
     </div>
-    <div class="title">{{linkPreview.title}}</div>
-    <div class="description">{{linkPreview.description}}</div>
-    <div><img class="preview" *ngIf="linkPreview.imageUrl" src="{{linkPreview.imageUrl}}"></div>
+    <div>
+      <img class="preview-img"
+           *ngIf="linkPreview.imageUrl"
+           src="{{linkPreview.imageUrl}}"
+           alt="{{linkPreview.domain}} preview image"
+      >
+    </div>
   </div>
-  </a>
-</div>
+</a>
