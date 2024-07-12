@@ -179,4 +179,13 @@ public class JobChatServiceImpl implements JobChatService {
     public List<Long> findChatsWithPostsSinceDate(OffsetDateTime dateTime) {
         return jobChatRepository.myFindChatsWithPostsSinceDate(dateTime);
     }
+
+    @Override
+    @Nullable
+    public JobChat getCandidateProspectChat(long candidateId) {
+        return jobChatRepository.findByTypeAndCandidate(
+            JobChatType.CandidateProspect, candidateId
+        );
+    }
+
 }

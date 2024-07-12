@@ -6,7 +6,6 @@ import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {
   ChatPost,
-  CreateChatRequest,
   JobChat,
   JobChatType,
   JobChatUserInfo
@@ -77,15 +76,15 @@ export class ViewCandidateComponent implements OnInit {
 
   private setCandidate(candidate: Candidate) {
     this.candidate = candidate;
-    this.fetchSourceChat();
+    this.getCandidateProspectChat();
     this.fetchAllOpportunityChats();
   }
 
-  private fetchSourceChat() {
-    const sourceChatRequest: CreateChatRequest =
-      {type: JobChatType.CandidateProspect, candidateId: this.candidate.id}
-    this.chatService.getOrCreate(sourceChatRequest).subscribe({
-      next: chat => this.setSourceChat(chat)
+  private getCandidateProspectChat() {
+    this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
+      if (result) {
+        this.setSourceChat(result);
+      }
     })
   }
 
