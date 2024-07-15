@@ -14,27 +14,29 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {By} from '@angular/platform-browser';
-import {CreatedByComponent} from "./created-by.component";
+import {UpdatedByComponent} from "./updated-by.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {UserPipe} from "../user.pipe";
 import {DatePipe} from "@angular/common";
+import {By} from "@angular/platform-browser";
 import {MockUser} from "../../../../MockData/MockUser";
-fdescribe('CreatedByComponent', () => {
-  let component: CreatedByComponent;
-  let fixture: ComponentFixture<CreatedByComponent>;
+
+fdescribe('UpdatedByComponent', () => {
+  let component: UpdatedByComponent;
+  let fixture: ComponentFixture<UpdatedByComponent>;
   let userPipe: UserPipe;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CreatedByComponent,UserPipe],
-      providers:[DatePipe]
+      declarations: [UpdatedByComponent, UserPipe],
+      providers: [DatePipe]
     }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreatedByComponent);
+    fixture = TestBed.createComponent(UpdatedByComponent);
     component = fixture.componentInstance;
-    userPipe = new UserPipe();
+    userPipe = new UserPipe(); // Instantiate the UserPipe
     fixture.detectChanges();
   });
 
@@ -42,7 +44,16 @@ fdescribe('CreatedByComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the creator name if createdBy is defined', () => {
+  it('should display the updater name if updatedBy is defined', () => {
+    const mockUser = new MockUser();
+    component.object = { updatedBy: mockUser, updatedDate: '2024-07-09T12:00:00' };
+    fixture.detectChanges();
+
+    const nameElement = fixture.debugElement.query(By.css('.name')).nativeElement;
+    expect(nameElement.textContent).toContain(userPipe.transform(mockUser, 'fullName'));
+  });
+
+  it('should display the creator name if updatedBy is not defined and createdBy is defined', () => {
     const mockUser = new MockUser();
     component.object = { createdBy: mockUser, createdDate: '2024-07-09T12:00:00' };
     fixture.detectChanges();
@@ -51,16 +62,27 @@ fdescribe('CreatedByComponent', () => {
     expect(nameElement.textContent).toContain(userPipe.transform(mockUser, 'fullName'));
   });
 
-
-  it('should display "unknown" if createdBy is not defined', () => {
-    component.object = { createdDate: '2024-07-09T12:00:00' };
+  it('should display "unknown" if neither updatedBy nor createdBy is defined', () => {
+    component.object = { updatedDate: '2024-07-09T12:00:00' };
     fixture.detectChanges();
 
     const nameElement = fixture.debugElement.query(By.css('.name')).nativeElement;
     expect(nameElement.textContent).toContain('unknown');
   });
 
-  it('should display the formatted creation date if createdDate is defined', () => {
+  it('should display the formatted update date if updatedDate is defined', () => {
+    const datePipe = new DatePipe('en-US'); // Instantiate the DatePipe
+    const updatedDate = '2024-07-09T12:00:00';
+    component.object = { updatedBy: 'Jane Doe', updatedDate: updatedDate };
+    fixture.detectChanges();
+
+    const formattedDate = datePipe.transform(new Date(updatedDate), 'customDateTime'); // Adjust the format as needed
+    const dateElement = fixture.debugElement.query(By.css('.date')).nativeElement;
+
+    expect(dateElement.textContent).toContain(formattedDate);
+  });
+
+  it('should display the formatted creation date if updatedDate is not defined and createdDate is defined', () => {
     const datePipe = new DatePipe('en-US'); // Instantiate the DatePipe
     const createdDate = '2024-07-09T12:00:00';
     component.object = { createdBy: 'John Doe', createdDate: createdDate };
@@ -72,8 +94,8 @@ fdescribe('CreatedByComponent', () => {
     expect(dateElement.textContent).toContain(formattedDate);
   });
 
-  it('should not display the date if createdDate is not defined', () => {
-    component.object = { createdBy: 'John Doe' };
+  it('should not display the date if neither updatedDate nor createdDate is defined', () => {
+    component.object = { updatedBy: 'Jane Doe' };
     fixture.detectChanges();
 
     const dateElement = fixture.debugElement.query(By.css('.date'));
