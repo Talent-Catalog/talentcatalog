@@ -44,13 +44,13 @@ public class LinkPreview extends AbstractDomainObject<Long> {
     private String url;
 
     @NotBlank
+    private String domain;
+
+    @Nullable
     private String title;
 
-    @NotBlank
+    @Nullable
     private String description;
-
-    @NotBlank
-    private String domain;
 
     @Nullable
     private String imageUrl;

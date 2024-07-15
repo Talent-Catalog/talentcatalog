@@ -185,7 +185,7 @@ export class CreateUpdatePostComponent implements OnInit {
     this.linkPreviewService.buildLinkPreview(request).subscribe(
       linkPreview => {
         // Checks that valid linkPreview has been returned and pushes to array if so.
-        if (linkPreview.title && linkPreview.description) this.linkPreviews.push(linkPreview);
+        if (linkPreview.domain) this.linkPreviews.push(linkPreview);
       }
     )
   }

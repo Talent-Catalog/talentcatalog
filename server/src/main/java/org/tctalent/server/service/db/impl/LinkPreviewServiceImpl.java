@@ -58,38 +58,24 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     linkPreview.setUrl(url);
 
     try {
-      Document doc = Jsoup.connect(url)
-          // Mask Jsoup as a browser - helps to bypass some 403 errors
-          .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36\n")
-          .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-          .header("Accept-Encoding", "gzip, deflate, br")
-          .header("Accept-Language", "en-US,en;q=0.9")
-          .header("Connection", "keep-alive")
-          .header("Referer", "http://google.com").get();
+      Document doc = Jsoup.connect(url).get();
 
-      // We don't want to return a link preview without all the three following values.
-      String description = getDescription(doc);
-      if (description != null) {
-        linkPreview.setDescription(description);
-      } else return null;
-
-      String title = getTitle(doc);
-      if (title != null) {
-        linkPreview.setTitle(title);
-      } else return null;
-
+      // A valid domain name is the minimal threshold content for displaying a preview.
       String domain = getDomain(doc, url);
       if (domain != null) {
         linkPreview.setDomain(domain);
       } else return null;
 
-      // These are not essential and often may not be available.
+      linkPreview.setTitle(getTitle(doc));
+      linkPreview.setDescription(getDescription(doc));
       linkPreview.setImageUrl(getImageUrl(doc));
       linkPreview.setFaviconUrl(getFaviconUrl(doc));
 
       return linkPreview;
 
     } catch (HttpStatusException e) {
+      // If doc can't be retrieved, log the error and return null.
+
       LogBuilder.builder(log)
           .action("BuildLinkPreview: Jsoup.connect(url).get()")
           .message("HTTP error fetching URL " + "(" + url + "): " + e.getStatusCode())
