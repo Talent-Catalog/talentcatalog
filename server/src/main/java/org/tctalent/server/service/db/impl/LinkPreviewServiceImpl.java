@@ -58,7 +58,14 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     linkPreview.setUrl(url);
 
     try {
-      Document doc = Jsoup.connect(url).get();
+      Document doc = Jsoup.connect(url)
+          // Mask Jsoup as a browser - helps to bypass some 403 errors
+          .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36\n")
+          .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+          .header("Accept-Encoding", "gzip, deflate, br")
+          .header("Accept-Language", "en-US,en;q=0.9")
+          .header("Connection", "keep-alive")
+          .header("Referer", "http://google.com").get();
 
       // We don't want to return a link preview without all the three following values.
       String description = getDescription(doc);
