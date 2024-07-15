@@ -157,20 +157,19 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     }
 
     /**
-     * Extracts the database SQL representing boolean logic in the WHERE clause of the SQL
-     * corresponding to the given search request.
+     * Extracts the database query SQL corresponding to the given search request.
      *
      * @param nativeQuery True if native database SQL is required, otherwise JPQL is returned
      * @return String containing the SQL or JPQL
      */
-    public String extractPredicateSQL(boolean nativeQuery) {
+    public String extractSQL(boolean nativeQuery) {
 
         List<String> ands = new ArrayList<>();
 
         // STATUS SEARCH
         if (!Collections.isEmpty(getStatuses())) {
             String values = getStatuses().stream()
-                .map(Enum::name).collect(Collectors.joining(","));
+                .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
             ands.add("candidate.status in (" + values + ")");
         }
 
@@ -227,20 +226,23 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         // REFERRER
-        final String referrerParam = 
+        final String referrerParam =
             getRegoReferrerParam() == null ? null : getRegoReferrerParam().trim().toLowerCase();
         if (referrerParam != null && !referrerParam.isEmpty()) {
             ands.add("lower(candidate.rego_referrer_param) like '" + referrerParam + "'");
         }
-        
+
         // GENDER SEARCH
         if (getGender() != null) {
             ands.add("candidate.gender = '" + getGender().name() + "'");
         }
-        
+
         //TODO JC Modified from etc
-        
+
         String s = String.join(" and ", ands);
+
+        //TODO JC This has to manage joins
+        s = "select id from candidate where " + s;
         return s;
     }
 

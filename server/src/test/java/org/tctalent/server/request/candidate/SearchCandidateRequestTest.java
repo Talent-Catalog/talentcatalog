@@ -27,7 +27,7 @@ import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 
 class SearchCandidateRequestTest {
-    
+
     private SearchCandidateRequest request;
 
     @BeforeEach
@@ -37,50 +37,50 @@ class SearchCandidateRequestTest {
 
     @Test
     @DisplayName("no SQL generated from empty request")
-    void extractPredicateSQLFromEmptyRequest() {
-        String sql = request.extractPredicateSQL(true);
+    void extractSQLFromEmptyRequest() {
+        String sql = request.extractSQL(true);
         assertEquals(0, sql.length());
     }
 
     @Test
     @DisplayName("SQL generated from local enumeration")
-    void extractPredicateSQLFromLocalEnumerationRequest() {
+    void extractSQLFromLocalEnumerationRequest() {
         Gender gender = Gender.male;
         request.setGender(gender);
-        String sql = request.extractPredicateSQL(true);
-        assertEquals("candidate.gender = '" + gender.name() + "'", sql);
+        String sql = request.extractSQL(true);
+        assertEquals("select id from candidate where candidate.gender = '" + gender.name() + "'", sql);
 
-        String jpql = request.extractPredicateSQL(false);
-        assertEquals("candidate.gender = '" + gender.name() + "'", jpql);
+        String jpql = request.extractSQL(false);
+        assertEquals("select id from candidate where candidate.gender = '" + gender.name() + "'", jpql);
     }
 
     @Test
     @DisplayName("SQL generated from local collection")
-    void extractPredicateSQLFromLocalCollectionRequest() {
+    void extractSQLFromLocalCollectionRequest() {
         List<CandidateStatus> statuses = new ArrayList<CandidateStatus>();
         statuses.add(CandidateStatus.active);
         statuses.add(CandidateStatus.pending);
-        
+
         request.setStatuses(statuses);
-        String sql = request.extractPredicateSQL(true);
-        assertEquals("candidate.status in (active,pending)", sql);
+        String sql = request.extractSQL(true);
+        assertEquals("select id from candidate where candidate.status in ('active','pending')", sql);
     }
 
     @Test
     @DisplayName("And together multiple filters")
-    void extractPredicateSQLFromMultipleFiltersRequest() {
+    void extractSQLFromMultipleFiltersRequest() {
         List<CandidateStatus> statuses = new ArrayList<CandidateStatus>();
         statuses.add(CandidateStatus.active);
         statuses.add(CandidateStatus.pending);
-        
+
         request.setStatuses(statuses);
 
         Gender gender = Gender.male;
         request.setGender(gender);
 
-        String sql = request.extractPredicateSQL(true);
-        assertEquals("candidate.status in (active,pending) and candidate.gender = 'male'"
+        String sql = request.extractSQL(true);
+        assertEquals("select id from candidate where candidate.status in ('active','pending') and candidate.gender = 'male'"
             , sql);
     }
-    
+
 }

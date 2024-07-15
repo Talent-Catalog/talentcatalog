@@ -83,7 +83,7 @@ public class CandidateStatAdminApi {
         //Check whether the requested data to report on is from a set of candidates
         Set<Long> candidateIds = null;
         String constraintSubqueryPredicate = "";
-        
+
         if (request.getListId() != null) {
 
             LogBuilder.builder(log)
@@ -101,8 +101,8 @@ public class CandidateStatAdminApi {
             for (Candidate candidate : candidates) {
                 candidateIds.add(candidate.getId());
             }
-            
-            statReports = createReports(request.getDateFrom(), request.getDateTo(),  
+
+            statReports = createReports(request.getDateFrom(), request.getDateTo(),
                 candidateIds, sourceCountryIds, constraintSubqueryPredicate);
 
         } else if (request.getSearchId() != null) {
@@ -118,23 +118,23 @@ public class CandidateStatAdminApi {
             candidateIds = savedSearchService.searchCandidates(request.getSearchId());
 
             //Warning that the above call clears the JPA persistence context - see its JavaDoc
-            
+
             if (hasElasticSearch(request.getSearchId())) {
                 //todo Need to retrieve candidate ids of elastic portion
             } else {
                 constraintSubqueryPredicate = savedSearchService.
-                    loadSavedSearch(request.getSearchId()).extractPredicateSQL(true);
+                    loadSavedSearch(request.getSearchId()).extractSQL(true);
                 //TODO JC Could construct predicate
                 // id IN (SELECT id FROM candidate WHERE <constraintSubqueryPredicate>)
             }
             if (candidateIds != null) {
-                statReports = createReports(request.getDateFrom(), request.getDateTo(), 
+                statReports = createReports(request.getDateFrom(), request.getDateTo(),
                     candidateIds, sourceCountryIds, constraintSubqueryPredicate);
             } else {
-                statReports = createReports(request.getDateFrom(), request.getDateTo(), 
+                statReports = createReports(request.getDateFrom(), request.getDateTo(),
                     sourceCountryIds, constraintSubqueryPredicate);
             }
-            
+
         } else {
             statReports = createReports(request.getDateFrom(), request.getDateTo(),
                 sourceCountryIds, constraintSubqueryPredicate);
@@ -184,7 +184,7 @@ public class CandidateStatAdminApi {
 
         //TODO JC Compute subQuery from constraintPredicate and pass in to calls after sourceCountryIds
         //TODO JC Or compute subquery outside
-        
+
         List<StatReport> statReports = new ArrayList<>();
 
         title = "Gender";
