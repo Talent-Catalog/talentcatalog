@@ -85,9 +85,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (HttpStatusException e) {
       LogBuilder.builder(log)
           .action("BuildLinkPreview: Jsoup.connect(url).get()")
-          .message(
-              String.format("HTTP error fetching URL " + "(" + url + "): " + e.getStatusCode())
-          )
+          .message("HTTP error fetching URL " + "(" + url + "): " + e.getStatusCode())
           .logInfo();
 
       return null;
@@ -274,9 +272,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (IOException e) {
       LogBuilder.builder(log)
           .action("CheckImageIsAccessible")
-          .message(
-              String.format("Error fetching image with URL " + imageUrl + ": " + e.getMessage())
-          )
+          .message(e.getMessage())
           .logInfo();
 
       // Return false if there was an exception or non-200 status
