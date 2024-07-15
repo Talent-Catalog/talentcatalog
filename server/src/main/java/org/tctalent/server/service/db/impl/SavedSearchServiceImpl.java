@@ -1754,11 +1754,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         // Modify request, doing standard defaults
         addDefaultsToSearchCandidateRequest(searchRequest);
 
+        //Processing can change if search is based on another search.
+        final boolean hasBaseSearch = searchRequest.getSearchJoinRequests() != null &&
+                !searchRequest.getSearchJoinRequests().isEmpty();
+
         String simpleQueryString = searchRequest.getSimpleQueryString();
-        if (
-            (simpleQueryString != null && !simpleQueryString.isEmpty()) ||
-                !searchRequest.getSearchJoinRequests().isEmpty()
-        ) {
+
+        //TODO JC Reconsider this logic of forcing all searches based on other searches to be
+        //elastic searches.
+        if ((simpleQueryString != null && !simpleQueryString.isEmpty()) || hasBaseSearch) {
             // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
