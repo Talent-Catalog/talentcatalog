@@ -236,10 +236,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // If coming from candidate portal check delete logic
         if (user.getRole().equals(Role.user)) {
-             candidate = authService.getLoggedInCandidate();
-            if (candidate == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
+            candidate = candidateService.getLoggedInCandidate()
+                    .orElseThrow(() -> new InvalidSessionException("Not logged in"));
             // Check that the candidate is deleting an attachment related to themselves
             if (!candidate.getId().equals(candidateAttachment.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");
@@ -248,7 +246,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             if (!candidate.getUser().getId().equals(candidateAttachment.getCreatedBy().getId())) {
                 throw new InvalidRequestException("You can only delete your own uploads.");
             }
-            // todo can we handle the deletes differently if coming from candidate portal? Candidates should be able to delete their own atts?
             // Try to delete the record from the database, but throw error if foreign key constraint and the attachment is used as a shareable doc.
             try {
                 candidateAttachmentRepository.delete(candidateAttachment);
