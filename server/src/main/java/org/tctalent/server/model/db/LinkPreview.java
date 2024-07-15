@@ -40,11 +40,21 @@ public class LinkPreview extends AbstractDomainObject<Long> {
     @JoinColumn(name = "chat_post_id")
     private ChatPost chatPost;
 
-    //TODO consider notblank / nullable here
+    @NotBlank
     private String url;
+
+    @NotBlank
     private String title;
+
+    @NotBlank
     private String description;
-    private String imageUrl;
+
+    @NotBlank
     private String domain;
+
+    @Nullable
+    private String imageUrl;
+
+    @Nullable
     private String faviconUrl;
 }

@@ -43,7 +43,6 @@ import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.LinkPreviewService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -60,7 +59,6 @@ public class ChatPostServiceImpl implements ChatPostService {
     private final JobChatRepository jobChatRepository;
     private final CandidateService candidateService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final LinkPreviewService linkPreviewService;
 
     @Override
     public ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat, User user) {

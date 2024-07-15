@@ -91,6 +91,7 @@ export class ViewPostComponent implements OnInit {
                           })
   }
 
+  // Used to check whether user should see option to block link preview in sent post.
   private setUserIsPostAuthor() {
     this.userIsPostAuthor =
       this.post.createdBy.id === this.authenticationService.getLoggedInUser().id;

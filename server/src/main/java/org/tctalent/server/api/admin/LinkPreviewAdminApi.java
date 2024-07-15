@@ -19,8 +19,8 @@ package org.tctalent.server.api.admin;
  import java.io.IOException;
  import java.util.Map;
  import javax.validation.Valid;
- import javax.validation.constraints.NotNull;
  import lombok.RequiredArgsConstructor;
+ import org.springframework.lang.Nullable;
  import org.springframework.web.bind.annotation.PostMapping;
  import org.springframework.web.bind.annotation.RequestBody;
  import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,11 +42,11 @@ package org.tctalent.server.api.admin;
      private final LinkPreviewService linkPreviewService;
 
    /**
-    * TODO
     * @param id ID of record to be deleted
-    * @return
-    * @throws EntityReferencedException
-    * @throws InvalidRequestException
+    * @return boolean confirming successful deletion
+    * @throws EntityReferencedException if the object cannot be deleted because
+    * it is referenced by another object.
+    * @throws InvalidRequestException if not authorized to delete this object.
     */
      @Override
      public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
@@ -54,12 +54,12 @@ package org.tctalent.server.api.admin;
      }
 
    /**
-    * TODO doc
-    * @param
-    * @return
+    * Receives a URL in String form and returns a LinkPreview for display in Job Chats if successful.
+    * @param request URL String of link to be previewed
+    * @return Map of LinkPreview or null if unsuccessful
     */
    @PostMapping("/build-link-preview")
-   public @NotNull Map<String, Object> buildLinkPreview(
+   public @Nullable Map<String, Object> buildLinkPreview(
        @Valid @RequestBody BuildLinkPreviewRequest request) throws IOException {
      LinkPreview linkPreview = linkPreviewService.buildLinkPreview(request.getUrl());
      return this.linkPreviewDto().build(linkPreview);

@@ -24,18 +24,19 @@ import org.tctalent.server.model.db.LinkPreview;
 public interface LinkPreviewService {
 
   /**
-   * TODO doc
-   * @param url
-   * @return
+   * Receives a URL in String form and returns a LinkPreview for display in Job Chats if successful.
+   * @param url URL String of link to be previewed
+   * @return Map of LinkPreview or null if unsuccessful
+   * @throws IOException if Jsoup web scraping is unsuccessful
    */
   LinkPreview buildLinkPreview(String url) throws IOException;
 
   /**
-   * TODO doc
-   * @param linkPreviewId
-   * @return
-   * @throws EntityReferencedException
-   * @throws InvalidRequestException
+   * @param linkPreviewId ID of record to be deleted
+   * @return boolean confirming successful deletion
+   * @throws EntityReferencedException if the object cannot be deleted because
+   * it is referenced by another object.
+   * @throws InvalidRequestException if not authorized to delete this object.
    */
   boolean deleteLinkPreview(long linkPreviewId)
     throws EntityReferencedException, InvalidRequestException;

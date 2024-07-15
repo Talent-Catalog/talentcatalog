@@ -143,6 +143,7 @@ export class CreateUpdatePostComponent implements OnInit {
     }
   }
 
+  // Checks editor content for any links
   public checkForLinks(event) {
     if (event.html === null) {
       this.clearLinkPreviews()
@@ -156,7 +157,8 @@ export class CreateUpdatePostComponent implements OnInit {
           liveUrls.push(match[1]);
         })
       }
-      this.compareUrlArrays(liveUrls);
+      // We only need to run this check if there's something in either array.
+      if (liveUrls.length > 0 || this.storedUrls.length > 0) this.compareUrlArrays(liveUrls);
     }
   }
 
@@ -181,7 +183,10 @@ export class CreateUpdatePostComponent implements OnInit {
     // Build and include its linkPreview
     let request: BuildLinkPreviewRequest = {url: url};
     this.linkPreviewService.buildLinkPreview(request).subscribe(
-      linkPreview => this.linkPreviews.push(linkPreview)
+      linkPreview => {
+        // Checks that valid linkPreview has been returned and pushes to array if so.
+        if (linkPreview.title && linkPreview.description) this.linkPreviews.push(linkPreview);
+      }
     )
   }
 

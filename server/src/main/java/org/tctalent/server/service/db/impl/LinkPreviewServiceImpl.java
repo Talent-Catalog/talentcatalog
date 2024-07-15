@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.protocol.HTTP;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -54,20 +53,35 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   }
 
   @Override
-  public LinkPreview buildLinkPreview(String url) throws IOException {
+  public @Nullable LinkPreview buildLinkPreview(String url) throws IOException {
     LinkPreview linkPreview = new LinkPreview();
     linkPreview.setUrl(url);
 
     try {
       Document doc = Jsoup.connect(url).get();
 
-      linkPreview.setDescription(getDescription(doc));
-      linkPreview.setTitle(getTitle(doc));
-      linkPreview.setDomain(getDomain(doc, url));
+      // We don't want to return a link preview without all the three following values.
+      String description = getDescription(doc);
+      if (description != null) {
+        linkPreview.setDescription(description);
+      } else return null;
+
+      String title = getTitle(doc);
+      if (title != null) {
+        linkPreview.setTitle(title);
+      } else return null;
+
+      String domain = getDomain(doc, url);
+      if (domain != null) {
+        linkPreview.setDomain(domain);
+      } else return null;
+
+      // These are not essential and often may not be available.
       linkPreview.setImageUrl(getImageUrl(doc));
       linkPreview.setFaviconUrl(getFaviconUrl(doc));
 
       return linkPreview;
+
     } catch (HttpStatusException e) {
       LogBuilder.builder(log)
           .action("BuildLinkPreview: Jsoup.connect(url).get()")
@@ -78,10 +92,9 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
 
       return null;
     }
-
   }
 
-  private String getTitle(Document document) {
+  private @Nullable String getTitle(Document document) {
 
     String title = document.title();
     if (!title.isEmpty()) return title;
@@ -113,7 +126,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private String getDescription(Document document) {
+  private @Nullable String getDescription(Document document) {
 
     Elements ogDescriptionElements = document.select("meta[property=\"og:description\"]");
     if (!ogDescriptionElements.isEmpty()) {
@@ -142,7 +155,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private String getDomain(Document document, String url) throws MalformedURLException {
+  private @Nullable String getDomain(Document document, String url) throws MalformedURLException {
     Elements canonicalLinkElements = document.select("link[rel=canonical]");
     if (!canonicalLinkElements.isEmpty()) {
       String canonicalLink = canonicalLinkElements.first().attr("href");
@@ -167,7 +180,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private String getImageUrl(Document document) {
+  private @Nullable String getImageUrl(Document document) {
 
     Elements ogImgElements = document.select("meta[property=\"og:image\"]");
     if (!ogImgElements.isEmpty()) {
@@ -209,7 +222,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private String getFaviconUrl(Document document) {
+  private @Nullable String getFaviconUrl(Document document) {
     Elements faviconLinkElements = document.head().select("link[href~=.*\\.(ico|png)]");
     if (!faviconLinkElements.isEmpty()) {
       String faviconLink = selectImage("href", faviconLinkElements);
@@ -225,6 +238,12 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
+  /**
+   * Selects first suitable image from Elements collection and returns its url.
+   * @param attr the HTML attribute containing the URL
+   * @param elements Elements collection of images
+   * @return image URL in string form
+   */
   private @Nullable String selectImage(String attr, Elements elements) {
     int i = 0;
     while (i < elements.size()) {
@@ -238,6 +257,11 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
+  /**
+   * Ensures that an image URL provided by Jsoup web scraping methods is actually accessible.
+   * @param imageUrl URL in String form to be checked
+   * @return boolean true if accessible, false if not
+   */
   private boolean checkImageIsAccessible(String imageUrl) {
     try {
       Connection.Response response = Jsoup.connect(imageUrl)
