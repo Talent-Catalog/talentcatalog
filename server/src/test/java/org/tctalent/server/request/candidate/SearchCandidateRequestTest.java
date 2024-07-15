@@ -18,6 +18,7 @@ package org.tctalent.server.request.candidate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
+import org.tctalent.server.model.db.UnhcrStatus;
 
 class SearchCandidateRequestTest {
 
@@ -64,6 +66,55 @@ class SearchCandidateRequestTest {
         request.setStatuses(statuses);
         String sql = request.extractSQL(true);
         assertEquals("select id from candidate where candidate.status in ('active','pending')", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from local unhcr status collection")
+    void extractSQLFromLocalCollectionUnhcrStatusRequest() {
+        List<UnhcrStatus> statuses = new ArrayList<UnhcrStatus>();
+        statuses.add(UnhcrStatus.NoResponse);
+        statuses.add(UnhcrStatus.MandateRefugee);
+
+        request.setUnhcrStatuses(statuses);
+        String sql = request.extractSQL(true);
+        assertEquals("select id from candidate where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from date")
+    void extractSQLFromDateRequest() {
+        request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
+        String sql = request.extractSQL(true);
+        assertEquals(
+            "select id from candidate where candidate.updated_date >= '2019-01-01T00:00Z'"
+            , sql);
+
+        request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
+        request.setTimezone("Australia/Melbourne");
+        sql = request.extractSQL(true);
+        assertEquals(
+            "select id from candidate where candidate.updated_date >= '2019-01-01T00:00+10:00'"
+            , sql);
+    }
+
+//    @Test - modify for current date before running test
+    @DisplayName("SQL generated from min age")
+    void extractSQLFromMinAgeRequest() {
+        request.setMinAge(20);
+        String sql = request.extractSQL(true);
+        assertEquals(
+            "select id from candidate where (candidate.dob <= '2003-07-15' or candidate.dob is null)"
+            , sql);
+    }
+
+    //    @Test - modify for current date before running test
+    @DisplayName("SQL generated from max age")
+    void extractSQLFromMaxAgeRequest() {
+        request.setMaxAge(20);
+        String sql = request.extractSQL(true);
+        assertEquals(
+            "select id from candidate where (candidate.dob > '2003-07-15' or candidate.dob is null)"
+            , sql);
     }
 
     @Test

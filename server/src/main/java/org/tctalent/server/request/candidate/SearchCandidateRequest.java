@@ -18,7 +18,12 @@ package org.tctalent.server.request.candidate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.jsonwebtoken.lang.Collections;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +34,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -237,7 +243,36 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             ands.add("candidate.gender = '" + getGender().name() + "'");
         }
 
-        //TODO JC Modified from etc
+        //Modified From
+        if (getLastModifiedFrom() != null) {
+            ands.add("candidate.updated_date >= '" +
+                getOffsetDateTime(getLastModifiedFrom(), LocalTime.MIN, getTimezone()) + "'");
+        }
+
+        //Modified To
+        if (getLastModifiedTo() != null) {
+            ands.add("candidate.updated_date <= '" +
+                getOffsetDateTime(getLastModifiedTo(), LocalTime.MAX, getTimezone()) + "'");
+        }
+
+        //Min / Max Age
+        if (getMinAge() != null) {
+            LocalDate minDob = LocalDate.now().minusYears(getMinAge() + 1);
+            ands.add("(candidate.dob <= '" + minDob + "' or candidate.dob is null)" );
+        }
+        if (getMaxAge() != null) {
+            LocalDate maxDob = LocalDate.now().minusYears(getMaxAge() + 1);
+            ands.add("(candidate.dob > '" + maxDob + "' or candidate.dob is null)" );
+        }
+
+        // UNHCR STATUSES
+        if (!Collections.isEmpty(getUnhcrStatuses())) {
+            String values = getUnhcrStatuses().stream()
+                .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
+            ands.add("candidate.unhcr_status in (" + values + ")");
+        }
+
+        //TODO JC Others
 
         String s = String.join(" and ", ands);
 
@@ -245,6 +280,17 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         s = "select id from candidate where " + s;
         return s;
     }
+
+    //TODO JC Factor out this common
+    private static OffsetDateTime getOffsetDateTime(
+        LocalDate localDate, LocalTime time, String timezone) {
+        ZoneOffset offset = ZoneOffset.UTC;
+        if (!StringUtils.isBlank(timezone)) {
+            offset = ZoneId.of(timezone).getRules().getOffset(Instant.now());
+        }
+        return OffsetDateTime.of(localDate, time, offset);
+    }
+
 
     /**
      * Merge in a SavedSearchGetRequest - eg paging info
