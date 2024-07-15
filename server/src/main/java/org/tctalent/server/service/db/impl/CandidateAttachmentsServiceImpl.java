@@ -149,16 +149,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         Candidate candidate;
         String textExtract;
-
-        // Handle requests coming from the admin portal
+        
         if (request.getCandidateId() != null) {
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         } else {
-            candidate = authService.getLoggedInCandidate();
-            if (candidate == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
+            throw new InvalidRequestException("Missing candidate ID");
         }
 
         // Create a record of the attachment
