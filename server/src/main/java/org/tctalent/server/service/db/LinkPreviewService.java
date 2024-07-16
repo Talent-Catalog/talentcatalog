@@ -21,6 +21,14 @@ import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.model.db.LinkPreview;
 
+/**
+ * Implements Jsoup web-scraping and HTML parsing to return link previews.
+ * Uses <a href="https://andrejgajdos.com/how-to-create-a-link-preview/">...</a> as a starting point
+ * for selecting content from the many divergent options available across different websites.
+ *
+ * @author samschlicht
+ */
+
 public interface LinkPreviewService {
 
   /**
