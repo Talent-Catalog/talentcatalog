@@ -86,7 +86,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
 
       LogBuilder.builder(log)
           .action("BuildLinkPreview: Jsoup.connect(url).get()")
-          .message("HTTP error fetching URL " + "(" + url + "): " + e.getStatusCode())
+          .message(e.getMessage())
           .logInfo();
 
       return null;
@@ -154,13 +154,13 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     return null;
   }
 
-  private @Nullable String getDomain(Document document, String url) throws MalformedURLException {
+  private @Nullable String getDomain(Document document, String url) {
     Elements canonicalLinkElements = document.select("link[rel=canonical]");
     if (!canonicalLinkElements.isEmpty()) {
       String canonicalLink = canonicalLinkElements.first().attr("href");
       if (!canonicalLink.isEmpty()) {
-        String domain = URI.create(canonicalLink).toURL().getHost().replace("www.", "");
-        if (domain != null && !domain.isEmpty()) return domain;
+        String domain = convertUrlToDomain(canonicalLink);
+        if (!domain.isEmpty()) return domain;
       }
     }
 
@@ -168,15 +168,34 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     if (!ogUrlMetaElements.isEmpty()) {
       String ogUrlMeta = ogUrlMetaElements.first().attr("content");
       if (!ogUrlMeta.isEmpty()) {
-        String domain = URI.create(ogUrlMeta).toURL().getHost().replace("www.", "");
-        if (domain != null && !domain.isEmpty()) return domain;
+        String domain = convertUrlToDomain(ogUrlMeta);
+        if (!domain.isEmpty()) return domain;
       }
     }
 
-    String domain = URI.create(url).toURL().getHost().replace("www.", "");
-    if (domain != null && !domain.isEmpty()) return domain;
+    String domain = convertUrlToDomain(url);
+    if (!domain.isEmpty()) return domain;;
 
     return null;
+  }
+
+  /**
+   * Takes a URL as a String and returns a domain.
+   * @param url the String to be converted
+   * @return the domain, ready for display, or an empty string if unsuccessful
+  */
+  private String convertUrlToDomain(String url) {
+    try {
+      return URI.create(url).toURL().getHost().replace("www.", "");
+
+    } catch (IllegalArgumentException | MalformedURLException e) {
+      LogBuilder.builder(log)
+          .action("convertUrlToDomain")
+          .message(e.getMessage())
+          .logInfo();
+
+      return "";
+    }
   }
 
   private @Nullable String getImageUrl(Document document) {
@@ -184,37 +203,27 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     Elements ogImgElements = document.select("meta[property=\"og:image\"]");
     if (!ogImgElements.isEmpty()) {
       String ogImg = selectImage("content", ogImgElements);
-      if (ogImg != null && !ogImg.isEmpty()) return ogImg;
+      if (!ogImg.isEmpty()) return ogImg;
     }
 
     Elements imgRelLinkElements = document.select("link[rel=\"image_src\"]");
     if (!imgRelLinkElements.isEmpty()) {
       String imgRelLink = selectImage("href", imgRelLinkElements);
-      if (imgRelLink != null && !imgRelLink.isEmpty()) return imgRelLink;
+      if (!imgRelLink.isEmpty()) return imgRelLink;
     }
 
     Elements twitterImgElements = document.select("meta[name=\"twitter:image\"]");
     if (!twitterImgElements.isEmpty()) {
       String twitterImg = selectImage("content", twitterImgElements);
-      if (twitterImg != null && !twitterImg.isEmpty()) return twitterImg;
+      if (!twitterImg.isEmpty()) return twitterImg;
     }
 
     Elements images = document.getElementsByTag("img");
     if (!images.isEmpty()) {
-      Elements qualifiedImages = images
-          .stream()
-          .filter(img -> img.hasAttr("width") && img.hasAttr("height"))
-          .filter(img ->
-              (parseDouble(img.attr("width").replace("px","")) /
-                  parseDouble(img.attr("height").replace("px",""))) < 3)
-          .filter(img ->
-              (parseDouble(img.attr("width").replace("px","")) > 50) &&
-                  (parseDouble(img.attr("height").replace("px","")) > 50))
-          .collect(Collectors.toCollection(Elements::new));
-
+      Elements qualifiedImages = filterImagesCollection(images);
       if (!qualifiedImages.isEmpty()) {
         String qualifiedImage = selectImage("src", qualifiedImages);
-        if (qualifiedImage != null && !qualifiedImage.isEmpty()) return qualifiedImage;
+        if (!qualifiedImage.isEmpty()) return qualifiedImage;
       }
     }
 
@@ -225,25 +234,46 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     Elements faviconLinkElements = document.head().select("link[href~=.*\\.(ico|png)]");
     if (!faviconLinkElements.isEmpty()) {
       String faviconLink = selectImage("href", faviconLinkElements);
-      if (faviconLink != null && !faviconLink.isEmpty()) return faviconLink;
+      if (!faviconLink.isEmpty()) return faviconLink;
     }
 
     Elements faviconMetaElements = document.head().select("meta[itemprop=image]");
     if (!faviconMetaElements.isEmpty()) {
       String faviconMeta = selectImage("content", faviconMetaElements);
-      if (faviconMeta != null && !faviconMeta.isEmpty()) return faviconMeta;
+      if (!faviconMeta.isEmpty()) return faviconMeta;
     }
 
     return null;
   }
 
   /**
-   * Selects first suitable image from Elements collection and returns its url.
+   * Filters an Elements collection of images to remove any that are too wide or less than 50x50px.
+   * @param images Elements collection of image elements
+   * @return qualifiedImages a collection of images that meet the requirements, or empty collection
+   */
+  private Elements filterImagesCollection(Elements images) {
+    Elements qualifiedImages = images
+        .stream()
+        .filter(img -> img.hasAttr("width") && img.hasAttr("height"))
+        .filter(img ->
+            (parseDouble(img.attr("width").replace("px", "")) /
+                parseDouble(img.attr("height").replace("px", ""))) < 3)
+        .filter(img ->
+            (parseDouble(img.attr("width").replace("px", "")) > 50) &&
+                (parseDouble(img.attr("height").replace("px", "")) > 50))
+        .collect(Collectors.toCollection(Elements::new));
+
+      return qualifiedImages;
+  }
+
+  /**
+   * Selects first suitable image from Elements collection and returns its URL. Will also call
+   * {@link #checkImageIsAccessible(String)} to check the URL points to an accessible image.
    * @param attr the HTML attribute containing the URL
    * @param elements Elements collection of images
-   * @return image URL in string form
+   * @return image URL as String or empty String if unsuccessful
    */
-  private @Nullable String selectImage(String attr, Elements elements) {
+  private String selectImage(String attr, Elements elements) {
     int i = 0;
     while (i < elements.size()) {
       if (elements.get(i).hasAttr(attr) && elements.get(i).attr(attr).startsWith("http")) {
@@ -253,11 +283,11 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       i++;
     }
 
-    return null;
+    return "";
   }
 
   /**
-   * Ensures that an image URL provided by Jsoup web scraping methods is actually accessible.
+   * Ensures that an image URL is actually accessible.
    * @param imageUrl URL in String form to be checked
    * @return boolean true if accessible, false if not
    */
@@ -280,4 +310,5 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       return false;
     }
   }
+
 }
