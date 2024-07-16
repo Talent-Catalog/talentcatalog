@@ -30,7 +30,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
   isCurrentPost: boolean = false;
   public reactionPickerXPos: number;
   public reactionPickerYPos: number;
-  protected userIsPostAuthor: boolean;
+  public userIsPostAuthor: boolean;
 
   // Currently ngx-quill just inserts the url into an <img> tag, this is then saved as innerHTML.
   // Adding this event listener allows us to make the images clickable and open the src attribute in a new tab.
