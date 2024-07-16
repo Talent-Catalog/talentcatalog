@@ -38,10 +38,53 @@ class SearchCandidateRequestTest {
     }
 
     @Test
-    @DisplayName("no SQL generated from empty request")
+    @DisplayName("SQL generated from empty request")
     void extractSQLFromEmptyRequest() {
         String sql = request.extractSQL(true);
-        assertEquals(0, sql.length());
+        assertEquals("select distinct candidate.id from candidate", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from request needing join")
+    void extractSQLFromRequestNeedingJoin() {
+        List<Long> partnerIds = new ArrayList<>();
+        partnerIds.add(123L);
+        partnerIds.add(456L);
+        request.setPartnerIds(partnerIds);
+        String sql = request.extractSQL(true);
+        assertEquals(
+            "select distinct candidate.id from candidate join users on candidate.user_id = users.id "
+                + "where users.partner_id in (123,456)", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from request needing multiple joins")
+    void extractSQLFromRequestNeedingJoins() {
+        List<Long> partnerIds = new ArrayList<>();
+        partnerIds.add(123L);
+        partnerIds.add(456L);
+        request.setPartnerIds(partnerIds);
+        request.setMinEducationLevel(1);
+        String sql = request.extractSQL(true);
+        assertEquals(
+            "select distinct candidate.id from candidate "
+                + "join users on candidate.user_id = users.id "
+                + "join education_level on candidate.max_education_level_id = education_level.id "
+                + "where users.partner_id in (123,456) and education_level.level >= 1"
+                , sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from major education request")
+    void extractSQLFromMajorEducationRequest() {
+        List<Long> majorIds = new ArrayList<>();
+        majorIds.add(123L);
+        request.setEducationMajorIds(majorIds);
+        String sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate "
+                + "join candidate_education on candidate.id = candidate_education.candidate_id "
+                + "where (major_id in (123) or migration_education_major_id in (123))"
+                , sql);
     }
 
     @Test
@@ -50,34 +93,83 @@ class SearchCandidateRequestTest {
         Gender gender = Gender.male;
         request.setGender(gender);
         String sql = request.extractSQL(true);
-        assertEquals("select id from candidate where candidate.gender = '" + gender.name() + "'", sql);
+        assertEquals("select distinct candidate.id from candidate where candidate.gender = '" + gender.name() + "'", sql);
+    }
 
-        String jpql = request.extractSQL(false);
-        assertEquals("select id from candidate where candidate.gender = '" + gender.name() + "'", jpql);
+    @Test
+    @DisplayName("SQL generated from local nullable")
+    void extractSQLFromLocalNullableRequest() {
+        request.setMiniIntakeCompleted(true);
+        String sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate where mini_intake_completed_date is not null", sql);
+
+        request.setMiniIntakeCompleted(false);
+        sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate where mini_intake_completed_date is null", sql);
+
+        request.setFullIntakeCompleted(false);
+        sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate "
+            + "where mini_intake_completed_date is null and full_intake_completed_date is null", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from languages request")
+    void extractSQLFromLanguagesRequest() {
+        request.setEnglishMinSpokenLevel(2);
+        String sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate "
+            + "join candidate_language on candidate.id = candidate_language.candidate_id "
+            + "join language on candidate_language.language_id = language.id "
+            + "join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
+            + "where lower(language.name) = 'english' and spoken_level.level >= 2", sql);
+
+        request.setEnglishMinWrittenLevel(2);
+        sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate "
+            + "join candidate_language on candidate.id = candidate_language.candidate_id "
+            + "join language on candidate_language.language_id = language.id "
+            + "join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
+            + "join language_level as written_level on candidate_language.written_level_id = written_level_id "
+            + "where lower(language.name) = 'english' and spoken_level.level >= 2 "
+            + "and written_level.level >= 2", sql);
+
+        request.setOtherLanguageId(344L);
+        request.setOtherMinSpokenLevel(3);
+        sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate "
+            + "join candidate_language on candidate.id = candidate_language.candidate_id "
+            + "join language on candidate_language.language_id = language.id "
+            + "join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
+            + "join language_level as written_level on candidate_language.written_level_id = written_level_id "
+            + "where lower(language.name) = 'english' and spoken_level.level >= 2 "
+            + "and written_level.level >= 2 "
+            + "and candidate_language.language_id = 344 and spoken_level.level >= 3", sql);
+
     }
 
     @Test
     @DisplayName("SQL generated from local collection")
     void extractSQLFromLocalCollectionRequest() {
-        List<CandidateStatus> statuses = new ArrayList<CandidateStatus>();
+        List<CandidateStatus> statuses = new ArrayList<>();
         statuses.add(CandidateStatus.active);
         statuses.add(CandidateStatus.pending);
 
         request.setStatuses(statuses);
         String sql = request.extractSQL(true);
-        assertEquals("select id from candidate where candidate.status in ('active','pending')", sql);
+        assertEquals("select distinct candidate.id from candidate where candidate.status in ('active','pending')", sql);
     }
 
     @Test
     @DisplayName("SQL generated from local unhcr status collection")
     void extractSQLFromLocalCollectionUnhcrStatusRequest() {
-        List<UnhcrStatus> statuses = new ArrayList<UnhcrStatus>();
+        List<UnhcrStatus> statuses = new ArrayList<>();
         statuses.add(UnhcrStatus.NoResponse);
         statuses.add(UnhcrStatus.MandateRefugee);
 
         request.setUnhcrStatuses(statuses);
         String sql = request.extractSQL(true);
-        assertEquals("select id from candidate where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
+        assertEquals("select distinct candidate.id from candidate where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
     }
 
     @Test
@@ -86,14 +178,14 @@ class SearchCandidateRequestTest {
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
         String sql = request.extractSQL(true);
         assertEquals(
-            "select id from candidate where candidate.updated_date >= '2019-01-01T00:00Z'"
+            "select distinct candidate.id from candidate where candidate.updated_date >= '2019-01-01T00:00Z'"
             , sql);
 
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
         request.setTimezone("Australia/Melbourne");
         sql = request.extractSQL(true);
         assertEquals(
-            "select id from candidate where candidate.updated_date >= '2019-01-01T00:00+10:00'"
+            "select distinct candidate.id from candidate where candidate.updated_date >= '2019-01-01T00:00+10:00'"
             , sql);
     }
 
@@ -103,7 +195,7 @@ class SearchCandidateRequestTest {
         request.setMinAge(20);
         String sql = request.extractSQL(true);
         assertEquals(
-            "select id from candidate where (candidate.dob <= '2003-07-15' or candidate.dob is null)"
+            "select distinct candidate.id from candidate where (candidate.dob <= '2003-07-15' or candidate.dob is null)"
             , sql);
     }
 
@@ -113,14 +205,14 @@ class SearchCandidateRequestTest {
         request.setMaxAge(20);
         String sql = request.extractSQL(true);
         assertEquals(
-            "select id from candidate where (candidate.dob > '2003-07-15' or candidate.dob is null)"
+            "select distinct candidate.id from candidate where (candidate.dob > '2003-07-15' or candidate.dob is null)"
             , sql);
     }
 
     @Test
     @DisplayName("And together multiple filters")
     void extractSQLFromMultipleFiltersRequest() {
-        List<CandidateStatus> statuses = new ArrayList<CandidateStatus>();
+        List<CandidateStatus> statuses = new ArrayList<>();
         statuses.add(CandidateStatus.active);
         statuses.add(CandidateStatus.pending);
 
@@ -130,7 +222,7 @@ class SearchCandidateRequestTest {
         request.setGender(gender);
 
         String sql = request.extractSQL(true);
-        assertEquals("select id from candidate where candidate.status in ('active','pending') and candidate.gender = 'male'"
+        assertEquals("select distinct candidate.id from candidate where candidate.status in ('active','pending') and candidate.gender = 'male'"
             , sql);
     }
 

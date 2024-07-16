@@ -16,17 +16,16 @@
 
 package org.tctalent.server.request.candidate;
 
+import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.jsonwebtoken.lang.Collections;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -34,7 +33,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Sort;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -42,6 +41,7 @@ import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
+import org.tctalent.server.repository.db.CandidateQueryHelper;
 import org.tctalent.server.request.PagedSearchRequest;
 
 /*
@@ -170,17 +170,18 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      */
     public String extractSQL(boolean nativeQuery) {
 
+        Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
 
         // STATUS SEARCH
-        if (!Collections.isEmpty(getStatuses())) {
+        if (!ObjectUtils.isEmpty(getStatuses())) {
             String values = getStatuses().stream()
                 .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
             ands.add("candidate.status in (" + values + ")");
         }
 
         // Occupations SEARCH
-        if (!Collections.isEmpty(getOccupationIds())) {
+        if (!ObjectUtils.isEmpty(getOccupationIds())) {
             String values = getOccupationIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("candidate_occupation.occupation_id in (" + values + ")");
@@ -191,7 +192,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         //TODO JC This can come from reviewed search - how do we handle that in stats?
 
         // NATIONALITY SEARCH
-        if (!Collections.isEmpty(getNationalityIds())) {
+        if (!ObjectUtils.isEmpty(getNationalityIds())) {
             String values = getNationalityIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             if (getNationalitySearchType() == null || getNationalitySearchType().equals(SearchType.or)) {
@@ -204,7 +205,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         // COUNTRY SEARCH - taking into account user source country limitations
         // If request ids is NOT EMPTY we can just accept them because the options
         // presented to the user will be limited to the allowed source countries
-        if (!Collections.isEmpty(getCountryIds())) {
+        if (!ObjectUtils.isEmpty(getCountryIds())) {
             String values = getCountryIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             if (getCountrySearchType() == null || getCountrySearchType().equals(SearchType.or)) {
@@ -218,14 +219,15 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         // PARTNER SEARCH
-        if (!Collections.isEmpty(getPartnerIds())) {
+        if (!ObjectUtils.isEmpty(getPartnerIds())) {
+            joins.add(CandidateQueryHelper.CANDIDATE__USER__JOIN__NATIVE);
             String values = getPartnerIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("users.partner_id in (" + values + ")");
         }
 
         // SURVEY TYPE SEARCH
-        if (!Collections.isEmpty(getSurveyTypeIds())) {
+        if (!ObjectUtils.isEmpty(getSurveyTypeIds())) {
             String values = getSurveyTypeIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("candidate.survey_type_id in (" + values + ")");
@@ -266,29 +268,94 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         // UNHCR STATUSES
-        if (!Collections.isEmpty(getUnhcrStatuses())) {
+        if (!ObjectUtils.isEmpty(getUnhcrStatuses())) {
             String values = getUnhcrStatuses().stream()
                 .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
             ands.add("candidate.unhcr_status in (" + values + ")");
         }
 
-        //TODO JC Others
-
-        String s = String.join(" and ", ands);
-
-        //TODO JC This has to manage joins
-        s = "select id from candidate where " + s;
-        return s;
-    }
-
-    //TODO JC Factor out this common
-    private static OffsetDateTime getOffsetDateTime(
-        LocalDate localDate, LocalTime time, String timezone) {
-        ZoneOffset offset = ZoneOffset.UTC;
-        if (!StringUtils.isBlank(timezone)) {
-            offset = ZoneId.of(timezone).getRules().getOffset(Instant.now());
+        // EDUCATION LEVEL SEARCH
+        if (getMinEducationLevel() != null) {
+            joins.add(CandidateQueryHelper.CANDIDATE__EDUCATION_LEVEL__JOIN__NATIVE);
+            ands.add("education_level.level >= " + getMinEducationLevel());
         }
-        return OffsetDateTime.of(localDate, time, offset);
+
+        // MINI INTAKE COMPLETE
+        if (getMiniIntakeCompleted() != null) {
+            boolean completed = getMiniIntakeCompleted();
+            ands.add("mini_intake_completed_date " + (completed ? "is not null" : "is null"));
+        }
+
+        // FULL INTAKE COMPLETE
+        if (getFullIntakeCompleted() != null) {
+            boolean completed = getFullIntakeCompleted();
+            ands.add("full_intake_completed_date " + (completed ? "is not null" : "is null"));
+        }
+
+        // MAJOR SEARCH
+        if (!ObjectUtils.isEmpty(getEducationMajorIds())) {
+            String values = getEducationMajorIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE);
+            ands.add("(major_id in (" + values + ") "
+                + "or migration_education_major_id in (" + values + "))");
+        }
+
+        // LANGUAGE SEARCH
+        if (getEnglishMinSpokenLevel() != null || getEnglishMinWrittenLevel() != null
+            || getOtherLanguageId() != null
+            || getOtherMinSpokenLevel() != null || getOtherMinWrittenLevel() != null) {
+
+            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE);
+            joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE__JOIN_NATIVE);
+
+            if (getEnglishMinSpokenLevel() != null && getEnglishMinWrittenLevel() != null) {
+                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                ands.add("lower(language.name) = 'english'");
+                ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
+                ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
+            } else if (getEnglishMinSpokenLevel() != null) {
+                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                ands.add("lower(language.name) = 'english'");
+                ands.add("spoken_level.level >= " + getEnglishMinSpokenLevel());
+            } else if (getEnglishMinWrittenLevel() != null) {
+                joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                ands.add("lower(language.name) = 'english'");
+                ands.add("written_level.level >= " + getEnglishMinWrittenLevel());
+            }
+
+            if (getOtherLanguageId() != null) {
+                if (getOtherMinSpokenLevel() != null && getOtherMinWrittenLevel() != null) {
+                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                    ands.add("candidate_language.language_id = " + getOtherLanguageId());
+                    ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
+                    ands.add("written_level.level >= " + getOtherMinWrittenLevel());
+                } else if (getOtherMinSpokenLevel() != null) {
+                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE);
+                    ands.add("candidate_language.language_id = " + getOtherLanguageId());
+                    ands.add("spoken_level.level >= " + getOtherMinSpokenLevel());
+                } else if (getOtherMinWrittenLevel() != null) {
+                    joins.add(CandidateQueryHelper.CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_WRITTEN__JOIN_NATIVE);
+                    ands.add("candidate_language.language_id = " + getOtherLanguageId());
+                    ands.add("written_level.level >= " + getOtherMinWrittenLevel());
+                }
+            }
+        }
+
+        String joinClause = String.join(" join ", joins);
+        String whereClause = String.join(" and ", ands);
+
+        String query = "select distinct candidate.id from candidate";
+        if (!joinClause.isEmpty()) {
+            query += " join " + joinClause;
+        }
+        if (!whereClause.isEmpty()) {
+            query += " where " + whereClause;
+        }
+
+        return query;
     }
 
 
