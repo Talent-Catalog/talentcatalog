@@ -53,7 +53,8 @@ class SearchCandidateRequestTest {
         request.setPartnerIds(partnerIds);
         String sql = request.extractSQL(true);
         assertEquals(
-            "select distinct candidate.id from candidate join users on candidate.user_id = users.id "
+            "select distinct candidate.id from candidate "
+                + "join users on candidate.user_id = users.id "
                 + "where users.partner_id in (123,456)", sql);
     }
 
@@ -93,7 +94,8 @@ class SearchCandidateRequestTest {
         Gender gender = Gender.male;
         request.setGender(gender);
         String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate where candidate.gender = '" + gender.name() + "'", sql);
+        assertEquals("select distinct candidate.id from candidate "
+            + "where candidate.gender = '" + gender.name() + "'", sql);
     }
 
     @Test
@@ -101,16 +103,45 @@ class SearchCandidateRequestTest {
     void extractSQLFromLocalNullableRequest() {
         request.setMiniIntakeCompleted(true);
         String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate where mini_intake_completed_date is not null", sql);
+        assertEquals("select distinct candidate.id from candidate "
+            + "where mini_intake_completed_date is not null", sql);
 
         request.setMiniIntakeCompleted(false);
         sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate where mini_intake_completed_date is null", sql);
+        assertEquals("select distinct candidate.id from candidate "
+            + "where mini_intake_completed_date is null", sql);
 
         request.setFullIntakeCompleted(false);
         sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
             + "where mini_intake_completed_date is null and full_intake_completed_date is null", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from occupations")
+    void extractSQLFromOccupationsRequest() {
+        List<Long> occupationIds = new ArrayList<>();
+        occupationIds.add(9426L);
+        request.setOccupationIds(occupationIds);
+        String sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate "
+            + "join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
+            + "where candidate_occupation.occupation_id in (9426)", sql);
+
+        request.setMinYrs(1);
+        sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate "
+            + "join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
+            + "where candidate_occupation.occupation_id in (9426) "
+            + "and candidate_occupation.years_experience >= 1", sql);
+
+        request.setMaxYrs(5);
+        sql = request.extractSQL(true);
+        assertEquals("select distinct candidate.id from candidate "
+            + "join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
+            + "where candidate_occupation.occupation_id in (9426) "
+            + "and candidate_occupation.years_experience >= 1 "
+            + "and candidate_occupation.years_experience <= 5", sql);
     }
 
     @Test
@@ -157,7 +188,8 @@ class SearchCandidateRequestTest {
 
         request.setStatuses(statuses);
         String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate where candidate.status in ('active','pending')", sql);
+        assertEquals("select distinct candidate.id from candidate "
+            + "where candidate.status in ('active','pending')", sql);
     }
 
     @Test
@@ -169,7 +201,8 @@ class SearchCandidateRequestTest {
 
         request.setUnhcrStatuses(statuses);
         String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
+        assertEquals("select distinct candidate.id from candidate "
+            + "where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
     }
 
     @Test
@@ -178,14 +211,16 @@ class SearchCandidateRequestTest {
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
         String sql = request.extractSQL(true);
         assertEquals(
-            "select distinct candidate.id from candidate where candidate.updated_date >= '2019-01-01T00:00Z'"
+            "select distinct candidate.id from candidate "
+                + "where candidate.updated_date >= '2019-01-01T00:00Z'"
             , sql);
 
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
         request.setTimezone("Australia/Melbourne");
         sql = request.extractSQL(true);
         assertEquals(
-            "select distinct candidate.id from candidate where candidate.updated_date >= '2019-01-01T00:00+10:00'"
+            "select distinct candidate.id from candidate "
+                + "where candidate.updated_date >= '2019-01-01T00:00+10:00'"
             , sql);
     }
 
@@ -195,7 +230,8 @@ class SearchCandidateRequestTest {
         request.setMinAge(20);
         String sql = request.extractSQL(true);
         assertEquals(
-            "select distinct candidate.id from candidate where (candidate.dob <= '2003-07-15' or candidate.dob is null)"
+            "select distinct candidate.id from candidate "
+                + "where (candidate.dob <= '2003-07-15' or candidate.dob is null)"
             , sql);
     }
 
@@ -205,7 +241,8 @@ class SearchCandidateRequestTest {
         request.setMaxAge(20);
         String sql = request.extractSQL(true);
         assertEquals(
-            "select distinct candidate.id from candidate where (candidate.dob > '2003-07-15' or candidate.dob is null)"
+            "select distinct candidate.id from candidate "
+                + "where (candidate.dob > '2003-07-15' or candidate.dob is null)"
             , sql);
     }
 
@@ -222,7 +259,8 @@ class SearchCandidateRequestTest {
         request.setGender(gender);
 
         String sql = request.extractSQL(true);
-        assertEquals("select distinct candidate.id from candidate where candidate.status in ('active','pending') and candidate.gender = 'male'"
+        assertEquals("select distinct candidate.id from candidate "
+                + "where candidate.status in ('active','pending') and candidate.gender = 'male'"
             , sql);
     }
 

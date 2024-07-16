@@ -182,11 +182,18 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // Occupations SEARCH
         if (!ObjectUtils.isEmpty(getOccupationIds())) {
+            joins.add(CandidateQueryHelper.CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE);
             String values = getOccupationIds().stream()
                 .map(Objects::toString).collect(Collectors.joining(","));
             ands.add("candidate_occupation.occupation_id in (" + values + ")");
+
+            if (getMinYrs() != null) {
+                ands.add("candidate_occupation.years_experience >= " + getMinYrs());
+            }
+            if (getMaxYrs() != null) {
+                ands.add("candidate_occupation.years_experience <= " + getMaxYrs());
+            }
         }
-        //TODO JC Min and max years
 
         // EXCLUDED CANDIDATES (eg from Review Status)
         //TODO JC This can come from reviewed search - how do we handle that in stats?

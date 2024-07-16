@@ -28,6 +28,8 @@ public class CandidateQueryHelper {
         "education_level on candidate.max_education_level_id = education_level.id";
     public static final String CANDIDATE__CANDIDATE_EDUCATION__JOIN__NATIVE =
         "candidate_education on candidate.id = candidate_education.candidate_id";
+    public static final String CANDIDATE__CANDIDATE_OCCUPATION__JOIN__NATIVE =
+        "candidate_occupation on candidate.id = candidate_occupation.candidate_id";
     public static final String CANDIDATE__CANDIDATE_LANGUAGE__JOIN__NATIVE =
         "candidate_language on candidate.id = candidate_language.candidate_id";
     public static final String CANDIDATE_LANGUAGE__LANGUAGE_LEVEL_SPOKEN__JOIN_NATIVE =
