@@ -23,101 +23,152 @@ import {
   JobPrepSuggestedSearches
 } from "./job-prep-item";
 import {Job} from "./job";
-import {MockJob} from "../MockData/MockJob";
+import {MockSavedSearch} from "../MockData/MockSavedSearch";
+import {MockUser} from "../MockData/MockUser";
+import {TaskType, UploadType} from "./task";
 
-fdescribe('Job Preparation Items', () => {
+fdescribe('JobPrepDueDate', () => {
+  let item: JobPrepDueDate;
+  let job: Job;
 
-
-  describe('JobPrepDueDate', () => {
-    let item: JobPrepDueDate;
-
-    beforeEach(() => {
-      item = new JobPrepDueDate();
-      item.job = MockJob;
-    });
-
-    it('should return true if submission due date is set', () => {
-      expect(item.isCompleted()).toBe(true);
-    });
+  beforeEach(() => {
+    item = new JobPrepDueDate();
+    job = {
+      submissionDueDate: new Date(),
+      submissionList: {
+        id: 1,
+        name: 'Mock Submission List',
+        savedSearchSource: { id: 1 }, // SavedSearchRef example with only id
+        fileJdLink: 'example.com/jd',
+        fileJdName: 'JD File',
+        fileJoiLink: 'example.com/joi',
+        fileJoiName: 'JOI File',
+      },
+      jobSummary: 'This is a job summary',
+      jobOppIntake: {
+        employerCostCommitment: 'Full-time',
+      },
+      suggestedSearches: [new MockSavedSearch()],
+    } as Job;
+    item.job = job;
   });
 
-  describe('JobPrepJD', () => {
-    let item: JobPrepJD;
+  it('should return true if submission due date is set', () => {
+    expect(item.isCompleted()).toBe(true);
+  });
+});
 
-    beforeEach(() => {
-      item = new JobPrepJD();
-      item.job = MockJob;
-    });
+fdescribe('JobPrepJD', () => {
+  let item: JobPrepJD;
+  let job: Job;
 
-    it('should return true if job description (JD) is provided', () => {
-      expect(item.isCompleted()).toBe(true);
-    });
-
-    it('should return false if job description (JD) link is not provided', () => {
-      item.job.submissionList.fileJdLink = '';
-      expect(item.isCompleted()).toBe(false);
-    });
+  beforeEach(() => {
+    item = new JobPrepJD();
+    job = {
+      submissionList: {
+        id: 1,
+        name: 'Mock Submission List',
+        savedSearchSource: { id: 1 }, // SavedSearchRef example with only id
+        fileJdLink: 'example.com/jd',
+        fileJdName: 'JD File',
+        fileJoiLink: 'example.com/joi',
+        fileJoiName: 'JOI File',
+      },
+    } as Job;
+    item.job = job;
   });
 
-  describe('JobPrepJobSummary', () => {
-    let item: JobPrepJobSummary;
-
-    beforeEach(() => {
-      item = new JobPrepJobSummary();
-      item.job = MockJob;
-    });
-
-    it('should return true if job summary is provided', () => {
-      expect(item.isCompleted()).toBe(true);
-    });
-
-    it('should return false if job summary is not provided', () => {
-      item.job.jobSummary = '';
-      expect(item.isCompleted()).toBe(false);
-    });
+  it('should return true if job description (JD) is provided', () => {
+    expect(item.isCompleted()).toBe(true);
   });
 
-  describe('JobPrepJOI', () => {
-    let item: JobPrepJOI;
+  it('should return false if job description (JD) link is not provided', () => {
+    job.submissionList.fileJdLink = '';
+    expect(item.isCompleted()).toBe(false);
+  });
+});
 
-    beforeEach(() => {
-      item = new JobPrepJOI();
-      item.job = MockJob;
-    });
+fdescribe('JobPrepJobSummary', () => {
+  let item: JobPrepJobSummary;
+  let job: Job;
 
-    it('should return true if job opportunity intake (JOI) is provided', () => {
-      expect(item.isCompleted()).toBe(true);
-    });
-
-    it('should return false if employer cost commitment is not provided', () => {
-      item.job.jobOppIntake.employerCostCommitment = '';
-      expect(item.isCompleted()).toBe(false);
-    });
+  beforeEach(() => {
+    item = new JobPrepJobSummary();
+    job = {
+      jobSummary: 'This is a job summary',
+    } as Job;
+    item.job = job;
   });
 
-  describe('JobPrepSuggestedCandidates', () => {
-    let item: JobPrepSuggestedCandidates;
-
-    beforeEach(() => {
-      item = new JobPrepSuggestedCandidates();
-    });
-
-    it('should return false by default (empty is true)', () => {
-      expect(item.isCompleted()).toBe(false);
-    });
+  it('should return true if job summary is provided', () => {
+    expect(item.isCompleted()).toBe(true);
   });
 
-  describe('JobPrepSuggestedSearches', () => {
-    let item: JobPrepSuggestedSearches;
+  it('should return false if job summary is not provided', () => {
+    job.jobSummary = '';
+    expect(item.isCompleted()).toBe(false);
+  });
+});
 
-    beforeEach(() => {
-      item = new JobPrepSuggestedSearches();
-      item.job = MockJob;
-    });
+fdescribe('JobPrepJOI', () => {
+  let item: JobPrepJOI;
+  let job: Job;
 
-    it('should return false if suggested searches are not provided', () => {
-      item.job.suggestedSearches = [];
-      expect(item.isCompleted()).toBe(false);
-    });
+  beforeEach(() => {
+    item = new JobPrepJOI();
+    job = {
+      jobOppIntake: {
+        employerCostCommitment: 'Full-time',
+      },
+    } as Job;
+    item.job = job;
+  });
+
+  it('should return true if job opportunity intake (JOI) is provided', () => {
+    expect(item.isCompleted()).toBe(true);
+  });
+
+  it('should return false if employer cost commitment is not provided', () => {
+    job.jobOppIntake.employerCostCommitment = '';
+    expect(item.isCompleted()).toBe(false);
+  });
+});
+
+fdescribe('JobPrepSuggestedCandidates', () => {
+  let item: JobPrepSuggestedCandidates;
+
+  beforeEach(() => {
+    item = new JobPrepSuggestedCandidates();
+  });
+
+  it('should return false by default (empty is true)', () => {
+    expect(item.isCompleted()).toBe(false);
+  });
+
+  it('should return true if suggested candidates are provided (empty is false)', () => {
+    item.empty = false;
+    expect(item.isCompleted()).toBe(true);
+  });
+});
+
+fdescribe('JobPrepSuggestedSearches', () => {
+  let item: JobPrepSuggestedSearches;
+  let job: Job;
+
+  beforeEach(() => {
+    item = new JobPrepSuggestedSearches();
+    job = {
+      suggestedSearches: [{ name: 'Search 1' }],
+    } as Job;
+    item.job = job;
+  });
+
+  it('should return true if suggested searches are provided', () => {
+    expect(item.isCompleted()).toBe(true);
+  });
+
+  it('should return false if suggested searches are not provided', () => {
+    job.suggestedSearches = [];
+    expect(item.isCompleted()).toBe(false);
   });
 });
