@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -35,12 +36,15 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateQueryHelper;
 import org.tctalent.server.request.PagedSearchRequest;
 
@@ -168,7 +172,9 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      * @param nativeQuery True if native database SQL is required, otherwise JPQL is returned
      * @return String containing the SQL or JPQL
      */
-    public String extractSQL(boolean nativeQuery) {
+    public String extractSQL(boolean nativeQuery,
+        @Nullable User user,
+        @Nullable Collection<Candidate> excludedCandidates) {
 
         Set<String> joins = new LinkedHashSet<>();
         List<String> ands = new ArrayList<>();
@@ -196,7 +202,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         }
 
         // EXCLUDED CANDIDATES (eg from Review Status)
-        //TODO JC This can come from reviewed search - how do we handle that in stats?
+        if (!ObjectUtils.isEmpty(excludedCandidates)) {
+            //TODO JC Native queries extract ids and add in clause
+
+        }
 
         // NATIONALITY SEARCH
         if (!ObjectUtils.isEmpty(getNationalityIds())) {
@@ -221,8 +230,8 @@ public class SearchCandidateRequest extends PagedSearchRequest {
                 ands.add("candidate.country_id not in (" + values + ")");
             }
         // If request ids IS EMPTY only show source countries
-        } else {
-            //TODO JC Logged in user is also input
+        } else if (user != null && !ObjectUtils.isEmpty(user.getSourceCountries())) {
+            //TODO JC Native queries extract ids and add clause
         }
 
         // PARTNER SEARCH
