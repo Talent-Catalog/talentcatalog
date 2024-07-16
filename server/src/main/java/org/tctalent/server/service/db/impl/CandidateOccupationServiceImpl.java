@@ -16,6 +16,11 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,10 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.OccupationRepository;
@@ -34,16 +43,6 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOccupationService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateOccupation;
-import org.tctalent.server.model.db.Occupation;
-import org.tctalent.server.model.db.User;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -168,13 +167,10 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
-        /* Obtain logged in user for audit fields */
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        Candidate candidate = authService.getLoggedInCandidate();
-        if (candidate == null) {
-            throw new InvalidSessionException("Not logged in");
-        }
+        // Fetch updated candidate object from the DB to collect all data updates that may have been made since logging in.
+        Candidate candidate = candidateService.getLoggedInCandidate()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         List<CandidateOccupation> updatedOccupations = new ArrayList<>();
         List<Long> updatedOccupationIds = new ArrayList<>();
 
@@ -237,7 +233,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             }
         }
 
-        candidate.setAuditFields(user);
+        candidate.setAuditFields(candidate.getUser());
         candidateService.save(candidate, true);
 
         return candidateOccupations;

@@ -26,10 +26,7 @@ import org.tctalent.server.model.db.task.UploadType;
 @Getter
 @Setter
 public class CreateCandidateAttachmentRequest {
-
-    /**
-     * Only populated by requests from Admin portal
-     */
+    
     private Long candidateId;
 
     @Enumerated(EnumType.STRING)
