@@ -37,6 +37,7 @@ public enum CandidateOpportunityStage {
         twoWayReview ("2 way review"),
         offer ("Offer"),
         acceptance ("Acceptance"),
+        training("Training"),
         provincialVisaPreparation ("Provincial visa preparation", false, true, false),
         provincialVisaProcessing ("Provincial visa processing", false, true, false),
         visaPreparation ("Visa preparation", false, true, false),
