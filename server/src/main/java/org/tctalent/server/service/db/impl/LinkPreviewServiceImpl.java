@@ -58,7 +58,15 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     linkPreview.setUrl(url);
 
     try {
-      Document doc = Jsoup.connect(url).get();
+      Document doc = Jsoup.connect(url)
+          // Mask Jsoup as browser - evades 403s in some cases.
+          .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+          .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+          .header("Accept-Encoding", "gzip, deflate, br")
+          .header("Accept-Language", "en-US,en;q=0.9")
+          .header("Connection", "keep-alive")
+          .header("Referer", "http://google.com")
+          .get();
 
       // A valid domain name is the minimal threshold content for displaying a preview.
       String domain = getDomain(doc, url);
