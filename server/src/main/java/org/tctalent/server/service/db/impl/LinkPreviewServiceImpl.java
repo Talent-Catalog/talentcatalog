@@ -51,9 +51,9 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       linkPreviewRepository.deleteById(linkPreviewId);
     } catch (EntityReferencedException | InvalidRequestException e) {
       LogBuilder.builder(log)
-          .action("deleteLinkPreview(long linkPreviewId)")
-          .message(e.getMessage())
-          .logInfo();
+          .action("DeleteLinkPreview")
+          .message("Link preview with ID " + linkPreviewId + " could not be deleted.")
+          .logError(e);
 
       return false;
     }
@@ -90,12 +90,10 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       return linkPreview;
 
     } catch (IOException e) {
-      // If doc can't be retrieved, log the error and return null.
-
       LogBuilder.builder(log)
-          .action("BuildLinkPreview > Jsoup.connect(String url).get()")
-          .message(e.getMessage())
-          .logInfo();
+          .action("BuildLinkPreview")
+          .message("Jsoup was unable to retrieve a valied HTML document from this URL.")
+          .logError(e);
 
       return null;
     }
@@ -198,9 +196,9 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
 
     } catch (IllegalArgumentException | MalformedURLException e) {
       LogBuilder.builder(log)
-          .action("convertUrlToDomain(String url)")
-          .message(e.getMessage())
-          .logInfo();
+          .action("ConvertUrlToDomain")
+          .message("String provided doesn't match URI or URL scheme.")
+          .logError(e);
 
       return "";
     }
@@ -310,9 +308,9 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       return statusCode == 200;
     } catch (IOException e) {
       LogBuilder.builder(log)
-          .action("CheckImageIsAccessible(String imageUrl)")
-          .message(e.getMessage())
-          .logInfo();
+          .action("CheckImageIsAccessible")
+          .message("URL doesn't point to an accessible image")
+          .logError(e);
 
       // Return false if there was an exception or non-200 status
       return false;
