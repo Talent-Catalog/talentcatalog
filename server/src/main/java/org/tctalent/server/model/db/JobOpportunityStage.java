@@ -28,6 +28,7 @@ public enum JobOpportunityStage {
         prospect ("Prospect"),
         briefing ("Briefing"),
         pitching ("Pitching"),
+        mou("MOU"),
         identifyingRoles ("Identifying roles"),
         candidateSearch ("Candidate search"),
         visaEligibility ("Visa eligibility"),
@@ -48,7 +49,8 @@ public enum JobOpportunityStage {
         noVisa ("No visa", true, false),
         tooExpensive ("Too expensive", true, false),
         tooHighWage ("Too high wage", true, false),
-        tooLong ("Too long", true, false);
+        tooLong ("Too long", true, false),
+        mouIssue("MOU issue", true, false);
 
         private final String salesforceStageName;
         private final boolean closed;
