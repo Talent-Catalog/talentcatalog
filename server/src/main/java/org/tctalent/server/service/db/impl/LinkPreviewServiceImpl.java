@@ -174,7 +174,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     }
 
     String domain = convertUrlToDomain(url);
-    if (!domain.isEmpty()) return domain;;
+    if (!domain.isEmpty()) return domain;
 
     return null;
   }
