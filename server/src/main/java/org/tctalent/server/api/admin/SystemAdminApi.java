@@ -201,11 +201,12 @@ public class SystemAdminApi {
     @GetMapping("flush_user_cache")
     public void flushUserCache() {
         cacheService.flushUserCache();
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("FlushUserCache")
-            .message("User cache flushed")
-            .logInfo();
+        log.info("User cache flushed");
+//        LogBuilder.builder(log)
+//            .user(authService.getLoggedInUser())
+//            .action("FlushUserCache")
+//            .message("User cache flushed")
+//            .logInfo();
     }
 
     @GetMapping("notifyOfChatsWithNewPosts")
