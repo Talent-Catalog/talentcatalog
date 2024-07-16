@@ -26,18 +26,14 @@ import {Job} from "./job";
 import {MockJob} from "../MockData/MockJob";
 
 fdescribe('Job Preparation Items', () => {
-  let job: Job;
 
-  beforeEach(() => {
-    job = MockJob;
-  });
 
   describe('JobPrepDueDate', () => {
     let item: JobPrepDueDate;
 
     beforeEach(() => {
       item = new JobPrepDueDate();
-      item.job = job;
+      item.job = MockJob;
     });
 
     it('should return true if submission due date is set', () => {
@@ -50,7 +46,7 @@ fdescribe('Job Preparation Items', () => {
 
     beforeEach(() => {
       item = new JobPrepJD();
-      item.job = job;
+      item.job = MockJob;
     });
 
     it('should return true if job description (JD) is provided', () => {
@@ -58,7 +54,7 @@ fdescribe('Job Preparation Items', () => {
     });
 
     it('should return false if job description (JD) link is not provided', () => {
-      job.submissionList.fileJdLink = '';
+      item.job.submissionList.fileJdLink = '';
       expect(item.isCompleted()).toBe(false);
     });
   });
@@ -68,7 +64,7 @@ fdescribe('Job Preparation Items', () => {
 
     beforeEach(() => {
       item = new JobPrepJobSummary();
-      item.job = job;
+      item.job = MockJob;
     });
 
     it('should return true if job summary is provided', () => {
@@ -76,7 +72,7 @@ fdescribe('Job Preparation Items', () => {
     });
 
     it('should return false if job summary is not provided', () => {
-      job.jobSummary = '';
+      item.job.jobSummary = '';
       expect(item.isCompleted()).toBe(false);
     });
   });
@@ -86,7 +82,7 @@ fdescribe('Job Preparation Items', () => {
 
     beforeEach(() => {
       item = new JobPrepJOI();
-      item.job = job;
+      item.job = MockJob;
     });
 
     it('should return true if job opportunity intake (JOI) is provided', () => {
@@ -94,7 +90,7 @@ fdescribe('Job Preparation Items', () => {
     });
 
     it('should return false if employer cost commitment is not provided', () => {
-      job.jobOppIntake.employerCostCommitment = '';
+      item.job.jobOppIntake.employerCostCommitment = '';
       expect(item.isCompleted()).toBe(false);
     });
   });
@@ -110,17 +106,17 @@ fdescribe('Job Preparation Items', () => {
       expect(item.isCompleted()).toBe(false);
     });
   });
-  
+
   describe('JobPrepSuggestedSearches', () => {
     let item: JobPrepSuggestedSearches;
 
     beforeEach(() => {
       item = new JobPrepSuggestedSearches();
-      item.job = job;
+      item.job = MockJob;
     });
 
     it('should return false if suggested searches are not provided', () => {
-      job.suggestedSearches = [];
+      item.job.suggestedSearches = [];
       expect(item.isCompleted()).toBe(false);
     });
   });
