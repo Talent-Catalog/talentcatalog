@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
-import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -48,12 +47,21 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
   @Override
   public boolean deleteLinkPreview(long linkPreviewId)
       throws EntityReferencedException, InvalidRequestException {
-    linkPreviewRepository.deleteById(linkPreviewId);
+    try {
+      linkPreviewRepository.deleteById(linkPreviewId);
+    } catch (EntityReferencedException | InvalidRequestException e) {
+      LogBuilder.builder(log)
+          .action("deleteLinkPreview(long linkPreviewId)")
+          .message(e.getMessage())
+          .logInfo();
+
+      return false;
+    }
     return true;
   }
 
   @Override
-  public @Nullable LinkPreview buildLinkPreview(String url) throws IOException {
+  public @Nullable LinkPreview buildLinkPreview(String url) {
     LinkPreview linkPreview = new LinkPreview();
     linkPreview.setUrl(url);
 
@@ -81,11 +89,11 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
 
       return linkPreview;
 
-    } catch (HttpStatusException e) {
+    } catch (IOException e) {
       // If doc can't be retrieved, log the error and return null.
 
       LogBuilder.builder(log)
-          .action("BuildLinkPreview: Jsoup.connect(url).get()")
+          .action("BuildLinkPreview > Jsoup.connect(String url).get()")
           .message(e.getMessage())
           .logInfo();
 
@@ -190,7 +198,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
 
     } catch (IllegalArgumentException | MalformedURLException e) {
       LogBuilder.builder(log)
-          .action("convertUrlToDomain")
+          .action("convertUrlToDomain(String url)")
           .message(e.getMessage())
           .logInfo();
 
@@ -302,7 +310,7 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
       return statusCode == 200;
     } catch (IOException e) {
       LogBuilder.builder(log)
-          .action("CheckImageIsAccessible")
+          .action("CheckImageIsAccessible(String imageUrl)")
           .message(e.getMessage())
           .logInfo();
 

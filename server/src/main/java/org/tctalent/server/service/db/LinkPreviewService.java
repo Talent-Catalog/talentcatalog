@@ -16,9 +16,6 @@
 
 package org.tctalent.server.service.db;
 
-import java.io.IOException;
-import org.tctalent.server.exception.EntityReferencedException;
-import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.model.db.LinkPreview;
 
 /**
@@ -35,18 +32,13 @@ public interface LinkPreviewService {
    * Receives a URL in String form and returns a LinkPreview for display in Job Chats if successful.
    * @param url URL String of link to be previewed
    * @return Map of LinkPreview or null if unsuccessful
-   * @throws IOException if Jsoup web scraping is unsuccessful
    */
-  LinkPreview buildLinkPreview(String url) throws IOException;
+  LinkPreview buildLinkPreview(String url);
 
   /**
    * @param linkPreviewId ID of record to be deleted
-   * @return boolean confirming successful deletion
-   * @throws EntityReferencedException if the object cannot be deleted because
-   * it is referenced by another object.
-   * @throws InvalidRequestException if not authorized to delete this object.
+   * @return boolean - true if successful, false if not
    */
-  boolean deleteLinkPreview(long linkPreviewId)
-    throws EntityReferencedException, InvalidRequestException;
+  boolean deleteLinkPreview(long linkPreviewId);
 
 }
