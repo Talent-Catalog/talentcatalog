@@ -36,6 +36,7 @@ public enum JobOpportunityStage {
         cvReview ("CV review"),
         recruitmentProcess ("Recruitment process"),
         jobOffer ("Job offer"),
+        training("Training"),
         visaPreparation ("Visa preparation"),
         postHireEngagement ("Post hire engagement"),
         hiringCompleted ("Hiring completed", true, true),
@@ -50,7 +51,8 @@ public enum JobOpportunityStage {
         tooExpensive ("Too expensive", true, false),
         tooHighWage ("Too high wage", true, false),
         tooLong ("Too long", true, false),
-        mouIssue("MOU issue", true, false);
+        mouIssue("MOU issue", true, false),
+        trainingIncomplete("Did not successfully complete training", true, false);
 
         private final String salesforceStageName;
         private final boolean closed;

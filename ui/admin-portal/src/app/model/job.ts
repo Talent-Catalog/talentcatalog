@@ -81,9 +81,10 @@ export enum JobOpportunityStage {
   cvReview = "8. CV review",
   recruitmentProcess = "9. Recruitment process",
   jobOffer = "10. Job offer",
-  visaPreparation = "11. Visa preparation",
-  postHireEngagement = "12. Post hire engagement",
-  hiringCompleted = "13. Closed won. Hiring completed",
+  training = "11. Training",
+  visaPreparation = "12. Visa preparation",
+  postHireEngagement = "13. Post hire engagement",
+  hiringCompleted = "14. Closed won. Hiring completed",
   ineligibleEmployer = "Closed. Ineligible employer",
   ineligibleOccupation = "Closed. Ineligible occupation",
   ineligibleRegion = "Closed. Ineligible region",
@@ -96,6 +97,7 @@ export enum JobOpportunityStage {
   tooHighWage = "Closed. Too high wage",
   tooLong = "Closed. Too long",
   mouIssue = "Closed. MOU issue",
+  trainingIncomplete = "Closed. Did not successfully complete training",
 }
 
 /**
