@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,19 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.exception;
-
-public class ExpiredTokenException extends ServiceException {
-
-    public ExpiredTokenException() {
-        super("expired_password_token", "The reset password token has expired");
-    }
-
-    public ExpiredTokenException(String message) {
-        super("expired_password_token", message);
-    }
-
-    public ExpiredTokenException(Throwable cause) {
-        super("expired_password_token", "The reset password token has expired", cause);
-    }
-}
+export const ERROR_MESSAGES = {
+  EXPIRED_OR_INVALID_JWT: 'Expired or invalid JWT token'
+};
