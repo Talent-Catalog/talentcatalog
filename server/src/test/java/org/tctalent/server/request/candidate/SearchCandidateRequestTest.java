@@ -59,7 +59,7 @@ class SearchCandidateRequestTest {
         String sql = request.extractSQL(true);
         assertEquals(
             "select distinct candidate.id from candidate "
-                + "join users on candidate.user_id = users.id "
+                + "left join users on candidate.user_id = users.id "
                 + "where users.partner_id in (123,456)", sql);
     }
 
@@ -74,8 +74,8 @@ class SearchCandidateRequestTest {
         String sql = request.extractSQL(true);
         assertEquals(
             "select distinct candidate.id from candidate "
-                + "join users on candidate.user_id = users.id "
-                + "join education_level on candidate.max_education_level_id = education_level.id "
+                + "left join users on candidate.user_id = users.id "
+                + "left join education_level on candidate.max_education_level_id = education_level.id "
                 + "where users.partner_id in (123,456) and education_level.level >= 1"
                 , sql);
     }
@@ -88,7 +88,7 @@ class SearchCandidateRequestTest {
         request.setEducationMajorIds(majorIds);
         String sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
-                + "join candidate_education on candidate.id = candidate_education.candidate_id "
+                + "left join candidate_education on candidate.id = candidate_education.candidate_id "
                 + "where (major_id in (123) or migration_education_major_id in (123))"
                 , sql);
     }
@@ -130,20 +130,20 @@ class SearchCandidateRequestTest {
         request.setOccupationIds(occupationIds);
         String sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
-            + "join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
+            + "left join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
             + "where candidate_occupation.occupation_id in (9426)", sql);
 
         request.setMinYrs(1);
         sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
-            + "join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
+            + "left join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
             + "where candidate_occupation.occupation_id in (9426) "
             + "and candidate_occupation.years_experience >= 1", sql);
 
         request.setMaxYrs(5);
         sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
-            + "join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
+            + "left join candidate_occupation on candidate.id = candidate_occupation.candidate_id "
             + "where candidate_occupation.occupation_id in (9426) "
             + "and candidate_occupation.years_experience >= 1 "
             + "and candidate_occupation.years_experience <= 5", sql);
@@ -155,18 +155,18 @@ class SearchCandidateRequestTest {
         request.setEnglishMinSpokenLevel(2);
         String sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
-            + "join candidate_language on candidate.id = candidate_language.candidate_id "
-            + "join language on candidate_language.language_id = language.id "
-            + "join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
+            + "left join candidate_language on candidate.id = candidate_language.candidate_id "
+            + "left join language on candidate_language.language_id = language.id "
+            + "left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
             + "where lower(language.name) = 'english' and spoken_level.level >= 2", sql);
 
         request.setEnglishMinWrittenLevel(2);
         sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
-            + "join candidate_language on candidate.id = candidate_language.candidate_id "
-            + "join language on candidate_language.language_id = language.id "
-            + "join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
-            + "join language_level as written_level on candidate_language.written_level_id = written_level_id "
+            + "left join candidate_language on candidate.id = candidate_language.candidate_id "
+            + "left join language on candidate_language.language_id = language.id "
+            + "left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
+            + "left join language_level as written_level on candidate_language.written_level_id = written_level_id "
             + "where lower(language.name) = 'english' and spoken_level.level >= 2 "
             + "and written_level.level >= 2", sql);
 
@@ -174,10 +174,10 @@ class SearchCandidateRequestTest {
         request.setOtherMinSpokenLevel(3);
         sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
-            + "join candidate_language on candidate.id = candidate_language.candidate_id "
-            + "join language on candidate_language.language_id = language.id "
-            + "join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
-            + "join language_level as written_level on candidate_language.written_level_id = written_level_id "
+            + "left join candidate_language on candidate.id = candidate_language.candidate_id "
+            + "left join language on candidate_language.language_id = language.id "
+            + "left join language_level as spoken_level on candidate_language.spoken_level_id = spoken_level_id "
+            + "left join language_level as written_level on candidate_language.written_level_id = written_level_id "
             + "where lower(language.name) = 'english' and spoken_level.level >= 2 "
             + "and written_level.level >= 2 "
             + "and candidate_language.language_id = 344 and spoken_level.level >= 3", sql);

@@ -365,12 +365,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             }
         }
 
-        String joinClause = String.join(" join ", joins);
+        String joinClause = String.join(" left join ", joins);
         String whereClause = String.join(" and ", ands);
 
         String query = "select distinct candidate.id from candidate";
         if (!joinClause.isEmpty()) {
-            query += " join " + joinClause;
+            query += " left join " + joinClause;
         }
         if (!whereClause.isEmpty()) {
             query += " where " + whereClause;
