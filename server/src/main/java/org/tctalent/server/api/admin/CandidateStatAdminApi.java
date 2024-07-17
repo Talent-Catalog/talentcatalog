@@ -40,9 +40,11 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.StatReport;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CountryRepository;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CandidateStatsService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -54,6 +56,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class CandidateStatAdminApi {
 
     private final CandidateService candidateService;
+    private final CandidateStatsService candidateStatsService;
     private final CountryRepository countryRepository;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
@@ -71,6 +74,110 @@ public class CandidateStatAdminApi {
     public List<Map<String, Object>> getAllStats(
             @RequestBody CandidateStatsRequest request)
             throws NoSuchObjectException {
+
+        List<StatReport> statReports;
+
+        boolean runOldStats = request.getRunOldStats();
+        if (runOldStats) {
+            statReports = getAllStatsByOldMethod(request);
+        } else {
+            statReports = getAllStatsByNewMethod(request);
+        }
+
+        //Construct the dto - just a list of all individual report dtos
+        List<Map<String, Object>> dto = new ArrayList<>();
+        for (StatReport statReport: statReports) {
+            dto.add(statDto().buildReport(statReport));
+        }
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .listId(request.getListId())
+            .searchId(request.getSearchId())
+            .action("Get all stats")
+            .message("Returning all stats")
+            .logInfo();
+
+        return dto;
+    }
+
+    private List<StatReport> getAllStatsByNewMethod(CandidateStatsRequest request) {
+        //Pick up any source country restrictions based on current user
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
+
+        //Default any null dates
+        convertDateRangeDefaults(request);
+
+        //Check whether the requested data to report on is from a set of candidates
+        List<StatReport> statReports = null;
+        if (request.getListId() != null) {
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .listId(request.getListId())
+                .action("Get all stats")
+                .message("Getting all stats for list with id: " + request.getListId())
+                .logInfo();
+
+            //Get candidates from list
+            SavedList list = savedListService.get(request.getListId());
+            Set<Candidate> candidates = list.getCandidates();
+
+            Set<Long> candidateIds = new HashSet<>();
+            for (Candidate candidate : candidates) {
+                candidateIds.add(candidate.getId());
+            }
+
+            convertDateRangeDefaults(request);
+
+            //Report based on set of candidates or date range
+            statReports = createNewReports(
+                request.getDateFrom(), request.getDateTo(),
+                candidateIds, sourceCountryIds, null);
+        } else if (request.getSearchId() != null) {
+
+            SearchCandidateRequest searchRequest =
+                savedSearchService.loadSavedSearch(request.getSearchId());
+            String sql = searchRequest.extractSQL(true);
+            String constraintPredicate = "candidate.id in (" + sql + ")";
+
+            statReports = createNewReports(
+                request.getDateFrom(), request.getDateTo(),
+                null, sourceCountryIds, constraintPredicate);
+        }
+        return statReports;
+    }
+
+    private List<StatReport> createNewReports(
+        LocalDate dateFrom,
+        LocalDate dateTo,
+        Set<Long> candidateIds,
+        List<Long> sourceCountryIds,
+        String constraint) {
+
+        String title;
+        String chartType;
+
+        List<StatReport> statReports = new ArrayList<>();
+
+        title = "Birth years";
+        chartType = "bar";
+        statReports.add(new StatReport(title,
+            candidateStatsService.computeBirthYearStats(
+                null, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint),
+            chartType));
+        statReports.add(new StatReport(title + " (male)",
+            candidateStatsService.computeBirthYearStats(
+                Gender.male, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint),
+            chartType));
+        statReports.add(new StatReport(title + " (female)",
+            candidateStatsService.computeBirthYearStats(
+                Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint), chartType));
+
+        return statReports;
+    }
+
+    private List<StatReport> getAllStatsByOldMethod(CandidateStatsRequest request) {
 
         //Pick up any source country restrictions based on current user
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
@@ -115,26 +222,11 @@ public class CandidateStatAdminApi {
         //Report based on set of candidates or date range
         List<StatReport> statReports;
         if (candidateIds != null) {
-            statReports = createReports(request.getDateFrom(), request.getDateTo(),  candidateIds, sourceCountryIds);
+            statReports = createOldReports(request.getDateFrom(), request.getDateTo(),  candidateIds, sourceCountryIds);
         } else {
-            statReports = createReports(request.getDateFrom(), request.getDateTo(), sourceCountryIds);
+            statReports = createOldReports(request.getDateFrom(), request.getDateTo(), sourceCountryIds);
         }
-
-        //Construct the dto - just a list of all individual report dtos
-        List<Map<String, Object>> dto = new ArrayList<>();
-        for (StatReport statReport: statReports) {
-            dto.add(statDto().buildReport(statReport));
-        }
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .listId(request.getListId())
-            .searchId(request.getSearchId())
-            .action("Get all stats")
-            .message("Returning all stats")
-            .logInfo();
-
-        return dto;
+        return statReports;
     }
 
     /**
@@ -150,7 +242,7 @@ public class CandidateStatAdminApi {
         }
     }
 
-    private List<StatReport> createReports(
+    private List<StatReport> createOldReports(
             LocalDate dateFrom,
             LocalDate dateTo,
             List<Long> sourceCountryIds ) {
@@ -296,7 +388,7 @@ public class CandidateStatAdminApi {
             candidateService.computeSpokenLanguageLevelStats(Gender.female, language, dateFrom, dateTo, sourceCountryIds)));
     }
 
-    private List<StatReport> createReports(
+    private List<StatReport> createOldReports(
         LocalDate dateFrom,
         LocalDate dateTo,
         Set<Long> candidateIds,

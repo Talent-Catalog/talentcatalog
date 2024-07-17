@@ -72,8 +72,13 @@
 
     <div class="row my-4">
       <div class="col">
-        <button class="btn btn-success float-end" (click)="submitStatsRequest()">
+        <button class="btn btn-success float-end" (click)="submitStatsRequest(true)">
           <i class="fas fa-calendar-alt"></i> Run stats
+        </button>
+      </div>
+      <div class="col">
+        <button class="btn btn-success float-end" (click)="submitStatsRequest(false)">
+          <i class="fas fa-calendar-alt"></i> Run new stats
         </button>
       </div>
     </div>
