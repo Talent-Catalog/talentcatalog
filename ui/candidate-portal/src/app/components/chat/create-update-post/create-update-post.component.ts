@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -22,6 +22,11 @@ import Quill from 'quill';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {LinkPreview} from "../../../model/link-preview";
+import {
+  BuildLinkPreviewRequest,
+  LinkPreviewService
+} from "../../../services/link-preview.service";
 
 @Component({
   selector: 'app-create-update-post',
@@ -31,25 +36,28 @@ import {FileSelectorComponent} from "../../util/file-selector/file-selector.comp
 export class CreateUpdatePostComponent implements OnInit {
   @Input() chat: JobChat;
 
-  @ViewChild('editorPickerSpan') editorPickerSpan: ElementRef;
-
   error: any;
   saving: any;
   postForm: FormGroup;
   quillEditorRef: Quill;
   public emojiPickerVisible: boolean = false;
+  regexpLink: RegExp;
+  storedUrls: string[] = [];
+  linkPreviews: LinkPreview[] = [];
 
   constructor(
     private fb: FormBuilder,
     private rxStompService: RxStompService,
     private modalService: NgbModal,
-    private chatPostService: ChatPostService
+    private chatPostService: ChatPostService,
+    private linkPreviewService: LinkPreviewService,
   ) {}
 
   ngOnInit() {
     this.postForm = this.fb.group({
       content: ["", Validators.required]
     });
+    this.regexpLink = new RegExp('<a href="(\\S+)"', 'gi');
   }
 
   editorCreated(quill: Quill) {
@@ -85,7 +93,8 @@ export class CreateUpdatePostComponent implements OnInit {
   onSend() {
     if (this.chat) {
       const post: Post = {
-        content: this.contentControl.value
+        content: this.contentControl.value,
+        linkPreviews: this.attachLinkPreviews()
       }
       const body = JSON.stringify(post);
       //todo See retryIfDisconnected in publish doc
@@ -124,14 +133,88 @@ export class CreateUpdatePostComponent implements OnInit {
     this.quillEditorRef.setSelection(index + 2, 0);
   }
 
-  // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
-  public onClickEmojiBtn() {
+  // Toggles the emoji picker on or off and focuses the caret.
+  public toggleEmojiPicker() {
     this.emojiPickerVisible = !this.emojiPickerVisible;
-    // If closing the picker, focus the caret in editor.
+    // When closing, focus the caret in editor.
     if(!this.emojiPickerVisible) {
       const index: number = this.quillEditorRef.selection.savedRange.index;
       this.quillEditorRef.setSelection(index, 0);
     }
+  }
+
+  // Checks editor content for any links
+  public checkForLinks(event) {
+    if (event.html === null) {
+      this.clearLinkPreviews()
+    } else {
+      const editorHtmlContent = event.html
+      const liveUrls: string[] = [];
+      const liveMatches: string[][] = [...editorHtmlContent.matchAll(this.regexpLink)]
+      if (liveMatches.length > 0) {
+        // More useful to have just the URLs vs the entire regex match array.
+        liveMatches.forEach(match => {
+          liveUrls.push(match[1]);
+        })
+      }
+      // We only need to run this check if there's something in either array.
+      if (liveUrls.length > 0 || this.storedUrls.length > 0) this.compareUrlArrays(liveUrls);
+    }
+  }
+
+  private compareUrlArrays(liveUrls: string[]) {
+    for (const url of liveUrls) {
+      if (!this.storedUrls.includes(url)) {
+        this.addLinkPreview(url)
+      }
+    }
+
+    for (const url of this.storedUrls) {
+      if (!liveUrls.includes(url)) {
+        this.removeLinkPreview(url)
+      }
+    }
+  }
+
+  private addLinkPreview(url: string) {
+    // Add to storedUrls array
+    this.storedUrls.push(url);
+
+    // Build and include its linkPreview
+    let request: BuildLinkPreviewRequest = {url: url};
+    this.linkPreviewService.buildLinkPreview(request).subscribe(
+      linkPreview => {
+        // Checks that valid linkPreview has been returned and pushes to array if so.
+        if (linkPreview.domain) this.linkPreviews.push(linkPreview);
+      }
+    )
+  }
+
+  private removeLinkPreview(url: string) {
+    // Remove from storedUrls array
+    this.storedUrls.splice(this.storedUrls.indexOf(url), 1);
+
+    // Remove its linkPreview
+    this.linkPreviews.forEach(linkPreview => {
+      if (linkPreview.url === url) {
+        this.linkPreviews.splice(this.linkPreviews.indexOf(linkPreview), 1);
+      }
+    })
+  }
+
+  private clearLinkPreviews() {
+    this.storedUrls = [];
+    this.linkPreviews = [];
+  }
+
+  // We don't want to save any linkPreviews that the user has blocked
+  private attachLinkPreviews(): LinkPreview[] {
+    if (this.linkPreviews.length > 0) {
+      return this.linkPreviews.filter(
+        linkPreview => !linkPreview.blocked
+        )
+    }
+    return this.linkPreviews;
   }
 
 }

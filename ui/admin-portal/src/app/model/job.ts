@@ -29,9 +29,12 @@ export function isJob(opp: Opportunity): opp is Job {
   return !isCandidateOpportunity(opp);
 }
 
-export interface ShortJob {
+export interface JobNameAndId {
   id: number,
   name: string;
+}
+
+export interface ShortJob extends JobNameAndId {
   country?: Country;
   submissionList?: ShortSavedList;
   jobCreator?: ShortPartner;
@@ -43,6 +46,7 @@ export interface Job extends Opportunity {
   contactUser: User;
   country: Country;
   employerEntity: Employer;
+  evergreen: boolean;
   exclusionList: SavedList;
   jobSummary: string;
   publishedBy: User;
@@ -61,7 +65,7 @@ export function getJobExternalHref(router: Router, location: Location, job: Job)
   return getExternalHref(router, location, ['job', job.id]);
 }
 
-export type JobDocType = "jd" | "joi" | "interview";
+export type JobDocType = "jd" | "joi" | "interview" | "mou";
 
 /**
  * Note that the string values of this enum MUST match the actual stage names for job
@@ -100,15 +104,16 @@ export enum JobOpportunityStage {
  * Adds extra job opportunity specific fields to standard SearchOpportunityRequest
  */
 export class SearchJobRequest extends SearchOpportunityRequest {
-  published?: boolean;
   starred?: boolean;
+  jobNameAndIdOnly?: boolean;
 }
 
 export interface UpdateJobRequest extends OpportunityProgressParams {
   contactUserId?: number;
+  evergreen?: boolean;
   roleName?: string;
   sfId?: string;
   sfJoblink?: string;
   submissionDueDate?: Date;
+  jobToCopyId?: number;
 }
-

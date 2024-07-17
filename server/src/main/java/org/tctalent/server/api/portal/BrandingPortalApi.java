@@ -17,13 +17,13 @@
 package org.tctalent.server.api.portal;
 
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -33,8 +33,8 @@ import org.tctalent.server.util.dto.DtoBuilder;
  */
 @RestController()
 @RequestMapping("/api/portal/branding")
+@Slf4j
 public class BrandingPortalApi {
-    private static final Logger log = LoggerFactory.getLogger(BrandingPortalApi.class);
 
     private final BrandingService brandingService;
 
@@ -52,7 +52,10 @@ public class BrandingPortalApi {
         @RequestParam(value = "p", required = false) final String partnerAbbreviation) {
 
         if (partnerAbbreviation != null) {
-            log.info("Branding Info fetched with partner query param: 'p=" + partnerAbbreviation + "'");
+            LogBuilder.builder(log)
+                .action("Get branding info")
+                .message("Branding Info fetched with partner query param: 'p=" + partnerAbbreviation + "'")
+                .logInfo();
         }
         BrandingInfo info = brandingService.getBrandingInfo(partnerAbbreviation);
         return brandingInfoDto().build(info);

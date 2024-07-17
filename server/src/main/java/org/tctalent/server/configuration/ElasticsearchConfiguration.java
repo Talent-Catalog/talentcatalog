@@ -19,10 +19,8 @@ package org.tctalent.server.configuration;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +29,7 @@ import org.springframework.data.elasticsearch.client.RestClients;
 import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.lang.NonNull;
+import org.tctalent.server.logging.LogBuilder;
 
 /**
  * Based on
@@ -42,6 +41,7 @@ import org.springframework.lang.NonNull;
  */
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "org.tctalent.server.repository.es")
+@Slf4j
 public class ElasticsearchConfiguration extends AbstractElasticsearchConfiguration {
 
     @Value("${spring.elasticsearch.uris}")
@@ -50,8 +50,6 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
     private String username;
     @Value("${spring.elasticsearch.password}")
     private String password;
-
-    private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
 
     @Override
     @Bean
@@ -63,7 +61,10 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
                 String protocol = uri.getScheme();
                 boolean useSsl = "https".equals(protocol);
 
-                log.info("Connecting to Elasticsearch at " + hostAndPort);
+                LogBuilder.builder(log)
+                    .action("ElasticsearchConfiguration")
+                    .message("Connecting to Elasticsearch at " + hostAndPort)
+                    .logInfo();
 
                 ClientConfiguration.MaybeSecureClientConfigurationBuilder x
                         = ClientConfiguration.builder().connectedTo(hostAndPort);

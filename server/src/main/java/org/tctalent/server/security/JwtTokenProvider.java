@@ -27,12 +27,12 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.util.Date;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Role;
 
 /**
@@ -46,9 +46,8 @@ import org.tctalent.server.model.db.Role;
  * a Base64 secret key suitable for putting in the configuration.
  */
 @Component
+@Slf4j
 public class JwtTokenProvider implements InitializingBean {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     @Value("${jwt.secret}")
     private String jwtSecretBase64;
@@ -104,15 +103,30 @@ public class JwtTokenProvider implements InitializingBean {
             Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
-            logger.error("Invalid JWT signature");
+            LogBuilder.builder(log)
+                .action("validateToken")
+                .message("Invalid JWT signature: " + ex.getMessage())
+                .logError();
         } catch (MalformedJwtException ex) {
-            logger.error("Invalid JWT token");
+            LogBuilder.builder(log)
+                .action("validateToken")
+                .message("Invalid JWT token: " + ex.getMessage())
+                .logError();
         } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token");
+            LogBuilder.builder(log)
+                .action("validateToken")
+                .message("Expired JWT token for: " + ex.getClaims().getSubject())
+                .logError();
         } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token");
+            LogBuilder.builder(log)
+                .action("validateToken")
+                .message("Unsupported JWT token: " + ex.getMessage())
+                .logError();
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty.");
+            LogBuilder.builder(log)
+                .action("validateToken")
+                .message("JWT claims string is empty: " + ex.getMessage())
+                .logError();
         }
         return false;
     }

@@ -711,6 +711,7 @@ const ALL_FIELDS = {
       "HEADER": null,
       "POST-HEADER": null,
       "POST-SEND": null,
+      "MARK-AS-READ": null,
       "NO-POSTS": null,
   }
 }

@@ -29,15 +29,15 @@ import lombok.ToString;
  * a small number of fields. Just values for those fields will be populated
  * in the class. All other fields will be null.
  * <p/>
- * Null fields are ignored - non null fields update the database.
+ * Null fields are ignored - non-null fields update the database.
  *
  * @author John Cameron
  */
 @Getter
 @Setter
 @ToString
-public class JobIntakeData {
-    @Nullable Long jobOppIntakeId;
+public class JobIntakeData implements IJobIntakeData {
+    @Nullable Long Id;
     private String salaryRange;
     private String recruitmentProcess;
     private String employerCostCommitment;

@@ -16,8 +16,11 @@
 
 package org.tctalent.server.service.db.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -29,11 +32,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.w3c.tidy.Tidy;
 import org.xhtmlrenderer.pdf.ITextRenderer;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.regex.Pattern;
 
 /**
  * Service for generating PDFs using Flying Saucer and Thymeleaf templates.
@@ -47,9 +45,8 @@ import java.util.regex.Pattern;
  * /test.pdf
  */
 @Service
+@Slf4j
 public class PdfHelper {
-
-    private static final Logger log = LoggerFactory.getLogger(PdfHelper.class);
 
     @Value("${server.url}")
     private String serverUrl;

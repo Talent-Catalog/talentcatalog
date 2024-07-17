@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Country;
@@ -47,13 +47,12 @@ import org.tctalent.server.service.db.JobService;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HelpLinkServiceImpl implements HelpLinkService {
     private final HelpLinkRepository helpLinkRepository;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CountryService countryService;
     private final JobService jobService;
-
-    private static final Logger log = LoggerFactory.getLogger(HelpLinkServiceImpl.class);
 
     @Override
     public @NotNull HelpLink createHelpLink(UpdateHelpLinkRequest request)  throws NoSuchObjectException {
@@ -101,8 +100,11 @@ public class HelpLinkServiceImpl implements HelpLinkService {
             if (standardDocLink != null) {
                 helpLinks.add(standardDocLink);
             } else {
-               log.warn("Could not find standard stage doc " +
-                   (caseStage != null ? caseStage : jobStage));
+               LogBuilder.builder(log)
+                   .action("FetchHelp")
+                   .message("Could not find standard stage doc " +
+                       (caseStage != null ? caseStage : jobStage))
+                   .logWarn();
             }
         }
 

@@ -2,7 +2,7 @@
 <div *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
-<div *ngIf="error">
+<div *ngIf="error" class="error-message">
   {{error}}
 </div>
 <div *ngIf="!loading">
@@ -57,7 +57,9 @@
         <app-cost-commit-employer
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
+          [editable]="!loggedInUser.readOnly"
+          (intakeChanged)="onIntakeChanged($event)"
+        >
         </app-cost-commit-employer>
       </ng-template>
     </ngb-panel>

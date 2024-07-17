@@ -25,4 +25,8 @@ export class ListHomeComponent extends HomeComponent {
     this.defaultTabId = 'MyLists';
   }
 
+  seesPublicLists() {
+    //Employers are not interested in public lists
+    return !this.authorizationService.isEmployerPartner();
+  }
 }

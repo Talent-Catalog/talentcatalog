@@ -31,6 +31,7 @@ import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SearchType;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.request.PagedSearchRequest;
 
 /*
@@ -109,6 +110,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Long otherLanguageId;
     private Integer otherMinWrittenLevel;
     private Integer otherMinSpokenLevel;
+    private List<UnhcrStatus> unhcrStatuses;
 
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate lastModifiedFrom;
@@ -141,6 +143,8 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      *     <li>closedOpps</li>
      *     <li>relocatedOpps</li>
      * </ul>
+     *
+     * Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
      */
     private CandidateFilterByOpps candidateFilterByOpps;
 

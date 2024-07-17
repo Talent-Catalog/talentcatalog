@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -119,6 +120,7 @@ class UserAdminApiTest extends ApiTestBase {
             .willReturn(users);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -177,6 +179,7 @@ class UserAdminApiTest extends ApiTestBase {
             .willReturn(userPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -321,6 +324,7 @@ class UserAdminApiTest extends ApiTestBase {
         .willReturn(fullUser);
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -378,6 +382,7 @@ class UserAdminApiTest extends ApiTestBase {
         .willReturn(fullUser);
 
     mockMvc.perform(put(BASE_PATH + "/" + USER_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -432,6 +437,7 @@ class UserAdminApiTest extends ApiTestBase {
 
     mockMvc.perform(put(BASE_PATH + "/" + UPDATE_PASSWORD_PATH
             .replace("{id}", Long.toString(USER_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -448,6 +454,7 @@ class UserAdminApiTest extends ApiTestBase {
 
     mockMvc.perform(put(BASE_PATH + "/" + MFA_RESET_PATH
             .replace("{id}", Long.toString(USER_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 
@@ -461,7 +468,8 @@ class UserAdminApiTest extends ApiTestBase {
   void deleteUserByIdSucceeds() throws Exception {
 
     mockMvc.perform(delete(BASE_PATH + "/" + USER_ID)
-            .header("Authorization", "Bearer " + "jwt-token"))
+            .header("Authorization", "Bearer " + "jwt-token")
+            .with(csrf()))
 
         .andExpect(status().isOk());
 

@@ -24,10 +24,9 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -35,12 +34,12 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -65,20 +64,18 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @Service
+@Slf4j
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
-
-    private static final Logger log = LoggerFactory.getLogger(CandidateAttachmentsServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final FileSystemService fileSystemService;
-    private final GoogleDriveConfig googleDriveConfig;
     private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
 
-    @Value("{aws.s3.bucketName}")
+    @Value("${aws.s3.bucketName}")
     String s3Bucket;
 
     @Autowired
@@ -86,13 +83,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                                            CandidateService candidateService,
                                            CandidateAttachmentRepository candidateAttachmentRepository,
                                            FileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
-                                           GoogleDriveConfig googleDriveConfig,
                                            AuthService authService) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.fileSystemService = fileSystemService;
-        this.googleDriveConfig = googleDriveConfig;
         this.s3ResourceHelper = s3ResourceHelper;
         this.authService = authService;
         this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
@@ -193,7 +188,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), source);
             // Copy the file from temp folder in s3 into the candidate's folder on S3
             this.s3ResourceHelper.copyObject(source, destination);
-            log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("CreateCandidateAttachment")
+                .message("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]")
+                .logInfo();
 
             // The location is set to the filename because we can derive it's location from the candidate number
             attachment.setLocation(uniqueFilename);
@@ -210,7 +210,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                         candidateAttachmentRepository.save(attachment);
                     }
                 } catch (Exception e) {
-                    log.error("Could not extract text from uploaded cv file", e);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("CreateCandidateAttachment")
+                        .message("Could not extract text from uploaded cv file")
+                        .logError(e);
+
                     attachment.setTextExtract(null);
                 }
                 attachment.setCv(request.getCv());
@@ -291,13 +296,21 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                         try {
                             fileSystemService.renameFile(fsf);
                         } catch (IOException e) {
-                            log.error("Could not rename attachment in Google Drive: " + candidateAttachment.getName(), e);
+                            LogBuilder.builder(log)
+                                .user(authService.getLoggedInUser())
+                                .action("DeleteCandidateAttachment")
+                                .message("Could not rename attachment in Google Drive: " + candidateAttachment.getName())
+                                .logError(e);
                         }
                     } else {
                         try {
                             fileSystemService.deleteFile(fsf);
                         } catch (IOException e) {
-                            log.error("Could not delete attachment from Google Drive: " + fsf, e);
+                            LogBuilder.builder(log)
+                                .user(authService.getLoggedInUser())
+                                .action("DeleteCandidateAttachment")
+                                .message("Could not delete attachment from Google Drive: " + fsf)
+                                .logError(e);
                         }
 
                     }
@@ -400,9 +413,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                             candidateAttachmentRepository.save(candidateAttachment);
                         }
                     } catch (Exception e) {
-                        log.error(
-                            "Unable to extract text from file " + candidateAttachment.getLocation(),
-                            e.getMessage());
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("UpdateCandidateAttachment")
+                            .message("Unable to extract text from file " + candidateAttachment.getLocation())
+                            .logError(e);
+
                         candidateAttachment.setTextExtract(null);
                     }
                 }
@@ -483,13 +499,21 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 textExtract = textExtractHelper
                     .getTextExtractFromFile(tempFile, fileType);
             } catch (Exception e) {
-                log.error("Could not extract text from uploaded file", e);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("UploadAttachment")
+                    .message("Could not extract text from uploaded file")
+                    .logError(e);
             }
         }
 
         //Delete tempfile
         if (!tempFile.delete()) {
-            log.error("Failed to delete temporary file " + tempFile);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("UploadAttachment")
+                .message("Failed to delete temporary file " + tempFile)
+                .logError();
         }
 
         //Now create corresponding CandidateAttachment record.

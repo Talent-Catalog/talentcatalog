@@ -22,12 +22,6 @@
       <div *ngIf="selectedChat">
         <strong>{{selectedChatDisplayName}}</strong>
 
-        <div class="d-flex justify-content-end">
-          <button type="button" class="btn btn-success " (click)="onMarkChatAsRead()">
-            Mark as Read <i class="fa-solid"></i>
-          </button>
-        </div>
-
         <div class="alert alert-danger" *ngIf="error">
           {{error}}
         </div>

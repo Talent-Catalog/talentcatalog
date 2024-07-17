@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -95,6 +96,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .willReturn(getSavedLists());
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH.replace("{id}", "1"))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -154,6 +156,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
     HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
 
     mockMvc.perform(put(BASE_PATH + REPLACE_PATH.replace("{id}", String.valueOf(CANDIDATE_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -188,6 +191,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
     HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
 
     mockMvc.perform(put(BASE_PATH + MERGE_PATH.replace("{id}", "1"))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -207,6 +211,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
     HasSetOfSavedListsImpl request = new HasSetOfSavedListsImpl();
 
     mockMvc.perform(put(BASE_PATH + REMOVE_PATH.replace("{id}", "1"))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -226,6 +231,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
     SearchSavedListRequest request = new SearchSavedListRequest();
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH.replace("{id}", "1"))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))

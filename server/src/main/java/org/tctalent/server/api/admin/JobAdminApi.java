@@ -115,8 +115,18 @@ public class JobAdminApi implements
     @PostMapping("search-paged")
     public @NotNull Map<String, Object> searchPaged(@Valid SearchJobRequest request) {
         Page<SalesforceJobOpp> jobs = jobService.searchJobs(request);
-        final Map<String, Object> objectMap = jobDto().buildPage(jobs);
+        final DtoBuilder builder =
+            Boolean.TRUE.equals(request.getJobNameAndIdOnly()) ? jobNameAndIdDto() : jobDto();
+        final Map<String, Object> objectMap = builder.buildPage(jobs);
         return objectMap;
+    }
+
+    @Override
+    public @NotNull List<Map<String, Object>> search(@Valid SearchJobRequest request) {
+        List<SalesforceJobOpp> jobs = jobService.searchJobsUnpaged(request);
+        final DtoBuilder builder =
+                Boolean.TRUE.equals(request.getJobNameAndIdOnly()) ? jobNameAndIdDto() : jobDto();
+        return builder.buildList(jobs);
     }
 
     @Override
@@ -148,6 +158,14 @@ public class JobAdminApi implements
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateInterviewGuidanceLink(id, updateLinkRequest);
+        return jobDto().build(job);
+    }
+
+    @PutMapping("{id}/mou-link")
+    public @NotNull Map<String, Object> updateMouLink(
+            @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateMouLink(id, updateLinkRequest);
         return jobDto().build(job);
     }
 
@@ -191,6 +209,21 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PostMapping("{id}/upload/mou")
+    public @NotNull Map<String, Object> uploadMou(
+            @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
+            throws InvalidRequestException, IOException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.uploadMou(id, file);
+        return jobDto().build(job);
+    }
+
+    private DtoBuilder jobNameAndIdDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
+    }
+
     private DtoBuilder jobDto() {
         return new DtoBuilder()
             .add("id")
@@ -200,6 +233,7 @@ public class JobAdminApi implements
             .add("createdBy", shortUserDto())
             .add("createdDate")
             .add("employerEntity", employerDto())
+            .add("evergreen")
             .add("hiringCommitment")
             .add("opportunityScore")
             .add("exclusionList", savedListBuilderSelector.selectBuilder())

@@ -28,18 +28,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.email.EmailSender;
 import org.tctalent.server.service.db.util.PartnerDatabaseDefinition;
@@ -75,8 +73,8 @@ import org.tctalent.server.service.db.util.PartnerTableDefinition;
  * See https://dev.mysql.com/doc/refman/8.0/en/load-data.html
  */
 @Service
+@Slf4j
 public class DataSharingServiceImpl implements DataSharingService {
-    private static final Logger log = LoggerFactory.getLogger(DataSharingServiceImpl.class);
 
     @Value("${spring.datasource.url}")
     private String masterJdbcUrl;
@@ -126,19 +124,30 @@ public class DataSharingServiceImpl implements DataSharingService {
 
             for (PartnerDatabaseDefinition destination : destinations) {
 
-                log.info("Copying to " + destination.getCountry());
+                LogBuilder.builder(log)
+                    .action("DataSharingServiceImpl")
+                    .message("Copying to " + destination.getCountry())
+                    .logInfo();
 
                 try {
                     List<PartnerTableDefinition> defs = destination.getTables();
 
-                    log.info("Create local copy");
+                    LogBuilder.builder(log)
+                        .action("DataSharingServiceImpl")
+                        .message("Create local copy")
+                        .logInfo();
+
                     for (PartnerTableDefinition def : defs) {
                         copyTable(def);
                     }
 
                     postProcess();
 
-                    log.info("Export/Import remote copy");
+                    LogBuilder.builder(log)
+                        .action("DataSharingServiceImpl")
+                        .message("Export/Import remote copy")
+                        .logInfo();
+
                     try (Connection tbbRemoteCopy = destination.connect()) {
                         for (PartnerTableDefinition def : defs) {
                             exportImport(tbbRemoteCopy, def);
@@ -192,7 +201,11 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     private void copyTable(PartnerTableDefinition def) {
 
-        log.info(def.getTableName());
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message("Copying " + def.getTableName())
+            .logInfo();
+
         final String populateTableSQL = def.getPopulateTableSQL();
         try (final Statement masterSelect = tbbMaster.createStatement();
              final ResultSet masterData =
@@ -244,18 +257,29 @@ public class DataSharingServiceImpl implements DataSharingService {
     private void exportImport(
             Connection tbbRemoteCopy, PartnerTableDefinition def) {
         final String tableName = def.getTableName();
-        log.info(tableName);
+
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message("Exporting " + tableName)
+            .logInfo();
 
         String tmpDir = System.getProperty("java.io.tmpdir");
         File exportFile = new File(tmpDir, tableName + ".csv");
         if (exportFile.exists()) {
             boolean ok = exportFile.delete();
             if (!ok) {
-                log.warn("Failed to delete old temp file");
+                LogBuilder.builder(log)
+                    .action("DataSharingServiceImpl")
+                    .message("Failed to delete old temp file")
+                    .logWarn();
             }
         }
         final String exportFilePath = exportFile.getAbsolutePath();
-        log.info("Exporting to " + exportFilePath);
+
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message("Exporting to " + exportFilePath)
+            .logInfo();
 
         try (final Statement exportSt = tbbLocalCopy.createStatement()) {
             String s = "CALL CSVWRITE(" +
@@ -375,7 +399,11 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     private void reportError(String s, @Nullable Exception ex) {
-        log.error(s, ex);
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message(s)
+            .logError(ex);
+
         if (emailSender != null) {
             emailSender.sendAlert( s, ex);
         }

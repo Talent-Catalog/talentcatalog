@@ -437,9 +437,6 @@ import {
   TravelDocumentComponent
 } from "./components/candidates/visa/travel-document/travel-document.component";
 import {
-  CreateVisaJobAssessementComponent
-} from "./components/candidates/visa/visa-job-assessments/modal/create-visa-job-assessement.component";
-import {
   SalaryTsmitComponent
 } from "./components/candidates/visa/visa-job-assessments/salary-tsmit/salary-tsmit.component";
 import {
@@ -793,6 +790,12 @@ import {
 } from './components/settings/help-links/create-update-help-link/create-update-help-link.component';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {LanguageLoader} from "./services/language.loader";
+import {SfJoblinkComponent} from './components/util/sf-joblink/sf-joblink.component';
+import {SelectJobCopyComponent} from './components/util/select-job-copy/select-job-copy.component';
+import {
+  VisaJobCheckUkComponent
+} from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
+import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
 
 @NgModule({
   declarations: [
@@ -968,7 +971,6 @@ import {LanguageLoader} from "./services/language.loader";
     SecurityRiskComponent,
     TravelDocumentComponent,
     RiskAssessmentComponent,
-    CreateVisaJobAssessementComponent,
     VisaFinalAssessmentComponent,
     JobOccupationComponent,
     SalaryTsmitComponent,
@@ -1113,7 +1115,11 @@ import {LanguageLoader} from "./services/language.loader";
     ArrestImprisonComponent,
     HelpComponent,
     SearchHelpLinksComponent,
-    CreateUpdateHelpLinkComponent
+    CreateUpdateHelpLinkComponent,
+    SfJoblinkComponent,
+    SelectJobCopyComponent,
+    VisaJobCheckUkComponent,
+    PreviewLinkComponent
   ],
   imports: [
     BrowserModule,

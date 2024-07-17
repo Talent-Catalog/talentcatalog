@@ -22,7 +22,10 @@ import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -38,15 +41,19 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.common.bytes.BytesReference;
+import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentFactory;
+import org.elasticsearch.xcontent.XContentType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -63,7 +70,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.tctalent.server.exception.CircularReferencedException;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityExistsException;
@@ -71,6 +78,7 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -90,6 +98,7 @@ import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.SearchJoin;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.es.CandidateEs;
@@ -120,6 +129,7 @@ import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateReviewStatusService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
@@ -135,9 +145,8 @@ import org.tctalent.server.service.db.email.EmailHelper;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SavedSearchServiceImpl implements SavedSearchService {
-
-    private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
@@ -166,6 +175,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
     private final EntityManager entityManager;
+    private final AuthService authService;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
@@ -201,7 +211,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearches = savedSearchRepository.findAll(
                 SavedSearchSpecification.buildSearchQuery(request, loggedInUser));
         }
-        log.info("Found " + savedSearches.size() + " savedSearches in search");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("SearchSavedSearches")
+            .message("Found " + savedSearches.size() + " savedSearches in search")
+            .logInfo();
 
         for (SavedSearch savedSearch: savedSearches) {
             savedSearch.parseType();
@@ -232,7 +246,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     SavedSearchSpecification.buildSearchQuery(request, loggedInUser),
                 request.getPageRequest());
         }
-        log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("SearchSavedSearches")
+            .message("Found " + savedSearches.getTotalElements() + " savedSearches in search")
+            .logInfo();
 
         for (SavedSearch savedSearch: savedSearches) {
             savedSearch.parseType();
@@ -303,9 +321,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
 
             count += pageOfCandidates.getNumberOfElements();
-            log.info("Processing page " + pageNum + ". "
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .searchId(savedSearchId)
+                .action("SearchCandidates")
+                .message("Processing page " + pageNum + ". "
                     + count + " candidates of "
-                + pageOfCandidates.getTotalElements());
+                    + pageOfCandidates.getTotalElements())
+                .logInfo();
 
             //Extract candidate ids
             List<Candidate> candidates = pageOfCandidates.getContent();
@@ -406,22 +430,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Map<Integer, String> educationLevelMap = educationLevelRepository.findAllActive().stream().collect(
                 Collectors.toMap(EducationLevel::getLevel, EducationLevel::getName, (l1, l2) ->  l1));
 
-        if (!StringUtils.isEmpty(savedSearch.getCountryIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getCountryIds())){
             savedSearch.setCountryNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getPartnerIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getPartnerIds())){
             savedSearch.setPartnerNames(partnerRepository.getNamesForIds(getIdsFromString(savedSearch.getPartnerIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getNationalityIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getNationalityIds())){
             savedSearch.setNationalityNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getNationalityIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getOccupationIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getOccupationIds())){
             savedSearch.setOccupationNames(occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getOccupationIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getEducationMajorIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getEducationMajorIds())){
             savedSearch.setEducationMajors(educationMajorRepository.getNamesForIds(getIdsFromString(savedSearch.getEducationMajorIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getSurveyTypeIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getSurveyTypeIds())){
             savedSearch.setSurveyTypeNames(surveyTypeRepository.getNamesForIds(getIdsFromString(savedSearch.getSurveyTypeIds())));
         }
         if (savedSearch.getEnglishMinWrittenLevel() != null){
@@ -485,7 +509,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         UpdateSavedSearchRequest createRequest = new UpdateSavedSearchRequest();
         createRequest.setName(name);
-        createRequest.setSfJoblink(request.getSfJoblink());
+        createRequest.setJobId(request.getJobId());
 
         //Default to job type
         createRequest.setSavedSearchType(SavedSearchType.job);
@@ -594,13 +618,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
                 savedSearch.setReviewable(request.getReviewable());
-                savedSearch.setSfJobOpp(
-                    salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
+                final Long jobId = request.getJobId();
+                if (jobId != null) {
+                    savedSearch.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+                }
 
                 savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
                 return savedSearchRepository.save(savedSearch);
             } else {
-                log.warn("Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .searchId(savedSearch.getId())
+                    .action("UpdateSavedSearch")
+                    .message("Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName())
+                    .logWarn();
+
                 return savedSearch;
             }
         }
@@ -665,6 +698,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
+                entityManager.clear();
                 Page<Candidate> result = doSearchCandidates(request);
                 setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {
@@ -931,7 +965,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         // Not every base search will contain an elastic search term, since we're processing
         // joined regular searches here too — so we need a safe escape here
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
+        if (simpleQueryString != null && !simpleQueryString.isEmpty()) {
             // Create a simple query string builder from the given string
             SimpleQueryStringBuilder simpleQueryStringBuilder =
                 QueryBuilders.simpleQueryStringQuery(simpleQueryString);
@@ -948,6 +982,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //countries and nationalities. A match against any one of the
         //multiselected values will result in the filter returning true.
         //There is also a TermQuery which takes only one value.
+
+        // AGE
+        // Note that the orders of filters is reversed, since we're using DOB — i.e., min age has
+        // higher DOB-as-a-number than max age (e.g., 19690101 vs 19920101)
+        Integer minAge = request.getMinAge();
+        Integer maxAge = request.getMaxAge();
+        if (minAge != null || maxAge != null) {
+            boolQueryBuilder = addElasticRangeFilter(
+                boolQueryBuilder,
+                "dob",
+                constructDobFilter(maxAge),
+                constructDobFilter(minAge));
+        }
 
         //English levels
         Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
@@ -1006,15 +1053,27 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Occupations
         final List<Long> occupationIds = request.getOccupationIds();
-        if (occupationIds != null) {
+        final Integer minYrs = request.getMinYrs();
+        final Integer maxYrs = request.getMaxYrs();
+        if (!Collections.isEmpty(occupationIds)) {
             //Look up names from ids.
             List<Object> reqOccupations = new ArrayList<>();
             for (Long id : occupationIds) {
                 final Occupation occupation = occupationService.getOccupation(id);
                 reqOccupations.add(occupation.getName());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                    null,"occupations.keyword", reqOccupations);
+            if (reqOccupations.size() > 0) {
+                BoolQueryBuilder nestedQueryBuilder = new BoolQueryBuilder();
+                nestedQueryBuilder = addElasticTermFilter(
+                    nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
+                if (minYrs != null || maxYrs != null) {
+                    nestedQueryBuilder = addElasticRangeFilter(
+                        nestedQueryBuilder, "occupations.yearsExperience", minYrs, maxYrs);
+                }
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.nestedQuery(
+                        "occupations", nestedQueryBuilder, ScoreMode.Avg));
+            }
         }
 
         //Countries - need to take account of source country restrictions
@@ -1080,11 +1139,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     null,"status.keyword", reqStatuses);
         }
 
+        //UNHCR Statuses
+        List<UnhcrStatus> unhcrStatuses = request.getUnhcrStatuses();
+        if (unhcrStatuses != null) {
+            //Extract names from enums
+            List<Object> reqUnhcrStatuses = new ArrayList<>();
+            for (UnhcrStatus unhcrStatus : unhcrStatuses) {
+                reqUnhcrStatuses.add(unhcrStatus.name());
+            }
+            boolQueryBuilder =
+                addElasticTermFilter(boolQueryBuilder,
+                    null,"unhcrStatus.keyword", reqUnhcrStatuses);
+        }
+
         //Referrer
         String referrer = request.getRegoReferrerParam();
-        if (referrer != null) {
+        if (referrer != null && !referrer.isEmpty()) {
             boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.termQuery("regoReferrerParam", referrer));
+                QueryBuilders.termQuery("regoReferrerParam.keyword", referrer));
         }
 
         //Gender
@@ -1115,7 +1187,84 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
                     null, "educationMajors.keyword", reqEducations);
         }
+
+        //Mini Intake
+        final Boolean miniIntakeCompleted = request.getMiniIntakeCompleted();
+        if (miniIntakeCompleted != null) {
+            if (miniIntakeCompleted) {
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.existsQuery("miniIntakeCompletedDate")
+                );
+            } else {
+                boolQueryBuilder = boolQueryBuilder.mustNot(
+                    QueryBuilders.existsQuery("miniIntakeCompletedDate")
+                );
+            }
+        }
+
+        //Full Intake
+        final Boolean fullIntakeCompleted = request.getFullIntakeCompleted();
+        if (fullIntakeCompleted != null) {
+            if (fullIntakeCompleted) {
+                boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.existsQuery("fullIntakeCompletedDate")
+                );
+            } else {
+                boolQueryBuilder = boolQueryBuilder.mustNot(
+                    QueryBuilders.existsQuery("fullIntakeCompletedDate")
+                );
+            }
+
+        }
+
+        // Last Modified
+        // updatedDate is converted for the ES field 'updated' to a long denoting no. of
+        // milliseconds elapsed since 1970-01-01T00:00:00Z. This enables an ES range query by
+        // converting the dates in the request in the same way, as below.
+        if (request.getLastModifiedFrom() != null) {
+            Long lastModifiedFrom = OffsetDateTime.of(
+                request.getLastModifiedFrom(),
+                LocalTime.MIN,
+                ZoneOffset.UTC
+            ).toInstant().toEpochMilli();
+
+            Long lastModifiedTo = request.getLastModifiedTo() == null ?
+                null : OffsetDateTime.of(
+                    request.getLastModifiedTo(),
+                    LocalTime.MAX,
+                    ZoneOffset.UTC
+                ).toInstant().toEpochMilli();
+
+            boolQueryBuilder = addElasticRangeFilter(
+                boolQueryBuilder,
+                "updated",
+                lastModifiedFrom,
+                lastModifiedTo
+            );
+        }
+
+        // Survey types
+        final List<Long> surveyTypeIds = request.getSurveyTypeIds();
+        if (surveyTypeIds != null) {
+            List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                null,"surveyType", surveyTypeObjList);
+        }
+
         return boolQueryBuilder;
+    }
+
+    /**
+     * Takes a min or max age as specified in candidate search and returns a term for filtering on
+     * the DOB field in elasticsearch.
+     * @param age min or max age as an Integer
+     * @return String term for adding to search query as min or max value for a range filter
+     */
+    private String constructDobFilter(Integer age) {
+        return age == null ? null : LocalDate.now()
+            .minusYears(age + 1)
+            .toString()
+            .replaceAll("-", "");
     }
 
     private static String constructDefaultSearchName(User user) {
@@ -1266,8 +1415,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
             savedSearch.setDisplayedFieldsShort(origSavedSearch.getDisplayedFieldsShort());
         }
-        savedSearch.setSfJobOpp(
-            salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+        final Long jobId = request.getJobId();
+        if (jobId != null) {
+            final SalesforceJobOpp jobOpp =
+                jobId < 0 ? null : salesforceJobOppService.getJobOpp(jobId);
+            savedSearch.setSfJobOpp(jobOpp);
+        }
 
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
@@ -1322,7 +1475,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNull();
             Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
 
-            log.info("Notify watchers: running " + searches.size() + " searches");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("notifySearchWatchers")
+                .message("Notify watchers: running " + searches.size() + " searches")
+                .logInfo();
 
             int count = 0;
 
@@ -1335,7 +1492,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
                 count++;
                 currentSearch = savedSearch.getName() + " (" + savedSearch.getId() + ")";
-                log.info("Running search " + count + ": " + currentSearch);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("notifySearchWatchers")
+                    .message("Running search " + count + ": " + currentSearch)
+                    .logInfo();
 
                 SearchCandidateRequest searchCandidateRequest =
                     convertToSearchCandidateRequest(savedSearch);
@@ -1373,11 +1535,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 String s = savedSearches.stream()
                     .map(SavedSearch::getName)
                     .collect(Collectors.joining("/"));
-                log.info("Tell user " + userId + " about searches " + s);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("notifySearchWatchers")
+                    .message("Tell user " + userId + " about searches " + s)
+                    .logInfo();
+
                 User user = this.userRepository.findById(userId).orElse(null);
                 if (user == null) {
                     final String mess = "Unknown user watcher id " + userId + " watching searches " + s;
-                    log.warn(mess);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("notifySearchWatchers")
+                        .message(mess)
+                        .logWarn();
+
                     emailHelper.sendAlert(mess);
                 } else {
                     emailHelper.sendWatcherEmail(user, savedSearches);
@@ -1385,7 +1558,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         } catch (Exception ex) {
             String mess = "Watcher notification failure (" + currentSearch + ")";
-            log.error(mess, ex);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("notifySearchWatchers")
+                .message(mess)
+                .logError(ex);
+
             emailHelper.sendAlert(mess, ex);
         }
     }
@@ -1396,6 +1574,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
             savedSearch.setKeyword(request.getKeyword());
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
+            savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
             savedSearch.setMinYrs(request.getMinYrs());
@@ -1441,6 +1620,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
 
             //Save Boolean filters corresponding to enum name
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
             final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
             if (candidateFilterByOpps == null) {
                 savedSearch.setAnyOpps(null);
@@ -1461,6 +1641,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
         searchCandidateRequest.setKeyword(search.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
+        searchCandidateRequest.setUnhcrStatuses(getUnhcrStatusListFromString(search.getUnhcrStatuses()));
         searchCandidateRequest.setGender(search.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
         searchCandidateRequest.setMinYrs(search.getMinYrs());
@@ -1511,6 +1692,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
 
+        // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
         CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
             search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
         searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
@@ -1545,8 +1727,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     List<CandidateStatus> getStatusListFromString(String statusList){
         return statusList != null ? Stream.of(statusList.split(","))
-                .map(s -> CandidateStatus.valueOf(s))
+                .map(CandidateStatus::valueOf)
                 .collect(Collectors.toList()) : null;
+    }
+
+    String getUnhcrStatusListAsString(List<UnhcrStatus> unhcrStatuses){
+        return !CollectionUtils.isEmpty(unhcrStatuses) ? unhcrStatuses.stream().map(
+                Enum::name)
+            .collect(Collectors.joining(",")) : null;
+    }
+
+    List<UnhcrStatus> getUnhcrStatusListFromString(String unhcrStatusList){
+        return unhcrStatusList != null ? Stream.of(unhcrStatusList.split(","))
+            .map(UnhcrStatus::valueOf)
+            .collect(Collectors.toList()) : null;
     }
 
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest searchRequest) {
@@ -1561,8 +1755,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         addDefaultsToSearchCandidateRequest(searchRequest);
 
         String simpleQueryString = searchRequest.getSimpleQueryString();
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            // This is an elasticsearch request
+        if (
+            (simpleQueryString != null && !simpleQueryString.isEmpty()) ||
+                !searchRequest.getSearchJoinRequests().isEmpty()
+        ) {
+            // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
             BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
@@ -1571,8 +1768,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            log.info("Elasticsearch query:\n" + boolQueryBuilder);
-            log.info("Elasticsearch sort:\n" + req);
+            // Convert BoolQueryBuilder to a compact JSON string
+            String boolQueryJson = convertToJson(boolQueryBuilder);
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .searchId(searchRequest.getSavedSearchId())
+                .action("doSearchCandidates")
+                .message("Elasticsearch query: " + boolQueryJson)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .searchId(searchRequest.getSavedSearchId())
+                .action("doSearchCandidates")
+                .message("Elasticsearch sort: " + req)
+                .logInfo();
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
@@ -1580,7 +1791,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .build();
 
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+                query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
@@ -1612,7 +1823,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
         }
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .searchId(searchRequest.getSavedSearchId())
+            .action("doSearchCandidates")
+            .message("Found " + candidates.getTotalElements() + " candidates in search")
+            .logInfo();
+
         return candidates;
     }
 
@@ -1689,4 +1906,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return boolQueryBuilder;
     }
 
+    private String convertToJson(BoolQueryBuilder boolQueryBuilder) {
+        try (XContentBuilder builder = XContentFactory.jsonBuilder()) {
+            boolQueryBuilder.toXContent(builder, null);
+            BytesReference bytes = BytesReference.bytes(builder);
+            return XContentHelper.convertToJson(bytes, false, XContentType.JSON);
+        } catch (IOException e) {
+            logConversionFailure(e);
+            return boolQueryBuilder.toString();
+        }
+    }
+
+    private void logConversionFailure(Exception e) {
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("convertToJson")
+            .message("Failed to convert BoolQueryBuilder to compact JSON: " + e.getMessage())
+            .logWarn();
+    }
 }

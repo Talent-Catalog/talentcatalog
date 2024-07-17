@@ -27,7 +27,8 @@ import org.tctalent.server.model.db.JobChatType;
 
 public interface JobChatRepository extends JpaRepository<JobChat, Long>,
     JpaSpecificationExecutor<JobChat> {
-
+    @Query("SELECT c FROM JobChat c WHERE c.jobOpp.id = :jobId")
+    List<JobChat> findByJobOppId(@Param("jobId") Long jobId);
 
     @Query(" select c from JobChat c "
         + " where c.id in (:ids) ")

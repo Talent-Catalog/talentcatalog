@@ -15,6 +15,7 @@
  */
 
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   Input,
@@ -24,7 +25,7 @@ import {
   ViewChild
 } from '@angular/core';
 
-import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender} from '../../../model/candidate';
+import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -88,7 +89,7 @@ import {first} from "rxjs/operators";
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges {
+export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -126,11 +127,11 @@ export class DefineSearchComponent implements OnInit, OnChanges {
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
   genderOptions: EnumOption[] = enumOptions(Gender);
-  candidateFilterByOppsOptions: EnumOption[] = enumOptions(CandidateFilterByOpps);
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
   loggedInUser: User;
+  unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
 
   selectedBaseJoin;
   storedBaseJoin;
@@ -188,6 +189,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       miniIntakeCompleted: [null],
       fullIntakeCompleted: [null],
       searchJoinRequests: this.fb.array([]),
+      unhcrStatuses: [[]],
       //for display purposes
       occupations: [[]],
       countries: [[]],
@@ -197,8 +199,8 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       regoReferrerParam: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
-      candidateFilterByOpps: [null],
       exclusionListId: [null],
+      unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
@@ -261,6 +263,18 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       this.loading = false;
       this.error = error;
     });
+  }
+
+  // Stops Keyword Search tooltip from opening on keydown.enter in inputs
+  ngAfterViewInit() {
+    const inputs: NodeList = document.querySelectorAll('input')
+    inputs.forEach(input => {
+      input.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+      })
+    })
   }
 
   get simpleQueryString(): string {
@@ -366,6 +380,12 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     if (request.surveyTypes != null) {
       request.surveyTypeIds = request.surveyTypes.map(s => s.id);
       delete request.surveyTypes;
+    }
+
+    if (request.unhcrStatusesDisplay != null) {
+      //Pick up key values from EnumOptions
+      request.unhcrStatuses = request.unhcrStatusesDisplay.map(s => s.key);
+      delete request.unhcrStatusesDisplay;
     }
 
     return request;
@@ -582,6 +602,13 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       searchType = 'or';
     }
     this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
+
+    /* UNHCR STATUSES */
+    let unhcrStatuses: EnumOption[] = [];
+    if (request.unhcrStatuses) {
+      unhcrStatuses = enumKeysToEnumOptions(request.unhcrStatuses, UnhcrStatus);
+    }
+    this.searchForm.controls['unhcrStatusesDisplay'].patchValue(unhcrStatuses);
 
     /* JOINED SEARCHES */
     while (this.searchJoinArray.length) {

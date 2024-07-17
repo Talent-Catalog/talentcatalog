@@ -19,8 +19,8 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SavedList, UpdateSavedListInfoRequest} from '../../../model/saved-list';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {SavedListService} from '../../../services/saved-list.service';
-import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
 import {SalesforceService} from "../../../services/salesforce.service";
+import {JobNameAndId} from "../../../model/job";
 
 @Component({
   selector: 'app-create-update-list',
@@ -31,9 +31,9 @@ export class CreateUpdateListComponent implements OnInit {
   error = null;
   form: FormGroup;
   jobName: string;
+  jobId: number;
   saving: boolean;
   savedList: SavedList;
-  sfJoblink: string;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -57,6 +57,10 @@ export class CreateUpdateListComponent implements OnInit {
       : "Update existing candidate list";
   }
 
+  get isSubmissionList(): boolean {
+    return this.savedList && this.savedList.registeredJob;
+  }
+
   get fixedControl() { return this.form.get('fixed'); }
   get nameControl() { return this.form.get('name'); }
 
@@ -69,7 +73,7 @@ export class CreateUpdateListComponent implements OnInit {
     const request: UpdateSavedListInfoRequest = {
       name: this.name,
       fixed: this.fixed,
-      sfJoblink: this.sfJoblink ? this.sfJoblink : null
+      jobId: this.jobId
     };
     if (this.create) {
       this.savedListService.create(request).subscribe(
@@ -102,18 +106,14 @@ export class CreateUpdateListComponent implements OnInit {
     this.activeModal.dismiss(false);
   }
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
-    if (jobOpportunity.valid) {
-      this.sfJoblink = jobOpportunity.sfJoblink;
-      this.jobName = jobOpportunity.jobname;
+  onJobSelection(job: JobNameAndId) {
+    //Null job translates to request to remove associated job (jobId < 0).
+    this.jobName = job ? job.name : "";
+    this.jobId = job ? job.id : -1;
 
-      //If existing name is empty, auto copy into them
-      if (!this.nameControl.value) {
-        this.nameControl.patchValue(this.jobName);
-      }
-    } else {
-      this.sfJoblink = null;
-      this.jobName = null;
+    //If existing name is empty, auto copy job name to it
+    if (!this.nameControl.value) {
+      this.nameControl.patchValue(this.jobName);
     }
   }
 

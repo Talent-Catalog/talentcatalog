@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {
@@ -19,6 +18,9 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {Employer} from "../../../model/partner";
+import {SfJoblinkValidationEvent} from "../../util/sf-joblink/sf-joblink.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {SelectJobCopyComponent} from "../../util/select-job-copy/select-job-copy.component";
 
 @Component({
   selector: 'app-new-job',
@@ -32,6 +34,8 @@ export class NewJobComponent implements OnInit {
   job: Job;
   savedList: SavedList;
   sfJoblink: string;
+  jobToCopyId: number;
+  jobsToCopy: Job[];
   slacklink: string;
   creatingJob: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
@@ -42,6 +46,7 @@ export class NewJobComponent implements OnInit {
   errorCreatingJob: string = null;
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
+  errorGettingJobsToCopySlack: string = null;
   jobForm: FormGroup;
 
   constructor(
@@ -53,7 +58,8 @@ export class NewJobComponent implements OnInit {
     private savedListService: SavedListService,
     private slackService: SlackService,
     private location: Location,
-    private router: Router) { }
+    private router: Router,
+    private modalService: NgbModal) { }
 
   ngOnInit(): void {
     if (this.isEmployerPartner()) {
@@ -112,7 +118,7 @@ export class NewJobComponent implements OnInit {
     return name;
   }
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
+  onSfJoblinkValidation(jobOpportunity: SfJoblinkValidationEvent) {
     this.creatingJob = Progress.NotStarted;
     this.creatingFolders = Progress.NotStarted;
     this.creatingSFLinks = Progress.NotStarted;
@@ -140,7 +146,8 @@ export class NewJobComponent implements OnInit {
     this.creatingJob = Progress.Started;
     const request: UpdateJobRequest = {
       roleName: this.roleName ? this.roleName : null,
-      sfJoblink: this.sfJoblink ? this.sfJoblink : null
+      sfJoblink: this.sfJoblink ? this.sfJoblink : null,
+      jobToCopyId: this.jobToCopyId ? this.jobToCopyId : null
     };
     this.jobService.create(request).subscribe(
       (job) => {
@@ -229,11 +236,26 @@ export class NewJobComponent implements OnInit {
   }
 
   getBreadCrumb() {
-    return "Create a new job";
+    return "New Job";
   }
 
   doPreparation() {
     this.createRegisteredJob()
+  }
+
+  selectJobCopy() {
+    let jobs: Job[] = []
+    const copyJobModal = this.modalService.open(SelectJobCopyComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    copyJobModal.result.then(
+      (jobId: number) => {
+        this.jobToCopyId = jobId;
+        this.doPreparation()
+      })
+      .catch(() => {})
   }
 
   doShowJob() {

@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
@@ -29,9 +21,7 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {
-  CandidateSourceCandidateService
-} from "../../../../services/candidate-source-candidate.service";
+import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
 import {forkJoin, Observable} from "rxjs";
@@ -39,6 +29,7 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../../model/chat";
 import {ChatService} from "../../../../services/chat.service";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
+import {JobOppIntake} from "../../../../model/job-opp-intake";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -328,5 +319,14 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   onChatReadStatusCreated(chatReadStatus$: Observable<boolean>) {
     this.chatReadStatus$ = chatReadStatus$;
+  }
+
+  /**
+   * If intake has changed, update the job with the updated intake.
+   * This will trigger the logic to run which checks whether the intake is complete (JobPrepJOI).
+   * @param joi Updated intake
+   */
+  onIntakeChanged(joi: JobOppIntake) {
+    this.job.jobOppIntake = joi;
   }
 }

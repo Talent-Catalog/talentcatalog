@@ -12,8 +12,9 @@ import {
 import {isHtml} from 'src/app/util/string';
 import {ChatPost} from "../../../model/chat";
 import {UserService} from "../../../services/user.service";
-import {CreateReactionRequest, ReactionService} from "../../../services/reaction.service";
+import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
 import {Reaction} from "../../../model/reaction";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-view-post',
@@ -29,7 +30,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
   isCurrentPost: boolean = false;
   public reactionPickerXPos: number;
   public reactionPickerYPos: number;
-
+  public userIsPostAuthor: boolean;
 
   // Currently ngx-quill just inserts the url into an <img> tag, this is then saved as innerHTML.
   // Adding this event listener allows us to make the images clickable and open the src attribute in a new tab.
@@ -45,9 +46,13 @@ export class ViewPostComponent implements OnInit, OnChanges {
 
   @ViewChild('thisPost') thisPost: ElementRef;
 
-  constructor(private reactionService: ReactionService) { }
+  constructor(
+    private reactionService: ReactionService,
+    private authenticationService: AuthenticationService
+  ) { }
 
   ngOnInit(): void {
+    this.setUserIsPostAuthor()
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -95,10 +100,10 @@ export class ViewPostComponent implements OnInit, OnChanges {
   // associated with the post. This behaviour is managed by ReactionService on the server.
   public onSelectEmoji(event) {
     this.reactionPickerVisible = false;
-    const request: CreateReactionRequest = {
+    const request: AddReactionRequest = {
       emoji: `${event.emoji.native}`
     }
-    this.reactionService.createReaction(this.post.id, request)
+    this.reactionService.addReaction(this.post.id, request)
                           .subscribe({
                             next: (updatedReactions) =>
                             this.post.reactions = updatedReactions
@@ -106,7 +111,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
   }
 
   public onSelectReaction(reaction: Reaction) {
-    this.reactionService.updateReaction(reaction.id)
+    this.reactionService.modifyReaction(reaction.id)
                           .subscribe({
                             next: (updatedReactions) =>
                             this.post.reactions = updatedReactions
@@ -118,6 +123,12 @@ export class ViewPostComponent implements OnInit, OnChanges {
     if (!this.isCurrentPost) {
       this.reactionPickerVisible = false;
     }
+  }
+
+  // Used to check whether user should see option to block link preview in sent post.
+  private setUserIsPostAuthor() {
+    this.userIsPostAuthor =
+      this.post.createdBy.id === this.authenticationService.getLoggedInUser().id;
   }
 
 }
