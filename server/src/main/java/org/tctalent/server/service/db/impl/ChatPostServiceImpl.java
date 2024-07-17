@@ -67,8 +67,10 @@ public class ChatPostServiceImpl implements ChatPostService {
         chatPost.setContent(post.getContent());
         chatPost.setCreatedDate(OffsetDateTime.now());
         chatPost.setCreatedBy(user);
+        chatPost.setLinkPreviews(post.getLinkPreviews());
 
         chatPost = chatPostRepository.save(chatPost);
+
         return chatPost;
     }
 
@@ -90,6 +92,19 @@ public class ChatPostServiceImpl implements ChatPostService {
             .add("updatedDate")
             .add("updatedBy", userDto())
             .add("reactions", reactionDto())
+            .add("linkPreviews", linkPreviewDto())
+            ;
+    }
+
+    private DtoBuilder linkPreviewDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("url")
+            .add("title")
+            .add("description")
+            .add("imageUrl")
+            .add("domain")
+            .add("faviconUrl")
             ;
     }
 

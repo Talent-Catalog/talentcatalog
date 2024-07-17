@@ -12,6 +12,7 @@ import {ChatPost} from "../../../model/chat";
 import {UserService} from "../../../services/user.service";
 import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
 import {Reaction} from "../../../model/reaction";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-view-post',
@@ -24,6 +25,7 @@ import {Reaction} from "../../../model/reaction";
 export class ViewPostComponent implements OnInit {
 
   public reactionPickerVisible: boolean = false;
+  public userIsPostAuthor: boolean;
 
   // Currently ngx-quill just inserts the url into an <img> tag, this is then saved as innerHTML.
   // Adding this event listener allows us to make the images clickable and open the src attribute in a new tab.
@@ -38,9 +40,13 @@ export class ViewPostComponent implements OnInit {
 
   @ViewChild('thisPost') thisPost: ElementRef;
 
-  constructor(private reactionService: ReactionService) { }
+  constructor(
+    private reactionService: ReactionService,
+    private authenticationService: AuthenticationService
+  ) { }
 
   ngOnInit(): void {
+    this.setUserIsPostAuthor()
   }
 
   get isHtml() {
@@ -83,6 +89,12 @@ export class ViewPostComponent implements OnInit {
                             next: (updatedReactions) =>
                             this.post.reactions = updatedReactions
                           })
+  }
+
+  // Used to check whether user should see option to block link preview in sent post.
+  private setUserIsPostAuthor() {
+    this.userIsPostAuthor =
+      this.post.createdBy.id === this.authenticationService.getLoggedInUser().id;
   }
 
 }

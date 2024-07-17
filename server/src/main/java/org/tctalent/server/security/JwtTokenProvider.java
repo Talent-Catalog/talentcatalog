@@ -49,6 +49,8 @@ import org.tctalent.server.model.db.Role;
 @Slf4j
 public class JwtTokenProvider implements InitializingBean {
 
+    public static final String EXPIRED_OR_INVALID_TOKEN_MSG = "Expired or invalid JWT token";
+
     @Value("${jwt.secret}")
     private String jwtSecretBase64;
 
@@ -70,8 +72,7 @@ public class JwtTokenProvider implements InitializingBean {
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
         String subject = "";
 
-        if (authentication.getPrincipal() instanceof TcUserDetails) {
-            TcUserDetails user = (TcUserDetails) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof TcUserDetails user) {
             subject = user.getUsername();
 
             //Candidates can stay logged in forever
