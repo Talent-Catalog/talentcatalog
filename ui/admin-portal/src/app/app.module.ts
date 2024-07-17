@@ -796,6 +796,8 @@ import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
 import { ChatConsoleComponent } from './components/chat/chat-console/chat-console.component';
+import { SourceCandidateChatsComponent } from './components/chat/source-candidate-chats/source-candidate-chats.component';
+import { ViewSourceCandidatesWithChatsComponent } from './components/chat/view-source-candidates-with-chats/view-source-candidates-with-chats.component';
 
 @NgModule({
   declarations: [
@@ -1119,7 +1121,9 @@ import { ChatConsoleComponent } from './components/chat/chat-console/chat-consol
     SfJoblinkComponent,
     SelectJobCopyComponent,
     VisaJobCheckUkComponent,
-    ChatConsoleComponent
+    ChatConsoleComponent,
+    SourceCandidateChatsComponent,
+    ViewSourceCandidatesWithChatsComponent
   ],
   imports: [
     BrowserModule,
