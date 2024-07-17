@@ -67,7 +67,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" [for]="'dependantDob'+myRecordIndex">DOB</label>
+          <label class="form-label me-2" [for]="'dependantDob'+myRecordIndex">DOB</label>
           <app-date-picker *ngIf="editable; else notEditable" [id]="'dependantDob'+myRecordIndex" [control]="form.controls.dependantDob"></app-date-picker>
           <ng-template #notEditable><span>{{myRecord.dob}}</span></ng-template>
           <p class="small">Age: {{dependantAge}}</p>

@@ -31,48 +31,49 @@ package org.tctalent.server.api.admin;
  import org.tctalent.server.exception.InvalidRequestException;
  import org.tctalent.server.exception.NoSuchObjectException;
  import org.tctalent.server.model.db.Reaction;
- import org.tctalent.server.request.chat.reaction.CreateReactionRequest;
+ import org.tctalent.server.request.chat.reaction.AddReactionRequest;
  import org.tctalent.server.service.db.ReactionService;
  import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/reaction")
 @RequiredArgsConstructor
-public class ReactionAdminApi {
+public class ReactionAdminApi
+    implements IJoinedTableApi<AddReactionRequest, AddReactionRequest, AddReactionRequest> {
 
     private final ReactionService reactionService;
 
     /**
-     * Creates a reaction record from the data in the given request or calls update if that emoji
-     * is already associated with a reaction on this post. Update may in turn even call delete, if
-     * that user was the last remaining user associated with the existing reaction.
+     * Adds a reaction record from the data in the given request or modifies an existing one if that
+     * emoji is already associated with a reaction on same post. Modify may even delete, if user was
+     * the last remaining user associated with the existing reaction.
      * @param request Request containing emoji
      * @return updated reactions list for the parent chat post
      * @throws EntityExistsException if reaction already exists
      * @throws NoSuchObjectException if post or reaction (if update called) not found
      * @throws InvalidRequestException if not authorised to delete (if delete method called)
      */
-    @PostMapping("{id}")
-    public @NotNull List<Map<String, Object>> createReaction(
-          @PathVariable("id") long chatPostId, @Valid @RequestBody CreateReactionRequest request)
+    @PostMapping("{id}/add-reaction")
+    public @NotNull List<Map<String, Object>> addReaction(
+          @PathVariable("id") long chatPostId, @Valid @RequestBody AddReactionRequest request)
             throws NoSuchObjectException, InvalidRequestException, EntityExistsException {
-        List<Reaction> reactions = this.reactionService.createReaction(chatPostId, request);
+        List<Reaction> reactions = this.reactionService.addReaction(chatPostId, request);
         return reactionDto().buildList(reactions);
     }
 
   /**
-   * Updates an existing user reaction, adding or removing a user (depending on whether they were
+   * Modifies an existing user reaction, adding or removing a user (depending on whether they were
    * already associated with it) or calling delete if they were the last associated user.
-   * @param id of the reaction to be updated
-   * @return updated reactions list for the parent chat post
+   * @param id of the reaction to be modified
+   * @return modified reactions list for the parent chat post
    * @throws NoSuchObjectException if the there is no Reaction record with the given ID
    * @throws InvalidRequestException if not authorised to delete (if delete method called)
    */
-    @PutMapping("{id}/update-reaction")
-    public @NotNull List<Map<String, Object>> updateReaction(
+    @PutMapping("{id}/modify-reaction")
+    public @NotNull List<Map<String, Object>> modifyReaction(
         @PathVariable("id") long id)
             throws NoSuchObjectException, InvalidRequestException {
-        List<Reaction> reactions = reactionService.updateReaction(id);
+        List<Reaction> reactions = reactionService.modifyReaction(id);
         return reactionDto().buildList(reactions);
     }
 

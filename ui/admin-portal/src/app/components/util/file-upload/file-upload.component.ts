@@ -14,13 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  HostListener, Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
 import {CandidateAttachmentService} from "../../../services/candidate-attachment.service";
 
 @Component({

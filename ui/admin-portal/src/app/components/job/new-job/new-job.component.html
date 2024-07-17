@@ -18,23 +18,26 @@
       </ul>
   </div>
 
-  <div *ngIf="isEmployerPartner()" class="me-4">
-    <h5>Enter a job name - describing the role</h5>
-    <p>For example, "Full stack software engineer"</p>
+  <div *ngIf="isEmployerPartner()">
+    <div class="me-4">
+      <h5>Job Name</h5>
+      <p>Enter a job name - describing the role. For example, "Full stack software engineer"</p>
 
-    <form [formGroup]="jobForm">
-      <div>
-        <input #role type="text" class="form-control" placeholder="Role..." formControlName="role"
-               id="role">
-      </div>
-    </form>
+      <form [formGroup]="jobForm">
+        <div>
+          <input #role type="text" class="form-control" placeholder="Role..." formControlName="role"
+                 id="role">
+        </div>
+      </form>
+    </div>
   </div>
 
+
   <div *ngIf="isDefaultJobCreator()" class="d-flex flex-column flex-grow-1">
-    <app-joblink
+    <app-sf-joblink
       (updateError)="onJoblinkError($event)"
-      (joblinkValidation)="onJoblinkValidation($event)">
-    </app-joblink>
+      (sfJoblinkValidation)="onSfJoblinkValidation($event)">
+    </app-sf-joblink>
     <div class="alert alert-danger" *ngIf="errorFindingJob">
       {{errorFindingJob}}
     </div>
@@ -45,10 +48,15 @@
   <div class="card-header d-flex align-items-baseline justify-content-between">
     <h5>{{jobName}}</h5>
       <ng-container>
-        <button *ngIf="jobName && progressPercent != 100" type="button"
-                class="btn btn-primary float-end" (click)="doPreparation()">
-          Create Job
-        </button>
+        <div *ngIf="jobName && progressPercent != 100" class="float-end">
+          <button type="button" class="btn btn-primary" (click)="doPreparation()">
+            Create New Job
+          </button>
+          <button type="button" class="btn btn-secondary ms-3" (click)="selectJobCopy()"
+                  [ngbTooltip]="'Copies the JOI, Job Uploads and contacts from an existing job.'">
+            Copy Existing Job
+          </button>
+        </div>
         <button *ngIf="jobName && progressPercent == 100" type="button"
                 class="btn btn-primary float-end" (click)="doShowJob()">
           Show Job

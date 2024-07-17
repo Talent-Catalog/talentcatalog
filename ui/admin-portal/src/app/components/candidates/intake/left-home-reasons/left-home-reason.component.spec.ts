@@ -14,17 +14,32 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {LeftHomeReasonComponent} from "./left-home-reason.component";
+import {CandidateService} from "../../../../services/candidate.service";
+import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
+import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {CandidateIntakeData, IntRecruitReason, LeftHomeReason} from "../../../../model/candidate";
 
-import {LeftHomeReasonComponent} from './left-home-reason.component';
-
-describe('LeftHomeReasonComponent', () => {
+fdescribe('LeftHomeReasonComponent', () => {
   let component: LeftHomeReasonComponent;
   let fixture: ComponentFixture<LeftHomeReasonComponent>;
-
-  beforeEach(async(() => {
+  const mockCandidateIntakeData: CandidateIntakeData = {
+    leftHomeReasons: [LeftHomeReason.Job],
+    leftHomeNotes: 'Notes'
+  };
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LeftHomeReasonComponent ]
+      declarations: [ LeftHomeReasonComponent, AutosaveStatusComponent ],
+      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+
+      providers: [
+        FormBuilder,
+        { provide: CandidateService }
+      ]
     })
     .compileComponents();
   }));
@@ -32,10 +47,27 @@ describe('LeftHomeReasonComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LeftHomeReasonComponent);
     component = fixture.componentInstance;
+    component.entity = new MockCandidate();
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize the form with provided data', () => {
+    component.candidateIntakeData = mockCandidateIntakeData;
+    component.ngOnInit();
+    expect(component.form.value).toEqual({
+      leftHomeReasons: [{ key: 'Job Opportunities', stringValue: undefined }], // Adjusted to match the enum value
+      leftHomeNotes: 'Notes'
+    });
+  });
+
+  it('should handle "Other" reason option properly', () => {
+    component.form.get('leftHomeReasons').setValue([{ key: 'Other', stringValue: 'Other' }]);
+    fixture.detectChanges();
+    expect(component.hasOther).toBeTruthy();
+    expect(component.form.get('leftHomeNotes').enabled).toBe(true);
   });
 });

@@ -53,6 +53,7 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SearchType;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 
@@ -220,10 +221,10 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getNationalityIds())) {
                 if (request.getNationalitySearchType() == null || SearchType.or.equals(request.getNationalitySearchType())) {
                     conjunction.getExpressions().add(
-                            builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
+                            builder.isTrue(candidate.get("nationality").get("id").in(request.getNationalityIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("nationality").in(request.getNationalityIds()).not()
+                    conjunction.getExpressions().add(candidate.get("nationality").get("id").in(request.getNationalityIds()).not()
                     );
                 }
             }
@@ -234,10 +235,10 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getCountryIds())) {
                 if (request.getCountrySearchType() == null || SearchType.or.equals(request.getCountrySearchType())) {
                     conjunction.getExpressions().add(
-                        builder.isTrue(candidate.get("country").in(request.getCountryIds()))
+                        builder.isTrue(candidate.get("country").get("id").in(request.getCountryIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("country").in(request.getCountryIds()).not());
+                    conjunction.getExpressions().add(candidate.get("country").get("id").in(request.getCountryIds()).not());
                 }
             // If request ids IS EMPTY only show source countries
             } else if (loggedInUser != null &&
@@ -250,7 +251,7 @@ public class CandidateSpecification {
             // PARTNER SEARCH
             if (!Collections.isEmpty(request.getPartnerIds())) {
                 conjunction.getExpressions().add(
-                    builder.isTrue(user.get("partner").in(request.getPartnerIds()))
+                    builder.isTrue(user.get("partner").get("id").in(request.getPartnerIds()))
                 );
             }
 
@@ -322,6 +323,14 @@ public class CandidateSpecification {
                 LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge() + 1);
 
                 conjunction.getExpressions().add(builder.or(builder.greaterThan(candidate.get("dob"), maxDob), builder.isNull(candidate.get("dob"))));
+            }
+
+            // UNHCR STATUSES
+            if (!Collections.isEmpty(request.getUnhcrStatuses())) {
+                List<UnhcrStatus> statuses = request.getUnhcrStatuses();
+                conjunction.getExpressions().add(
+                    builder.isTrue(candidate.get("unhcrStatus").in(statuses))
+                );
             }
 
             // EDUCATION LEVEL SEARCH
@@ -402,6 +411,7 @@ public class CandidateSpecification {
             }
 
             //CANDIDATE OPPORTUNITIES
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
             final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
             if (candidateFilterByOpps != null) {
                Boolean anyOpps = candidateFilterByOpps.getAnyOpps();

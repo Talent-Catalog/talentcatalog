@@ -1,14 +1,58 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ViewJobComponent} from './view-job.component';
+import {NgbModal, NgbNavModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
+import {AuthenticationService} from '../../../../services/authentication.service';
+import {JobService} from '../../../../services/job.service';
+import {SlackService} from '../../../../services/slack.service';
+import {Router} from '@angular/router';
+import {CommonModule, Location} from '@angular/common';
+import {of, throwError} from 'rxjs';
+import {Job} from '../../../../model/job';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {MockUser} from "../../../../MockData/MockUser";
+import {MockJob} from "../../../../MockData/MockJob";
+import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.component";
+import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.component";
+import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
+import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
+import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {RouterLinkStubDirective} from "../../../login/login.component.spec";
+// Mock isStarredByMe function
+const isStarredByMe = (starringUsers: any[], authService: AuthenticationService) => {
+  const loggedInUser = authService.getLoggedInUser();
+  console.log(loggedInUser)
+  return starringUsers.some(user => user.id === loggedInUser.id);
+};
 
-describe('ViewJobComponent', () => {
+fdescribe('ViewJobComponent', () => {
   let component: ViewJobComponent;
   let fixture: ComponentFixture<ViewJobComponent>;
+  let mockAuthService: jasmine.SpyObj<AuthenticationService>;
+  let mockJobService: jasmine.SpyObj<JobService>;
+  let mockSlackService: jasmine.SpyObj<SlackService>;
+  let mockRouter: jasmine.SpyObj<Router>;
+  let mockLocation: jasmine.SpyObj<Location>;
 
   beforeEach(async () => {
+    mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    mockJobService = jasmine.createSpyObj('JobService', ['updateStarred']);
+    mockSlackService = jasmine.createSpyObj('SlackService', ['postJobFromId']);
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+    mockLocation = jasmine.createSpyObj('Location', ['back']);
+
     await TestBed.configureTestingModule({
-      declarations: [ ViewJobComponent ]
+      imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
+      declarations: [ViewJobComponent,RouterLinkStubDirective,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
+      providers: [
+        FormBuilder,
+        { provide: NgbModal, useValue: {} },
+        { provide: AuthenticationService, useValue: mockAuthService },
+        { provide: JobService, useValue: mockJobService },
+        { provide: SlackService, useValue: mockSlackService },
+        { provide: Router, useValue: mockRouter },
+        { provide: Location, useValue: mockLocation }
+      ]
     })
     .compileComponents();
   });
@@ -16,10 +60,61 @@ describe('ViewJobComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ViewJobComponent);
     component = fixture.componentInstance;
+    component.job=MockJob;
+
+    // Override the isStarredByMe method
+    (window as any).isStarredByMe = isStarredByMe;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+
+  it('should toggle starred status of job when initially starred', fakeAsync(() => {
+    // Arrange
+    const loggedInUser = new MockUser();
+    mockAuthService.getLoggedInUser.and.returnValue(loggedInUser);
+
+    // Initial state where the job is starred by the user
+    const job: Job = { ...MockJob, starringUsers: [loggedInUser] };
+    component.job = job;
+
+    // Toggled state where the job is no longer starred
+    const updatedJob = { ...job, starringUsers: [] };
+    mockJobService.updateStarred.and.returnValue(of(updatedJob));
+    // Act
+    component.doToggleStarred();
+    tick();
+
+    // Assert
+    expect(mockJobService.updateStarred).toHaveBeenCalledWith(job.id, false);
+    expect(component.job).toEqual(updatedJob);
+    expect(component.loading).toBeFalsy();
+  }));
+
+  it('should toggle starred status of job when initially not starred', fakeAsync(() => {
+    // Arrange
+    const loggedInUser = new MockUser();
+    mockAuthService.getLoggedInUser.and.returnValue(loggedInUser);
+
+    // Initial state where the job is not starred by the user
+    const job: Job = { ...MockJob, starringUsers: [] };
+    component.job = job;
+
+    // Toggled state where the job is now starred
+    const updatedJob = { ...job, starringUsers: [loggedInUser] };
+    mockJobService.updateStarred.and.returnValue(of(updatedJob));
+
+    // Act
+    component.doToggleStarred();
+    tick();
+
+    // Assert
+    expect(mockJobService.updateStarred).toHaveBeenCalledWith(job.id, true);
+    expect(component.job).toEqual(updatedJob);
+    expect(component.loading).toBeFalsy();
+  }));
+  
 });

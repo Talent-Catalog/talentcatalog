@@ -121,12 +121,12 @@ export enum SearchOppsBy {
  * Any validation method needs to use BOTH the SF sandbox and prod patterns below, combining them as OR options using a pipe: Validators.pattern(`${salesforceUrlPattern}|${salesforceSandboxUrlPattern}`)
  */
 export const salesforceUrlPattern: string =
-  'https://talentbeyondboundaries.lightning.force.com/' +
-  '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
+  'https://talentbeyondboundaries.lightning.force.com/lightning/r/' +
+  '[\\w]+/[\\w]{15,}[^\\w]?.*';
 
 export const salesforceSandboxUrlPattern: string =
-  'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/' +
-    '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
+  'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/lightning/r/' +
+    '[\\w]+/[\\w]{15,}[^\\w]?.*';
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 
@@ -259,6 +259,25 @@ export class LoginRequest {
    */
   totpToken: string;
 }
+
+// Regex breakdown (rules and test cases from https://en.wikipedia.org/wiki/Email_address):
+// - negative lookahead to ensure no consecutive '.' and no '.' at the end of the prefix
+// - prefix begins with upper or lowercase Latin letter, digits 0-9 or printable character
+// (!#$%&'*+-/=?^_`{|}~)
+// - prefix continues with any of above or '.'
+// - domain preceded by '@' consists of upper or lowercase Latin letter(s), digits 0-9 or hyphen
+// (which must not be at start or end)
+// 0 or more subdomains and/or a TLD preceded by '.', otherwise with same rules as domain
+//
+// These rules enable subaddressing (e.g. sam+test@tbb.org) and some other aspects that aren't
+// always allowed by mainstream email services. They do not allow for different rules applied within
+// quotation marks or the use of IP address literals, which sometimes are.
+//
+// NB: This regex is replicated in ui/candidate-portal/src/app/model/base.ts — any changes needed
+// here will also need to be replicated there!
+
+export const EMAIL_REGEX: string =
+  '(?!.*[@.]{2})[a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~]+[a-zA-Z0-9.!#$%&\'*+-/=?^_`{|}~]*@(?!-)[a-zA-Z0-9-]+(?<!-)(\\.(?!-)[a-zA-Z0-9-]+(?<!-))*$';
 
 export function isMine(source: CandidateSource, authenticationService: AuthenticationService) {
   let mine: boolean = false;

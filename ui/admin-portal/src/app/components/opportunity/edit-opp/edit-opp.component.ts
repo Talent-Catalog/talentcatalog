@@ -9,9 +9,7 @@ import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
 import {isJob, JobOpportunityStage} from "../../../model/job";
-import {
-  CandidateSourceCandidateService
-} from "../../../services/candidate-source-candidate.service";
+import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {switchMap} from "rxjs/operators";
 import {SearchCandidateSourcesRequest} from "../../../model/base";
@@ -132,6 +130,10 @@ export class EditOppComponent implements OnInit {
           (error) => this.error = error);
       }
     }
+
+  isEvergreenJob(): boolean {
+    return isJob(this.opp) && this.opp.evergreen;
+  }
 
   onStageSelectionChange(stage: any) {
     if (isCandidateOpportunity(this.opp)) {

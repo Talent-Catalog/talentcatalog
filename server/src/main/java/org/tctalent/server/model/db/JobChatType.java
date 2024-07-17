@@ -23,8 +23,8 @@ package org.tctalent.server.model.db;
  */
 public enum JobChatType {
     /**
-     * Participants: job source and destination partner associated with prospects for the job
-     * in a particular source location
+     * Participants: source and destination partners associated with job - and with prospects for
+     * the job in a particular source location.
      */
     JobCreatorSourcePartner,
 

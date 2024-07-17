@@ -19,7 +19,7 @@ package org.tctalent.server.service.db;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.JobOppIntake;
-import org.tctalent.server.request.job.JobIntakeData;
+import org.tctalent.server.request.job.IJobIntakeData;
 
 /**
  * Service for managing {@link JobOppIntake}
@@ -41,9 +41,8 @@ public interface JobOppIntakeService {
      * Creates the intake data.
      * @param data Partially populated JobIntakeData record. Null data
      *             fields are ignored. Only non-null fields are added to the new entity.
-     * @throws NoSuchObjectException if no job is found with that id
      */
-    JobOppIntake create(JobIntakeData data) throws NoSuchObjectException;
+    JobOppIntake create(IJobIntakeData data);
 
     /**
      * Updates the intake data.
@@ -52,6 +51,6 @@ public interface JobOppIntakeService {
      *             fields are ignored. Only non-null fields are updated.
      * @throws NoSuchObjectException if no job is found with that id
      */
-    void update(long id, JobIntakeData data) throws NoSuchObjectException;
+    void update(long id, IJobIntakeData data) throws NoSuchObjectException;
 
 }

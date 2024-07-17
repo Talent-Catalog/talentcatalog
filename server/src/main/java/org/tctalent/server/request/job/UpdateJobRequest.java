@@ -33,6 +33,12 @@ public class UpdateJobRequest extends OpportunityParams {
     private Long contactUserId;
 
     /**
+     * If present indicates that this job is an evergreen job.
+     */
+    @Nullable
+    private Boolean evergreen;
+
+    /**
      * Name of the role associated with the job - for example "Senior programmer"
      */
     @Nullable
@@ -58,4 +64,10 @@ public class UpdateJobRequest extends OpportunityParams {
 
     @Nullable
     private LocalDate submissionDueDate;
+
+    /**
+     * If present, the job is to have certain fields copied from the job belonging to this job id.
+     */
+    @Nullable
+    private Long jobToCopyId;
 }

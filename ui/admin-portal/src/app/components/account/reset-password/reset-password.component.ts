@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
 import {environment} from "../../../../environments/environment";
+import {EMAIL_REGEX} from "../../../model/base";
 
 @Component({
   selector: 'app-reset-password',
@@ -17,6 +18,8 @@ export class ResetPasswordComponent implements OnInit {
   updated: boolean;
 
   backgroundImage: string;
+
+  readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private fb: FormBuilder,
               private userService: UserService) {

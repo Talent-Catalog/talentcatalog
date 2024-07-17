@@ -48,12 +48,28 @@ Download and install the latest of the following tools.
   - In development it is best to build using Intellij rather than gradle. Change the Intellij 
   setting for "Build, Execution & Deployment" > "Build Tools" > "Gradle" to build with Intellij.
 
-- Java 17
-   - At least Java 17 is required - to support the Spring Boot Framework.
-   - If you are using a recent version of Intellij the version of Java that comes with it works 
- fine except that it does not have library source code - so probably best to download a new SDK
-     (which you can from inside Intellij - see Project Structure|Project|SDK).
+- Java 21
+    - Java 21 is required. **One way** (but you can choose whichever method you like) to manage Java versions is with **sdkman**. A .sdkmanrc file
+      exists when you check out the repository. You can get **sdkman** by running the following:
+
+      ```
+      curl -s "https://get.sdkman.io" | bash
+      source "$HOME/.sdkman/bin/sdkman-init.sh"
+      sdk install java 21.0.2-amzn
+      ```
+
+    - Intellij will load the JDK through the .sdkmanrc file.
+    - Update the Project SDK: 
+      - Go to File / Project Structure / Project and set the SDK to corretto-21
+    - IntelliJ Settings:
+      - Go to IntelliJ / Settings / Build,Execution,Deployment / Compiler / Java Compiler 
+        - Add `-parameters` to the`Additional command line parameters` textbox.
+        - Set the `Project bytecode version` to **20**.
+      - Go to IntelliJ / Settings / Build,Execution,Deployment / Build Tools / Gradle
+        - Set the **GradleJVM** from the drop list to use the Project SDK.
     
+    
+
 - Code Style
   - Download the intellij-java-google-style.xml file from the google/styleguide repository 
 [here](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).

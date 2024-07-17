@@ -20,8 +20,7 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
@@ -41,8 +40,8 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JobChatServiceImpl implements JobChatService {
-    private static final Logger log = LoggerFactory.getLogger(JobChatServiceImpl.class);
 
     private final UserService userService;
     private final JobChatRepository jobChatRepository;
@@ -180,4 +179,13 @@ public class JobChatServiceImpl implements JobChatService {
     public List<Long> findChatsWithPostsSinceDate(OffsetDateTime dateTime) {
         return jobChatRepository.myFindChatsWithPostsSinceDate(dateTime);
     }
+
+    @Override
+    @Nullable
+    public JobChat getCandidateProspectChat(long candidateId) {
+        return jobChatRepository.findByTypeAndCandidate(
+            JobChatType.CandidateProspect, candidateId
+        );
+    }
+
 }

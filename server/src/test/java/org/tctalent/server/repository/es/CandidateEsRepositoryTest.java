@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
@@ -46,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class CandidateEsRepositoryTest {
 
     @Autowired
-    private ElasticsearchRestTemplate elasticsearchTemplate;
+    private ElasticsearchOperations elasticsearchOperations;
 
     @Autowired
     private CandidateRepository candidateRepository;
@@ -78,7 +79,7 @@ public class CandidateEsRepositoryTest {
                 .withQuery(fuzzyQuery("candidateAttachments", "Condell"))
                 .build();
 
-        final SearchHits<CandidateEs> cands = elasticsearchTemplate
+        final SearchHits<CandidateEs> cands = elasticsearchOperations
                 .search(searchQuery, CandidateEs.class, IndexCoordinates.of("jobs2"));
 
         assertEquals(1, cands.getTotalHits());

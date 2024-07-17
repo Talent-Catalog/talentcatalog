@@ -41,6 +41,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -122,6 +123,7 @@ class CandidateEducationAdminApiTest extends ApiTestBase {
                 .willReturn(candidateEducation);
 
         mockMvc.perform(post(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -155,6 +157,7 @@ class CandidateEducationAdminApiTest extends ApiTestBase {
                 .willReturn(candidateEducation);
 
         mockMvc.perform(put(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -182,6 +185,7 @@ class CandidateEducationAdminApiTest extends ApiTestBase {
     @DisplayName("delete candidate education by id succeeds")
     void deleteEducationByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andDo(print())
