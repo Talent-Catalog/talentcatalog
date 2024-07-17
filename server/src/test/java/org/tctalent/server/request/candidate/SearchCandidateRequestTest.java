@@ -20,13 +20,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.UnhcrStatus;
+import org.tctalent.server.model.db.User;
 
 class SearchCandidateRequestTest {
 
@@ -203,6 +208,40 @@ class SearchCandidateRequestTest {
         String sql = request.extractSQL(true);
         assertEquals("select distinct candidate.id from candidate "
             + "where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from excluded candidates")
+    void extractSQLFromExcludedCandidates() {
+        List<Candidate> excluded = new ArrayList<>();
+        Candidate candidate;
+        candidate = new Candidate();
+        candidate.setId(123L);
+        excluded.add(candidate);
+        candidate = new Candidate();
+        candidate.setId(456L);
+        excluded.add(candidate);
+        String sql = request.extractSQL(true, null, excluded);
+        assertEquals("select distinct candidate.id from candidate "
+            + "where not candidate.id in (123,456)", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from user source countries")
+    void extractSQLFromUserSourceCountries() {
+        User user = new User();
+        Set<Country> countries = new HashSet<>();
+        Country country;
+        country = new Country();
+        country.setId(123L);
+        countries.add(country);
+        country = new Country();
+        country.setId(456L);
+        countries.add(country);
+        user.setSourceCountries(countries);
+        String sql = request.extractSQL(true, user, null);
+        assertEquals("select distinct candidate.id from candidate "
+            + "where candidate.country_id in (456,123)", sql);
     }
 
     @Test

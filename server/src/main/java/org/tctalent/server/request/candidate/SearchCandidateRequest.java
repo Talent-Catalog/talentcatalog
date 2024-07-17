@@ -203,8 +203,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
         // EXCLUDED CANDIDATES (eg from Review Status)
         if (!ObjectUtils.isEmpty(excludedCandidates)) {
-            //TODO JC Native queries extract ids and add in clause
-
+            String values = excludedCandidates.stream()
+                .map(candidate -> candidate.getId().toString())
+                .collect(Collectors.joining(","));
+            ands.add("not candidate.id in (" + values + ")");
         }
 
         // NATIONALITY SEARCH
@@ -229,9 +231,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
             } else {
                 ands.add("candidate.country_id not in (" + values + ")");
             }
-        // If request ids IS EMPTY only show source countries
+        // If request's countryIds IS EMPTY only show user's source countries
         } else if (user != null && !ObjectUtils.isEmpty(user.getSourceCountries())) {
-            //TODO JC Native queries extract ids and add clause
+            String values = user.getSourceCountries().stream()
+                .map(country -> country.getId().toString())
+                .collect(Collectors.joining(","));
+            ands.add("candidate.country_id in (" + values + ")");
         }
 
         // PARTNER SEARCH
@@ -374,6 +379,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         return query;
     }
 
+    /**
+     * @see #extractSQL(boolean, User, Collection)
+     */
+    public String extractSQL(boolean nativeQuery) {
+        return extractSQL(nativeQuery, null, null);
+    }
 
     /**
      * Merge in a SavedSearchGetRequest - eg paging info
