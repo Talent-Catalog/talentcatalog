@@ -45,6 +45,7 @@ import {ResetPasswordComponent} from "./components/account/reset-password/reset-
 import {
   UserChangePasswordComponent
 } from "./components/account/user-change-password/user-change-password.component";
+import {ChatConsoleComponent} from "./components/chat/chat-console/chat-console.component";
 
 const routes: Routes = [
   {
@@ -115,6 +116,11 @@ const routes: Routes = [
         pathMatch: 'full',
         component: ListHomeComponent,
         data: {title: 'TC Candidate Lists'}
+      },
+      {
+        path: 'chat-console',
+        pathMatch: 'full',
+        component: ChatConsoleComponent,
       },
       {
         path: 'opp',

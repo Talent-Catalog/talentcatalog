@@ -795,6 +795,7 @@ import {SelectJobCopyComponent} from './components/util/select-job-copy/select-j
 import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
+import { ChatConsoleComponent } from './components/chat/chat-console/chat-console.component';
 
 @NgModule({
   declarations: [
@@ -1117,7 +1118,8 @@ import {
     CreateUpdateHelpLinkComponent,
     SfJoblinkComponent,
     SelectJobCopyComponent,
-    VisaJobCheckUkComponent
+    VisaJobCheckUkComponent,
+    ChatConsoleComponent
   ],
   imports: [
     BrowserModule,
