@@ -16,21 +16,41 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.domain.Specification;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
+import org.tctalent.server.model.db.Gender;
+import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.repository.db.CandidateSpecification;
+import org.tctalent.server.repository.db.CountryRepository;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CandidateStatsService;
 
 @SpringBootTest
 class CandidateStatsServiceImplTest {
     @Autowired
     private CandidateStatsService candidateStatsService;
+    @Autowired
+    private CandidateService candidateService;
+    @Autowired
+    private CandidateRepository candidateRepository;
+    @Autowired
+    private CountryRepository countryRepository;
 
     @BeforeEach
     void setUp() {
@@ -41,13 +61,72 @@ class CandidateStatsServiceImplTest {
     }
 
     @Test
-    void computeBirthYearStats() {
+    @DisplayName("Compare old and new ways of doing birth year stats")
+    void compareOldAndNewBirthYearStats() {
 
-        String constraintPredicate = "candidate.city = 'Adiyaman'";
-        final List<DataRow> rows = candidateStatsService.computeBirthYearStats(
-            null, null, null, null, null,
+        LocalDate dateFrom = LocalDate.parse("2023-01-01");
+        LocalDate dateTo = null;
+
+        //Default null dates
+        if (dateFrom == null) {
+            dateFrom = LocalDate.parse("2000-01-01");
+        }
+        if (dateTo == null) {
+            dateTo = LocalDate.now();
+        }
+
+        List <Long> sourceCountryIds = countryRepository.findAll().stream()
+            .map(Country::getId)
+            .collect(Collectors.toList());
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setGender(Gender.female);
+        request.setMinAge(30);
+
+
+        //New way of running stats is to restrict data over which stats are run by adding a
+        //constraint that the candidates should belong to the search query extracted from the
+        //search request.
+        String sql = request.extractSQL(true);
+
+        System.out.println("Extracted query: " + sql);
+
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeBirthYearStats(
+            null, dateFrom, dateTo, null, sourceCountryIds,
             constraintPredicate);
-        
+
         assertNotNull(rows);
+
+
+        //Old way of running stats is to restrict data by running the search corresponding to the
+        //search request, then extract the ids of all returned candidates and then perform the stats
+        //restricting it to candidates whose id's appear in that set of ids.
+        //(Problem with this approach is that Postgres has a limit on the number of ids that can
+        //appear in a query).
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+        candidateService.computeBirthYearStats(
+            null, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        assertNotNull(rowsCurrent);
+
+        //The results of running stats both ways should be identical.
+
+        //The number of collected stats should be the same.
+        assertEquals(rowsCurrent.size(), rows.size());
+
+        //And each individual data point should be the same.
+        for (int i = 0; i < rows.size(); i++) {
+             assertEquals(rows.get(i).getLabel(), rowsCurrent.get(i).getLabel());
+             assertEquals(rows.get(i).getValue(), rowsCurrent.get(i).getValue());
+        }
     }
 }
