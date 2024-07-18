@@ -77,7 +77,7 @@ export enum JobOpportunityStage {
   prospect = "0. Prospect",
   briefing = "1. Briefing",
   pitching = "2. Pitching",
-  mou = "3. Mou",
+  mou = "3. MOU",
   identifyingRoles = "4. Identifying roles",
   candidateSearch = "5. Candidate search",
   visaEligibility = "6. Visa eligibility",
@@ -101,7 +101,7 @@ export enum JobOpportunityStage {
   tooHighWage = "Closed. Too high wage",
   tooLong = "Closed. Too long",
   mouIssue = "Closed. MOU issue",
-  trainingNotCompleted = "Training not completed",
+  trainingNotCompleted = "Closed. Training not completed",
 }
 
 /**
