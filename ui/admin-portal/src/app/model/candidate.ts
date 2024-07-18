@@ -403,21 +403,6 @@ export enum CandidateStatus {
   withdrawn = "withdrawn (inactive)"
 }
 
-export enum CandidateFilterByOpps {
-  someOpps = "Some cases",
-
-  noOpps = "No cases",
-
-  openOpps = "Some open cases",
-
-  closedOpps = "Some closed cases",
-
-  preRelocationOpps = "Some cases not yet at relocated stage - ie 'live' cases",
-
-  postRelocationOpps = "Some cases at the relocated or later stage"
-
-}
-
 export interface CandidateOpportunityParams extends OpportunityProgressParams {
   closingComments?: string;
   closingCommentsForCandidate?: string;
@@ -540,12 +525,12 @@ export enum IntRecruitReason {
 }
 
 export enum UnhcrStatus {
-  NoResponse= "No response received from candidate",
+  NoResponse = "No response",
+  RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
+  NotRegistered = "Not registered with UNHCR",
   MandateRefugee = "Assessed by UNHCR as a mandate refugee (RSD)",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
-  RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
-  NotRegistered = "Not registered with UNHCR",
   Unsure = "Candidate was unsure",
   NA = "Not applicable"
 }

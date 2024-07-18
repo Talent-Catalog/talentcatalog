@@ -10,7 +10,8 @@
     <quill-editor id="content"
                   placeholder="Write your message..."
                   [formControlName]="'content'"
-                  (onEditorCreated)="editorCreated($event)">
+                  (onEditorCreated)="editorCreated($event)"
+                  (onContentChanged)="checkForLinks($event)">
       <div quill-editor-toolbar id="quillToolbar">
           <button class="ql-list" value="ordered" title="Ordered list"></button>
           <button class="ql-list" value="bullet" title="Bullet list"></button>
@@ -49,6 +50,14 @@
             [disabled]="postForm.invalid">
       Send <i class="fa-solid fa-paper-plane"></i>
     </button>
+  </div>
+
+  <div>
+    <div *ngFor="let linkPreview of linkPreviews">
+      <app-preview-link [linkPreview]="linkPreview"
+                        [userIsPostAuthor]="true"
+      ></app-preview-link>
+    </div>
   </div>
 
 </form>

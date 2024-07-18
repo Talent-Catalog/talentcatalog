@@ -13,29 +13,68 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {VisaCheckAuComponent} from "./visa-check-au.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
+import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {MockCandidate} from "../../../../../../MockData/MockCandidate";
+import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {MockJob} from "../../../../../../MockData/MockJob";
+import {
+  mockCandidateIntakeData
+} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {VisaCheckAuComponent} from './visa-check-au.component';
-
-describe('AuComponent', () => {
+fdescribe('VisaCheckAuComponent', () => {
   let component: VisaCheckAuComponent;
   let fixture: ComponentFixture<VisaCheckAuComponent>;
+  const mockCandidate = new MockCandidate();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ VisaCheckAuComponent ]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ VisaCheckAuComponent ],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule ,NgSelectModule,LocalStorageModule.forRoot({})],
+      providers: [
+        { provide: NgbModal, useValue: {} },
+        { provide: LocalStorageService, useValue: {} }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VisaCheckAuComponent);
     component = fixture.componentInstance;
+
+    // Initialize input properties
+    component.candidate = mockCandidate;
+    component.candidateIntakeData = {...mockCandidateIntakeData,candidateDestinations:[MockJob.country]}
+    component.visaCheckRecord = {
+      candidateVisaJobChecks: [
+        { id: 1 } as CandidateVisaJobCheck,
+        { id: 2 } as CandidateVisaJobCheck
+      ]
+    } as CandidateVisa;
+
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should initialize currentYear and birthYear correctly', () => {
+    const currentYear = new Date().getFullYear().toString();
+    expect(component.currentYear).toBe(currentYear);
+    expect(component.birthYear).toBe('Mon ');
+  });
+
+  it('should select the first job by default', () => {
+    expect(component.selectedJob).toBe(component.visaCheckRecord.candidateVisaJobChecks[0]);
+  });
+
 });

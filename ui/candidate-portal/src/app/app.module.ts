@@ -125,11 +125,11 @@ import {
   faFaceSmile,
   faFileUpload,
   faFolderOpen,
-  faGlobe,
+  faGlobe, faLink,
   faPlus,
   faQuestion,
   faQuestionCircle,
-  faTimes
+  faTimes, faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -194,6 +194,7 @@ import {
 } from './components/register/create-account/registration-create-account.component';
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
+import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -263,7 +264,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ChatReadStatusComponent,
     TruncatePipe,
     RegistrationCreateAccountComponent,
-    FileSelectorComponent
+    FileSelectorComponent,
+    PreviewLinkComponent
   ],
   imports: [
     BrowserModule,
@@ -340,7 +342,9 @@ export class AppModule {
       faFolderOpen,
       faFileUpload,
       faFaceSmile,
-      faPlus
+      faPlus,
+      faXmark,
+      faLink
     );
   }
 }

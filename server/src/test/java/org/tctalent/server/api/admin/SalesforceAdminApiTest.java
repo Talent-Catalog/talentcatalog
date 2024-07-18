@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -124,6 +125,7 @@ class SalesforceAdminApiTest extends ApiTestBase {
     UpdateEmployerOpportunityRequest request = new UpdateEmployerOpportunityRequest();
 
     mockMvc.perform(put(BASE_PATH + UPDATE_EMPLOYER_OPPORTUNITY_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -145,6 +147,7 @@ class SalesforceAdminApiTest extends ApiTestBase {
             .updateEmployerOpportunity(any(UpdateEmployerOpportunityRequest.class));
 
     mockMvc.perform(put(BASE_PATH + UPDATE_EMPLOYER_OPPORTUNITY_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))

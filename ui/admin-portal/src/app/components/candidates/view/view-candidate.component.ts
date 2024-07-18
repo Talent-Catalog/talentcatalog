@@ -55,6 +55,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
   activeTabId: string;
   loading: boolean;
+  loadingButton: boolean;
   savingList: boolean;
   loadingError: boolean;
   error;
@@ -83,13 +84,12 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   ngOnInit() {
-    this.refreshCandidateInfo();
+    this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
-    this.checkVisibility();
   }
-  private checkVisibility() {
-    const candidatePartner = this.candidate?.user?.partner;
+  private setChatAccess() {
+    const candidatePartner = this.candidate.user?.partner;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
 
     //User is source partner responsible for candidate or default source partner
@@ -97,9 +97,16 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
       loggedInPartner.defaultSourcePartner || loggedInPartner.id == candidatePartner?.id;
 
     this.candidateProspectTabVisible = userIsCandidatePartner;
+
+    // May return null, in which case 'Create Chat' button displayed instead of chat
+    if (this.candidateProspectTabVisible) {
+      this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
+        this.candidateChat = result;
+      })
+    }
   }
 
-  refreshCandidateInfo() {
+  refreshCandidateProfile() {
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
@@ -115,6 +122,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
           this.setCandidate(candidate);
           this.loadLists();
           this.generateToken();
+          this.setChatAccess();
         }
       }, error => {
         this.loadingError = true;
@@ -202,26 +210,21 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     } else {
       this.titleService.setTitle(this.candidate.candidateNumber);
     }
-
-    this.fetchChat();
   }
 
-  fetchChat() {
-    if (this.candidate) {
-      this.loading = true;
-      this.error = null;
+  createChat() {
+    this.loadingButton = true;
+    this.error = null;
 
-      const candidateProspectChatRequest: CreateChatRequest = {
-        type: JobChatType.CandidateProspect,
-        candidateId: this.candidate.id,
-      }
-      this.chatService.getOrCreate(candidateProspectChatRequest).subscribe(
-        {
-          next: (chat) => {this.candidateChat = chat; this.loading = false},
-          error: (error) => {this.error = error; this.loading = false}
-        }
-      )
+    const candidateProspectChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateProspect,
+      candidateId: this.candidate.id,
     }
+    this.chatService.create(candidateProspectChatRequest).subscribe({
+        next: (chat) => {this.candidateChat = chat; this.loadingButton = false},
+        error: (error) => {this.error = error; this.loadingButton = false}
+      }
+    )
   }
 
   downloadCV() {

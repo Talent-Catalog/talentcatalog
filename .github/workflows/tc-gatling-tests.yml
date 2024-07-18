@@ -9,6 +9,11 @@ on:
 
 jobs:
   run-tests:
+    # This job is intentionally disabled because the Gatling Tests are currently failing.
+    # The 'if: false' condition effectively prevents this job from running under any circumstances.
+    # This will remain in place until the SDET has a chance to review and set appropriate performance
+    # test benchmarks and a spin-up/tear-down perf environment is in place.
+    if: false # this attribute disables the job
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +24,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew

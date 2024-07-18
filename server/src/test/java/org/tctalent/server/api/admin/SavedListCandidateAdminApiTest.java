@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -162,6 +163,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 put(BASE_PATH + "/123" + MERGE_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -185,6 +187,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
         mockMvc.perform(
                 multipart(HttpMethod.PUT, BASE_PATH + "/123" + MERGE_FROM_FILE_PATH)
                     .file(testFile)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
             )
 
@@ -201,6 +204,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 put(BASE_PATH + "/123" + REMOVE_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -220,6 +224,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 put(BASE_PATH + "/123" + REPLACE_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -247,6 +252,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 post(BASE_PATH + "/123" + SEARCH_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -277,6 +283,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 post(BASE_PATH + "/123" + SEARCH_PAGED_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -308,6 +315,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 post(BASE_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -334,6 +342,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 post(BASE_PATH + "/123" + EXPORT_CSV_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -359,6 +368,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 put(BASE_PATH + "/123" + CREATE_FOLDERS_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
             )
 
@@ -376,6 +386,7 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(
                 put(BASE_PATH + "/123" + SAVE_SELECTION_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))

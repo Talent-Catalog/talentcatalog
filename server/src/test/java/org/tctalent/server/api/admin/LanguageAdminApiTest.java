@@ -49,6 +49,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -163,6 +164,7 @@ class LanguageAdminApiTest extends ApiTestBase {
                 .willReturn(languagePage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -217,6 +219,7 @@ class LanguageAdminApiTest extends ApiTestBase {
                 .willReturn(systemLanguage);
 
         mockMvc.perform(post(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON))
 
@@ -244,6 +247,7 @@ class LanguageAdminApiTest extends ApiTestBase {
                 .willReturn(language);
 
         mockMvc.perform(post(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -272,6 +276,7 @@ class LanguageAdminApiTest extends ApiTestBase {
                 .willReturn(language);
 
         mockMvc.perform(put(BASE_PATH + "/" + LANGUAGE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -292,6 +297,7 @@ class LanguageAdminApiTest extends ApiTestBase {
     @DisplayName("delete language by id succeeds")
     void deleteLanguageByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + LANGUAGE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk());

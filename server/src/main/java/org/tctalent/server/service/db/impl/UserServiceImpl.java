@@ -31,10 +31,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.security.auth.login.AccountLockedException;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -63,6 +62,7 @@ import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -91,10 +91,8 @@ import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
-
-    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-
     private final UserRepository userRepository;
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
@@ -236,15 +234,8 @@ public class UserServiceImpl implements UserService {
                 }
             }
         } else {
-            //If user does not already have a source partner, assign one
-            if (currentPartner == null) {
-                if (creatingUser == null) {
-                    //If we do not know who created this user, set up a default partner
-                    newSourcePartner = partnerService.getDefaultSourcePartner();
-                } else {
-                    newSourcePartner = creatingUser.getPartner();
-                }
-            }
+            //Throw an exception if no partner is specified
+            throw new InvalidRequestException("A partner must be specified.");
         }
         //If we have a new source partner, update it.
         if (newSourcePartner != null) {
@@ -439,7 +430,11 @@ public class UserServiceImpl implements UserService {
                     }
                 } catch (Exception ex) {
                     //Log details to check for nature of brute force attacks.
-                    log.info("Invalid credentials for user: " + request + ". Exception " + ex);
+                    LogBuilder.builder(log)
+                        .action("Login")
+                        .message("Invalid credentials for user: " + request)
+                        .logError(ex);
+
                     //Exception if there is more than one user associated with email.
                     throw new InvalidCredentialsException("Sorry, that email is not unique. Log in with your username.");
                 }
@@ -465,7 +460,11 @@ public class UserServiceImpl implements UserService {
 
         } catch (BadCredentialsException e) {
             //Log details to check for nature of brute force attacks.
-            log.info("Invalid credentials for user: " + request);
+            LogBuilder.builder(log)
+                .action("Login")
+                .message("Invalid credentials for user: " + request)
+                .logError(e);
+
             // map spring exception to a service exception for better handling
             throw new InvalidCredentialsException("Invalid credentials for user");
         } catch (LockedException e) {
@@ -583,14 +582,24 @@ public class UserServiceImpl implements UserService {
             try {
                 emailHelper.sendResetPasswordEmail(user);
             } catch (EmailSendFailedException e) {
-                log.error("unable to send reset password email for " + user.getEmail());
+                LogBuilder.builder(log)
+                    .action("ResetPassword")
+                    .message("Unable to send reset password email for " + user.getEmail())
+                    .logError(e);
             }
 
             // temporary for testing till emails are working
             String resetUrl = user.getRole() == Role.user ? portalUrl : adminUrl;
-            log.info("RESET URL: " + resetUrl + "/reset-password/" + user.getResetToken());
+
+            LogBuilder.builder(log)
+                .action("GenerateResetPasswordToken")
+                .message("RESET URL: " + resetUrl + "/reset-password/" + user.getResetToken())
+                .logInfo();
         } else {
-            log.error("unable to send reset email for " + request.getEmail());
+            LogBuilder.builder(log)
+                .action("GenerateResetPasswordToken")
+                .message("Unable to send reset password email for " + request.getEmail())
+                .logError();
         }
     }
 
@@ -617,7 +626,11 @@ public class UserServiceImpl implements UserService {
         if (user != null) {
             String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
 
-            log.info("Saving new password for user with id {}", user.getId());
+            LogBuilder.builder(log)
+                .action("ResetPassword")
+                .message("Saving new password for user with id " + user.getId())
+                .logInfo();
+
             user.setPasswordEnc(passwordEnc);
             user.setPasswordUpdatedDate(OffsetDateTime.now());
             user.setResetTokenIssuedDate(null);
@@ -700,7 +713,12 @@ public class UserServiceImpl implements UserService {
                 .map(User::getUsername)
                 .collect(Collectors.joining(","));
             final String mess = "The following staff members have MFA disabled: " + s;
-            log.warn(mess);
+
+            LogBuilder.builder(log)
+                .action("CheckMfaUsers")
+                .message(mess)
+                .logWarn();
+
             emailHelper.sendAlert(mess);
         }
     }

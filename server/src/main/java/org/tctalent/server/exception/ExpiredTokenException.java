@@ -22,6 +22,10 @@ public class ExpiredTokenException extends ServiceException {
         super("expired_password_token", "The reset password token has expired");
     }
 
+    public ExpiredTokenException(String message) {
+        super("expired_password_token", message);
+    }
+
     public ExpiredTokenException(Throwable cause) {
         super("expired_password_token", "The reset password token has expired", cause);
     }

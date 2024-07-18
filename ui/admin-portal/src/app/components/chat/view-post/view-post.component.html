@@ -15,7 +15,7 @@
       <i id="reactionBtnPlus" class="fa-solid fa-plus fa-2xs"></i></i>
     </button>
     <button
-    class="update-reaction-btn"
+    class="modify-reaction-btn"
     *ngFor="let reaction of post.reactions"
     (click)="onSelectReaction(reaction)">
       <span [ngbTooltip]="reactionToolTip">
@@ -31,6 +31,15 @@
       </ng-template>
     </button>
   </div>
+
+  <div>
+    <div *ngFor="let linkPreview of post.linkPreviews">
+      <app-preview-link [linkPreview]="linkPreview"
+                        [userIsPostAuthor]="userIsPostAuthor"
+      ></app-preview-link>
+    </div>
+  </div>
+
 </div>
 
 <emoji-mart

@@ -1,0 +1,96 @@
+.link-preview {
+  margin: 16px 0 16px 0;
+  padding-left: 32px;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease
+}
+
+.link-preview:hover {
+  transform: translateX(3px); /* Subtle upward movement on hover */
+}
+
+// Indented grey line
+.link-preview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  bottom: 0;
+  width: 3px;
+  background-color: #6e6f78;
+}
+
+.preview-img {
+  margin-top: 16px;
+  object-fit: contain;
+  max-width: 40%;
+  border: 1px solid #9697a1;
+  border-radius: 8px;
+}
+
+.favicon {
+  display: inline-block;
+  height: 16px;
+  border: 0.5px solid #8b8c93;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.link-icon {
+  display: inline-block;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.domain {
+  font-size: 14px;
+  font-weight: bolder;
+  margin-bottom: 2px;
+  color: #64656d;
+}
+
+.content {
+  flex: 1;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #1c4679;
+}
+
+.description {
+  font-size: 15px;
+  color: #555;
+}
+
+.block-button {
+  position: absolute;
+  top: 13px;
+  left: 0;
+  cursor: pointer;
+  color: #64656d;
+  z-index: 2;
+  opacity: 0; /* Initially hidden */
+  visibility: hidden; /* Initially hidden */
+  transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition */
+}
+
+.link-preview:hover .block-button {
+  opacity: 1; /* Fully visible */
+  visibility: visible; /* Visible */
+}
+
+.block-button:hover {
+  color: #151f2d;
+}
+
+.link-wrapper {
+  text-decoration: none;
+  display: flex;
+  width: 80%
+}

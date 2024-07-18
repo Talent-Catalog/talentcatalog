@@ -38,9 +38,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
@@ -56,15 +55,18 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateOpportunityStageHistory;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.model.sf.OpportunityHistory;
@@ -77,6 +79,7 @@ import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportun
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -90,8 +93,8 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CandidateOpportunityServiceImpl implements CandidateOpportunityService {
-    private static final Logger log = LoggerFactory.getLogger(SalesforceJobOppServiceImpl.class);
     private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateService candidateService;
     private final EmailHelper emailHelper;
@@ -102,7 +105,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final AuthService authService;
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
-    private final ChatPostServiceImpl chatPostServiceImpl;
+    private final ChatPostService chatPostService;
 
     /**
      * Creates or updates CandidateOpportunities associated with the given candidates going for
@@ -143,8 +146,12 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
             String sfId = fetchSalesforceId(candidate, jobOpp);
             if (sfId == null) {
-                log.error("Could not find SF candidate opp for candidate "
-                    + candidate.getCandidateNumber() + " job " + jobOpp.getId());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("createOrUpdateCandidateOpportunity")
+                    .message("Could not find SF candidate opp for candidate "
+                        + candidate.getCandidateNumber() + " job " + jobOpp.getId())
+                    .logError();
             }
             opp.setSfId(sfId);
         }
@@ -154,30 +161,10 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         opp = updateCandidateOpportunity(opp, oppParams);
 
         if (create) {
-            //Create the chats
-            JobChat prospectChat = jobChatService.createCandidateProspectChat(opp.getCandidate());
+            // todo why are we creating a recruiting chat here? Candidate is only now a prospect?
             jobChatService.createCandidateRecruitingChat(opp.getCandidate(), opp.getJobOpp());
-
-            //Automate post to notify that a candidate has been added to a submission list.
-            //Create the automated post
-//            String candidateName = opp.getCandidate().getUser().getFirstName() + " "
-//                + opp.getCandidate().getUser().getLastName();
-//            Post autoPostAddedToSubList = new Post();
-//            autoPostAddedToSubList.setContent("The candidate " + candidateName +
-//                " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
-//            // Create the chat post
-//            ChatPost prospectChatPost = chatPostServiceImpl.createPost(
-//                autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
-//            //publish chat post
-//            chatPostServiceImpl.publishChatPost(prospectChatPost);
-//            //Create another auto post to the job creator source partner chat.
-//            JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
-//                candidate.getUser().getPartner(), null);
-//            // Create the chat post
-//            ChatPost jcspChatPost = chatPostServiceImpl.createPost(
-//                autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
-//            //publish chat post
-//            chatPostServiceImpl.publishChatPost(jcspChatPost);
+            //Create the automated post to notify that a candidate has been added to a submission list.
+            publishAddedToSubmissionListPosts(opp);
         }
 
         return opp;
@@ -264,12 +251,20 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public void loadCandidateOpportunities(String... jobOppIds) throws SalesforceException {
 
-        log.info("Updating candidate opportunities from Salesforce");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("loadCandidateOpportunities")
+            .message("Updating candidate opportunities from Salesforce")
+            .logInfo();
 
         //Remove duplicates
         final String[] ids = Arrays.stream(jobOppIds).distinct().toArray(String[]::new);
 
-        log.info(ids.length + " jobs to process");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("loadCandidateOpportunities")
+            .message(ids.length + " jobs to process")
+            .logInfo();
 
         final int maxJobsAtATime = 10;
 
@@ -280,12 +275,21 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             if (endJobIndex > ids.length) {
                 endJobIndex = ids.length;
             }
-            log.info("Processing jobs from " + startJobIndex + " to " + (endJobIndex - 1) );
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("loadCandidateOpportunities")
+                .message("Processing jobs from " + startJobIndex + " to " + (endJobIndex - 1))
+                .logInfo();
 
             String[] idsChunk = Arrays.copyOfRange(ids, startJobIndex, endJobIndex);
             List<Opportunity> ops = salesforceService.findCandidateOpportunitiesByJobOpps(idsChunk);
 
-            log.info("Loaded " + ops.size() + " candidate opportunities from Salesforce");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("loadCandidateOpportunities")
+                .message("Loaded " + ops.size() + " candidate opportunities from Salesforce")
+                .logInfo();
+
             for (Opportunity op : ops) {
                 loadCandidateOpportunity(op, false);
             }
@@ -331,7 +335,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             jobOpp = salesforceJobOppService.getJobOppById(jobOppSfid);
         }
         if (jobOpp == null) {
-            log.error("Could not find job opp: " + jobOppSfid + " parent of " + op.getName());
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadCandidateOpportunity")
+                .message("Could not find job opp: " + jobOppSfid + " parent of " + op.getName())
+                .logError();
         }
         candidateOpportunity.setJobOpp(jobOpp);
 
@@ -339,7 +347,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         String candidateNumber = op.getCandidateId();
         Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
         if (candidate == null) {
-            log.error("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName());
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadCandidateOpportunity")
+                .message("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName())
+                .logError();
         }
         candidateOpportunity.setCandidate(candidate);
 
@@ -356,7 +368,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 candidateOpportunity.setNextStepDueDate(
                     LocalDate.parse(nextStepDueDate));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName())
+                    .logError();
             }
         }
 
@@ -365,7 +381,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             try {
                 candidateOpportunity.setCreatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(createdDate));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding createdDate from SF: " + createdDate + " in candidate op " + op.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding createdDate from SF: " + createdDate + " in candidate op " + op.getName())
+                    .logError();
             }
         }
 
@@ -374,7 +394,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             try {
                 candidateOpportunity.setUpdatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(lastModifiedDate));
             } catch (DateTimeParseException ex) {
-                log.error("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + op.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + op.getName())
+                    .logError();
             }
         }
         candidateOpportunity.setSfId(op.getId());
@@ -382,7 +406,12 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         try {
             stage = CandidateOpportunityStage.textToEnum(op.getStageName());
         } catch (IllegalArgumentException e) {
-            log.error("Error decoding stage in load: " + op.getStageName() + " in candidate op " + op.getName());
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadCandidateOpportunity")
+                .message("Error decoding stage in load: " + op.getStageName() + " in candidate op " + op.getName())
+                .logError();
+
             stage = CandidateOpportunityStage.prospect;
         }
         candidateOpportunity.setStage(stage);
@@ -438,7 +467,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public void loadCandidateOpportunityLastActiveStages() {
 
-        log.info("Loading candidate opportunities from Salesforce");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("loadCandidateOpportunityLastActiveStages")
+            .message("Loading candidate opportunities from Salesforce")
+            .logInfo();
 
         final int limit = 10;
 
@@ -447,12 +480,23 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         int nOpps = -1;
         while (nOpps != 0) {
 
-            log.info("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId));
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("loadCandidateOpportunityLastActiveStages")
+                .message("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId))
+                .logInfo();
+
             List<Opportunity> ops = salesforceService.findCandidateOpportunities(
                 lastId == null ? null : "Id > '" + lastId + "'", limit);
             nOpps = ops.size();
             totalOpps += nOpps;
-            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps);
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("loadCandidateOpportunityLastActiveStages")
+                .message("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps)
+                .logInfo();
+
             if (nOpps > 0) {
                 lastId = ops.get(nOpps - 1).getId();
 
@@ -485,7 +529,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             //Fetch opp to update.
             CandidateOpportunity opp = getCandidateOpportunityFromSfId(oppId);
             if (opp == null) {
-                log.warn("Could not find candidate opp with SF id = " + oppId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("loadCandidateOpportunityLastActiveStages")
+                    .message("Could not find candidate opp with SF id = " + oppId)
+                    .logWarn();
             } else {
                 CandidateOpportunityStage lastActiveStage;
                 if (oppHistories.isEmpty()) {
@@ -517,9 +565,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 //Set lastActiveStage on candidate opp
                 opp.setLastActiveStage(lastActiveStage);
                 candidateOpportunityRepository.save(opp);
-                log.info("Updated lastActiveStage of candidate opportunity "
-                    + opp.getName() + "(" + opp.getId() + ") to " + lastActiveStage.name());
 
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("loadCandidateOpportunityLastActiveStages")
+                    .message("Updated lastActiveStage of candidate opportunity "
+                        + opp.getName() + "(" + opp.getId() + ") to " + lastActiveStage.name())
+                    .logInfo();
             }
         }
     }
@@ -600,9 +652,23 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         CandidateOpportunity opp, @Nullable CandidateOpportunityParams oppParams) {
 
         if (oppParams != null) {
-            final CandidateOpportunityStage stage = oppParams.getStage();
-            if (stage != null) {
-                opp.setStage(stage);
+            final CandidateOpportunityStage newStage = oppParams.getStage();
+            if (newStage != null) {
+                // Stage is changing
+                if (!newStage.equals(opp.getStage())) {
+                    // If stage is changing to CLOSED (e.g. removed from submission list) publish posts
+                    if (newStage.isClosed()) {
+                        publishRemovedFromSubmissionListPosts(opp, newStage);
+                    // If a stage is changed to ACCEPTANCE (job offer is accepted)
+                    } else if (newStage.equals(CandidateOpportunityStage.acceptance)) {
+                        publishOppAcceptedPosts(opp);
+                    } else {
+                        // If non closing stage change, publish posts
+                        publishStageChangePosts(opp, newStage);
+                    }
+                }
+
+                opp.setStage(newStage);
             }
 
             //Process next step
@@ -614,13 +680,75 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             final String processedNextStep = auditStampNextStep(
                 loggedInUser.getUsername(), LocalDate.now(),
                 opp.getNextStep(), oppParams.getNextStep());
+
+            // If next step details changing, send automated post to JobCreatorSourcePartner chat.
+            if (oppParams.getNextStep() != null
+            ) {
+                // To compare previous next step to new one, need to ensure neither is null.
+                // Cases are auto-populated with a value for next step when created, but this has
+                // not always been the case.
+                String currentNextStep = opp.getNextStep() == null ? "" : opp.getNextStep();
+
+                // If only the due date has changed, we still want to send a message.
+                // As above, there are some old cases with null values that need to be dealt with.
+                LocalDate currentDueDate =
+                    opp.getNextStepDueDate() == null ?
+                        LocalDate.of(1970, 1, 1) : opp.getNextStepDueDate();
+
+                // If the request due date is null (user deletes the existing value in the form but
+                // doesn't set a new one, then submits) it will not be used (see below) — so, for
+                // purpose of comparison we give it the same value as the current due date (no
+                // message will be sent because they're the same).
+                // TODO: next step due date should be a required value in the form
+                LocalDate requestDueDate =
+                    oppParams.getNextStepDueDate() == null ?
+                        currentDueDate : oppParams.getNextStepDueDate();
+
+                if (!processedNextStep.equals(currentNextStep) || !requestDueDate.equals(currentDueDate)) {
+                    // Find the relevant job chat
+                    JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                        JobChatType.JobCreatorSourcePartner,
+                        opp.getJobOpp(),
+                        opp.getCandidate().getUser().getPartner(),
+                        null
+                    );
+
+                    String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+
+                    // Set the chat post content
+                    Post autoPostNextStepChange = new Post();
+                    autoPostNextStepChange.setContent(
+                        "💼 <b>" + opp.getName()
+                            + "</b> 🪜<br> The next step details have changed for this case relating to candidate "
+                            + candidateNameAndNumber
+                            + ".<br><b>Next step:</b> " + processedNextStep
+                            + "<br><b>Due date:</b> "
+                            + (oppParams.getNextStepDueDate() == null ?
+                            opp.getNextStepDueDate() : oppParams.getNextStepDueDate())
+                    );
+
+                    // Create the chat post
+                    ChatPost nextStepChangeChatPost = chatPostService.createPost(
+                        autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
+
+                    // Publish the chat post
+                    chatPostService.publishChatPost(nextStepChangeChatPost);
+                }
+            }
+
             opp.setNextStep(processedNextStep);
 
-            opp.setNextStepDueDate(oppParams.getNextStepDueDate());
+            // A next step always needs a due date
+            final LocalDate requestDueDate = oppParams.getNextStepDueDate();
+            if (requestDueDate != null) {
+                opp.setNextStepDueDate(requestDueDate);
+            }
+
             opp.setClosingComments(oppParams.getClosingComments());
             opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
             opp.setEmployerFeedback(oppParams.getEmployerFeedback());
         }
+
         return candidateOpportunityRepository.save(opp);
     }
 
@@ -680,7 +808,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         //Delete tempfile
         if (!tempFile.delete()) {
-            log.error("Failed to delete temporary file " + tempFile);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("uploadFile")
+                .message("Failed to delete temporary file " + tempFile)
+                .logError();
         }
 
         return uploadedFile;
@@ -762,12 +894,185 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             String s = userChats.stream()
                 .map(c -> c.getId().toString())
                 .collect(Collectors.joining(","));
-            log.info("Tell user " + userId + " about posts to chats " + s);
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("notifyOfChatsWithNewPosts")
+                .message("Notifying user " + userId + " about posts to chats " + s)
+                .logInfo();
+
             User user = userService.getUser(userId);
             if (user != null) {
                 emailHelper.sendNewChatPostsForCandidateUserEmail(user, userChats);
             }
         }
+    }
+
+    /**
+     * Publish posts for a candidate opportunity that is moved to a closing stage.
+     * Publish to:
+     * - JobCreatorSourcePartner chat
+     * - CandidateProspect chat
+     * - CandidateRecruiting chat
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
+     * @param newStage CandidateOpportunityStage - closing stage that the opp is being changed to
+     */
+    private void publishRemovedFromSubmissionListPosts(CandidateOpportunity opp, CandidateOpportunityStage newStage) {
+        Candidate candidate = opp.getCandidate();
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+
+        Post autoPostRemovedFromSubList = new Post();
+        autoPostRemovedFromSubList.setContent("The candidate " + candidateNameAndNumber +
+                " has been removed for the job '" + opp.getJobOpp().getName() +
+                "' with the reason " + newStage.getSalesforceStageName() + ".");
+
+        // AUTO CHAT TO PROSPECT CHAT
+        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+        // Create the chat post
+        ChatPost prospectChatPostRemoved = chatPostService.createPost(
+                autoPostRemovedFromSubList, prospectChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(prospectChatPostRemoved);
+
+        // AUTO CHAT TO RECRUITING CHAT
+        JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
+                candidate.getUser().getPartner(), candidate);
+        // Create the chat post
+        ChatPost recruitingChatPostRemoved = chatPostService.createPost(
+                autoPostRemovedFromSubList, recruitingChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(recruitingChatPostRemoved);
+
+        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
+                candidate.getUser().getPartner(), null);
+        // Create the chat post
+        ChatPost jcspChatPostRemoved = chatPostService.createPost(
+                autoPostRemovedFromSubList, jcspChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(jcspChatPostRemoved);
+    }
+
+    /**
+     * Publish posts for after a Candidate Opportunity is created (e.g. Added to submission list) and the stage is now prospect.
+     * Publish to:
+     * - CandidateProspect chat
+     * - JobCreatorSourcePartner chat.
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
+     */
+    private void publishAddedToSubmissionListPosts(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+
+        Post autoPostAddedToSubList = new Post();
+        autoPostAddedToSubList.setContent("The candidate " + candidateNameAndNumber +
+                " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
+
+        // AUTO CHAT TO PROSPECT CHAT
+        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+        // Create the chat post
+        ChatPost prospectChatPost = chatPostService.createPost(
+                autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
+        //publish chat post
+        chatPostService.publishChatPost(prospectChatPost);
+
+        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
+                candidate.getUser().getPartner(), null);
+        // Create the chat post
+        ChatPost jcspChatPost = chatPostService.createPost(
+                autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
+        //publish chat post
+        chatPostService.publishChatPost(jcspChatPost);
+    }
+
+    /**
+     * Publish post for a candidate opportunity stage change that is not to a closing stage.
+     * Publish to Job Creator Source Partner chat.
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
+     * @param newStage CandidateOpportunityStage - non-closing stage that the opp is being changed to
+     */
+    private void publishStageChangePosts(CandidateOpportunity opp, CandidateOpportunityStage newStage) {
+        // Find the relevant job chat
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                JobChatType.JobCreatorSourcePartner,
+                opp.getJobOpp(),
+                opp.getCandidate().getUser().getPartner(),
+                null
+        );
+
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+
+        // Set the chat post content
+        Post autoPostCandidateOppStageChange = new Post();
+        autoPostCandidateOppStageChange.setContent(
+                "💼 <b>" + opp.getName() + "</b> 🪜<br> This case for candidate "
+                        + candidateNameAndNumber
+                        + " has changed stage from '" + opp.getStage() + "' to '"
+                        + newStage + "'."
+        );
+
+        // Create the chat post
+        ChatPost candidateOppStageChangeChatPost = chatPostService.createPost(
+                autoPostCandidateOppStageChange, jcspChat, userService.getSystemAdminUser());
+
+        // Publish the chat post
+        chatPostService.publishChatPost(candidateOppStageChangeChatPost);
+    }
+
+    /**
+     * Publish post for a candidate opportunity stage change to acceptance. Notify all previous chats.
+     * - CandidateProspect chat
+     * - CandidateRecruiting chat
+     * - JobCreatorSourcePartner chat
+     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
+     */
+    private void publishOppAcceptedPosts(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+        Post autoPostAcceptedJobOffer = new Post();
+        autoPostAcceptedJobOffer.setContent("The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
+                + opp.getJobOpp().getName() + " and is now a member of the <a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>.");
+
+        // AUTO CHAT TO PROSPECT CHAT
+        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+        // Create the chat post
+        ChatPost prospectChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, prospectChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(prospectChatPostAccepted);
+
+        // AUTO CHAT TO RECRUITING CHAT
+        JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
+                candidate.getUser().getPartner(), candidate);
+        // Create the chat post
+        ChatPost recruitingChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, recruitingChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(recruitingChatPostAccepted);
+
+        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
+                candidate.getUser().getPartner(), null);
+        // Create the chat post
+        ChatPost jcspChatPostAccepted = chatPostService.createPost(
+                autoPostAcceptedJobOffer, jcspChat, userService.getSystemAdminUser());
+        // Publish chat post
+        chatPostService.publishChatPost(jcspChatPostAccepted);
+    }
+
+    /**
+     * Get candidate name and number string for automated chat posts
+     * @param candidate Candidate to get details from
+     */
+    private String getCandidateNameNumber(Candidate candidate) {
+        // Get candidate name and number for automated chat posts
+        return candidate.getUser().getFirstName() + " "
+                + candidate.getUser().getLastName()
+                + " (" + candidate.getCandidateNumber() + ")";
     }
 
 }

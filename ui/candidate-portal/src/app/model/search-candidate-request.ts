@@ -15,7 +15,6 @@
  */
 
 import {SavedSearchJoin} from './saved-search';
-import {CandidateFilterByOpps} from "./candidate";
 
 export interface SearchCandidateRequest {
   simpleQueryString?: string;
@@ -58,5 +57,4 @@ export interface SearchCandidateRequest {
   includeDraftAndDeleted?: boolean;
   searchJoins?: SavedSearchJoin[];
   exclusionListId?: number;
-  candidateFilterByOpps?: CandidateFilterByOpps;
 }

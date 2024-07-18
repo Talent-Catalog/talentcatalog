@@ -26,7 +26,7 @@ import org.tctalent.server.model.db.task.UploadType;
 @Getter
 @Setter
 public class CreateCandidateAttachmentRequest {
-    
+
     private Long candidateId;
 
     @Enumerated(EnumType.STRING)
