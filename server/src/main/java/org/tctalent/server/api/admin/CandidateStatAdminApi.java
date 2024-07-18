@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,7 @@ import org.tctalent.server.model.db.StatReport;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
+import org.tctalent.server.request.candidate.SearchJoinRequest;
 import org.tctalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
@@ -101,6 +104,7 @@ public class CandidateStatAdminApi {
         return dto;
     }
 
+    @NonNull
     private List<StatReport> getAllStatsByNewMethod(CandidateStatsRequest request) {
         //Pick up any source country restrictions based on current user
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
@@ -108,10 +112,10 @@ public class CandidateStatAdminApi {
         //Default any null dates
         convertDateRangeDefaults(request);
 
-        //Check whether the requested data to report on is from a set of candidates
-        List<StatReport> statReports = null;
-        if (request.getListId() != null) {
+        List<StatReport> statReports;
 
+        if (request.getListId() != null) {
+//            LIST
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .listId(request.getListId())
@@ -131,21 +135,71 @@ public class CandidateStatAdminApi {
             convertDateRangeDefaults(request);
 
             //Report based on set of candidates or date range
-            statReports = createNewReports(
-                request.getDateFrom(), request.getDateTo(),
+            statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
                 candidateIds, sourceCountryIds, null);
-        } else if (request.getSearchId() != null) {
+        } else {
+            final Long searchId = request.getSearchId();
+            if (searchId == null) {
+                //No list and no search - this will report on all data
+                statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
+                    null, sourceCountryIds, null);
+            } else {
 
-            SearchCandidateRequest searchRequest =
-                savedSearchService.loadSavedSearch(request.getSearchId());
-            String sql = searchRequest.extractSQL(true);
-            String constraintPredicate = "candidate.id in (" + sql + ")";
+                // SEARCH
+                if (hasElasticSearch(searchId)) {
+                    //SEARCH containing Elastic Search
 
-            statReports = createNewReports(
-                request.getDateFrom(), request.getDateTo(),
-                null, sourceCountryIds, constraintPredicate);
+                    //Stats on searches which contain an elastic search can only be constrained
+                    //by a set of candidate ids (because SQL Subquery constraints can only be used
+                    //to constrain Postgres - not Elastic search).
+
+                    //Run the search and collect the candidateIds.
+                    //Warning that this call clears the JPA persistence context - see its JavaDoc
+                    //Also note that the following call will throw an InvalidRequestException if
+                    //the number of candidates returned by the search is greater than 32,000.
+                    //Stats cannot be gathered from searches containing an Elastic search which
+                    //return more than that number of candidates.
+                    Set<Long> candidateIds = savedSearchService.searchCandidates(searchId);
+
+                    statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
+                        candidateIds, sourceCountryIds, null);
+
+                } else {
+                    //SEARCH just containing Postgres SQL (no Elastic search)
+
+                    SearchCandidateRequest searchRequest =
+                        savedSearchService.loadSavedSearch(searchId);
+                    String sql = searchRequest.extractSQL(true);
+                    String constraintPredicate = "candidate.id in (" + sql + ")";
+
+                    statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
+                        null, sourceCountryIds, constraintPredicate);
+                }
+            }
         }
         return statReports;
+    }
+
+    private boolean hasElasticSearch(Long searchId) {
+
+        SearchCandidateRequest searchRequest;
+        searchRequest = savedSearchService.loadSavedSearch(searchId);
+        if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
+            return true;
+        }
+
+        List<SearchJoinRequest> searchJoinRequests = searchRequest.getSearchJoinRequests();
+        while (!ObjectUtils.isEmpty(searchJoinRequests)) {
+            final Long id = searchJoinRequests.getFirst().getSavedSearchId();
+            searchRequest = savedSearchService.loadSavedSearch(id);
+            if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
+                return true;
+            }
+            searchJoinRequests = searchRequest.getSearchJoinRequests(); //TODO JC Test!!
+        }
+
+        //Didn't find any Elastic search
+        return false;
     }
 
     private List<StatReport> createNewReports(
