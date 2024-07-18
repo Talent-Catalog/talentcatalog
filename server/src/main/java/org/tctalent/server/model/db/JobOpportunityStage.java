@@ -52,7 +52,7 @@ public enum JobOpportunityStage {
         tooHighWage ("Too high wage", true, false),
         tooLong ("Too long", true, false),
         mouIssue("MOU issue", true, false),
-        trainingNotCompleted("Candidate(s) did not complete training", true, false);
+        trainingNotCompleted("Training not completed", true, false);
 
         private final String salesforceStageName;
         private final boolean closed;

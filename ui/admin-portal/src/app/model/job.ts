@@ -97,7 +97,7 @@ export enum JobOpportunityStage {
   tooHighWage = "Closed. Too high wage",
   tooLong = "Closed. Too long",
   mouIssue = "Closed. MOU issue",
-  trainingNotCompleted = "Closed. Candidate(s) did not complete training"
+  trainingNotCompleted = "Training not completed",
 }
 
 /**
