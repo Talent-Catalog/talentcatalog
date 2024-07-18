@@ -31,6 +31,15 @@
       </ng-template>
     </button>
   </div>
+
+  <div>
+    <div *ngFor="let linkPreview of post.linkPreviews">
+      <app-preview-link [linkPreview]="linkPreview"
+                        [userIsPostAuthor]="userIsPostAuthor"
+      ></app-preview-link>
+    </div>
+  </div>
+
 </div>
 
 <emoji-mart

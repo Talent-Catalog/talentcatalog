@@ -166,13 +166,10 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
-        /* Obtain logged in user for audit fields */
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        Candidate candidate = authService.getLoggedInCandidate();
-        if (candidate == null) {
-            throw new InvalidSessionException("Not logged in");
-        }
+        // Fetch updated candidate object from the DB to collect all data updates that may have been made since logging in.
+        Candidate candidate = candidateService.getLoggedInCandidate()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         List<CandidateOccupation> updatedOccupations = new ArrayList<>();
         List<Long> updatedOccupationIds = new ArrayList<>();
 
@@ -270,7 +267,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             }
         }
 
-        candidate.setAuditFields(user);
+        candidate.setAuditFields(candidate.getUser());
         candidateService.save(candidate, true);
 
         return candidateOccupations;
