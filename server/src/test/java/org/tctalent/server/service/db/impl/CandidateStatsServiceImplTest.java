@@ -147,6 +147,152 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
+    @Test
+    @DisplayName("Compare old and new ways of doing language stats")
+    void compareOldAndNewLanguageStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setGender(Gender.female);
+        request.setMinAge(3);
+
+        String sql = request.extractSQL(true);
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeLanguageStats(
+             null, dateFrom, dateTo, null, sourceCountryIds,
+            constraintPredicate);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+        candidateService.computeLanguageStats(
+             null, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing LinkedIn stats")
+    void compareOldAndNewLinkedInStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(3);
+
+        String sql = request.extractSQL(true);
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeLinkedInStats(
+                dateFrom, dateTo, null, sourceCountryIds,
+                constraintPredicate);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+            candidateService.computeLinkedInStats(
+                dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing Registration stats")
+    void compareOldAndNewRegistrationStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(3);
+
+        String sql = request.extractSQL(true);
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeRegistrationStats(
+                dateFrom, dateTo, null, sourceCountryIds,
+                constraintPredicate);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+            candidateService.computeRegistrationStats(
+                dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing unhcr registered stats")
+    void compareOldAndNewUNHCRRegisteredStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(3);
+
+        String sql = request.extractSQL(true);
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeUnhcrRegisteredStats(
+             dateFrom, dateTo, null, sourceCountryIds,
+            constraintPredicate);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+        candidateService.computeUnhcrRegisteredStats(
+             dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing unhcr_status stats")
+    void compareOldAndNewUNHCRStatusStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(3);
+
+        String sql = request.extractSQL(true);
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeUnhcrStatusStats(
+             dateFrom, dateTo, null, sourceCountryIds,
+            constraintPredicate);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+        candidateService.computeUnhcrStatusStats(
+             dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
     private void compareResults(List<DataRow> rowsCurrent, List<DataRow> rows) {
 
         assertNotNull(rows);

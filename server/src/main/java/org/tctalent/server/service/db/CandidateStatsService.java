@@ -31,9 +31,7 @@ import org.tctalent.server.model.db.Gender;
 public interface CandidateStatsService {
 
     /**
-     * Generates numbers of candidates by birth year.
-     * <p/>
-     * Candidates are selected which have the given gender.
+     * Generates numbers of candidates by birth year for each gender.
      * <p/>
      * Candidates are selected who registered between the given dates.
      * <p/>
@@ -63,6 +61,56 @@ public interface CandidateStatsService {
      * See above doc for standard parameters and return value.
      */
     List<DataRow> computeGenderStats(
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
+        @Nullable String constraintPredicate);
+
+    /**
+     * Generates numbers by language and gender.
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
+    List<DataRow> computeLanguageStats(
+        @Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
+        @Nullable String constraintPredicate);
+
+    /**
+     * Generates numbers with LinkedIn links by registration date
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
+    List<DataRow> computeLinkedInStats(
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
+        @Nullable String constraintPredicate);
+
+    /**
+     * Generates numbers by registration date
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
+    List<DataRow> computeRegistrationStats(
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
+        @Nullable String constraintPredicate);
+
+    /**
+     * Generates UNHCR numbers by registration.
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
+    List<DataRow> computeUnhcrRegisteredStats(
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
+        @Nullable String constraintPredicate);
+
+    /**
+     * Generates UNHCR numbers by registration status.
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
+    List<DataRow> computeUnhcrStatusStats(
         @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraintPredicate);

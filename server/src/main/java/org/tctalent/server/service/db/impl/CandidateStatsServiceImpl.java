@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -58,9 +59,9 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
             " where saved_list_id = "
             + "(select id from saved_list where name = 'TestCandidates' and global = true))";
     private static final String countingStandardFilter =
-        " users.status = 'active' and candidate.status != 'draft'" + notTestCandidateCondition;
+        " and users.status = 'active' and candidate.status != 'draft'" + notTestCandidateCondition;
     private static final String dateConditionFilter =
-        " and users.created_date >= (:dateFrom) and users.created_date <= (:dateTo)";
+        " users.created_date >= (:dateFrom) and users.created_date <= (:dateTo)";
     private static final String excludeIneligible = " and candidate.status != 'ineligible'";
 
     @Override
@@ -73,10 +74,10 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     """
             select cast(extract(year from dob) as bigint) as year, count(distinct candidate) as PeopleCount
                  from candidate left join users on candidate.user_id = users.id
-                 where gender like :gender
+                 where gender like :gender and
     """
         //Ignore null birthdate and only look at plausible birth years
-        + " and dob is not null and extract(year from dob) > 1940 and";
+        + " dob is not null and extract(year from dob) > 1940 and";
 
         selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
 
@@ -93,7 +94,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         setStandardQueryParameters(query,
             dateFrom, dateTo, candidateIds, sourceCountryIds);
 
-        return runQuery(query);
+        return runQuery(query, 0);
     }
 
     @Override
@@ -121,7 +122,162 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         setStandardQueryParameters(query,
             dateFrom, dateTo, candidateIds, sourceCountryIds);
 
-        return runQuery(query);
+        return runQuery(query, 0);
+    }
+
+    @Override
+    public List<DataRow> computeLanguageStats(
+        @Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
+        @Nullable String constraintPredicate) {
+
+        String selectSql =
+            """
+                    select language.name, count(distinct candidate) as PeopleCount
+                         from candidate left join users on candidate.user_id = users.id
+                         left join candidate_language on candidate.id = candidate_language.candidate_id
+                         left join language on candidate_language.language_id = language.id
+                         where gender like :gender and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+
+        String groupBySql = " group by language.name order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeLanguageStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 15);
+    }
+
+    @Override
+    public List<DataRow> computeLinkedInStats(@Nullable LocalDate dateFrom,
+        @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+
+        String selectSql =
+            """
+                    select DATE(users.created_date), count(distinct users.id) as PeopleCount
+                         from users left join candidate on users.id = candidate.user_id
+                         where linked_in_link is not null and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+
+        String groupBySql = " group by DATE(users.created_date) order by DATE(users.created_date) asc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeLinkedInStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
+    }
+
+    @Override
+    public List<DataRow> computeRegistrationStats(@Nullable LocalDate dateFrom,
+        @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+
+        String selectSql =
+            """
+                    select DATE(users.created_date), count(distinct users.id) as PeopleCount
+                         from users left join candidate on users.id = candidate.user_id
+                         where
+            """;
+
+        selectSql += standardConstraints(
+            candidateIds, sourceCountryIds, constraintPredicate, false);
+
+        String groupBySql = " group by DATE(users.created_date) order by DATE(users.created_date) asc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeRegistrationStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
+    }
+
+    @Override
+    public List<DataRow> computeUnhcrRegisteredStats(@Nullable LocalDate dateFrom,
+        @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+
+        String selectSql =
+            """
+                    select case
+                     when unhcr_status = 'NotRegistered' then 'No'
+                     when unhcr_status = 'RegisteredAsylum' then 'Yes'
+                     when unhcr_status = 'MandateRefugee' then 'Yes'
+                     when unhcr_status = 'RegisteredStateless' then 'Yes'
+                     when unhcr_status = 'RegisteredStatusUnknown' then 'Yes'
+                     when unhcr_status = 'Unsure' then 'Unsure'
+                     when unhcr_status = 'NoResponse' then 'NoResponse'
+                     else 'NoResponse' end as UNHCRRegistered,
+            count(distinct candidate) as PeopleCount
+                         from candidate left join users on candidate.user_id = users.id
+                         where
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+
+        String groupBySql = " group by UNHCRRegistered order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeUnhcrRegisteredStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
+    }
+
+    @Override
+    public List<DataRow> computeUnhcrStatusStats(@Nullable LocalDate dateFrom,
+        @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+
+        String selectSql =
+            """
+                    select unhcr_status, count(distinct candidate) as PeopleCount
+                         from candidate left join users on candidate.user_id = users.id
+                         where unhcr_status is not null and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+
+        String groupBySql = " group by unhcr_status order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeUnhcrStatusStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
     }
 
     private static String countryStr(String country) {
@@ -140,9 +296,29 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         return gender == null ? "%" : gender.toString();
     }
 
-    private static List<DataRow> runQuery(Query query) {
+    private static List<DataRow> limitRows(List<DataRow> rawData, int limit) {
+        if (rawData.size() > limit) {
+            List<DataRow> result = new ArrayList<>(rawData.subList(0, limit - 1));
+            BigDecimal other = BigDecimal.ZERO;
+            for (int i = limit-1; i < rawData.size(); i++) {
+                other = other.add(rawData.get(i).getValue());
+            }
+            if (other.compareTo(BigDecimal.ZERO) != 0) {
+                result.add(new DataRow("Other", other));
+            }
+            return result;
+        } else {
+            return rawData;
+        }
+    }
+
+    private static List<DataRow> runQuery(Query query, int limit) {
         final List resultList = query.getResultList();
-        return toRows(resultList);
+        List<DataRow> rows = toRows(resultList);
+        if (limit > 0) {
+            rows = limitRows(rows, limit);
+        }
+        return rows;
     }
 
     private static void setStandardQueryParameters(Query query,
@@ -163,8 +339,18 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     private static String standardConstraints(
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraintPredicate) {
+        return standardConstraints(
+            candidateIds, sourceCountryIds, constraintPredicate, true);
+    }
 
-        String s = countingStandardFilter + dateConditionFilter;
+    private static String standardConstraints(
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
+        @Nullable String constraintPredicate, boolean applyCountingFilter) {
+
+        String s = dateConditionFilter;
+        if (applyCountingFilter) {
+            s += countingStandardFilter;
+        }
         if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
             s += sourceCountriesCondition;
         }
