@@ -75,6 +75,9 @@ public interface CandidateStatsService {
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraintPredicate);
 
+    //TODO JC Doc
+    List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+
     /**
      * Generates numbers with LinkedIn links by registration date
      * <p/>
@@ -84,6 +87,9 @@ public interface CandidateStatsService {
         @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraintPredicate);
+
+    //TODO JC Doc
+    List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
 
     /**
      * Generates numbers by registration date

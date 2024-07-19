@@ -159,6 +159,13 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     }
 
     @Override
+    public List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo,
+        Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeLinkedInExistsStats
+        throw new UnsupportedOperationException("computeLinkedInExistsStats not implemented");
+    }
+
+    @Override
     public List<DataRow> computeLinkedInStats(@Nullable LocalDate dateFrom,
         @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
         @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
@@ -213,6 +220,14 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
             dateFrom, dateTo, candidateIds, sourceCountryIds);
 
         return runQuery(query, 0);
+    }
+
+    @Override
+    public List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo,
+        Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeRegistrationOccupationStats
+        throw new UnsupportedOperationException(
+            "computeRegistrationOccupationStats not implemented");
     }
 
     @Override
