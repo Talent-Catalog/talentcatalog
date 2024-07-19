@@ -61,7 +61,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     private static final String countingStandardFilter =
         " and users.status = 'active' and candidate.status != 'draft'" + notTestCandidateCondition;
     private static final String dateConditionFilter =
-        " users.created_date >= (:dateFrom) and users.created_date <= (:dateTo)";
+        " users.created_date >= :dateFrom and users.created_date <= :dateTo";
     private static final String excludeIneligible = " and candidate.status != 'ineligible'";
 
     @Override
