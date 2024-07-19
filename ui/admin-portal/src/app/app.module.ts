@@ -796,7 +796,6 @@ import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
-import { ChatConsoleComponent } from './components/chat/chat-console/chat-console.component';
 import { SourceCandidateChatsComponent } from './components/chat/source-candidate-chats/source-candidate-chats.component';
 import { ViewSourceCandidatesWithChatsComponent } from './components/chat/view-source-candidates-with-chats/view-source-candidates-with-chats.component';
 
@@ -1124,7 +1123,6 @@ import { ViewSourceCandidatesWithChatsComponent } from './components/chat/view-s
     VisaJobCheckUkComponent,
     PreviewLinkComponent,
     VisaJobCheckUkComponent,
-    ChatConsoleComponent,
     SourceCandidateChatsComponent,
     ViewSourceCandidatesWithChatsComponent
   ],
