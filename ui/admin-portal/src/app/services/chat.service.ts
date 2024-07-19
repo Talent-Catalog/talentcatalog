@@ -346,8 +346,4 @@ export class ChatService implements OnDestroy {
     return Array.from(filterMap.values());
   }
 
-  getSourceCandidateChats(userId: number): Observable<JobChat[]> {
-    return this.http.get<JobChat[]>(`${this.apiUrl}/${userId}/get-source-candidate-chats`);
-  }
-
 }

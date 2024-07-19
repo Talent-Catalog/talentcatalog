@@ -688,4 +688,30 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                              @Param("dateFrom") LocalDate dateFrom,
                                              @Param("dateTo") LocalDate dateTo,
                                              @Param("candidateIds") Set<Long> candidateIds);
+
+    /**
+     * CANDIDATE CHAT
+     */
+
+    @Query(value = """
+        select chats.id from
+
+        (select job_chat.id from candidate
+            join job_chat on candidate.id = job_chat.candidate_id
+                and type = 'CandidateProspect'
+            where candidate.id in (:candidateIds)
+        ) as chats
+        
+        where
+                (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId)
+                    < (select max(id) from chat_post where job_chat_id = chats.id)
+
+        or  (
+                (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId) is null
+                and
+                (select count(*) from chat_post where job_chat_id = chats.id) > 0
+            )
+        """, nativeQuery = true)
+    List<Long> findUnreadChatsInCandidates(@Param("userId") long userId,
+        @Param("candidateIds") Iterable<Long> candidateIds);
 }

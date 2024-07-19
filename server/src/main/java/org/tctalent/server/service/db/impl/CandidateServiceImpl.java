@@ -63,6 +63,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -122,6 +123,7 @@ import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateExamRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.repository.db.CandidateSpecification;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.EducationLevelRepository;
 import org.tctalent.server.repository.db.GetSavedListCandidatesQuery;
@@ -144,6 +146,7 @@ import org.tctalent.server.request.candidate.CreateCandidateRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -2952,4 +2955,24 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
+
+    @Override
+    public List<Long> findUnreadChatsInCandidates(SearchCandidateRequest request) {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        //Construct query
+        final Specification<Candidate> spec =
+            CandidateSpecification.buildSearchQuery(request, loggedInUser, null);
+
+        //Retrieve all results and gather the ids
+        List<Candidate> allCandidates = candidateRepository.findAll(spec);
+        List<Long> candidateIds = allCandidates.stream().map(Candidate::getId).toList();
+        List<Long> unreadChatIds =
+            candidateRepository.findUnreadChatsInCandidates(loggedInUser.getId(), candidateIds);
+        return unreadChatIds;
+    }
+
 }

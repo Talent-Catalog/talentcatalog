@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
+import javax.validation.constraints.NotNull;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -35,6 +36,7 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
@@ -340,6 +342,15 @@ public class CandidateAdminApi {
          CvClaims cvClaims = new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupationIds);
          String token = candidateTokenProvider.generateCvToken(cvClaims, 365L);
          return token;
+    }
+
+    @PostMapping("check-unread-chats")
+    public @NotNull JobChatUserInfo checkUnreadChats(
+        @RequestBody SearchCandidateRequest request) {
+        List<Long> chatIds = candidateService.findUnreadChatsInCandidates(request);
+        JobChatUserInfo info = new JobChatUserInfo();
+        info.setNumberUnreadChats(chatIds.size());
+        return info;
     }
 
 }

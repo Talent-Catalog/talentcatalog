@@ -2,8 +2,11 @@ import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import {ChatService} from "../../../services/chat.service";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Candidate} from "../../../model/candidate";
-import {User} from "../../../model/user";
 import {JobChat} from "../../../model/chat";
+import {Partner} from "../../../model/partner";
+import {BehaviorSubject} from "rxjs";
+import {SearchCandidateRequest} from "../../../model/search-candidate-request";
+import {CandidateService} from "../../../services/candidate.service";
 
 @Component({
   selector: 'app-source-candidate-chats',
@@ -12,21 +15,24 @@ import {JobChat} from "../../../model/chat";
 })
 export class SourceCandidateChatsComponent extends MainSidePanelBase implements OnInit {
 
-  @Input() sourceCandidateChats: JobChat[];
+  @Input() loggedInPartner: Partner;
+  @Input() chatsRead$!: BehaviorSubject<boolean>;
 
   error: any;
   selectedCandidate: Candidate;
   selectedCandidateChat: JobChat;
-  loggedInUser: User;
   chatHeader: string = "";
+  candidatesWithActiveChat: Candidate[];
 
   constructor(
-    private chatService: ChatService
+    private chatService: ChatService,
+    private candidateService: CandidateService
   ) {
     super(5);
   }
 
   ngOnInit(): void {
+    this.fetchCandidatesWithActiveChat()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -57,6 +63,17 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
     this.chatHeader =
       "Chat with " + this.selectedCandidate.user.firstName +
         this.selectedCandidate.user.lastName + " (" + this.selectedCandidate.candidateNumber + ")";
+  }
+
+  private fetchCandidatesWithActiveChat() {
+    let candidateReq: SearchCandidateRequest = {
+      partnerIds: [this.loggedInPartner.id],
+    }
+    //
+    // this.candidateService.fetchCandidatesWithActiveChat(candidateReq).subscribe({
+    //   next: candidates => this.candidatesWithActiveChat = candidates,
+    //   error: error => this.error = error
+    // })
   }
 
 }

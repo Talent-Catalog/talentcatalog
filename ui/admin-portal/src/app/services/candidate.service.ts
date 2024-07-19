@@ -32,6 +32,8 @@ import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
 import {CandidateSource} from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
+import {JobChatUserInfo} from "../model/chat";
+import {SearchCandidateRequest} from "../model/search-candidate-request";
 
 export interface DownloadCVRequest {
   candidateId: number,
@@ -203,5 +205,13 @@ export class CandidateService implements IntakeService {
         },
         responseType: 'text'
       });
+  }
+
+  checkUnreadChats(request: SearchCandidateRequest): Observable<JobChatUserInfo> {
+    return this.http.post<JobChatUserInfo>(`${this.apiUrl}/check-unread-chats`, request);
+  }
+
+  fetchCandidatesWithActiveChat(request: SearchCandidateRequest): Observable<Candidate[]> {
+    return this.http.post<Candidate[]>(`${this.apiUrl}/fetch-candidates-with-active-chats`, request);
   }
 }
