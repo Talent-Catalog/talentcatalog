@@ -33,10 +33,11 @@ public interface CandidateStatsService {
     /**
      * Generates numbers of candidates by birth year.
      * <p/>
-     * Candidates are selected which have the given gender, and who registered between 
-     * the given dates.
+     * Candidates are selected which have the given gender.
      * <p/>
-     * Candidates also can be restricted by 
+     * Candidates are selected who registered between the given dates.
+     * <p/>
+     * Candidates also can be restricted by
      * <ul>
      *     <li>candidate ids (eg all candidates in a list)</li>
      *     <li>a search query, as defined by the constraintPredicate</li>
@@ -48,12 +49,22 @@ public interface CandidateStatsService {
      * @param candidateIds If not null, only candidates with these ids are counted
      * @param sourceCountryIds If not null, only candidates located in these countries are counted.
      * @param constraintPredicate If not null, other candidates satisfying this predicate are
-     *                            counted. The predicate is in the form of a SQL expression. 
-     * @return List of counts for each value. 
+     *                            counted. The predicate is in the form of a SQL expression.
+     * @return List of counts for each value.
      */
     List<DataRow> computeBirthYearStats(
-        @Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, 
-        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, 
+        @Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
+        @Nullable String constraintPredicate);
+
+    /**
+     * Generates numbers of candidates by gender.
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
+    List<DataRow> computeGenderStats(
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
+        @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraintPredicate);
 
 }

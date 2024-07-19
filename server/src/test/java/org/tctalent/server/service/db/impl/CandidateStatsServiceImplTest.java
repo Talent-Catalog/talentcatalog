@@ -52,20 +52,14 @@ class CandidateStatsServiceImplTest {
     @Autowired
     private CountryRepository countryRepository;
 
+    private LocalDate dateFrom;
+    private LocalDate dateTo;
+    private List <Long> sourceCountryIds;
+
     @BeforeEach
     void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
-    @Test
-    @DisplayName("Compare old and new ways of doing birth year stats")
-    void compareOldAndNewBirthYearStats() {
-
-        LocalDate dateFrom = LocalDate.parse("2023-01-01");
-        LocalDate dateTo = null;
+        dateFrom = LocalDate.parse("2016-01-01");
+        dateTo = null;
 
         //Default null dates
         if (dateFrom == null) {
@@ -75,9 +69,18 @@ class CandidateStatsServiceImplTest {
             dateTo = LocalDate.now();
         }
 
-        List <Long> sourceCountryIds = countryRepository.findAll().stream()
+        sourceCountryIds = countryRepository.findAll().stream()
             .map(Country::getId)
             .collect(Collectors.toList());
+    }
+
+    @AfterEach
+    void tearDown() {
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing birth year stats")
+    void compareOldAndNewBirthYearStats() {
 
         //Set up search on which stats will be run
         SearchCandidateRequest request = new SearchCandidateRequest();
@@ -90,16 +93,11 @@ class CandidateStatsServiceImplTest {
         //search request.
         String sql = request.extractSQL(true);
 
-        System.out.println("Extracted query: " + sql);
-
         String constraintPredicate = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeBirthYearStats(
             null, dateFrom, dateTo, null, sourceCountryIds,
             constraintPredicate);
-
-        assertNotNull(rows);
-
 
         //Old way of running stats is to restrict data by running the search corresponding to the
         //search request, then extract the ids of all returned candidates and then perform the stats
@@ -116,17 +114,51 @@ class CandidateStatsServiceImplTest {
         candidateService.computeBirthYearStats(
             null, dateFrom, dateTo, candidateIds, sourceCountryIds);
 
-        assertNotNull(rowsCurrent);
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing gender stats")
+    void compareOldAndNewGenderStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(3);
+
+        String sql = request.extractSQL(true);
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeGenderStats(
+             dateFrom, dateTo, null, sourceCountryIds,
+            constraintPredicate);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+        candidateService.computeGenderStats(
+             dateFrom, dateTo, candidateIds, sourceCountryIds);
 
         //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    private void compareResults(List<DataRow> rowsCurrent, List<DataRow> rows) {
+
+        assertNotNull(rows);
+        assertNotNull(rowsCurrent);
 
         //The number of collected stats should be the same.
         assertEquals(rowsCurrent.size(), rows.size());
 
         //And each individual data point should be the same.
         for (int i = 0; i < rows.size(); i++) {
-             assertEquals(rows.get(i).getLabel(), rowsCurrent.get(i).getLabel());
-             assertEquals(rows.get(i).getValue(), rowsCurrent.get(i).getValue());
+            assertEquals(rows.get(i).getLabel(), rowsCurrent.get(i).getLabel());
+            assertEquals(rows.get(i).getValue(), rowsCurrent.get(i).getValue());
         }
     }
 }

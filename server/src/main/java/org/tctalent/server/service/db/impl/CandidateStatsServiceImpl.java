@@ -69,7 +69,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraintPredicate) {
 
-        String countByBirthYearSelectSQL =
+        String selectSql =
     """
             select cast(extract(year from dob) as bigint) as year, count(distinct candidate) as PeopleCount
                  from candidate left join users on candidate.user_id = users.id
@@ -78,11 +78,10 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         //Ignore null birthdate and only look at plausible birth years
         + " and dob is not null and extract(year from dob) > 1940 and";
 
-        countByBirthYearSelectSQL +=
-            standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
 
-        String countByBirthYearGroupBySQL = " group by year order by year asc";
-        String sql = countByBirthYearSelectSQL + countByBirthYearGroupBySQL;
+        String groupBySql = " group by year order by year asc";
+        String sql = selectSql + groupBySql;
 
         LogBuilder.builder(log).action("computeBirthYearStats")
             .message("Query: " + sql).logInfo();
@@ -90,6 +89,34 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         Query query = entityManager.createNativeQuery(sql);
 
         query.setParameter("gender", genderStr(gender));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query);
+    }
+
+    @Override
+    public List<DataRow> computeGenderStats(@Nullable LocalDate dateFrom,
+        @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+
+        String selectSql =
+            """
+                    select gender, count(distinct candidate) as PeopleCount
+                         from candidate left join users on candidate.user_id = users.id
+                         where
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+
+        String groupBySql = " group by gender order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeGenderStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
 
         setStandardQueryParameters(query,
             dateFrom, dateTo, candidateIds, sourceCountryIds);
