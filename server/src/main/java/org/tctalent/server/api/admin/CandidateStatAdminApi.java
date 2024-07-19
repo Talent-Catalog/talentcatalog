@@ -180,10 +180,10 @@ public class CandidateStatAdminApi {
         return statReports;
     }
 
+    //TODO JC This belongs in SavedSearchService - then unit test it
     private boolean hasElasticSearch(Long searchId) {
 
-        SearchCandidateRequest searchRequest;
-        searchRequest = savedSearchService.loadSavedSearch(searchId);
+        SearchCandidateRequest searchRequest = savedSearchService.loadSavedSearch(searchId);
         if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
             return true;
         }
