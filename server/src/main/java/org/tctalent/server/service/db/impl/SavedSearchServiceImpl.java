@@ -864,6 +864,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return getSelectionList(id, loggedInUser.getId());
     }
 
+    public boolean includesElasticSearch(long savedSearchId) {
+
+        SearchCandidateRequest searchRequest = loadSavedSearch(savedSearchId);
+        if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
+            return true;
+        }
+
+        List<SearchJoinRequest> searchJoinRequests = searchRequest.getSearchJoinRequests();
+        while (!ObjectUtils.isEmpty(searchJoinRequests)) {
+            //Note that in practice there is now only ever one searchJoinRequest
+            final Long id = searchJoinRequests.getFirst().getSavedSearchId();
+            searchRequest = loadSavedSearch(id);
+            if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
+                return true;
+            }
+            searchJoinRequests = searchRequest.getSearchJoinRequests();
+        }
+
+        //Didn't find any Elastic search
+        return false;
+    }
+
     @Override
     public boolean isEmpty(long id) throws NoSuchObjectException {
         SavedSearch savedSearch = savedSearchRepository.findById(id)

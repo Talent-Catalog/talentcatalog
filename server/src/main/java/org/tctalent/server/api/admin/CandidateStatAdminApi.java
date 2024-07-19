@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +42,6 @@ import org.tctalent.server.model.db.StatReport;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
-import org.tctalent.server.request.candidate.SearchJoinRequest;
 import org.tctalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
@@ -146,7 +144,7 @@ public class CandidateStatAdminApi {
             } else {
 
                 // SEARCH
-                if (hasElasticSearch(searchId)) {
+                if (savedSearchService.includesElasticSearch(searchId)) {
                     //SEARCH containing Elastic Search
 
                     //Stats on searches which contain an elastic search can only be constrained
@@ -178,28 +176,6 @@ public class CandidateStatAdminApi {
             }
         }
         return statReports;
-    }
-
-    //TODO JC This belongs in SavedSearchService - then unit test it
-    private boolean hasElasticSearch(Long searchId) {
-
-        SearchCandidateRequest searchRequest = savedSearchService.loadSavedSearch(searchId);
-        if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
-            return true;
-        }
-
-        List<SearchJoinRequest> searchJoinRequests = searchRequest.getSearchJoinRequests();
-        while (!ObjectUtils.isEmpty(searchJoinRequests)) {
-            final Long id = searchJoinRequests.getFirst().getSavedSearchId();
-            searchRequest = savedSearchService.loadSavedSearch(id);
-            if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
-                return true;
-            }
-            searchJoinRequests = searchRequest.getSearchJoinRequests(); //TODO JC Test!!
-        }
-
-        //Didn't find any Elastic search
-        return false;
     }
 
     private List<StatReport> createNewReports(
