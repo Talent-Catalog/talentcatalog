@@ -194,6 +194,41 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     }
 
     @Override
+    public List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeMaxEducationStats
+        throw new UnsupportedOperationException("computeMaxEducationStats not implemented");
+    }
+
+    @Override
+    public List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeMostCommonOccupationStats
+        throw new UnsupportedOperationException("computeMostCommonOccupationStats not implemented");
+    }
+
+    @Override
+    public List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeNationalityStats
+        throw new UnsupportedOperationException("computeNationalityStats not implemented");
+    }
+
+    @Override
+    public List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo,
+        Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeOccupationStats
+        throw new UnsupportedOperationException("computeOccupationStats not implemented");
+    }
+
+    @Override
+    public List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeReferrerStats
+        throw new UnsupportedOperationException("computeReferrerStats not implemented");
+    }
+
+    @Override
     public List<DataRow> computeRegistrationStats(@Nullable LocalDate dateFrom,
         @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
         @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
@@ -220,6 +255,35 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
             dateFrom, dateTo, candidateIds, sourceCountryIds);
 
         return runQuery(query, 0);
+    }
+
+    @Override
+    public List<DataRow> computeSourceCountryStats(Gender gender, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeSourceCountryStats
+        throw new UnsupportedOperationException("computeSourceCountryStats not implemented");
+    }
+
+    @Override
+    public List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language,
+        LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds,
+        String constraint) {
+        //TODO JC Implement computeSpokenLanguageLevelStats
+        throw new UnsupportedOperationException("computeSpokenLanguageLevelStats not implemented");
+    }
+
+    @Override
+    public List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeStatusStats
+        throw new UnsupportedOperationException("computeStatusStats not implemented");
+    }
+
+    @Override
+    public List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom,
+        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
+        //TODO JC Implement computeSurveyStats
+        throw new UnsupportedOperationException("computeSurveyStats not implemented");
     }
 
     @Override
