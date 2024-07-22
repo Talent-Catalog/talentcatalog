@@ -66,8 +66,8 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
-import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -85,7 +85,7 @@ import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
-import org.tctalent.server.service.db.CandidateVisaJobCheckService;
+import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
@@ -191,7 +191,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final SalesforceConfig salesforceConfig;
     private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
     private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
-    private final CandidateVisaJobCheckService candidateVisaJobCheckService;
+    private final CandidateOpportunityService candidateOpportunityService;
 
     private PrivateKey privateKey;
 
@@ -210,12 +210,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Autowired
     public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
         SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
-        CandidateVisaJobCheckService candidateVisaJobCheckService) {
+        CandidateOpportunityService candidateOpportunityService) {
         this.emailHelper = emailHelper;
         this.salesforceConfig = salesforceConfig;
         this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
         this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
-        this.candidateVisaJobCheckService = candidateVisaJobCheckService;
+        this.candidateOpportunityService = candidateOpportunityService;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
@@ -2118,12 +2118,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         int checkSize();
     }
 
-    private Map<String, Integer> processSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck,
+    private Map<String, Integer> processSfCaseRelocationInfo(CandidateOpportunity candidateOpportunity,
         Candidate relocatingCandidate) throws NoSuchObjectException {
 
         // Get the dependants if any (can return null and processing will continue, which we want)
         List<CandidateDependant> relocatingDependants =
-            candidateVisaJobCheckService.getRelocatingDependants(visaJobCheck);
+            candidateOpportunityService.getRelocatingDependants(candidateOpportunity);
 
         // Initiate values to populate SF candidate opp relocation info fields
         int relocatingBoys = 0;
@@ -2194,22 +2194,22 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public void updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
+    public void updateSfCaseRelocationInfo(CandidateOpportunity candidateOpportunity)
         throws NoSuchObjectException, SalesforceException, WebClientException {
 
         // Get the relocating candidate and add to list
-        Candidate relocatingCandidate = visaJobCheck.getCandidate();
+        Candidate relocatingCandidate = candidateOpportunity.getCandidate();
         List<Candidate> candidateList = Collections.singletonList(relocatingCandidate);
 
         // Process the relocation info and add to candidate opportunity params
         Map<String, Integer> relocationInfo = processSfCaseRelocationInfo(
-            visaJobCheck, relocatingCandidate);
+            candidateOpportunity, relocatingCandidate);
 
         CandidateOpportunityParams candidateOppParams = new CandidateOpportunityParams();
         candidateOppParams.setRelocationInfo(relocationInfo);
 
         // Get the SF job opp that this visa assessment and candidate opp relate to
-        SalesforceJobOpp sfJobOpp = visaJobCheck.getJobOpp();
+        SalesforceJobOpp sfJobOpp = candidateOpportunity.getJobOpp();
 
         // Update the candidate opp
         createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);

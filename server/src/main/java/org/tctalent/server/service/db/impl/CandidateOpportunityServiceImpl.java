@@ -57,6 +57,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateOpportunityStageHistory;
@@ -77,6 +78,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
@@ -106,6 +108,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
     private final ChatPostService chatPostService;
+    private final CandidateDependantService candidateDependantService;
 
     /**
      * Creates or updates CandidateOpportunities associated with the given candidates going for
@@ -314,6 +317,19 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
         copyOpportunityToCandidateOpportunity(op, candidateOpportunity, createJobOpp);
         return candidateOpportunityRepository.save(candidateOpportunity);
+    }
+
+
+    @Override
+    public List<CandidateDependant> getRelocatingDependants(CandidateOpportunity candidateOpportunity)
+        throws NoSuchObjectException {
+        List<Long> relocatingDependantIds = candidateOpportunity.getRelocatingDependantIds();
+
+        return relocatingDependantIds != null ?
+            relocatingDependantIds
+                .stream()
+                .map(candidateDependantService::getDependant)
+                .collect(Collectors.toList()) : null;
     }
 
     /**

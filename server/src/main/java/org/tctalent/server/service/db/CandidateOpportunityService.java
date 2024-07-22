@@ -28,6 +28,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.partner.Partner;
@@ -163,4 +164,13 @@ public interface CandidateOpportunityService {
      */
     CandidateOpportunity uploadOffer(long id, MultipartFile file)
         throws InvalidRequestException, NoSuchObjectException, IOException;
+
+    /**
+     * Gets relocating dependants listed on a given candidate opportunity.
+     * @param candidateOpportunity instance of {@link CandidateOpportunity}
+     * @return list of candidate dependant objects or null if there aren't any for that assessment
+     * @throws NoSuchObjectException if there's no candidate dependant with a given id
+     */
+    List<CandidateDependant> getRelocatingDependants(CandidateOpportunity candidateOpportunity)
+        throws NoSuchObjectException;
 }

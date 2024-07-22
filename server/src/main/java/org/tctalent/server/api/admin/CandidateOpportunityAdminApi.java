@@ -32,14 +32,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
@@ -50,6 +53,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
                                                                CandidateOpportunityParams> {
 
     private final CandidateOpportunityService candidateOpportunityService;
+    private final SalesforceService salesforceService;
 
     @Override
     @GetMapping("{id}")
@@ -89,6 +93,13 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
         throws InvalidRequestException, IOException, NoSuchObjectException {
         CandidateOpportunity opp = candidateOpportunityService.uploadOffer(id, file);
         return candidateOpportunityDto().build(opp);
+    }
+
+    @PutMapping("{id}/update-sf-case-relocation-info")
+    public void updateSfCaseRelocationInfo(@PathVariable("id") long id)
+        throws NoSuchObjectException, SalesforceException, WebClientException {
+        CandidateOpportunity candidateOpportunity = candidateOpportunityService.getCandidateOpportunity(id);
+        salesforceService.updateSfCaseRelocationInfo(candidateOpportunity);
     }
 
     private DtoBuilder candidateOpportunityDto() {
