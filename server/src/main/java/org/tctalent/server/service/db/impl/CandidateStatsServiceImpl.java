@@ -164,7 +164,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
         String selectSql =
             """
-            select case when linked_in_link is not null 
+            select case when linked_in_link is not null
                 then 'Has link'
                 else 'No link'
             end as hasLink,
@@ -218,38 +218,168 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     }
 
     @Override
-    public List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom,
-        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeMaxEducationStats
-        throw new UnsupportedOperationException("computeMaxEducationStats not implemented");
+    public List<DataRow> computeMaxEducationStats(@Nullable Gender gender,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select case when max_education_level_id is null
+                then 'Unknown'
+                else education_level.name
+            end as EducationLevel,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join education_level on candidate.max_education_level_id = education_level.id
+            where gender like :gender and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by EducationLevel order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeMaxEducationStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
     }
 
     @Override
-    public List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom,
-        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeMostCommonOccupationStats
-        throw new UnsupportedOperationException("computeMostCommonOccupationStats not implemented");
+    public List<DataRow> computeMostCommonOccupationStats(@Nullable Gender gender,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select occupation.name,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join candidate_occupation on candidate.id = candidate_occupation.candidate_id
+            left join occupation on candidate_occupation.occupation_id = occupation.id
+            where gender like :gender and
+              not (lower(occupation.name) in ('undefined', 'unknown')) and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by occupation.name order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeMostCommonOccupationStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 15);
     }
 
     @Override
-    public List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom,
-        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeNationalityStats
-        throw new UnsupportedOperationException("computeNationalityStats not implemented");
+    public List<DataRow> computeNationalityStats(@Nullable Gender gender, @Nullable String country,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select nationality.name,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join country nationality on candidate.nationality_id = nationality.id
+            left join country on candidate.country_id = country.id
+            where gender like :gender and lower(country.name) like :country and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by nationality.name order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeNationalityStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+        query.setParameter("country", countryStr(country));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 15);
     }
 
     @Override
-    public List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo,
-        Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeOccupationStats
-        throw new UnsupportedOperationException("computeOccupationStats not implemented");
+    public List<DataRow> computeOccupationStats(@Nullable Gender gender,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select occupation.name,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join candidate_occupation on candidate.id = candidate_occupation.candidate_id
+            left join occupation on candidate_occupation.occupation_id = occupation.id
+            where gender like :gender and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by occupation.name order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeOccupationStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
     }
 
     @Override
-    public List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom,
-        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeReferrerStats
-        throw new UnsupportedOperationException("computeReferrerStats not implemented");
+    public List<DataRow> computeReferrerStats(@Nullable Gender gender, @Nullable String country,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select candidate.rego_referrer_param,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join country on candidate.country_id = country.id
+            where gender like :gender and lower(country.name) like :country and
+              rego_referrer_param is not null and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by candidate.rego_referrer_param order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeReferrerStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+        query.setParameter("country", countryStr(country));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
     }
 
     @Override
@@ -282,40 +412,162 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     }
 
     @Override
-    public List<DataRow> computeSourceCountryStats(Gender gender, LocalDate dateFrom,
-        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeSourceCountryStats
-        throw new UnsupportedOperationException("computeSourceCountryStats not implemented");
+    public List<DataRow> computeSourceCountryStats(@Nullable Gender gender,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select source.name,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join country source on candidate.country_id = source.id
+            where gender like :gender and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by source.name order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeSourceCountryStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 15);
     }
 
     @Override
-    public List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language,
-        LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds,
-        String constraint) {
-        //TODO JC Implement computeSpokenLanguageLevelStats
-        throw new UnsupportedOperationException("computeSpokenLanguageLevelStats not implemented");
+    public List<DataRow> computeSpokenLanguageLevelStats(@Nullable Gender gender, String language,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select language_level.name,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join candidate_language on candidate.id = candidate_language.candidate_id
+            left join language on language.id = candidate_language.language_id
+            left join language_level on language_level.id = candidate_language.spoken_level_id
+            where gender like :gender and lower(language.name) = lower(:language) and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by language_level.name order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeSpokenLanguageLevelStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+        query.setParameter("language", language);
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
     }
 
     @Override
-    public List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom,
-        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeStatusStats
-        throw new UnsupportedOperationException("computeStatusStats not implemented");
+    public List<DataRow> computeStatusStats(@Nullable Gender gender, @Nullable String country,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select candidate.status,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join country on candidate.country_id = country.id
+            where gender like :gender and lower(country.name) like :country and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by candidate.status order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeStatusStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+        query.setParameter("country", countryStr(country));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
     }
 
     @Override
-    public List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom,
-        LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeSurveyStats
-        throw new UnsupportedOperationException("computeSurveyStats not implemented");
+    public List<DataRow> computeSurveyStats(@Nullable Gender gender, @Nullable String country,
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select survey_type.name,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join survey_type on candidate.survey_type_id = survey_type.id
+            left join country on candidate.country_id = country.id
+            where gender like :gender and lower(country.name) like :country and
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by survey_type.name order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeSurveyStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        query.setParameter("gender", genderStr(gender));
+        query.setParameter("country", countryStr(country));
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
     }
 
     @Override
-    public List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo,
-        Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeRegistrationOccupationStats
-        throw new UnsupportedOperationException(
-            "computeRegistrationOccupationStats not implemented");
+    public List<DataRow> computeRegistrationOccupationStats(@Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+
+        String selectSql =
+            """
+            select occupation.name, count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            left join candidate_occupation on candidate.id = candidate_occupation.candidate_id
+            left join occupation on candidate_occupation.occupation_id = occupation.id
+            where
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by occupation.name order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeRegistrationOccupationStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 15);
     }
 
     @Override

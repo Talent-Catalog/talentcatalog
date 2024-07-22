@@ -119,6 +119,337 @@ class CandidateStatsServiceImplTest {
     }
 
     @Test
+    @DisplayName("Compare old and new ways of doing max education level stats")
+    void compareOldAndNewMaxEducationLevelStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(30);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeMaxEducationStats(
+                Gender.female, dateFrom, dateTo, null, sourceCountryIds,
+                constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+            candidateService.computeMaxEducationStats(
+                Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing most common occupation stats")
+    void compareOldAndNewMostCommonOccupationStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(30);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeMostCommonOccupationStats(
+                Gender.female, dateFrom, dateTo, null, sourceCountryIds,
+                constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+            candidateService.computeMostCommonOccupationStats(
+                Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing nationality stats")
+    void compareOldAndNewNationalityStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(30);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        List<DataRow> rows;
+        rows = candidateStatsService.computeNationalityStats(
+            Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent;
+        rowsCurrent = candidateService.computeNationalityStats(
+            Gender.female, null, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+
+        //Run again limiting by source country
+        rows = candidateStatsService.computeNationalityStats(
+            Gender.female, "jordan", dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+        rowsCurrent = candidateService.computeNationalityStats(
+            Gender.female, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+
+        //Run again for all genders in source country
+        rows = candidateStatsService.computeNationalityStats(
+            null, "jordan", dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+        rowsCurrent = candidateService.computeNationalityStats(
+            null, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing status stats")
+    void compareOldAndNewStatusStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(30);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        List<DataRow> rows;
+        rows = candidateStatsService.computeStatusStats(
+            Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent;
+        rowsCurrent = candidateService.computeStatusStats(
+            Gender.female, null, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+
+        //Run again limiting by source country
+        rows = candidateStatsService.computeStatusStats(
+            Gender.female, "jordan", dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+        rowsCurrent = candidateService.computeStatusStats(
+            Gender.female, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+
+        //Run again for all genders in source country
+        rows = candidateStatsService.computeStatusStats(
+            null, "jordan", dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+        rowsCurrent = candidateService.computeStatusStats(
+            null, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing survey stats")
+    void compareOldAndNewSurveyStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(30);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        List<DataRow> rows;
+        rows = candidateStatsService.computeSurveyStats(
+            Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent;
+        rowsCurrent = candidateService.computeSurveyStats(
+            Gender.female, null, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+
+        //Run again limiting by source country
+        rows = candidateStatsService.computeSurveyStats(
+            Gender.female, "jordan", dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+        rowsCurrent = candidateService.computeSurveyStats(
+            Gender.female, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+
+        //Run again for all genders in source country
+        rows = candidateStatsService.computeSurveyStats(
+            null, "jordan", dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+        rowsCurrent = candidateService.computeSurveyStats(
+            null, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing occupation stats")
+    void compareOldAndNewOccupationStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(30);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeOccupationStats(
+                Gender.female, dateFrom, dateTo, null, sourceCountryIds,
+                constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+            candidateService.computeOccupationStats(
+                Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing referrer stats")
+    void compareOldAndNewReferrerStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(30);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        List<DataRow> rows;
+        rows = candidateStatsService.computeReferrerStats(
+            Gender.female, null, dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent;
+        rowsCurrent = candidateService.computeReferrerStats(
+            Gender.female, null, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing source country stats")
+    void compareOldAndNewSourceCountryStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(30);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        List<DataRow> rows;
+        rows = candidateStatsService.computeSourceCountryStats(
+            Gender.female, dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent;
+        rowsCurrent = candidateService.computeSourceCountryStats(
+            Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing spoken language stats")
+    void compareOldAndNewSpokenLanguageStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(60);
+        request.setGender(Gender.female);
+
+        String sql = request.extractSQL(true);
+
+        String constraint = "candidate.id in (" + sql + ")";
+        List<DataRow> rows;
+        rows = candidateStatsService.computeSpokenLanguageLevelStats(
+            Gender.female, "English", dateFrom, dateTo, null, sourceCountryIds,
+            constraint);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent;
+        rowsCurrent = candidateService.computeSpokenLanguageLevelStats(
+            Gender.female, "English", dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
     @DisplayName("Compare old and new ways of doing gender stats")
     void compareOldAndNewGenderStats() {
 
@@ -258,6 +589,35 @@ class CandidateStatsServiceImplTest {
 
         List<DataRow> rowsCurrent =
             candidateService.computeRegistrationStats(
+                dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing Registration Occupataion stats")
+    void compareOldAndNewRegistrationOccupationStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(3);
+
+        String sql = request.extractSQL(true);
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeRegistrationOccupationStats(
+                dateFrom, dateTo, null, sourceCountryIds,
+                constraintPredicate);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+            candidateService.computeRegistrationOccupationStats(
                 dateFrom, dateTo, candidateIds, sourceCountryIds);
 
         //The results of running stats both ways should be identical.
