@@ -93,11 +93,11 @@ class CandidateStatsServiceImplTest {
         //search request.
         String sql = request.extractSQL(true);
 
-        String constraintPredicate = "candidate.id in (" + sql + ")";
+        String constraint = "candidate.id in (" + sql + ")";
         final List<DataRow> rows =
             candidateStatsService.computeBirthYearStats(
             null, dateFrom, dateTo, null, sourceCountryIds,
-            constraintPredicate);
+            constraint);
 
         //Old way of running stats is to restrict data by running the search corresponding to the
         //search request, then extract the ids of all returned candidates and then perform the stats
@@ -172,6 +172,35 @@ class CandidateStatsServiceImplTest {
         List<DataRow> rowsCurrent =
         candidateService.computeLanguageStats(
              null, dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        //The results of running stats both ways should be identical.
+        compareResults(rowsCurrent, rows);
+    }
+
+    @Test
+    @DisplayName("Compare old and new ways of doing LinkedIn exists stats")
+    void compareOldAndNewLinkedInExistsStats() {
+
+        //Set up search on which stats will be run
+        SearchCandidateRequest request = new SearchCandidateRequest();
+        request.setMinAge(3);
+
+        String sql = request.extractSQL(true);
+        String constraintPredicate = "candidate.id in (" + sql + ")";
+        final List<DataRow> rows =
+            candidateStatsService.computeLinkedInExistsStats(
+                dateFrom, dateTo, null, sourceCountryIds,
+                constraintPredicate);
+
+        Specification<Candidate> query = CandidateSpecification
+            .buildSearchQuery(request, null, null);
+        List<Candidate> candidates = candidateRepository.findAll(query);
+        Set<Long> candidateIds =
+            candidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+
+        List<DataRow> rowsCurrent =
+            candidateService.computeLinkedInExistsStats(
+                dateFrom, dateTo, candidateIds, sourceCountryIds);
 
         //The results of running stats both ways should be identical.
         compareResults(rowsCurrent, rows);

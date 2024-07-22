@@ -168,10 +168,10 @@ public class CandidateStatAdminApi {
                     SearchCandidateRequest searchRequest =
                         savedSearchService.loadSavedSearch(searchId);
                     String sql = searchRequest.extractSQL(true);
-                    String constraintPredicate = "candidate.id in (" + sql + ")";
+                    String constraint = "candidate.id in (" + sql + ")";
 
                     statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
-                        null, sourceCountryIds, constraintPredicate);
+                        null, sourceCountryIds, constraint);
                 }
             }
         }

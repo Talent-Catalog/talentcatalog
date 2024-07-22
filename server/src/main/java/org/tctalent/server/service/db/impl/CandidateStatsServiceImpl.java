@@ -68,7 +68,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     public List<DataRow> computeBirthYearStats(
         @Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate) {
+        @Nullable String constraint) {
 
         String selectSql =
     """
@@ -79,7 +79,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         //Ignore null birthdate and only look at plausible birth years
         + " dob is not null and extract(year from dob) > 1940 and";
 
-        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
 
         String groupBySql = " group by year order by year asc";
         String sql = selectSql + groupBySql;
@@ -100,7 +100,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     @Override
     public List<DataRow> computeGenderStats(@Nullable LocalDate dateFrom,
         @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
-        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
 
         String selectSql =
             """
@@ -109,7 +109,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
                          where
             """;
 
-        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
 
         String groupBySql = " group by gender order by PeopleCount desc";
         String sql = selectSql + groupBySql;
@@ -129,7 +129,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     public List<DataRow> computeLanguageStats(
         @Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate) {
+        @Nullable String constraint) {
 
         String selectSql =
             """
@@ -140,7 +140,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
                          where gender like :gender and
             """;
 
-        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
 
         String groupBySql = " group by language.name order by PeopleCount desc";
         String sql = selectSql + groupBySql;
@@ -159,16 +159,40 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     }
 
     @Override
-    public List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo,
-        Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint) {
-        //TODO JC Implement computeLinkedInExistsStats
-        throw new UnsupportedOperationException("computeLinkedInExistsStats not implemented");
+    public List<DataRow> computeLinkedInExistsStats(
+        @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
+        String selectSql =
+            """
+            select case when linked_in_link is not null 
+                then 'Has link'
+                else 'No link'
+            end as hasLink,
+            count(distinct candidate) as PeopleCount
+            from candidate left join users on candidate.user_id = users.id
+            where
+            """;
+
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+
+        String groupBySql = " group by hasLink order by PeopleCount desc";
+        String sql = selectSql + groupBySql;
+
+        LogBuilder.builder(log).action("computeLinkedInExistsStats")
+            .message("Query: " + sql).logInfo();
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        setStandardQueryParameters(query,
+            dateFrom, dateTo, candidateIds, sourceCountryIds);
+
+        return runQuery(query, 0);
     }
 
     @Override
     public List<DataRow> computeLinkedInStats(@Nullable LocalDate dateFrom,
         @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
-        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
 
         String selectSql =
             """
@@ -177,7 +201,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
                          where linked_in_link is not null and
             """;
 
-        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
 
         String groupBySql = " group by DATE(users.created_date) order by DATE(users.created_date) asc";
         String sql = selectSql + groupBySql;
@@ -231,7 +255,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     @Override
     public List<DataRow> computeRegistrationStats(@Nullable LocalDate dateFrom,
         @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
-        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
 
         String selectSql =
             """
@@ -241,7 +265,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
             """;
 
         selectSql += standardConstraints(
-            candidateIds, sourceCountryIds, constraintPredicate, false);
+            candidateIds, sourceCountryIds, constraint, false);
 
         String groupBySql = " group by DATE(users.created_date) order by DATE(users.created_date) asc";
         String sql = selectSql + groupBySql;
@@ -297,7 +321,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     @Override
     public List<DataRow> computeUnhcrRegisteredStats(@Nullable LocalDate dateFrom,
         @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
-        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
 
         String selectSql =
             """
@@ -315,7 +339,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
                          where
             """;
 
-        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
 
         String groupBySql = " group by UNHCRRegistered order by PeopleCount desc";
         String sql = selectSql + groupBySql;
@@ -334,7 +358,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     @Override
     public List<DataRow> computeUnhcrStatusStats(@Nullable LocalDate dateFrom,
         @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds,
-        @Nullable List<Long> sourceCountryIds, @Nullable String constraintPredicate) {
+        @Nullable List<Long> sourceCountryIds, @Nullable String constraint) {
 
         String selectSql =
             """
@@ -343,7 +367,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
                          where unhcr_status is not null and
             """;
 
-        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraintPredicate);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
 
         String groupBySql = " group by unhcr_status order by PeopleCount desc";
         String sql = selectSql + groupBySql;
@@ -417,14 +441,14 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
 
     private static String standardConstraints(
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate) {
+        @Nullable String constraint) {
         return standardConstraints(
-            candidateIds, sourceCountryIds, constraintPredicate, true);
+            candidateIds, sourceCountryIds, constraint, true);
     }
 
     private static String standardConstraints(
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate, boolean applyCountingFilter) {
+        @Nullable String constraint, boolean applyCountingFilter) {
 
         String s = dateConditionFilter;
         if (applyCountingFilter) {
@@ -433,18 +457,18 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
             s += sourceCountriesCondition;
         }
-        if (constraintPredicate != null) {
-            s += " and " + constraintPredicate;
+        if (constraint != null) {
+            s += " and " + constraint;
         }
         if (candidateIds != null) {
             s += candidatesCondition;
         }
 
-        //Stats that are not based on predefined candidate ids or constraintPredicate,
+        //Stats that are not based on predefined candidate ids or constraint,
         // should exclude ineligible.
         //(With candidate ids, it is up to the associated list or search to decide whether to
         // exclude ineligible)
-        if (candidateIds == null && constraintPredicate == null) {
+        if (candidateIds == null && constraint == null) {
             s += excludeIneligible;
         }
 

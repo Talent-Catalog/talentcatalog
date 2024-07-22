@@ -38,7 +38,7 @@ public interface CandidateStatsService {
      * Candidates also can be restricted by
      * <ul>
      *     <li>candidate ids (eg all candidates in a list)</li>
-     *     <li>a search query, as defined by the constraintPredicate</li>
+     *     <li>a search query, as defined by the constraint</li>
      *     <li>source countries where the candidates are located</li>
      * </ul>
      * @param gender Candidate gender - if null any gender is accepted
@@ -46,14 +46,14 @@ public interface CandidateStatsService {
      * @param dateTo Candidate date of registration should be this date or before
      * @param candidateIds If not null, only candidates with these ids are counted
      * @param sourceCountryIds If not null, only candidates located in these countries are counted.
-     * @param constraintPredicate If not null, other candidates satisfying this predicate are
+     * @param constraint If not null, other candidates satisfying this predicate are
      *                            counted. The predicate is in the form of a SQL expression.
      * @return List of counts for each value.
      */
     List<DataRow> computeBirthYearStats(
         @Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate);
+        @Nullable String constraint);
 
     /**
      * Generates numbers of candidates by gender.
@@ -63,7 +63,7 @@ public interface CandidateStatsService {
     List<DataRow> computeGenderStats(
         @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate);
+        @Nullable String constraint);
 
     /**
      * Generates numbers by language and gender.
@@ -73,7 +73,7 @@ public interface CandidateStatsService {
     List<DataRow> computeLanguageStats(
         @Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate);
+        @Nullable String constraint);
 
     //TODO JC Doc
     List<DataRow> computeLinkedInExistsStats(@Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
@@ -86,7 +86,7 @@ public interface CandidateStatsService {
     List<DataRow> computeLinkedInStats(
         @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate);
+        @Nullable String constraint);
 
     //TODO JC Doc
     List<DataRow> computeMaxEducationStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
@@ -114,7 +114,7 @@ public interface CandidateStatsService {
     List<DataRow> computeRegistrationStats(
         @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate);
+        @Nullable String constraint);
 
     //TODO JC Doc
     List<DataRow> computeSourceCountryStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
@@ -136,7 +136,7 @@ public interface CandidateStatsService {
     List<DataRow> computeUnhcrRegisteredStats(
         @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate);
+        @Nullable String constraint);
 
     /**
      * Generates UNHCR numbers by registration status.
@@ -146,6 +146,6 @@ public interface CandidateStatsService {
     List<DataRow> computeUnhcrStatusStats(
         @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo,
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraintPredicate);
+        @Nullable String constraint);
 
 }
