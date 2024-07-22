@@ -874,7 +874,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         List<SearchJoinRequest> searchJoinRequests = searchRequest.getSearchJoinRequests();
         while (!ObjectUtils.isEmpty(searchJoinRequests)) {
             //Note that in practice there is now only ever one searchJoinRequest
-            final Long id = searchJoinRequests.getFirst().getSavedSearchId();
+            final Long id = searchJoinRequests.get(0).getSavedSearchId();
             searchRequest = loadSavedSearch(id);
             if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
                 return true;
