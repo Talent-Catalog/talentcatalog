@@ -16,10 +16,21 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateLanguage;
+import org.tctalent.server.model.db.Language;
+import org.tctalent.server.model.db.LanguageLevel;
+import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateLanguageRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.LanguageLevelRepository;
@@ -30,18 +41,6 @@ import org.tctalent.server.request.candidate.language.UpdateCandidateLanguagesRe
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateLanguageService;
 import org.tctalent.server.service.db.CandidateService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateLanguage;
-import org.tctalent.server.model.db.Language;
-import org.tctalent.server.model.db.LanguageLevel;
-import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.util.audit.AuditHelper;
 
 @Service
@@ -174,7 +173,9 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public List<CandidateLanguage> updateCandidateLanguages(UpdateCandidateLanguagesRequest request) {
-        Candidate candidate = authService.getLoggedInCandidate();
+        Candidate candidate = candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         List<CandidateLanguage> updatedLanguages = new ArrayList<>();
         List<Long> updatedLanguageIds = new ArrayList<>();
 

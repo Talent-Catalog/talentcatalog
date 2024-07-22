@@ -16,9 +16,11 @@
 import {User} from "./user";
 import {Auditable} from "./base";
 import {Reaction} from "./reaction";
+import {LinkPreview} from "./link-preview";
 
 export interface Post extends Auditable {
   content: string;
+  linkPreviews: LinkPreview[];
 }
 
 export interface JobChat {
@@ -41,6 +43,7 @@ export interface ChatPost {
   updatedBy: User;
   updatedDate: Date;
   reactions?: Reaction[];
+  linkPreviews?: LinkPreview[];
 }
 
 export enum JobChatType {
