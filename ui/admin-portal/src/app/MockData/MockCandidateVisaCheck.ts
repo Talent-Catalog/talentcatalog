@@ -54,6 +54,5 @@ export const MockCandidateVisaJobCheck: CandidateVisaJobCheck = {
   occupationSubCategory: 'Occupation subcategory',
   languagesRequired: 'English, Spanish',
   languagesThresholdMet: YesNo.Yes,
-  languagesThresholdNotes: 'Languages threshold met',
-  relocatingDependantIds: [1, 2, 3]
+  languagesThresholdNotes: 'Languages threshold met'
 };

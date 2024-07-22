@@ -85,7 +85,7 @@ import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
@@ -191,7 +191,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final SalesforceConfig salesforceConfig;
     private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
     private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
-    private final CandidateOpportunityService candidateOpportunityService;
+    private final CandidateDependantService candidateDependantService;
 
     private PrivateKey privateKey;
 
@@ -210,12 +210,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Autowired
     public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
         SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
-        CandidateOpportunityService candidateOpportunityService) {
+        CandidateDependantService candidateDependantService) {
         this.emailHelper = emailHelper;
         this.salesforceConfig = salesforceConfig;
         this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
         this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
-        this.candidateOpportunityService = candidateOpportunityService;
+        this.candidateDependantService = candidateDependantService;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
@@ -2122,8 +2122,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         Candidate relocatingCandidate) throws NoSuchObjectException {
 
         // Get the dependants if any (can return null and processing will continue, which we want)
-        List<CandidateDependant> relocatingDependants =
-            candidateOpportunityService.getRelocatingDependants(candidateOpportunity);
+        List<CandidateDependant> relocatingDependants = getRelocatingDependants(candidateOpportunity);
 
         // Initiate values to populate SF candidate opp relocation info fields
         int relocatingBoys = 0;
@@ -2191,6 +2190,24 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         relocationInfo.put("relocatingAdults", relocatingAdults);
 
         return relocationInfo;
+    }
+
+    /**
+     * Gets relocating dependants listed on a given candidate opportunity. Methods sits here as it causes a
+     * circular dependency if it sits on the candidate opportunity service
+     * @param candidateOpportunity instance of {@link CandidateOpportunity}
+     * @return list of candidate dependant objects or null if there aren't any for that assessment
+     * @throws NoSuchObjectException if there's no candidate dependant with a given id
+     */
+    private List<CandidateDependant> getRelocatingDependants(CandidateOpportunity candidateOpportunity)
+        throws NoSuchObjectException {
+        List<Long> relocatingDependantIds = candidateOpportunity.getRelocatingDependantIds();
+    
+        return relocatingDependantIds != null ?
+            relocatingDependantIds
+                .stream()
+                .map(candidateDependantService::getDependant)
+                .collect(Collectors.toList()) : null;
     }
 
     @Override

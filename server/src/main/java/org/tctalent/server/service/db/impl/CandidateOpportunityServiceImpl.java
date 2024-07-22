@@ -57,7 +57,6 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.CandidateOpportunityStageHistory;
@@ -75,6 +74,7 @@ import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateOpportunitySpecification;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.security.AuthService;
@@ -317,19 +317,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
         copyOpportunityToCandidateOpportunity(op, candidateOpportunity, createJobOpp);
         return candidateOpportunityRepository.save(candidateOpportunity);
-    }
-
-
-    @Override
-    public List<CandidateDependant> getRelocatingDependants(CandidateOpportunity candidateOpportunity)
-        throws NoSuchObjectException {
-        List<Long> relocatingDependantIds = candidateOpportunity.getRelocatingDependantIds();
-
-        return relocatingDependantIds != null ?
-            relocatingDependantIds
-                .stream()
-                .map(candidateDependantService::getDependant)
-                .collect(Collectors.toList()) : null;
     }
 
     /**
@@ -832,6 +819,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
 
         return uploadedFile;
+    }
+    
+    @Override
+    public CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request) {
+        CandidateOpportunity opp = getCandidateOpportunity(id);
+        opp.setRelocatingDependantIds(request.getRelocatingDependantIds());
+        return candidateOpportunityRepository.save(opp);
     }
 
     //One minute past Midnight GMT

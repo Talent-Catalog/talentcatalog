@@ -39,6 +39,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.JobChatUserInfo;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -102,6 +103,14 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
         salesforceService.updateSfCaseRelocationInfo(candidateOpportunity);
     }
 
+    @PutMapping("{id}/relocating-dependants")
+    public void updateRelocatingDependants(@PathVariable("id") long id, 
+        @RequestBody UpdateRelocatingDependantIds request)
+        throws NoSuchObjectException, SalesforceException, WebClientException {
+        CandidateOpportunity candidateOpportunity = 
+            candidateOpportunityService.updateRelocatingDependants(id, request);
+    }
+
     private DtoBuilder candidateOpportunityDto() {
         return new DtoBuilder()
             .add("id")
@@ -123,6 +132,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
             .add("updatedDate")
             .add("fileOfferLink")
             .add("fileOfferName")
+            .add("relocatingDependantIds")
             ;
     }
 

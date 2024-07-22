@@ -28,12 +28,12 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
@@ -166,11 +166,12 @@ public interface CandidateOpportunityService {
         throws InvalidRequestException, NoSuchObjectException, IOException;
 
     /**
-     * Gets relocating dependants listed on a given candidate opportunity.
-     * @param candidateOpportunity instance of {@link CandidateOpportunity}
-     * @return list of candidate dependant objects or null if there aren't any for that assessment
-     * @throws NoSuchObjectException if there's no candidate dependant with a given id
+     * Updates the CandidateOpportunity with the relocating dependants
+     * @param request id of opportunity to get
+     * @param request relocating dependant ids
+     * @return CandidateOpportunity
+     * @throws NoSuchObjectException if there is no opportunity with this id.
      */
-    List<CandidateDependant> getRelocatingDependants(CandidateOpportunity candidateOpportunity)
+    CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request)
         throws NoSuchObjectException;
 }
