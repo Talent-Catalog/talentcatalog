@@ -23,6 +23,11 @@ import {CandidateOpportunityParams} from "../model/candidate";
 import {OpportunityService} from "../components/util/opportunity/OpportunityService";
 import {JobChatUserInfo} from "../model/chat";
 
+export interface UpdateRelocatingDependantIds {
+  id?: number;
+  relocatingDependantIds: number[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -95,6 +100,10 @@ export class CandidateOpportunityService implements OpportunityService<Candidate
       observable = this.http.put<CandidateOpportunity>(`${this.apiUrl}/${id}`, info);
     }
     return observable;
+  }
+
+  updateRelocatingDependants(id: number, request: UpdateRelocatingDependantIds): Observable <void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/relocating-dependants`, request);
   }
 
   uploadOffer(id: number, formData: FormData): Observable<CandidateOpportunity> {

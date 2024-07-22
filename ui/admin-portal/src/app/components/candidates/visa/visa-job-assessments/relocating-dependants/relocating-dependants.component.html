@@ -2,9 +2,9 @@
   {{error}}
 </div>
 <form [formGroup]="form" class="mb-3">
-  <div *ngIf="editable" class="row align-items-end">
+  <div class="row align-items-end">
     <div class="col">
-      <label class="form-label" for="visaJobRelocatingDependantIds">Which dependants hope to relocate with the candidate?</label>
+      <label class="form-label" for="relocatingDependantIds">Which dependants hope to relocate with the candidate?</label>
       <div class="float-end">
         <app-autosave-status
           [saving]="saving"
@@ -12,13 +12,13 @@
         </app-autosave-status>
       </div>
       <ng-select
-        id="visaJobRelocatingDependantIds"
+        id="relocatingDependantIds"
         [items]="dependants"
         [multiple]="true"
         placeholder="Select or type..."
         bindValue="id"
         bindLabel="relation"
-        [formControlName]="'visaJobRelocatingDependantIds'">
+        [formControlName]="'relocatingDependantIds'">
         <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
           <div class="ng-value" *ngFor="let item of items">
             <span class="ng-value-label">{{item?.relation}}<span *ngIf="item?.name">: {{item?.name}}</span></span>
@@ -33,7 +33,7 @@
     <div class="col-auto">
       <button class="btn btn-sm btn-secondary mb-1" [disabled]="saving"
               (click)="requestSfCaseRelocationInfoUpdate()">
-        <span *ngIf="loading; else elseBlock">
+        <span *ngIf="saving; else elseBlock">
             <i class="fas fa-spinner fa-spin"></i>
           </span>
         <ng-template #elseBlock>
