@@ -76,7 +76,7 @@ public interface CandidateStatsService {
         @Nullable String constraintPredicate);
 
     //TODO JC Doc
-    List<DataRow> computeLinkedInExistsStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeLinkedInExistsStats(@Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     /**
      * Generates numbers with LinkedIn links by registration date
@@ -89,22 +89,22 @@ public interface CandidateStatsService {
         @Nullable String constraintPredicate);
 
     //TODO JC Doc
-    List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeMaxEducationStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     //TODO JC Doc
-    List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeMostCommonOccupationStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     //TODO JC Doc
-    List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeNationalityStats(@Nullable Gender gender, @Nullable String country, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     //TODO JC Doc
-    List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeOccupationStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     //TODO JC Doc
-    List<DataRow> computeReferrerStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeReferrerStats(@Nullable Gender gender, @Nullable String country, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     //TODO JC Doc
-    List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeRegistrationOccupationStats(@Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     /**
      * Generates numbers by registration date
@@ -117,17 +117,16 @@ public interface CandidateStatsService {
         @Nullable String constraintPredicate);
 
     //TODO JC Doc
-    List<DataRow> computeSourceCountryStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeSourceCountryStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     //TODO JC Doc
-    List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds,
-        String constraint);
+    List<DataRow> computeSpokenLanguageLevelStats(@Nullable Gender gender, @Nullable String language, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     //TODO JC Doc
-    List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeStatusStats(@Nullable Gender gender, @Nullable String country, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     //TODO JC Doc
-    List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds, String constraint);
+    List<DataRow> computeSurveyStats(@Nullable Gender gender, @Nullable String country, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     /**
      * Generates UNHCR numbers by registration.
