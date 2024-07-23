@@ -78,7 +78,7 @@ public class CandidateStatAdminApi {
 
         List<StatReport> statReports;
 
-        boolean runOldStats = request.getRunOldStats();
+        boolean runOldStats = request.getRunOldStats() != null && request.getRunOldStats();
         if (runOldStats) {
             statReports = getAllStatsByOldMethod(request);
         } else {
