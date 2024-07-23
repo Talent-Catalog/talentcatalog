@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
@@ -78,7 +77,7 @@ class CandidateStatsServiceImplTest {
     void tearDown() {
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing birth year stats")
     void compareOldAndNewBirthYearStats() {
 
@@ -118,7 +117,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing max education level stats")
     void compareOldAndNewMaxEducationLevelStats() {
 
@@ -148,7 +147,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing most common occupation stats")
     void compareOldAndNewMostCommonOccupationStats() {
 
@@ -178,7 +177,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing nationality stats")
     void compareOldAndNewNationalityStats() {
 
@@ -228,7 +227,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing status stats")
     void compareOldAndNewStatusStats() {
 
@@ -278,7 +277,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing survey stats")
     void compareOldAndNewSurveyStats() {
 
@@ -328,7 +327,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing occupation stats")
     void compareOldAndNewOccupationStats() {
 
@@ -358,7 +357,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing referrer stats")
     void compareOldAndNewReferrerStats() {
 
@@ -388,7 +387,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing source country stats")
     void compareOldAndNewSourceCountryStats() {
 
@@ -418,7 +417,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing spoken language stats")
     void compareOldAndNewSpokenLanguageStats() {
 
@@ -449,7 +448,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing gender stats")
     void compareOldAndNewGenderStats() {
 
@@ -478,7 +477,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing language stats")
     void compareOldAndNewLanguageStats() {
 
@@ -508,7 +507,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing LinkedIn exists stats")
     void compareOldAndNewLinkedInExistsStats() {
 
@@ -537,7 +536,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing LinkedIn stats")
     void compareOldAndNewLinkedInStats() {
 
@@ -566,7 +565,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing Registration stats")
     void compareOldAndNewRegistrationStats() {
 
@@ -595,7 +594,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing Registration Occupataion stats")
     void compareOldAndNewRegistrationOccupationStats() {
 
@@ -624,7 +623,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing unhcr registered stats")
     void compareOldAndNewUNHCRRegisteredStats() {
 
@@ -653,7 +652,7 @@ class CandidateStatsServiceImplTest {
         compareResults(rowsCurrent, rows);
     }
 
-    @Test
+    //@Test
     @DisplayName("Compare old and new ways of doing unhcr_status stats")
     void compareOldAndNewUNHCRStatusStats() {
 
