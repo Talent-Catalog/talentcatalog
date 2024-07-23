@@ -75,7 +75,11 @@ public interface CandidateStatsService {
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates the numbers of people with and without LinkedIn links.
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeLinkedInExistsStats(@Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     /**
@@ -88,22 +92,46 @@ public interface CandidateStatsService {
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by different levels of education
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeMaxEducationStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by the most common occupations
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeMostCommonOccupationStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by the nationality
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeNationalityStats(@Nullable Gender gender, @Nullable String country, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by each occupation
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeOccupationStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by referrer name
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeReferrerStats(@Nullable Gender gender, @Nullable String country, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by occupation
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeRegistrationOccupationStats(@Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     /**
@@ -116,16 +144,32 @@ public interface CandidateStatsService {
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by source country
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeSourceCountryStats(@Nullable Gender gender, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by spoken language level
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeSpokenLanguageLevelStats(@Nullable Gender gender, @Nullable String language, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by candidate status
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeStatusStats(@Nullable Gender gender, @Nullable String country, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
-    //TODO JC Doc
+    /**
+     * Generates numbers by survey (where did you hear about us)
+     * <p/>
+     * See above doc for standard parameters and return value.
+     */
     List<DataRow> computeSurveyStats(@Nullable Gender gender, @Nullable String country, @Nullable LocalDate dateFrom, @Nullable LocalDate dateTo, @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds, @Nullable String constraint);
 
     /**
