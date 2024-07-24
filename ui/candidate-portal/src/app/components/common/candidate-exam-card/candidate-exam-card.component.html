@@ -1,0 +1,40 @@
+<ng-container *ngIf="candidateExam">
+
+  <div class="text-end" *ngIf="!disabled">
+    <button class="btn btn-danger btn-card" [disabled]="disabled" (click)="delete()">&times;</button>
+  </div>
+
+  <!-- Exam -->
+  <div class="mb-3">
+    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.EXAM' | translate }} <sup>*</sup></label>
+    <ng-select *ngIf="!disabled" [(ngModel)]="candidateExam.exam" placeholder="{{ 'FORM.PLACEHOLDER.SELECTOREXAM' | translate }}" [clearable]="false" >
+      <ng-option [value]="candidateExam.exam">{{getExamName(candidateExam.exam)}}</ng-option>
+    </ng-select>
+    <p *ngIf="disabled">{{getExamName(candidateExam.exam)}}</p>
+  </div>
+
+  <!-- Score -->
+  <div class="mb-3">
+    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.SCORE' | translate }}</label>
+    <input type="text" class="form-control" [(ngModel)]="candidateExam.score" [disabled]="disabled">
+  </div>
+
+  <!-- Other Exam -->
+  <div  *ngIf="candidateExam.exam === 'Other'" class="mb-3">
+    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.OTHEREXAM' | translate }} <sup>*</sup></label>
+    <input type="text" class="form-control" [(ngModel)]="candidateExam.otherExam" [disabled]="disabled">
+  </div>
+
+  <!-- Year -->
+  <div class="mb-3">
+    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }}</label>
+    <input type="number" min="1900" max="2099" step="1" class="form-control" [(ngModel)]="candidateExam.year" [disabled]="disabled">
+  </div>
+
+  <!-- Notes -->
+  <div class="mb-3">
+    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.NOTES' | translate }}</label>
+    <textarea class="form-control" [(ngModel)]="candidateExam.notes" [disabled]="disabled"></textarea>
+  </div>
+
+</ng-container>
