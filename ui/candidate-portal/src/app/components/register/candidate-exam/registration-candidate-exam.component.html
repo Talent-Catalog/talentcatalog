@@ -1,0 +1,79 @@
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- REVIEW -->
+    <div class="card" *ngFor="let exam of candidateExams; let i = index;">
+      <app-candidate-exam-card [candidateExam]="exam"
+                               [candidateExams]="candidateExams"
+                               [disabled]="saving || loading"
+                               (onDelete)="deleteCandidateExam(i, exam.id)">
+      </app-candidate-exam-card>
+    </div>
+
+    <!-- CREATE -->
+    <form class="card" [formGroup]="form" *ngIf="!loading && showForm">
+
+      <!-- EXAM -->
+      <div class="mb-3">
+        <label class="form-label" for="exam">{{ 'REGISTRATION.EXAM.LABEL.EXAM' | translate }} <sup>*</sup></label>
+        <ng-select id="exam" [formControlName]="'exam'" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTOREXAM' | translate }}">
+          <ng-option *ngFor="let exam of examListEnum" [value]="exam.key">{{exam.value}}</ng-option>
+
+        </ng-select>
+        <app-form-control-error [control]="form.controls.exam"></app-form-control-error>
+      </div>
+
+      <!-- OTHER EXAM -->
+      <div class="mb-3" *ngIf="showOtherExamInput">
+        <label class="form-label" for="otherExam">{{ 'REGISTRATION.EXAM.LABEL.OTHEREXAM' | translate }}</label>
+        <input type="text" class="form-control" id="otherExam" [formControlName]="'otherExam'">
+        <app-form-control-error [control]="form.controls.otherExam"></app-form-control-error>
+      </div>
+
+      <!-- SCORE -->
+      <div class="mb-3">
+        <label class="form-label" for="score">{{ 'REGISTRATION.EXAM.LABEL.SCORE' | translate }}<sup>*</sup></label>
+        <input type="text" class="form-control" id="score" [formControlName]="'score'">
+        <app-form-control-error [control]="form.controls.score"></app-form-control-error>
+      </div>
+
+      <!-- YEAR -->
+      <div class="mb-3">
+        <label class="form-label" for="year">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }}<sup>*</sup></label>
+        <input type="number" min="1900" max="2099" step="1" class="form-control" id="year" [formControlName]="'year'">
+        <app-form-control-error [control]="form.controls.year"></app-form-control-error>
+      </div>
+
+      <!-- NOTES -->
+      <div class="mb-3">
+        <label class="form-label" for="notes">{{ 'REGISTRATION.EXAM.LABEL.NOTES' | translate }}</label>
+        <textarea class="form-control" id="notes" [formControlName]="'notes'"></textarea>
+        <app-form-control-error [control]="form.controls.notes"></app-form-control-error>
+      </div>
+
+    </form>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-outline-primary"
+              (click)="addExam()"
+              [disabled]="loading || saving">
+        {{ 'REGISTRATION.EXAM.BUTTON.ADD' | translate }}
+      </button>
+    </div>
+  </ng-container>
+
+  <app-error [error]="error"></app-error>
+
+  <app-registration-footer
+    [nextDisabled]="!form.valid && !candidateExams?.length"
+    [type]="edit ? 'update' : 'step'"
+    (backClicked)="edit ? cancel() : back()"
+    (nextClicked)="next()">
+  </app-registration-footer>
+
+
+</div>
