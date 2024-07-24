@@ -85,6 +85,13 @@ public class CandidatePortalApi {
         return candidateWithCandidateOccupationsDto().build(candidate);
     }
 
+    @GetMapping("exams")
+    public Map<String, Object> getCandidateCandidateExams() {
+        Candidate candidate = this.candidateService
+            .getLoggedInCandidateLoadCandidateExams()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        return candidateWithCandidateExamsDto().build(candidate);
+    }
     @GetMapping("education")
     public Map<String, Object> getCandidateEducation() {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
@@ -238,6 +245,12 @@ public class CandidatePortalApi {
                 ;
     }
 
+    private DtoBuilder candidateWithCandidateExamsDto() {
+        return new DtoBuilder()
+            .add("candidateExams", candidateExamDto())
+            ;
+    }
+    
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
@@ -245,6 +258,16 @@ public class CandidatePortalApi {
                 .add("yearsExperience")
                 .add("migrationOccupation")
                 ;
+    }
+
+    private DtoBuilder candidateExamDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("exam")
+            .add("otherExam")
+            .add("score")
+            .add("year")
+            .add("notes");
     }
 
     private DtoBuilder candidateEducationLevelDto() {
