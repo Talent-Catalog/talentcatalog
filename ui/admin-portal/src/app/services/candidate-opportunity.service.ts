@@ -111,4 +111,9 @@ export class CandidateOpportunityService implements OpportunityService<Candidate
       `${this.apiUrl}/${id}/upload-offer`, formData);
 
   }
+
+  updateSfCaseRelocationInfo(id: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.apiUrl}/${id}/update-sf-case-relocation-info`, null);
+  }
 }

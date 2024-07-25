@@ -78,20 +78,6 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.visaJobCanada.expandAll();
   }
-
-  requestSfCaseRelocationInfoUpdate() {
-    this.error = null;
-    this.loading = true;
-    this.candidateVisaJobService.updateSfCaseRelocationInfo(
-        this.selectedJobCheck.id).subscribe(
-        boolean => {
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
-  }
 }
 
 

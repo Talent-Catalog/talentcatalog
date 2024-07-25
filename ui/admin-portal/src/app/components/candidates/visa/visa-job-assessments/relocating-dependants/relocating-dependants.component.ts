@@ -21,6 +21,7 @@ export class RelocatingDependantsComponent extends AutoSaveComponentBase impleme
   @Input() candidateId: number;
   dependants: CandidateDependant[];
   loading: boolean;
+  updatingSf: boolean;
 
   constructor(private fb: FormBuilder,
               private candidateOpportunityService: CandidateOpportunityService,
@@ -61,18 +62,16 @@ export class RelocatingDependantsComponent extends AutoSaveComponentBase impleme
   }
 
   requestSfCaseRelocationInfoUpdate() {
-    //todo update using candidate opportunity service
-
-    // this.error = null;
-    // this.loading = true;
-    // this.candidateVisaJobService.updateSfCaseRelocationInfo(
-    //   this.visaJobCheck.id).subscribe(
-    //   boolean => {
-    //     this.loading = false;
-    //   },
-    //   error => {
-    //     this.error = error;
-    //     this.loading = false;
-    //   });
+    this.error = null;
+    this.updatingSf = true;
+    this.candidateOpportunityService.updateSfCaseRelocationInfo(
+      this.candidateOpp.id).subscribe(
+      boolean => {
+        this.updatingSf = false;
+      },
+      error => {
+        this.error = error;
+        this.updatingSf = false;
+      });
   }
 }

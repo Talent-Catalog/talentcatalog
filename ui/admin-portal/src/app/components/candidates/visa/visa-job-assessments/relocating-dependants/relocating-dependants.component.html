@@ -31,9 +31,9 @@
       </ng-select>
     </div>
     <div class="col-auto">
-      <button class="btn btn-sm btn-secondary mb-1" [disabled]="saving"
+      <button class="btn btn-sm btn-secondary mb-1" [disabled]="updatingSf || loading"
               (click)="requestSfCaseRelocationInfoUpdate()">
-        <span *ngIf="saving; else elseBlock">
+        <span *ngIf="updatingSf; else elseBlock">
             <i class="fas fa-spinner fa-spin"></i>
           </span>
         <ng-template #elseBlock>
