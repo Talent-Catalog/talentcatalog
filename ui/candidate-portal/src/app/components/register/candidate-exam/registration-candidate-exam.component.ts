@@ -84,7 +84,7 @@ export class RegistrationCandidateExamComponent implements OnInit, OnDestroy {
       exam: [null, Validators.required],
       otherExam: [null],
       score: [null, Validators.required],
-      year: [null, [Validators.required, Validators.min(1900)]],
+      year: [null, [Validators.required, Validators.min(1950)]],
       notes: [null]
     });
     // Watch for changes in examId to toggle "other" input
@@ -105,7 +105,7 @@ export class RegistrationCandidateExamComponent implements OnInit, OnDestroy {
     if (this.form.valid) {
       this.addExam();
     }
-    this.invalidExam = this.candidateExams.find(candidateExam => candidateExam.year < 0 || candidateExam.year == null);
+    this.invalidExam = this.candidateExams.find(candidateExam => candidateExam.year < 1950 || candidateExam.year == null);
     const request = {
       updates: this.candidateExams
     };
@@ -123,7 +123,7 @@ export class RegistrationCandidateExamComponent implements OnInit, OnDestroy {
           this.error = error;
         });
     } else {
-      this.error = "You need to put in a years value (from 0 upwards).";
+      this.error = "You need to put in a years value (from 1950 upwards).";
     }
   }
   get loading() {
