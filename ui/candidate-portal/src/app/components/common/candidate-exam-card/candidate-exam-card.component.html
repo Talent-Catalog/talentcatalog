@@ -26,9 +26,16 @@
   </div>
 
   <!-- Year -->
+<!--  <div class="mb-3">-->
+<!--    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }}</label>-->
+<!--    <input type="number" min="1900" max="2099" step="1" class="form-control" [(ngModel)]="candidateExam.year" [disabled]="disabled">-->
+<!--  </div>-->
   <div class="mb-3">
-    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }}</label>
-    <input type="number" min="1900" max="2099" step="1" class="form-control" [(ngModel)]="candidateExam.year" [disabled]="disabled">
+    <label class="form-label" for="year">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }} <sup>*</sup></label>
+    <ng-select id="year" [items]="years" [(ngModel)]="candidateExam.year" [disabled]="disabled" [clearable]="false"
+               placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
+
+    </ng-select>
   </div>
 
   <!-- Notes -->
