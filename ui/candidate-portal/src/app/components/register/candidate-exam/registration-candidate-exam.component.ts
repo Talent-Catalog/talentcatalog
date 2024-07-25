@@ -8,6 +8,7 @@ import {RegistrationService} from "../../../services/registration.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {DeleteExamComponent} from "./delete/delete-exam.component";
+import {generateYearArray} from "../../../util/year-helper";
 @Component({
   selector: 'app-registration-candidate-exam',
   templateUrl: './registration-candidate-exam.component.html',
@@ -30,7 +31,7 @@ export class RegistrationCandidateExamComponent implements OnInit, OnDestroy {
   invalidExam: CandidateExam | null = null;
   examListEnum: { key: string, value: string }[] = [];
   showOtherExamInput: boolean = false;
-
+  years: number[];
   _loading = {
     candidate: true,
     exams: true
@@ -50,7 +51,7 @@ export class RegistrationCandidateExamComponent implements OnInit, OnDestroy {
     this.subscription = this.translateService.onLangChange.subscribe(() => {
       this.loadDropDownData();
     });
-
+    this.years = generateYearArray(1950,true);
     this.candidateService.getCandidateCandidateExams().subscribe(
       (candidate) => {
         console.log(candidate)
