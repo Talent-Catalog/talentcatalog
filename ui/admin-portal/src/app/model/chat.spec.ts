@@ -20,12 +20,14 @@ import {User} from "./user";
 fdescribe('Job Chat and Post interface', () => {
   it('should create a Post instance', () => {
     const post: Post = {
+      linkPreviews: [],
       id: 1,
-      content: 'Sample content',
+      content: 'Sample content'
     };
 
     expect(post).toBeTruthy();
     expect(post.id).toBe(1);
+    expect(post.linkPreviews).toEqual([]);
     expect(post.content).toBe('Sample content');
   });
 
