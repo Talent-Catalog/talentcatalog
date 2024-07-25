@@ -9,18 +9,19 @@ sass:
 Check out the newest features and enhancements.
 
 # New Features
-
-
-## General Improvements
+     
+## New way of running stats on saved searches
 Temporarily there are two ways of running stats, and two buttons "Run stats" and "New run stats".
 
-They should both produce the same results, but the new way should get over one of the 
+They should both produce the same results, but the new way should get over one of the
 limitations of the old way - for example, reported by Sarah Walder where she could not run stats
 on searches showing candidates in Lebanon or Jordan because there were too many of them
 (greater than 32,000). The new way of running stats should avoid that limitation.
 
 Once we are happy that the new way of running stats produces the same results as the old way,
-we can remove the old way altogether. 
+we can remove the old way altogether.
+
+## General Improvements
 
 ## Data Improvements
 
