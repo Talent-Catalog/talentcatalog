@@ -121,7 +121,6 @@ public class CandidateVisaJobCheckAdminApi
                 .add("languagesRequired")
                 .add("languagesThresholdMet")
                 .add("languagesThresholdNotes")
-                .add("relocatingDependantIds")
                 ;
     }
 

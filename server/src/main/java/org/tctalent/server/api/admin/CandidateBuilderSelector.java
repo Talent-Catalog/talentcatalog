@@ -252,7 +252,7 @@ public class CandidateBuilderSelector {
             .add("createdDate")
             .add("updatedBy", userDto())
             .add("updatedDate")
-
+            .add("relocatingDependantIds")
             ;
     }
 

@@ -14,6 +14,7 @@ import {CandidateOccupation} from "../../../../../../../model/candidate-occupati
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateVisaJobService} from "../../../../../../../services/candidate-visa-job.service";
+import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-visa-job-check-ca',
@@ -34,6 +35,7 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   familyInCanada: string;
   partnerIeltsString: string;
   pathwaysInfoLink: string;
+  candidateOpportunity: CandidateOpportunity;
 
   error: string;
   loading: boolean;
@@ -69,6 +71,8 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
       this.partnerIeltsString = null;
     }
     this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
+    this.candidateOpportunity = this.candidate.candidateOpportunities
+      .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
   }
 
   ngAfterViewInit() {
