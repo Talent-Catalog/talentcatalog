@@ -23,8 +23,8 @@ plugins {
   id "com.github.node-gradle.node" version "3.4.0"
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 node {
   version = '16.17.0'
