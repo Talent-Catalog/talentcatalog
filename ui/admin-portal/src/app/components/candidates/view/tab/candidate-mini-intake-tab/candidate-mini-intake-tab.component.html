@@ -197,45 +197,45 @@
       </ngb-panel>
 
       <!-- EXAMS -->
-      <ngb-panel id="intake-exams">
-        <ng-template ngbPanelTitle let-opened="opened">
-          <div class="container-fluid gx-0">
-            <div class="row">
-              <div class="col-3 border-end">
-                <span>Language Exams</span>
-              </div>
-              <div class="col">
-                <div class="tag-light fw-600">
-                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">
-                    <span *ngIf="exam.exam != 'Other'; else otherExam"
-                          [ngClass]="{'me-4': exam.exam != null}">
-                      {{exam.exam}}
-                      <span class="text-info">{{exam.score}}</span>
-                    </span>
-                    <ng-template #otherExam>
-                      <span class="me-4">{{exam.otherExam}}
-                        <span class="text-info">{{exam.score}}</span>
-                      </span>
-                    </ng-template>
-                  </ng-container>
-                </div>
+<!--      <ngb-panel id="intake-exams">-->
+<!--        <ng-template ngbPanelTitle let-opened="opened">-->
+<!--          <div class="container-fluid gx-0">-->
+<!--            <div class="row">-->
+<!--              <div class="col-3 border-end">-->
+<!--                <span>Language Exams</span>-->
+<!--              </div>-->
+<!--              <div class="col">-->
+<!--                <div class="tag-light fw-600">-->
+<!--                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">-->
+<!--                    <span *ngIf="exam.exam != 'Other'; else otherExam"-->
+<!--                          [ngClass]="{'me-4': exam.exam != null}">-->
+<!--                      {{exam.exam}}-->
+<!--                      <span class="text-info">{{exam.score}}</span>-->
+<!--                    </span>-->
+<!--                    <ng-template #otherExam>-->
+<!--                      <span class="me-4">{{exam.otherExam}}-->
+<!--                        <span class="text-info">{{exam.score}}</span>-->
+<!--                      </span>-->
+<!--                    </ng-template>-->
+<!--                  </ng-container>-->
+<!--                </div>-->
 
-              </div>
-              <div class="col-1">
-                <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-        <ng-template ngbPanelContent>
-          <app-exams
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-exams>
-        </ng-template>
-      </ngb-panel>
+<!--              </div>-->
+<!--              <div class="col-1">-->
+<!--                <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">-->
+<!--                  <i class="fas fa-plus"></i>-->
+<!--                </button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </ng-template>-->
+<!--        <ng-template ngbPanelContent>-->
+<!--          <app-exams-->
+<!--            [candidate]="candidate"-->
+<!--            [candidateIntakeData]="candidateIntakeData">-->
+<!--          </app-exams>-->
+<!--        </ng-template>-->
+<!--      </ngb-panel>-->
 
       <ngb-panel id="intake-language-assessment">
         <ng-template ngbPanelTitle let-opened="opened">
