@@ -6,7 +6,7 @@ import {
   OnChanges,
   SimpleChanges
 } from '@angular/core';
-import {CandidateExam} from '../../../model/candidate-exam';
+import {CandidateExam} from '../../../model/candidate';
 import {Exam} from "../../../model/candidate";
 
 @Component({
