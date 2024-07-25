@@ -12,6 +12,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
+import {CandidateOpportunity} from "../../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-candidate-visa-job',
@@ -165,5 +166,9 @@ export class CandidateVisaJobComponent implements OnInit {
 
   canDeleteVisaJob() : boolean {
     return this.authService.isSystemAdminOnly();
+  }
+
+  fetchCandidateOppForJob(jobId: number): CandidateOpportunity {
+    return this.candidate.candidateOpportunities?.find(co => co.jobOpp.id === jobId)
   }
 }

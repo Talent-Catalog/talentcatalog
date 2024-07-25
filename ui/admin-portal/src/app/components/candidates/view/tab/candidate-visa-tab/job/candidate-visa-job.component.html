@@ -11,10 +11,16 @@
     <form [formGroup]="form">
       <div *ngFor="let visaJob of visaCheckRecord?.candidateVisaJobChecks; let i = index;">
         <div class="form-check">
-          <input class="form-check-input" type="radio" [value]="i" name="jobIndex" [id]="'radio'+i"
+          <input class="form-check-input" type="radio" [value]="i" name="jobIndex" [id]="'radioJob'+i"
                  [formControlName]="'jobIndex'" (change)="fetchUpdatedSelectedJob(visaJob)">
-          <label class="form-check-label fw-light" [for]="'radio'+i">
-            <a [routerLink]="visaJob?.jobOpp ? ['/job',visaJob.jobOpp.id] : null" target="_blank">{{visaJob?.jobOpp ? visaJob?.jobOpp?.name : visaJob.name}} <i *ngIf="visaJob?.jobOpp" class="fas fa-external-link-alt" title="Show in new tab"></i></a>
+          <label class="form-check-label fw-light" [for]="'radioJob'+i">
+            {{visaJob?.jobOpp ? visaJob?.jobOpp?.name : visaJob.name}}
+            <a [routerLink]="visaJob?.jobOpp ? ['/job',visaJob.jobOpp.id] : null" target="_blank" class="link-info">
+              <i *ngIf="visaJob?.jobOpp" class="fa-solid fa-briefcase" title="Open job in new tab"></i>
+            </a>
+            <a [routerLink]="visaJob?.jobOpp ? ['/opp', fetchCandidateOppForJob(visaJob.jobOpp.id).id] : null" target="_blank" class="link-info">
+              <i *ngIf="fetchCandidateOppForJob(visaJob.jobOpp.id)" class="fa-solid fa-address-book" title="Open case in new tab"></i>
+            </a>
           </label>
           <a *ngIf="canDeleteVisaJob()" class="link-danger float-end" (click)="deleteJob(i)"><i class="fas fa-trash"></i></a>
         </div>
