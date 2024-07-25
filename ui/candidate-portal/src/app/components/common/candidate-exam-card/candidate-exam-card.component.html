@@ -25,11 +25,7 @@
     <input type="text" class="form-control" [(ngModel)]="candidateExam.otherExam" [disabled]="disabled">
   </div>
 
-  <!-- Year -->
-<!--  <div class="mb-3">-->
-<!--    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }}</label>-->
-<!--    <input type="number" min="1900" max="2099" step="1" class="form-control" [(ngModel)]="candidateExam.year" [disabled]="disabled">-->
-<!--  </div>-->
+  <!-- Exam Year -->
   <div class="mb-3">
     <label class="form-label" for="year">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }} <sup>*</sup></label>
     <ng-select id="year" [items]="years" [(ngModel)]="candidateExam.year" [disabled]="disabled" [clearable]="false"
