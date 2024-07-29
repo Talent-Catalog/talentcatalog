@@ -70,6 +70,10 @@
           <br/>
           Copy and paste from Salesforce.
         </div>
+        <div *ngIf="form.errors?.['missingEmployerPartnerSflink'] && (form.touched || form.dirty)"
+             class="alert alert-danger">
+          Employer partners must have a link to a Salesforce Account of type Employer
+        </div>
       </div>
 
       <div class="mb-3">
