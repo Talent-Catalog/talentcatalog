@@ -5,9 +5,12 @@ import {Candidate} from "../../../model/candidate";
 import {JobChat} from "../../../model/chat";
 import {Partner} from "../../../model/partner";
 import {BehaviorSubject} from "rxjs";
-import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {CandidateService} from "../../../services/candidate.service";
 import {SearchResults} from "../../../model/search-results";
+import {ActivatedRoute} from "@angular/router";
+import {
+  FetchCandidatesWithActiveChatRequest,
+} from "../../../model/base";
 
 @Component({
   selector: 'app-source-candidate-chats',
@@ -19,7 +22,9 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
   @Input() loggedInPartner: Partner;
   @Input() chatsRead$!: BehaviorSubject<boolean>;
 
-  error: any;
+  error: string;
+  loading: boolean;
+  pageNumber: number;
   selectedCandidate: Candidate;
   selectedCandidateChat: JobChat;
   chatHeader: string = "";
@@ -27,13 +32,26 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
 
   constructor(
     private chatService: ChatService,
-    private candidateService: CandidateService
+    private candidateService: CandidateService,
+    private route: ActivatedRoute
   ) {
     super(5);
   }
 
   ngOnInit(): void {
     this.fetchCandidatesWithActiveChat()
+
+    // TODO check to see where this info gets included (do I need to do it deliberately?)
+    //  See SearchTasksComponent.search for how to handle pagination
+    // Start listening to route params after everything is loaded.
+    this.route.queryParamMap.subscribe(
+      params => {
+        this.pageNumber = +params.get('pageNumber');
+        if (!this.pageNumber) {
+          this.pageNumber = 1;
+        }
+      }
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -66,12 +84,13 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
         this.selectedCandidate.user.lastName + " (" + this.selectedCandidate.candidateNumber + ")";
   }
 
-  private fetchCandidatesWithActiveChat() {
-    let candidateReq: SearchCandidateRequest = {
-      partnerIds: [this.loggedInPartner.id],
+  public fetchCandidatesWithActiveChat() {
+    // See SearchTasksComponent.search for how to manage pagination
+    let request: FetchCandidatesWithActiveChatRequest = {
+      pageNumber: this.pageNumber - 1,
     }
 
-    this.candidateService.fetchCandidatesWithActiveChat(candidateReq).subscribe({
+    this.candidateService.fetchCandidatesWithActiveChat(request).subscribe({
       next: candidates => this.candidatesWithActiveChats = candidates,
       error: error => this.error = error
     })

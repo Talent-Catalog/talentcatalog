@@ -97,9 +97,8 @@ export class JobHomeComponent extends HomeComponent {
     )
 
     let candidateReq: SearchCandidateRequest = {
-      // TODO in the case of TBB, should we only fetch candidates w chats that TBB has posted in,
-      //  or any candidate the source partner manages, w a chat that has posts from anyone, as is
-      //  currently the logic?
+      // TODO Does there need to be additional logic for default partner TBB here? This will only return
+      //  candidates managed by admin's partner
       partnerIds: [this.loggedInPartner.id]
     }
 

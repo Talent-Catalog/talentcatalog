@@ -57,6 +57,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableDocsRequest
 import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithActiveChatRequest;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -355,8 +356,8 @@ public class CandidateAdminApi {
     }
 
     @PostMapping("fetch-candidates-with-active-chat")
-    public Map<String, Object> fetchCandidatesWithActiveChats(
-        @RequestBody SearchCandidateRequest request
+    public Map<String, Object> fetchCandidatesWithActiveChat(
+        @Valid @RequestBody FetchCandidatesWithActiveChatRequest request
     ) {
         Page<Candidate> candidates = candidateService.fetchCandidatesWithActiveChat(request);
         DtoBuilder builder = builderSelector.selectBuilder();

@@ -157,6 +157,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithActiveChatRequest;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
@@ -2971,13 +2972,15 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> fetchCandidatesWithActiveChat(SearchCandidateRequest request) {
+    public Page<Candidate> fetchCandidatesWithActiveChat(
+        FetchCandidatesWithActiveChatRequest request
+    ) {
         User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
             throw new InvalidSessionException("Not logged in");
         }
 
-        Pageable pageable = PageRequest.of(0, 25);
+        Pageable pageable = PageRequest.of(request.getPageNumber(), 25);
 
         return candidateRepository.fetchCandidatesWithActiveChats(
             loggedInUser.getPartner().getId(), pageable);

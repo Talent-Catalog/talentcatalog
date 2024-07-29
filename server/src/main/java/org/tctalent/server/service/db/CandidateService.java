@@ -69,6 +69,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithActiveChatRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
@@ -551,5 +552,5 @@ public interface CandidateService {
      * @param request
      * @return
      */
-    Page<Candidate> fetchCandidatesWithActiveChat(SearchCandidateRequest request);
+    Page<Candidate> fetchCandidatesWithActiveChat(FetchCandidatesWithActiveChatRequest request);
 }

@@ -319,3 +319,7 @@ export enum Status {
   inactive = "inactive",
   deleted = "deleted"
 }
+
+export interface FetchCandidatesWithActiveChatRequest {
+  pageNumber: number,
+}
