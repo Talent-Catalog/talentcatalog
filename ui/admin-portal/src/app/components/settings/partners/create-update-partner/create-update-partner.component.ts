@@ -5,6 +5,7 @@ import {
   FormBuilder,
   FormGroup,
   ValidationErrors,
+  ValidatorFn,
   Validators
 } from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
@@ -24,7 +25,7 @@ import {UserService} from "../../../../services/user.service";
 import {AuthorizationService} from "../../../../services/authorization.service";
 
 /* MODEL - Cross field validation in a form.
-   See crossFieldValidator method.
+   See crossFieldValidator function.
 */
 
 /*
@@ -50,6 +51,47 @@ import {AuthorizationService} from "../../../../services/authorization.service";
   the value you want. For example, just type "Role." and Intellij will prompt you for all legal
   values.
  */
+
+/**
+ * Cross field validator - configured into above form definition.
+ * <p/>
+ * See https://angular.io/guide/form-validation#cross-field-validation
+ * <p/>
+ * Checks that employer partners always have a salesforce link.
+ * <p/>
+ * See also div in html file which checks form.errors
+ * </p>
+ * Note that this isn't be a method. Actually you can make it a method and it sort of works
+ * but it doesn't see class fields so best to define it as recommended by Angular above.
+ * @param control The form group will be passed in here.
+ * @private
+ * @return Null if no errors otherwise object containing fields for errors:
+ * missingEmployerPartnerSflink and sourcePartnerIsJobCreator
+ */
+export const crossFieldValidator: ValidatorFn = (
+  control: AbstractControl,
+): ValidationErrors | null => {
+  let errors = null;
+  const defaultSourcePartnerCtrl = control.get('defaultSourcePartner');
+  const employerPartnerCtrl = control.get('employerPartner');
+  const jobCreatorCtrl = control.get('jobCreator');
+  const sourcePartnerCtrl = control.get('sourcePartner');
+  const sflinkCtrl = control.get('sflink');
+  if (employerPartnerCtrl.value) {
+    const sflink = sflinkCtrl.value;
+    if (!sflink) {
+      errors = {missingEmployerPartnerSflink: true}
+    }
+  }
+  if (!defaultSourcePartnerCtrl.value) {
+    if (sourcePartnerCtrl.value) {
+      if (jobCreatorCtrl.value) {
+        errors = {sourcePartnerIsJobCreator: true}
+      }
+    }
+  }
+  return errors;
+}
 
 @Component({
   selector: 'app-create-update-partner',
@@ -87,6 +129,11 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       autoAssignable: [this.partner?.autoAssignable],
       defaultContact: [this.partner?.defaultContact],
       defaultPartnerRef: [this.partner?.defaultPartnerRef],
+
+      //This is never displayed so can't be modified - it is just is here to let the validator know
+      //whether this is the special TBB partner (which CAN be a job creator AND a source partner).
+      defaultSourcePartner: [this.partner?.defaultSourcePartner],
+
       employerPartner: [this.partner?.employer ? true : false],
       jobCreator: [this.partner?.jobCreator],
       logo: [this.partner?.logo],
@@ -104,7 +151,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       //the user).
       status: [this.partner?.status, Validators.required],
       websiteUrl: [this.partner?.websiteUrl],
-    },{validators: this.crossFieldValidator});
+    },{validators: crossFieldValidator});
 
     this.countryService.listCountriesRestricted().subscribe(
       (response) => {
@@ -138,31 +185,6 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
         },
       );
     }
-  }
-
-  /**
-   * Cross field validator - configured into above form definition.
-   * <p/>
-   * See https://angular.io/guide/form-validation#cross-field-validation
-   * <p/>
-   * Checks that employer partners always have a salesforce link.
-   * <p/>
-   * See also div in html file which checks form.errors
-   * @param control The form group will be passed in here.
-   * @private
-   * @return Null if no errors otherwise object containing field missingEmployerPartnerSflink
-   */
-  private crossFieldValidator(control: AbstractControl): ValidationErrors | null {
-    let errors = null;
-    const employerPartnerCtrl = control.get('employerPartner');
-    const sflinkCtrl = control.get('sflink');
-    if (employerPartnerCtrl.value) {
-      const sflink = sflinkCtrl.value;
-      if (!sflink) {
-        errors = {missingEmployerPartnerSflink: true}
-      }
-    }
-    return errors;
   }
 
   get create(): boolean {

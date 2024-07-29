@@ -27,6 +27,10 @@
       <div class="form-check">
         <input class="form-check-input" type="checkbox" id="sourcePartner" formControlName="sourcePartner">
         <label class="form-check-label" for="sourcePartner">Source Partner?</label>
+        <div *ngIf="form.errors?.['sourcePartnerIsJobCreator'] && (form.touched || form.dirty)"
+             class="alert alert-danger">
+          Source partners cannot be job creators
+        </div>
       </div>
 
       <div class="form-check mb-3">
