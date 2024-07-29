@@ -8,6 +8,7 @@ import {Message} from "@stomp/stompjs";
 import {map, share, shareReplay, takeUntil, tap} from "rxjs/operators";
 import {RxStompConfig} from "@stomp/rx-stomp";
 import {AuthenticationService} from "./authentication.service";
+import {ERROR_MESSAGES} from "../app.constants";
 
 @Injectable({
   providedIn: 'root'
@@ -95,6 +96,11 @@ export class ChatService implements OnDestroy {
 
   create(request: CreateChatRequest): Observable<JobChat> {
     return this.http.post<JobChat>(`${this.apiUrl}`, request);
+  }
+
+  // Returns null if there isn't one already
+  getCandidateProspectChat(candidateId: number): Observable<JobChat> {
+    return this.http.get<JobChat>(`${this.apiUrl}/${candidateId}/get-cp-chat`);
   }
 
   getOrCreate(request: CreateChatRequest): Observable<JobChat> {
@@ -205,8 +211,27 @@ export class ChatService implements OnDestroy {
       let stompConfig = this.getRxStompConfig();
       this.rxStompService.configure(stompConfig);
       this.rxStompService.activate();
+      this.configureErrorHandling();
       this.stompServiceConfigured = true;
     }
+  }
+
+  private configureErrorHandling(): void {
+    this.rxStompService.stompErrors$
+    .pipe(
+      takeUntil(this.destroyStompSubscriptions$)
+    )
+    .subscribe((error) => {
+      if (error.headers && error.headers.message &&
+        error.headers.message.includes(ERROR_MESSAGES.EXPIRED_OR_INVALID_JWT)) {
+        this.handleExpiredOrInvalidToken();
+      }
+    });
+  }
+
+  private handleExpiredOrInvalidToken(): void {
+    console.log('Expired or invalid JWT  - logging out');
+    this.authenticationService.logout();
   }
 
   /**

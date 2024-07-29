@@ -16,8 +16,10 @@
 
 package org.tctalent.server.model.db.chat;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.LinkPreview;
 import org.tctalent.server.util.html.HtmlSanitizer;
 
 /**
@@ -29,6 +31,8 @@ import org.tctalent.server.util.html.HtmlSanitizer;
 @Setter
 public class Post {
     private String content;
+
+    private List<LinkPreview> linkPreviews;
 
     public void setContent(String content) {
         this.content = HtmlSanitizer.sanitizeWithLinksNewTab(content);

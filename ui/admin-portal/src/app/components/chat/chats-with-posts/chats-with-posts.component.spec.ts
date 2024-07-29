@@ -16,14 +16,18 @@ import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {QuillModule} from "ngx-quill";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
+import {MockUser} from "../../../MockData/MockUser";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 fdescribe('ChatsWithPostsComponent', () => {
   let component: ChatsWithPostsComponent;
   let fixture: ComponentFixture<ChatsWithPostsComponent>;
   let chatService: jasmine.SpyObj<ChatService>;
+  let authenticationService: jasmine.SpyObj<AuthenticationService>;
   const mockJobChat = new MockJobChat();
   beforeEach(async () => {
     const chatServiceSpy = jasmine.createSpyObj('ChatService', ['markChatAsRead','getChatPosts$','getOrCreate','getChatIsRead$','listPosts']);
+    const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsWithPostsComponent, ChatsComponent, ViewChatPostsComponent, ViewPostComponent, CreateUpdatePostComponent ],
@@ -31,10 +35,12 @@ fdescribe('ChatsWithPostsComponent', () => {
 
       providers: [
         FormBuilder,
-        { provide: ChatService, useValue: chatServiceSpy }
+        { provide: ChatService, useValue: chatServiceSpy },
+        { provide: AuthenticationService, useValue: authSpy }
       ]
     })
     .compileComponents();
+    authenticationService = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
   });
 
   beforeEach(() => {
@@ -43,6 +49,8 @@ fdescribe('ChatsWithPostsComponent', () => {
     chatService = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
     chatService.getChatPosts$.and.returnValue(of(new MockChatPost()));
     chatService.getChatIsRead$.and.returnValue(of(true));
+    authenticationService.getLoggedInUser.and.returnValue((new MockUser()));
+    chatService.markChatAsRead.and.returnValue();
     fixture.detectChanges();
   });
 

@@ -21,7 +21,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {ViewCandidateComponent} from "./view-candidate.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {of} from "rxjs";
+import {of, throwError} from "rxjs";
 import {ActivatedRoute, convertToParamMap} from "@angular/router";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -44,6 +44,10 @@ import {ViewCandidateContactComponent} from "./contact/view-candidate-contact.co
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
 import {User} from "../../../model/user";
 import {ViewCandidateNoteComponent} from "./note/view-candidate-note.component";
+import {Candidate} from "../../../model/candidate";
+import {SavedList} from "../../../model/saved-list";
+import {MockSavedList} from "../../../MockData/MockSavedList";
+import {MockPartner} from "../../../MockData/MockPartner";
 
 fdescribe('ViewCandidateComponent', () => {
   let component: ViewCandidateComponent;
@@ -95,21 +99,37 @@ fdescribe('ViewCandidateComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should refresh candidate information and load lists on initialization', () => {
+  it('should set candidate and title correctly on setCandidate', () => {
+    const mockCandidateWithNames: Candidate = { ...mockCandidate, user: { ...mockCandidate.user, firstName: 'Jane', lastName: 'Smith' } };
 
-    // Mocking candidate service method
-    mockCandidateService.getByNumber.and.returnValue(of(mockCandidate));
+    spyOn(component['titleService'], 'setTitle').and.stub();
 
-    // Mocking saved list service method
-    mockSavedListService.search.and.returnValue(of([]));
-    spyOn(component, 'refreshCandidateInfo'); // or .and.stub() if you don't want to actually call the method
+    component.setCandidate(mockCandidateWithNames);
 
-    // Triggering ngOnInit
-    component.refreshCandidateInfo();
-    fixture.detectChanges();
-    // Expectations
-    expect(component.loading).toBe(false); // Assuming loading is set to false after successful data retrieval
-    expect(component.candidate).toEqual(mockCandidate); // Candidate data should be set
-    expect(component.refreshCandidateInfo).toHaveBeenCalled(); // Method to load lists should be called
+    expect(component.candidate).toEqual(mockCandidateWithNames);
+    expect(component['titleService'].setTitle).toHaveBeenCalledWith('Jane Smith 123456');
   });
+
+  it('should set candidate lists correctly on setCandidateLists', () => {
+    const mockLists: SavedList[] = [MockSavedList];
+
+    spyOn(component['candidateSavedListService'], 'replace').and.returnValue(of(null));
+
+    component['setCandidateLists'](mockLists);
+
+    expect(component.savingList).toBeFalse();
+    expect(component['candidateSavedListService'].replace).toHaveBeenCalled();
+  });
+
+  it('should handle loading error when candidate does not exist', () => {
+    const errorMessage = 'Candidate not found';
+    mockCandidateService.getByNumber.and.returnValue(throwError(errorMessage));
+
+    component.refreshCandidateProfile();
+
+    expect(component.loadingError).toBeTrue();
+    expect(component.error).toEqual(`Candidate not found`);
+    expect(component.loading).toBeFalse();
+  });
+
 });

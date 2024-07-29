@@ -8,31 +8,43 @@ import {of} from "rxjs";
 import {Reaction} from "../../../model/reaction";
 import {MOCK_REACTIONS} from "../../../MockData/MockReactions";
 import {By} from "@angular/platform-browser";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {AuthenticationService} from "../../../services/authentication.service";
+import {MockUser} from "../../../MockData/MockUser";
+import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 
 fdescribe('ViewPostComponent', () => {
   let component: ViewPostComponent;
   let fixture: ComponentFixture<ViewPostComponent>;
   let reactionServiceSpy: jasmine.SpyObj<ReactionService>;
+  let authenticationService: jasmine.SpyObj<AuthenticationService>;
 
   beforeEach(async () => {
     const spy = jasmine.createSpyObj('ReactionService', ['addReaction', 'modifyReaction']);
+    const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
 
     await TestBed.configureTestingModule({
       declarations: [ ViewPostComponent ],
-      providers: [
-        { provide: ReactionService, useValue: spy }
+      imports: [HttpClientTestingModule,NgbTooltipModule,
+        LocalStorageModule.forRoot({}),
       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
+      providers: [
+        { provide: ReactionService, useValue: spy },
+        { provide: AuthenticationService, useValue: authSpy }
+      ]
     })
     .compileComponents();
 
     reactionServiceSpy = TestBed.inject(ReactionService) as jasmine.SpyObj<ReactionService>;
+    authenticationService = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ViewPostComponent);
     component = fixture.componentInstance;
     component.post = new MockChatPost();
+    authenticationService.getLoggedInUser.and.returnValue((new MockUser()));
     fixture.detectChanges();
   });
 
