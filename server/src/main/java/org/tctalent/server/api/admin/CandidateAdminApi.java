@@ -346,11 +346,21 @@ public class CandidateAdminApi {
 
     @PostMapping("check-unread-chats")
     public @NotNull JobChatUserInfo checkUnreadChats(
-        @RequestBody SearchCandidateRequest request) {
+        @RequestBody SearchCandidateRequest request
+    ) {
         List<Long> chatIds = candidateService.findUnreadChatsInCandidates(request);
         JobChatUserInfo info = new JobChatUserInfo();
         info.setNumberUnreadChats(chatIds.size());
         return info;
+    }
+
+    @PostMapping("fetch-candidates-with-active-chat")
+    public Map<String, Object> fetchCandidatesWithActiveChats(
+        @RequestBody SearchCandidateRequest request
+    ) {
+        Page<Candidate> candidates = candidateService.fetchCandidatesWithActiveChat(request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.buildPage(candidates);
     }
 
 }

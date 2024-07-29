@@ -7,6 +7,7 @@ import {Partner} from "../../../model/partner";
 import {BehaviorSubject} from "rxjs";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {CandidateService} from "../../../services/candidate.service";
+import {SearchResults} from "../../../model/search-results";
 
 @Component({
   selector: 'app-source-candidate-chats',
@@ -22,7 +23,7 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
   selectedCandidate: Candidate;
   selectedCandidateChat: JobChat;
   chatHeader: string = "";
-  candidatesWithActiveChat: Candidate[];
+  candidatesWithActiveChats: SearchResults<Candidate>;
 
   constructor(
     private chatService: ChatService,
@@ -69,11 +70,11 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
     let candidateReq: SearchCandidateRequest = {
       partnerIds: [this.loggedInPartner.id],
     }
-    //
-    // this.candidateService.fetchCandidatesWithActiveChat(candidateReq).subscribe({
-    //   next: candidates => this.candidatesWithActiveChat = candidates,
-    //   error: error => this.error = error
-    // })
+
+    this.candidateService.fetchCandidatesWithActiveChat(candidateReq).subscribe({
+      next: candidates => this.candidatesWithActiveChats = candidates,
+      error: error => this.error = error
+    })
   }
 
 }

@@ -546,4 +546,10 @@ public interface CandidateService {
      */
     List<Long> findUnreadChatsInCandidates(SearchCandidateRequest request);
 
+    /**
+     * TODO
+     * @param request
+     * @return
+     */
+    Page<Candidate> fetchCandidatesWithActiveChat(SearchCandidateRequest request);
 }

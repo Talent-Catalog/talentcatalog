@@ -211,7 +211,10 @@ export class CandidateService implements IntakeService {
     return this.http.post<JobChatUserInfo>(`${this.apiUrl}/check-unread-chats`, request);
   }
 
-  fetchCandidatesWithActiveChat(request: SearchCandidateRequest): Observable<Candidate[]> {
-    return this.http.post<Candidate[]>(`${this.apiUrl}/fetch-candidates-with-active-chats`, request);
+  fetchCandidatesWithActiveChat(request: SearchCandidateRequest): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(
+      `${this.apiUrl}/fetch-candidates-with-active-chat`, request
+    );
   }
+
 }

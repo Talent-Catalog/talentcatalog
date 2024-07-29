@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {JobChat} from "../../../model/chat";
 import {Candidate} from "../../../model/candidate";
+import {SearchResults} from "../../../model/search-results";
 
 @Component({
   selector: 'app-view-source-candidates-with-chats',
@@ -9,11 +9,7 @@ import {Candidate} from "../../../model/candidate";
 })
 export class ViewSourceCandidatesWithChatsComponent implements OnInit {
 
-  // TODO: takes an array of source partner's JobChats of type CandidateProspect that have messages,
-  //  displays a list of candidates with whom the chats are associated and returns the candidate to
-  //  the parent component when clicked. See view-job-source-contacts for something similar.
-
-  @Input() sourceCandidateChats: JobChat[];
+  @Input() candidatesWithActiveChats: SearchResults<Candidate>;
   @Output() candidateSelection = new EventEmitter<Candidate>();
 
   constructor() { }
