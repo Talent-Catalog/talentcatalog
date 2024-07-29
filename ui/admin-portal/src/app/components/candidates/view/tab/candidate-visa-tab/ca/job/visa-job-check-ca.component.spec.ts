@@ -20,7 +20,6 @@ import {LocalStorageModule} from "angular-2-local-storage";
 import {VisaJobCheckCaComponent} from "./visa-job-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
-import {CandidateVisaJobService} from "../../../../../../../services/candidate-visa-job.service";
 import {
   CandidateOccupationService
 } from "../../../../../../../services/candidate-occupation.service";
@@ -83,13 +82,11 @@ fdescribe('VisaJobCheckCaComponent', () => {
   let fixture: ComponentFixture<VisaJobCheckCaComponent>;
   let candidateEducationServiceSpy: jasmine.SpyObj<CandidateEducationService>;
   let candidateOccupationServiceSpy: jasmine.SpyObj<CandidateOccupationService>;
-  let candidateVisaJobServiceSpy: jasmine.SpyObj<CandidateVisaJobService>;
   const mockCandidate = new MockCandidate();
 
   beforeEach(async () => {
     const educationSpy = jasmine.createSpyObj('CandidateEducationService', ['list']);
     const occupationSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
-    const visaJobSpy = jasmine.createSpyObj('CandidateVisaJobService', ['updateSfCaseRelocationInfo']);
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,NgbAccordionModule,ReactiveFormsModule,
         NgSelectModule,LocalStorageModule.forRoot({})],
@@ -101,15 +98,13 @@ fdescribe('VisaJobCheckCaComponent', () => {
         LanguageThresholdComponent ],
       providers: [
         { provide: CandidateEducationService, useValue: educationSpy },
-        { provide: CandidateOccupationService, useValue: occupationSpy },
-        { provide: CandidateVisaJobService, useValue: visaJobSpy }
+        { provide: CandidateOccupationService, useValue: occupationSpy }
       ],
     })
     .compileComponents();
 
     candidateEducationServiceSpy = TestBed.inject(CandidateEducationService) as jasmine.SpyObj<CandidateEducationService>;
     candidateOccupationServiceSpy = TestBed.inject(CandidateOccupationService) as jasmine.SpyObj<CandidateOccupationService>;
-    candidateVisaJobServiceSpy = TestBed.inject(CandidateVisaJobService) as jasmine.SpyObj<CandidateVisaJobService>;
   });
 
   beforeEach(() => {
@@ -170,16 +165,5 @@ fdescribe('VisaJobCheckCaComponent', () => {
     component.ngAfterViewInit();
 
     expect(component.visaJobCanada.expandAll).toHaveBeenCalled();
-  });
-
-
-  it('should handle error when updating case stats', () => {
-    candidateVisaJobServiceSpy.updateSfCaseRelocationInfo.and.returnValue(throwError('Error updating case stats'));
-
-    component.requestSfCaseRelocationInfoUpdate();
-
-    expect(candidateVisaJobServiceSpy.updateSfCaseRelocationInfo).toHaveBeenCalledWith(component.selectedJobCheck.id);
-    expect(component.error).toBe('Error updating case stats');
-    expect(component.loading).toBeFalse();
   });
 });

@@ -9,11 +9,12 @@ import {
 } from "../../../../../../../model/candidate";
 import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
-import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
+import {
+  CandidateOccupationService
+} from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateVisaJobService} from "../../../../../../../services/candidate-visa-job.service";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
@@ -41,8 +42,7 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   loading: boolean;
 
   constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService,
-              private candidateVisaJobService: CandidateVisaJobService) {}
+              private candidateOccupationService: CandidateOccupationService) {}
 
   ngOnInit(): void {
     // Get the candidate occupations
