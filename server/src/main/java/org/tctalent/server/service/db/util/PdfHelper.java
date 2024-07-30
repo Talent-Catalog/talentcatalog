@@ -53,6 +53,8 @@ public class PdfHelper {
     private String serverUrl;
 
     private static final String UTF_8 = "UTF-8";
+    private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
+
     private final TemplateEngine pdfTemplateEngine;
 
     @Autowired
@@ -74,7 +76,7 @@ public class PdfHelper {
             String xHtml = convertToXhtml(renderedHtmlContent);
 
             // Remove any null bytes to avoid an invalid XML character (Unicode: 0x0) error
-            xHtml = Pattern.compile("\\x00").matcher(xHtml).replaceAll("");
+            xHtml = NULL_BYTE_PATTERN.matcher(xHtml).replaceAll("");
 
             ITextRenderer renderer = new ITextRenderer();
 
