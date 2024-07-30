@@ -100,7 +100,7 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private Integer minEducationLevel;
     private String educationMajorIds;
-    
+
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
 
@@ -138,6 +138,10 @@ public class SavedSearch extends AbstractCandidateSource {
      */
     private Boolean reviewable = false;
 
+    //TODO JC There is only ever one "SearchJoin" per search - this is legacy code where each search
+    //could be based on a boolean expression of base searches. Too complex and was dropped ages ago.
+    //Should be replace with a single base search - and no further need for the SearchJoin class or
+    // entity
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
 

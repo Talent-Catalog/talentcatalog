@@ -18,12 +18,16 @@ package org.tctalent.server.util.locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
 import java.time.format.TextStyle;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -179,5 +183,25 @@ class LocaleHelperTest {
         name = LocaleHelper.getOwnLanguageDisplayName("fr");
         assertNotNull(name);
         assertEquals("français", name.toLowerCase());
+    }
+
+    @Test
+    void getOffsetDateTimeTestFallbackToUTCOnBadTimezone() {
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
+
+        final OffsetDateTime timeWithBadTimeZone = LocaleHelper.getOffsetDateTime(date, time,
+            "fred");
+
+        final OffsetDateTime timeWithUTCTimeZone = LocaleHelper.getOffsetDateTime(date, time,
+            "UTC");
+
+        assertEquals(timeWithUTCTimeZone, timeWithBadTimeZone);
+
+        final OffsetDateTime timeWithOtherValidTimeZone = LocaleHelper.getOffsetDateTime(date, time,
+            "Australia/Sydney");
+
+        assertNotEquals(timeWithUTCTimeZone, timeWithOtherValidTimeZone);
+
     }
 }
