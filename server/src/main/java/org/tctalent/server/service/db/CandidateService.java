@@ -23,7 +23,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -129,6 +131,16 @@ public interface CandidateService {
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
+
+    /**
+     * Returns a set of the ids of all candidates resulting from the given SQL query.
+     *
+     * @param sql SQL query
+     * @throws PersistenceException if the SQL is invalid
+     * @return Candidate ids (NOT candidateNumbers) of candidates matching query
+     */
+    @NotNull
+    Set<Long> searchCandidatesUsingSql(String sql) throws PersistenceException;
 
     Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request);
 
