@@ -28,6 +28,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.PdfGenerationException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.util.html.StringSanitizer;
 import org.thymeleaf.TemplateEngine;
@@ -86,7 +87,12 @@ public class PdfHelper {
             outputStream.close();
             return new ByteArrayResource(outputStream.toByteArray());
 
-        } catch (Exception e){
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("generatePdf")
+                .message("Error generating PDF")
+                .logError(e);
+
            throw new PdfGenerationException(e.getMessage());
         }
 
