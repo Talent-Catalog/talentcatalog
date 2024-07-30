@@ -21,6 +21,7 @@ import {HttpClient} from '@angular/common/http';
 import {StatReport} from "../model/stat-report";
 
 export interface CandidateStatsRequest {
+  runOldStats?: boolean;
   listId?: number;
   searchId?: number;
   dateFrom?: string;
