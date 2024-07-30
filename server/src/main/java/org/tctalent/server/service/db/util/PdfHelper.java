@@ -18,7 +18,6 @@ package org.tctalent.server.service.db.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -102,16 +101,34 @@ public class PdfHelper {
         );
     }
 
-    private static String convertToXhtml(String html) throws UnsupportedEncodingException {
+    private static String convertToXhtml(String html) {
         Tidy tidy = new Tidy();
         tidy.setInputEncoding(UTF_8);
         tidy.setOutputEncoding(UTF_8);
         tidy.setXHTML(true);
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(
-            StandardCharsets.UTF_8));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        tidy.parseDOM(inputStream, outputStream);
-        return outputStream.toString(StandardCharsets.UTF_8);
+
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8));
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+            tidy.parseDOM(inputStream, outputStream);
+
+            String xhtml = outputStream.toString(StandardCharsets.UTF_8);
+
+            LogBuilder.builder(log)
+                .action("convertToXhtml")
+                .message("Converted HTML to XHTML")
+                .logInfo();
+
+            return xhtml;
+
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("convertToXhtml")
+                .message("Error converting HTML to XHTML")
+                .logError(e);
+
+            throw new RuntimeException("Error converting HTML to XHTML", e);
+        }
     }
 
     private Resource createPdf(String xHtml) throws Exception {
