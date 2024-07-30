@@ -60,6 +60,14 @@ public class PdfHelper {
 
     private final TemplateEngine pdfTemplateEngine;
 
+    /**
+     * Generates a PDF for a candidate.
+     *
+     * @param candidate the candidate data
+     * @param showName whether to show the candidate's name
+     * @param showContact whether to show the candidate's contact information
+     * @return the generated PDF as a Resource
+     */
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
 
@@ -76,16 +84,8 @@ public class PdfHelper {
             // Remove any null bytes to avoid an invalid XML character (Unicode: 0x0) error
             xHtml = NULL_BYTE_PATTERN.matcher(xHtml).replaceAll("");
 
-            ITextRenderer renderer = new ITextRenderer();
-
-            renderer.setDocumentFromString(xHtml, "classpath:pdf/");
-            renderer.layout();
-
             // And finally, we create the PDF:
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            renderer.createPDF(outputStream);
-            outputStream.close();
-            return new ByteArrayResource(outputStream.toByteArray());
+            return createPdf(xHtml);
 
         } catch (Exception e) {
             LogBuilder.builder(log)
@@ -115,6 +115,17 @@ public class PdfHelper {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         tidy.parseDOM(inputStream, outputStream);
         return outputStream.toString(UTF_8);
+    }
+
+    private Resource createPdf(String xHtml) throws Exception {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(xHtml, "classpath:pdf/");
+        renderer.layout();
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            renderer.createPDF(outputStream);
+            return new ByteArrayResource(outputStream.toByteArray());
+        }
     }
 
 }
