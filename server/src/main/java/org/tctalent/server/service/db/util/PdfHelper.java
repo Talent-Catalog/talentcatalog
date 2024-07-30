@@ -28,6 +28,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.PdfGenerationException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.util.html.StringSanitizer;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.w3c.tidy.Tidy;
@@ -62,6 +63,8 @@ public class PdfHelper {
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
 
+            cleanCandidateJobDescriptions(candidate);
+
             Context context = new Context();
             context.setVariable("candidate", candidate);
             context.setVariable("showName", showName);
@@ -88,6 +91,14 @@ public class PdfHelper {
            throw new PdfGenerationException(e.getMessage());
         }
 
+    }
+
+    private static void cleanCandidateJobDescriptions(Candidate candidate) {
+        candidate.getCandidateJobExperiences().forEach(jobExperience ->
+            jobExperience.setDescription(
+                StringSanitizer.replaceLsepWithBr(jobExperience.getDescription())
+            )
+        );
     }
 
     private static String convertToXhtml(String html) throws UnsupportedEncodingException {
