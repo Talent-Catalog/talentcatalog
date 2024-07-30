@@ -17,6 +17,7 @@
 package org.tctalent.server.util.locale;
 
 import java.awt.ComponentOrientation;
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -130,7 +131,11 @@ public class LocaleHelper {
         LocalDate localDate, LocalTime localTime, @Nullable String timezone) {
         ZoneOffset offset = ZoneOffset.UTC;
         if (!ObjectUtils.isEmpty(timezone)) {
-            offset = ZoneId.of(timezone).getRules().getOffset(Instant.now());
+            try {
+                offset = ZoneId.of(timezone).getRules().getOffset(Instant.now());
+            } catch (DateTimeException e) {
+                System.err.println("Invalid timezone provided: " + timezone + ". Falling back to UTC.");
+            }
         }
         return OffsetDateTime.of(localDate, localTime, offset);
     }
