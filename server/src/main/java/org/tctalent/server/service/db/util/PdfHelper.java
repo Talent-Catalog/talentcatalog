@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +48,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PdfHelper {
 
     @Value("${server.url}")
@@ -56,11 +58,6 @@ public class PdfHelper {
     private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
 
     private final TemplateEngine pdfTemplateEngine;
-
-    @Autowired
-    public PdfHelper(TemplateEngine pdfTemplateEngine) {
-        this.pdfTemplateEngine = pdfTemplateEngine;
-    }
 
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
