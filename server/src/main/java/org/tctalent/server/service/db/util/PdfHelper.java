@@ -19,11 +19,10 @@ package org.tctalent.server.service.db.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -51,9 +50,6 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 @Slf4j
 @RequiredArgsConstructor
 public class PdfHelper {
-
-    @Value("${server.url}")
-    private String serverUrl;
 
     private static final String UTF_8 = "UTF-8";
     private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
@@ -111,10 +107,11 @@ public class PdfHelper {
         tidy.setInputEncoding(UTF_8);
         tidy.setOutputEncoding(UTF_8);
         tidy.setXHTML(true);
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(UTF_8));
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(
+            StandardCharsets.UTF_8));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         tidy.parseDOM(inputStream, outputStream);
-        return outputStream.toString(UTF_8);
+        return outputStream.toString(StandardCharsets.UTF_8);
     }
 
     private Resource createPdf(String xHtml) throws Exception {
