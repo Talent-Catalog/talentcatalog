@@ -14,23 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.chat;
+package org.tctalent.server.util;
 
-import javax.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.request.PagedSearchRequest;
-
-@Getter
-@Setter
-public class FetchCandidatesWithActiveChatRequest extends PagedSearchRequest {
+public class StringHelper {
 
   /**
-   * Used to match candidates whose first or last names are like this keyword —
-   * empty string received if no value entered in search form.
-   * TODO implement for candidate no. too?
+   *   Function to check if a string contains only digits
    */
-  @NotNull
-  private String keyword;
+  public static boolean
+  onlyDigits(String str, int n)
+  {
+    // Traverse the string from start to end
+    for (int i = 0; i < n; i++) {
 
+      // Check if character is not a digit between 0-9, return false if so
+      if (str.charAt(i) < '0'
+          || str.charAt(i) > '9') {
+        return false;
+      }
+    }
+    // If we reach here, that means all characters were digits.
+    return true;
+  }
 }

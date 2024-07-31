@@ -13,7 +13,6 @@ import {SearchJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {SearchOppsBy} from "../../../model/base";
-import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 
 @Component({
   selector: 'app-job-home',
@@ -96,13 +95,7 @@ export class JobHomeComponent extends HomeComponent {
       }
     )
 
-    let candidateReq: SearchCandidateRequest = {
-      // TODO Does there need to be additional logic for default partner TBB here? This will only return
-      //  candidates managed by admin's partner
-      partnerIds: [this.loggedInPartner.id]
-    }
-
-    this.candidateService.checkUnreadChats(candidateReq).subscribe({
+    this.candidateService.checkUnreadChats().subscribe({
       next: info => this.processChatsReadStatus(this.sourceCandidateChatsRead$, info),
       error: error => this.error = error
     })

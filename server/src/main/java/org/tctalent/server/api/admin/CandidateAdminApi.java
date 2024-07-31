@@ -346,10 +346,8 @@ public class CandidateAdminApi {
     }
 
     @PostMapping("check-unread-chats")
-    public @NotNull JobChatUserInfo checkUnreadChats(
-        @RequestBody SearchCandidateRequest request
-    ) {
-        List<Long> chatIds = candidateService.findUnreadChatsInCandidates(request);
+    public @NotNull JobChatUserInfo checkUnreadChats() {
+        List<Long> chatIds = candidateService.findUnreadChatsInCandidates();
         JobChatUserInfo info = new JobChatUserInfo();
         info.setNumberUnreadChats(chatIds.size());
         return info;

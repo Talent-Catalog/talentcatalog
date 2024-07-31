@@ -1,6 +1,7 @@
 <div class="row">
   <div class="col-sm-{{mainPanelColWidth}}">
     <app-view-source-candidates-with-chats
+      [chatsRead$]="chatsRead$"
       (candidateSelection)="onCandidateSelected($event)"
     ></app-view-source-candidates-with-chats>
   </div>

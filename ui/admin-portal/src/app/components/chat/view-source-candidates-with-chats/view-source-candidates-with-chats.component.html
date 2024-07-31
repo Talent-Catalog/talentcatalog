@@ -4,19 +4,19 @@
 
 <ngb-pagination [boundaryLinks]="true"
                 [pageSize]="25"
-                [collectionSize]="candidatesWithActiveChats?.totalElements"
+                [collectionSize]="results?.totalElements"
                 [(page)]="pageNumber"
                 [maxSize]="5"
                 [ellipses]="true"
                 [rotate]="true"
-                (pageChange)="fetchCandidatesWithActiveChat()">
+                (pageChange)="fetchCandidatesWithActiveChat(true)">
 </ngb-pagination>
 
 <div class="searches">
-  <form [formGroup]="searchForm" (ngSubmit)="fetchCandidatesWithActiveChat()">
+  <form [formGroup]="searchForm" (ngSubmit)="fetchCandidatesWithActiveChat(true)">
     <div class="row mb-3">
       <div class="col-10">
-        <input #searchFilter type="text" class="form-control" placeholder="Search..."
+        <input #searchFilter type="text" class="form-control" placeholder="Name or number..."
                aria-label="Search" formControlName="keyword"
                id="keyword">
       </div>
@@ -57,18 +57,15 @@
         ></app-sorted-by>
         Last Name
       </th>
+      <th></th>
     </tr>
     </thead>
 
     <tbody>
-    <tr *ngFor="let candidate of candidatesWithActiveChats?.content"
+    <!--TODO: pointer when hovering over, selected effects-->
+    <tr *ngFor="let candidate of candidates"
         (click)="onCandidateSelected(candidate)"
-        [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
-<!--      <td>-->
-        <!--TODO-->
-<!--        <app-chat-read-status [chats]="[candidate._jobChat]">-->
-<!--        </app-chat-read-status>-->
-<!--      </td>-->
+        [ngClass]="{'current': currentCandidate?.id == candidate.id}">
       <td>
         <div ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
           <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
@@ -128,6 +125,10 @@
       </td>
       <td>
         {{candidate.user.lastName}}
+      </td>
+      <td>
+        <app-chat-read-status [chats]="[getCandidateChat(candidate)]">
+        </app-chat-read-status>
       </td>
     </tr>
 

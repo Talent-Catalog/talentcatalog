@@ -14,7 +14,16 @@ import {BehaviorSubject} from "rxjs";
 export class SourceCandidateChatsComponent extends MainSidePanelBase implements OnInit {
 
   @Input() loggedInPartner: Partner;
-  @Input() chatsRead$!: BehaviorSubject<boolean>;
+
+  /**
+   * This is passed in from a higher level component which tracks whether the overall read status
+   * of all the chats that it manages.
+   * <p/>
+   * This component can call next on this subject if it knows that some of the chats it manages
+   * are unread. The fact that it is a BehaviorSubject means that you can query the current status
+   * of the higher level component.
+   */
+  @Input() chatsRead$: BehaviorSubject<boolean>;
 
   error: any;
   loading: boolean;
@@ -29,6 +38,7 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
   public onCandidateSelected(candidate: Candidate) {
     this.selectedCandidate = candidate;
     this.displayChat();
+    // TODO: scroll to post editor
   }
 
   private displayChat() {

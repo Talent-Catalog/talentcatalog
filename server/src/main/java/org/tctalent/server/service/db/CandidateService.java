@@ -56,7 +56,6 @@ import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
-import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -542,10 +541,10 @@ public interface CandidateService {
     /**
      * Returns the ids of chats not fully read by the currently logged in user, which are
      * associated with candidates returned from the given search request.
-     * @param request - Search Request
+     * TODO doc
      * @return Ids of unread chats
      */
-    List<Long> findUnreadChatsInCandidates(SearchCandidateRequest request);
+    List<Long> findUnreadChatsInCandidates();
 
     /**
      * TODO

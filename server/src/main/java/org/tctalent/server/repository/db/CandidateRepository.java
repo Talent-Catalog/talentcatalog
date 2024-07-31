@@ -733,6 +733,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                 where u.partner.id = :partnerId
                 and lower(u.firstName) like :keyword
                 or lower(u.lastName) like :keyword
+                or (c.candidateNumber) like :keyword
             )
             and c.id in (
                 select c2.id

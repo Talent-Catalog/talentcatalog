@@ -144,7 +144,6 @@ import org.tctalent.server.request.candidate.CreateCandidateRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
-import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -181,6 +180,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
+import org.tctalent.server.util.StringHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
@@ -2956,7 +2956,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<Long> findUnreadChatsInCandidates(SearchCandidateRequest request) {
+    public List<Long> findUnreadChatsInCandidates() {
         User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
             throw new InvalidSessionException("Not logged in");
@@ -2980,10 +2980,14 @@ public class CandidateServiceImpl implements CandidateService {
             throw new InvalidSessionException("Not logged in");
         }
 
+        // TODO doc
+        String keyword = request.getKeyword();
+        if (keyword.isEmpty() || !StringHelper.onlyDigits(keyword, keyword.length())) {
+            keyword = StringUtils.lowerCase("%" + request.getKeyword() + "%");
+        }
+
         return candidateRepository.fetchCandidatesWithActiveChats(
-            loggedInUser.getPartner().getId(),
-            StringUtils.lowerCase("%" + request.getKeyword() + "%"),
-            request.getPageRequest()
+            loggedInUser.getPartner().getId(), keyword, request.getPageRequest()
         );
     }
 
