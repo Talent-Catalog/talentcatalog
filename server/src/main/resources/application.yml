@@ -225,14 +225,14 @@ email:
   type: ${EMAIL_TYPE:STUB}
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  user: ${EMAIL_USER:tc@talentcatalog.net}
+  user: ${EMAIL_USER:noreply@talentcatalog.net}
 
   # For dev this could be set in tc-secrets - but only needed if email.type is not STUB, which it
   # normally will be in dev.
   password: ${EMAIL_PASSWORD:}
   authenticated: true
   alertEmail: alert@talentcatalog.net
-  defaultEmail: ${EMAIL_DEFAULTEMAIL:tc@talentcatalog.net}
+  defaultEmail: ${EMAIL_DEFAULTEMAIL:noreply@talentcatalog.net}
   testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:}
 
 

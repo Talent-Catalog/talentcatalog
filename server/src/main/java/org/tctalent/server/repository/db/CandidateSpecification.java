@@ -16,13 +16,11 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
+
 import io.jsonwebtoken.lang.Collections;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -306,11 +304,15 @@ public class CandidateSpecification {
 
             //Modified From
             if (request.getLastModifiedFrom() != null) {
-                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedFrom(), LocalTime.MIN, request.getTimezone())));
+                conjunction.getExpressions().add(
+                    builder.greaterThanOrEqualTo(candidate.get("updatedDate"),getOffsetDateTime(
+                            request.getLastModifiedFrom(), LocalTime.MIN, request.getTimezone())));
             }
 
             if (request.getLastModifiedTo() != null) {
-                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone())));
+                conjunction.getExpressions().add(
+                    builder.lessThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(
+                        request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone())));
             }
 
             //Min / Max Age
@@ -340,12 +342,12 @@ public class CandidateSpecification {
                         builder.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
                 );
             }
-            
+
             // MINI INTAKE COMPLETE
             if (request.getMiniIntakeCompleted() != null) {
                 if(request.getMiniIntakeCompleted()) {
                     conjunction.getExpressions().add(
-                        builder.isNotNull(candidate.get("miniIntakeCompletedDate"))); 
+                        builder.isNotNull(candidate.get("miniIntakeCompletedDate")));
                 } else {
                     conjunction.getExpressions().add(
                         builder.isNull(candidate.get("miniIntakeCompletedDate")));
@@ -475,10 +477,6 @@ public class CandidateSpecification {
 
             return conjunction;
         };
-    }
-
-    private static OffsetDateTime getOffsetDateTime(LocalDate localDate, LocalTime time, String timezone) {
-        return OffsetDateTime.of(localDate, time, !StringUtils.isBlank(timezone) ? ZoneId.of(timezone).getRules().getOffset(Instant.now()) : ZoneOffset.UTC);
     }
 
 }
