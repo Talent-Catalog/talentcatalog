@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.chat;
 
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -23,5 +24,11 @@ import org.tctalent.server.request.PagedSearchRequest;
 @Getter
 @Setter
 public class FetchCandidatesWithActiveChatRequest extends PagedSearchRequest {
+
+  /**
+   * If specified, match candidates whose first or last names are like this keyword
+   */
+  @Nullable
+  private String keyword;
 
 }

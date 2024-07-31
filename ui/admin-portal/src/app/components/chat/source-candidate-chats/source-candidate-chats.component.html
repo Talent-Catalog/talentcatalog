@@ -7,8 +7,12 @@
 
   <div class="col-sm-{{sidePanelColWidth}}">
     <div *ngIf="canToggleSizes()" class="float-end">
-      <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-        class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i></button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()">
+        <i class="fas fa-arrow-{{sidePanelIsMax ? 'right' : 'left'}}"></i>
+      </button>
+    </div>
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
     </div>
     <div class="detail-panel side-panel-color h-100 d-flex flex-column"
          [ngClass]="selectedCandidate != null ?

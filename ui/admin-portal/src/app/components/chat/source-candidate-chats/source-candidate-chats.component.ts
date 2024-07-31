@@ -16,7 +16,7 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
   @Input() loggedInPartner: Partner;
   @Input() chatsRead$!: BehaviorSubject<boolean>;
 
-  error: string;
+  error: any;
   loading: boolean;
   selectedCandidate: Candidate;
   selectedCandidateChat: JobChat;
@@ -47,8 +47,8 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
 
   private computeChatHeader() {
     this.chatHeader =
-      "Chat with " + this.selectedCandidate.user.firstName + " "
-        this.selectedCandidate.user.lastName + " (" + this.selectedCandidate.candidateNumber + ")";
+      "Chat with " + this.selectedCandidate.user.firstName + " " +
+      this.selectedCandidate.user.lastName;
   }
 
 }

@@ -2981,7 +2981,10 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         return candidateRepository.fetchCandidatesWithActiveChats(
-            loggedInUser.getPartner().getId(), request.getPageRequest());
+            loggedInUser.getPartner().getId(),
+            StringUtils.lowerCase("%" + request.getKeyword() + "%"),
+            request.getPageRequest()
+        );
     }
 
 }

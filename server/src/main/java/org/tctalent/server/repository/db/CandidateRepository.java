@@ -731,6 +731,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                 select c1.id from Candidate c1
                 join c1.user u
                 where u.partner.id = :partnerId
+                and lower(u.firstName) like :keyword
+                or lower(u.lastName) like :keyword
             )
             and c.id in (
                 select c2.id
@@ -740,13 +742,14 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                 and jc.id in (
                     select jc2.id
                     from JobChat jc2
-                    join ChatPost cp on jc2.id = cp.jobChat.id 
+                    join ChatPost cp on jc2.id = cp.jobChat.id
                 )
             )
             """
     )
     Page<Candidate> fetchCandidatesWithActiveChats(
         @Param("partnerId") long partnerId,
+        @Param("keyword") String keyword,
         Pageable pageable
     );
 }

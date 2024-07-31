@@ -1,10 +1,19 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {FetchCandidatesWithActiveChatRequest, Status} from "../../../model/base";
 import {Task} from "../../../model/task";
 import {CandidateService} from "../../../services/candidate.service";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 
 @Component({
   selector: 'app-view-source-candidates-with-chats',
@@ -15,6 +24,9 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
 
   @Output() candidateSelection = new EventEmitter<Candidate>();
 
+  @ViewChild("searchFilter")
+  searchFilter: ElementRef;
+
   error: any;
   loading: boolean;
   currentCandidate: Candidate;
@@ -23,24 +35,49 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   candidatesWithActiveChats: SearchResults<Candidate>;
   sortField = 'id';
   sortDirection = 'DESC';
+  searchForm: FormGroup;
 
   constructor(
     private candidateService: CandidateService,
     private authService: AuthorizationService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.fetchCandidatesWithActiveChat()
+
+    this.searchForm = this.fb.group({
+      keyword: ['']
+    });
+
+    this.subscribeToFilterChanges();
+  }
+
+  private get keyword(): string {
+    return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  private subscribeToFilterChanges() {
+    this.searchForm.valueChanges
+    .pipe(
+      debounceTime(1000),
+      distinctUntilChanged()
+    )
+    .subscribe(() => {
+      this.fetchCandidatesWithActiveChat();
+    });
   }
 
   public fetchCandidatesWithActiveChat() {
+    this.error = null;
     this.loading = true;
-    // See SearchTasksComponent.search for how to manage pagination
+
     const request: FetchCandidatesWithActiveChatRequest = {
       pageNumber: this.pageNumber - 1,
       pageSize: 25,
       sortFields: [this.sortField],
-      sortDirection: this.sortDirection
+      sortDirection: this.sortDirection,
+      keyword: this.keyword
     }
 
     this.candidateService.fetchCandidatesWithActiveChat(request).subscribe(candidates => {
@@ -56,6 +93,10 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   public onCandidateSelected(candidate: Candidate) {
     this.currentCandidate = candidate;
     this.candidateSelection.emit(candidate);
+  }
+
+  public refresh(): void {
+    this.fetchCandidatesWithActiveChat();
   }
 
   public toggleSort(column) {
@@ -100,6 +141,7 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
     }
   }
 
+  // TODO currently not working - also in show-candidates component
   public downloadCv(candidate) {
     const tab = window.open();
     this.candidateService.downloadCv(candidate.id).subscribe(
@@ -112,7 +154,5 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
       }
     )
   }
-
-  // TODO add CV error code from show-candidates.component
 
 }
