@@ -31,12 +31,12 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
-  <div *ngIf="availImmediate === 'Yes'|| availImmediate == 'Unsure'">
+  <div *ngIf="availImmediateJobOps">
     <div class="mb-3">
       <label class="form-label" for="availImmediateJobOps">What type of opportunities are you qualified for?</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="availImmediateJobOps" [formControlName]="'availImmediateJobOps'"
-                placeholder="" ></textarea>
+                placeholder="" readonly></textarea>
     </div>
   </div>
 
@@ -52,6 +52,13 @@
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="availImmediateNotes" [formControlName]="'availImmediateNotes'"
                 placeholder="" ></textarea>
+    </div>
+    <div>
+      <label class="form-label" for="availImmediateNotes">When will you be available?</label>
+      <div>
+        TODO Avail DATE???
+      </div>
+
     </div>
   </div>
 </form>

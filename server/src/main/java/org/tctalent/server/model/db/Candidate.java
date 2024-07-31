@@ -387,7 +387,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnsure availImmediate;
+    private YesNo availImmediate;
 
     @Nullable
     private String availImmediateJobOps;
@@ -1448,9 +1448,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public YesNoUnsure getAvailImmediate() { return availImmediate; }
+    public YesNo getAvailImmediate() { return availImmediate; }
 
-    public void setAvailImmediate(@Nullable YesNoUnsure availImmediate) { this.availImmediate = availImmediate; }
+    public void setAvailImmediate(@Nullable YesNo availImmediate) { this.availImmediate = availImmediate; }
 
     @Nullable
     public String getAvailImmediateJobOps() { return availImmediateJobOps; }
