@@ -16,15 +16,12 @@
 
 package org.tctalent.server.request.chat;
 
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.request.PagedSearchRequest;
 
 @Getter
 @Setter
-public class FetchCandidatesWithActiveChatRequest {
-
-  @NotNull
-  private int pageNumber;
+public class FetchCandidatesWithActiveChatRequest extends PagedSearchRequest {
 
 }

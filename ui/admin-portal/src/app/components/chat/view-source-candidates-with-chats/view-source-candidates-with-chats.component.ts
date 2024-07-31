@@ -1,6 +1,10 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
+import {AuthorizationService} from "../../../services/authorization.service";
+import {FetchCandidatesWithActiveChatRequest, Status} from "../../../model/base";
+import {Task} from "../../../model/task";
+import {CandidateService} from "../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-source-candidates-with-chats',
@@ -9,21 +13,98 @@ import {SearchResults} from "../../../model/search-results";
 })
 export class ViewSourceCandidatesWithChatsComponent implements OnInit {
 
-  @Input() candidatesWithActiveChats: SearchResults<Candidate>;
   @Output() candidateSelection = new EventEmitter<Candidate>();
+  @Output() toggleSort = new EventEmitter<Candidate>();
 
-  constructor() { }
+  error: any;
+  loading: boolean;
+  currentCandidate: Candidate;
+  pageNumber: number = 1;
+  pageSize: number = 25;
+  monitoredTask: Task;
+  candidatesWithActiveChats: SearchResults<Candidate>;
+
+  constructor(
+    private candidateService: CandidateService,
+    private authService: AuthorizationService,
+  ) {}
 
   ngOnInit(): void {
-    this.populateCandidateList()
+    this.fetchCandidatesWithActiveChat()
   }
 
-  public onCandidateSelected() {
-    this.candidateSelection.emit();
+  public fetchCandidatesWithActiveChat() {
+    this.loading = true;
+    // See SearchTasksComponent.search for how to manage pagination
+    const request: FetchCandidatesWithActiveChatRequest = {
+      pageNumber: this.pageNumber - 1,
+      // TODO is this needed? 👇
+      pageSize: this.pageSize,
+      // TODO make the below alterable by user
+      sortFields: ['id'],
+      sortDirection: 'ASC',
+    }
+
+    this.candidateService.fetchCandidatesWithActiveChat(request).subscribe(candidates => {
+      this.candidatesWithActiveChats = candidates;
+      this.loading = false;
+    },
+      error => {
+      this.error = error;
+      this.loading = false;
+      });
   }
 
-  private populateCandidateList() {
-    // takes sourceCandidateChats and converts to candidates to be displayed in the view
+  public onCandidateSelected(candidate: Candidate) {
+    this.currentCandidate = candidate;
+    this.candidateSelection.emit(candidate);
   }
+
+  public canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
+  }
+
+  public hasTaskAssignments(candidate: Candidate): boolean {
+    const active = candidate.taskAssignments?.filter(ta => ta.status === Status.active);
+    return active?.length > 0;
+  }
+
+  public getTotalMonitoredTasks(candidate: Candidate) {
+    if (this.monitoredTask != null) {
+      return candidate.taskAssignments.filter(ta => ta.task.id === this.monitoredTask.id && ta.status === Status.active);
+    } else {
+      // DEFAULT tasks to monitor are required tasks
+      // Only run through active tasks.
+      let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
+      return activeTaskAssignments.filter(ta => !ta.task.optional);
+    }
+  }
+
+  public getCompletedMonitoredTasks(candidate: Candidate) {
+    if (this.monitoredTask != null) {
+      let monitoredTask = candidate.taskAssignments.filter(ta => ta.task.id === this.monitoredTask.id && ta.status === Status.active);
+      return monitoredTask.filter(ta => (ta.completedDate != null || ta.abandonedDate != null));
+    } else {
+      // DEFAULT tasks to monitor are required tasks
+      // Only run through active tasks.
+      let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
+      return activeTaskAssignments.filter(ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
+    }
+  }
+
+  public downloadCv(candidate) {
+    const tab = window.open();
+    this.candidateService.downloadCv(candidate.id).subscribe(
+      result => {
+        const fileUrl = URL.createObjectURL(result);
+        tab.location.href = fileUrl;
+      },
+      error => {
+        this.error = error;
+      }
+    )
+  }
+
+  // TODO add CV error code from show-candidates.component
 
 }

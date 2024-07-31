@@ -2980,10 +2980,8 @@ public class CandidateServiceImpl implements CandidateService {
             throw new InvalidSessionException("Not logged in");
         }
 
-        Pageable pageable = PageRequest.of(request.getPageNumber(), 25);
-
         return candidateRepository.fetchCandidatesWithActiveChats(
-            loggedInUser.getPartner().getId(), pageable);
+            loggedInUser.getPartner().getId(), request.getPageRequest());
     }
 
 }

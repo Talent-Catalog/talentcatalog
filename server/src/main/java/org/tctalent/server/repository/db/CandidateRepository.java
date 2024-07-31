@@ -701,8 +701,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         (select job_chat.id from candidate
             join job_chat on candidate.id = job_chat.candidate_id
                 and type = 'CandidateProspect'
-            where candidate.id in 
-                  (select candidate.id from candidate 
+            where candidate.id in
+                  (select candidate.id from candidate
                     join users on candidate.user_id = users.id
                         where users.partner_id = :partnerId)
         ) as chats
@@ -722,26 +722,31 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         @Param("userId") long userId
     );
 
-    @Query(value = """
-        select c
-        from Candidate c
-        where c.id in (
-            select c1.id from Candidate c1
-            join c1.user u
-            where u.partner.id = :partnerId
-        )
-        and c.id in (
-            select c2.id 
-            from Candidate c2 
-            join JobChat jc on c2.id = jc.candidate.id
-            where jc.type = 'CandidateProspect'
-            and jc.id in (
-                select jc2.id
-                from JobChat jc2
-                join ChatPost cp on jc2.id = cp.jobChat.id 
+    @Query(
+        value =
+            """
+            select c
+            from Candidate c
+            where c.id in (
+                select c1.id from Candidate c1
+                join c1.user u
+                where u.partner.id = :partnerId
             )
-        )
-        """)
-    Page<Candidate> fetchCandidatesWithActiveChats(@Param("partnerId") long partnerId,
-        Pageable pageable);
+            and c.id in (
+                select c2.id
+                from Candidate c2
+                join JobChat jc on c2.id = jc.candidate.id
+                where jc.type = 'CandidateProspect'
+                and jc.id in (
+                    select jc2.id
+                    from JobChat jc2
+                    join ChatPost cp on jc2.id = cp.jobChat.id 
+                )
+            )
+            """
+    )
+    Page<Candidate> fetchCandidatesWithActiveChats(
+        @Param("partnerId") long partnerId,
+        Pageable pageable
+    );
 }

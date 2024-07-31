@@ -1,2 +1,100 @@
-<!-- TODO: implement app-chat-read-status (if not too pricey) -->
-<!-- List candidates much like view-job-source-contacts.component.html -->
+<ngb-pagination [boundaryLinks]="true"
+                [pageSize]="25"
+                [collectionSize]="candidatesWithActiveChats?.totalElements"
+                [(page)]="pageNumber"
+                [maxSize]="5"
+                [ellipses]="true"
+                [rotate]="true"
+                (pageChange)="fetchCandidatesWithActiveChat()">
+</ngb-pagination>
+
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+<div class="table-responsive">
+  <table class="table table-hover">
+
+    <thead class="table-primary">
+    <tr>
+      <th></th>
+      <th>Candidate #</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let candidate of candidatesWithActiveChats?.content"
+        (click)="onCandidateSelected(candidate)"
+        [ngClass]="{'current': currentCandidate?.id == candidate.id, 'selected': candidate.selected}">
+<!--      <td>-->
+        <!--TODO-->
+<!--        <app-chat-read-status [chats]="[candidate._jobChat]">-->
+<!--        </app-chat-read-status>-->
+<!--      </td>-->
+      <td>
+        <div ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
+          <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
+          <ul ngbDropdownMenu>
+            <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
+            <li class="dropdown-divider"></li>
+            <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
+              in new tab</a></li>
+            <li class="dropdown-divider"></li>
+          </ul>
+        </div>
+      </td>
+      <td>
+        <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
+          {{candidate.candidateNumber}}
+        </a>
+        <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+          <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+        </a>
+        <a [routerLink]="['/candidate',candidate.candidateNumber]">
+          <i class="fas fa-user" title="Candidate"></i>
+        </a>
+        <a target="_blank" [href]="candidate.user.partner.websiteUrl">
+          <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
+        </a>
+        <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
+          <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
+        </a>
+        <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
+          <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
+        </a>
+        <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
+          <i class="fas fa-video" title="Show candidate's one way video"></i>
+        </a>
+        <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+          <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
+        </a>
+        <app-cv-icon
+          [candidate]="candidate">
+        </app-cv-icon>
+        <app-tasks-monitor
+          *ngIf="hasTaskAssignments(candidate)"
+          [candidate]="candidate"
+          [completedTasks]="getCompletedMonitoredTasks(candidate)"
+          [totalTasks]="getTotalMonitoredTasks(candidate)">
+        </app-tasks-monitor>
+      </td>
+      <td>
+        {{candidate.user.firstName}}
+      </td>
+      <td>
+        {{candidate.user.lastName}}
+      </td>
+    </tr>
+
+    <!-- loading -->
+    <tr *ngIf="loading">
+      <td colspan="42">
+        <i class="fas fa-spinner fa-spin"></i> Loading...
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

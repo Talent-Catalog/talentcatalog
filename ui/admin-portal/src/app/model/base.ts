@@ -320,6 +320,6 @@ export enum Status {
   deleted = "deleted"
 }
 
-export interface FetchCandidatesWithActiveChatRequest {
-  pageNumber: number,
+// TODO may be able to make do with extending PagedSearchRequest - depends whether I use keyword and status
+export interface FetchCandidatesWithActiveChatRequest extends PagedFilteredSearchRequest {
 }

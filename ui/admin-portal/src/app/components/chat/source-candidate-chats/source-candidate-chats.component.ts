@@ -1,16 +1,10 @@
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ChatService} from "../../../services/chat.service";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Candidate} from "../../../model/candidate";
 import {JobChat} from "../../../model/chat";
 import {Partner} from "../../../model/partner";
 import {BehaviorSubject} from "rxjs";
-import {CandidateService} from "../../../services/candidate.service";
-import {SearchResults} from "../../../model/search-results";
-import {ActivatedRoute} from "@angular/router";
-import {
-  FetchCandidatesWithActiveChatRequest,
-} from "../../../model/base";
 
 @Component({
   selector: 'app-source-candidate-chats',
@@ -24,44 +18,17 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
 
   error: string;
   loading: boolean;
-  pageNumber: number;
   selectedCandidate: Candidate;
   selectedCandidateChat: JobChat;
   chatHeader: string = "";
-  candidatesWithActiveChats: SearchResults<Candidate>;
 
-  constructor(
-    private chatService: ChatService,
-    private candidateService: CandidateService,
-    private route: ActivatedRoute
-  ) {
-    super(5);
-  }
+  constructor(private chatService: ChatService) { super(5); }
 
-  ngOnInit(): void {
-    this.fetchCandidatesWithActiveChat()
-
-    // TODO check to see where this info gets included (do I need to do it deliberately?)
-    //  See SearchTasksComponent.search for how to handle pagination
-    // Start listening to route params after everything is loaded.
-    this.route.queryParamMap.subscribe(
-      params => {
-        this.pageNumber = +params.get('pageNumber');
-        if (!this.pageNumber) {
-          this.pageNumber = 1;
-        }
-      }
-    );
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.selectedCandidate) {
-      this.displayChat();
-    }
-  }
+  ngOnInit(): void { }
 
   public onCandidateSelected(candidate: Candidate) {
     this.selectedCandidate = candidate;
+    this.displayChat();
   }
 
   private displayChat() {
@@ -80,20 +47,8 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
 
   private computeChatHeader() {
     this.chatHeader =
-      "Chat with " + this.selectedCandidate.user.firstName +
+      "Chat with " + this.selectedCandidate.user.firstName + " "
         this.selectedCandidate.user.lastName + " (" + this.selectedCandidate.candidateNumber + ")";
-  }
-
-  public fetchCandidatesWithActiveChat() {
-    // See SearchTasksComponent.search for how to manage pagination
-    let request: FetchCandidatesWithActiveChatRequest = {
-      pageNumber: this.pageNumber - 1,
-    }
-
-    this.candidateService.fetchCandidatesWithActiveChat(request).subscribe({
-      next: candidates => this.candidatesWithActiveChats = candidates,
-      error: error => this.error = error
-    })
   }
 
 }

@@ -1,17 +1,6 @@
-<ngb-pagination [boundaryLinks]="true"
-                [pageSize]="25"
-                [collectionSize]="candidatesWithActiveChats?.totalElements"
-                [(page)]="pageNumber"
-                [maxSize]="5"
-                [ellipses]="true"
-                [rotate]="true"
-                (pageChange)="fetchCandidatesWithActiveChat()">
-</ngb-pagination>
-
 <div class="row">
   <div class="col-sm-{{mainPanelColWidth}}">
     <app-view-source-candidates-with-chats
-      [candidatesWithActiveChats] = "candidatesWithActiveChats"
       (candidateSelection)="onCandidateSelected($event)"
     ></app-view-source-candidates-with-chats>
   </div>
