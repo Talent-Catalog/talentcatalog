@@ -17,9 +17,27 @@
     <thead class="table-primary">
     <tr>
       <th></th>
-      <th>Candidate #</th>
-      <th>First Name</th>
-      <th>Last Name</th>
+      <th (click)="toggleSort('id')">
+        <app-sorted-by [column]="'id'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        Candidate #
+      </th>
+      <th (click)="toggleSort('user.firstName')">
+        <app-sorted-by [column]="'user.firstName'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        First Name
+      </th>
+      <th (click)="toggleSort('user.lastName')">
+        <app-sorted-by [column]="'user.lastName'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        Last Name
+      </th>
     </tr>
     </thead>
 

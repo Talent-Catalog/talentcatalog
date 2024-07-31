@@ -14,15 +14,15 @@ import {CandidateService} from "../../../services/candidate.service";
 export class ViewSourceCandidatesWithChatsComponent implements OnInit {
 
   @Output() candidateSelection = new EventEmitter<Candidate>();
-  @Output() toggleSort = new EventEmitter<Candidate>();
 
   error: any;
   loading: boolean;
   currentCandidate: Candidate;
   pageNumber: number = 1;
-  pageSize: number = 25;
   monitoredTask: Task;
   candidatesWithActiveChats: SearchResults<Candidate>;
+  sortField = 'id';
+  sortDirection = 'DESC';
 
   constructor(
     private candidateService: CandidateService,
@@ -38,11 +38,9 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
     // See SearchTasksComponent.search for how to manage pagination
     const request: FetchCandidatesWithActiveChatRequest = {
       pageNumber: this.pageNumber - 1,
-      // TODO is this needed? 👇
-      pageSize: this.pageSize,
-      // TODO make the below alterable by user
-      sortFields: ['id'],
-      sortDirection: 'ASC',
+      pageSize: 25,
+      sortFields: [this.sortField],
+      sortDirection: this.sortDirection
     }
 
     this.candidateService.fetchCandidatesWithActiveChat(request).subscribe(candidates => {
@@ -58,6 +56,16 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   public onCandidateSelected(candidate: Candidate) {
     this.currentCandidate = candidate;
     this.candidateSelection.emit(candidate);
+  }
+
+  public toggleSort(column) {
+    if (this.sortField === column) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortField = column;
+      this.sortDirection = 'ASC';
+    }
+    this.fetchCandidatesWithActiveChat();
   }
 
   public canAccessSalesforce(): boolean {
