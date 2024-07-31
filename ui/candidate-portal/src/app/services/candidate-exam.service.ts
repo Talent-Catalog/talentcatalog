@@ -28,6 +28,6 @@ export class CandidateExamService {
   constructor(private http: HttpClient) {}
 
   updateCandidateExams(request): Observable<CandidateExam[]> {
-    return this.http.post<CandidateExam[]>(`${this.apiUrl}/update`, request);
+    return this.http.put<CandidateExam[]>(`${this.apiUrl}/update`, request);
   }
 }
