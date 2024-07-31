@@ -634,6 +634,7 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.save(job);
     }
 
+    //TODO JC This should be reused - see code in changeJobStage
     private void sendMessageToJobChat(JobChatType chatType, SalesforceJobOpp job, String messageContent) {
         // Get or create the job chat based on the provided chat type
         JobChat jobChat = jobChatService.getOrCreateJobChat(chatType, job, null, null);
