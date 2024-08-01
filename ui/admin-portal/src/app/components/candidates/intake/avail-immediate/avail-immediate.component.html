@@ -41,6 +41,10 @@
   </div>
 
   <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
+    <div>
+      <label class="form-label" for="availDate">When will you be available?</label>
+      <app-date-picker id="availDate" [control]="form.controls.availDate"></app-date-picker>
+    </div>
     <div class="mb-3">
       <label class="form-label" for="availImmediateReason">Factors preventing immediate availability for international work.</label>
       <ng-select id="availImmediateReason" [formControlName]="'availImmediateReason'" (clear)="setNoResponse('availImmediateReason')"
@@ -52,10 +56,6 @@
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="availImmediateNotes" [formControlName]="'availImmediateNotes'"
                 placeholder="" ></textarea>
-    </div>
-    <div>
-      <label class="form-label" for="availDate">When will you be available?</label>
-      <app-date-picker id="availDate" [control]="form.controls.availDate"></app-date-picker>
     </div>
   </div>
 </form>
