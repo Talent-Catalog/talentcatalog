@@ -14,16 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  CandidateVisaJobCheck,
-  TBBEligibilityAssessment,
-  VisaEligibility,
-  YesNo
-} from "../model/candidate";
+import {CandidateVisaJobCheck, TBBEligibilityAssessment, VisaEligibility, YesNo} from "../model/candidate";
+import {MockJob} from "./MockJob";
 
 export const MockCandidateVisaJobCheck: CandidateVisaJobCheck = {
   id: 1,
   name: 'Mock Job',
+  jobOpp: MockJob,
   occupation: {
     id: 1,
     name: 'Mock Occupation',

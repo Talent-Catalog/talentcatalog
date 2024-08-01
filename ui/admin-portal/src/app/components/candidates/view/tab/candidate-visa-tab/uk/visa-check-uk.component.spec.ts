@@ -17,9 +17,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {
-  mockCandidateIntakeData
-} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {By} from '@angular/platform-browser';
 import {VisaCheckUkComponent} from "./visa-check-uk.component";
 import {MockCandidateVisa} from "../../../../../../MockData/MockCandidateVisa";
@@ -27,6 +25,14 @@ import {MockCandidateVisaJobCheck} from "../../../../../../MockData/MockCandidat
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {VisaJobCheckUkComponent} from "./job/visa-job-check-uk.component";
+import {AutosaveStatusComponent} from "../../../../../util/autosave-status/autosave-status.component";
+import {CandidateVisaJobComponent} from "../job/candidate-visa-job.component";
+import {
+  RelocatingDependantsComponent
+} from "../../../../visa/visa-job-assessments/relocating-dependants/relocating-dependants.component";
+import {RouterLinkStubDirective} from "../../../../../login/login.component.spec";
+import {DependantsComponent} from "../../../../intake/dependants/dependants.component";
 
 fdescribe('VisaCheckUkComponent', () => {
   let component: VisaCheckUkComponent;
@@ -37,7 +43,7 @@ fdescribe('VisaCheckUkComponent', () => {
       // todo fixed the test failing by removing the below from declarations - find out why!
       //  It appears to be the CandidateVisaJobComponent. Throws msgs instead of errors when removed - should probably be put back.
       // ,AutosaveStatusComponent,VisaJobCheckUkComponent,CandidateVisaJobComponent,RelocatingDependantsComponent,RouterLinkStubDirective,DependantsComponent
-      declarations: [VisaCheckUkComponent],
+      declarations: [VisaCheckUkComponent,AutosaveStatusComponent,VisaJobCheckUkComponent,CandidateVisaJobComponent,RelocatingDependantsComponent,RouterLinkStubDirective,DependantsComponent],
       imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule,LocalStorageModule.forRoot({})],
       providers: [FormBuilder]
     }).compileComponents();
