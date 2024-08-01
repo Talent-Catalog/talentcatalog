@@ -54,11 +54,8 @@
                 placeholder="" ></textarea>
     </div>
     <div>
-      <label class="form-label" for="availImmediateNotes">When will you be available?</label>
-      <div>
-        TODO Avail DATE???
-      </div>
-
+      <label class="form-label" for="availDate">When will you be available?</label>
+      <app-date-picker id="availDate" [control]="form.controls.availDate"></app-date-picker>
     </div>
   </div>
 </form>

@@ -63,6 +63,7 @@ public class CandidateIntakeDataUpdate {
     private String arrestImprisonNotes;
 
     private LocalDate asylumYear;
+    private LocalDate availDate;
     private YesNo availImmediate;
     private String availImmediateJobOps;
     private AvailImmediateReason availImmediateReason;

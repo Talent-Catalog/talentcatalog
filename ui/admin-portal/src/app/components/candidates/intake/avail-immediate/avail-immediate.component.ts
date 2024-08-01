@@ -38,6 +38,7 @@ export class AvailImmediateComponent extends IntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
+      availDate: [this.candidateIntakeData?.availDate],
       availImmediate: [this.candidateIntakeData?.availImmediate],
       availImmediateJobOps: [this.candidateIntakeData?.availImmediateJobOps],
       availImmediateReason: [this.candidateIntakeData?.availImmediateReason],
