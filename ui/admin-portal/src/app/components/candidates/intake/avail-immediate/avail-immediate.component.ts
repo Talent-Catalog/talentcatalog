@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {AvailImmediateReason, YesNo} from '../../../../model/candidate';
+import {AvailImmediateReason, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 
@@ -31,6 +31,7 @@ export class AvailImmediateComponent extends IntakeComponentBase implements OnIn
 
   public availImmediateOptions: EnumOption[] = enumOptions(YesNo);
   public availImmediateReasonOptions: EnumOption[] = enumOptions(AvailImmediateReason);
+  public interestedOptions: EnumOption[] = enumOptions(YesNoUnsure);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -43,6 +44,7 @@ export class AvailImmediateComponent extends IntakeComponentBase implements OnIn
       availImmediateJobOps: [this.candidateIntakeData?.availImmediateJobOps],
       availImmediateReason: [this.candidateIntakeData?.availImmediateReason],
       availImmediateNotes: [this.candidateIntakeData?.availImmediateNotes],
+      interested: []
     });
   }
 
@@ -52,6 +54,10 @@ export class AvailImmediateComponent extends IntakeComponentBase implements OnIn
 
   get availImmediate(): string {
     return this.form.value?.availImmediate;
+  }
+
+  get interested(): string {
+    return this.form.value?.interested;
   }
 
 }
