@@ -212,6 +212,15 @@ public interface SavedSearchService {
             throws NoSuchObjectException, InvalidSessionException;
 
     /**
+     * Returns true if the given search involves an Elastic search - either itself or in its
+     * base class.
+     * @param id ID of search
+     * @return True if an Elastic search is part of this search.
+     * @throws NoSuchObjectException if there is no such saved search.
+     */
+    boolean includesElasticSearch(long id) throws NoSuchObjectException;
+
+    /**
      * Returns true if there are no candidates matching search
      * @param id ID of search
      * @return True if no candidates

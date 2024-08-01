@@ -25,13 +25,19 @@ import {ActivatedRoute} from "@angular/router";
 import {DatePickerComponent} from "../util/date-picker/date-picker.component";
 import {RouterLinkStubDirective} from "../login/login.component.spec";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-
+import {SavedListService} from "../../services/saved-list.service";
+import {SavedSearchService} from "../../services/saved-search.service";
+import {MockSavedList} from "../../MockData/MockSavedList";
+import {MockSavedSearch} from "../../MockData/MockSavedSearch";
+import {StatReport} from "../../model/stat-report";
+import {ChartType} from "chart.js"
 fdescribe('InfographicComponent', () => {
   let component: InfographicComponent;
   let fixture: ComponentFixture<InfographicComponent>;
   let mockActivatedRoute: any;
   let mockCandidateStatService: jasmine.SpyObj<CandidateStatService>;
-
+  let mockSavedListService: jasmine.SpyObj<SavedListService>;
+  let mockSavedSearchService: jasmine.SpyObj<SavedSearchService>;
   beforeEach(async () => {
     mockActivatedRoute = {
       paramMap: of({
@@ -43,6 +49,8 @@ fdescribe('InfographicComponent', () => {
     };
 
     mockCandidateStatService = jasmine.createSpyObj('CandidateStatService', ['getAllStats']);
+    mockSavedListService = jasmine.createSpyObj('SavedListService', ['search', 'get']);
+    mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['search', 'get']);
 
     await TestBed.configureTestingModule({
       declarations: [InfographicComponent,DatePickerComponent,RouterLinkStubDirective],
@@ -50,7 +58,9 @@ fdescribe('InfographicComponent', () => {
       providers: [
         FormBuilder,
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: CandidateStatService, useValue: mockCandidateStatService }
+        { provide: CandidateStatService, useValue: mockCandidateStatService },
+        { provide: SavedListService, useValue: mockSavedListService },
+        { provide: SavedSearchService, useValue: mockSavedSearchService }
       ]
     }).compileComponents();
   });
@@ -58,6 +68,8 @@ fdescribe('InfographicComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(InfographicComponent);
     component = fixture.componentInstance;
+    mockCandidateStatService.getAllStats.and.returnValue(of());
+    mockSavedSearchService.get.and.returnValue(of());
     fixture.detectChanges();
   });
 
@@ -88,7 +100,34 @@ fdescribe('InfographicComponent', () => {
     expect(dateToControl?.hasError('required')).toBeTruthy();
   });
 
-it('should submit stats request successfully', fakeAsync(() => {
+  it('should load lists and searches', fakeAsync(() => {
+    const mockLists = [MockSavedList];
+    const mockSearches = [new MockSavedSearch()];
+
+    mockSavedListService.search.and.returnValue(of(mockLists));
+    mockSavedSearchService.search.and.returnValue(of(mockSearches));
+
+    component['loadListsAndSearches']();
+    tick();
+
+    expect(component.loading).toBe(false);
+    expect(component.lists).toEqual(mockLists);
+    expect(component.searches).toEqual(mockSearches);
+  }));
+
+  it('should handle error while initializing filter fields from URL parameters', fakeAsync(() => {
+    const mockError = 'Internal Server Error';
+
+    mockSavedListService.get.and.returnValue(throwError(mockError));
+    mockSavedSearchService.get.and.returnValue(throwError(mockError));
+
+    component['initializeFilterFields']();
+    tick();
+
+    expect(component.error).toEqual(mockError);
+  }));
+
+  it('should submit stats request successfully', fakeAsync(() => {
     // Mock form values
     component.statsFilter.patchValue({
       savedList: { id: 1, name: 'Test List' },
@@ -96,14 +135,13 @@ it('should submit stats request successfully', fakeAsync(() => {
       dateFrom: '2024-01-01',
       dateTo: '2024-06-01'
     });
-
     // Mock service response
-    const mockStatReports = [{ name: 'Report 1', rows: [] }];
-    // @ts-expect-error
+    const mockStatReports:StatReport[] = [{ name: 'Report 1', rows:[],chartType: 'bar' as ChartType }];
+
     mockCandidateStatService.getAllStats.and.returnValue(of(mockStatReports));
 
     // Call the method
-    component.submitStatsRequest();
+    component.submitStatsRequest(true);
 
     // Simulate asynchronous observables
     tick();
@@ -112,7 +150,6 @@ it('should submit stats request successfully', fakeAsync(() => {
     expect(component.dataLoaded).toBe(true);
     expect(component.statsName).toBe('list Test List');
   }));
-
   it('should handle error while submitting stats request', fakeAsync(() => {
     // Mock form values
     component.statsFilter.patchValue({
@@ -127,7 +164,7 @@ it('should submit stats request successfully', fakeAsync(() => {
     mockCandidateStatService.getAllStats.and.returnValue(throwError(mockError));
 
     // Call the method
-    component.submitStatsRequest();
+    component.submitStatsRequest(true);
 
     // Simulate asynchronous observables
     tick();
@@ -135,4 +172,5 @@ it('should submit stats request successfully', fakeAsync(() => {
     expect(component.loading).toBe(false);
     expect(component.error).toEqual(mockError);
   }));
+
 });

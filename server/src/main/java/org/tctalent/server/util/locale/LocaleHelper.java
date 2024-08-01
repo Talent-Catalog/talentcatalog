@@ -17,14 +17,22 @@
 package org.tctalent.server.util.locale;
 
 import java.awt.ComponentOrientation;
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.TextStyle;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.lang.Nullable;
 
 /**
@@ -110,6 +118,26 @@ public class LocaleHelper {
             }
         }
         return cts;
+    }
+
+    /**
+     * Computes an OffsetDateTime from a LocalDate, LocalTime and timezone
+     * @param localDate Local date
+     * @param localTime Local time
+     * @param timezone Timezone string - if null or blank UTC timezone is used
+     * @return An OffsetDateTime
+     */
+    public static OffsetDateTime getOffsetDateTime(
+        LocalDate localDate, LocalTime localTime, @Nullable String timezone) {
+        ZoneOffset offset = ZoneOffset.UTC;
+        if (!ObjectUtils.isEmpty(timezone)) {
+            try {
+                offset = ZoneId.of(timezone).getRules().getOffset(Instant.now());
+            } catch (DateTimeException e) {
+                System.err.println("Invalid timezone provided: " + timezone + ". Falling back to UTC.");
+            }
+        }
+        return OffsetDateTime.of(localDate, localTime, offset);
     }
 
     /**

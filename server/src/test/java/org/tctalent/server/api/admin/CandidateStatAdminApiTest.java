@@ -68,6 +68,7 @@ import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CandidateStatsService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 
@@ -85,6 +86,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   private static final String ALL_STATS_PATH = "/all";
 
   @MockBean CandidateService candidateService;
+  @MockBean CandidateStatsService candidateStatsService;
   @MockBean CountryRepository countryRepository;
   @MockBean SavedListService savedListService;
   @MockBean SavedSearchService savedSearchService;
@@ -95,8 +97,13 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Autowired ObjectMapper objectMapper;
   @Autowired CandidateStatAdminApi candidateStatAdminApi;
 
+  private CandidateStatsRequest request = new CandidateStatsRequest();
+
   @BeforeEach
   void setUp() {
+    request = new CandidateStatsRequest();
+    request.setRunOldStats(true);
+
     configureAuthentication();
 
     user.setSourceCountries(Set.of(
@@ -118,7 +125,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - gender report succeeds")
   void getAllStatsGenderReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeGenderStats(any(), any(), any()))
@@ -156,7 +162,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - registration report succeeds")
   void getAllStatsRegistrationReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeRegistrationStats(any(), any(), any()))
@@ -194,7 +199,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - registration by occupation report succeeds")
   void getAllStatsRegistrationByOccupationReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeRegistrationOccupationStats(any(), any(), any()))
@@ -232,7 +236,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - birth year report succeeds")
   void getAllStatsBirthYearReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeBirthYearStats(any(), any(), any(), any()))
@@ -270,7 +273,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - linked in links report succeeds")
   void getAllStatsLinkedInLinksReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeLinkedInExistsStats(any(), any(), any()))
@@ -306,7 +308,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - linked in links by registration date report succeeds")
   void getAllStatsLinkedInLinksByRegistrationDateReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeLinkedInStats(any(), any(), any()))
@@ -344,7 +345,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - Unhcr registration date report succeeds")
   void getAllStatsUnhcrRegistrationReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeUnhcrRegisteredStats(any(), any(), any()))
@@ -382,7 +382,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - Unhcr status report succeeds")
   void getAllStatsUnhcrStatusReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeUnhcrStatusStats(any(), any(), any()))
@@ -422,7 +421,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - nationalities report succeeds")
   void getAllStatsNationalityReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeNationalityStats(any(), any(), any(), any(), any()))
@@ -458,7 +456,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - source countries report succeeds")
   void getAllStatsSourceCountryReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeSourceCountryStats(any(), any(), any(), any()))
@@ -494,7 +491,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - status report succeeds")
   void getAllStatsStatusReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeStatusStats(any(), any(), any(), any(), any()))
@@ -536,7 +532,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - occupations report succeeds")
   void getAllStatsOccupationsReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeOccupationStats(any(), any(), any(), any()))
@@ -574,7 +569,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - most common occupations report succeeds")
   void getAllStatsMostCommonOccupationsReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeMostCommonOccupationStats(any(), any(), any(), any()))
@@ -612,7 +606,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - most max education level report succeeds")
   void getAllStatsMaxEducationLevelReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeMaxEducationStats(any(), any(), any(), any()))
@@ -650,7 +643,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - languages report succeeds")
   void getAllStatsLanguagesReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeLanguageStats(any(), any(), any(), any()))
@@ -688,7 +680,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - referrers report succeeds")
   void getAllStatsReferrersReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeReferrerStats(any(), any(), any(), any(), any()))
@@ -724,7 +715,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - survey report succeeds")
   void getAllStatsSurveyReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeSurveyStats(any(), any(), any(), any(), any()))
@@ -762,7 +752,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - spoken language report succeeds")
   void getAllStatsSpokenLanguageReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeSpokenLanguageLevelStats(any(), any(), any(), any(), any()))
