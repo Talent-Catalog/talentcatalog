@@ -49,7 +49,7 @@ fdescribe('CandidateSourceCandidateService', () => {
   describe('list', () => {
     it('should make a GET request to the correct URL for listing candidates', () => {
       const source: CandidateSource = { id: 1 } as CandidateSource;
-      const mockResponse: Candidate[] = [/* ...candidates... */];
+      const mockResponse: Candidate[] = [new MockCandidate()];
 
       (service as any).isSavedSearch.and.returnValue(false);
 
@@ -106,7 +106,7 @@ fdescribe('CandidateSourceCandidateService', () => {
   describe('searchPaged', () => {
     it('should make a POST request to the correct URL for searching candidates with pagination', () => {
       const source: CandidateSource = { id: 1 } as CandidateSource;
-      const request: SearchCandidateSourcesRequest = { /* ... */ };
+      const request: SearchCandidateSourcesRequest = { keyword:'test' };
       const mockResponse: SearchResults<Candidate> = {number:1,size:10,totalPages:1,totalElements:1,first:true,last:false, content: [new MockCandidate()] };
 
       (service as any).isSavedSearch.and.returnValue(false);
@@ -125,8 +125,8 @@ fdescribe('CandidateSourceCandidateService', () => {
   describe('export', () => {
     it('should make a POST request to the correct URL for exporting candidates', () => {
       const source: CandidateSource = { id: 1 } as CandidateSource;
-      const request: PagedSearchRequest = { /* ... */ };
-      const mockResponse = new Blob([/* ... */]);
+      const request: PagedSearchRequest = { pageNumber:1};
+      const mockResponse = new Blob();
 
       (service as any).isSavedSearch.and.returnValue(false);
 
