@@ -42,7 +42,6 @@ fdescribe('VisaCheckUkComponent', () => {
     await TestBed.configureTestingModule({
       // todo fixed the test failing by removing the below from declarations - find out why!
       //  It appears to be the CandidateVisaJobComponent. Throws msgs instead of errors when removed - should probably be put back.
-      // ,AutosaveStatusComponent,VisaJobCheckUkComponent,CandidateVisaJobComponent,RelocatingDependantsComponent,RouterLinkStubDirective,DependantsComponent
       declarations: [VisaCheckUkComponent,AutosaveStatusComponent,VisaJobCheckUkComponent,CandidateVisaJobComponent,RelocatingDependantsComponent,RouterLinkStubDirective,DependantsComponent],
       imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule,LocalStorageModule.forRoot({})],
       providers: [FormBuilder]
