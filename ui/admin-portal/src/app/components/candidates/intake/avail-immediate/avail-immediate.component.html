@@ -25,16 +25,12 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="interested === 'No'">
-<!--    todo Instructions-->
-    <div class="mb-3">
-      Instructions for staff if they say No
+    <div class="mb-3" [innerHTML]="'STAFF_INSTRUCTION.CANDIDATE_NO_INTEREST' | translate">
     </div>
   </div>
 
   <div *ngIf="interested === 'Unsure'">
-    <!--    todo Instructions-->
-    <div class="mb-3">
-      Instructions for staff if they say Unsure
+    <div class="mb-3" [innerHTML]="'STAFF_INSTRUCTION.CANDIDATE_UNSURE_INTEREST' | translate">
     </div>
   </div>
 
