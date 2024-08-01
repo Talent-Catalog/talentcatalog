@@ -1,1 +1,12 @@
 @import "~src/scss/variables";
+
+tr:hover {
+  cursor: pointer;
+}
+
+// Form check reverse aligns the form checks to the right, so need to set them to the left.
+.row {
+  .form-check {
+    float: left;
+  }
+}

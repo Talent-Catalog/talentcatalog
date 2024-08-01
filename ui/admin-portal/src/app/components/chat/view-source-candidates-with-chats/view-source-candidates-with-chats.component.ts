@@ -37,19 +37,24 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
-  @ViewChild("searchFilter")
-  searchFilter: ElementRef;
+  @ViewChild("searchFilter") searchFilter: ElementRef;
 
   error: any;
   loading: boolean;
   currentCandidate: Candidate;
   pageNumber: number = 1;
+  pageSize: number = 25;
   monitoredTask: Task;
   sortField = 'id';
   sortDirection = 'DESC';
   searchForm: FormGroup;
   candidates: Candidate[];
   results: SearchResults<Candidate>;
+  chatsReadProcessingComplete: boolean = false;
+
+  // Form info
+  unreadOnlyTip = "Show only candidates whose chats have unread posts";
+  unreadOnlyLabel = "Show unread only";
 
   /**
    * All chats associated with all candidates. Used to construct overall chat read notifier.
@@ -75,17 +80,22 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchCandidatesWithActiveChat(true)
-
     this.searchForm = this.fb.group({
-      keyword: ['']
+      keyword: [''],
+      unreadOnly: [false]
     });
 
     this.subscribeToFilterChanges();
+
+    this.fetchCandidatesWithActiveChat(true)
   }
 
   private get keyword(): string {
     return this.searchForm ? this.searchForm.value.keyword : "";
+  }
+
+  protected get unreadOnly(): boolean {
+    return this.searchForm? this.searchForm.value.unreadOnly : false;
   }
 
   private subscribeToFilterChanges() {
@@ -100,12 +110,11 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   }
 
   public fetchCandidatesWithActiveChat(refresh: boolean) {
-    this.error = null;
     this.loading = true;
 
     const request: FetchCandidatesWithActiveChatRequest = {
       pageNumber: this.pageNumber - 1,
-      pageSize: 25,
+      pageSize: this.pageSize,
       sortFields: [this.sortField],
       sortDirection: this.sortDirection,
       keyword: this.keyword
@@ -134,20 +143,21 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
 
   protected processSearchResults(results: SearchResults<Candidate>) {
     this.results = results;
-    this.loading = false;
 
-    this.candidates = results.content;
+    if (this.unreadOnly) { // User only wants to see candidates whose chat has unread posts
+      // TODO create request
+      this.candidateService.fetchCandidatesWithUnreadChat().subscribe(
+        candidatesWithUnreadChatIds => {
+          // TODO get this to return paged search results and process them as you would any other
+          })
+    } else {
+      this.candidates = results.content;
+    }
 
     //Following the search, filter loses focus, so focus back on it again
     setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
 
     this.fetchChats();
-  }
-
-  selectCurrent(candidate: Candidate) {
-    this.currentCandidate = candidate;
-
-    this.candidateSelection.emit(candidate);
   }
 
   protected processChatsReadStatus(info: JobChatUserInfo) {
@@ -157,7 +167,6 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
       //if there are no unread chats, otherwise false.
       this.chatsRead$.next(info.numberUnreadChats === 0);
     }
-    this.loading = false;
   }
 
   public onCandidateSelected(candidate: Candidate) {
@@ -211,8 +220,8 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
     }
   }
 
-  public getCandidateChat(candidate: Candidate): JobChat {
-    return candidate ? this.candidateChats.get(candidate.id) : null;
+  public getCandidateChat(candidate: Candidate): JobChat[] {
+    return candidate ? [this.candidateChats.get(candidate.id)] : null;
   }
 
   /**
@@ -253,7 +262,7 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
         //Mark all chats read false
         this.chatsRead$.next(false);
       } else if (!this.chatsRead$.value && chatsRead) {
-        //All chats are showing not read, but all chats for visible opps are now read.
+        //All chats are showing not read, but all chats for visible candidates are now read.
         //Fetch from server again to see if there are still some non-visible candidates with unread chats.
         //Don't redo the search - we just want to see if there are any unread chats left in the full
         //search results.
@@ -281,11 +290,13 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
     }
 
     this.error = null;
-    forkJoin(candidateChats$).subscribe({
-        next: chatsByCandidate => this.processCandidateChats(chatsByCandidate),
-        error: err => this.error = err
-      }
-    )
+    forkJoin(candidateChats$).subscribe(chatByCandidate => {
+      this.processCandidateChats(chatByCandidate);
+      this.chatsReadProcessingComplete = true;
+    },
+    error => {
+      this.error = error
+    })
   }
 
   // TODO currently not working - also in show-candidates component

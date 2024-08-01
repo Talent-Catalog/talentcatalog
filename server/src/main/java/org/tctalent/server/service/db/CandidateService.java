@@ -552,4 +552,10 @@ public interface CandidateService {
      * @return
      */
     Page<Candidate> fetchCandidatesWithActiveChat(FetchCandidatesWithActiveChatRequest request);
+
+    /**
+     * TODO
+     * @return
+     */
+    Page<Candidate> fetchCandidatesWithUnreadChat(FetchCandidatesWithUnreadChatRequest request);
 }

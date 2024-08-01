@@ -28,7 +28,6 @@ public class FetchCandidatesWithActiveChatRequest extends PagedSearchRequest {
   /**
    * Used to match candidates whose first or last names are like this keyword —
    * empty string received if no value entered in search form.
-   * TODO implement for candidate no. too?
    */
   @NotNull
   private String keyword;

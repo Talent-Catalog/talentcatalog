@@ -362,4 +362,13 @@ public class CandidateAdminApi {
         return builder.buildPage(candidates);
     }
 
+    @PostMapping("fetch-candidates-with-unread-chat")
+    public Page<Candidate> fetchCandidatesWithUnreadChat(
+        FetchCandidatesWithUnreadChatRequest request
+    ) {
+        Page<Candidate> candidatesWithUnreadChat =
+            candidateService.fetchCandidatesWithUnreadChat(request);
+        return candidatesWithUnreadChat;
+    }
+
 }

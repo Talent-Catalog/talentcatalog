@@ -88,16 +88,15 @@
   </ng-container>
 
   <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCandidateChatsAsSourcePartner">
-    <a ngbNavLink title="Chats with candidates managed by my partner organization">
+    <a ngbNavLink title="Active chats with candidates managed by my organization">
       {{loggedInPartner.abbreviation}} Candidate Chats  <i class="fa-solid fa-user"></i>
       <app-chat-read-status
         [observable]="sourceCandidateChatsRead$"
       ></app-chat-read-status>
     </a>
     <ng-template ngbNavContent>
-      <app-source-candidate-chats [loggedInPartner]="loggedInPartner"
-                                  [chatsRead$]="sourcePartnerChatsRead$"
-      ></app-source-candidate-chats>
+      <app-source-candidate-chats [chatsRead$]="sourceCandidateChatsRead$">
+      </app-source-candidate-chats>
     </ng-template>
   </ng-container>
 

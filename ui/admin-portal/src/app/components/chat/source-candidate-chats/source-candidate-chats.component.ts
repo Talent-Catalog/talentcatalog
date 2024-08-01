@@ -3,7 +3,6 @@ import {ChatService} from "../../../services/chat.service";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Candidate} from "../../../model/candidate";
 import {JobChat} from "../../../model/chat";
-import {Partner} from "../../../model/partner";
 import {BehaviorSubject} from "rxjs";
 
 @Component({
@@ -12,8 +11,6 @@ import {BehaviorSubject} from "rxjs";
   styleUrls: ['./source-candidate-chats.component.scss']
 })
 export class SourceCandidateChatsComponent extends MainSidePanelBase implements OnInit {
-
-  @Input() loggedInPartner: Partner;
 
   /**
    * This is passed in from a higher level component which tracks whether the overall read status
@@ -38,7 +35,7 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
   public onCandidateSelected(candidate: Candidate) {
     this.selectedCandidate = candidate;
     this.displayChat();
-    // TODO: scroll to post editor
+    window.scrollTo(0,0);
   }
 
   private displayChat() {

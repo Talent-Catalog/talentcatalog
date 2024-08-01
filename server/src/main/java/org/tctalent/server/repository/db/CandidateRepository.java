@@ -753,4 +753,35 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         @Param("keyword") String keyword,
         Pageable pageable
     );
+
+    // TODO needs to return the whole candidate
+    @Query(value = """
+        select job_chat.candidate_id from
+        
+            (select job_chat.id from candidate
+                                         join job_chat on candidate.id = job_chat.candidate_id
+                and type = 'CandidateProspect'
+             where candidate.id in
+                   (select candidate.id from candidate
+                                                 join users on candidate.user_id = users.id
+                    where users.partner_id = :partnerId)
+            ) as chats
+        
+                join job_chat on job_chat.id = chats.id
+        
+        where
+            (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId)
+                < (select max(id) from chat_post where job_chat_id = chats.id)
+        
+           or  (
+            (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId) is null
+                and
+            (select count(*) from chat_post where job_chat_id = chats.id) > 0
+            )
+        """, nativeQuery = true)
+    Page<Candidate> findCandidatesWithUnreadChat(
+        @Param("partnerId") long partnerId,
+        @Param("userId") long userId,
+        Pageable pageable
+    );
 }

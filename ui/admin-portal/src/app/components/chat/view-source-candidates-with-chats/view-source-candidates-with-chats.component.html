@@ -2,17 +2,26 @@
   {{error}}
 </div>
 
-<ngb-pagination [boundaryLinks]="true"
-                [pageSize]="25"
-                [collectionSize]="results?.totalElements"
-                [(page)]="pageNumber"
-                [maxSize]="5"
-                [ellipses]="true"
-                [rotate]="true"
-                (pageChange)="fetchCandidatesWithActiveChat(true)">
-</ngb-pagination>
+<!-- loading -->
+<div *ngIf="loading">
+  <td colspan="42">
+    <i class="fas fa-spinner fa-spin"></i> Loading...
+  </td>
+</div>
 
-<div class="searches">
+<div class="my-4">
+  <ngb-pagination [boundaryLinks]="true"
+                  [pageSize]="pageSize"
+                  [collectionSize]="results?.totalElements"
+                  [(page)]="pageNumber"
+                  [maxSize]="5"
+                  [ellipses]="true"
+                  [rotate]="true"
+                  (pageChange)="fetchCandidatesWithActiveChat(true)">
+  </ngb-pagination>
+</div>
+
+<div class="searches my-4">
   <form [formGroup]="searchForm" (ngSubmit)="fetchCandidatesWithActiveChat(true)">
     <div class="row mb-3">
       <div class="col-10">
@@ -25,6 +34,17 @@
           Refresh
           <i class="fas fa-sync" title="Refresh data"></i>
         </button>
+      </div>
+    </div>
+
+    <div class="row mb-2">
+      <div class="col-md-5">
+        <div class="form-check form-check-reverse">
+          <input [title]="unreadOnlyTip" type="checkbox"
+                 formControlName="unreadOnly" id="unreadOnlyCheckbox" class="form-check-input">
+          <label class="form-check-label" [title]="unreadOnlyTip"
+                 for="unreadOnlyCheckbox">{{unreadOnlyLabel}}</label>
+        </div>
       </div>
     </div>
   </form>
@@ -62,7 +82,6 @@
     </thead>
 
     <tbody>
-    <!--TODO: pointer when hovering over, selected effects-->
     <tr *ngFor="let candidate of candidates"
         (click)="onCandidateSelected(candidate)"
         [ngClass]="{'current': currentCandidate?.id == candidate.id}">
@@ -127,15 +146,9 @@
         {{candidate.user.lastName}}
       </td>
       <td>
-        <app-chat-read-status [chats]="[getCandidateChat(candidate)]">
+        <app-chat-read-status *ngIf="chatsReadProcessingComplete"
+                              [chats]="getCandidateChat(candidate)">
         </app-chat-read-status>
-      </td>
-    </tr>
-
-    <!-- loading -->
-    <tr *ngIf="loading">
-      <td colspan="42">
-        <i class="fas fa-spinner fa-spin"></i> Loading...
       </td>
     </tr>
     </tbody>

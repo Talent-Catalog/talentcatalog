@@ -31,7 +31,7 @@ import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
 import {
-  CandidateSource, FetchCandidatesWithActiveChatRequest
+  CandidateSource, FetchCandidatesWithActiveChatRequest, FetchCandidatesWithUnreadChatRequest
 } from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
 import {JobChatUserInfo} from "../model/chat";
@@ -215,6 +215,13 @@ export class CandidateService implements IntakeService {
   fetchCandidatesWithActiveChat(request: FetchCandidatesWithActiveChatRequest): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(
       `${this.apiUrl}/fetch-candidates-with-active-chat`, request
+    );
+  }
+
+  fetchCandidatesWithUnreadChat(request: FetchCandidatesWithUnreadChatRequest):
+    Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(
+      `${this.apiUrl}/fetch-candidates-with-unread-chat`, request
     );
   }
 

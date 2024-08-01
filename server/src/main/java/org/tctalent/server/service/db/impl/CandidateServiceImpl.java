@@ -2991,4 +2991,22 @@ public class CandidateServiceImpl implements CandidateService {
         );
     }
 
+    @Override
+    public Page<Candidate> fetchCandidatesWithUnreadChat(
+        FetchCandidatesWithUnreadChatRequest request) {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        Page<Candidate> candidatesWithUnreadChat =
+            candidateRepository.findCandidatesWithUnreadChat(
+                loggedInUser.getPartner().getId(),
+                loggedInUser.getId(),
+                request.getPageRequest
+            );
+
+        return candidatesWithUnreadChat;
+    }
+
 }
