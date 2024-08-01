@@ -183,7 +183,7 @@ fdescribe('ChatService', () => {
 
   describe('markChatAsRead', () => {
     it('should mark chat as read', () => {
-      const mockChat: JobChat = { id: 1, /* other properties */ };
+      const mockChat: JobChat = { id: 1 };
 
       spyOn(service as any, 'markAsReadUptoOnServer').and.returnValue(of(void 0));
       spyOn(service as any, 'changeChatReadStatus');
