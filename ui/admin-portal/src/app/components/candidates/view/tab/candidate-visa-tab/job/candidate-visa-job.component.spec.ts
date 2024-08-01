@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {CandidateVisaJobComponent} from './candidate-visa-job.component';
-// todo these tests - maybe if these are completed it might fix the bug?
+
 describe('CandidateVisaJobComponent', () => {
   let component: CandidateVisaJobComponent;
   let fixture: ComponentFixture<CandidateVisaJobComponent>;
