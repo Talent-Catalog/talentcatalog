@@ -23,7 +23,7 @@ import org.tctalent.server.request.PagedSearchRequest;
 
 @Getter
 @Setter
-public class FetchCandidatesWithActiveChatRequest extends PagedSearchRequest {
+public class FetchCandidatesWithChatRequest extends PagedSearchRequest {
 
   /**
    * Used to match candidates whose first or last names are like this keyword —
@@ -31,5 +31,11 @@ public class FetchCandidatesWithActiveChatRequest extends PagedSearchRequest {
    */
   @NotNull
   private String keyword;
+
+  /**
+   * When true, returns matching candidates whose chat has posts unread by the logged-in user.
+   */
+  @NotNull
+  private boolean unreadOnly;
 
 }

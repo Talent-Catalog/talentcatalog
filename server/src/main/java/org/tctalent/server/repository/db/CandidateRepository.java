@@ -691,32 +691,51 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
 
     /**
      * CANDIDATE CHAT
-     * SELECT IDs of chats of type 'CandidateProspect' involving any of the given candidates
-     * WHERE the given user has unread posts
+     * These methods are used to find candidates and check read statuses for the
+     * [Partner] Candidate Chats tab.
      */
 
-    @Query(value = """
-        select chats.id from
-        
-        (select job_chat.id from candidate
-            join job_chat on candidate.id = job_chat.candidate_id
-                and type = 'CandidateProspect'
-            where candidate.id in
-                  (select candidate.id from candidate
-                    join users on candidate.user_id = users.id
-                        where users.partner_id = :partnerId)
-        ) as chats
-        
-        where
-                (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId)
-                    < (select max(id) from chat_post where job_chat_id = chats.id)
-
-        or  (
-                (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId) is null
-                and
-                (select count(*) from chat_post where job_chat_id = chats.id) > 0
+    @Query(
+        value =
+        """
+        SELECT chats.id
+        FROM (
+            SELECT job_chat.id
+            FROM candidate
+            JOIN job_chat ON candidate.id = job_chat.candidate_id
+                AND job_chat.type = 'CandidateProspect'
+            WHERE candidate.id IN (
+                SELECT candidate.id
+                FROM candidate
+                JOIN users ON candidate.user_id = users.id
+                WHERE users.partner_id = :partnerId
             )
-        """, nativeQuery = true)
+        ) AS chats
+        WHERE (
+            (SELECT last_read_post_id
+             FROM job_chat_user
+             WHERE job_chat_id = chats.id
+               AND user_id = :userId
+            ) < (
+                SELECT MAX(id)
+                FROM chat_post
+                WHERE job_chat_id = chats.id
+            )
+        )
+        OR (
+            (SELECT last_read_post_id
+             FROM job_chat_user
+             WHERE job_chat_id = chats.id
+               AND user_id = :userId
+            ) IS NULL
+            AND (
+                SELECT COUNT(*)
+                FROM chat_post
+                WHERE job_chat_id = chats.id
+            ) > 0
+        )
+        """, nativeQuery = true
+    )
     List<Long> findUnreadChatsInCandidates(
         @Param("partnerId") long partnerId,
         @Param("userId") long userId
@@ -725,63 +744,84 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(
         value =
             """
-            select c
-            from Candidate c
-            where c.id in (
-                select c1.id from Candidate c1
-                join c1.user u
-                where u.partner.id = :partnerId
-                and lower(u.firstName) like :keyword
-                or lower(u.lastName) like :keyword
-                or (c.candidateNumber) like :keyword
+            SELECT c
+            FROM Candidate c
+            WHERE c.id IN (
+                SELECT c1.id
+                FROM Candidate c1
+                JOIN c1.user u
+                WHERE u.partner.id = :partnerId
+                AND (
+                    LOWER(u.firstName) LIKE :keyword
+                    OR LOWER(u.lastName) LIKE :keyword
+                    OR c.candidateNumber LIKE :keyword
+                )
             )
-            and c.id in (
-                select c2.id
-                from Candidate c2
-                join JobChat jc on c2.id = jc.candidate.id
-                where jc.type = 'CandidateProspect'
-                and jc.id in (
-                    select jc2.id
-                    from JobChat jc2
-                    join ChatPost cp on jc2.id = cp.jobChat.id
+            AND c.id IN (
+                SELECT c2.id
+                FROM Candidate c2
+                JOIN JobChat jc ON c2.id = jc.candidate.id
+                WHERE jc.type = 'CandidateProspect'
+                AND jc.id IN (
+                    SELECT jc2.id
+                    FROM JobChat jc2
+                    JOIN ChatPost cp ON jc2.id = cp.jobChat.id
                 )
             )
             """
     )
-    Page<Candidate> fetchCandidatesWithActiveChats(
+    Page<Candidate> findCandidatesWithActiveChat(
         @Param("partnerId") long partnerId,
         @Param("keyword") String keyword,
         Pageable pageable
     );
 
-    // TODO needs to return the whole candidate
-    @Query(value = """
-        select job_chat.candidate_id from
-        
-            (select job_chat.id from candidate
-                                         join job_chat on candidate.id = job_chat.candidate_id
-                and type = 'CandidateProspect'
-             where candidate.id in
-                   (select candidate.id from candidate
-                                                 join users on candidate.user_id = users.id
-                    where users.partner_id = :partnerId)
-            ) as chats
-        
-                join job_chat on job_chat.id = chats.id
-        
-        where
-            (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId)
-                < (select max(id) from chat_post where job_chat_id = chats.id)
-        
-           or  (
-            (select last_read_post_id from job_chat_user where job_chat_id = chats.id and user_id = :userId) is null
-                and
-            (select count(*) from chat_post where job_chat_id = chats.id) > 0
+    @Query(
+        value =
+            """
+            SELECT candidate.id
+            FROM candidate
+                     JOIN users ON candidate.user_id = users.id
+            WHERE candidate.id IN (
+                SELECT job_chat.candidate_id
+                FROM (
+                         SELECT job_chat.id
+                         FROM candidate
+                                  JOIN job_chat ON candidate.id = job_chat.candidate_id
+                         WHERE type = 'CandidateProspect'
+                     ) AS chats
+                         JOIN job_chat ON job_chat.id = chats.id
+                WHERE
+                    (SELECT last_read_post_id
+                     FROM job_chat_user
+                     WHERE job_chat_id = chats.id AND user_id = :userId) <
+                    (SELECT max(id)
+                     FROM chat_post
+                     WHERE job_chat_id = chats.id)
+                   OR (
+                    (SELECT last_read_post_id
+                     FROM job_chat_user
+                     WHERE job_chat_id = chats.id AND user_id = :userId) IS NULL
+                        AND
+                    (SELECT count(*)
+                     FROM chat_post
+                     WHERE job_chat_id = chats.id) > 0
+                    )
             )
-        """, nativeQuery = true)
-    Page<Candidate> findCandidatesWithUnreadChat(
+              AND users.partner_id = :partnerId
+              AND (
+                LOWER(users.first_name) LIKE :keyword
+                OR LOWER(users.last_name) LIKE :keyword
+                OR candidate.candidate_number LIKE :keyword
+                )
+            """, nativeQuery = true
+    )
+    List<Long> findCandidatesWithActiveAndUnreadChat(
         @Param("partnerId") long partnerId,
         @Param("userId") long userId,
-        Pageable pageable
+        @Param("keyword") String keyword
     );
+
+    Page<Candidate> findByIdIn(List<Long> ids, Pageable pageable);
+
 }

@@ -68,7 +68,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tctalent.server.request.chat.FetchCandidatesWithActiveChatRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
@@ -551,11 +551,6 @@ public interface CandidateService {
      * @param request
      * @return
      */
-    Page<Candidate> fetchCandidatesWithActiveChat(FetchCandidatesWithActiveChatRequest request);
+    Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
 
-    /**
-     * TODO
-     * @return
-     */
-    Page<Candidate> fetchCandidatesWithUnreadChat(FetchCandidatesWithUnreadChatRequest request);
 }

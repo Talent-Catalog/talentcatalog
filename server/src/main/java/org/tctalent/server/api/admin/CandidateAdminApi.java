@@ -57,7 +57,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableDocsRequest
 import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tctalent.server.request.chat.FetchCandidatesWithActiveChatRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -353,22 +353,13 @@ public class CandidateAdminApi {
         return info;
     }
 
-    @PostMapping("fetch-candidates-with-active-chat")
-    public Map<String, Object> fetchCandidatesWithActiveChat(
-        @Valid @RequestBody FetchCandidatesWithActiveChatRequest request
+    @PostMapping("fetch-candidates-with-chat")
+    public Map<String, Object> fetchCandidatesWithChat(
+        @Valid @RequestBody FetchCandidatesWithChatRequest request
     ) {
-        Page<Candidate> candidates = candidateService.fetchCandidatesWithActiveChat(request);
+        Page<Candidate> candidates = candidateService.fetchCandidatesWithChat(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
-    }
-
-    @PostMapping("fetch-candidates-with-unread-chat")
-    public Page<Candidate> fetchCandidatesWithUnreadChat(
-        FetchCandidatesWithUnreadChatRequest request
-    ) {
-        Page<Candidate> candidatesWithUnreadChat =
-            candidateService.fetchCandidatesWithUnreadChat(request);
-        return candidatesWithUnreadChat;
     }
 
 }

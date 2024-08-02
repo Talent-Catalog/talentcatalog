@@ -3,25 +3,15 @@
 </div>
 
 <!-- loading -->
-<div *ngIf="loading">
-  <td colspan="42">
+<div class="mt-1">
+  <span *ngIf="loading || !chatsReadProcessingComplete; else emptyLine">
     <i class="fas fa-spinner fa-spin"></i> Loading...
-  </td>
+  </span>
+  <!-- Keeps elements from bouncing around when toggling between loading and not loading -->
+  <ng-template #emptyLine><br></ng-template>
 </div>
 
-<div class="my-4">
-  <ngb-pagination [boundaryLinks]="true"
-                  [pageSize]="pageSize"
-                  [collectionSize]="results?.totalElements"
-                  [(page)]="pageNumber"
-                  [maxSize]="5"
-                  [ellipses]="true"
-                  [rotate]="true"
-                  (pageChange)="fetchCandidatesWithActiveChat(true)">
-  </ngb-pagination>
-</div>
-
-<div class="searches my-4">
+<div class="searches mb-4 mt-3">
   <form [formGroup]="searchForm" (ngSubmit)="fetchCandidatesWithActiveChat(true)">
     <div class="row mb-3">
       <div class="col-10">
@@ -153,4 +143,18 @@
     </tr>
     </tbody>
   </table>
+</div>
+
+<div class="text-muted mb-2 align-middle">
+  <ngb-pagination [boundaryLinks]="true"
+                  [pageSize]="pageSize"
+                  [collectionSize]="results?.totalElements"
+                  [(page)]="pageNumber"
+                  [maxSize]="5"
+                  [ellipses]="true"
+                  [rotate]="true"
+                  (pageChange)="fetchCandidatesWithActiveChat(true)">
+  </ngb-pagination>
+
+  Found {{results?.totalElements}} in total
 </div>

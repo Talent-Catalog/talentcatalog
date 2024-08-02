@@ -9,7 +9,7 @@ import {
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {FetchCandidatesWithActiveChatRequest, Status} from "../../../model/base";
+import {FetchCandidatesWithChatRequest, Status} from "../../../model/base";
 import {Task} from "../../../model/task";
 import {CandidateService} from "../../../services/candidate.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -53,7 +53,8 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   chatsReadProcessingComplete: boolean = false;
 
   // Form info
-  unreadOnlyTip = "Show only candidates whose chats have unread posts";
+  unreadOnlyTip = "Show only candidates whose chats have unread posts. " +
+    "This view doesn't auto-update: click 'Refresh' to see current results.";
   unreadOnlyLabel = "Show unread only";
 
   /**
@@ -112,16 +113,17 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   public fetchCandidatesWithActiveChat(refresh: boolean) {
     this.loading = true;
 
-    const request: FetchCandidatesWithActiveChatRequest = {
+    const request: FetchCandidatesWithChatRequest = {
       pageNumber: this.pageNumber - 1,
       pageSize: this.pageSize,
       sortFields: [this.sortField],
       sortDirection: this.sortDirection,
-      keyword: this.keyword
+      keyword: this.keyword,
+      unreadOnly: this.unreadOnly
     }
 
     if (refresh) {
-      this.candidateService.fetchCandidatesWithActiveChat(request).subscribe(
+      this.candidateService.fetchCandidatesWithChat(request).subscribe(
         candidates => {
           this.processSearchResults(candidates);
         },
@@ -142,17 +144,8 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   }
 
   protected processSearchResults(results: SearchResults<Candidate>) {
-    this.results = results;
-
-    if (this.unreadOnly) { // User only wants to see candidates whose chat has unread posts
-      // TODO create request
-      this.candidateService.fetchCandidatesWithUnreadChat().subscribe(
-        candidatesWithUnreadChatIds => {
-          // TODO get this to return paged search results and process them as you would any other
-          })
-    } else {
+      this.results = results;
       this.candidates = results.content;
-    }
 
     //Following the search, filter loses focus, so focus back on it again
     setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
@@ -225,7 +218,11 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   }
 
   /**
-   * TODO Doc
+   * Stores each candidate chat in this.candidateChats, indexed by the candidate id.
+   * This can be accessed by {@link getCandidateChat}.
+   * <p/>
+   * It also puts chats for all candidates into this.allChats.
+   * @param chatByCandidate chat for each candidate
    */
   protected processCandidateChats(chatByCandidate: JobChat[]) {
     //Recalculate all chats for new candidates
@@ -299,7 +296,6 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
     })
   }
 
-  // TODO currently not working - also in show-candidates component
   public downloadCv(candidate) {
     const tab = window.open();
     this.candidateService.downloadCv(candidate.id).subscribe(

@@ -156,7 +156,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tctalent.server.request.chat.FetchCandidatesWithActiveChatRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
@@ -2972,41 +2972,32 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> fetchCandidatesWithActiveChat(
-        FetchCandidatesWithActiveChatRequest request
+    public Page<Candidate> fetchCandidatesWithChat(
+        FetchCandidatesWithChatRequest request
     ) {
         User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
             throw new InvalidSessionException("Not logged in");
         }
 
-        // TODO doc
         String keyword = request.getKeyword();
         if (keyword.isEmpty() || !StringHelper.onlyDigits(keyword, keyword.length())) {
             keyword = StringUtils.lowerCase("%" + request.getKeyword() + "%");
         }
 
-        return candidateRepository.fetchCandidatesWithActiveChats(
-            loggedInUser.getPartner().getId(), keyword, request.getPageRequest()
-        );
-    }
-
-    @Override
-    public Page<Candidate> fetchCandidatesWithUnreadChat(
-        FetchCandidatesWithUnreadChatRequest request) {
-        User loggedInUser = userService.getLoggedInUser();
-        if (loggedInUser == null) {
-            throw new InvalidSessionException("Not logged in");
-        }
-
-        Page<Candidate> candidatesWithUnreadChat =
-            candidateRepository.findCandidatesWithUnreadChat(
-                loggedInUser.getPartner().getId(),
-                loggedInUser.getId(),
-                request.getPageRequest
+        if (request.isUnreadOnly()) {
+            List<Long> candidateIds =
+                candidateRepository.findCandidatesWithActiveAndUnreadChat(
+                    loggedInUser.getPartner().getId(),
+                    loggedInUser.getId(),
+                    keyword
+                );
+            return candidateRepository.findByIdIn(candidateIds, request.getPageRequest());
+        } else {
+            return candidateRepository.findCandidatesWithActiveChat(
+                loggedInUser.getPartner().getId(), keyword, request.getPageRequest()
             );
-
-        return candidatesWithUnreadChat;
+        }
     }
 
 }

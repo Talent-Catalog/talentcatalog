@@ -320,8 +320,6 @@ export enum Status {
   deleted = "deleted"
 }
 
-export interface FetchCandidatesWithActiveChatRequest extends PagedFilteredSearchRequest { }
-
-export interface FetchCandidatesWithUnreadChatRequest extends PagedSearchRequest {
-  candidateIds: number[]
+export interface FetchCandidatesWithChatRequest extends PagedFilteredSearchRequest {
+  unreadOnly: boolean;
 }
