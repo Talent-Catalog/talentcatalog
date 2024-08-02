@@ -128,6 +128,9 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
       this.candidateService.fetchCandidatesWithChat(request).subscribe(
         candidates => {
           this.processSearchResults(candidates);
+          // Cancel candidate selection and clear chat display
+          this.candidateSelection.emit(null);
+          this.currentCandidate = null;
         },
         error => {
           this.error = error;
