@@ -19,13 +19,16 @@ package org.tctalent.server.util;
 public class StringHelper {
 
   /**
-   *   Function to check if a string contains only digits
+   * Takes a string and returns true if it is all digits.
+   * @param str the string to be evaluated
+   * @param strLength the length of that string
+   * @return true if all digits, false if not
    */
   public static boolean
-  onlyDigits(String str, int n)
+  onlyDigits(String str, int strLength)
   {
     // Traverse the string from start to end
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < strLength; i++) {
 
       // Check if character is not a digit between 0-9, return false if so
       if (str.charAt(i) < '0'

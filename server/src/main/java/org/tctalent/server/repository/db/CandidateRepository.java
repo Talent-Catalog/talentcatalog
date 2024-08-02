@@ -17,6 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -695,6 +696,13 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * [Partner] Candidate Chats tab.
      */
 
+    /**
+     * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in
+     * user's partner organisation, if they contain posts unread by same user.
+     * @param partnerId logged-in user's partner org's ID
+     * @param userId logged in user's ID
+     * @return list of IDs of Job Chats matching the criteria
+     */
     @Query(
         value =
         """
@@ -741,6 +749,15 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         @Param("userId") long userId
     );
 
+    /**
+     * Paged search finding candidates managed by the logged-in user's partner organisation, if
+     * they have a Job Chat of type 'CandidateProspect' containing at least one post.
+     * @param partnerId logged-in user's partner org's ID
+     * @param keyword pre-processed keyword entered in search filter, may represent candidate
+     *                number, first name or last name of candidate
+     * @param pageable details of requested pagination
+     * @return paged search results of matching candidates
+     */
     @Query(
         value =
             """
@@ -776,6 +793,18 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         Pageable pageable
     );
 
+    /**
+     * Search finding IDs of candidates managed by the logged-in user's partner organisation, if they
+     * have a Job Chat of type 'CandidateProspect' containing at least one post that is unread by
+     * the logged-in user.
+     * Being a complex query, this was not suitable for JPQL so is instead written in regular SQL,
+     * requiring return of IDs rather than the whole candidate object.
+     * @param partnerId logged-in user's partner org's ID
+     * @param userId logged-in user's ID
+     * @param keyword pre-processed keyword entered in search filter, may represent candidate
+     *                number, first name or last name of candidate
+     * @return list of IDs of candidates who match the criteria
+     */
     @Query(
         value =
             """
@@ -822,6 +851,13 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         @Param("keyword") String keyword
     );
 
-    Page<Candidate> findByIdIn(List<Long> ids, Pageable pageable);
+    /**
+     * Takes a collection of candidate IDs and returns their corresponding candidates. Used here to
+     * get around SQL limitations.
+     * @param candidateIds any Collection of candidate IDs
+     * @param pageable details of requested pagination
+     * @return paged search result of candidates who match the criteria
+     */
+    Page<Candidate> findByIdIn(Collection<Long> candidateIds, Pageable pageable);
 
 }

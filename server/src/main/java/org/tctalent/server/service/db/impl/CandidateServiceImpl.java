@@ -2994,6 +2994,10 @@ public class CandidateServiceImpl implements CandidateService {
             throw new InvalidSessionException("Not logged in");
         }
 
+        // If the keyword is empty or contains non-numeric characters, we want matches for first and
+        // last names that match the string in any part - e.g. 'sam' would match 'samuel' - but if
+        // the keyword contains only numbers, we assume a candidate number is sought and return
+        // only full matches - e.g. '00' will not match '60011'.
         String keyword = request.getKeyword();
         if (keyword.isEmpty() || !StringHelper.onlyDigits(keyword, keyword.length())) {
             keyword = StringUtils.lowerCase("%" + request.getKeyword() + "%");

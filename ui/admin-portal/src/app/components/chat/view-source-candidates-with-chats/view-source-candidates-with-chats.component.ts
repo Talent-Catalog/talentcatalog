@@ -50,6 +50,8 @@ export class ViewSourceCandidatesWithChatsComponent implements OnInit {
   searchForm: FormGroup;
   candidates: Candidate[];
   results: SearchResults<Candidate>;
+  // Used to stop the view from checking chat read statuses on candidate rows until after the chats
+  // have been processed - also keeps the loading indicator running while doing so.
   chatsReadProcessingComplete: boolean = false;
 
   // Form info

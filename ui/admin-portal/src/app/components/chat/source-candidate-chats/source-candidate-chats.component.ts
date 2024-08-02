@@ -35,7 +35,7 @@ export class SourceCandidateChatsComponent extends MainSidePanelBase implements 
   public onCandidateSelected(candidate: Candidate) {
     this.selectedCandidate = candidate;
     this.displayChat();
-    window.scrollTo(0,0);
+    window.scrollTo(0,0); // When user clicks candidate at bottom of page, returns them to editor
   }
 
   private displayChat() {
