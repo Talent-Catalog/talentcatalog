@@ -46,6 +46,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -507,6 +508,19 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Set<Long> searchCandidatesUsingSql(String sql) {
+        Query query = entityManager.createNativeQuery(sql);
+        final List resultList = query.getResultList();
+        Set<Long> result = new HashSet<>();
+        for (Object obj : resultList) {
+            if (obj instanceof BigInteger) {
+                result.add(((BigInteger) obj).longValue());
+            }
+        }
+        return result;
     }
 
     @NotNull

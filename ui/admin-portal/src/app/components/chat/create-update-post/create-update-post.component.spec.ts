@@ -73,12 +73,15 @@ fdescribe('CreateUpdatePostComponent', () => {
   it('should send a post', () => {
     component.chat = { id: 1 }; // Mock chat object
     const content = 'Test content';
+    const expectedBody = {
+      content,
+      linkPreviews: []  // Ensure this matches what is actually sent
+    };
     component.postForm.get('content').setValue(content);
     component.onSend();
-    expect(rxStompService.publish).toHaveBeenCalledWith({ destination: '/app/chat/1', body: JSON.stringify({ content }) });
+    expect(rxStompService.publish).toHaveBeenCalledWith({ destination: '/app/chat/1', body: JSON.stringify(expectedBody) });
     expect(component.postForm.get('content').value).toBeNull(); // Should clear content after sending
   });
-
 
   it('should upload a file', fakeAsync(() => {
     const file = new File(['file content'], 'test.txt');

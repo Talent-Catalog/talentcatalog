@@ -17,7 +17,6 @@
 package org.tctalent.server.request.candidate.stat;
 
 import java.time.LocalDate;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -26,6 +25,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CandidateStatsRequest {
+
+    /**
+     * If not null and true, stats are computed using the old method.
+     */
+    private Boolean runOldStats;
 
     /**
      * If not null, stats are computed on candidates in the corresponding list.
