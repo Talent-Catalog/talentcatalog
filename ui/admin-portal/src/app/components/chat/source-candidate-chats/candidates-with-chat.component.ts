@@ -7,10 +7,10 @@ import {BehaviorSubject} from "rxjs";
 
 @Component({
   selector: 'app-source-candidate-chats',
-  templateUrl: './source-candidate-chats.component.html',
-  styleUrls: ['./source-candidate-chats.component.scss']
+  templateUrl: './candidates-with-chat.component.html',
+  styleUrls: ['./candidates-with-chat.component.scss']
 })
-export class SourceCandidateChatsComponent extends MainSidePanelBase implements OnInit {
+export class CandidatesWithChatComponent extends MainSidePanelBase implements OnInit {
 
   /**
    * This is passed in from a higher level component which tracks whether the overall read status

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewSourceCandidatesWithChatsComponent } from './view-source-candidates-with-chats.component';
+import { ViewCandidatesWithChatComponent } from './view-candidates-with-chat.component';
 
 describe('ViewSourceCandidatesWithChatsComponent', () => {
-  let component: ViewSourceCandidatesWithChatsComponent;
-  let fixture: ComponentFixture<ViewSourceCandidatesWithChatsComponent>;
+  let component: ViewCandidatesWithChatComponent;
+  let fixture: ComponentFixture<ViewCandidatesWithChatComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ViewSourceCandidatesWithChatsComponent ]
+      declarations: [ ViewCandidatesWithChatComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ViewSourceCandidatesWithChatsComponent);
+    fixture = TestBed.createComponent(ViewCandidatesWithChatComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

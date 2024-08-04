@@ -20,10 +20,10 @@ import {JobChat, JobChatUserInfo} from "../../../model/chat";
 
 @Component({
   selector: 'app-view-source-candidates-with-chats',
-  templateUrl: './view-source-candidates-with-chats.component.html',
-  styleUrls: ['./view-source-candidates-with-chats.component.scss']
+  templateUrl: './view-candidates-with-chat.component.html',
+  styleUrls: ['./view-candidates-with-chat.component.scss']
 })
-export class ViewSourceCandidatesWithChatsComponent implements OnInit {
+export class ViewCandidatesWithChatComponent implements OnInit {
 
   @Output() candidateSelection = new EventEmitter<Candidate>();
 

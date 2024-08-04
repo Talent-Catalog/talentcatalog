@@ -345,6 +345,12 @@ public class CandidateAdminApi {
          return token;
     }
 
+    /**
+     * Returns {@link JobChatUserInfo} used for processing unread status of Job Chats of type
+     * 'CandidateProspect' for candidates managed by the logged-in user's partner organisation, if
+     * they contain posts unread by same user.
+     * @return {@link JobChatUserInfo}
+     */
     @PostMapping("check-unread-chats")
     public @NotNull JobChatUserInfo checkUnreadChats() {
         List<Long> chatIds = candidateService.findUnreadChatsInCandidates();
@@ -353,6 +359,14 @@ public class CandidateAdminApi {
         return info;
     }
 
+    /**
+     * If unreadOnly boolean contained in request is true, returns paged search results of
+     * candidates managed by the logged-in user's partner organisation, if they have a Job Chat of
+     * type 'CandidateProspect' containing at least one post that is unread by the logged-in user.
+     * If unreadOnly is false, the candidates' chat only has to contain one post, read or unread.
+     * @param request {@link FetchCandidatesWithChatRequest}
+     * @return Map<String, Object> representing paged search results of candidates matching criteria
+     */
     @PostMapping("fetch-candidates-with-chat")
     public Map<String, Object> fetchCandidatesWithChat(
         @Valid @RequestBody FetchCandidatesWithChatRequest request
