@@ -356,7 +356,9 @@
                   </button>
                   <ul ngbDropdownMenu>
                     <li *ngIf="isReviewable()" ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
-                    <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
+                    <li class="dropdown-divider" *ngIf="isReviewable"></li>
+                    <li ngbDropdownItem
+                        (click)="downloadCv(candidate)">Download CV</li>
                     <li class="dropdown-divider"></li>
                     <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
                       in new tab</a></li>
