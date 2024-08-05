@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,11 +15,11 @@
  */
 import {CvIconComponent} from "./cv-icon.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {MockCandidate} from "../../../MockData/MockCandidate";
-import {AuthorizationService} from "../../../services/authorization.service";
-import {CandidateAttachmentService} from "../../../services/candidate-attachment.service";
-import {CandidateAttachment} from "../../../model/candidate-attachment";
-import {Candidate} from "../../../model/candidate";
+import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {AuthorizationService} from "../../../../services/authorization.service";
+import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
+import {CandidateAttachment} from "../../../../model/candidate-attachment";
+import {Candidate} from "../../../../model/candidate";
 import {of, throwError} from "rxjs";
 import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
@@ -73,26 +73,26 @@ fdescribe('CvIconComponent', () => {
   it('should return true if user can view CV and cvs are present', () => {
     mockAuthService.canViewCandidateCV.and.returnValue(true);
     component.cvs = mockCanidiate.candidateAttachments;
-    expect(component.canOpen()).toBe(true);
+    expect(component.canOpenOrDownloadCvs()).toBe(true);
   });
 
   it('should return false if user cannot view CV', () => {
     mockAuthService.canViewCandidateCV.and.returnValue(false);
     component.cvs = mockCanidiate.candidateAttachments;
-    expect(component.canOpen()).toBe(false);
+    expect(component.canOpenOrDownloadCvs()).toBe(false);
   });
 
   it('should return false if cvs are not present', () => {
     mockAuthService.canViewCandidateCV.and.returnValue(true);
     component.cvs = [];
-    expect(component.canOpen()).toBe(false);
+    expect(component.canOpenOrDownloadCvs()).toBe(false);
   });
 
   it('should set loading to false and call downloadAttachments', () => {
     mockCandidateAttachmentService.downloadAttachments.and.returnValue(of(null));
     component.cvs = mockCanidiate.candidateAttachments;
     component.candidate = mockCanidiate;
-    component.openCVs();
+    component.openOrDownloadCvs(event);
     expect(component.loading).toBe(false);
     expect(mockCandidateAttachmentService.downloadAttachments).toHaveBeenCalledWith(component.candidate, component.cvs);
   });
@@ -101,7 +101,7 @@ fdescribe('CvIconComponent', () => {
     mockCandidateAttachmentService.downloadAttachments.and.returnValue(of(null));
     component.cvs = mockCanidiate.candidateAttachments;
     component.candidate = mockCanidiate;
-    component.openCVs();
+    component.openOrDownloadCvs(event);
     expect(component.loading).toBe(false);
   });
 
@@ -110,7 +110,7 @@ fdescribe('CvIconComponent', () => {
     mockCandidateAttachmentService.downloadAttachments.and.returnValue(throwError(error));
     component.cvs = mockCanidiate.candidateAttachments;
     component.candidate = mockCanidiate;
-    component.openCVs();
+    component.openOrDownloadCvs(event);
     expect(component.loading).toBe(false);
     expect(component.error).toBe(error);
   });
@@ -131,14 +131,14 @@ fdescribe('CvIconComponent', () => {
     expect(errorElement.textContent).toContain(errorMessage);
   });
 
-  it('should call openCVs when link is clicked', () => {
+  it('should call openOrDownloadCvs when link is clicked', () => {
     component.candidate = mockCanidiate;
-    spyOn(component, 'openCVs');
+    spyOn(component, 'openOrDownloadCvs');
     mockAuthService.canViewCandidateCV.and.returnValue(true);
     component.cvs = mockCanidiate.candidateAttachments;
     fixture.detectChanges();
     const link: DebugElement = fixture.debugElement.query(By.css('.link-info'));
     link.triggerEventHandler('click', null);
-    expect(component.openCVs).toHaveBeenCalled();
+    expect(component.openOrDownloadCvs).toHaveBeenCalled();
   });
 });

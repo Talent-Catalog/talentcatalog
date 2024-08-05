@@ -354,19 +354,29 @@
                   <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
                     <i class="fas fa-ellipsis-h"></i>
                   </button>
-                  <ul ngbDropdownMenu>
-                    <li *ngIf="isReviewable()" ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
-                    <li class="dropdown-divider" *ngIf="isReviewable"></li>
-                    <li ngbDropdownItem
-                        (click)="downloadCv(candidate)">Download CV</li>
-                    <li class="dropdown-divider"></li>
-                    <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
-                      in new tab</a></li>
-                    <li class="dropdown-divider"
-                        *ngIf="(!isJobList() && isContentModifiable()) || isJobList()">
+                  <ul ngbDropdownMenu id="candidate-dropdown">
+                    <span *ngIf="isReviewable()">
+                      <li ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
+                      <li class="dropdown-divider"></li>
+                    </span>
+                    <app-cv-dropdown-menu-item [candidate]="candidate"
+                                               (errorStatus)="error = $event"
+                    ></app-cv-dropdown-menu-item>
+                    <li ngbDropdownItem>
+                      <a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">
+                        Open in new tab
+                      </a>
                     </li>
-                    <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
-                    <li *ngIf="isJobList()" ngbDropdownItem (click)="closeOpportunity(candidate)">Close opportunity for this job</li>
+                    <li class="dropdown-divider"
+                        *ngIf="(!isJobList() && isContentModifiable()) || isJobList()"
+                    ></li>
+                    <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem
+                        (click)="removeCandidateFromList(candidate)">
+                      Remove from list
+                    </li>
+                    <li *ngIf="isJobList()" ngbDropdownItem (click)="closeOpportunity(candidate)">
+                      Close opportunity for this job
+                    </li>
                   </ul>
                 </div>
               </td>
@@ -409,10 +419,9 @@
                 <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
                   <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
                 </a>
-                <app-cv-icon
-                  *ngIf="isCandidateNameViewable()"
-                  [candidate]="candidate">
-                </app-cv-icon>
+                <app-cv-icon [candidate]="candidate"
+                             (errorStatus)="error = $event"
+                ></app-cv-icon>
                 <app-tasks-monitor
                   *ngIf="hasTaskAssignments(candidate)"
                   [candidate]="candidate"
