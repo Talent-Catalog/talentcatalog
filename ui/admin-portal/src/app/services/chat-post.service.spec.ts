@@ -43,7 +43,7 @@ fdescribe('ChatPostService', () => {
   });
 
   describe('#listPosts', () => {
-    it('should return an Observable<ChatPost[]>', () => {
+    it('should return an Observable ChatPost[] ', () => {
       const mockChatPosts: ChatPost[] = [
         { id: 1, content: 'Test Post 1'} as ChatPost,
         { id: 2, content: 'Test Post 2' } as ChatPost
@@ -61,7 +61,7 @@ fdescribe('ChatPostService', () => {
   });
 
   describe('#uploadFile', () => {
-    it('should return an Observable<UrlDto>', () => {
+    it('should return an Observable UrlDto ', () => {
       const mockUrlDto: UrlDto = { url: 'http://localhost/test-file' };
       const formData = new FormData();
 
