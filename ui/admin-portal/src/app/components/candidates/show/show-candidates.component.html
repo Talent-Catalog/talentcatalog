@@ -360,7 +360,9 @@
                     <li class="dropdown-divider"></li>
                     <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
                       in new tab</a></li>
-                    <li class="dropdown-divider"></li>
+                    <li class="dropdown-divider"
+                        *ngIf="(!isJobList() && isContentModifiable()) || isJobList()">
+                    </li>
                     <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
                     <li *ngIf="isJobList()" ngbDropdownItem (click)="closeOpportunity(candidate)">Close opportunity for this job</li>
                   </ul>
