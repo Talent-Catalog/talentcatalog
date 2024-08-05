@@ -91,12 +91,12 @@
     <a ngbNavLink title="Active chats with candidates managed by my partner organization">
       {{loggedInPartner.abbreviation}} Candidate Chats  <i class="fa-solid fa-user"></i>
       <app-chat-read-status
-        [observable]="sourceCandidateChatsRead$"
+        [observable]="candidatesWithChatRead$"
       ></app-chat-read-status>
     </a>
     <ng-template ngbNavContent>
-      <app-source-candidate-chats [chatsRead$]="sourceCandidateChatsRead$">
-      </app-source-candidate-chats>
+      <app-candidates-with-chat [chatsRead$]="candidatesWithChatRead$">
+      </app-candidates-with-chat>
     </ng-template>
   </ng-container>
 

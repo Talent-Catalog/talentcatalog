@@ -6,7 +6,7 @@ import {JobChat} from "../../../model/chat";
 import {BehaviorSubject} from "rxjs";
 
 @Component({
-  selector: 'app-source-candidate-chats',
+  selector: 'app-candidates-with-chat',
   templateUrl: './candidates-with-chat.component.html',
   styleUrls: ['./candidates-with-chat.component.scss']
 })

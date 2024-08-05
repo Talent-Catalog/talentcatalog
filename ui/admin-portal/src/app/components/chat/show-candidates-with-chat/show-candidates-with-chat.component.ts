@@ -19,11 +19,11 @@ import {BehaviorSubject, forkJoin, Observable, Subscription} from "rxjs";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
 
 @Component({
-  selector: 'app-view-source-candidates-with-chats',
-  templateUrl: './view-candidates-with-chat.component.html',
-  styleUrls: ['./view-candidates-with-chat.component.scss']
+  selector: 'app-show-candidates-with-chat',
+  templateUrl: './show-candidates-with-chat.component.html',
+  styleUrls: ['./show-candidates-with-chat.component.scss']
 })
-export class ViewCandidatesWithChatComponent implements OnInit {
+export class ShowCandidatesWithChatComponent implements OnInit {
 
   @Output() candidateSelection = new EventEmitter<Candidate>();
 

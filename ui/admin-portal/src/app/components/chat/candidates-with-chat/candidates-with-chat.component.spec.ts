@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CandidatesWithChatComponent } from './candidates-with-chat.component';
 
-describe('SourceCandidateChatsComponent', () => {
+describe('CandidatesWithChatComponent', () => {
   let component: CandidatesWithChatComponent;
   let fixture: ComponentFixture<CandidatesWithChatComponent>;
 

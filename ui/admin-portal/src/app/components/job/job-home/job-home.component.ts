@@ -34,7 +34,7 @@ export class JobHomeComponent extends HomeComponent {
   sourcePartnerChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   partnerJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   starredJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
-  sourceCandidateChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  candidatesWithChatRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   error: any;
 
@@ -96,7 +96,7 @@ export class JobHomeComponent extends HomeComponent {
     )
 
     this.candidateService.checkUnreadChats().subscribe({
-      next: info => this.processChatsReadStatus(this.sourceCandidateChatsRead$, info),
+      next: info => this.processChatsReadStatus(this.candidatesWithChatRead$, info),
       error: error => this.error = error
     })
 
