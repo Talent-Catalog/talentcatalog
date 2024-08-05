@@ -46,7 +46,6 @@
 
     <thead class="table-primary">
     <tr>
-      <th></th>
       <th (click)="toggleSort('id')">
         <app-sorted-by [column]="'id'"
                        [sortColumn]="sortField"
@@ -75,26 +74,8 @@
     <tbody>
       <tr *ngFor="let candidate of candidates"
           (click)="onCandidateSelected(candidate)"
-          [ngClass]="{'current': currentCandidate?.id == candidate.id}">
-        <td>
-          <div ngbDropdown placement="bottom-left" (click)="$event.stopPropagation();" container="body">
-            <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
-              <i class="fas fa-ellipsis-h"></i>
-            </button>
-            <ul ngbDropdownMenu>
-              <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
-              <li class="dropdown-divider"></li>
-              <li ngbDropdownItem>
-                <a target="_blank"
-                   class="no-link"
-                   [routerLink]="['/candidate', candidate.candidateNumber]"
-                >
-                  Open in new tab
-                </a>
-              </li>
-            </ul>
-          </div>
-        </td>
+          [ngClass]="{'current': currentCandidate?.id == candidate.id}"
+      >
         <td>
           <a class="fw-bold" [routerLink]="['/candidate',candidate.candidateNumber]">
             {{candidate.candidateNumber}}
@@ -108,9 +89,6 @@
           <a target="_blank" [href]="candidate.user.partner.websiteUrl">
             <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>
           </a>
-          <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank">
-            <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
-          </a>
           <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
             <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
           </a>
@@ -120,15 +98,6 @@
           <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
             <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
           </a>
-          <app-cv-icon
-            [candidate]="candidate">
-          </app-cv-icon>
-          <app-tasks-monitor
-            *ngIf="hasTaskAssignments(candidate)"
-            [candidate]="candidate"
-            [completedTasks]="getCompletedMonitoredTasks(candidate)"
-            [totalTasks]="getTotalMonitoredTasks(candidate)">
-          </app-tasks-monitor>
         </td>
         <td>
           {{candidate.user.firstName}}

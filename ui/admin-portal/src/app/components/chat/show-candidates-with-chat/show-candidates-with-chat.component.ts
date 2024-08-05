@@ -8,15 +8,24 @@ import {
 } from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
-import {AuthorizationService} from "../../../services/authorization.service";
-import {FetchCandidatesWithChatRequest, Status} from "../../../model/base";
-import {Task} from "../../../model/task";
+import {FetchCandidatesWithChatRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {ChatService} from "../../../services/chat.service";
 import {BehaviorSubject, forkJoin, Observable, Subscription} from "rxjs";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
+
+/**
+ * Simple candidate view with support for showing read/unread status of their chats with source.
+ * Results can be filtered by this status and also by keyword search on name and candidate number,
+ * in addition to toggled sorting by column.
+ *
+ * Some of this code, particularly in the template, is replicated from the show-candidates
+ * component used to display candidate search results and also in the candidate-lists component.
+ * Subject of a future issue may be to create a base class for simple candidate view which this and
+ * both the above can extend - a more lightweight version may prove more versatile than show-candidates.
+ */
 
 @Component({
   selector: 'app-show-candidates-with-chat',
@@ -44,7 +53,6 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   currentCandidate: Candidate;
   pageNumber: number = 1;
   pageSize: number = 25;
-  monitoredTask: Task;
   sortField = 'id';
   sortDirection = 'DESC';
   searchForm: FormGroup;
@@ -77,7 +85,6 @@ export class ShowCandidatesWithChatComponent implements OnInit {
 
   constructor(
     private candidateService: CandidateService,
-    private authService: AuthorizationService,
     private fb: FormBuilder,
     private chatService: ChatService
   ) {}
@@ -186,38 +193,6 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     this.fetchCandidatesWithActiveChat(true);
   }
 
-  public canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
-  }
-
-  public hasTaskAssignments(candidate: Candidate): boolean {
-    const active = candidate.taskAssignments?.filter(ta => ta.status === Status.active);
-    return active?.length > 0;
-  }
-
-  public getTotalMonitoredTasks(candidate: Candidate) {
-    if (this.monitoredTask != null) {
-      return candidate.taskAssignments.filter(ta => ta.task.id === this.monitoredTask.id && ta.status === Status.active);
-    } else {
-      // DEFAULT tasks to monitor are required tasks
-      // Only run through active tasks.
-      let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
-      return activeTaskAssignments.filter(ta => !ta.task.optional);
-    }
-  }
-
-  public getCompletedMonitoredTasks(candidate: Candidate) {
-    if (this.monitoredTask != null) {
-      let monitoredTask = candidate.taskAssignments.filter(ta => ta.task.id === this.monitoredTask.id && ta.status === Status.active);
-      return monitoredTask.filter(ta => (ta.completedDate != null || ta.abandonedDate != null));
-    } else {
-      // DEFAULT tasks to monitor are required tasks
-      // Only run through active tasks.
-      let activeTaskAssignments = candidate.taskAssignments.filter(ta => ta.status === Status.active);
-      return activeTaskAssignments.filter(ta => (ta.completedDate != null || ta.abandonedDate != null) && !ta.task.optional);
-    }
-  }
-
   public getCandidateChat(candidate: Candidate): JobChat[] {
     return candidate ? [this.candidateChats.get(candidate.id)] : null;
   }
@@ -299,19 +274,6 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     error => {
       this.error = error
     })
-  }
-
-  public downloadCv(candidate) {
-    const tab = window.open();
-    this.candidateService.downloadCv(candidate.id).subscribe(
-      result => {
-        const fileUrl = URL.createObjectURL(result);
-        tab.location.href = fileUrl;
-      },
-      error => {
-        this.error = error;
-      }
-    )
   }
 
 }

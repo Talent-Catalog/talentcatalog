@@ -15,7 +15,8 @@
     <div class="alert alert-danger" *ngIf="error">
       {{error}}
     </div>
-    <div class="detail-panel side-panel-color vh-100 d-flex flex-column"
+    <div class="detail-panel side-panel-color d-flex flex-column"
+         style="min-height: 70vh;"
          [ngClass]="selectedCandidate != null ?
             'justify-content-between':'justify-content-center'"
     >
@@ -29,7 +30,7 @@
         ></app-view-chat-posts>
       </div>
       <ng-template #noSelectedChat>
-        <div class="text-muted py-4 fw-light text-center fs-5">
+        <div class="py-4 text-muted fw-light text-center fs-5">
           Select candidate from table to chat
         </div>
       </ng-template>
