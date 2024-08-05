@@ -15,18 +15,15 @@ package org.tctalent.server.request.candidate.exam;/*
  */
 
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class UpdateCandidateExamsRequest {
 
     List<UpdateCandidateExamRequest> updates;
 
-    public List<UpdateCandidateExamRequest> getUpdates() {
-        return updates;
-    }
-
-    public void setUpdates(List<UpdateCandidateExamRequest> updates) {
-        this.updates = updates;
-    }
 }
 
 
