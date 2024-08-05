@@ -7,7 +7,7 @@
   <ng-container *ngIf="!loading">
 
     <!-- TABS -->
-    <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+    <nav ngbNav #nav="ngbNav" class="nav-pills nav-fill flex-column flex-sm-row" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
       <!-- PROFILE -->
       <ng-container ngbNavItem="Profile">
