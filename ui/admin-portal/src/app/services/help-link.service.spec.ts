@@ -124,7 +124,7 @@ fdescribe('HelpLinkService', () => {
       label:'Test',
       country: MockJob.country
     } as HelpLink;
-    
+
     service.update(id, request).subscribe((response) => {
       expect(response).toEqual(mockResponse);
     });
