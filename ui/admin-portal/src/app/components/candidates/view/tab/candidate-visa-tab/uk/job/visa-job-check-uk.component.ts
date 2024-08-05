@@ -9,6 +9,7 @@ import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
 import {OccupationService} from "../../../../../../../services/occupation.service";
+import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-visa-job-check-uk',
@@ -23,6 +24,8 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
 
   @ViewChild('visaJobUk') visaJobUk: NgbAccordion;
 
+  candidateOpportunity: CandidateOpportunity;
+
   error: string;
 
   constructor(private candidateEducationService: CandidateEducationService,
@@ -30,6 +33,8 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
               private occupationService: OccupationService) {}
 
   ngOnInit() {
+    this.candidateOpportunity = this.candidate.candidateOpportunities
+      .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
   }
 
   ngAfterViewInit() {

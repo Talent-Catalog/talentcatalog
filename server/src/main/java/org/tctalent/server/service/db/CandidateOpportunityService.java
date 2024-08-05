@@ -33,6 +33,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
@@ -163,4 +164,14 @@ public interface CandidateOpportunityService {
      */
     CandidateOpportunity uploadOffer(long id, MultipartFile file)
         throws InvalidRequestException, NoSuchObjectException, IOException;
+
+    /**
+     * Updates the CandidateOpportunity with the relocating dependants
+     * @param request id of opportunity to get
+     * @param request relocating dependant ids
+     * @return CandidateOpportunity
+     * @throws NoSuchObjectException if there is no opportunity with this id.
+     */
+    CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request)
+        throws NoSuchObjectException;
 }

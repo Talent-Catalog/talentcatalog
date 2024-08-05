@@ -17,6 +17,13 @@
 package org.tctalent.server.api.admin;
 
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
@@ -81,14 +88,6 @@ import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.PublishedDocColumnProps;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author sadatmalik
@@ -284,6 +283,7 @@ public class AdminApiTestUtil {
         opportunity.setEmployerFeedback("Some employer feedback");
         opportunity.setStage(CandidateOpportunityStage.offer);
         opportunity.setJobOpp(getSalesforceJobOpp());
+        opportunity.setRelocatingDependantIds(List.of(1L, 2L));
         return opportunity;
     }
 

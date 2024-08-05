@@ -134,7 +134,7 @@
       </ng-container>
 
       <ng-container ngbNavItem="Upload">
-        <a ngbNavLink>Upload Offer</a>
+        <a ngbNavLink>Upload</a>
         <ng-template ngbNavContent>
           <div class="card">
 
@@ -173,6 +173,22 @@
 
             </div>
 
+          </div>
+
+          <hr>
+
+          <div class="card">
+
+            <div class="card-header">
+              Relocating Dependants
+            </div>
+
+            <div class="card-body">
+              <app-relocating-dependants
+                [candidateOpp]="opp"
+                [candidateId]="opp.candidate.id">
+              </app-relocating-dependants>
+            </div>
           </div>
         </ng-template>
       </ng-container>

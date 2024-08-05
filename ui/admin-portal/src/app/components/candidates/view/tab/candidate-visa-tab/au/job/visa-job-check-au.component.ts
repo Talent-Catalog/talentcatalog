@@ -15,6 +15,7 @@ import {CandidateEducation} from "../../../../../../../model/candidate-education
 import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {Occupation} from "../../../../../../../model/occupation";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-visa-job-check-au',
@@ -35,6 +36,7 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
   yrsExp: CandidateOccupation;
   familyInAus: string;
   candidateAge: number;
+  candidateOpportunity: CandidateOpportunity;
 
   error: string;
 
@@ -70,6 +72,8 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
     this.familyInAus = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
     const dobDate = new Date(this.candidate.dob);
     this.candidateAge = calculateAge(dobDate);
+    this.candidateOpportunity = this.candidate.candidateOpportunities
+      .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
   }
 
   ngAfterViewInit() {
