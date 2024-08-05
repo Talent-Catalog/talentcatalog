@@ -54,7 +54,11 @@ export class CvIconComponent implements OnInit {
     if (this.attachment) {
       this.cvs.push(this.attachment)
     } else {
-      this.cvs = this.candidate.candidateAttachments;
+      this.candidate.candidateAttachments.forEach(attachment => {
+        if (attachment.cv) {
+          this.cvs.push(attachment);
+        }
+      })
     }
   }
 
