@@ -345,4 +345,5 @@ export class ChatService implements OnDestroy {
     }
     return Array.from(filterMap.values());
   }
+
 }

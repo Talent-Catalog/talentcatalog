@@ -1,0 +1,124 @@
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
+<!-- MODEL: loading indicator that doesn't move other elements on the screen around -->
+<!-- loading -->
+<div class="mt-1">
+  <span *ngIf="loading || !chatsReadProcessingComplete; else emptyLine">
+    <i class="fas fa-spinner fa-spin"></i> Loading...
+  </span>
+  <!-- Keeps elements from bouncing around when toggling between loading and not loading -->
+  <ng-template #emptyLine><br></ng-template>
+</div>
+
+<div class="searches mb-4 mt-3">
+  <form [formGroup]="searchForm" (ngSubmit)="fetchCandidatesWithActiveChat(true)">
+    <div class="row mb-3">
+      <div class="col-10">
+        <input #searchFilter type="text" class="form-control" placeholder="Name or number..."
+               aria-label="Search" formControlName="keyword"
+               id="keyword">
+      </div>
+      <div class="col-2">
+        <button class="btn btn-sm btn-accent-3" (click)="refresh()">
+          Refresh
+          <i class="fas fa-sync" title="Refresh data"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-2">
+      <div class="col-md-5">
+        <div class="form-check form-check-reverse">
+          <input [title]="unreadOnlyTip" type="checkbox"
+                 formControlName="unreadOnly" id="unreadOnlyCheckbox" class="form-check-input">
+          <label class="form-check-label" [title]="unreadOnlyTip"
+                 for="unreadOnlyCheckbox">{{unreadOnlyLabel}}</label>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-hover">
+
+    <thead class="table-primary">
+    <tr>
+      <th (click)="toggleSort('id')">
+        <app-sorted-by [column]="'id'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        Candidate #
+      </th>
+      <th (click)="toggleSort('user.firstName')">
+        <app-sorted-by [column]="'user.firstName'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        First Name
+      </th>
+      <th (click)="toggleSort('user.lastName')">
+        <app-sorted-by [column]="'user.lastName'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        Last Name
+      </th>
+      <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let candidate of candidates"
+          (click)="onCandidateSelected(candidate)"
+          [ngClass]="{'current': currentCandidate?.id == candidate.id}"
+      >
+        <td>
+          <a class="fw-bold" target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+            {{candidate.candidateNumber}}
+          </a>
+          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
+            <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+          </a>
+          <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
+            <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
+          </a>
+          <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
+            <i class="fas fa-video" title="Show candidate's one way video"></i>
+          </a>
+          <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+            <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
+          </a>
+        </td>
+        <td>
+          {{candidate.user.firstName}}
+        </td>
+        <td>
+          {{candidate.user.lastName}}
+        </td>
+        <td>
+          <app-chat-read-status *ngIf="chatsReadProcessingComplete"
+                                [chats]="getCandidateChat(candidate)">
+          </app-chat-read-status>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="text-muted mb-2 align-middle">
+  <ngb-pagination [boundaryLinks]="true"
+                  [pageSize]="pageSize"
+                  [collectionSize]="results?.totalElements"
+                  [(page)]="pageNumber"
+                  [maxSize]="5"
+                  [ellipses]="true"
+                  [rotate]="true"
+                  (pageChange)="fetchCandidatesWithActiveChat(true)">
+  </ngb-pagination>
+
+  Found {{results?.totalElements}} in total
+</div>

@@ -4,7 +4,6 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {HomeComponent} from "../../candidates/home.component";
-import {SearchOppsBy} from "../../../model/base";
 import {BehaviorSubject, Subject} from "rxjs";
 import {SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 import {OpportunityOwnershipType} from "../../../model/opportunity";
@@ -12,6 +11,8 @@ import {CandidateOpportunityService} from "../../../services/candidate-opportuni
 import {JobChatUserInfo} from "../../../model/chat";
 import {SearchJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
+import {CandidateService} from "../../../services/candidate.service";
+import {SearchOppsBy} from "../../../model/base";
 
 @Component({
   selector: 'app-job-home',
@@ -33,6 +34,7 @@ export class JobHomeComponent extends HomeComponent {
   sourcePartnerChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   partnerJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   starredJobChatsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  candidatesWithChatRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   error: any;
 
@@ -42,7 +44,8 @@ export class JobHomeComponent extends HomeComponent {
     protected localStorageService: LocalStorageService,
     protected savedSearchService: SavedSearchService,
     protected authorizationService: AuthorizationService,
-    protected authenticationService: AuthenticationService
+    protected authenticationService: AuthenticationService,
+    protected candidateService: CandidateService
   ) {
     super(localStorageService, savedSearchService, authorizationService, authenticationService);
     this.lastTabKey = 'JobsHomeLastTab';
@@ -91,6 +94,12 @@ export class JobHomeComponent extends HomeComponent {
         error: error => this.error = error
       }
     )
+
+    this.candidateService.checkUnreadChats().subscribe({
+      next: info => this.processChatsReadStatus(this.candidatesWithChatRead$, info),
+      error: error => this.error = error
+    })
+
   }
 
   private processChatsReadStatus(subject: Subject<boolean>, info: JobChatUserInfo) {
