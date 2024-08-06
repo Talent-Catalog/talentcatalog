@@ -227,7 +227,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     )
   }
 
-  downloadCV() {
+  downloadGeneratedCV() {
     // Modal
     const downloadCVModal = this.modalService.open(DownloadCvComponent, {
       centered: true,

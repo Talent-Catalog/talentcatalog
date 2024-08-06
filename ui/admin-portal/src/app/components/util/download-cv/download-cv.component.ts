@@ -3,6 +3,11 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService, DownloadCVRequest} from "../../../services/candidate.service";
 
+/**
+ * Modal component fills request to open/DL CV generated from given candidates profile.
+ * Usage examples {@link ShowCandidatesComponent.downloadGeneratedCV},
+ * {@link ViewCandidateComponent.downloadGeneratedCV}
+ */
 @Component({
   selector: 'app-download-cv',
   templateUrl: './download-cv.component.html',

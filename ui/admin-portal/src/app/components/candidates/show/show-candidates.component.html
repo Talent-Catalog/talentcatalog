@@ -360,7 +360,9 @@
                       <li class="dropdown-divider"></li>
                     </span>
                     <span *ngIf="isCandidateNameViewable()">
-                      <li ngbDropdownItem (click)="downloadCv(candidate)">
+                      <li ngbDropdownItem (click)="downloadGeneratedCV(candidate)"
+                          title="Opens/DLs CV generated from candidate profile"
+                      >
                         Download CV
                       </li>
                       <li class="dropdown-divider"></li>

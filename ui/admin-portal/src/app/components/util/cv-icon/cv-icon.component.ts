@@ -20,6 +20,10 @@ import {CandidateAttachmentService} from '../../../services/candidate-attachment
 import {Candidate} from '../../../model/candidate';
 import {AuthorizationService} from "../../../services/authorization.service";
 
+/**
+ * Clickable icon component that opens or DLs CVs uploaded to the given candidate's profile
+ */
+
 @Component({
   selector: 'app-cv-icon',
   templateUrl: './cv-icon.component.html',
