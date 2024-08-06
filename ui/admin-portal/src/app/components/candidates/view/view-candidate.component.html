@@ -62,9 +62,10 @@
           <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank" class="link-info" >
             <i class="fab fa-linkedin" title="Show candidate's linkedIn"></i>
           </a>
-          <app-cv-icon [candidate]="candidate"
-                       (errorStatus)="error = $event"
-          ></app-cv-icon>
+          <app-cv-icon
+            *ngIf="isCVViewable()"
+            [candidate]="candidate">
+          </app-cv-icon>
           <a [href]="publicCvUrl()" target="_blank" class="link-info">
             <i class="fas fa-users" title="View candidate's public CV"></i>
           </a>

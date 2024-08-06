@@ -274,7 +274,7 @@ import {
 import {
   CreateCandidateOccupationComponent
 } from './components/candidates/view/occupation/create/create-candidate-occupation.component';
-import {CvIconComponent} from './components/util/cv-download/cv-icon/cv-icon.component';
+import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
 import {JoblinkComponent} from './components/util/joblink/joblink.component';
 import {
   CandidateContextNoteComponent
@@ -796,8 +796,6 @@ import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
-import { CvDropdownMenuItemComponent } from './components/util/cv-download/cv-dropdown-menu-item/cv-dropdown-menu-item.component';
-import { CvDownloadBaseComponent } from './components/util/cv-download/cv-download-base/cv-download-base.component';
 
 @NgModule({
   declarations: [
@@ -1121,9 +1119,7 @@ import { CvDownloadBaseComponent } from './components/util/cv-download/cv-downlo
     SfJoblinkComponent,
     SelectJobCopyComponent,
     VisaJobCheckUkComponent,
-    PreviewLinkComponent,
-    CvDropdownMenuItemComponent,
-    CvDownloadBaseComponent
+    PreviewLinkComponent
   ],
   imports: [
     BrowserModule,

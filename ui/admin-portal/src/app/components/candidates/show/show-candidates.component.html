@@ -359,9 +359,12 @@
                       <li ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
                       <li class="dropdown-divider"></li>
                     </span>
-                    <app-cv-dropdown-menu-item [candidate]="candidate"
-                                               (errorStatus)="error = $event"
-                    ></app-cv-dropdown-menu-item>
+                    <span *ngIf="isCandidateNameViewable()">
+                      <li ngbDropdownItem (click)="downloadCv(candidate)">
+                        Download CV
+                      </li>
+                      <li class="dropdown-divider"></li>
+                    </span>
                     <li ngbDropdownItem>
                       <a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">
                         Open in new tab
@@ -419,9 +422,10 @@
                 <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
                   <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
                 </a>
-                <app-cv-icon [candidate]="candidate"
-                             (errorStatus)="error = $event"
-                ></app-cv-icon>
+                <app-cv-icon
+                  *ngIf="isCandidateNameViewable()"
+                  [candidate]="candidate">
+                </app-cv-icon>
                 <app-tasks-monitor
                   *ngIf="hasTaskAssignments(candidate)"
                   [candidate]="candidate"

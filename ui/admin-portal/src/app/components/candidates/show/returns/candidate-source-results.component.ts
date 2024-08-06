@@ -43,7 +43,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
   styleUrls: ['./candidate-source-results.component.scss']
 })
 export class CandidateSourceResultsComponent implements OnInit, OnChanges {
-  error: any;
+  error: null;
   pageNumber: number;
   pageSize: number;
   results: SearchResults<Candidate>;

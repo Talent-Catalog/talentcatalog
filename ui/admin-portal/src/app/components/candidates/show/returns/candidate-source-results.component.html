@@ -104,9 +104,10 @@
             <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
               <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
             </a>
-            <app-cv-icon [candidate]="candidate"
-                         (errorStatus)="error = $event"
-            ></app-cv-icon>
+            <app-cv-icon
+              *ngIf="isCandidateNameViewable()"
+              [candidate]="candidate">
+            </app-cv-icon>
           </span>
         </td>
 
