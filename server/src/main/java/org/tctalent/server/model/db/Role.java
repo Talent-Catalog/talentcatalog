@@ -47,12 +47,6 @@ public enum Role {
     admin,
 
     /**
-     * All candidates have Role.user.
-     * They can only see information relevant to themselves.
-     */
-    user,
-
-    /**
      * Can’t create new admins
      * Can’t assign regions to admins
      * Can’t add or modify anything to do with the appearance of the app - ie can’t modify
@@ -70,5 +64,11 @@ public enum Role {
     /**
      * Can’t see a refugee’s location info - country, province, nationality
      */
-    limited
+    limited,
+
+    /**
+     * All candidates have Role.user.
+     * They can only see information relevant to themselves.
+     */
+    user
 }
