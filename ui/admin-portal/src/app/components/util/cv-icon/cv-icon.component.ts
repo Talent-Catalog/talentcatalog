@@ -71,7 +71,9 @@ export class CvIconComponent implements OnInit {
     return this.authService.canViewCandidateCV() && this.cvs?.length > 0;
   }
 
-  openCVs() {
+  openCVs(event: any) {
+    // Stop candidate search profile card from opening on click
+    event.stopPropagation();
     this.loading = true;
     this.candidateAttachmentService.downloadAttachments(this.candidate, this.cvs).subscribe(
       () => this.loading = false,
