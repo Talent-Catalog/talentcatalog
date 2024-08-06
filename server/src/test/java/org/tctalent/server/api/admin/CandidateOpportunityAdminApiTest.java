@@ -16,27 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateOpportunity;
-import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
-import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -53,6 +32,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
+import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
+import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
+import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.SalesforceService;
+
 /**
  * Unit tests for Candidate Opportunity Admin Api endpoints.
  *
@@ -66,6 +67,8 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
 
     private static final String BASE_PATH = "/api/admin/opp";
     private static final String SEARCH_PAGED_PATH = "/search-paged";
+    private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
+    private static final String RELOCATING_DEPENDANTS_PATH = "/{id}/relocating-dependants";
 
     private static final CandidateOpportunity candidateOpportunity = AdminApiTestUtil.getCandidateOpportunity();
     private final Page<CandidateOpportunity> candidateOpportunityPage =
@@ -76,6 +79,7 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
             );
 
     @MockBean CandidateOpportunityService candidateOpportunityService;
+    @MockBean SalesforceService salesforceService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -186,5 +190,47 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.employerFeedback", is("Some employer feedback")));
 
         verify(candidateOpportunityService).updateCandidateOpportunity(anyLong(), any(CandidateOpportunityParams.class));
+    }
+
+    @Test
+    @DisplayName("update sf case relocation info succeeds")
+    void updateSfCaseRelocationInfoSucceeds() throws Exception {
+        given(candidateOpportunityService
+                .getCandidateOpportunity(anyLong()))
+                .willReturn(any(CandidateOpportunity.class));
+
+        mockMvc.perform(put(BASE_PATH + UPDATE_SF_CASE_PATH.replace(
+                        "{id}", "3"))
+                        .with(csrf())
+                        .header("Authorization", "Bearer " + "jwt-token"))
+
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(candidateOpportunityService).getCandidateOpportunity(anyLong());
+    }
+
+    @Test
+    @DisplayName("update relocating dependants succeeds")
+    void updateRelocatingDependantsSucceeds() throws Exception {
+        UpdateRelocatingDependantIds request = new UpdateRelocatingDependantIds();
+        request.setRelocatingDependantIds(List.of(1L, 2L));
+
+        given(candidateOpportunityService
+                .updateRelocatingDependants(anyLong(), any(UpdateRelocatingDependantIds.class)))
+                .willReturn(candidateOpportunity);
+
+        mockMvc.perform(put(BASE_PATH + RELOCATING_DEPENDANTS_PATH.replace(
+                        "{id}", "3"))
+                        .with(csrf())
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(candidateOpportunityService).updateRelocatingDependants(anyLong(), any(UpdateRelocatingDependantIds.class));
     }
 }

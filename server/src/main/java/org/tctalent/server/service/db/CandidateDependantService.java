@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -50,6 +51,13 @@ public interface CandidateDependantService {
      */
     Candidate deleteDependant(long dependantId)
             throws EntityReferencedException, InvalidRequestException;
+
+    /**
+     * List of all dependants associated to candidate with given id.
+     * @param candidateId ID of candidate whose dependants we want
+     * @return list of candidate dependants
+     */
+    List<CandidateDependant> list(long candidateId);
 
     /**
      * Updates the candidate dependant intake data associated with the given

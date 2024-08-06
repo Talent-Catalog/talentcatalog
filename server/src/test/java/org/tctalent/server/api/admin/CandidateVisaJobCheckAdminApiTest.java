@@ -27,7 +27,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,7 +57,6 @@ import org.tctalent.server.service.db.SalesforceService;
 @AutoConfigureMockMvc
 public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-visa-job";
-    private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
 
     private static final CandidateVisaJobCheck candidateVisaJobCheck = getCandidateVisaJobCheck(false);
     private static final CandidateVisaJobCheck candidateVisaJobCheckComplete = getCandidateVisaJobCheck(true);
@@ -170,23 +168,5 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
                 .andExpect(status().isOk());
 
         verify(candidateVisaJobCheckService).deleteVisaJobCheck(anyLong());
-    }
-
-    @Test
-    @DisplayName("update sf case relocation info succeeds")
-    void updateSfCaseRelocationInfoSucceeds() throws Exception {
-        given(candidateVisaJobCheckService
-            .getVisaJobCheck(anyLong()))
-            .willReturn(any(CandidateVisaJobCheck.class));
-
-        mockMvc.perform(put(BASE_PATH + UPDATE_SF_CASE_PATH.replace(
-            "{id}", "3"))
-                .with(csrf())
-            .header("Authorization", "Bearer " + "jwt-token"))
-
-            .andDo(print())
-            .andExpect(status().isOk());
-
-        verify(candidateVisaJobCheckService).getVisaJobCheck(anyLong());
     }
 }

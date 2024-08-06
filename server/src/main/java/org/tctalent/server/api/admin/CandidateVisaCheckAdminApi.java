@@ -16,7 +16,15 @@
 
 package org.tctalent.server.api.admin;
 
-import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -25,11 +33,6 @@ import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-visa-check")
@@ -177,7 +180,6 @@ public class CandidateVisaCheckAdminApi
                 .add("languagesRequired")
                 .add("languagesThresholdMet")
                 .add("languagesThresholdNotes")
-                .add("relocatingDependantIds")
                 ;
     }
 
