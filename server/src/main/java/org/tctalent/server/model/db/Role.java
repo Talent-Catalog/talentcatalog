@@ -47,7 +47,7 @@ public enum Role {
     admin,
 
     /**
-     * Can’t create new admins
+     * Can create new users, including administrators, for their own partner
      * Can’t assign regions to admins
      * Can’t add or modify anything to do with the appearance of the app - ie can’t modify
      * Posts and Pages, User Registration Options, Localization or General Settings
@@ -55,6 +55,7 @@ public enum Role {
     partneradmin,
 
     /**
+     * Can't create new users
      * Can’t see candidate’s name or contact info,
      * Can’t see file attachments
      * Can’t update candidate comments

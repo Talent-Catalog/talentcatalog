@@ -69,9 +69,7 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
-import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
@@ -94,7 +92,6 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
@@ -102,7 +99,6 @@ public class UserServiceImpl implements UserService {
     private final AuthService authService;
     private final EmailHelper emailHelper;
     private final PartnerService partnerService;
-    private final SavedSearchRepository savedSearchRepository;
 
     @Value("${web.portal}")
     private String portalUrl;
@@ -123,18 +119,14 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-        CandidateRepository candidateRepository,
         CountryRepository countryRepository,
-        SavedSearchRepository savedSearchRepository,
         PasswordHelper passwordHelper,
         AuthenticationManager authenticationManager,
         JwtTokenProvider tokenProvider,
         AuthService authService,
         EmailHelper emailHelper, PartnerService partnerService) {
         this.userRepository = userRepository;
-        this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
-        this.savedSearchRepository = savedSearchRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
@@ -223,13 +215,15 @@ public class UserServiceImpl implements UserService {
         Partner newSourcePartner = null;
         Long partnerId = request.getPartnerId();
         if (partnerId != null) {
-            //Partner specified - is it a new one?
+            //Partner specified - is it changing the existing partner?
             if (!partnerId.equals(currentPartnerId)) {
-                if (creatingUser != null && creatingUser.getRole() != Role.systemadmin) {
+                if (creatingUser != null && currentPartnerId != null
+                    && creatingUser.getRole() != Role.systemadmin) {
                     //Only system admins can change partners
-                    throw new InvalidRequestException("You don't have permission to assign a partner.");
+                    throw new InvalidRequestException("You don't have permission to change a partner.");
                 } else {
-                    //Changing partner
+                    //Changing partner -
+                    //or setting partner for the first time (currentPartnerId = null)
                     newSourcePartner = partnerService.getPartner(partnerId);
                 }
             }
@@ -374,7 +368,10 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Validates that source partner admins can only set roles that aren't admin or source partner admin.
+     * Validates whether given creating user can assign a given role to the user they are creating
+     * or updating.
+     * <p/>
+     * See doc on {@link Role} for who can create users of what types.
      * @param user User - the user to add or update role type to.
      * @param requestedRole - The role to change to in the request.
      * @param creatingUser User that is assigning role to given user
@@ -390,13 +387,16 @@ public class UserServiceImpl implements UserService {
             } else {
                 throw new InvalidRequestException("You don't have permission to save this role type.");
             }
-        } else {
-            // Check that source partner admin is only saving roles that are allowed (not admin or source partner admin)
-            if (!authService.hasAdminPrivileges(requestedRole)) {
+        } else if (creatingUserRole == Role.partneradmin) {
+            // Check that source partner admin is only saving roles that are allowed
+            // (not admin or system admin)
+            if (requestedRole != Role.systemadmin && requestedRole != Role.admin) {
                 user.setRole(requestedRole);
             } else {
                 throw new InvalidRequestException("You don't have permission to save this role type.");
             }
+        } else {
+            throw new InvalidRequestException("You don't have permission to save this role type.");
         }
     }
 
@@ -689,7 +689,7 @@ public class UserServiceImpl implements UserService {
     public void mfaVerify(String mfaCode) throws InvalidCredentialsException {
         User user = fetchLoggedInUser();
         if (user.getUsingMfa()) {
-            if (mfaCode == null || mfaCode.length() == 0) {
+            if (mfaCode == null || mfaCode.isEmpty()) {
                 throw new InvalidCredentialsException("You need to enter an authentication code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
@@ -708,7 +708,7 @@ public class UserServiceImpl implements UserService {
     @SchedulerLock(name = "UserService_searchStaffNotUsingMfa", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void checkMfaUsers() {
         List<User> users = searchStaffNotUsingMfa();
-        if (users.size() > 0) {
+        if (!users.isEmpty()) {
             String s = users.stream()
                 .map(User::getUsername)
                 .collect(Collectors.joining(","));

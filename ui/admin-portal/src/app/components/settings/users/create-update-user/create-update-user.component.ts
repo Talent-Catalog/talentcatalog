@@ -27,6 +27,7 @@ import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {forkJoin} from "rxjs";
 import {EMAIL_REGEX, SearchUserRequest, Status} from "../../../../model/base";
+import {AuthenticationService} from "../../../../services/authentication.service";
 
 @Component({
   selector: 'app-create-update-user',
@@ -51,7 +52,8 @@ export class CreateUpdateUserComponent implements OnInit {
               private fb: FormBuilder,
               private partnerService: PartnerService,
               private userService: UserService,
-              private authService: AuthorizationService,
+              private authenticationService: AuthenticationService,
+              private authorizationService: AuthorizationService,
               private countryService: CountryService) {
   }
 
@@ -75,6 +77,9 @@ export class CreateUpdateUserComponent implements OnInit {
     //Password is required field in user creation only
     if (this.create) {
       formControlsConfig["password"] = [null, Validators.required];
+
+      //Need to initialize partnerId to existing user's partner
+      formControlsConfig["partnerId"] = [this.authenticationService.getLoggedInUser().partner.id];
     }
 
     this.userForm = this.fb.group(formControlsConfig);
@@ -107,7 +112,7 @@ export class CreateUpdateUserComponent implements OnInit {
     );
 
     //Filter who can set which roles
-    const role = this.authService.getLoggedInRole();
+    const role = this.authorizationService.getLoggedInRole();
     if (role === Role.admin) {
       this.roleOptions = this.roleOptions.filter(
         r => ![Role.systemadmin].includes(Role[r.key]));
@@ -182,6 +187,6 @@ export class CreateUpdateUserComponent implements OnInit {
   }
 
   canAssignPartner(): boolean {
-    return this.authService.canAssignPartner();
+    return this.authorizationService.canAssignPartner();
   }
 }
