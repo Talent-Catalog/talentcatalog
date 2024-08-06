@@ -779,6 +779,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  /**
+   * Lightly adapted version of {@link ViewCandidateComponent.downloadGeneratedCV}.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   */
   downloadGeneratedCV(candidate) {
     // Modal
     const downloadCVModal = this.modalService.open(DownloadCvComponent, {
