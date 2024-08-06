@@ -227,6 +227,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     )
   }
 
+  /**
+   * Very similar to {@link ShowCandidatesComponent.downloadGeneratedCV}.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   */
   downloadGeneratedCV() {
     // Modal
     const downloadCVModal = this.modalService.open(DownloadCvComponent, {
