@@ -27,7 +27,8 @@ export class CandidateExamService {
 
   constructor(private http: HttpClient) {}
 
-  updateCandidateExams(request): Observable<CandidateExam[]> {
-    return this.http.put<CandidateExam[]>(`${this.apiUrl}/update`, request);
+  updateCandidateExams(id:number,request): Observable<CandidateExam[]> {
+    return this.http.put<CandidateExam[]>(`${this.apiUrl}/${id}`, request);
   }
+  
 }

@@ -1,62 +1,104 @@
 package org.tctalent.server.api.portal;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.api.admin.ITableApi;
+import org.tctalent.server.api.admin.IJoinedTableApi;
 import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
+import org.tctalent.server.request.candidate.exam.SearchCandidateExamRequest;
 import org.tctalent.server.request.candidate.exam.UpdateCandidateExamsRequest;
 import org.tctalent.server.service.db.CandidateExamService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
 @RequestMapping("/api/portal/candidate-exam")
-public class CandidateExamPortalApi implements ITableApi<CreateCandidateExamRequest,UpdateCandidateExamsRequest,UpdateCandidateExamsRequest> {
+public class CandidateExamPortalApi implements IJoinedTableApi<SearchCandidateExamRequest,
+    CreateCandidateExamRequest,
+    UpdateCandidateExamsRequest> {
 
   private final CandidateExamService candidateExamService;
+  private final CandidateService candidateService;
 
-  @Autowired
-  public CandidateExamPortalApi(CandidateExamService candidateExamService) {
+  public CandidateExamPortalApi(
+      CandidateExamService candidateExamService,
+      CandidateService candidateService
+      ) {
     this.candidateExamService = candidateExamService;
+    this.candidateService = candidateService;
   }
 
-  @PostMapping("/{candidateId}")
-  public @NotNull Map<String, Object> createCandidateExam(@Valid @RequestBody CreateCandidateExamRequest request, @PathVariable Long candidateId)
-      throws InvalidRequestException, NoSuchObjectException {
-    CandidateExam createdExam = candidateExamService.createExam(candidateId,request);
-    return candidateExamDto().build(createdExam);
+  /**
+   * Creates a new record from the data in the given request.
+   * @param request Request containing details from which the record is created.
+   * @return Created record
+   * @throws EntityExistsException If an identical record (eg with the same
+   * name) already exists
+   */
+  @Override
+  public @NotNull Map<String, Object> create(
+      long parentId, @Valid CreateCandidateExamRequest request)
+      throws NoSuchObjectException {
+    // Create CandidateExams based on the request
+    CandidateExam candidateExam =
+        this.candidateExamService
+            .createExam(parentId, request);
+    return candidateExamDto().build(candidateExam);
   }
 
-  @PutMapping("/update")
-  public @NotNull List<Map<String, Object>> createUpdateCandidateExams(@Valid @RequestBody UpdateCandidateExamsRequest request)
+  /**
+   * Update the record with the given id from the data in the given request.
+   * @param id ID of record to be updated
+   * @param request Request containing details from which the record is updated.
+   *                Details which are not specified in the request (ie are null)
+   *                cause no change to the record. Therefore, there is no way
+   *                to set a field of the record to null.
+   * @return Updated record
+   * @throws EntityExistsException if the updated record would clash with an
+   * existing record - eg with the same name.
+   * @throws InvalidRequestException if not authorized to update this record.
+   * @throws NoSuchObjectException if there is no such record with the given id
+   */
+  @Override
+  public @NotNull Map<String, Object> update(
+      @PathVariable("id") long id, @Valid @RequestBody UpdateCandidateExamsRequest request)
       throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+    // updateCandidateExam method updates exams based on the request
     List<CandidateExam> candidateExams = candidateExamService.updateCandidateExam(request);
-    return candidateExamDto().buildList(candidateExams);
+    // Using the buildList method to convert the list of CandidateExam to a list of maps
+    List<Map<String, Object>> examMaps = candidateExamDto().buildList(candidateExams);
+
+    // Aggregate results into a single map
+    Map<String, Object> response = new HashMap<>();
+    response.put("exams", examMaps);
+
+    return response;
   }
 
-  @DeleteMapping
-  public @NotNull Map<String, Object> deleteCandidateExam(@RequestParam Long id) {
-    boolean success = candidateExamService.deleteCandidateExam(id);
-    return Map.of("success", success);
+  /**
+   * Delete the candidate exam with the given id.
+   * @param id ID of record to be deleted
+   * @return True if record was deleted, false if it was not found.
+   * @throws EntityReferencedException if the object cannot be deleted because
+   * it is referenced by another object.
+   * @throws InvalidRequestException if not authorized to delete this list.
+   */
+  @Override
+  public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
+    return candidateService.deleteCandidateExam(id);
   }
-
   private DtoBuilder candidateExamDto() {
     return new DtoBuilder()
         .add("id")
@@ -66,4 +108,5 @@ public class CandidateExamPortalApi implements ITableApi<CreateCandidateExamRequ
         .add("year")
         .add("notes");
   }
+
 }

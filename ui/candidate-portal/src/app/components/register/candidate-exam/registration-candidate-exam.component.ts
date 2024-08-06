@@ -111,7 +111,7 @@ export class RegistrationCandidateExamComponent implements OnInit, OnDestroy {
       updates: this.candidateExams
     };
     if (!this.invalidExam) {
-      this.candidateExamService.updateCandidateExams(request).subscribe(
+      this.candidateExamService.updateCandidateExams(0,request).subscribe(
         (response) => {
           if (dir === 'next') {
             this.onSave.emit();
