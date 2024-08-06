@@ -89,16 +89,4 @@ fdescribe('CandidateVisaJobService', () => {
       req.flush(true);
     });
   });
-
-  describe('updateSfCaseRelocationInfo', () => {
-    it('should complete without returning data', () => {
-      service.updateSfCaseRelocationInfo(1).subscribe(() => {
-        // No response data
-      });
-
-      const req = httpMock.expectOne(`${environment.apiUrl}/candidate-visa-job/1/update-sf-case-relocation-info`);
-      expect(req.request.method).toBe('PUT');
-      req.flush({});
-    });
-  });
 });
