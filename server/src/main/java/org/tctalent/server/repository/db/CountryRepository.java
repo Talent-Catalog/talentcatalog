@@ -18,6 +18,8 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -27,6 +29,53 @@ import org.tctalent.server.model.db.Status;
 
 public interface CountryRepository extends JpaRepository<Country, Long>, JpaSpecificationExecutor<Country> {
 
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    <T extends Country> T save(@NotNull T country);
+
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    <T extends Country> List<T> saveAll(@NotNull Iterable<T> countries);
+
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    <T extends Country> T saveAndFlush(@NotNull T country);
+
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    <T extends Country> List<T> saveAllAndFlush(@NotNull Iterable<T> countries);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void delete(@NotNull Country country);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteById(@NotNull Long id);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAll();
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAll(@NotNull Iterable<? extends Country> countries);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAllInBatch();
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAllInBatch(@NotNull Iterable<Country> countries);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAllByIdInBatch(@NotNull Iterable<Long> ids);
 
     @Query(" select c from Country c "
             + " where c.status = :status order by c.name asc")
