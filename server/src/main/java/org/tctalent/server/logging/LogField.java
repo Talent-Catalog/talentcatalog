@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  *
  * <ul>
  *     <li>USER_ID - User ID field</li>
- *     <li>CANDIDATE_NUMBER - Candidate number field</li>
+ *     <li>CANDIDATE_ID - Candidate ID field</li>
  *     <li>JOB_ID - Job ID field</li>
  *     <li>LIST_ID - List ID field</li>
  *     <li>SEARCH_ID - Search ID field</li>
