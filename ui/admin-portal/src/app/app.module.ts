@@ -796,6 +796,7 @@ import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
+import { BuildLinkComponent } from './util/build-link/build-link.component';
 
 @NgModule({
   declarations: [
@@ -1119,7 +1120,8 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
     SfJoblinkComponent,
     SelectJobCopyComponent,
     VisaJobCheckUkComponent,
-    PreviewLinkComponent
+    PreviewLinkComponent,
+    BuildLinkComponent
   ],
   imports: [
     BrowserModule,

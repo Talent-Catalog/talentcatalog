@@ -11,14 +11,21 @@
                   placeholder="Write your message..."
                   [formControlName]="'content'"
                   (onEditorCreated)="editorCreated($event)"
-                  (onContentChanged)="checkForLinks($event)">
+                  (onContentChanged)="checkForLinks($event)"
+                  (onSelectionChanged)="checkForLinkAtSelection($event)"
+    >
       <div quill-editor-toolbar id="quillToolbar">
           <button class="ql-list" value="ordered" title="Ordered list"></button>
           <button class="ql-list" value="bullet" title="Bullet list"></button>
           <button class="ql-bold" title="Bold text"></button>
           <button class="ql-italic" title="Italic text"></button>
           <button class="ql-underline" title="Underline text"></button>
-          <button class="ql-link" title="Add link"></button>
+
+          <button [ngClass]="!this.linkBtnSelected ? 'custom-link-btn' : 'custom-link-btn-selected'"
+                  title="Add link"
+                  (click)="onLinkBtnClick()">
+            <i class="fas fa-link small"></i>
+          </button>
 
           <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
             <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>

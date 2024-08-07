@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -11,6 +11,7 @@ import {
   BuildLinkPreviewRequest,
   LinkPreviewService
 } from "../../../services/link-preview.service";
+import {BuildLinkComponent} from "../../../util/build-link/build-link.component";
 
 @Component({
   selector: 'app-create-update-post',
@@ -28,6 +29,7 @@ export class CreateUpdatePostComponent implements OnInit {
   regexpLink: RegExp;
   storedUrls: string[] = [];
   linkPreviews: LinkPreview[] = [];
+  public linkBtnSelected: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -46,6 +48,54 @@ export class CreateUpdatePostComponent implements OnInit {
 
   editorCreated(quill: Quill) {
     this.quillEditorRef = quill;
+    // Overrides Quill's native link functionality, which was allowing users to use invalid URLs.
+    this.quillEditorRef.theme.tooltip.show = function () { }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+      this.onLinkBtnClick();
+    }
+  }
+
+  public onLinkBtnClick() {
+    this.linkBtnSelected = true;
+
+    const selectedRange = this.quillEditorRef.getSelection();
+
+    if (selectedRange == null || selectedRange.length === 0) return;
+
+    const selectedText = this.quillEditorRef.getText(selectedRange);
+
+    const selectedTextFormat = this.quillEditorRef.getFormat(selectedRange.index, selectedRange.length)
+
+    // Initiate modal for building the link
+    const linkModal = this.modalService.open(BuildLinkComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    linkModal.componentInstance.selectedText = selectedText; // Prepopulate modal form
+
+    if (selectedTextFormat.link) {
+      linkModal.componentInstance.currentUrl = selectedTextFormat.link;
+    }
+
+    linkModal.result.then((link) => {
+      if (link) {
+        // Delete the selection
+        this.quillEditorRef.deleteText(selectedRange.index, selectedRange.length);
+
+        // Replace with Link from modal
+        this.quillEditorRef.insertText(selectedRange.index, link.placeholder, 'link', link.url)
+      }
+
+      // Refocus caret at end of selection
+      this.quillEditorRef.setSelection(selectedRange.index + selectedRange.length);
+
+      this.linkBtnSelected = false;
+    })
   }
 
   private doUpload(file: File) {
@@ -119,6 +169,15 @@ export class CreateUpdatePostComponent implements OnInit {
     if (!this.emojiPickerVisible) {
       const index: number = this.quillEditorRef.selection.savedRange.index;
       this.quillEditorRef.setSelection(index, 0);
+    }
+  }
+
+  public checkForLinkAtSelection(event: any) {
+    if (event.range === null) return;
+    let leaf = this.quillEditorRef.getLeaf(event.range.index);
+    if (leaf[0].parent.constructor.name === 'Link') {
+      // TODO Bring up tooltip enabling visit to URL or Remove or Edit (see Gmail)
+      console.log('We have a link!')
     }
   }
 
