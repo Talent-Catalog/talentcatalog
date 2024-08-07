@@ -17,7 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 
@@ -32,7 +33,7 @@ public interface UserRepository extends CacheEvictingRepository<User, Long>, Jpa
 
     @Override
     @CacheEvict(value = "users", key = "#p0.username")
-    void delete(@NotNull User user);
+    void delete(@NonNull User user);
 
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "

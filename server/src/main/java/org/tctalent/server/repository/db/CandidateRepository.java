@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +27,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -39,19 +39,19 @@ import org.tctalent.server.model.db.ReviewStatus;
  */
 public interface CandidateRepository extends CacheEvictingRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
-    @NotNull
+    @NonNull
     @Override
     @CacheEvict(value = "users", key = "#p0.user.username")
-    <S extends Candidate> S save(@NotNull S entity);
+    <S extends Candidate> S save(@NonNull S entity);
 
-    @NotNull
+    @NonNull
     @Override
     @CacheEvict(value = "users", key = "#p0.user.username")
-    <S extends Candidate> S saveAndFlush(@NotNull S entity);
+    <S extends Candidate> S saveAndFlush(@NonNull S entity);
 
     @Override
     @CacheEvict(value = "users", key = "#p0.user.username")
-    void delete(@NotNull Candidate entity);
+    void delete(@NonNull Candidate entity);
 
     /**
      * CANDIDATE PORTAL METHODS: Used to display candidate in registration/profile.
@@ -148,6 +148,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Transactional
     @Modifying
     @Query("update Candidate c set c.textSearchId = null")
+    @CacheEvict(value = "users", allEntries = true)
     void clearAllCandidateTextSearchIds();
 
     /**

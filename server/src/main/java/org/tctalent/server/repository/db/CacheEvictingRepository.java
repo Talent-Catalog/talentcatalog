@@ -17,41 +17,41 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.lang.NonNull;
 
 @NoRepositoryBean
 public interface CacheEvictingRepository<T, ID> extends JpaRepository<T, ID> {
 
-  @NotNull
+  @NonNull
   @Override
   @CacheEvict(value = "users", allEntries = true)
-  <S extends T> S save(@NotNull S entity);
+  <S extends T> S save(@NonNull S entity);
 
-  @NotNull
+  @NonNull
   @Override
   @CacheEvict(value = "users", allEntries = true)
-  <S extends T> List<S> saveAll(@NotNull Iterable<S> entities);
+  <S extends T> List<S> saveAll(@NonNull Iterable<S> entities);
 
-  @NotNull
+  @NonNull
   @Override
   @CacheEvict(value = "users", allEntries = true)
-  <S extends T> S saveAndFlush(@NotNull S entity);
+  <S extends T> S saveAndFlush(@NonNull S entity);
 
-  @NotNull
+  @NonNull
   @Override
   @CacheEvict(value = "users", allEntries = true)
-  <S extends T> List<S> saveAllAndFlush(@NotNull Iterable<S> entities);
-
-  @Override
-  @CacheEvict(value = "users", allEntries = true)
-  void delete(@NotNull T entity);
+  <S extends T> List<S> saveAllAndFlush(@NonNull Iterable<S> entities);
 
   @Override
   @CacheEvict(value = "users", allEntries = true)
-  void deleteById(@NotNull ID id);
+  void delete(@NonNull T entity);
+
+  @Override
+  @CacheEvict(value = "users", allEntries = true)
+  void deleteById(@NonNull ID id);
 
   @Override
   @CacheEvict(value = "users", allEntries = true)
@@ -59,7 +59,7 @@ public interface CacheEvictingRepository<T, ID> extends JpaRepository<T, ID> {
 
   @Override
   @CacheEvict(value = "users", allEntries = true)
-  void deleteAll(@NotNull Iterable<? extends T> entities);
+  void deleteAll(@NonNull Iterable<? extends T> entities);
 
   @Override
   @CacheEvict(value = "users", allEntries = true)
@@ -67,9 +67,9 @@ public interface CacheEvictingRepository<T, ID> extends JpaRepository<T, ID> {
 
   @Override
   @CacheEvict(value = "users", allEntries = true)
-  void deleteAllInBatch(@NotNull Iterable<T> entities);
+  void deleteAllInBatch(@NonNull Iterable<T> entities);
 
   @Override
   @CacheEvict(value = "users", allEntries = true)
-  void deleteAllByIdInBatch(@NotNull Iterable<ID> ids);
+  void deleteAllByIdInBatch(@NonNull Iterable<ID> ids);
 }
