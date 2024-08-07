@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -49,6 +50,9 @@ class UserCacheEvictionTest {
 
   @Autowired
   private CountryRepository countryRepository;
+
+  @Autowired
+  private CandidateRepository candidateRepository;
 
   @Autowired
   private CacheManager cacheManager;
@@ -638,9 +642,163 @@ class UserCacheEvictionTest {
     verifyCacheIsEmpty();
   }
 
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("save candidate should evict connected user from cache")
+  void whenSaveCandidate_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling save to update the candidate evicts the connected user from cache
+    Candidate candidate = foundUser.getCandidate();
+    candidate.setCity("Metropolis");
+    candidateRepository.save(candidate);
+
+    // Verify that the candidate updated and the user was evicted from cache
+    verifyCandidateCityUpdated(candidate.getId(), "Metropolis");
+    verifySingleUserEvictedFromCache(foundUser);
+
+    // Verify that finding the user again will return and cache the updated candidate
+    foundUser = findUserAndVerifyCache("sadat.malik@test.org", candidate);
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAll candidates should evict the user cache")
+  void whenSaveAllCandidates_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling saveAll to update the candidate clears the cache
+    Candidate candidate = foundUser.getCandidate();
+    candidate.setCity("Metropolis");
+    candidateRepository.saveAll(List.of(candidate));
+
+    // Verify that the candidate updated and cache was cleared
+    verifyCandidateCityUpdated(candidate.getId(), "Metropolis");
+    verifyCacheIsEmpty();
+
+    // Verify that finding the user again will return and cache the updated candidate
+    foundUser = findUserAndVerifyCache("sadat.malik@test.org", candidate);
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAndFlush candidate should evict the connected user from the cache")
+  void whenSaveAndFlushCandidate_thenConnectedUserShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling saveAndFlush to update the candidate should evict the connected user from cache
+    Candidate candidate = foundUser.getCandidate();
+    candidate.setCity("Metropolis");
+    candidateRepository.saveAndFlush(candidate);
+
+    // Verify that the candidate updated and the user was evicted from cache
+    verifyCandidateCityUpdated(candidate.getId(), "Metropolis");
+    verifySingleUserEvictedFromCache(foundUser);
+
+    // Verify that finding the user again will return and cache the updated candidate
+    foundUser = findUserAndVerifyCache("sadat.malik@test.org", candidate);
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAllAndFlush candidates should evict the user cache")
+  void whenSaveAllAndFlushCandidates_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling saveAllAndFlush to update the candidate should clear the user cache
+    Candidate candidate = foundUser.getCandidate();
+    candidate.setCity("Metropolis");
+    candidateRepository.saveAllAndFlush(List.of(candidate));
+
+    // Verify that the candidate updated and cache was cleared
+    verifyCandidateCityUpdated(candidate.getId(), "Metropolis");
+    verifyCacheIsEmpty();
+
+    // Verify that finding the user again will return and cache the updated candidate
+    foundUser = findUserAndVerifyCache("sadat.malik@test.org", candidate);
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete candidate should evict the connected user from cache")
+  void whenDeleteCandidate_thenConnectedUserShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling delete candidate should evict the connected user from cache
+    Candidate candidate = foundUser.getCandidate();
+    candidateRepository.delete(candidate);
+
+    // Verify that the connected user was evicted from cache
+    verifySingleUserEvictedFromCache(foundUser);
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete candidate by id should evict the user cache")
+  void whenDeleteCandidateById_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling delete candidate by id should clear the user cache
+    Candidate candidate = foundUser.getCandidate();
+    candidateRepository.deleteById(candidate.getId());
+
+    // Verify that the cache was cleared
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all candidate repository should evict the user cache")
+  void whenDeleteAllCandidateRepo_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling delete all on candidate repository should clear the user cache
+    Candidate candidate = foundUser.getCandidate();
+    candidateRepository.deleteAll();
+
+    // Verify that the cache was cleared
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all candidates should evict the user cache")
+  void whenDeleteAllCandidates_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling delete all candidate should clear the user cache
+    Candidate candidate = foundUser.getCandidate();
+    candidateRepository.deleteAll(List.of(candidate));
+
+    // Verify that the cache was cleared
+    verifyCacheIsEmpty();
+  }
+
   private User findUserAndVerifyCache(String username, String expectedPartnerName) {
     User user = userRepository.findByUsernameIgnoreCase(username);
     verifyUserAndCachedEntry(user, expectedPartnerName);
+    return user;
+  }
+
+  private User findUserAndVerifyCache(String username, Candidate expectedCandidate) {
+    User user = userRepository.findByUsernameIgnoreCase(username);
+    verifyUserAndCachedEntry(user, expectedCandidate);
     return user;
   }
 
@@ -650,7 +808,17 @@ class UserCacheEvictionTest {
     assertThat(user.getPartner().getName()).isEqualTo(partnerName);
 
     // Verify the cached user
-    User cachedUser = (User) cacheManager.getCache("users").get("testuser").get();
+    User cachedUser = (User) cacheManager.getCache("users").get(user.getUsername()).get();
+    assertThat(cachedUser).isEqualTo(user);
+  }
+
+  private void verifyUserAndCachedEntry(User user, Candidate candidate) {
+    // Verify the user
+    assertThat(user).isNotNull();
+    assertThat(user.getCandidate().getCity()).isEqualTo(candidate.getCity());
+
+    // Verify the cached user
+    User cachedUser = (User) cacheManager.getCache("users").get(user.getUsername()).get();
     assertThat(cachedUser).isEqualTo(user);
   }
 
@@ -661,6 +829,11 @@ class UserCacheEvictionTest {
 
   private void verifyCacheIsPartiallyEvicted() {
     verifyCacheEviction("testuser");
+    assertThat(cacheManager.getCache("users").get("testuser2")).isNotNull();
+  }
+
+  private void verifySingleUserEvictedFromCache(User user) {
+    verifyCacheEviction(user.getUsername());
     assertThat(cacheManager.getCache("users").get("testuser2")).isNotNull();
   }
 
@@ -681,6 +854,11 @@ class UserCacheEvictionTest {
   private void verifyCountryNameUpdated(Long countryId, String expectedName) {
     Country updatedCountry = countryRepository.findById(countryId).get();
     assertThat(updatedCountry.getName()).isEqualTo(expectedName);
+  }
+
+  private void verifyCandidateCityUpdated(Long candidateId, String expectedCity) {
+    Candidate updatedCandidate = candidateRepository.findById(candidateId).get();
+    assertThat(updatedCandidate.getCity()).isEqualTo(expectedCity);
   }
 
 }
