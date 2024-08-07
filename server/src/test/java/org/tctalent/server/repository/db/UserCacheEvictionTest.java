@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -47,11 +48,15 @@ class UserCacheEvictionTest {
   private EmployerRepository employerRepository;
 
   @Autowired
+  private CountryRepository countryRepository;
+
+  @Autowired
   private CacheManager cacheManager;
 
   private PartnerImpl tbb;
   private PartnerImpl hias;
   private Employer employer;
+  private Country country;
 
   @BeforeEach
   void setUp() {
@@ -59,6 +64,7 @@ class UserCacheEvictionTest {
     tbb = partnerRepository.findByAbbreviation("TBB").get();
     hias = partnerRepository.findByAbbreviation("HIAS").get();
     employer = employerRepository.findById(1L).get();
+    country = countryRepository.findByNameIgnoreCase("United Kingdom");
 
     User user = new User();
     user.setId(1L);
@@ -376,7 +382,6 @@ class UserCacheEvictionTest {
     verifyCacheIsEmpty();
   }
 
-
   @Test
   @Transactional
   @Rollback
@@ -468,7 +473,7 @@ class UserCacheEvictionTest {
     // Find the user to cache it initially
     User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
 
-    // Deleting the partner should evict the user cache
+    // Deleting the employer should evict the user cache
     employerRepository.deleteById(employer.getId());
 
     // Verify that the user cache evicted
@@ -483,7 +488,7 @@ class UserCacheEvictionTest {
     // Find the user to cache it initially
     User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
 
-    // Deleting the partner should evict the user cache
+    // Deleting the employer should evict the user cache
     employerRepository.deleteAll();
 
     // Verify that the user cache evicted
@@ -498,8 +503,136 @@ class UserCacheEvictionTest {
     // Find the user to cache it initially
     User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
 
-    // Deleting the partner should evict the user cache
+    // Deleting the employer should evict the user cache
     employerRepository.deleteAll(List.of(employer));
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("save country should evict all user cache entries")
+  void whenSaveCountry_thenCacheShouldBeEvictedAndUpdated() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving country should evict the user cache
+    country.setName("UpdatedCountry");
+    countryRepository.save(country);
+
+    // Verify that the country updated and the user cache evicted
+    verifyCountryNameUpdated(country.getId(), "UpdatedCountry");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAll countries should evict the user cache")
+  void whenSaveAllCountries_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving countries should evict the user cache
+    country.setName("UpdatedCountry");
+    countryRepository.saveAll(List.of(country));
+
+    // Verify that the country updated and the user cache evicted
+    verifyCountryNameUpdated(country.getId(), "UpdatedCountry");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAndFlush country should evict the user cache")
+  void whenSaveAndFlushCountry_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving country should evict the user cache
+    country.setName("UpdatedCountry");
+    countryRepository.saveAndFlush(country);
+
+    // Verify that the country updated and the user cache evicted
+    verifyCountryNameUpdated(country.getId(), "UpdatedCountry");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAllAndFlush countries should evict the user cache")
+  void whenSaveAllAndFlushCountries_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving countries should evict the user cache
+    country.setName("UpdatedCountry");
+    countryRepository.saveAllAndFlush(List.of(country));
+
+    // Verify that the country updated and the user cache evicted
+    verifyCountryNameUpdated(country.getId(), "UpdatedCountry");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete country should evict the user cache")
+  void whenDeleteCountry_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the country should evict the user cache
+    countryRepository.delete(country);
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete country by id should evict the user cache")
+  void whenDeleteCountryById_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the country should evict the user cache
+    countryRepository.deleteById(country.getId());
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all country repository should evict the user cache")
+  void whenDeleteAllCountryRepo_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the country should evict the user cache
+    countryRepository.deleteAll();
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all countries should evict the user cache")
+  void whenDeleteAllCountries_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the counties should evict the user cache
+    countryRepository.deleteAll(List.of(country));
 
     // Verify that the user cache evicted
     verifyCacheIsEmpty();
@@ -543,6 +676,11 @@ class UserCacheEvictionTest {
   private void verifyEmployerNameUpdated(Long employerId, String expectedName) {
     Employer updatedEmployer = employerRepository.findById(employerId).get();
     assertThat(updatedEmployer.getName()).isEqualTo(expectedName);
+  }
+
+  private void verifyCountryNameUpdated(Long countryId, String expectedName) {
+    Country updatedCountry = countryRepository.findById(countryId).get();
+    assertThat(updatedCountry.getName()).isEqualTo(expectedName);
   }
 
 }
