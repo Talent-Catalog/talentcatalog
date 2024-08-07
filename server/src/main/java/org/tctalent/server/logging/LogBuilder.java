@@ -88,6 +88,20 @@ public class LogBuilder {
   }
 
   /**
+   * Adds the candidate ID to the log fields if the candidate ID is not null.
+   *
+   * @param candidateId the candidate ID
+   * @return the current {@code LogBuilder} instance for chaining
+   */
+  public LogBuilder candidateId(Long candidateId) {
+    if (candidateId == null) {
+      return this;
+    }
+    addField(LogField.CANDIDATE_ID, candidateId.toString());
+    return this;
+  }
+
+  /**
    * Adds the list ID to the log fields if the list ID is not null.
    *
    * @param listId the list ID

@@ -51,7 +51,7 @@ import lombok.RequiredArgsConstructor;
 public enum LogField {
 
   USER_ID("uid", 100),
-  CANDIDATE_NUMBER("cn", 101),
+  CANDIDATE_ID("cid", 101),
   JOB_ID("jid", 102),
   LIST_ID("lid", 103),
   SEARCH_ID("sid", 104),
