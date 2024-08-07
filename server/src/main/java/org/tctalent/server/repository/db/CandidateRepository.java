@@ -75,6 +75,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Candidate findByIdLoadCandidateOccupations(@Param("id") Long id);
 
     @Query(" select c from Candidate c "
+        + " left join fetch c.candidateExams p "
+        + " where c.id = :id ")
+    Candidate findByIdLoadCandidateExams(@Param("id") Long id);
+
+    @Query(" select c from Candidate c "
             + " left join fetch c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
