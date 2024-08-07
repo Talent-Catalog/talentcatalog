@@ -20,9 +20,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.validation.constraints.NotNull;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -36,7 +37,21 @@ import org.tctalent.server.model.db.ReviewStatus;
 /**
  * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
  */
-public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
+public interface CandidateRepository extends CacheEvictingRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
+
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", key = "#p0.user.username")
+    <S extends Candidate> S save(@NotNull S entity);
+
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", key = "#p0.user.username")
+    <S extends Candidate> S saveAndFlush(@NotNull S entity);
+
+    @Override
+    @CacheEvict(value = "users", key = "#p0.user.username")
+    void delete(@NotNull Candidate entity);
 
     /**
      * CANDIDATE PORTAL METHODS: Used to display candidate in registration/profile.
