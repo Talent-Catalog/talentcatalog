@@ -33,8 +33,52 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     @NotNull
     @Override
-    @CacheEvict(value = "users", key = "#p0.username")
+    @CacheEvict(value = "users", allEntries = true)
     <T extends User> T save(@NotNull T user);
+
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    <T extends User> List<T> saveAll(@NotNull Iterable<T> users);
+
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    <T extends User> T saveAndFlush(@NotNull T user);
+
+    @NotNull
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    <T extends User> List<T> saveAllAndFlush(@NotNull Iterable<T> entities);
+
+    @Override
+    @CacheEvict(value = "users", key = "#p0.username")
+    void delete(@NotNull User user);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteById(@NotNull Long id);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAll();
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAll(@NotNull Iterable<? extends User> entities);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAllInBatch();
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAllInBatch(@NotNull Iterable<User> entities);
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    void deleteAllByIdInBatch(@NotNull Iterable<Long> ids);
+
 
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
