@@ -18,9 +18,6 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,55 +31,7 @@ import org.tctalent.server.model.db.Status;
  * See {@link #findSourcePartnerByAutoassignableCountry(Country)} - noting join with sourceCountries attribute
  */
 
-public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
-
-    @NotNull
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    <T extends PartnerImpl> T save(@NotNull T partner);
-
-    @NotNull
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    <T extends PartnerImpl> List<T> saveAll(@NotNull Iterable<T> partners);
-
-    @NotNull
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    <T extends PartnerImpl> T saveAndFlush(@NotNull T partner);
-
-    @NotNull
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    <T extends PartnerImpl> List<T> saveAllAndFlush(@NotNull Iterable<T> partners);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void delete(@NotNull PartnerImpl partner);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteById(@NotNull Long id);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAll();
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAll(@NotNull Iterable<? extends PartnerImpl> partners);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAllInBatch();
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAllInBatch(@NotNull Iterable<PartnerImpl> partners);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAllByIdInBatch(@NotNull Iterable<Long> ids);
+public interface PartnerRepository extends CacheEvictingRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
 
     @Query("select p from Partner p where p.defaultSourcePartner = :defaultSourcePartner")
     Optional<PartnerImpl> findByDefaultSourcePartner(@Param("defaultSourcePartner") boolean defaultSourcePartner);
