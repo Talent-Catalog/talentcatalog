@@ -767,7 +767,6 @@ class UserCacheEvictionTest {
     User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
 
     // Calling delete all on candidate repository should clear the user cache
-    Candidate candidate = foundUser.getCandidate();
     candidateRepository.deleteAll();
 
     // Verify that the cache was cleared
