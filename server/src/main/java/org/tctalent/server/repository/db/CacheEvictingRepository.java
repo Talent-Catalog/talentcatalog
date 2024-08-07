@@ -22,6 +22,23 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.lang.NonNull;
 
+/**
+ * This interface extends JpaRepository to provide CRUD operations with automatic cache eviction.
+ * The cache eviction clears the "users" cache whenever entities are saved, deleted, or modified.
+ *
+ * @param <T>  the type of the entity to handle
+ * @param <ID> the type of the entity's identifier
+ *
+ * <p>All methods are annotated with @CacheEvict to clear all entries in the "users" cache upon
+ * execution.
+ *
+ * <p>Annotations:
+ * <ul>
+ *   <li>@NoRepositoryBean - Indicates that this interface should not be instantiated directly and
+ *            is intended to be extended by other repository interfaces.</li>
+ *   <li>@CacheEvict - Configures cache eviction for the specified cache ("users").</li>
+ * </ul>
+ */
 @NoRepositoryBean
 public interface CacheEvictingRepository<T, ID> extends JpaRepository<T, ID> {
 

@@ -39,19 +39,37 @@ import org.tctalent.server.model.db.ReviewStatus;
  */
 public interface CandidateRepository extends CacheEvictingRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
+    /**
+     * This method overrides the default save behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the saved candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to save; must not be null
+     */
     @NonNull
     @Override
     @CacheEvict(value = "users", key = "#p0.user.username")
-    <S extends Candidate> S save(@NonNull S entity);
+    <S extends Candidate> S save(@NonNull S candidate);
 
+    /**
+     * This method overrides the default saveAndFlush behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the saved candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to save; must not be null
+     */
     @NonNull
     @Override
     @CacheEvict(value = "users", key = "#p0.user.username")
-    <S extends Candidate> S saveAndFlush(@NonNull S entity);
+    <S extends Candidate> S saveAndFlush(@NonNull S candidate);
 
+    /**
+     * This method overrides the default delete behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the deleted candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to delete; must not be null
+     */
     @Override
     @CacheEvict(value = "users", key = "#p0.user.username")
-    void delete(@NonNull Candidate entity);
+    void delete(@NonNull Candidate candidate);
 
     /**
      * CANDIDATE PORTAL METHODS: Used to display candidate in registration/profile.

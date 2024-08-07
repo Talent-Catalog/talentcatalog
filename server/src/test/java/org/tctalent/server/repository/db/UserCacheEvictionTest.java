@@ -36,6 +36,18 @@ import org.tctalent.server.model.db.User;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * This class contains unit tests for verifying cache eviction behaviour in the users cache.
+ *
+ * <p>Annotations:
+ * <ul>
+ *   <li>@SpringBootTest - Loads the full application context for integration testing with a local
+ *   database</li>
+ *   <li>@Transactional - Ensures each test runs within a transaction that can be rolled back after
+ *   the test</li>
+ *   <li>@Rollback - Explicitly rolls back transactions between tests</li>
+ * </ul>
+ */
 @SpringBootTest
 class UserCacheEvictionTest {
 

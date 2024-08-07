@@ -31,6 +31,12 @@ import org.tctalent.server.model.db.User;
 
 public interface UserRepository extends CacheEvictingRepository<User, Long>, JpaSpecificationExecutor<User> {
 
+    /**
+     * This method overrides the default delete behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the deleted user's username will be removed from the cache.
+     *
+     * @param user the user entity to delete; must not be null
+     */
     @Override
     @CacheEvict(value = "users", key = "#p0.username")
     void delete(@NonNull User user);
