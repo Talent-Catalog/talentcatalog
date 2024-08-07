@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
@@ -43,16 +44,21 @@ class UserCacheEvictionTest {
   private PartnerRepository partnerRepository;
 
   @Autowired
+  private EmployerRepository employerRepository;
+
+  @Autowired
   private CacheManager cacheManager;
 
   private PartnerImpl tbb;
   private PartnerImpl hias;
+  private Employer employer;
 
   @BeforeEach
   void setUp() {
 
     tbb = partnerRepository.findByAbbreviation("TBB").get();
     hias = partnerRepository.findByAbbreviation("HIAS").get();
+    employer = employerRepository.findById(1L).get();
 
     User user = new User();
     user.setId(1L);
@@ -370,6 +376,135 @@ class UserCacheEvictionTest {
     verifyCacheIsEmpty();
   }
 
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("save employer should evict all user cache entries")
+  void whenSaveEmployer_thenCacheShouldBeEvictedAndUpdated() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving the employer should evict the user cache
+    employer.setName("UpdatedEmployer");
+    employerRepository.save(employer);
+
+    // Verify that the employer updated and the user cache evicted
+    verifyEmployerNameUpdated(tbb.getId(), "UpdatedEmployer");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAll employers should evict the user cache")
+  void whenSaveAllEmployers_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving the employer should evict the user cache
+    employer.setName("UpdatedEmployer");
+    employerRepository.saveAll(List.of(employer));
+
+    // Verify that the employer updated and the user cache evicted
+    verifyEmployerNameUpdated(tbb.getId(), "UpdatedEmployer");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAndFlush employer should evict the user cache")
+  void whenSaveAndFlushEmployer_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving the employer should evict the user cache
+    employer.setName("UpdatedEmployer");
+    employerRepository.saveAndFlush(employer);
+
+    // Verify that the employer updated and the user cache evicted
+    verifyEmployerNameUpdated(tbb.getId(), "UpdatedEmployer");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAllAndFlush employers should evict the user cache")
+  void whenSaveAllAndFlushEmployers_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving the employer should evict the user cache
+    employer.setName("UpdatedEmployer");
+    employerRepository.saveAllAndFlush(List.of(employer));
+
+    // Verify that the employer updated and the user cache evicted
+    verifyEmployerNameUpdated(tbb.getId(), "UpdatedEmployer");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete employer should evict the user cache")
+  void whenDeleteEmployer_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the employer should evict the user cache
+    employerRepository.delete(employer);
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete employer by id should evict the user cache")
+  void whenDeleteEmployerById_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the partner should evict the user cache
+    employerRepository.deleteById(employer.getId());
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all employer repository should evict the user cache")
+  void whenDeleteAllEmployerRepo_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the partner should evict the user cache
+    employerRepository.deleteAll();
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all employers should evict the user cache")
+  void whenDeleteAllEmployers_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the partner should evict the user cache
+    employerRepository.deleteAll(List.of(employer));
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
   private User findUserAndVerifyCache(String username, String expectedPartnerName) {
     User user = userRepository.findByUsernameIgnoreCase(username);
     verifyUserAndCachedEntry(user, expectedPartnerName);
@@ -403,6 +538,11 @@ class UserCacheEvictionTest {
   private void verifyPartnerNameUpdated(Long partnerId, String expectedName) {
     PartnerImpl updatedPartner = partnerRepository.findById(partnerId).get();
     assertThat(updatedPartner.getName()).isEqualTo(expectedName);
+  }
+
+  private void verifyEmployerNameUpdated(Long employerId, String expectedName) {
+    Employer updatedEmployer = employerRepository.findById(employerId).get();
+    assertThat(updatedEmployer.getName()).isEqualTo(expectedName);
   }
 
 }
