@@ -208,7 +208,7 @@ class UserCacheEvictionTest {
     userRepository.delete(foundUser);
 
     // Verify that only the deleted user is evicted from the cache
-    verifyCacheIsPartiallyEvicted();
+    verifySingleUserEvictedFromCache(foundUser);
   }
 
   @Test
@@ -836,11 +836,6 @@ class UserCacheEvictionTest {
   private void verifyCacheIsEmpty() {
     verifyCacheEviction("testuser");
     verifyCacheEviction("testuser2");
-  }
-
-  private void verifyCacheIsPartiallyEvicted() {
-    verifyCacheEviction("testuser");
-    assertThat(cacheManager.getCache("users").get("testuser2")).isNotNull();
   }
 
   private void verifySingleUserEvictedFromCache(User user) {
