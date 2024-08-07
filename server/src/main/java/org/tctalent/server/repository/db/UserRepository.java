@@ -22,63 +22,17 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 
-public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
-
-    @NotNull
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    <T extends User> T save(@NotNull T user);
-
-    @NotNull
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    <T extends User> List<T> saveAll(@NotNull Iterable<T> users);
-
-    @NotNull
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    <T extends User> T saveAndFlush(@NotNull T user);
-
-    @NotNull
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    <T extends User> List<T> saveAllAndFlush(@NotNull Iterable<T> entities);
+public interface UserRepository extends CacheEvictingRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     @Override
     @CacheEvict(value = "users", key = "#p0.username")
     void delete(@NotNull User user);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteById(@NotNull Long id);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAll();
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAll(@NotNull Iterable<? extends User> entities);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAllInBatch();
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAllInBatch(@NotNull Iterable<User> entities);
-
-    @Override
-    @CacheEvict(value = "users", allEntries = true)
-    void deleteAllByIdInBatch(@NotNull Iterable<Long> ids);
-
 
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
