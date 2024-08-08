@@ -47,8 +47,10 @@
             <i class="fas fa-external-link-alt is-link" title="Show candidate in new tab"></i>
           </a>
            -
-          <a target="_blank" (click)="downloadCV()" class="link-info">
-              <i class="fas fa-file-download" title="Download CV"></i>
+          <a target="_blank" (click)="downloadGeneratedCV()" class="link-info">
+              <i class="fas fa-file-download"
+                 title="Opens/DLs CV generated from candidate profile"
+              ></i>
           </a>
           <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank" class="link-info">
             <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
