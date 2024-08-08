@@ -17,6 +17,7 @@ import {
   LinkPreviewService
 } from "../../../services/link-preview.service";
 import {BuildLinkComponent} from "../../../util/build-link/build-link.component";
+import {QuillSelection} from "../../../model/base";
 
 @Component({
   selector: 'app-create-update-post',
@@ -36,10 +37,10 @@ export class CreateUpdatePostComponent implements OnInit {
   linkPreviews: LinkPreview[] = [];
 
   public linkBtnSelected: boolean = false;
-  public selectedLinkUrl: string;
   public linkTooltipXPosition: number;
   public linkTooltipYPosition: number;
   public linkTooltipVisible: boolean = false;
+  public selectedText: QuillSelection;
 
   constructor(
     private fb: FormBuilder,
@@ -70,39 +71,49 @@ export class CreateUpdatePostComponent implements OnInit {
   }
 
   public onLinkBtnClick() {
-    this.linkBtnSelected = true;
-
     const selectedRange = this.quillEditorRef.getSelection();
 
     if (selectedRange == null || selectedRange.length === 0) return;
 
-    const selectedText = this.quillEditorRef.getText(selectedRange);
+    this.linkBtnSelected = true;
 
-    const selectedTextFormat = this.quillEditorRef.getFormat(selectedRange.index, selectedRange.length)
+    const selectedTextFormat =
+      this.quillEditorRef.getFormat(selectedRange.index, selectedRange.length)
 
+    this.selectedText = {
+      index: selectedRange.index,
+      length: selectedRange.length,
+      text: this.quillEditorRef.getText(selectedRange),
+      url: selectedTextFormat.link ? selectedTextFormat.link : null
+    }
+
+    this.buildLink();
+  }
+
+  private buildLink() {
     // Initiate modal for building the link
     const linkModal = this.modalService.open(BuildLinkComponent, {
       centered: true,
       backdrop: 'static'
     })
 
-    linkModal.componentInstance.selectedText = selectedText; // Prepopulate modal form
+    linkModal.componentInstance.selectedText = this.selectedText.text; // Prepopulate modal form
 
-    if (selectedTextFormat.link) {
-      linkModal.componentInstance.currentUrl = selectedTextFormat.link;
+    if (this.selectedText.url) {
+      linkModal.componentInstance.currentUrl = this.selectedText.url;
     }
 
     linkModal.result.then((link) => {
       if (link) {
         // Delete the selection
-        this.quillEditorRef.deleteText(selectedRange.index, selectedRange.length);
+        this.quillEditorRef.deleteText(this.selectedText.index, this.selectedText.length);
 
         // Replace with Link from modal
-        this.quillEditorRef.insertText(selectedRange.index, link.placeholder, 'link', link.url)
+        this.quillEditorRef.insertText(this.selectedText.index, link.placeholder, 'link', link.url)
       }
 
       // Refocus caret at end of selection
-      this.quillEditorRef.setSelection(selectedRange.index + selectedRange.length);
+      this.quillEditorRef.setSelection(this.selectedText.index + this.selectedText.length);
 
       this.linkBtnSelected = false;
     })
@@ -268,25 +279,42 @@ export class CreateUpdatePostComponent implements OnInit {
     // event.range can be null when the focus moves outside the editor - it's a selection change but
     // doesn't have any data, handy in this instance because we can close the tooltip and end its
     // attendant effects for any click outside the editor.
-    if (event.range === null) {
+    if (!event.range) {
       this.closeTooltip()
+      return;
     }
+
+    const selectionIndex: number = event.range.index;
 
     // A Blot is an abstraction in Quill that represents a distinct piece of content or formatting.
     // A Leaf Blot represents atomic pieces of content such as text that don't have nested content
     // of their own. getLeaf() will return the distinct piece of content immediately before or
     // surrounding the given index, and we can then query it's formatting and other properties.
-    let leafBlot = this.quillEditorRef.getLeaf(event.range.index);
+    let leafBlot = this.quillEditorRef.getLeaf(selectionIndex);
+
     if (leafBlot[0].parent.constructor.name === 'Link') { // If it's a link:
       this.linkBtnSelected = true; // Highlight the link button
-      this.selectedLinkUrl = leafBlot[0].parent.domNode.href; // Set the URL for the tooltip
+
       // Set the position of the tooltip
       this.linkTooltipXPosition = leafBlot[0].parent.domNode.getBoundingClientRect().x +
         leafBlot[0].parent.domNode.getBoundingClientRect().width
       this.linkTooltipYPosition = leafBlot[0].parent.domNode.getBoundingClientRect().y +
         leafBlot[0].parent.domNode.getBoundingClientRect().height
+
       this.linkTooltipVisible = true; // Show the tooltip
-      this.disableScroll(); // Disable document scrolling so it stays in position (copied from Slack!)
+
+      // Disable document scrolling so tooltip stays in position
+      this.disableScroll();
+
+      // Set parameters so user can edit if they wish
+      this.selectedText = {
+        // (Index of selection) - (no. of characters to beginning of blot)
+        index: selectionIndex - leafBlot[1],
+        length: leafBlot[0].text.length,
+        text: leafBlot[0].text,
+        url: leafBlot[0].parent.domNode.href
+      }
+
     } else { // If it's not a link:
       this.closeTooltip()
     }
@@ -296,6 +324,13 @@ export class CreateUpdatePostComponent implements OnInit {
     this.linkBtnSelected = false; // Un-highlight link button
     this.linkTooltipVisible = false; // Hide the tooltip
     this.enableScroll(); // Re-enable scrolling
+  }
+
+  public onEditLinkClick() {
+    this.buildLink();
+  }
+
+  public onRemoveLinkClick() {
     return;
   }
 

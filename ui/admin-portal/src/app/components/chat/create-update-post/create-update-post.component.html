@@ -72,5 +72,7 @@
 <app-link-tooltip *ngIf="this.linkTooltipVisible"
                   [xPosition]="linkTooltipXPosition"
                   [yPosition]="linkTooltipYPosition"
-                  [url]="selectedLinkUrl"
+                  [url]="selectedText.url"
+                  (editClicked)="onEditLinkClick()"
+                  (removeClicked)="onRemoveLinkClick()"
 ></app-link-tooltip>

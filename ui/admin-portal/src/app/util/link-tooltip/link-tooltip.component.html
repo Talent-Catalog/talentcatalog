@@ -1,11 +1,18 @@
 <div class="link-tooltip"
-     [ngStyle]="{'left': ((xPosition || 100)) + 'px', 'top': ((yPosition || 100)) + 'px'}"
+     [ngStyle]="{'left': xPosition + 'px', 'top': yPosition + 'px'}"
 >
-  <a href="{{url}}" target="_blank" rel="noopener">{{url}}</a>
-<!--  <span (click)="onEditClick()">-->
-<!--    Edit-->
-<!--  </span>-->
-<!--  <span (click)="onRemoveClick()">-->
-<!--    Remove-->
-<!--  </span>-->
+  <div>
+    <a href="{{url}}" target="_blank" rel="noopener">
+      {{url}} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+    </a>
+  </div>
+  <div class="button-group">
+    <button type="button" class="btn btn-primary" (click)="onEditClick()">
+      Edit
+    </button>
+    <button type="button" class="btn btn-accent-2" (click)="onRemoveClick()">
+      Remove
+    </button>
+  </div>
 </div>
+

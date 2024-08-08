@@ -12,8 +12,7 @@ export class BuildLinkComponent implements OnInit {
 
   form: FormGroup;
   error: string;
-  // TODO: adapt title depending whether adding or editing
-  title: string = 'Add Link'
+  title: string;
 
   @Input() selectedText: string;
   @Input() currentUrl: string = '';
@@ -30,6 +29,11 @@ export class BuildLinkComponent implements OnInit {
       placeholder: [this.selectedText, Validators.required],
       url: [this.currentUrl, [Validators.required]]
     });
+    this.computeHeader()
+  }
+
+  private computeHeader(): void {
+    this.title = this.currentUrl ? 'Edit Link' : 'Add Link';
   }
 
   ngAfterViewInit(): void {
@@ -49,7 +53,7 @@ export class BuildLinkComponent implements OnInit {
   }
 
   private createLink(): Link {
-    let link: Link = {
+    const link: Link = {
       url: this.getUrl(),
       placeholder: this.getPlaceholder()
     }

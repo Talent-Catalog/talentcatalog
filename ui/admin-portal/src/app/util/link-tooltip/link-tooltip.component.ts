@@ -11,13 +11,20 @@ export class LinkTooltipComponent implements OnInit {
   @Input() yPosition: number;
   @Input() url: string;
 
-  @Output() onEditClick = new EventEmitter();
-  @Output() onRemoveClick = new EventEmitter();
+  @Output() editClicked = new EventEmitter<string>();
+  @Output() removeClicked = new EventEmitter<string>();
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  public onEditClick() {
+    this.editClicked.emit(this.url)
+  }
+
+  public onRemoveClick() {
+    this.removeClicked.emit(this.url)
+  }
 
 }

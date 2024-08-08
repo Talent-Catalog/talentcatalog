@@ -331,3 +331,10 @@ export interface Link {
   placeholder: string,
   url: string
 }
+
+export interface QuillSelection {
+  index: number,
+  length: number,
+  text: string,
+  url?: string
+}

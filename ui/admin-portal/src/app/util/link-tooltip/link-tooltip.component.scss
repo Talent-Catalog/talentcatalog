@@ -1,27 +1,52 @@
-.link-tooltip {
-  position: fixed;
-  left: 0;
-  top: 0;
-  background-color: black;
-  border-radius: 4px;
-  color: #ffffff;
-  padding: 3px 6px;
-  font-size: 13px;
-  margin-top: 5px;
-  transform:translateX(-50%);
-  z-index: 1000;
-}
+@import "~src/scss/variables";
 
 .link-tooltip {
-  &::before {
-    content: '';
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid black;
-    position: absolute;
-    left: calc(50% - 5px);
-    top: -5px;
-  }
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  top: 0;
+  background-color: #ffffff;
+  border-radius: 4px;
+  color: #151f2d;
+  padding: 10px; /* Increased padding for better spacing */
+  font-size: 13px;
+  margin-top: 5px;
+  transform: translateX(-50%);
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for depth */
+}
+
+.link-tooltip::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #ffffff; /* Match the arrow color to the tooltip’s background */
+  border-top: 1px solid #d3d3d3; /* Top border to match the tooltip's border */
+  position: absolute;
+  left: calc(50% - 5px);
+  top: -5px;
+  z-index: 1001;
+}
+
+/* Additional styling for buttons and link */
+.link-tooltip a {
+  display: flex;
+  align-items: center;
+  color: #151f2d; /* Link color */
+  text-decoration: none;
+  margin-bottom: 10px; /* Space below the link */
+  font-weight: bold;
+}
+
+.link-tooltip a i {
+  margin-left: 5px; /* Space between text and icon */
+}
+
+.link-tooltip .button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px; /* Space between buttons */
 }
