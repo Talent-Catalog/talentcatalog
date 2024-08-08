@@ -5,12 +5,10 @@
   <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading && selectedChat">
-
-    <div class="mt-4 h4 text-center">
-      {{ getChatHeaderTranslationKey(selectedChatType) | translate }}
-    </div>
-
-    <div class="d-md-flex justify-content-md-between my-3">
+    <div class="d-sm-flex justify-content-between align-items-center text-center mb-4">
+      <h3 class="mb-4 text-center text-sm-left">
+        {{ getChatHeaderTranslationKey(selectedChatType) | translate }}
+      </h3>
       <div class="mx-3 text-center flex-shrink-0">
         <button class="btn btn-sm btn-secondary" (click)="unSelectChat()">
           <fa-icon class="me-1" icon="arrow-left"></fa-icon>
@@ -25,7 +23,7 @@
     >
     </app-view-chat-posts>
 
-    <div class="mt-4 mx-3 text-center flex-shrink-0 float-end">
+    <div class="mt-4 mx-3 text-center flex-shrink-0">
       <button class="btn btn-sm btn-secondary" (click)="unSelectChat()">
         <fa-icon class="me-1" icon="arrow-left"></fa-icon>
         {{ 'CANDIDATE-OPPS.OPP.CHAT-RETURN' | translate }}
@@ -35,114 +33,105 @@
   </ng-container>
 
   <ng-container *ngIf="!loading && !selectedChat">
-    <div class="d-sm-flex justify-content-between">
-      <div class="card-body">
-        <app-error [error]="error"></app-error>
-
-        <div class="row">
-
-          <div class="mb-3 col-sm-12 col-md-4">
-            <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
-              {{ 'CANDIDATE-OPPS.TABLE.NAME' | translate }}</label>
-            <div class="form-control-plaintext">
-              {{selectedOpp?.jobOpp.name}}
-            </div>
+    <app-error [error]="error"></app-error>
+    <div>
+      <div class="d-sm-flex justify-content-between text-center">
+        <h3 class="mb-4 text-center text-sm-left">{{selectedOpp?.jobOpp.name}}</h3>
+        <div class="mx-3 text-center flex-shrink-0">
+          <button class="btn btn-sm btn-secondary" (click)="goBack()">
+            <fa-icon class="me-1" icon="arrow-left"></fa-icon>
+            {{ 'CANDIDATE-OPPS.OPP.JOB-RETURN' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="d-sm-flex justify-content-between align-items-center">
+      <div class="row">
+        <div class="mb-2 col-sm-12 col-md-6">
+          <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
+            {{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</label>
+          <div class="form-control-plaintext">
+            {{getCandidateOpportunityStageTranslationKey(selectedOpp?.stage) | translate}}
           </div>
-
-          <div class="mb-3 col-sm-12 col-md-4">
-            <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
-              {{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</label>
-            <div class="form-control-plaintext">
-              {{getCandidateOpportunityStageTranslationKey(selectedOpp?.stage) | translate}}
-            </div>
+        </div>
+        <div *ngIf="selectedOpp?.fileOfferLink" class="mb-2 col-sm-12 col-md-3">
+          <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
+            {{ 'CANDIDATE-OPPS.TABLE.OFFER' | translate }}</label>
+          <div class="form-control-plaintext">
+            <a class="link-secondary" target="_blank" [href]="selectedOpp.fileOfferLink">
+              <i class="fa-solid fa-link"></i> {{selectedOpp.fileOfferName ? selectedOpp.fileOfferName : selectedOpp.fileOfferLink}}</a>
           </div>
+        </div>
 
-          <div *ngIf="selectedOpp?.fileOfferLink" class="mb-3 col-sm-12 col-md-4">
-            <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
-              {{ 'CANDIDATE-OPPS.TABLE.OFFER' | translate }}</label>
-            <div class="form-control-plaintext">
-              <a class="link-secondary" target="_blank" [href]="selectedOpp.fileOfferLink">
-                <i class="fa-solid fa-link"></i> {{selectedOpp.fileOfferName ? selectedOpp.fileOfferName : selectedOpp.fileOfferLink}}</a>
-            </div>
+        <div *ngIf="selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceLink" class="mb-2 col-sm-12 col-md-3">
+          <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
+            {{ 'CANDIDATE-OPPS.TABLE.INTERVIEW-GUIDANCE' | translate }}</label>
+          <div class="form-control-plaintext">
+            <a class="link-secondary" target="_blank"
+               [href]="selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceLink">
+              <i class="fa-solid fa-link"></i>
+              {{selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceName ?
+              selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceName :
+              selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceLink}}
+            </a>
           </div>
+        </div>
 
-          <div *ngIf="selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceLink" class="mb-3 col-sm-12 col-md-4">
-            <label class="col-form-label"><i class="fa-solid fa-map-location-dot"></i>
-              {{ 'CANDIDATE-OPPS.TABLE.INTERVIEW-GUIDANCE' | translate }}</label>
-            <div class="form-control-plaintext">
-              <a class="link-secondary" target="_blank"
-                 [href]="selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceLink">
-                <i class="fa-solid fa-link"></i>
-                {{selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceName ?
-                selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceName :
-                selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceLink}}
-              </a>
-            </div>
-          </div>
-
-          <div *ngIf="selectedOpp?.closingCommentsForCandidate">
-            <label class="form-label" for="closingComments">
-              {{ 'CANDIDATE-OPPS.TABLE.COMMENTS' | translate }}
-            </label>
-            <div class="col-12" id="closingComments"
-                 [innerHtml]="selectedOpp?.closingCommentsForCandidate">
-            </div>
-          </div>
-
-
-          <div id="chats" class="table-responsive">
-            <table class="table table-hover bg-white">
-              <thead class="table-secondary">
-                <tr>
-                  <th>{{ 'CANDIDATE-OPPS.TABLE.CHATS' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr (click)="setSelectedChatType(JobChatType.CandidateProspect)">
-                  <td>
-                    <div class="link underline">
-                      <app-chat-read-status
-                        [chats]="[sourceChat]"
-                      >
-                      </app-chat-read-status>
-                      {{ getChatHeaderTranslationKey(JobChatType.CandidateProspect) | translate }}
-                    </div>
-                  </td>
-                </tr>
-                <tr *ngIf="showDestinationChat" (click)="setSelectedChatType(JobChatType.CandidateRecruiting)">
-                  <td>
-                    <div class="link underline">
-                      <app-chat-read-status
-                        [chats]="[destinationChat]"
-                      >
-                      </app-chat-read-status>
-                      {{ getChatHeaderTranslationKey(JobChatType.CandidateRecruiting) | translate }}
-                    </div>
-                  </td>
-                </tr>
-                <tr *ngIf="showAllChat" (click)="setSelectedChatType(JobChatType.AllJobCandidates)">
-                  <td>
-                    <div class="link underline">
-                    <app-chat-read-status
-                      [chats]="[allJobCandidatesChat]"
-                    >
-                    </app-chat-read-status>
-                    {{ getChatHeaderTranslationKey(JobChatType.AllJobCandidates) | translate }}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <div *ngIf="selectedOpp?.closingCommentsForCandidate" class="mb-2 col-12">
+          <label class="form-label" for="closingComments">
+            {{ 'CANDIDATE-OPPS.TABLE.COMMENTS' | translate }}
+          </label>
+          <div id="closingComments"
+               [innerHtml]="selectedOpp?.closingCommentsForCandidate">
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="mt-4 mx-3 text-center flex-shrink-0">
-        <button class="btn btn-sm btn-secondary" (click)="goBack()">
-          <fa-icon class="me-1" icon="arrow-left"></fa-icon>
-          {{ 'CANDIDATE-OPPS.OPP.JOB-RETURN' | translate }}
-        </button>
-      </div>
+
+    <div id="chats" class="table-responsive mt-3">
+      <table class="table table-hover bg-white">
+        <thead class="table-secondary">
+          <tr>
+            <th>{{ 'CANDIDATE-OPPS.TABLE.CHATS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr (click)="setSelectedChatType(JobChatType.CandidateProspect)">
+            <td>
+              <div class="link underline">
+                <app-chat-read-status
+                  [chats]="[sourceChat]"
+                >
+                </app-chat-read-status>
+                {{ getChatHeaderTranslationKey(JobChatType.CandidateProspect) | translate }}
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="showDestinationChat" (click)="setSelectedChatType(JobChatType.CandidateRecruiting)">
+            <td>
+              <div class="link underline">
+                <app-chat-read-status
+                  [chats]="[destinationChat]"
+                >
+                </app-chat-read-status>
+                {{ getChatHeaderTranslationKey(JobChatType.CandidateRecruiting) | translate }}
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="showAllChat" (click)="setSelectedChatType(JobChatType.AllJobCandidates)">
+            <td>
+              <div class="link underline">
+              <app-chat-read-status
+                [chats]="[allJobCandidatesChat]"
+              >
+              </app-chat-read-status>
+              {{ getChatHeaderTranslationKey(JobChatType.AllJobCandidates) | translate }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </ng-container>
 </div>

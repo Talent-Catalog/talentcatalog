@@ -1,0 +1,47 @@
+/*!
+ * Copyright (c) 2024 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+@import "variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/buttons";
+
+.nav-tabs .nav-link {
+  background-color: white;
+  border-color: #d2d2d2;
+  &.active {
+  background-color: #ccc;
+    border-color: #d2d2d2;
+  }
+}
+
+.navbar-toggler {
+  border: 0;
+}
+
+.nav-pills .nav-link {
+  background-color: #e3e3e3;
+  margin: 0.25rem 1rem;
+  box-shadow: 0 1px 1px #dcd9d9;
+  &.active {
+    background-color: #6e6f78;
+  }
+  &:hover {
+    background-color: #6e6f78;
+    color: white;
+  }
+}
