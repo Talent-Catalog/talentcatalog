@@ -141,4 +141,8 @@ export class CandidateService {
   clearCandNumberStorage() {
     this.localStorage.remove('candidateNumber');
   }
+
+  getCandidateDestinations(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/destinations`);
+  }
 }

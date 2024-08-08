@@ -1477,6 +1477,18 @@ public class CandidateServiceImpl implements CandidateService {
             return candidate == null ? Optional.empty() : Optional.of(candidate);
         }
     }
+    
+    @Override
+    public Optional<Candidate> getLoggedInCandidateLoadDestinations() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadDestinations(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
+    }
 
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCandidateLanguages() {

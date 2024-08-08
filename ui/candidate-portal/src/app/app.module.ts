@@ -125,11 +125,13 @@ import {
   faFaceSmile,
   faFileUpload,
   faFolderOpen,
-  faGlobe, faLink,
+  faGlobe,
+  faLink,
   faPlus,
   faQuestion,
   faQuestionCircle,
-  faTimes, faXmark
+  faTimes,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -155,7 +157,7 @@ import {
 import {
   CandidateTaskComponent
 } from './components/profile/view/tab/tasks/task/candidate-task.component';
-import {DatePipe} from "@angular/common";
+import {CommonModule, DatePipe} from "@angular/common";
 import {ExtendDatePipe} from "./util/date-adapter/extend-date-pipe";
 import {
   ViewSimpleTaskComponent
@@ -194,7 +196,13 @@ import {
 } from './components/register/create-account/registration-create-account.component';
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
-import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
+import {PreviewLinkComponent} from './components/chat/preview-link/preview-link.component';
+import {
+  RegistrationDestinationsComponent
+} from './components/register/destinations/registration-destinations.component';
+import {
+  DestinationComponent
+} from "./components/register/destinations/destination/destination.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -265,7 +273,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent,
-    PreviewLinkComponent
+    PreviewLinkComponent,
+    RegistrationDestinationsComponent,
+    DestinationComponent
   ],
   imports: [
     BrowserModule,
@@ -300,7 +310,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgSelectModule,
     NgxWigModule,
     QuillModule.forRoot(),
-    PickerModule
+    PickerModule,
+    CommonModule,
+    CommonModule
   ],
   providers: [
     {provide: RedirectGuard},
