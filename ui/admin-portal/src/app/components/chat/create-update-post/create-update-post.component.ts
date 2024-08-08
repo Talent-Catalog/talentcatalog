@@ -1,4 +1,9 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {
+  Component,
+  HostListener,
+  Input,
+  OnInit,
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -29,14 +34,19 @@ export class CreateUpdatePostComponent implements OnInit {
   regexpLink: RegExp;
   storedUrls: string[] = [];
   linkPreviews: LinkPreview[] = [];
+
   public linkBtnSelected: boolean = false;
+  public selectedLinkUrl: string;
+  public linkTooltipXPosition: number;
+  public linkTooltipYPosition: number;
+  public linkTooltipVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private rxStompService: RxStompService,
     private modalService: NgbModal,
     private chatPostService: ChatPostService,
-    private linkPreviewService: LinkPreviewService,
+    private linkPreviewService: LinkPreviewService
   ) {}
 
   ngOnInit() {
@@ -172,15 +182,6 @@ export class CreateUpdatePostComponent implements OnInit {
     }
   }
 
-  public checkForLinkAtSelection(event: any) {
-    if (event.range === null) return;
-    let leaf = this.quillEditorRef.getLeaf(event.range.index);
-    if (leaf[0].parent.constructor.name === 'Link') {
-      // TODO Bring up tooltip enabling visit to URL or Remove or Edit (see Gmail)
-      console.log('We have a link!')
-    }
-  }
-
   // Checks editor content for any links
   public checkForLinks(event) {
     if (event.html === null) {
@@ -253,6 +254,49 @@ export class CreateUpdatePostComponent implements OnInit {
         )
     }
     return this.linkPreviews;
+  }
+
+  disableScroll() {
+    document.body.style.overflow = 'hidden';
+  }
+
+  enableScroll() {
+    document.body.style.overflow = 'auto';
+  }
+
+  public checkForLinkAtSelection(event: any) {
+    // event.range can be null when the focus moves outside the editor - it's a selection change but
+    // doesn't have any data, handy in this instance because we can close the tooltip and end its
+    // attendant effects for any click outside the editor.
+    if (event.range === null) {
+      this.closeTooltip()
+    }
+
+    // A Blot is an abstraction in Quill that represents a distinct piece of content or formatting.
+    // A Leaf Blot represents atomic pieces of content such as text that don't have nested content
+    // of their own. getLeaf() will return the distinct piece of content immediately before or
+    // surrounding the given index, and we can then query it's formatting and other properties.
+    let leafBlot = this.quillEditorRef.getLeaf(event.range.index);
+    if (leafBlot[0].parent.constructor.name === 'Link') { // If it's a link:
+      this.linkBtnSelected = true; // Highlight the link button
+      this.selectedLinkUrl = leafBlot[0].parent.domNode.href; // Set the URL for the tooltip
+      // Set the position of the tooltip
+      this.linkTooltipXPosition = leafBlot[0].parent.domNode.getBoundingClientRect().x +
+        leafBlot[0].parent.domNode.getBoundingClientRect().width
+      this.linkTooltipYPosition = leafBlot[0].parent.domNode.getBoundingClientRect().y +
+        leafBlot[0].parent.domNode.getBoundingClientRect().height
+      this.linkTooltipVisible = true; // Show the tooltip
+      this.disableScroll(); // Disable document scrolling so it stays in position (copied from Slack!)
+    } else { // If it's not a link:
+      this.closeTooltip()
+    }
+  }
+
+  private closeTooltip() {
+    this.linkBtnSelected = false; // Un-highlight link button
+    this.linkTooltipVisible = false; // Hide the tooltip
+    this.enableScroll(); // Re-enable scrolling
+    return;
   }
 
 }
