@@ -21,7 +21,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
-import {AvailImmediateReason, YesNoUnsure} from "../../../../model/candidate";
+import {AvailImmediateReason, YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
 fdescribe('AvailImmediateComponent', () => {
@@ -46,7 +46,7 @@ fdescribe('AvailImmediateComponent', () => {
     fixture = TestBed.createComponent(AvailImmediateComponent);
     component = fixture.componentInstance;
     component.candidateIntakeData = {
-      availImmediate: YesNoUnsure.Yes,
+      availImmediate: YesNo.Yes,
       availImmediateJobOps: 'Software Development',
       availImmediateReason: AvailImmediateReason.Health,
       availImmediateNotes: 'Some additional notes'

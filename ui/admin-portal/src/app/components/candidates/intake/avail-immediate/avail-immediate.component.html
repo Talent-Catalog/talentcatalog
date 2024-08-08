@@ -19,39 +19,61 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="availImmediate">Are you available for international employment opportunities now?</label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="availImmediate" [formControlName]="'availImmediate'" (clear)="setNoResponse('availImmediate')"
-               [items]="availImmediateOptions" [clearOnBackspace]="false"
+    <label class="form-label" for="interested">Are you interested in international employment opportunities?</label>
+    <ng-select id="interested" [formControlName]="'interested'" (clear)="setNoResponse('interested')"
+               [items]="interestedOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
-
-  <div *ngIf="availImmediate === 'Yes'|| availImmediate == 'Unsure'">
-    <div class="mb-3">
-      <label class="form-label" for="availImmediateJobOps">What type of opportunities are you qualified for?</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                id="availImmediateJobOps" [formControlName]="'availImmediateJobOps'"
-                placeholder="" ></textarea>
+  <div *ngIf="interested === 'No'">
+    <div class="mb-3" [innerHTML]="'STAFF_INSTRUCTION.CANDIDATE_NO_INTEREST' | translate">
     </div>
   </div>
 
-  <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
+  <div *ngIf="interested === 'Unsure'">
+    <div class="mb-3" [innerHTML]="'STAFF_INSTRUCTION.CANDIDATE_UNSURE_INTEREST' | translate">
+    </div>
+  </div>
+
+  <div *ngIf="interested === 'Yes'">
     <div class="mb-3">
-      <label class="form-label" for="availImmediateReason">Factors preventing immediate availability for international work.</label>
-      <ng-select id="availImmediateReason" [formControlName]="'availImmediateReason'" (clear)="setNoResponse('availImmediateReason')"
-                 [items]="availImmediateReasonOptions" [clearOnBackspace]="false"
+      <label class="form-label" for="availImmediate">Are you available for international employment opportunities now?</label>
+      <div class="float-end">
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </div>
+      <ng-select id="availImmediate" [formControlName]="'availImmediate'" (clear)="setNoResponse('availImmediate')"
+                 [items]="availImmediateOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
-    <div class="mb-3">
-      <label class="form-label" for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                id="availImmediateNotes" [formControlName]="'availImmediateNotes'"
-                placeholder="" ></textarea>
+
+    <div *ngIf="availImmediateJobOps">
+      <div class="mb-3">
+        <label class="form-label" for="availImmediateJobOps">What type of opportunities are you qualified for?</label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  id="availImmediateJobOps" [formControlName]="'availImmediateJobOps'"
+                  placeholder="" readonly></textarea>
+      </div>
+    </div>
+
+    <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
+      <div>
+        <label class="form-label" for="availDate">When will you be available?</label>
+        <app-date-picker id="availDate" [control]="form.controls.availDate"></app-date-picker>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="availImmediateReason">Factors preventing immediate availability for international work.</label>
+        <ng-select id="availImmediateReason" [formControlName]="'availImmediateReason'" (clear)="setNoResponse('availImmediateReason')"
+                   [items]="availImmediateReasonOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  id="availImmediateNotes" [formControlName]="'availImmediateNotes'"
+                  placeholder="" ></textarea>
+      </div>
     </div>
   </div>
 </form>

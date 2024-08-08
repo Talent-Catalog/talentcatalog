@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {AvailImmediateReason, YesNoUnsureLearn} from '../../../../model/candidate';
+import {AvailImmediateReason, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 
@@ -29,8 +29,9 @@ import {CandidateService} from '../../../../services/candidate.service';
 
 export class AvailImmediateComponent extends IntakeComponentBase implements OnInit {
 
-  public availImmediateOptions: EnumOption[] = enumOptions(YesNoUnsureLearn);
+  public availImmediateOptions: EnumOption[] = enumOptions(YesNo);
   public availImmediateReasonOptions: EnumOption[] = enumOptions(AvailImmediateReason);
+  public interestedOptions: EnumOption[] = enumOptions(YesNoUnsure);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -38,15 +39,25 @@ export class AvailImmediateComponent extends IntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
+      availDate: [this.candidateIntakeData?.availDate],
       availImmediate: [this.candidateIntakeData?.availImmediate],
       availImmediateJobOps: [this.candidateIntakeData?.availImmediateJobOps],
       availImmediateReason: [this.candidateIntakeData?.availImmediateReason],
       availImmediateNotes: [this.candidateIntakeData?.availImmediateNotes],
+      interested: []
     });
+  }
+
+  get availImmediateJobOps(): string {
+    return this.form.value?.availImmediateJobOps;
   }
 
   get availImmediate(): string {
     return this.form.value?.availImmediate;
+  }
+
+  get interested(): string {
+    return this.form.value?.interested;
   }
 
 }

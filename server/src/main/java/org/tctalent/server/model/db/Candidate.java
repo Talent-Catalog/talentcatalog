@@ -385,9 +385,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String visaIssuesNotes;
 
+    /**
+     * Date that candidate will become available for international opportunities.
+     */
+    @Nullable
+    private LocalDate availDate;
+
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnsure availImmediate;
+    private YesNo availImmediate;
 
     @Nullable
     private String availImmediateJobOps;
@@ -1448,9 +1454,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public YesNoUnsure getAvailImmediate() { return availImmediate; }
+    public LocalDate getAvailDate() {
+        return availDate;
+    }
 
-    public void setAvailImmediate(@Nullable YesNoUnsure availImmediate) { this.availImmediate = availImmediate; }
+    public void setAvailDate(@Nullable LocalDate availDate) {
+        this.availDate = availDate;
+    }
+
+    @Nullable
+    public YesNo getAvailImmediate() { return availImmediate; }
+
+    public void setAvailImmediate(@Nullable YesNo availImmediate) { this.availImmediate = availImmediate; }
 
     @Nullable
     public String getAvailImmediateJobOps() { return availImmediateJobOps; }

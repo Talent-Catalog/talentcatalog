@@ -2413,6 +2413,9 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getAsylumYear() != null) {
             candidate.setAsylumYear(data.getAsylumYear());
         }
+        if (data.getAvailDate() != null) {
+            candidate.setAvailDate(data.getAvailDate());
+        }
         if (data.getAvailImmediate() != null) {
             candidate.setAvailImmediate(data.getAvailImmediate());
         }

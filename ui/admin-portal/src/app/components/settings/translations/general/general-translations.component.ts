@@ -187,6 +187,10 @@ const ALL_FIELDS = {
         "SELECT": null,
       }
     },
+     "STAFF_INSTRUCTION": {
+       "CANDIDATE_NO_INTEREST": null,
+       "CANDIDATE_UNSURE_INTEREST": null
+     },
     "LOADING": null,
     "LOGIN": {
       "TITLE": null,

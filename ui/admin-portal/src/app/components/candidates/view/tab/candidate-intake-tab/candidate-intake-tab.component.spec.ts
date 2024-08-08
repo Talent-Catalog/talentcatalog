@@ -53,7 +53,7 @@ import {
   CandidateIntakeData,
   Exam,
   FamilyRelations,
-  HasPassport,
+  HasPassport, YesNo,
   YesNoUnsure
 } from "../../../../../model/candidate";
 import {MockJob} from "../../../../../MockData/MockJob";
@@ -127,7 +127,7 @@ const mockCandidateDestination: CandidateDestination = {
 }
 export const mockCandidateIntakeData: CandidateIntakeData = {
   asylumYear: '2023',
-  availImmediate: YesNoUnsure.Yes,
+  availImmediate: YesNo.Yes,
   availImmediateJobOps: 'Some job opportunities',
   availImmediateReason: AvailImmediateReason.Other,
   availImmediateNotes: 'Some notes',
