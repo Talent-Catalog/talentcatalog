@@ -1946,7 +1946,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             Partner partner = jobOpp.getJobCreator();
 
-            //Update candidate partner Salesforce account id
+            //Update job creator partner Salesforce account id
             if (partner != null) {
                 String partnerSfAccountId = partner.getSfId();
                 if (partnerSfAccountId != null) {
