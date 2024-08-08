@@ -228,9 +228,20 @@ public class SystemAdminApi {
         List<CandidateOpportunity> opps = candidateOpportunityRepository.findAllBySfIdIsNull();
         for (CandidateOpportunity opp : opps) {
             String sfid = candidateOpportunityService.fetchSalesforceId(opp);
-            if (sfid != null) {
-                System.out.println(sfid);
-//                opp.setSfId(sfid);
+            if (sfid == null) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("FixNullCaseSfids")
+                    .message("No Salesforce opp for case " + opp.getId())
+                    .logInfo();
+            } else {
+                opp.setSfId(sfid);
+                candidateOpportunityRepository.save(opp);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("FixNullCaseSfids")
+                    .message("Updated Sfid of case " + opp.getId())
+                    .logInfo();
             }
         }
     }
