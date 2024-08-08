@@ -16,7 +16,7 @@
              class="form-control"
              id="placeholder"
              [formControlName]="'placeholder'"
-             (keydown.enter)="onKeydownEnter()"
+             (keydown.enter)="onKeydownEnter($event)"
       >
     </div>
     <div class="my-2">
@@ -26,7 +26,7 @@
              class="form-control"
              id="url"
              [formControlName]="'url'"
-             (keydown.enter)="onKeydownEnter()"
+             (keydown.enter)="onKeydownEnter($event)"
              pattern="{{urlRegex}}"
       >
       <div *ngIf="form.get('url').touched || form.get('url').dirty" class="my-2">

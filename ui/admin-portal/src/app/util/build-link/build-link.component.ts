@@ -64,7 +64,8 @@ export class BuildLinkComponent implements OnInit {
     this.modal.close(this.createLink())
   }
 
-  onKeydownEnter() {
+  onKeydownEnter(event: any) {
+    event.preventDefault();
     if (this.form.valid) {
       this.save()
     }
