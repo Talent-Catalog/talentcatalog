@@ -73,6 +73,16 @@ public interface CandidateOpportunityService {
         throws SalesforceException, WebClientException;
 
     /**
+     * From Salesforce fetch the Salesforce id, if any, of the SF opp corresponding to the given
+     * TC candidate opp.
+     *
+     * @param opp Candidate opp on the TC
+     * @return Salesforce id if one found
+     */
+    @Nullable
+    String fetchSalesforceId(@NonNull CandidateOpportunity opp);
+
+    /**
      * Finds the candidate opportunity associated with the given candidate and job
      *
      * @param candidate Candidate
@@ -167,7 +177,6 @@ public interface CandidateOpportunityService {
 
     /**
      * Updates the CandidateOpportunity with the relocating dependants
-     * @param request id of opportunity to get
      * @param request relocating dependant ids
      * @return CandidateOpportunity
      * @throws NoSuchObjectException if there is no opportunity with this id.

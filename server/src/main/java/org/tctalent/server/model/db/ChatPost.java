@@ -52,10 +52,13 @@ public class ChatPost extends AbstractAuditableDomainObject<Long> {
     private List<LinkPreview> linkPreviews = new ArrayList<>();
 
     public void setLinkPreviews(List<LinkPreview> linkPreviews) {
-        linkPreviews.forEach(linkPreview -> {
-            linkPreview.setChatPost(this);
-            this.linkPreviews.add(linkPreview);
-        });
+        //TODO JC This still has problems because it doesn't clear out existing linkPreviews
+        if (linkPreviews != null) {
+            linkPreviews.forEach(linkPreview -> {
+                linkPreview.setChatPost(this);
+                this.linkPreviews.add(linkPreview);
+            });
+        }
     }
 
     //Author of post is stored in inherited createdBy

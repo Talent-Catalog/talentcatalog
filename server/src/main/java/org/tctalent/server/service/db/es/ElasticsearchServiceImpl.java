@@ -80,7 +80,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
    * {@inheritDoc}
    */
   @Override
-  public Set<Long> findByName(@NonNull String name) {
+  public Set<Long> findByNameWithLimit(@NonNull String name) {
     BoolQueryBuilder boolQuery = computeFindByNameQuery(name);
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
@@ -97,7 +97,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
    * {@inheritDoc}
    */
   @Override
-  public Set<Long> findByNumber(@NonNull String number) {
+  public Set<Long> findByNumberWithLimit(@NonNull String number) {
     BoolQueryBuilder boolQuery = computeFindByNumberQuery(number);
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
@@ -114,7 +114,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
    * {@inheritDoc}
    */
   @Override
-  public Set<Long> findByPhoneOrEmail(@NonNull String number) {
+  public Set<Long> findByPhoneOrEmailWithLimit(@NonNull String number) {
     BoolQueryBuilder boolQuery = computeFindByPhoneOrEmailQuery(number);
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
@@ -131,7 +131,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
    * {@inheritDoc}
    */
   @Override
-  public Set<Long> findByExternalId(@NonNull String number) {
+  public Set<Long> findByExternalIdWithLimit(@NonNull String number) {
     BoolQueryBuilder boolQuery = computeFindByExternalIdQuery(number);
     SearchHits<CandidateEs> hits = executeQuery(boolQuery);
     LinkedHashSet<Long> candidateIds = extractCandidateIds(hits);
@@ -290,6 +290,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     } return builder;
   }
 
+  /**
+   * Returns the first few hits of the given query
+   * @param boolQuery Query
+   * @return the first page of hits (currently 10)
+   */
   @NotNull
   private SearchHits<CandidateEs> executeQuery(BoolQueryBuilder boolQuery) {
     NativeSearchQuery query = new NativeSearchQueryBuilder()

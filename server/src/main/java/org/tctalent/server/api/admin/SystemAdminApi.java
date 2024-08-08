@@ -67,6 +67,7 @@ import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateNote;
+import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
@@ -79,6 +80,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
+import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.repository.db.JobChatRepository;
@@ -122,6 +124,7 @@ public class SystemAdminApi {
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateService candidateService;
     private final CountryService countryService;
@@ -178,6 +181,7 @@ public class SystemAdminApi {
             CandidateAttachmentRepository candidateAttachmentRepository,
             CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
+        CandidateOpportunityRepository candidateOpportunityRepository,
             CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
             CountryService countryService,
             FileSystemService fileSystemService,
@@ -194,6 +198,7 @@ public class SystemAdminApi {
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateOpportunityRepository = candidateOpportunityRepository;
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateService = candidateService;
         this.countryService = countryService;
@@ -216,6 +221,29 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         countryForGeneralCountry = getExtraCountryMappings();
+    }
+
+    @GetMapping("fix_null_case_sfids")
+    public void fixNullCaseSfids() {
+        List<CandidateOpportunity> opps = candidateOpportunityRepository.findAllBySfIdIsNull();
+        for (CandidateOpportunity opp : opps) {
+            String sfid = candidateOpportunityService.fetchSalesforceId(opp);
+            if (sfid == null) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("FixNullCaseSfids")
+                    .message("No Salesforce opp for case " + opp.getId())
+                    .logInfo();
+            } else {
+                opp.setSfId(sfid);
+                candidateOpportunityRepository.save(opp);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("FixNullCaseSfids")
+                    .message("Updated Sfid of case " + opp.getId())
+                    .logInfo();
+            }
+        }
     }
 
     @GetMapping("flush_user_cache")
