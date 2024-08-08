@@ -12,7 +12,8 @@ export class BuildLinkComponent implements OnInit {
 
   form: FormGroup;
   error: string;
-  title: string = 'Edit Link'
+  // TODO: adapt title depending whether adding or editing
+  title: string = 'Add Link'
 
   @Input() selectedText: string;
   @Input() currentUrl: string = '';

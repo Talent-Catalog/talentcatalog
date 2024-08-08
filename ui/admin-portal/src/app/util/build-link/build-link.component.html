@@ -25,6 +25,7 @@
              type="text"
              class="form-control"
              id="url"
+             placeholder="URL including http(s):// or mailto: prefix"
              [formControlName]="'url'"
              (keydown.enter)="onKeydownEnter($event)"
              pattern="{{urlRegex}}"
