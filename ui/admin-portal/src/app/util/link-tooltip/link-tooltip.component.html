@@ -1,0 +1,16 @@
+<div class="link-tooltip"
+     [ngStyle]="{'left': leftOffset + 'px', 'bottom': bottomOffset + 'px'}"
+>
+  <a href="{{url}}" target="_blank">
+    {{url}}
+    <i class="fa-solid fa-arrow-up-right-from-square ml-2"></i>
+  </a>
+  <div class="button-group">
+    <button type="button" (click)="onEditClick()">
+      Edit
+    </button>
+    <button type="button" (click)="onRemoveClick()">
+      Remove
+    </button>
+  </div>
+</div>
