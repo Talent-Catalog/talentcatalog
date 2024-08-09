@@ -115,6 +115,7 @@ import {MonthPickerComponent} from './components/common/month-picker/month-picke
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft,
+  faArrowUpRightFromSquare,
   faCalendar,
   faCheck,
   faChevronDown,
@@ -125,11 +126,13 @@ import {
   faFaceSmile,
   faFileUpload,
   faFolderOpen,
-  faGlobe, faLink,
+  faGlobe,
+  faLink,
   faPlus,
   faQuestion,
   faQuestionCircle,
-  faTimes, faXmark
+  faTimes,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -195,6 +198,8 @@ import {
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
+import { BuildLinkComponent } from './util/build-link/build-link.component';
+import { LinkTooltipComponent } from './util/link-tooltip/link-tooltip.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -265,7 +270,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent,
-    PreviewLinkComponent
+    PreviewLinkComponent,
+    BuildLinkComponent,
+    LinkTooltipComponent
   ],
   imports: [
     BrowserModule,
@@ -326,6 +333,7 @@ export class AppModule {
   constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
     library.addIcons(
+      faArrowUpRightFromSquare,
       faEdit,
       faSpinner,
       faChevronDown,

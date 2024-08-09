@@ -36,6 +36,7 @@ export class CreateUpdatePostComponent implements OnInit {
   storedUrls: string[] = [];
   linkPreviews: LinkPreview[] = [];
 
+  // Component properties used for link functionality
   public linkBtnSelected: boolean = false;
   public linkTooltipLeftOffset: number;
   public linkTooltipBottomOffset: number;
@@ -59,7 +60,8 @@ export class CreateUpdatePostComponent implements OnInit {
 
   editorCreated(quill: Quill) {
     this.quillEditorRef = quill;
-    // Overrides Quill's native link functionality, which was allowing users to use invalid URLs.
+    // Overrides Quill's native link functionality, which was allowing users to enter invalid URLs
+    // in its link info/editor tooltip.
     this.quillEditorRef.theme.tooltip.show = function () { }
   }
 
@@ -131,13 +133,17 @@ export class CreateUpdatePostComponent implements OnInit {
   // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
   public onClickEmojiBtn() {
     this.emojiPickerVisible = !this.emojiPickerVisible;
-    if (!this.emojiPickerVisible) {
+    // When closing, focus the caret in editor.
+    if(!this.emojiPickerVisible) {
       const index: number = this.quillEditorRef.selection.savedRange.index;
       this.quillEditorRef.setSelection(index, 0);
     }
   }
 
   public contentChanged(event: any) {
+    // This opening block catches when a user has selected a link but then hits delete or space -
+    // these actions don't register as selection changes from the editor's event emitter, so we
+    // check whether a link is still selected when the tooltip is visible.
     if (this.linkTooltipVisible) {
       const selectedRange = this.quillEditorRef.getSelection();
       this.checkForLinkAtSelection(selectedRange.index, selectedRange.length)
@@ -330,12 +336,13 @@ export class CreateUpdatePostComponent implements OnInit {
    * @param selectionLength no. of characters selected from index position
    */
   private checkForLinkAtSelection(selectionIndex: number, selectionLength: number) {
-    // A Blot is an abstraction in Quill that represents a distinct piece of content or formatting.
-    // getLeaf() returns the distinct piece of content immediately before or surrounding the given
-    // index, and we can then query it's formatting and other properties.
-    let blot = this.quillEditorRef.getLeaf(selectionIndex);
 
-    if (blot[0].parent.constructor.name === 'Link') { // It's a link:
+    if (this.quillEditorRef.getFormat(selectionIndex, selectionLength).link) { // It's a link:
+      // A Blot is an abstraction in Quill that represents a distinct piece of content or formatting.
+      // getLeaf() returns the distinct piece of content immediately before or surrounding the given
+      // index, and we can then query it's formatting and other properties.
+      let blot = this.quillEditorRef.getLeaf(selectionIndex);
+
       // Set the position of the tooltip: bounds returns the position relative to the editor and
       // the tooltip is offset relative to the toolbar.
       let bounds = this.quillEditorRef.getBounds(selectionIndex, selectionLength)
@@ -349,7 +356,7 @@ export class CreateUpdatePostComponent implements OnInit {
         index: selectionIndex - blot[1],
         length: blot[0].text.length,
         highlightedText: blot[0].text,
-        url: blot[0].parent.domNode.href
+        url: this.quillEditorRef.getFormat(selectionIndex, selectionLength).link
       }
 
       this.openTooltip();
@@ -387,4 +394,5 @@ export class CreateUpdatePostComponent implements OnInit {
   private removeLink() {
     this.quillEditorRef.removeFormat(this.editorSelection.index, this.editorSelection.length);
   }
+
 }

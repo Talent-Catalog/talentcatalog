@@ -279,6 +279,13 @@ export class LoginRequest {
 export const EMAIL_REGEX: string =
   '(?!.*[@.]{2})[a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~]+[a-zA-Z0-9.!#$%&\'*+-/=?^_`{|}~]*@(?!-)[a-zA-Z0-9-]+(?<!-)(\\.(?!-)[a-zA-Z0-9-]+(?<!-))*$';
 
+/**
+ * URL validation, also accepting 'mailto:' links, from
+ * <a href="https://regex101.com/library/4hNOPu">regex101</a>
+ */
+export const URL_REGEX: string =
+  '(mailto:[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)|(((?:https?)|(?:ftp)):\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})'
+
 export function isMine(source: CandidateSource, authenticationService: AuthenticationService) {
   let mine: boolean = false;
   const me: User = authenticationService.getLoggedInUser();
@@ -320,4 +327,40 @@ export enum Status {
   deleted = "deleted"
 }
 
+/**
+ * Interface for sharing link-formatted text properties.
+ * See {@link CreateUpdatePostComponent}
+ */
+export interface Link {
+  /**
+   * Display text
+   */
+  placeholder: string,
+  /**
+   * Navigate to
+   */
+  url: string
+}
 
+/**
+ * Interface for sharing text editor selection properties.
+ * See {@link CreateUpdatePostComponent}
+ */
+export interface EditorSelection {
+  /**
+   * Beginning of selection
+   */
+  index: number,
+  /**
+   * No. of characters included after index
+   */
+  length: number,
+  /**
+   * Highlighted text if selection is a range
+   */
+  highlightedText?: string,
+  /**
+   * URL if selection is a link
+   */
+  url?: string
+}
