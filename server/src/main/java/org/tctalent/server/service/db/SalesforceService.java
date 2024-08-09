@@ -272,7 +272,8 @@ public interface SalesforceService {
      * given candidates for the given Employer job opportunity.
      * <p/>
      * Note the candidate job opportunities are identified by the unique
-     * external id TBBCandidateExternalId__c
+     * external id TBBCandidateExternalId__c (constructed from the candidate number and the
+     * SF job id)
      *
      * @param candidates Candidates
      * @param candidateOppParams Optional Salesforce fields to set on all given candidates'
