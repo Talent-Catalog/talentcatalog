@@ -327,14 +327,40 @@ export enum Status {
   deleted = "deleted"
 }
 
+/**
+ * Interface for sharing link-formatted text properties.
+ * See {@link CreateUpdatePostComponent}
+ */
 export interface Link {
+  /**
+   * Display text
+   */
   placeholder: string,
+  /**
+   * Navigate to
+   */
   url: string
 }
 
-export interface QuillSelection {
+/**
+ * Interface for sharing text editor selection properties.
+ * See {@link CreateUpdatePostComponent}
+ */
+export interface EditorSelection {
+  /**
+   * Beginning of selection
+   */
   index: number,
+  /**
+   * No. of characters included after index
+   */
   length: number,
-  text: string,
+  /**
+   * Highlighted text if selection is a range
+   */
+  highlightedText?: string,
+  /**
+   * URL if selection is a link
+   */
   url?: string
 }

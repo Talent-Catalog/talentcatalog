@@ -2,7 +2,7 @@ import {
   Component,
   HostListener,
   Input,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
@@ -17,7 +17,7 @@ import {
   LinkPreviewService
 } from "../../../services/link-preview.service";
 import {BuildLinkComponent} from "../../../util/build-link/build-link.component";
-import {QuillSelection} from "../../../model/base";
+import {EditorSelection} from "../../../model/base";
 
 @Component({
   selector: 'app-create-update-post',
@@ -37,10 +37,10 @@ export class CreateUpdatePostComponent implements OnInit {
   linkPreviews: LinkPreview[] = [];
 
   public linkBtnSelected: boolean = false;
-  public linkTooltipXPosition: number;
-  public linkTooltipYPosition: number;
+  public linkTooltipLeftOffset: number;
+  public linkTooltipBottomOffset: number;
   public linkTooltipVisible: boolean = false;
-  public selectedText: QuillSelection;
+  public editorSelection: EditorSelection;
 
   constructor(
     private fb: FormBuilder,
@@ -61,62 +61,6 @@ export class CreateUpdatePostComponent implements OnInit {
     this.quillEditorRef = quill;
     // Overrides Quill's native link functionality, which was allowing users to use invalid URLs.
     this.quillEditorRef.theme.tooltip.show = function () { }
-  }
-
-  @HostListener('window:keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent) {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-      this.onLinkBtnClick();
-    }
-  }
-
-  public onLinkBtnClick() {
-    const selectedRange = this.quillEditorRef.getSelection();
-
-    if (selectedRange == null || selectedRange.length === 0) return;
-
-    this.linkBtnSelected = true;
-
-    const selectedTextFormat =
-      this.quillEditorRef.getFormat(selectedRange.index, selectedRange.length)
-
-    this.selectedText = {
-      index: selectedRange.index,
-      length: selectedRange.length,
-      text: this.quillEditorRef.getText(selectedRange),
-      url: selectedTextFormat.link ? selectedTextFormat.link : null
-    }
-
-    this.buildLink();
-  }
-
-  private buildLink() {
-    // Initiate modal for building the link
-    const linkModal = this.modalService.open(BuildLinkComponent, {
-      centered: true,
-      backdrop: 'static'
-    })
-
-    linkModal.componentInstance.selectedText = this.selectedText.text; // Prepopulate modal form
-
-    if (this.selectedText.url) {
-      linkModal.componentInstance.currentUrl = this.selectedText.url;
-    }
-
-    linkModal.result.then((link) => {
-      if (link) {
-        // Delete the selection
-        this.quillEditorRef.deleteText(this.selectedText.index, this.selectedText.length);
-
-        // Replace with Link from modal
-        this.quillEditorRef.insertText(this.selectedText.index, link.placeholder, 'link', link.url)
-      }
-
-      // Refocus caret at end of selection
-      this.quillEditorRef.setSelection(this.selectedText.index + this.selectedText.length);
-
-      this.linkBtnSelected = false;
-    })
   }
 
   private doUpload(file: File) {
@@ -193,8 +137,20 @@ export class CreateUpdatePostComponent implements OnInit {
     }
   }
 
-  // Checks editor content for any links
-  public checkForLinks(event) {
+  public contentChanged(event: any) {
+    if (this.linkTooltipVisible) {
+      const selectedRange = this.quillEditorRef.getSelection();
+      this.checkForLinkAtSelection(selectedRange.index, selectedRange.length)
+    }
+
+    this.checkEditorContentForLinks(event)
+  }
+
+  /**
+   * Checks all the current contents of the editor for link-formatted text.
+   * @param event contains content the editor's contents
+   */
+  public checkEditorContentForLinks(event) {
     if (event.html === null) {
       this.clearLinkPreviews()
     } else {
@@ -267,71 +223,168 @@ export class CreateUpdatePostComponent implements OnInit {
     return this.linkPreviews;
   }
 
-  disableScroll() {
-    document.body.style.overflow = 'hidden';
+  /**
+   * LINK FUNCTIONALITY - adding or editing links in the Post editor
+   */
+
+  /**
+   * Handles typical keyboard shortcut to add/edit link in text editor (ctrl + k / cmd + k).
+   * @param event keyboard event
+   */
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+      this.onLinkBtnClick();
+    }
   }
 
-  enableScroll() {
-    document.body.style.overflow = 'auto';
+  public onLinkBtnClick() {
+    const currentSelection = this.quillEditorRef.getSelection();
+
+    if (currentSelection == null) { // User is not focused on the editor at all
+      return;
+    } else if (currentSelection.length === 0) { // The selection is not a range
+      // Refocus previous selection
+      this.quillEditorRef.setSelection(currentSelection.index, currentSelection.length)
+      return;
+    }
+
+    this.linkBtnSelected = true; // Highlight the button
+
+    // Check the format of the selected range
+    const selectedTextFormat =
+      this.quillEditorRef.getFormat(currentSelection.index, currentSelection.length)
+
+    // Set the component's EditorSelection properties
+    this.editorSelection = {
+      index: currentSelection.index,
+      length: currentSelection.length,
+      highlightedText: this.quillEditorRef.getText(currentSelection),
+      url: selectedTextFormat.link ? selectedTextFormat.link : null
+    }
+
+    // Keep focus at current editor selection
+    this.quillEditorRef.setSelection(currentSelection.index, currentSelection.length);
+
+    this.addOrEditLink();
   }
 
-  public checkForLinkAtSelection(event: any) {
-    // event.range can be null when the focus moves outside the editor - it's a selection change but
-    // doesn't have any data, handy in this instance because we can close the tooltip and end its
-    // attendant effects for any click outside the editor.
-    if (!event.range) {
+  /**
+   * Formats a text segment as a new link if there is no URL in the component instance
+   * of EditorSelection, or edits an existing one if there is.
+   */
+  private addOrEditLink() {
+    const currentSelection = this.quillEditorRef.getSelection();
+
+    // Initiate link modal
+    const linkModal = this.modalService.open(BuildLinkComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    // Prepopulate modal form
+    linkModal.componentInstance.selectedText = this.editorSelection.highlightedText;
+    if (this.editorSelection.url) {
+      linkModal.componentInstance.currentUrl = this.editorSelection.url;
+    }
+
+    // Handle the modal results
+    linkModal.result.then((link) => {
+      if (link) { // Modal has returned a valid link:
+        // Delete the text selection
+        this.quillEditorRef.deleteText(this.editorSelection.index, this.editorSelection.length);
+
+        console.log(this.quillEditorRef.getSelection())
+
+        // Replace it with the link-formatted text
+        this.quillEditorRef.insertText(
+          this.editorSelection.index, link.placeholder, 'link', link.url
+        )
+
+        // Refocus at end of placeholder, un-highlight button
+        this.quillEditorRef.setSelection(this.editorSelection.index + link.placeholder.length, 0);
+        this.linkBtnSelected = false;
+        return
+      }
+
+      // Refocus previous selection, un-highlight button
+      this.quillEditorRef.setSelection(currentSelection.index, currentSelection.length);
+      this.linkBtnSelected = false;
+    })
+  }
+
+  public editorSelectionChanged(event: any) {
+    if (!event.range) { // User is not focused on the editor at all
       this.closeTooltip()
       return;
     }
 
-    const selectionIndex: number = event.range.index;
+    this.checkForLinkAtSelection(event.range.index, event.range.length)
+  }
 
+  /**
+   * Checks for link format at current user selection in the editor. If link is present, it sets the
+   * properties of the components {@link EditorSelection} object and opens the link tooltip, which
+   * enables the user to navigate to the linked URL or edit/remove it.
+   * @param selectionIndex index of editor selection
+   * @param selectionLength no. of characters selected from index position
+   */
+  private checkForLinkAtSelection(selectionIndex: number, selectionLength: number) {
     // A Blot is an abstraction in Quill that represents a distinct piece of content or formatting.
-    // A Leaf Blot represents atomic pieces of content such as text that don't have nested content
-    // of their own. getLeaf() will return the distinct piece of content immediately before or
-    // surrounding the given index, and we can then query it's formatting and other properties.
-    let leafBlot = this.quillEditorRef.getLeaf(selectionIndex);
+    // getLeaf() returns the distinct piece of content immediately before or surrounding the given
+    // index, and we can then query it's formatting and other properties.
+    let blot = this.quillEditorRef.getLeaf(selectionIndex);
 
-    if (leafBlot[0].parent.constructor.name === 'Link') { // If it's a link:
-      this.linkBtnSelected = true; // Highlight the link button
+    if (blot[0].parent.constructor.name === 'Link') { // It's a link:
+      // Set the position of the tooltip: bounds returns the position relative to the editor and
+      // the tooltip is offset relative to the toolbar.
+      let bounds = this.quillEditorRef.getBounds(selectionIndex, selectionLength)
+      this.linkTooltipLeftOffset = bounds.left;
+      this.linkTooltipBottomOffset = -bounds.bottom + 20;
 
-      // Set the position of the tooltip
-      this.linkTooltipXPosition = leafBlot[0].parent.domNode.getBoundingClientRect().x +
-        leafBlot[0].parent.domNode.getBoundingClientRect().width
-      this.linkTooltipYPosition = leafBlot[0].parent.domNode.getBoundingClientRect().y +
-        leafBlot[0].parent.domNode.getBoundingClientRect().height
-
-      this.linkTooltipVisible = true; // Show the tooltip
-
-      // Disable document scrolling so tooltip stays in position
-      this.disableScroll();
-
-      // Set parameters so user can edit if they wish
-      this.selectedText = {
+      // Set link parameters so user can edit/remove link if desired
+      this.editorSelection = {
         // (Index of selection) - (no. of characters to beginning of blot)
-        index: selectionIndex - leafBlot[1],
-        length: leafBlot[0].text.length,
-        text: leafBlot[0].text,
-        url: leafBlot[0].parent.domNode.href
+        // Sets index to beginning of blot, which is what's needed for subsequent formatting.
+        index: selectionIndex - blot[1],
+        length: blot[0].text.length,
+        highlightedText: blot[0].text,
+        url: blot[0].parent.domNode.href
       }
 
-    } else { // If it's not a link:
-      this.closeTooltip()
+      this.openTooltip();
+
+    } else { // It's not a link:
+      if (this.linkTooltipVisible) this.closeTooltip();
     }
+
+    // Refocus at current selection
+    this.quillEditorRef.setSelection(selectionIndex, selectionLength);
+  }
+
+  private openTooltip() {
+    this.linkBtnSelected = true; // Highlight the link button
+    this.linkTooltipVisible = true; // Show the tooltip
   }
 
   private closeTooltip() {
     this.linkBtnSelected = false; // Un-highlight link button
     this.linkTooltipVisible = false; // Hide the tooltip
-    this.enableScroll(); // Re-enable scrolling
   }
 
-  public onEditLinkClick() {
-    this.buildLink();
+  public onEditLinkTooltipClick() {
+    this.addOrEditLink();
   }
 
-  public onRemoveLinkClick() {
-    return;
+  public onRemoveLinkTooltipClick() {
+    this.removeLink()
   }
 
+  /**
+   * Removes the link-formatting from the selection defined by the current properties of component's
+   * {@link EditorSelection} instance.
+   */
+  private removeLink() {
+    this.quillEditorRef.removeFormat(this.editorSelection.index, this.editorSelection.length);
+  }
 }

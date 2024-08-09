@@ -3,6 +3,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Link, URL_REGEX} from "../../model/base";
 
+/**
+ * Provides a modal for setting the properties of link-formatted text.
+ */
 @Component({
   selector: 'app-build-link',
   templateUrl: './build-link.component.html',
@@ -32,6 +35,10 @@ export class BuildLinkComponent implements OnInit {
     this.computeHeader()
   }
 
+  /**
+   * If a URL is passed, then we're working with an existing link.
+   * @private
+   */
   private computeHeader(): void {
     this.title = this.currentUrl ? 'Edit Link' : 'Add Link';
   }
@@ -40,6 +47,9 @@ export class BuildLinkComponent implements OnInit {
     this.focusInput();
   }
 
+  /**
+   * Placeholder will always be pre-filled, so we focus on url input
+   */
   focusInput(): void {
     this.urlInput.nativeElement.focus();
   }

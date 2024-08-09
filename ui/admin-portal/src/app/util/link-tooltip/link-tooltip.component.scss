@@ -1,52 +1,75 @@
 @import "~src/scss/variables";
 
+/* MODEL: tooltip with white background and arrow - tricky bit of CSS! */
 .link-tooltip {
-  position: fixed;
+  position: absolute;
   display: flex;
   flex-direction: column;
-  left: 0;
-  top: 0;
+  flex-wrap: wrap;
+  width: 150px; /* A bit skinny, but keeps it from falling off the viewport. */
   background-color: #ffffff;
   border-radius: 4px;
+  border: 1px solid #8b8c93;
   color: #151f2d;
-  padding: 10px; /* Increased padding for better spacing */
+  padding: 10px;
   font-size: 13px;
   margin-top: 5px;
   transform: translateX(-50%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for depth */
 }
 
 .link-tooltip::before {
   content: '';
   width: 0;
   height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid #ffffff; /* Match the arrow color to the tooltip’s background */
-  border-top: 1px solid #d3d3d3; /* Top border to match the tooltip's border */
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #8b8c93; /* Arrow color for the border */
   position: absolute;
-  left: calc(50% - 5px);
-  top: -5px;
-  z-index: 1001;
+  left: calc(50% - 7px);
+  bottom: -7px; /* Position the arrow at the bottom of the tooltip */
+}
+
+.link-tooltip::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #ffffff; /* Tooltip background color */
+  position: absolute;
+  left: calc(50% - 7px);
+  bottom: -6px; /* Slightly above the ::before pseudo-element */
 }
 
 /* Additional styling for buttons and link */
 .link-tooltip a {
-  display: flex;
-  align-items: center;
   color: #151f2d; /* Link color */
   text-decoration: none;
   margin-bottom: 10px; /* Space below the link */
   font-weight: bold;
+  word-break: break-all; /* Break long URLs to fit within the container */
+  overflow-wrap: anywhere; /* Allow breaking within words if necessary */
+}
+
+.link-tooltip a:hover {
+  color: #06c; /* Same as buttons */
 }
 
 .link-tooltip a i {
-  margin-left: 5px; /* Space between text and icon */
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .link-tooltip .button-group {
   display: flex;
-  justify-content: flex-end;
   gap: 10px; /* Space between buttons */
+}
+
+// This component had to be contained by the Quill toolbar to get the right positioning irrespective
+// of what's going in in the editor. For that reason, it tries to inherit Quill styling, which is
+// unset here. This was an additional incentive to keep the tooltip styling pretty basic.
+button {
+  all: unset;
 }

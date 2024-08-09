@@ -1,5 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
+/**
+ * Provides a tooltip displaying and enabling edit and removal of properties of link-formatted text.
+ */
 @Component({
   selector: 'app-link-tooltip',
   templateUrl: './link-tooltip.component.html',
@@ -7,8 +10,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 })
 export class LinkTooltipComponent implements OnInit {
 
-  @Input() xPosition: number;
-  @Input() yPosition: number;
+  @Input() leftOffset: number;
+  @Input() bottomOffset: number;
   @Input() url: string;
 
   @Output() editClicked = new EventEmitter<string>();
