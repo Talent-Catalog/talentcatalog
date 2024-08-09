@@ -18,16 +18,17 @@ package org.tctalent.server.service.db.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.PdfGenerationException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.util.html.StringSanitizer;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.w3c.tidy.Tidy;
@@ -46,21 +47,26 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PdfHelper {
 
-    @Value("${server.url}")
-    private String serverUrl;
-
     private static final String UTF_8 = "UTF-8";
+    private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
+
     private final TemplateEngine pdfTemplateEngine;
 
-    @Autowired
-    public PdfHelper(TemplateEngine pdfTemplateEngine) {
-        this.pdfTemplateEngine = pdfTemplateEngine;
-    }
-
+    /**
+     * Generates a PDF for a candidate.
+     *
+     * @param candidate the candidate data
+     * @param showName whether to show the candidate's name
+     * @param showContact whether to show the candidate's contact information
+     * @return the generated PDF as a Resource
+     */
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
+
+            cleanCandidateJobDescriptions(candidate);
 
             Context context = new Context();
             context.setVariable("candidate", candidate);
@@ -71,34 +77,69 @@ public class PdfHelper {
             String xHtml = convertToXhtml(renderedHtmlContent);
 
             // Remove any null bytes to avoid an invalid XML character (Unicode: 0x0) error
-            xHtml = Pattern.compile("\\x00").matcher(xHtml).replaceAll("");
-
-            ITextRenderer renderer = new ITextRenderer();
-
-            renderer.setDocumentFromString(xHtml, "classpath:pdf/");
-            renderer.layout();
+            xHtml = NULL_BYTE_PATTERN.matcher(xHtml).replaceAll("");
 
             // And finally, we create the PDF:
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            renderer.createPDF(outputStream);
-            outputStream.close();
-            return new ByteArrayResource(outputStream.toByteArray());
+            return createPdf(xHtml);
 
-        } catch (Exception e){
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("generatePdf")
+                .message("Error generating PDF")
+                .logError(e);
+
            throw new PdfGenerationException(e.getMessage());
         }
 
     }
 
-    private static String convertToXhtml(String html) throws UnsupportedEncodingException {
+    private static void cleanCandidateJobDescriptions(Candidate candidate) {
+        candidate.getCandidateJobExperiences().forEach(jobExperience ->
+            jobExperience.setDescription(
+                StringSanitizer.replaceLsepWithBr(jobExperience.getDescription())
+            )
+        );
+    }
+
+    private static String convertToXhtml(String html) {
         Tidy tidy = new Tidy();
         tidy.setInputEncoding(UTF_8);
         tidy.setOutputEncoding(UTF_8);
         tidy.setXHTML(true);
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(UTF_8));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        tidy.parseDOM(inputStream, outputStream);
-        return outputStream.toString(UTF_8);
+
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8));
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+            tidy.parseDOM(inputStream, outputStream);
+
+            String xhtml = outputStream.toString(StandardCharsets.UTF_8);
+
+            LogBuilder.builder(log)
+                .action("convertToXhtml")
+                .message("Converted HTML to XHTML")
+                .logInfo();
+
+            return xhtml;
+
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("convertToXhtml")
+                .message("Error converting HTML to XHTML")
+                .logError(e);
+
+            throw new RuntimeException("Error converting HTML to XHTML", e);
+        }
+    }
+
+    private Resource createPdf(String xHtml) throws Exception {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(xHtml, "classpath:pdf/");
+        renderer.layout();
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            renderer.createPDF(outputStream);
+            return new ByteArrayResource(outputStream.toByteArray());
+        }
     }
 
 }
