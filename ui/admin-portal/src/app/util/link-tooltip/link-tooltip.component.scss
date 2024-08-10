@@ -1,5 +1,7 @@
 @import "~src/scss/variables";
 
+// Just noting that the buttons on the tooltip inherit Quill styling because of the component's
+// placement - not a problem in this instance, as the simple look it provides is desired.
 /* MODEL: tooltip with white background and arrow - tricky bit of CSS! */
 .link-tooltip {
   position: absolute;
@@ -65,13 +67,6 @@
 .link-tooltip .button-group {
   display: flex;
   gap: 10px; /* Space between buttons */
-}
-
-// This component had to be contained by the Quill toolbar to get the right positioning irrespective
-// of what's going in in the editor. For that reason, it tries to inherit Quill styling, which is
-// unset here. This was an additional incentive to keep the tooltip styling pretty basic.
-button {
-  all: unset;
 }
 
 /* Mobile screen styling */
