@@ -23,7 +23,7 @@
 
           <button [ngClass]="!this.linkBtnSelected ? 'custom-link-btn' : 'custom-link-btn-selected'"
                   title="Add link"
-                  (click)="onLinkBtnClick()">
+                  (click)="onLinkBtnClickOrKeyShortcut()">
             <i class="fas fa-link small"></i>
           </button>
 
@@ -51,7 +51,7 @@
           <app-link-tooltip *ngIf="this.linkTooltipVisible"
                             [leftOffset]="linkTooltipLeftOffset"
                             [bottomOffset]="linkTooltipBottomOffset"
-                            [url]="editorSelection.url"
+                            [url]="editorSelection.linkUrl"
                             (editClicked)="onEditLinkTooltipClick()"
                             (removeClicked)="onRemoveLinkTooltipClick()"
           ></app-link-tooltip>

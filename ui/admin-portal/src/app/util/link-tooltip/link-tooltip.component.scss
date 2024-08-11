@@ -69,6 +69,12 @@
   gap: 10px; /* Space between buttons */
 }
 
+//TODO this works! Copy TC bootstrap button styling and make sure it's doc-ed and works in mobile
+#editBtn {
+  all: unset;
+  cursor: pointer;
+}
+
 /* Mobile screen styling */
 @media only screen and (max-width: 600px) {
   .link-tooltip {

@@ -348,19 +348,27 @@ export interface Link {
  */
 export interface EditorSelection {
   /**
-   * Beginning of selection
+   * TODO
    */
-  index: number,
+  userSelectionIndex: number,
   /**
    * No. of characters included after index
    */
-  length: number,
+  userSelectionLength: number,
   /**
    * Highlighted text if selection is a range
    */
   highlightedText?: string,
   /**
+   * Beginning of link if user selection is at link
+   */
+  linkIndex?: number,
+  /**
+   * TODO
+   */
+  linkLength?: number,
+  /**
    * URL if selection is a link
    */
-  url?: string
+  linkUrl?: string
 }
