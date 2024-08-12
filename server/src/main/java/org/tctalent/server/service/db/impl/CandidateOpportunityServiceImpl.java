@@ -173,11 +173,15 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         return opp;
     }
 
-    private String fetchSalesforceId(Candidate candidate, SalesforceJobOpp jobOpp) {
+    public @Nullable String fetchSalesforceId(@NonNull CandidateOpportunity opp) {
+        return fetchSalesforceId(opp.getCandidate(), opp.getJobOpp());
+    }
 
-        Opportunity opp = salesforceService.findCandidateOpportunity(
-            candidate.getCandidateNumber(), jobOpp.getSfId());
-        return opp == null ? null : opp.getId();
+    private @Nullable String fetchSalesforceId(
+        @NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp) {
+        Opportunity sfOpp = salesforceService.findCandidateOpportunity(
+                candidate.getCandidateNumber(), jobOpp.getSfId());
+        return sfOpp == null ? null : sfOpp.getId();
     }
 
     @Override
@@ -820,7 +824,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         return uploadedFile;
     }
-    
+
     @Override
     public CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request) {
         CandidateOpportunity opp = getCandidateOpportunity(id);

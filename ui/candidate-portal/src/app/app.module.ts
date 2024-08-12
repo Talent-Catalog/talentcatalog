@@ -116,6 +116,7 @@ import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome
 import {
   faArrowLeft,
   faArrowUpRightFromSquare,
+  faBriefcase,
   faCalendar,
   faCheck,
   faChevronDown,
@@ -128,10 +129,13 @@ import {
   faFolderOpen,
   faGlobe,
   faLink,
+  faListCheck,
+  faMessage,
   faPlus,
   faQuestion,
   faQuestionCircle,
   faTimes,
+  faUser,
   faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -270,9 +274,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent,
-    PreviewLinkComponent,
-    BuildLinkComponent,
-    LinkTooltipComponent
+    PreviewLinkComponent
   ],
   imports: [
     BrowserModule,
@@ -333,7 +335,6 @@ export class AppModule {
   constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
     library.addIcons(
-      faArrowUpRightFromSquare,
       faEdit,
       faSpinner,
       faChevronDown,
@@ -352,7 +353,11 @@ export class AppModule {
       faFaceSmile,
       faPlus,
       faXmark,
-      faLink
+      faLink,
+      faUser,
+      faListCheck,
+      faBriefcase,
+      faMessage
     );
   }
 }
