@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,11 @@ public class CandidateDependantServiceImpl implements CandidateDependantService 
         Candidate candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
         return candidate;
+    }
+
+    @Override
+    public List<CandidateDependant> list(long candidateId) {
+        return candidateDependantRepository.findByCandidateId(candidateId);
     }
 
     @Override

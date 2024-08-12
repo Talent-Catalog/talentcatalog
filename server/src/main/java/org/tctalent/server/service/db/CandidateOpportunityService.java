@@ -33,6 +33,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
@@ -70,6 +71,16 @@ public interface CandidateOpportunityService {
      */
     void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws SalesforceException, WebClientException;
+
+    /**
+     * From Salesforce fetch the Salesforce id, if any, of the SF opp corresponding to the given
+     * TC candidate opp.
+     *
+     * @param opp Candidate opp on the TC
+     * @return Salesforce id if one found
+     */
+    @Nullable
+    String fetchSalesforceId(@NonNull CandidateOpportunity opp);
 
     /**
      * Finds the candidate opportunity associated with the given candidate and job
@@ -163,4 +174,13 @@ public interface CandidateOpportunityService {
      */
     CandidateOpportunity uploadOffer(long id, MultipartFile file)
         throws InvalidRequestException, NoSuchObjectException, IOException;
+
+    /**
+     * Updates the CandidateOpportunity with the relocating dependants
+     * @param request relocating dependant ids
+     * @return CandidateOpportunity
+     * @throws NoSuchObjectException if there is no opportunity with this id.
+     */
+    CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request)
+        throws NoSuchObjectException;
 }

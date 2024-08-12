@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,4 +30,9 @@ public interface CandidateDependantRepository
             + " left join cd.candidate c "
             + " where c.id = :candidateId")
     Long countByCandidateId(@Param("candidateId") Long candidateId);
+
+    @Query(" select cd from CandidateDependant cd "
+        + " left join cd.candidate c "
+        + " where c.id = :candidateId")
+    List<CandidateDependant> findByCandidateId(@Param("candidateId") Long candidateId);
 }
