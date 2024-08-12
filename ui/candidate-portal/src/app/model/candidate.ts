@@ -124,7 +124,8 @@ export interface CandidateProperty {
 
 export interface CandidateIntakeData {
   asylumYear?: string;
-  availImmediate?: YesNoUnsure;
+  availDate?: string;
+  availImmediate?: YesNo;
   availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;

@@ -115,6 +115,7 @@ import {MonthPickerComponent} from './components/common/month-picker/month-picke
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft,
+  faBriefcase,
   faCalendar,
   faCheck,
   faChevronDown,
@@ -127,10 +128,13 @@ import {
   faFolderOpen,
   faGlobe,
   faLink,
+  faListCheck,
+  faMessage,
   faPlus,
   faQuestion,
   faQuestionCircle,
   faTimes,
+  faUser,
   faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -157,7 +161,7 @@ import {
 import {
   CandidateTaskComponent
 } from './components/profile/view/tab/tasks/task/candidate-task.component';
-import {CommonModule, DatePipe} from "@angular/common";
+import {DatePipe} from "@angular/common";
 import {ExtendDatePipe} from "./util/date-adapter/extend-date-pipe";
 import {
   ViewSimpleTaskComponent
@@ -310,9 +314,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgSelectModule,
     NgxWigModule,
     QuillModule.forRoot(),
-    PickerModule,
-    CommonModule,
-    CommonModule
+    PickerModule
   ],
   providers: [
     {provide: RedirectGuard},
@@ -356,7 +358,11 @@ export class AppModule {
       faFaceSmile,
       faPlus,
       faXmark,
-      faLink
+      faLink,
+      faUser,
+      faListCheck,
+      faBriefcase,
+      faMessage
     );
   }
 }
