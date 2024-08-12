@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *   <li>@Transactional - Ensures each test runs within a transaction that can be rolled back after
  *   the test</li>
  *   <li>@Rollback - Explicitly rolls back transactions between tests</li>
+ *   <li>@Disabled - Temporarily skips all tests in this class, preventing them from being executed.
+ *   This is so the tests will be bypassed in the higher environments where a localised test
+ *   database is not yet available.</li>
  * </ul>
  */
+@Disabled("Skipping all tests in this class")
 @SpringBootTest
 class UserCacheEvictionTest {
 
