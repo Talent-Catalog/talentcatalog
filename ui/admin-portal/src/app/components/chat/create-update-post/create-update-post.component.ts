@@ -333,7 +333,6 @@ export class CreateUpdatePostComponent implements OnInit {
         // Refocus at end of placeholder, un-highlight button
         this.quillEditorRef.setSelection(
           this.editorSelection.linkIndex + link.placeholder.length, 0);
-        this.linkBtnSelected = false;
         return;
 
       }
