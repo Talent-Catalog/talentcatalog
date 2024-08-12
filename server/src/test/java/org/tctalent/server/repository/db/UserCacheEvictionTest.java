@@ -17,8 +17,10 @@
 package org.tctalent.server.repository.db;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,7 @@ import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 
@@ -74,12 +77,16 @@ class UserCacheEvictionTest {
   private SavedListRepository savedListRepository;
 
   @Autowired
+  private SavedSearchRepository savedSearchRepository;
+
+  @Autowired
   private CacheManager cacheManager;
 
   private PartnerImpl tbb;
   private PartnerImpl hias;
   private Employer employer;
   private Country country;
+  private Map<String, SavedSearch> savedSearchesByName;
 
   @BeforeEach
   void setUp() {
@@ -89,7 +96,8 @@ class UserCacheEvictionTest {
     employer = employerRepository.findById(1L).get();
     country = countryRepository.findByNameIgnoreCase("United Kingdom");
 
-    createSavedLists();
+    createSharedLists();
+    createSharedSearches();
 
     User user = new User();
     user.setId(1L);
@@ -98,7 +106,8 @@ class UserCacheEvictionTest {
     user.setRole(Role.user);
     user.setStatus(Status.active);
     user.setPartner(tbb);
-    assignSavedLists(user);
+    assignSharedLists(user);
+    assignSharedSearches(user);
 
     // Save user to initialize the test data
     userRepository.save(user);
@@ -110,7 +119,8 @@ class UserCacheEvictionTest {
     user.setRole(Role.user);
     user.setStatus(Status.active);
     user.setPartner(hias);
-    assignSavedLists(user);
+    assignSharedLists(user);
+    assignSharedSearches(user);
 
     // Save user to initialize the test data
     userRepository.save(user);
@@ -119,7 +129,7 @@ class UserCacheEvictionTest {
     userRepository.findByUsernameIgnoreCase("testuser2");
   }
 
-  private void createSavedLists() {
+  private void createSharedLists() {
     SavedList savedList = new SavedList();
     savedList.setTbbShortName("TestList");
     savedList.setName("TestList");
@@ -145,7 +155,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(savedList);
   }
 
-  private void assignSavedLists(User user) {
+  private void assignSharedLists(User user) {
     Set<SavedList> savedLists = new HashSet<>();
 
     SavedList savedList = savedListRepository.findByShortNameIgnoreCase("TestList").get();
@@ -157,6 +167,48 @@ class UserCacheEvictionTest {
     savedLists.add(savedList3);
 
     user.setSharedLists(savedLists);
+  }
+
+  private void createSharedSearches() {
+    savedSearchesByName = new HashMap<>();
+
+    SavedSearch savedSearch = new SavedSearch();
+    savedSearch.setName("TestSearch");
+    savedSearch.setDescription("TestDescription");
+    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedSearch.setCreatedDate(OffsetDateTime.now());
+    savedSearchRepository.save(savedSearch);
+    savedSearchesByName.put("TestSearch", savedSearch);
+
+    savedSearch = new SavedSearch();
+    savedSearch.setName("TestSearch2");
+    savedSearch.setDescription("TestDescription2");
+    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedSearch.setCreatedDate(OffsetDateTime.now());
+    savedSearchRepository.save(savedSearch);
+    savedSearchesByName.put("TestSearch2", savedSearch);
+
+    savedSearch = new SavedSearch();
+    savedSearch.setName("TestSearch3");
+    savedSearch.setDescription("TestDescription3");
+    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedSearch.setCreatedDate(OffsetDateTime.now());
+    savedSearchRepository.save(savedSearch);
+    savedSearchesByName.put("TestSearch3", savedSearch);
+  }
+
+  private void assignSharedSearches(User user) {
+    Set<SavedSearch> savedSearches = new HashSet<>();
+
+    SavedSearch savedSearch = savedSearchRepository.findById(savedSearchesByName.get("TestSearch").getId()).get();
+    SavedSearch savedSearch2 = savedSearchRepository.findById(savedSearchesByName.get("TestSearch2").getId()).get();
+    SavedSearch savedSearch3 = savedSearchRepository.findById(savedSearchesByName.get("TestSearch3").getId()).get();
+
+    savedSearches.add(savedSearch);
+    savedSearches.add(savedSearch2);
+    savedSearches.add(savedSearch3);
+
+    user.setSharedSearches(savedSearches);
   }
 
   @AfterEach
@@ -964,7 +1016,7 @@ class UserCacheEvictionTest {
     // Find the user to cache it initially
     User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
 
-    // Deleting the country should evict the user cache
+    // Deleting the saved list repo should evict the user cache
     savedListRepository.deleteAll();
 
     // Verify that the user cache evicted
@@ -979,9 +1031,144 @@ class UserCacheEvictionTest {
     // Find the user to cache it initially
     User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
 
-    // Deleting the counties should evict the user cache
+    // Deleting the saved lists should evict the user cache
     SavedList list = savedListRepository.findByShortNameIgnoreCase("TestList").get();
     savedListRepository.deleteAll(List.of(list));
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("save saved search should evict all user cache entries")
+  void whenSaveSavedSearch_thenCacheShouldBeEvictedAndUpdated() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving savedSearch should evict the user cache
+    SavedSearch search = savedSearchesByName.get("TestSearch");
+    search.setDescription("UpdatedDescription");
+    savedSearchRepository.save(search);
+
+    // Verify that the saved search updated and the user cache evicted
+    verifyLSearchDescriptionUpdated(search.getId(), "UpdatedDescription");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAll saved searches should evict the user cache")
+  void whenSaveAllSavedLSearches_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving savedLSearch should evict the user cache
+    SavedSearch search = savedSearchesByName.get("TestSearch");
+    search.setDescription("UpdatedDescription");
+    savedSearchRepository.saveAll(List.of(search));
+
+    // Verify that the saved search updated and the user cache evicted
+    verifyLSearchDescriptionUpdated(search.getId(), "UpdatedDescription");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAndFlush saved search should evict the user cache")
+  void whenSaveAndFlushSavedSearch_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving savedLSearch should evict the user cache
+    SavedSearch search = savedSearchesByName.get("TestSearch");
+    search.setDescription("UpdatedDescription");
+    savedSearchRepository.saveAndFlush(search);
+
+    // Verify that the saved search updated and the user cache evicted
+    verifyLSearchDescriptionUpdated(search.getId(), "UpdatedDescription");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAllAndFlush savedLSearches should evict the user cache")
+  void whenSaveAllAndFlushCSavedSearches_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving savedLSearch should evict the user cache
+    SavedSearch search = savedSearchesByName.get("TestSearch");
+    search.setDescription("UpdatedDescription");
+    savedSearchRepository.saveAllAndFlush(List.of(search));
+
+    // Verify that the saved search updated and the user cache evicted
+    verifyLSearchDescriptionUpdated(search.getId(), "UpdatedDescription");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete saved search should evict the user cache")
+  void whenDeleteSavedSearch_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the saved search should evict the user cache
+    SavedSearch search = savedSearchesByName.get("TestSearch");
+    savedSearchRepository.delete(search);
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete saved search by id should evict the user cache")
+  void whenDeleteSavedSearchById_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the saved search should evict the user cache
+    SavedSearch search = savedSearchesByName.get("TestSearch");
+    savedSearchRepository.deleteById(search.getId());
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all savedSearch repository should evict the user cache")
+  void whenDeleteAllSavedSearchRepo_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the saved searches should evict the user cache
+    savedSearchRepository.deleteAll();
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all savedSearch should evict the user cache")
+  void whenDeleteAllSavedSearches_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the saved searches should evict the user cache
+    SavedSearch search = savedSearchesByName.get("TestSearch");
+    savedSearchRepository.deleteAll(List.of(search));
 
     // Verify that the user cache evicted
     verifyCacheIsEmpty();
@@ -1056,6 +1243,11 @@ class UserCacheEvictionTest {
   private void verifyListDescriptionUpdated(String shortName, String exepectedDescription) {
     SavedList savedList = savedListRepository.findByShortNameIgnoreCase(shortName).get();
     assertThat(savedList.getDescription()).isEqualTo(exepectedDescription);
+  }
+
+  private void verifyLSearchDescriptionUpdated(Long id, String expectedDescription) {
+    SavedSearch savedSearch = savedSearchRepository.findById(id).get();
+    assertThat(savedSearch.getDescription()).isEqualTo(expectedDescription);
   }
 
 }
