@@ -47,7 +47,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
      */
     @NonNull
     @Override
-    @CacheEvict(value = "users", key = "#p0.user.username")
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
     <S extends Candidate> S save(@NonNull S candidate);
 
     /**
@@ -58,7 +58,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
      */
     @NonNull
     @Override
-    @CacheEvict(value = "users", key = "#p0.user.username")
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
     <S extends Candidate> S saveAndFlush(@NonNull S candidate);
 
     /**
@@ -68,7 +68,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
      * @param candidate the candidate entity to delete; must not be null
      */
     @Override
-    @CacheEvict(value = "users", key = "#p0.user.username")
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
     void delete(@NonNull Candidate candidate);
 
     /**
