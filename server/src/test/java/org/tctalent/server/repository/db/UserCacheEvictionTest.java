@@ -33,6 +33,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -101,8 +102,10 @@ class UserCacheEvictionTest {
     employer = employerRepository.findById(1L).get();
     country = countryRepository.findByNameIgnoreCase("United Kingdom");
 
+    createAdminUser();
     createSharedLists();
     createSharedSearches();
+    createCandidateUser();
 
     User user = new User();
     user.setId(1L);
@@ -134,12 +137,22 @@ class UserCacheEvictionTest {
     userRepository.findByUsernameIgnoreCase("testuser2");
   }
 
+  private void createAdminUser() {
+    User adminUser = new User();
+    adminUser.setUsername("admin");
+    adminUser.setEmail("test@admin.com");
+    adminUser.setRole(Role.user);
+    adminUser.setStatus(Status.active);
+    adminUser.setPartner(tbb);
+    userRepository.save(adminUser);
+  }
+
   private void createSharedLists() {
     SavedList savedList = new SavedList();
     savedList.setTbbShortName("TestList");
     savedList.setName("TestList");
     savedList.setDescription("TestDescription");
-    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
     savedList.setCreatedDate(OffsetDateTime.now());
     savedListRepository.save(savedList);
 
@@ -147,7 +160,7 @@ class UserCacheEvictionTest {
     savedList.setTbbShortName("TestList2");
     savedList.setName("TestList2");
     savedList.setDescription("TestDescription2");
-    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
     savedList.setCreatedDate(OffsetDateTime.now());
     savedListRepository.save(savedList);
 
@@ -155,7 +168,7 @@ class UserCacheEvictionTest {
     savedList.setTbbShortName("TestList3");
     savedList.setName("TestList3");
     savedList.setDescription("TestDescription3");
-    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
     savedList.setCreatedDate(OffsetDateTime.now());
     savedListRepository.save(savedList);
   }
@@ -180,7 +193,7 @@ class UserCacheEvictionTest {
     SavedSearch savedSearch = new SavedSearch();
     savedSearch.setName("TestSearch");
     savedSearch.setDescription("TestDescription");
-    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
     savedSearch.setCreatedDate(OffsetDateTime.now());
     savedSearchRepository.save(savedSearch);
     savedSearchesByName.put("TestSearch", savedSearch);
@@ -188,7 +201,7 @@ class UserCacheEvictionTest {
     savedSearch = new SavedSearch();
     savedSearch.setName("TestSearch2");
     savedSearch.setDescription("TestDescription2");
-    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
     savedSearch.setCreatedDate(OffsetDateTime.now());
     savedSearchRepository.save(savedSearch);
     savedSearchesByName.put("TestSearch2", savedSearch);
@@ -196,7 +209,7 @@ class UserCacheEvictionTest {
     savedSearch = new SavedSearch();
     savedSearch.setName("TestSearch3");
     savedSearch.setDescription("TestDescription3");
-    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedSearch.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
     savedSearch.setCreatedDate(OffsetDateTime.now());
     savedSearchRepository.save(savedSearch);
     savedSearchesByName.put("TestSearch3", savedSearch);
@@ -214,6 +227,30 @@ class UserCacheEvictionTest {
     savedSearches.add(savedSearch3);
 
     user.setSharedSearches(savedSearches);
+  }
+
+  private void createCandidateUser() {
+    User candidateUser = new User();
+    candidateUser.setUsername("test-candidate");
+    candidateUser.setEmail("test@candidate.com");
+    candidateUser.setRole(Role.user);
+    candidateUser.setStatus(Status.active);
+    candidateUser.setPartner(tbb);
+    userRepository.save(candidateUser);
+
+    Candidate candidate = new Candidate();
+    candidate.setCity("TestCity");
+    candidate.setCountry(country);
+    candidate.setCreatedBy(candidateUser);
+    candidate.setCreatedDate(OffsetDateTime.now());
+    candidate.setUser(candidateUser);
+    candidate.setContactConsentPartners(true);
+    candidate.setContactConsentRegistration(true);
+    candidate.setStatus(CandidateStatus.active);
+    candidateRepository.save(candidate);
+
+    candidateUser.setCandidate(candidate);
+    userRepository.save(candidateUser);
   }
 
   @AfterEach
@@ -768,7 +805,7 @@ class UserCacheEvictionTest {
   @DisplayName("save candidate should evict connected user from cache")
   void whenSaveCandidate_thenCacheShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling save to update the candidate evicts the connected user from cache
     Candidate candidate = foundUser.getCandidate();
@@ -780,7 +817,7 @@ class UserCacheEvictionTest {
     verifySingleUserEvictedFromCache(foundUser);
 
     // Verify that finding the user again will return and cache the updated candidate
-    foundUser = findUserAndVerifyCache("sadat.malik@test.org", candidate);
+    foundUser = findUserAndVerifyCache("test-candidate", candidate);
   }
 
   @Test
@@ -789,7 +826,7 @@ class UserCacheEvictionTest {
   @DisplayName("saveAll candidates should evict the user cache")
   void whenSaveAllCandidates_thenCacheShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling saveAll to update the candidate clears the cache
     Candidate candidate = foundUser.getCandidate();
@@ -801,7 +838,7 @@ class UserCacheEvictionTest {
     verifyCacheIsEmpty();
 
     // Verify that finding the user again will return and cache the updated candidate
-    foundUser = findUserAndVerifyCache("sadat.malik@test.org", candidate);
+    foundUser = findUserAndVerifyCache("test-candidate", candidate);
   }
 
   @Test
@@ -810,7 +847,7 @@ class UserCacheEvictionTest {
   @DisplayName("saveAndFlush candidate should evict the connected user from the cache")
   void whenSaveAndFlushCandidate_thenConnectedUserShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling saveAndFlush to update the candidate should evict the connected user from cache
     Candidate candidate = foundUser.getCandidate();
@@ -822,7 +859,7 @@ class UserCacheEvictionTest {
     verifySingleUserEvictedFromCache(foundUser);
 
     // Verify that finding the user again will return and cache the updated candidate
-    foundUser = findUserAndVerifyCache("sadat.malik@test.org", candidate);
+    foundUser = findUserAndVerifyCache("test-candidate", candidate);
   }
 
   @Test
@@ -831,7 +868,7 @@ class UserCacheEvictionTest {
   @DisplayName("saveAllAndFlush candidates should evict the user cache")
   void whenSaveAllAndFlushCandidates_thenCacheShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling saveAllAndFlush to update the candidate should clear the user cache
     Candidate candidate = foundUser.getCandidate();
@@ -843,7 +880,7 @@ class UserCacheEvictionTest {
     verifyCacheIsEmpty();
 
     // Verify that finding the user again will return and cache the updated candidate
-    foundUser = findUserAndVerifyCache("sadat.malik@test.org", candidate);
+    foundUser = findUserAndVerifyCache("test-candidate", candidate);
   }
 
   @Test
@@ -852,7 +889,7 @@ class UserCacheEvictionTest {
   @DisplayName("delete candidate should evict the connected user from cache")
   void whenDeleteCandidate_thenConnectedUserShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling delete candidate should evict the connected user from cache
     Candidate candidate = foundUser.getCandidate();
@@ -868,7 +905,7 @@ class UserCacheEvictionTest {
   @DisplayName("delete candidate by id should evict the user cache")
   void whenDeleteCandidateById_thenCacheShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling delete candidate by id should clear the user cache
     Candidate candidate = foundUser.getCandidate();
@@ -884,7 +921,7 @@ class UserCacheEvictionTest {
   @DisplayName("delete all candidate repository should evict the user cache")
   void whenDeleteAllCandidateRepo_thenCacheShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling delete all on candidate repository should clear the user cache
     candidateRepository.deleteAll();
@@ -899,7 +936,7 @@ class UserCacheEvictionTest {
   @DisplayName("delete all candidates should evict the user cache")
   void whenDeleteAllCandidates_thenCacheShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling delete all candidate should clear the user cache
     Candidate candidate = foundUser.getCandidate();
@@ -915,7 +952,7 @@ class UserCacheEvictionTest {
   @DisplayName("clear all candidate text search ids should evict the user cache")
   void whenClearAllCandidateTextSearchIds_thenCacheShouldBeEvicted() {
     // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
 
     // Calling clearAllCandidateTextSearchIds should clear the user cache
     candidateRepository.clearAllCandidateTextSearchIds();
