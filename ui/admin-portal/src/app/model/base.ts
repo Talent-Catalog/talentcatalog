@@ -348,23 +348,23 @@ export interface Link {
  */
 export interface EditorSelection {
   /**
-   * TODO
+   * Index position of user selection
    */
   userSelectionIndex: number,
   /**
-   * No. of characters included after index
+   * No. of characters included after index in user selection
    */
   userSelectionLength: number,
   /**
-   * Highlighted text if selection is a range
+   * Placeholder for link (user selection if new link, current placeholder if existing link)
    */
-  highlightedText?: string,
+  placeholder?: string,
   /**
-   * Beginning of link if user selection is at link
+   * Index position of beginning of link
    */
   linkIndex?: number,
   /**
-   * TODO
+   * No. of characters from link index in entire link-formatted text
    */
   linkLength?: number,
   /**
