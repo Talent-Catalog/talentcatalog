@@ -18,13 +18,12 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.SavedList;
 
-public interface SavedListRepository extends JpaRepository<SavedList, Long>, JpaSpecificationExecutor<SavedList> {
+public interface SavedListRepository extends CacheEvictingRepository<SavedList, Long>, JpaSpecificationExecutor<SavedList> {
 
     /**
      * Retrieves a list of {@link SavedList} entries associated with the specified job IDs.
