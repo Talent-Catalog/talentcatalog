@@ -16,7 +16,10 @@
 
 package org.tctalent.server.repository.db;
 
+import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +34,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 
@@ -67,6 +71,9 @@ class UserCacheEvictionTest {
   private CandidateRepository candidateRepository;
 
   @Autowired
+  private SavedListRepository savedListRepository;
+
+  @Autowired
   private CacheManager cacheManager;
 
   private PartnerImpl tbb;
@@ -82,6 +89,8 @@ class UserCacheEvictionTest {
     employer = employerRepository.findById(1L).get();
     country = countryRepository.findByNameIgnoreCase("United Kingdom");
 
+    createSavedLists();
+
     User user = new User();
     user.setId(1L);
     user.setUsername("testuser");
@@ -89,6 +98,7 @@ class UserCacheEvictionTest {
     user.setRole(Role.user);
     user.setStatus(Status.active);
     user.setPartner(tbb);
+    assignSavedLists(user);
 
     // Save user to initialize the test data
     userRepository.save(user);
@@ -100,12 +110,53 @@ class UserCacheEvictionTest {
     user.setRole(Role.user);
     user.setStatus(Status.active);
     user.setPartner(hias);
+    assignSavedLists(user);
 
     // Save user to initialize the test data
     userRepository.save(user);
 
     // calling find by user to cache testuser2
     userRepository.findByUsernameIgnoreCase("testuser2");
+  }
+
+  private void createSavedLists() {
+    SavedList savedList = new SavedList();
+    savedList.setTbbShortName("TestList");
+    savedList.setName("TestList");
+    savedList.setDescription("TestDescription");
+    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedList.setCreatedDate(OffsetDateTime.now());
+    savedListRepository.save(savedList);
+
+    savedList = new SavedList();
+    savedList.setTbbShortName("TestList2");
+    savedList.setName("TestList2");
+    savedList.setDescription("TestDescription2");
+    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedList.setCreatedDate(OffsetDateTime.now());
+    savedListRepository.save(savedList);
+
+    savedList = new SavedList();
+    savedList.setTbbShortName("TestList3");
+    savedList.setName("TestList3");
+    savedList.setDescription("TestDescription3");
+    savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("sadat.malik@test.org"));
+    savedList.setCreatedDate(OffsetDateTime.now());
+    savedListRepository.save(savedList);
+  }
+
+  private void assignSavedLists(User user) {
+    Set<SavedList> savedLists = new HashSet<>();
+
+    SavedList savedList = savedListRepository.findByShortNameIgnoreCase("TestList").get();
+    SavedList savedList2 = savedListRepository.findByShortNameIgnoreCase("TestList2").get();
+    SavedList savedList3 = savedListRepository.findByShortNameIgnoreCase("TestList3").get();
+
+    savedLists.add(savedList);
+    savedLists.add(savedList2);
+    savedLists.add(savedList3);
+
+    user.setSharedLists(savedLists);
   }
 
   @AfterEach
@@ -801,6 +852,141 @@ class UserCacheEvictionTest {
     verifyCacheIsEmpty();
   }
 
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("save saved list should evict all user cache entries")
+  void whenSaveSavedList_thenCacheShouldBeEvictedAndUpdated() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving savedList should evict the user cache
+    SavedList list = savedListRepository.findByShortNameIgnoreCase("TestList").get();
+    list.setDescription("UpdatedDescription");
+    savedListRepository.save(list);
+
+    // Verify that the saved list updated and the user cache evicted
+    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAll saved lists should evict the user cache")
+  void whenSaveAllSavedLists_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving savedList should evict the user cache
+    SavedList list = savedListRepository.findByShortNameIgnoreCase("TestList").get();
+    list.setDescription("UpdatedDescription");
+    savedListRepository.saveAll(List.of(list));
+
+    // Verify that the savedList updated and the user cache evicted
+    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAndFlush saved list should evict the user cache")
+  void whenSaveAndFlushSavedList_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving savedList should evict the user cache
+    SavedList list = savedListRepository.findByShortNameIgnoreCase("TestList").get();
+    list.setDescription("UpdatedDescription");
+    savedListRepository.saveAndFlush(list);
+
+    // Verify that the savedList updated and the user cache evicted
+    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("saveAllAndFlush savedLists should evict the user cache")
+  void whenSaveAllAndFlushCSavedLists_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Updating and saving savedList should evict the user cache
+    SavedList list = savedListRepository.findByShortNameIgnoreCase("TestList").get();
+    list.setDescription("UpdatedDescription");
+    savedListRepository.saveAllAndFlush(List.of(list));
+
+    // Verify that the savedList updated and the user cache evicted
+    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete saved list should evict the user cache")
+  void whenDeleteSavedList_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the saved list should evict the user cache
+    SavedList list = savedListRepository.findByShortNameIgnoreCase("TestList").get();
+    savedListRepository.delete(list);
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete saved list by id should evict the user cache")
+  void whenDeleteSavedListById_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the saved list should evict the user cache
+    SavedList list = savedListRepository.findByShortNameIgnoreCase("TestList").get();
+    savedListRepository.deleteById(list.getId());
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all savedList repository should evict the user cache")
+  void whenDeleteAllSavedListRepo_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the country should evict the user cache
+    savedListRepository.deleteAll();
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  @DisplayName("delete all savedList should evict the user cache")
+  void whenDeleteAllSavedLists_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("testuser", "Talent Beyond Boundaries");
+
+    // Deleting the counties should evict the user cache
+    SavedList list = savedListRepository.findByShortNameIgnoreCase("TestList").get();
+    savedListRepository.deleteAll(List.of(list));
+
+    // Verify that the user cache evicted
+    verifyCacheIsEmpty();
+  }
+
   private User findUserAndVerifyCache(String username, String expectedPartnerName) {
     User user = userRepository.findByUsernameIgnoreCase(username);
     verifyUserAndCachedEntry(user, expectedPartnerName);
@@ -865,6 +1051,11 @@ class UserCacheEvictionTest {
   private void verifyCandidateCityUpdated(Long candidateId, String expectedCity) {
     Candidate updatedCandidate = candidateRepository.findById(candidateId).get();
     assertThat(updatedCandidate.getCity()).isEqualTo(expectedCity);
+  }
+
+  private void verifyListDescriptionUpdated(String shortName, String exepectedDescription) {
+    SavedList savedList = savedListRepository.findByShortNameIgnoreCase(shortName).get();
+    assertThat(savedList.getDescription()).isEqualTo(exepectedDescription);
   }
 
 }
