@@ -56,3 +56,10 @@ button.custom-link-btn-selected {
   color: #0066cc !important;
   padding-top: 1px !important;
 }
+
+/* Mobile screen styling */
+@media only screen and (max-width: 600px) {
+  button.custom-link-btn:hover {
+    color: #444 !important;
+  }
+}

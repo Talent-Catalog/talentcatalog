@@ -293,8 +293,6 @@ export class CreateUpdatePostComponent implements OnInit {
         return;
       }
 
-      this.linkBtnSelected = true; // Highlight the button
-
       // Check the format of the selected range
       const selectedTextFormat =
         this.quillEditorRef.getFormat(currentSelection.index, currentSelection.length)
@@ -354,7 +352,6 @@ export class CreateUpdatePostComponent implements OnInit {
       this.quillEditorRef.setSelection(
         this.editorSelection.userSelectionIndex, this.editorSelection.userSelectionLength
       );
-      this.linkBtnSelected = false;
     })
   }
 

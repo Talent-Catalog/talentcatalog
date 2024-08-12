@@ -71,3 +71,10 @@ button.custom-link-btn-selected {
   padding-bottom: 4px !important;
   padding-left: 0 !important;
 }
+
+/* Mobile screen styling */
+@media only screen and (max-width: 600px) {
+  button.custom-link-btn:hover {
+    color: #444 !important;
+  }
+}
