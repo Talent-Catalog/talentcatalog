@@ -14,15 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {
-  Candidate,
-  CandidateDestination,
-  FamilyRelations,
-  YesNoUnsureLearn
-} from '../../../../model/candidate';
+import {Component, Input, OnInit} from '@angular/core';
+import {CandidateDestination, YesNoUnsureLearn} from '../../../../model/candidate';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {CandidateService} from '../../../../services/candidate.service';
 import {Country} from '../../../../model/country';
 import {RegistrationService} from "../../../../services/registration.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
@@ -33,53 +27,29 @@ import {EnumOption, enumOptions} from "../../../util/enum";
   styleUrls: ['./destination.component.scss']
 })
 export class DestinationComponent implements OnInit {
+  @Input() candidateDestination: CandidateDestination;
   @Input() country: Country;
-  @Input() candidate: Candidate;
-  @Input() myRecordIndex: number;
-  @Output() touched = new EventEmitter();
+  @Input() saving: boolean;
 
   error: string;
   form: FormGroup;
 
   public destInterestOptions: EnumOption[] = enumOptions(YesNoUnsureLearn);
-  public destFamilyOptions: EnumOption[] = enumOptions(FamilyRelations);
 
   constructor(private fb: FormBuilder,
-              private candidateService: CandidateService,
               public registrationService: RegistrationService) {
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      destinationId: [this.myRecord?.id],
+      destinationId: [this.candidateDestination?.id],
       destinationCountryId: [this.country.id],
-      destinationInterest: [this.myRecord?.interest],
-      destinationFamily: [this.myRecord?.family],
-      destinationLocation: [this.myRecord?.location],
-      destinationNotes: [this.myRecord?.notes],
+      destinationInterest: [this.candidateDestination?.interest],
+      destinationNotes: [this.candidateDestination?.notes],
     });
-  }
-
-  private get myRecord(): CandidateDestination {
-    return this.candidate.candidateDestinations ?
-      this.candidate.candidateDestinations.find(d => d.country.id = this.country.id)
-      : null;
   }
 
   get interest(): string {
     return this.form?.value?.destinationInterest;
   }
-
-  get family(): string {
-    return this.form.value?.destinationFamily;
-  }
-
-  showLocation(): boolean {
-    if (this.family === 'NoRelation' || this.family === null) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
 }

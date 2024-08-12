@@ -28,22 +28,7 @@
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
-  <div  *ngIf="interest === 'Yes' || interest === 'Unsure'">
-    <div class="mb-3">
-      <label class="form-label" [for]="'destinationFamily'+country.id">Do you have family in {{country.name}} and if so what is the closest relative?</label>
-      <ng-select [id]="'destinationFamily'+country.id" [formControlName]="'destinationFamily'"
-                 [items]="destFamilyOptions" [clearOnBackspace]="false"
-                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-    </div>
-    <div  *ngIf="showLocation()">
-      <div class="mb-3">
-        <label class="form-label" [for]="'destinationLocation'+country.id">Where are they located in {{country.name}}?</label>
-        <input type="text"
-               class="form-control"
-               [id]="'destinationLocation'+country.id"
-               [formControlName]="'destinationLocation'">
-      </div>
-    </div>
+  <div  *ngIf="interest != null">
     <div class="mb-3">
       <label class="form-label" [for]="'destinationNotes'+country.id">Notes</label>
       <textarea type="text"

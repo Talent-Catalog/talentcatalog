@@ -1,10 +1,19 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Candidate, CandidateDestination} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
+import {DestinationComponent} from "./destination/destination.component";
 
 @Component({
   selector: 'app-registration-destinations',
@@ -17,6 +26,8 @@ export class RegistrationDestinationsComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
+  @ViewChildren(DestinationComponent) destinationFormComponents: QueryList<DestinationComponent>
+
   candidate: Candidate;
 
   form: FormGroup;
@@ -25,6 +36,7 @@ export class RegistrationDestinationsComponent implements OnInit {
   saving: boolean;
   candidateDestinations: CandidateDestination[];
   destinations: Country[];
+  candidateDestinationsRequest: CandidateDestination[];
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -34,6 +46,7 @@ export class RegistrationDestinationsComponent implements OnInit {
 
   ngOnInit() {
     this.saving = false;
+    this.loading = true;
 
     this.countryService.listTBBDestinations().subscribe(
       (results) => {
@@ -53,24 +66,8 @@ export class RegistrationDestinationsComponent implements OnInit {
 
   }
 
-  loadDropDownData() {
-
-    // /* Load the survey types  */
-    // this.surveyTypeService.listActiveSurveyTypes().subscribe(
-    //   (response) => {
-    //     /* Sort order with 'Other' showing last */
-    //     const sortOrder = [1, 2, 3, 4, 5, 6, 7, 9, 8];
-    //     this.surveyTypes = response
-    //     .sort((a, b) => {
-    //       return sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id);
-    //     })
-    //     this._loading.surveyTypes = false;
-    //   },
-    //   (error) => {
-    //     this.error = error;
-    //     this._loading.surveyTypes = false;
-    //   }
-    // );
+  fetchDestination(countryId: number) {
+     return this.candidateDestinations?.find(d => d.country.id === countryId)
   }
 
   save(dir: string) {
@@ -102,7 +99,10 @@ export class RegistrationDestinationsComponent implements OnInit {
   }
 
   next() {
-
+    this.saving = true;
+    let request = [];
+    this.destinationFormComponents.map(d => request.push(d.form.value));
+    console.log(request)
   }
 
   cancel() {

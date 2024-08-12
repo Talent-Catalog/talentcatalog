@@ -8,12 +8,10 @@
 
     <div class="destination-card" *ngFor="let destination of destinations; let i = index;">
       <div class="card">
-        <div class="card-title h6">
-          {{destination.name}}
-        </div>
         <app-destination
-          [candidate]="candidate"
-          [country]="destination">
+          [candidateDestination]="fetchDestination(destination.id)"
+          [country]="destination"
+          [saving]="saving">
         </app-destination>
       </div>
       <hr/>
