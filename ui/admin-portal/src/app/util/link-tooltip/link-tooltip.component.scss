@@ -13,8 +13,8 @@
   border-radius: 4px;
   border: 1px solid #8b8c93;
   color: #151f2d;
-  padding: 10px;
-  font-size: 13px;
+  padding: 8px;
+  font-size: 0.875rem;
   margin-top: 5px;
   transform: translateX(-50%);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -27,10 +27,10 @@
   height: 0;
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-top: 7px solid #8b8c93; /* Arrow color for the border */
+  border-top: 7px solid #8b8c93; /* Same colour as tooltip border */
   position: absolute;
   left: calc(50% - 7px);
-  bottom: -7px; /* Position the arrow at the bottom of the tooltip */
+  bottom: -7px; /* Slightly below the ::after pseudo-element to create border*/
 }
 
 .link-tooltip::after {
@@ -42,23 +42,22 @@
   border-top: 7px solid #ffffff; /* Tooltip background color */
   position: absolute;
   left: calc(50% - 7px);
-  bottom: -6px; /* Slightly above the ::before pseudo-element */
+  bottom: -6px; /* Position the arrow at the bottom of the tooltip */
 }
 
-/* Additional styling for buttons and link */
 .link-tooltip a {
   color: #151f2d; /* Link color */
   text-decoration: none;
-  margin-bottom: 10px; /* Space below the link */
+  margin-bottom: 8px; /* Space below the link */
   font-weight: bold;
   word-break: break-all; /* Break long URLs to fit within the container */
   overflow-wrap: anywhere; /* Allow breaking within words if necessary */
+  &:hover {
+    color: #06c;
+  }
 }
 
-.link-tooltip a:hover {
-  color: #06c; /* Same as buttons */
-}
-
+/* Icon spacing */
 .link-tooltip a i {
   margin-left: 5px;
   margin-right: 5px;
@@ -66,25 +65,73 @@
 
 .link-tooltip .button-group {
   display: flex;
-  gap: 10px; /* Space between buttons */
+  gap: 8px;
 }
 
-//TODO this works! Copy TC bootstrap button styling and make sure it's doc-ed and works in mobile
-#editBtn {
-  all: unset;
+/* The link tooltip's containing element is the Quill editor toolbar — it's the only static element
+that enables proper positioning over the selected link. But Quill has it's own styling, defined at
+the class level: this means we can't use Bootstrap class styling, as we need a higher degree of
+ specificity to override Quill CSS. Below is a CSS replication of what Bootstrap provides for small
+ primary and secondary buttons. */
+#editBtn,#removeBtn {
+  all: unset; // Disable Quill editor styling
+  box-shadow: 1px 1px 1px #8b8c93;
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
   cursor: pointer;
+  align-items: center;
+  text-decoration: none;
+  float: left;
+  &:hover {
+    color: $light;
+  }
+  &:disabled {
+    background-color: $accent3;
+    color: $accent1;
+    border-color: $accent3;
+  }
+}
+
+#editBtn {
+  background-color: #007bff; /* Bootstrap primary color */
+  border-color: #007bff;
+}
+
+#removeBtn {
+  background-color: #6c757d;
+  border-color: #6c757d;
 }
 
 /* Mobile screen styling */
 @media only screen and (max-width: 600px) {
   .link-tooltip {
-    padding: 8px;
-    font-size: 10px;
-    margin-top: 4px;
+    padding: 6px;
+    font-size: 0.6rem;;
     width: 100px;
   }
 
+  .link-tooltip a {
+    margin-bottom: 6px;
+  }
+
+  .link-tooltip a i {
+    margin-left: 3px;
+    margin-right: 3px;
+  }
+
+
   .link-tooltip .button-group {
-    gap: 0;
+    display: flex;
+    gap: 4px;
+  }
+
+  #editBtn,#removeBtn {
+    font-size: 0.6rem;
+    border-radius: 3px;
+    padding: 3px 6px;
+    box-shadow: 0.7px 0.7px 0.7px #8b8c93;
   }
 }
