@@ -26,6 +26,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
+/**
+ * Displays a preview of the content navigable to via link-formatted text in the Chat Post editor
+ * or sent Chat Post. A good overview of what constitutes a typical link preview and the methodology
+ * used to put ours together can be found in
+ * <a href="https://andrejgajdos.com/how-to-create-a-link-preview/">this blog post</a> by Andrej Gaydos.
+ * All the desired elements aren't necessarily unearthed by our scraping methods, or present full-
+ * stop. The minimal acceptable elements for display on the TC are a valid URL and its domain.
+ */
 @Getter
 @Setter
 @Entity
@@ -40,21 +48,39 @@ public class LinkPreview extends AbstractDomainObject<Long> {
     @JoinColumn(name = "chat_post_id")
     private ChatPost chatPost;
 
+    /**
+     * The linked-to URL
+     */
     @NotBlank
     private String url;
 
+    /**
+     * The domain component of the URL
+     */
     @NotBlank
     private String domain;
 
+    /**
+     * The linked-to content's best match for a title
+     */
     @Nullable
     private String title;
 
+    /**
+     * The linked-to content's best match for a description
+     */
     @Nullable
     private String description;
 
+    /**
+     * The best-suited image from the linked-to content
+     */
     @Nullable
     private String imageUrl;
 
+    /**
+     * The small icon that often precedes the page title on a browser tab
+     */
     @Nullable
     private String faviconUrl;
 }
