@@ -912,6 +912,21 @@ class UserCacheEvictionTest {
   @Test
   @Transactional
   @Rollback
+  @DisplayName("clear all candidate text search ids should evict the user cache")
+  void whenClearAllCandidateTextSearchIds_thenCacheShouldBeEvicted() {
+    // Find the user to cache it initially
+    User foundUser = findUserAndVerifyCache("sadat.malik@test.org", "Talent Beyond Boundaries");
+
+    // Calling clearAllCandidateTextSearchIds should clear the user cache
+    candidateRepository.clearAllCandidateTextSearchIds();
+
+    // Verify that the cache was cleared
+    verifyCacheIsEmpty();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
   @DisplayName("save saved list should evict all user cache entries")
   void whenSaveSavedList_thenCacheShouldBeEvictedAndUpdated() {
     // Find the user to cache it initially
