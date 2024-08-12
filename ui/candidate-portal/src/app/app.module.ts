@@ -274,7 +274,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent,
-    PreviewLinkComponent
+    PreviewLinkComponent,
+    LinkTooltipComponent,
+    BuildLinkComponent
   ],
   imports: [
     BrowserModule,
@@ -335,6 +337,7 @@ export class AppModule {
   constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
     library.addIcons(
+      faArrowUpRightFromSquare,
       faEdit,
       faSpinner,
       faChevronDown,

@@ -52,6 +52,13 @@ export class CreateUpdatePostComponent implements OnInit {
   public linkTooltipLeftOffset: number;
   public linkTooltipBottomOffset: number;
   public linkTooltipVisible: boolean = false;
+  /**
+   * Properties set when text range is highlighted and link button clicked or link keyboard shortcut
+   * used, or when user selects any position in existing link. In creation of new link, user
+   * selection and link properties are the same, whereas for existing link edit/removal, the index
+   * and length of the link (whose entirety will be edited or removed, if requested) are different
+   * to the index and length of the user selection (which will be refocused in the editor if no change).
+   */
   public editorSelection: EditorSelection;
 
   constructor(
@@ -59,7 +66,7 @@ export class CreateUpdatePostComponent implements OnInit {
     private rxStompService: RxStompService,
     private modalService: NgbModal,
     private chatPostService: ChatPostService,
-    private linkPreviewService: LinkPreviewService,
+    private linkPreviewService: LinkPreviewService
   ) {}
 
   ngOnInit() {
@@ -145,8 +152,8 @@ export class CreateUpdatePostComponent implements OnInit {
     this.quillEditorRef.setSelection(index + 2, 0);
   }
 
-  // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.
-  public onClickEmojiBtn() {
+  // Toggles the emoji picker on or off and focuses the caret.
+  public toggleEmojiPicker() {
     this.emojiPickerVisible = !this.emojiPickerVisible;
     // When closing, focus the caret in editor.
     if(!this.emojiPickerVisible) {
@@ -156,10 +163,7 @@ export class CreateUpdatePostComponent implements OnInit {
   }
 
   public contentChanged(event: any) {
-    // This opening block catches when a user has selected a link but then hits delete or space -
-    // these actions don't register as selection changes from the editor's event emitter, so we
-    // check whether a link is still selected when the tooltip is visible.
-    if (this.linkTooltipVisible) {
+    if (this.linkTooltipVisible) { // User could type out of link selection, so we run check.
       const selectedRange = this.quillEditorRef.getSelection();
       this.checkForLinkAtSelection(selectedRange.index, selectedRange.length)
     }
@@ -246,6 +250,8 @@ export class CreateUpdatePostComponent implements OnInit {
 
   /**
    * LINK FUNCTIONALITY - adding or editing links in the Post editor
+   * See <a href="https://github.com/Talent-Catalog/talentcatalog/issues/1144">GitHub issue</a> for
+   * full rundown of desired functionality, which is a combination of Slack and Gmail features.
    */
 
   /**
@@ -254,40 +260,57 @@ export class CreateUpdatePostComponent implements OnInit {
    */
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
+    if (!this.quillEditorRef.hasFocus()) return; // If user not focused on editor, do nothing.
+
     if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-      this.onLinkBtnClick();
+      this.onLinkBtnClickOrKeyShortcut();
+    }
+
+    // Typing is not registered by the (onSelectionChanged) event emitter but user could select a
+    // link by hitting a delete or backspace when a tooltip is not showing, so we run a check.
+    // Selection change also not registered after undo, so also requires a check.
+    if (event.key === 'Backspace' || event.key === 'Delete' ||
+          ((event.ctrlKey || event.metaKey) && event.key === 'z')
+    ) {
+      const selectedRange = this.quillEditorRef.getSelection();
+      this.checkForLinkAtSelection(selectedRange.index, selectedRange.length)
     }
   }
 
-  public onLinkBtnClick() {
-    const currentSelection = this.quillEditorRef.getSelection();
+  public onLinkBtnClickOrKeyShortcut() {
 
-    if (currentSelection == null) { // User is not focused on the editor at all
-      return;
-    } else if (currentSelection.length === 0) { // The selection is not a range
-      // Refocus previous selection
-      this.quillEditorRef.setSelection(currentSelection.index, currentSelection.length)
-      return;
+    // If add/edit link keyboard shortcut or toolbar button pressed when link selected -> remove link
+    if (this.linkTooltipVisible) {
+      this.removeLink();
+    } else { // No current link selected, so we need to set the properties of this.editorSelection
+      const currentSelection = this.quillEditorRef.getSelection();
+
+      if (currentSelection === null) { // User is not focused on the editor at all
+        return;
+      } else if (currentSelection.length === 0) { // The selection is not a range
+        // Refocus previous selection
+        this.quillEditorRef.setSelection(currentSelection.index, currentSelection.length)
+        return;
+      }
+
+      this.linkBtnSelected = true; // Highlight the button
+
+      // Check the format of the selected range
+      const selectedTextFormat =
+        this.quillEditorRef.getFormat(currentSelection.index, currentSelection.length)
+
+      // Set the component's EditorSelection properties
+      this.editorSelection = {
+        userSelectionIndex: currentSelection.index,
+        userSelectionLength: currentSelection.length,
+        placeholder: this.quillEditorRef.getText(currentSelection),
+        linkIndex: currentSelection.index,
+        linkLength: currentSelection.length,
+        linkUrl: selectedTextFormat.link ? selectedTextFormat.link : null
+      }
+
+      this.addOrEditLink();
     }
-
-    this.linkBtnSelected = true; // Highlight the button
-
-    // Check the format of the selected range
-    const selectedTextFormat =
-      this.quillEditorRef.getFormat(currentSelection.index, currentSelection.length)
-
-    // Set the component's EditorSelection properties
-    this.editorSelection = {
-      index: currentSelection.index,
-      length: currentSelection.length,
-      highlightedText: this.quillEditorRef.getText(currentSelection),
-      url: selectedTextFormat.link ? selectedTextFormat.link : null
-    }
-
-    // Keep focus at current editor selection
-    this.quillEditorRef.setSelection(currentSelection.index, currentSelection.length);
-
-    this.addOrEditLink();
   }
 
   /**
@@ -295,7 +318,6 @@ export class CreateUpdatePostComponent implements OnInit {
    * of EditorSelection, or edits an existing one if there is.
    */
   private addOrEditLink() {
-    const currentSelection = this.quillEditorRef.getSelection();
 
     // Initiate link modal
     const linkModal = this.modalService.open(BuildLinkComponent, {
@@ -304,32 +326,35 @@ export class CreateUpdatePostComponent implements OnInit {
     })
 
     // Prepopulate modal form
-    linkModal.componentInstance.selectedText = this.editorSelection.highlightedText;
-    if (this.editorSelection.url) {
-      linkModal.componentInstance.currentUrl = this.editorSelection.url;
+    linkModal.componentInstance.placeholder = this.editorSelection.placeholder;
+    if (this.editorSelection.linkUrl) {
+      linkModal.componentInstance.currentUrl = this.editorSelection.linkUrl;
     }
 
     // Handle the modal results
     linkModal.result.then((link) => {
       if (link) { // Modal has returned a valid link:
         // Delete the text selection
-        this.quillEditorRef.deleteText(this.editorSelection.index, this.editorSelection.length);
-
-        console.log(this.quillEditorRef.getSelection())
+        this.quillEditorRef.deleteText(
+          this.editorSelection.linkIndex, this.editorSelection.linkLength
+        );
 
         // Replace it with the link-formatted text
         this.quillEditorRef.insertText(
-          this.editorSelection.index, link.placeholder, 'link', link.url
+          this.editorSelection.linkIndex, link.placeholder, 'link', link.url
         )
 
         // Refocus at end of placeholder, un-highlight button
-        this.quillEditorRef.setSelection(this.editorSelection.index + link.placeholder.length, 0);
+        this.quillEditorRef.setSelection(
+          this.editorSelection.linkIndex + link.placeholder.length, 0);
         this.linkBtnSelected = false;
-        return
+        return;
       }
 
       // Refocus previous selection, un-highlight button
-      this.quillEditorRef.setSelection(currentSelection.index, currentSelection.length);
+      this.quillEditorRef.setSelection(
+        this.editorSelection.userSelectionIndex, this.editorSelection.userSelectionLength
+      );
       this.linkBtnSelected = false;
     })
   }
@@ -355,8 +380,12 @@ export class CreateUpdatePostComponent implements OnInit {
     if (this.quillEditorRef.getFormat(selectionIndex, selectionLength).link) { // It's a link:
       // A Blot is an abstraction in Quill that represents a distinct piece of content or formatting.
       // getLeaf() returns the distinct piece of content immediately before or surrounding the given
-      // index, and we can then query it's formatting and other properties.
-      let blot = this.quillEditorRef.getLeaf(selectionIndex);
+      // index, and we can then query it's formatting and other properties. When the user highlights
+      // a range of text, we actually want the blot after the index, which is why we use x here to
+      // dynamically add 1 without changing the actual selectionIndex.
+      let x: number;
+      selectionLength > 0 ? x = 1 : x = 0;
+      const blot = this.quillEditorRef.getLeaf(selectionIndex + x);
 
       // Set the position of the tooltip: bounds returns the position relative to the editor and
       // the tooltip is offset relative to the toolbar.
@@ -364,24 +393,25 @@ export class CreateUpdatePostComponent implements OnInit {
       this.linkTooltipLeftOffset = bounds.left;
       this.linkTooltipBottomOffset = -bounds.bottom + 20;
 
-      // Set link parameters so user can edit/remove link if desired
+      // Set editorSelection to the link blot's properties, so user can edit/remove.
       this.editorSelection = {
         // (Index of selection) - (no. of characters to beginning of blot)
         // Sets index to beginning of blot, which is what's needed for subsequent formatting.
-        index: selectionIndex - blot[1],
-        length: blot[0].text.length,
-        highlightedText: blot[0].text,
-        url: this.quillEditorRef.getFormat(selectionIndex, selectionLength).link
+        userSelectionIndex: selectionIndex,
+        userSelectionLength: selectionLength,
+        linkIndex: (selectionIndex - blot[1]) + x,
+        linkLength: blot[0].text.length,
+        placeholder: blot[0].text,
+        linkUrl: this.quillEditorRef.getFormat(selectionIndex, selectionLength).link
       }
 
       this.openTooltip();
 
     } else { // It's not a link:
       if (this.linkTooltipVisible) this.closeTooltip();
+      // Refocus at current selection
+      this.quillEditorRef.setSelection(selectionIndex, selectionLength);
     }
-
-    // Refocus at current selection
-    this.quillEditorRef.setSelection(selectionIndex, selectionLength);
   }
 
   private openTooltip() {
@@ -407,7 +437,15 @@ export class CreateUpdatePostComponent implements OnInit {
    * {@link EditorSelection} instance.
    */
   private removeLink() {
-    this.quillEditorRef.removeFormat(this.editorSelection.index, this.editorSelection.length);
+    // Remove entire link
+    this.quillEditorRef.removeFormat(
+      this.editorSelection.linkIndex, this.editorSelection.linkLength
+    );
+    this.closeTooltip();
+    // Refocus at previous selection
+    this.quillEditorRef.setSelection(
+      this.editorSelection.userSelectionIndex, this.editorSelection.userSelectionLength
+    );
   }
 
 }

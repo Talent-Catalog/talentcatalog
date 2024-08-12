@@ -17,7 +17,7 @@ export class BuildLinkComponent implements OnInit {
   error: string;
   title: string;
 
-  @Input() highlightedText: string;
+  @Input() placeholder: string;
   @Input() currentUrl: string = '';
 
   @ViewChild('urlInput') urlInput: ElementRef;
@@ -29,7 +29,7 @@ export class BuildLinkComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      placeholder: [this.highlightedText, Validators.required],
+      placeholder: [this.placeholder, Validators.required],
       url: [this.currentUrl, [Validators.required]]
     });
     this.computeHeader()

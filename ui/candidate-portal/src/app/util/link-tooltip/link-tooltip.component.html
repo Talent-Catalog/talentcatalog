@@ -3,13 +3,13 @@
 >
   <a href="{{url}}" target="_blank">
     {{url}}
-    <fa-icon icon="arrow-up-right-from-square" size="s"></fa-icon>
+    <fa-icon icon="arrow-up-right-from-square" size="sm"></fa-icon>
   </a>
   <div class="button-group">
-    <button type="button" (click)="onEditClick()">
+    <button type="button" id="editBtn" (click)="onEditClick()">
       Edit
     </button>
-    <button type="button" (click)="onRemoveClick()">
+    <button type="button" id="removeBtn" (click)="onRemoveClick()">
       Remove
     </button>
   </div>

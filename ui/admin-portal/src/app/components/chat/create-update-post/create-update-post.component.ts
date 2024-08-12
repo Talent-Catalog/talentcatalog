@@ -235,7 +235,7 @@ export class CreateUpdatePostComponent implements OnInit {
 
   /**
    * LINK FUNCTIONALITY - adding or editing links in the Post editor
-   * See <a href="https://github.com/Talent-Catalog/talentcatalog/issues/1144">Github issue</a> for
+   * See <a href="https://github.com/Talent-Catalog/talentcatalog/issues/1144">GitHub issue</a> for
    * full rundown of desired functionality, which is a combination of Slack and Gmail features.
    */
 
@@ -312,7 +312,7 @@ export class CreateUpdatePostComponent implements OnInit {
     })
 
     // Prepopulate modal form
-    linkModal.componentInstance.highlightedText = this.editorSelection.placeholder;
+    linkModal.componentInstance.placeholder = this.editorSelection.placeholder;
     if (this.editorSelection.linkUrl) {
       linkModal.componentInstance.currentUrl = this.editorSelection.linkUrl;
     }
@@ -428,11 +428,11 @@ export class CreateUpdatePostComponent implements OnInit {
     this.quillEditorRef.removeFormat(
       this.editorSelection.linkIndex, this.editorSelection.linkLength
     );
+    this.closeTooltip();
     // Refocus at previous selection
     this.quillEditorRef.setSelection(
       this.editorSelection.userSelectionIndex, this.editorSelection.userSelectionLength
     );
-    this.closeTooltip();
   }
 
 }
