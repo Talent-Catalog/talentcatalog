@@ -16,16 +16,11 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.model.db.User;
@@ -33,11 +28,11 @@ import org.tctalent.server.repository.db.CandidateExamRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tctalent.server.request.candidate.exam.UpdateCandidateExamRequest;
-import org.tctalent.server.request.candidate.exam.UpdateCandidateExamsRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateExamService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.util.audit.AuditHelper;
 
 /**
  * Manage candidate exams
@@ -76,131 +71,39 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
         CandidateExam ce = new CandidateExam();
         ce.setCandidate(candidate);
+        ce.setExam(request.getExam());
+        ce.setOtherExam(request.getOtherExam());
+        ce.setScore(request.getScore());
+        ce.setYear(request.getYear());
+        ce.setNotes(request.getNotes());
 
         return candidateExamRepository.save(ce);
     }
 
     @Override
-    public List<CandidateExam> updateCandidateExam(UpdateCandidateExamsRequest request) {
-
-        // Obtain logged-in user for audit fields
-        User user = authService.getLoggedInUser()
+    public CandidateExam updateCandidateExam(UpdateCandidateExamRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        Candidate candidate = authService.getLoggedInCandidate();
-        if (candidate == null) {
-            throw new InvalidSessionException("Not logged in");
-        }
-        List<CandidateExam> updatedExams = new ArrayList<>();
-        List<Long> updatedExamIds = new ArrayList<>();
 
-        List<CandidateExam> candidateExams = candidateExamRepository.findByCandidateId(candidate.getId());
-        Map<Long, CandidateExam> map = candidateExams.stream().collect(Collectors.toMap(CandidateExam::getId,
-            Function.identity()));
+        CandidateExam candidateExam = this.candidateExamRepository.findByIdLoadCandidate(request.getId())
+            .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, request.getId()));
 
+        // Update exam object to insert into the database
+        candidateExam.setExam(request.getExam());
+        candidateExam.setOtherExam(request.getOtherExam());
+        candidateExam.setScore(request.getScore());
+        candidateExam.setYear(request.getYear());
+        candidateExam.setNotes(request.getNotes());
 
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateCandidateExams")
-            .message("Update candidate exams request" + request.getUpdates())
-            .logInfo();
+        Candidate candidate = candidateExam.getCandidate();
 
-        for (UpdateCandidateExamRequest update : request.getUpdates()) {
-            // Check if candidate exam has been previously saved
-            CandidateExam candidateExam = update.getId() != null ? map.get(update.getId()) : null;
-            if (candidateExam != null){
-                if(update.getExam() == null) {
-                    LogBuilder.builder(log)
-                        .user(authService.getLoggedInUser())
-                        .action("UpdateCandidateExams")
-                        .message("NULL-AVOID: update.getExam. Updating " + update.getId() + ", for candidate id: " + candidate.getId())
-                        .logWarn();
+        // Save the candidate exam
+        candidateExam = candidateExamRepository.save(candidateExam);
 
-                    emailHelper.sendAlert("Avoided Null Pointer exception, check logs for warning. Search NULL-AVOID to find.");
-                } else if (candidateExam.getExam() == null) {
-                    LogBuilder.builder(log)
-                        .user(authService.getLoggedInUser())
-                        .action("UpdateCandidateExams")
-                        .message("NULL-AVOID: candidateExam.getExam. Updating " + update.getId() + ", for candidate id: " + candidate.getId())
-                        .logWarn();
-
-                    emailHelper.sendAlert("Avoided Null Pointer exception, check logs for warning. Search NULL-AVOID to find.");
-                } else {
-                    // Check if the exam has changed on existing candidate exam and update
-                    if (!update.getExam().equals(candidateExam.getExam())) {
-                        candidateExam.setExam(update.getExam());
-                        LogBuilder.builder(log)
-                            .user(authService.getLoggedInUser())
-                            .action("UpdateCandidateExams")
-                            .message("Set new Exam to an existing candidate exam " + update.getExam().name())
-                            .logInfo();
-                    }
-                    candidateExam.setScore(update.getScore());
-                    candidateExam.setYear(update.getYear());
-                    candidateExam.setNotes(update.getNotes());
-                    candidateExam.setOtherExam(update.getOtherExam());
-                }
-            } else {
-                // Check if candidate already has the same exam, if so update candidateExam, else create new
-                candidateExam = candidateExamRepository.findByCandidateIdAndExam(candidate.getId(), update.getExam());
-
-                if (candidateExam != null) {
-                    // If candidate has candidateExam with the same exam, just update that one
-                    candidateExam.setScore(update.getScore());
-                    candidateExam.setYear(update.getYear());
-                    candidateExam.setNotes(update.getNotes());
-                    candidateExam.setOtherExam(update.getOtherExam());
-
-                    LogBuilder.builder(log)
-                        .user(authService.getLoggedInUser())
-                        .action("UpdateCandidateExams")
-                        .message("Updated existing candidate exam " + candidateExam.getExam().name())
-                        .logInfo();
-                } else {
-                    // If candidate does not have that exam, create new exam
-                    candidateExam = new CandidateExam();
-                    candidateExam.setCandidate(candidate);
-                    candidateExam.setExam(update.getExam());
-                    candidateExam.setScore(update.getScore());
-                    candidateExam.setYear(update.getYear());
-                    candidateExam.setNotes(update.getNotes());
-                    candidateExam.setOtherExam(update.getOtherExam());
-
-                    LogBuilder.builder(log)
-                        .user(authService.getLoggedInUser())
-                        .action("UpdateCandidateExams")
-                        .message("Created new candidate exam " + candidateExam.getExam().name())
-                        .logInfo();
-                }
-            }
-            updatedExams.add(candidateExamRepository.save(candidateExam));
-
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("UpdateCandidateExams")
-                .message("Saved candidate " + candidate.getId() + " exam " + candidateExam.getExam().name())
-                .logInfo();
-
-            updatedExamIds.add(candidateExam.getId());
-        }
-        for (Long existingCandidateExamId : map.keySet()) {
-            // Check if the candidate exam has been removed
-            if (!updatedExamIds.contains(existingCandidateExamId)){
-                candidateExamRepository.deleteById(existingCandidateExamId);
-            }
-        }
-
-        candidate.setAuditFields(user);
+        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate, true);
 
-        return updatedExams;
+        return candidateExam;
     }
 
-
-    public boolean deleteCandidateExam(Long id) {
-        if (candidateExamRepository.existsById(id)) {
-            candidateExamRepository.deleteById(id);
-            return true;
-        }
-        return false;
-    }
 }
