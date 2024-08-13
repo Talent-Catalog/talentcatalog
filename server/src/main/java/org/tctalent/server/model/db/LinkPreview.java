@@ -17,6 +17,8 @@
 package org.tctalent.server.model.db;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -24,6 +26,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 import org.springframework.lang.Nullable;
 
 /**
@@ -41,11 +44,17 @@ import org.springframework.lang.Nullable;
 @SequenceGenerator(name = "seq_gen", sequenceName = "link_preview_id_seq", allocationSize = 1)
 public class LinkPreview extends AbstractDomainObject<Long> {
 
+    @Id
+    @GeneratedValue
+    private Long id;
+
     /**
-     * Associated chat post
+     * Associated chat post.
+     * FetchType.LAZY specified because otherwise we fall back to EAGER fetching which is
+     * <a href="https://vladmihalcea.com/eager-fetching-is-a-code-smell/">bad for performance.</a>.
      */
-    @ManyToOne
-    @JoinColumn(name = "chat_post_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_post_id", nullable=false)
     private ChatPost chatPost;
 
     /**
@@ -83,4 +92,40 @@ public class LinkPreview extends AbstractDomainObject<Long> {
      */
     @Nullable
     private String faviconUrl;
+
+    /**
+     * Since we cannot rely on a natural identifier for equality checks, we need to use the entity
+     * identifier instead for the 'equals' method. See
+     * <a href="https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/#:~:text=OneToMany%20Set%20association.-,Bidirectional%20%40OneToMany,-The%20best%20way">
+     *   here</a> for best practices in defining bidirectional one-to-many relationships, and
+     *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">here</a> for
+     *   implementing equals and hashCode specifically.
+     * @param o Object to be checked for equality
+     * @return boolean denoting entity equality
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LinkPreview )) return false;
+        return id != null && id.equals(((LinkPreview) o).getId());
+    }
+
+    /**
+     * We can’t use an auto-incrementing database id in the hashCode method since the transient and
+     * the attached object versions will no longer be located in the same hashed bucket. The
+     * possibility arises that we will instantiate two different objects that represent the same
+     * row in the database. See
+     * <a href="https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/#:~:text=OneToMany%20Set%20association.-,Bidirectional%20%40OneToMany,-The%20best%20way">
+     *   here</a> for best practices in defining bidirectional one-to-many relationships,
+     *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">here</a> for
+     *   implementing equals and hashCode specifically, and discussion of the reasons this is required
+     *   <a href="http://www.onjava.com/pub/a/onjava/2006/09/13/dont-let-hibernate-steal-your-identity.html">
+     *     here.</a>
+     * @return integer representing the hash value of the LinkPreview class
+     */
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
 }
