@@ -34,8 +34,9 @@ import org.springframework.lang.Nullable;
  * or sent Chat Post. A good overview of what constitutes a typical link preview and the methodology
  * used to put ours together can be found in
  * <a href="https://andrejgajdos.com/how-to-create-a-link-preview/">this blog post</a> by Andrej Gaydos.
- * All the desired elements aren't necessarily unearthed by our scraping methods, or present full-
- * stop. The minimal acceptable elements for display on the TC are a valid URL and its domain.
+ * All the desired elements aren't necessarily unearthed by our scraping methods, or present in the
+ * first place. The minimal acceptable elements for display on the TC are a valid URL, which we
+ * parse to also provide a domain.
  */
 @Getter
 @Setter
@@ -95,10 +96,10 @@ public class LinkPreview extends AbstractDomainObject<Long> {
 
     /**
      * Since we cannot rely on a natural identifier for equality checks, we need to use the entity
-     * identifier instead for the 'equals' method. See
+     * identifier instead for the equals method. See
      * <a href="https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/#:~:text=OneToMany%20Set%20association.-,Bidirectional%20%40OneToMany,-The%20best%20way">
-     *   here</a> for best practices in defining bidirectional one-to-many relationships, and
-     *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">here</a> for
+     *   this article</a> for best practices in defining bi-directional one-to-many relationships, and
+     *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">this article</a> for
      *   implementing equals and hashCode specifically.
      * @param o Object to be checked for equality
      * @return boolean denoting entity equality
@@ -116,9 +117,9 @@ public class LinkPreview extends AbstractDomainObject<Long> {
      * possibility arises that we will instantiate two different objects that represent the same
      * row in the database. See
      * <a href="https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/#:~:text=OneToMany%20Set%20association.-,Bidirectional%20%40OneToMany,-The%20best%20way">
-     *   here</a> for best practices in defining bidirectional one-to-many relationships,
-     *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">here</a> for
-     *   implementing equals and hashCode specifically, and discussion of the reasons this is required
+     *   this article</a> for best practices in defining bidirectional one-to-many relationships,
+     *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">this article</a> for
+     *   implementing equals and hashCode specificall discussion of the reasons this is required
      *   <a href="http://www.onjava.com/pub/a/onjava/2006/09/13/dont-let-hibernate-steal-your-identity.html">
      *     here.</a>
      * @return integer representing the hash value of the LinkPreview class
