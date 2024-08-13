@@ -55,7 +55,7 @@ public class LinkPreview extends AbstractDomainObject<Long> {
      * <a href="https://vladmihalcea.com/eager-fetching-is-a-code-smell/">bad for performance.</a>.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_post_id", nullable=false)
+    @JoinColumn(name = "chat_post_id")
     private ChatPost chatPost;
 
     /**
