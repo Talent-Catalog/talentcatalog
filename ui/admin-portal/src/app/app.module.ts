@@ -1167,7 +1167,8 @@ import { PreviewLinkComponent } from './components/chat/preview-link/preview-lin
   ],
   exports: [
     ViewChatPostsComponent,
-    ChatReadStatusComponent
+    ChatReadStatusComponent,
+    CandidateExamCardComponent
   ],
   bootstrap: [AppComponent]
 })
