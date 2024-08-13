@@ -106,7 +106,7 @@ export class CandidateExamFormComponent implements OnInit {
         },
       );
     } else {
-      this.candidateExamService.update(this.exam.id, this.form.value).subscribe(
+      this.candidateExamService.updateCandidateExam(this.exam.id, this.form.value).subscribe(
         (response) => {
           this.saved.emit(response);
         },
