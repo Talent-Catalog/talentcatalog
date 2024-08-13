@@ -5,40 +5,59 @@ import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-
 import {By} from '@angular/platform-browser';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {DebugElement} from '@angular/core';
-import {DependantRelations} from "../../../../../model/candidate";
+import {CandidateDependant, DependantRelations} from "../../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {of, throwError} from "rxjs";
+import {mockCandidateOpportunity} from "../../../../../MockData/MockCandidateOpportunity";
+import {CandidateOpportunityService} from "../../../../../services/candidate-opportunity.service";
+import {CandidateDependantService} from "../../../../../services/candidate-dependant.service";
+import {CandidateOpportunity} from "../../../../../model/candidate-opportunity";
+import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
 fdescribe('RelocatingDependantsComponent', () => {
   let component: RelocatingDependantsComponent;
   let fixture: ComponentFixture<RelocatingDependantsComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
+  let candidateOpportunityService: jasmine.SpyObj<CandidateOpportunityService>;
+  let candidateDependantService: jasmine.SpyObj<CandidateDependantService>;
   let fb: FormBuilder;
+
+  const mockCandidate = new MockCandidate();
+  const mockOpp: CandidateOpportunity = mockCandidateOpportunity;
+  const mockDependants: CandidateDependant[] = [
+    { id: 1, relation: DependantRelations.Partner, name: 'John Doe' },
+    { id: 2, relation: DependantRelations.Child, name: 'Jane Doe' }
+  ];
 
   beforeEach(async () => {
     const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    const candidateOpportunityServiceSpy = jasmine.createSpyObj('CandidateOpportunityService', ['updateSfCaseRelocationInfo']);
+    const candidateDependantServiceSpy = jasmine.createSpyObj('CandidateDependantService', ['list']);
 
     await TestBed.configureTestingModule({
       declarations: [RelocatingDependantsComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
+        { provide: FormBuilder  },
+        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+        { provide: CandidateOpportunityService, useValue: candidateOpportunityServiceSpy },
+        { provide: CandidateDependantService, useValue: candidateDependantServiceSpy }
       ]
     }).compileComponents();
 
     candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
+    candidateOpportunityService = TestBed.inject(CandidateOpportunityService) as jasmine.SpyObj<CandidateOpportunityService>;
+    candidateDependantService = TestBed.inject(CandidateDependantService) as jasmine.SpyObj<CandidateDependantService>;
     fb = TestBed.inject(FormBuilder);
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RelocatingDependantsComponent);
     component = fixture.componentInstance;
-    component.dependants = [
-      { id: 1, relation: DependantRelations.Partner, name: 'John Doe' },
-      { id: 2, relation: DependantRelations.Child, name: 'Jane Doe' }
-    ];
-    component.visaJobCheck = { id: 123, relocatingDependantIds: [1] };
+    component.candidateId = mockCandidate.id;
+    component.candidateOpp = mockOpp;
+    candidateDependantService.list.and.returnValue(of(mockDependants));
     fixture.detectChanges();
   });
 
@@ -46,12 +65,16 @@ fdescribe('RelocatingDependantsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize form with visaJobRelocatingDependantIds control', () => {
-    expect(component.form.contains('visaJobRelocatingDependantIds')).toBeTrue();
+  it('should fetch dependants on init', () => {
+    component.ngOnInit();
+    component.fetchDependants();
+    expect(candidateDependantService.list).toHaveBeenCalledWith(component.candidateId);
+    expect(component.dependants).toEqual(mockDependants);
+    expect(component.loading).toBeFalse();
   });
 
-  it('should initialize form control with value from visaJobCheck', () => {
-    expect(component.form.value.visaJobRelocatingDependantIds).toEqual([1]);
+  it('should initialize form with relocatingDependantIds control', () => {
+    expect(component.form.contains('relocatingDependantIds')).toBeTrue();
   });
 
   it('should render autosave status component', () => {
@@ -75,5 +98,15 @@ fdescribe('RelocatingDependantsComponent', () => {
   it('should display the correct helper text', () => {
     const helperText: HTMLElement = fixture.nativeElement.querySelector('.form-text');
     expect(helperText.textContent).toContain("If a dependant isn't listed in the dropdown, you may need to add the dependant to the Dependants section under the Full Intake tab.");
+  });
+
+  it('should handle error when updating case stats', () => {
+    candidateOpportunityService.updateSfCaseRelocationInfo.and.returnValue(throwError('Error updating case stats'));
+
+    component.requestSfCaseRelocationInfoUpdate();
+
+    expect(candidateOpportunityService.updateSfCaseRelocationInfo).toHaveBeenCalledWith(component.candidateOpp.id);
+    expect(component.error).toBe('Error updating case stats');
+    expect(component.loading).toBeFalse();
   });
 });

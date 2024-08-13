@@ -115,6 +115,7 @@ import {MonthPickerComponent} from './components/common/month-picker/month-picke
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft,
+  faBriefcase,
   faCalendar,
   faCheck,
   faChevronDown,
@@ -125,11 +126,16 @@ import {
   faFaceSmile,
   faFileUpload,
   faFolderOpen,
-  faGlobe, faLink,
+  faGlobe,
+  faLink,
+  faListCheck,
+  faMessage,
   faPlus,
   faQuestion,
   faQuestionCircle,
-  faTimes, faXmark
+  faTimes,
+  faUser,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -194,11 +200,7 @@ import {
 } from './components/register/create-account/registration-create-account.component';
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
-import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
-import {RegistrationCandidateExamComponent} from "./components/register/candidate-exam/registration-candidate-exam.component";
-import {CandidateExamCardComponent} from './components/common/candidate-exam-card/candidate-exam-card.component';
-import {DeleteExamComponent} from './components/register/candidate-exam/delete/delete-exam.component';
-import {CandidateExamFormComponent} from './components/common/candidate-exam-form/candidate-exam-form.component';
+import {PreviewLinkComponent} from './components/chat/preview-link/preview-link.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -269,11 +271,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent,
-    PreviewLinkComponent,
-    RegistrationCandidateExamComponent,
-    CandidateExamCardComponent,
-    DeleteExamComponent,
-    CandidateExamFormComponent,
+    PreviewLinkComponent
   ],
   imports: [
     BrowserModule,
@@ -352,7 +350,11 @@ export class AppModule {
       faFaceSmile,
       faPlus,
       faXmark,
-      faLink
+      faLink,
+      faUser,
+      faListCheck,
+      faBriefcase,
+      faMessage
     );
   }
 }

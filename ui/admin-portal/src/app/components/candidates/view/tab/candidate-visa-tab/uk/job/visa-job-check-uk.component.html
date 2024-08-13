@@ -9,9 +9,8 @@
     <ng-template ngbPanelContent>
       <div>
         <app-relocating-dependants
-          [visaJobCheck]="selectedJobCheck"
-          [entity]="visaCheckRecord"
-          [dependants]="candidateIntakeData.candidateDependants">
+          [candidateOpp]="candidateOpportunity"
+          [candidateId]="candidate.id">
         </app-relocating-dependants>
       </div>
       <div class="card card-body intake-data">

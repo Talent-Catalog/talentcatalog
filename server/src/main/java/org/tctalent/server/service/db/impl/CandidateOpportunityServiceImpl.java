@@ -74,9 +74,11 @@ import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateOpportunitySpecification;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
@@ -106,6 +108,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
     private final ChatPostService chatPostService;
+    private final CandidateDependantService candidateDependantService;
 
     /**
      * Creates or updates CandidateOpportunities associated with the given candidates going for
@@ -170,11 +173,15 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         return opp;
     }
 
-    private String fetchSalesforceId(Candidate candidate, SalesforceJobOpp jobOpp) {
+    public @Nullable String fetchSalesforceId(@NonNull CandidateOpportunity opp) {
+        return fetchSalesforceId(opp.getCandidate(), opp.getJobOpp());
+    }
 
-        Opportunity opp = salesforceService.findCandidateOpportunity(
-            candidate.getCandidateNumber(), jobOpp.getSfId());
-        return opp == null ? null : opp.getId();
+    private @Nullable String fetchSalesforceId(
+        @NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp) {
+        Opportunity sfOpp = salesforceService.findCandidateOpportunity(
+                candidate.getCandidateNumber(), jobOpp.getSfId());
+        return sfOpp == null ? null : sfOpp.getId();
     }
 
     @Override
@@ -816,6 +823,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
 
         return uploadedFile;
+    }
+
+    @Override
+    public CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request) {
+        CandidateOpportunity opp = getCandidateOpportunity(id);
+        opp.setRelocatingDependantIds(request.getRelocatingDependantIds());
+        return candidateOpportunityRepository.save(opp);
     }
 
     //One minute past Midnight GMT

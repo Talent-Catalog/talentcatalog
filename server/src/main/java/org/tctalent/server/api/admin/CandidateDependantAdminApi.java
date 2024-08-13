@@ -16,6 +16,10 @@
 
 package org.tctalent.server.api.admin;
 
+import java.util.List;
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,10 +32,6 @@ import org.tctalent.server.request.candidate.dependant.CreateCandidateDependantR
 import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-dependant")
@@ -77,6 +77,12 @@ public class CandidateDependantAdminApi
         // Need to save the Candidate as we set the number of dependants value on the candidate object when deleting dependant.
         candidateService.save(ownerOfDependant, true);
         return true;
+    }
+
+    @Override
+    public @NotNull List<Map<String, Object>> list(long candidateId) {
+        List<CandidateDependant> candidateDependants = candidateDependantService.list(candidateId);
+        return candidateDependantDto().buildList(candidateDependants);
     }
 
     private DtoBuilder candidateDependantDto() {

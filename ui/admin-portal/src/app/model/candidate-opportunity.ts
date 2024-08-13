@@ -33,6 +33,7 @@ export interface CandidateOpportunity extends Opportunity {
   candidate: ShortCandidate;
   jobOpp: ShortJob;
   stage: CandidateOpportunityStage;
+  relocatingDependantIds?: number[];
 }
 
 export enum CandidateOpportunityStage {
