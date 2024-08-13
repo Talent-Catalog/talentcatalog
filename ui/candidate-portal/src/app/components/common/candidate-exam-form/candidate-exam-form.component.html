@@ -18,7 +18,7 @@
 
   <div class="col-12">
     <div class="mb-3">
-      <label class="form-label" for="examType">{{ 'FORM.EXAMS.LABEL.NAME' | translate }} <sup>*</sup></label>
+      <label class="form-label" for="examType">{{ 'REGISTRATION.EXAM.LABEL.EXAM' | translate }} <sup>*</sup></label>
       <ng-select id="examType" [formControlName]="'exam'" [clearable]="false"
                  placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
         <ng-option *ngFor="let exam of examListEnum" [value]="exam.key">{{exam.value}}</ng-option>
@@ -26,16 +26,15 @@
     </div>
   </div>
 
-
   <!-- Conditionally render otherExam field based on the selected examType -->
   <div class="mb-3" *ngIf="isOtherExamSelected()">
-    <label class="form-label" for="otherExam">{{ 'REGISTRATION.OTHEREXAM.LABEL.NAME' | translate }} <sup>*</sup></label>
+    <label class="form-label" for="otherExam">{{ 'REGISTRATION.EXAM.LABEL.OTHEREXAM' | translate }} <sup>*</sup></label>
     <input type="text" class="form-control" id="otherExam" placeholder="" [formControlName]="'otherExam'">
     <app-form-control-error [control]="form.controls.otherExam"></app-form-control-error>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="score">{{ 'REGISTRATION.EXAMS.LABEL.SCORE' | translate }} <sup>*</sup></label>
+    <label class="form-label" for="score">{{ 'REGISTRATION.EXAM.LABEL.SCORE' | translate }} <sup>*</sup></label>
     <input type="text" class="form-control" id="score" placeholder="" [formControlName]="'score'">
     <app-form-control-error [control]="form.controls.score"></app-form-control-error>
   </div>
@@ -60,7 +59,7 @@
     <button class="btn btn-primary"
             [disabled]="form.invalid"
             (click)="save()">
-      {{ 'FORM.LABEL.SAVE' | translate }}
+      {{ 'REGISTRATION.EXAM.BUTTON.ADD' | translate }}
     </button>
   </div>
 
