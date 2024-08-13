@@ -1,150 +1,90 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+/*
+ * Copyright (c) 2024 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CandidateExamService} from '../../../services/candidate-exam.service';
-import {CandidateExam, Exam} from '../../../model/candidate';
-import {TranslateService} from '@ngx-translate/core';
-import {Subscription} from "rxjs";
+import {CandidateExam} from '../../../model/candidate';
 import {RegistrationService} from "../../../services/registration.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {DeleteExamComponent} from "./delete/delete-exam.component";
-import {generateYearArray} from "../../../util/year-helper";
+
 @Component({
   selector: 'app-registration-candidate-exam',
   templateUrl: './registration-candidate-exam.component.html',
   styleUrls: ['./registration-candidate-exam.component.scss']
 })
-export class RegistrationCandidateExamComponent implements OnInit, OnDestroy {
+export class RegistrationCandidateExamComponent implements OnInit {
 
+  /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
-  @Output() onSave = new EventEmitter<void>();
-  @Input() candidateExam: CandidateExam;
-  @Input() disabled: boolean;
-  @Output() delete = new EventEmitter<void>();
+
+  @Output() onSave = new EventEmitter();
+
+  error: any;
+  loading: boolean;
+  saving: boolean;
 
   form: FormGroup;
-  candidateExams: CandidateExam [] = [];
-  showForm: boolean = true;
-  error: any;
-  saving: boolean = false;
-  subscription: Subscription;
-  invalidExam: CandidateExam | null = null;
-  examListEnum: { key: string, value: string }[] = [];
-  showOtherExamInput: boolean = false;
+  candidateExams: CandidateExam[];
+  addingExam: boolean;
+
+
+  editTarget: CandidateExam;
+  subscription;
   years: number[];
-  _loading = {
-    candidate: true,
-    exams: true
-  };
-  constructor(
-    private fb: FormBuilder,
-    private candidateExamService: CandidateExamService,
-    public translateService: TranslateService,
-    public registrationService: RegistrationService,
-    private candidateService: CandidateService,
-    private modalService: NgbModal
-  ) { }
+
+
+  constructor(private fb: FormBuilder,
+              private candidateService: CandidateService,
+              private candidateExamService: CandidateExamService,
+              public registrationService: RegistrationService,
+              private modalService: NgbModal) { }
+
 
   ngOnInit() {
-    this.setUpForm();
-    this.loadDropDownData();
-    this.subscription = this.translateService.onLangChange.subscribe(() => {
-      this.loadDropDownData();
-    });
-    this.years = generateYearArray(1950,true);
+    this.candidateExams = [];
+    this.saving = false;
+    this.loading = false;
+    this.clearForm();
+
+    /* Load the candidate data */
+    this.loadCandidateExams();
+  }
+
+  loadCandidateExams() {
     this.candidateService.getCandidateCandidateExams().subscribe(
       (candidate) => {
-        console.log(candidate)
-        this.candidateExams = candidate.candidateExams.map(ce => {
-          return {
-            id: ce.id,
-            exam: ce.exam,
-            otherExam: ce.otherExam,
-            year: ce.year,
-            score: ce.score,
-            notes: ce.notes,
-          };
-        });
-        this._loading.candidate = false;
-        this.showForm = this.candidateExams.length === 0;
+        this.candidateExams = candidate.candidateExams || [];
+        this.addingExam = !this.candidateExams.length;
       },
       (error) => {
         this.error = error;
-        this._loading.candidate = false;
+        this.loading = false;
       }
     );
   }
-
-  loadDropDownData() {
-    this.examListEnum = Object.keys(Exam).map(key => ({ key, value: Exam[key] }));
-    this._loading.exams = false;
-  }
-
-  setUpForm() {
-    this.form = this.fb.group({
-      exam: [null, Validators.required],
-      otherExam: [null],
-      score: [null, Validators.required],
-      year: [null, [Validators.required, Validators.min(1950)]],
-      notes: [null]
-    });
-    // Watch for changes in examId to toggle "other" input
-    this.form.get('exam')?.valueChanges.subscribe(value => {
-      this.showOtherExamInput = value === 'Other';
-    });
-  }
-
-  addExam() {
-    if (this.form.valid) {
-      this.candidateExams.push(this.form.value);
-      this.showOtherExamInput = false;
-      this.form.reset();
-    }
-    this.showForm = true;
-  }
-  save(dir: string) {
-    if (this.form.valid) {
-      this.addExam();
-    }
-    this.invalidExam = this.candidateExams.find(candidateExam => candidateExam.year < 1950 || candidateExam.year == null);
-    const request = {
-      updates: this.candidateExams
-    };
-    if (!this.invalidExam) {
-      this.candidateExamService.updateCandidateExams(0,request).subscribe(
-        (response) => {
-          if (dir === 'next') {
-            this.onSave.emit();
-            this.registrationService.next();
-          } else {
-            this.registrationService.back();
-          }
-        },
-        (error) => {
-          this.error = error;
-        });
-    } else {
-      this.error = "You need to put in a years value (from 1950 upwards).";
-    }
-  }
-  get loading() {
-    return this._loading.candidate || this._loading.exams;
-  }
-  cancel() {
-    this.onSave.emit();
-  }
-
-  back() {
-    this.save('back');
-  }
-
-  next() {
-    this.save('next');
-  }
-  deleteCandidateExam(index: number,examId:number) {
-    this.deleteModal(index);
-  }
-  deleteModal(index: number) {
+  deleteExam(exam: CandidateExam, index: number) {
     const deleteExamModal = this.modalService.open(DeleteExamComponent, {
       centered: true,
       backdrop: 'static'
@@ -152,16 +92,69 @@ export class RegistrationCandidateExamComponent implements OnInit, OnDestroy {
 
     deleteExamModal.result
     .then((result) => {
-      // remove exam from candidateExams if confirmed modal
       if (result === true) {
-        this.candidateExams.splice(index, 1);
+        this.saving = true;
+        this.candidateExamService.deleteCandidateExam(exam.id).subscribe(
+          () => {
+            this.candidateExams = this.candidateExams.filter((_, i) => i !== index);
+            this.addingExam = !this.candidateExams.length;
+            this.saving = false;
+            this.loadCandidateExams();
+          },
+          (error) => {
+            this.error = error;
+            this.saving = false;
+          }
+        );
       }
     })
-    .catch(() => { /* Isn't possible */ });
+    .catch(() => { /* Handle modal dismissal without deletion */ });
   }
-  ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+
+  next() {
+    this.onSave.emit();
+    this.registrationService.next();
+  }
+
+  back() {
+    this.registrationService.back();
+  }
+
+  finishEditing() {
+    this.onSave.emit();
+  }
+
+  handleCandidateExamCreated(exam: CandidateExam) {
+    let index = -1;
+    if (this.candidateExams.length) {
+      index = this.candidateExams.findIndex(ex => ex.id === exam.id);
     }
+    /* Replace the old exam item with the updated item */
+    if (index >= 0) {
+      this.candidateExams.splice(index, 1, exam);
+    } else {
+      this.candidateExams.push(exam);
+    }
+    this.addingExam = false;
+  }
+
+  editCandidateExam(exam: CandidateExam) {
+    this.editTarget = exam;
+  }
+
+  handleExamSaved(exams: CandidateExam, i) {
+    this.candidateExams[i] = exams;
+    this.editTarget = null;
+  }
+
+  clearForm() {
+    this.form = this.fb.group({
+      id: ['', Validators.required],
+      exam: ['', Validators.required],
+      otherExam: ['', Validators.required],
+      score: ['', Validators.required],
+      year: ['', Validators.required],
+      notes: ['', Validators.required],
+    })
   }
 }
