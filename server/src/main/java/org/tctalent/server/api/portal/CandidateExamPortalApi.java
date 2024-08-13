@@ -1,13 +1,8 @@
 package org.tctalent.server.api.portal;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.api.admin.IJoinedTableApi;
@@ -18,7 +13,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tctalent.server.request.candidate.exam.SearchCandidateExamRequest;
-import org.tctalent.server.request.candidate.exam.UpdateCandidateExamsRequest;
+import org.tctalent.server.request.candidate.exam.UpdateCandidateExamRequest;
 import org.tctalent.server.service.db.CandidateExamService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -27,7 +22,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RequestMapping("/api/portal/candidate-exam")
 public class CandidateExamPortalApi implements IJoinedTableApi<SearchCandidateExamRequest,
     CreateCandidateExamRequest,
-    UpdateCandidateExamsRequest> {
+    UpdateCandidateExamRequest> {
 
   private final CandidateExamService candidateExamService;
   private final CandidateService candidateService;
@@ -42,16 +37,15 @@ public class CandidateExamPortalApi implements IJoinedTableApi<SearchCandidateEx
 
   /**
    * Creates a new record from the data in the given request.
+   * @param parentId ID of parent record
    * @param request Request containing details from which the record is created.
    * @return Created record
    * @throws EntityExistsException If an identical record (eg with the same
    * name) already exists
    */
   @Override
-  public @NotNull Map<String, Object> create(
-      long parentId, @Valid CreateCandidateExamRequest request)
-      throws NoSuchObjectException {
-    // Create CandidateExams based on the request
+  public Map<String, Object> create(long parentId, CreateCandidateExamRequest request)
+      throws EntityExistsException {
     CandidateExam candidateExam =
         this.candidateExamService
             .createExam(parentId, request);
@@ -72,19 +66,11 @@ public class CandidateExamPortalApi implements IJoinedTableApi<SearchCandidateEx
    * @throws NoSuchObjectException if there is no such record with the given id
    */
   @Override
-  public @NotNull Map<String, Object> update(
-      @PathVariable("id") long id, @Valid @RequestBody UpdateCandidateExamsRequest request)
+  public Map<String, Object> update(long id, UpdateCandidateExamRequest request)
       throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
-    // updateCandidateExam method updates exams based on the request
-    List<CandidateExam> candidateExams = candidateExamService.updateCandidateExam(request);
-    // Using the buildList method to convert the list of CandidateExam to a list of maps
-    List<Map<String, Object>> examMaps = candidateExamDto().buildList(candidateExams);
 
-    // Aggregate results into a single map
-    Map<String, Object> response = new HashMap<>();
-    response.put("exams", examMaps);
-
-    return response;
+    CandidateExam candidateExam = this.candidateExamService.updateCandidateExam(request);
+    return candidateExamDto().build(candidateExam);
   }
 
   /**
