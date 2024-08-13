@@ -485,6 +485,9 @@ const ALL_FIELDS = {
       "EDUCATION": {
         "TITLE": null
       },
+      "EXAMS": {
+        "TITLE": null
+      },
       "CERTIFICATIONS": {
         "TITLE": null
       },
@@ -516,6 +519,7 @@ const ALL_FIELDS = {
         "EXPERIENCE": null,
         "EDUCATION": null,
         "LANGUAGES": null,
+        "EXAMS": null,
         "CERTIFICATIONS": null,
         "ADDITIONAL": null,
         "UPLOAD": null
