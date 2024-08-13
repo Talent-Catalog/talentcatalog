@@ -3,8 +3,6 @@ import {
   EventEmitter,
   Input,
   Output,
-  OnChanges,
-  SimpleChanges, OnInit
 } from '@angular/core';
 import {CandidateExam} from '../../../model/candidate';
 import {Exam} from "../../../model/candidate";
@@ -15,25 +13,26 @@ import {generateYearArray} from "../../../util/year-helper";
   templateUrl: './candidate-exam-card.component.html',
   styleUrls: ['./candidate-exam-card.component.scss']
 })
-export class CandidateExamCardComponent implements OnChanges,OnInit {
+export class CandidateExamCardComponent {
 
-  @Input() candidateExam: CandidateExam;
-  @Input() candidateExams: CandidateExam[];
+  @Input() exam: CandidateExam;
+  @Input() preview: boolean = false;
   @Input() disabled: boolean = false;
-  @Output() onDelete = new EventEmitter<number>();
-  years:number[];
-  constructor() {}
+  @Output() onDelete = new EventEmitter<CandidateExam>();
+  @Output() onEdit = new EventEmitter<CandidateExam>();
 
-  ngOnInit() {
+  years:number[];
+
+  constructor() {
     this.years=generateYearArray(1950,true);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-
+  deleteExam() {
+    this.onDelete.emit(this.exam);
   }
 
-  delete() {
-    this.onDelete.emit();
+  editExam() {
+    this.onEdit.emit(this.exam);
   }
   getExamName(exam: string): string {
     return Exam[exam as keyof typeof Exam] || 'Unknown';
