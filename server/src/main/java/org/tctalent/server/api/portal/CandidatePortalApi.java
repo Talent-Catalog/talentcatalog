@@ -452,6 +452,7 @@ public class CandidatePortalApi {
                 .add("candidateEducations", educationDto())
                 /* LANGUAGES */
                 .add("candidateLanguages", candidateLanguageDto())
+                .add("candidateExams", candidateExamDto())
                 /* CERTIFICATIONS */
                 .add("candidateCertifications", certificationDto())
                 /* ADDITIONAL INFO / SUBMIT */
