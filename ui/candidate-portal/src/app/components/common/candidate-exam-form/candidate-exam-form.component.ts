@@ -44,7 +44,6 @@ export class CandidateExamFormComponent implements OnInit {
   years: number[];
   examListEnum: { key: string, value: string }[] = [];
   constructor(private fb: FormBuilder,
-              private router: Router,
               private candidateService: CandidateService,
               private candidateExamService: CandidateExamService,
               public registrationService: RegistrationService) { }
