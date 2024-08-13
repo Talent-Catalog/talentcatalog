@@ -18,8 +18,11 @@ package org.tctalent.server.service.db;
 
 import java.util.List;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateExam;
+import org.tctalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
+import org.tctalent.server.request.candidate.exam.UpdateCandidateExamRequest;
 import org.tctalent.server.request.candidate.exam.UpdateCandidateExamsRequest;
 
 public interface CandidateExamService {
@@ -42,12 +45,5 @@ public interface CandidateExamService {
      * @param request Request containing exam updates
      * @return List of updated candidate exam records
      */
-    List<CandidateExam> updateCandidateExam(UpdateCandidateExamsRequest request);
-
-    /**
-     * Deletes a candidate exam record by its ID.
-     * @param id ID of the candidate exam to delete
-     * @return True if the record was deleted, false otherwise
-     */
-    boolean deleteCandidateExam(Long id);
+    CandidateExam updateCandidateExam(UpdateCandidateExamRequest request);
 }
