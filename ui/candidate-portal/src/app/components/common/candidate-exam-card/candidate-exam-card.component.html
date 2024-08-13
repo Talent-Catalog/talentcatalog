@@ -1,43 +1,30 @@
-<ng-container *ngIf="candidateExam">
+<!--
+  ~ Copyright (c) 2024 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
 
-  <div class="text-end" *ngIf="!disabled">
-    <button class="btn btn-danger btn-card" [disabled]="disabled" (click)="delete()">&times;</button>
-  </div>
+<div class="text-end" *ngIf="!preview">
+  <button class="btn btn-danger btn-card"
+          [disabled]="disabled"
+          (click)="deleteExam()">&times;</button>
+  <button class="btn btn-primary btn-card pb-1"
+          [disabled]="disabled"
+          (click)="editExam()"><fa-icon icon="edit" size="xs"></fa-icon></button>
+</div>
 
-  <!-- Exam -->
-  <div class="mb-3">
-    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.EXAM' | translate }} <sup>*</sup></label>
-    <ng-select *ngIf="!disabled" [(ngModel)]="candidateExam.exam" placeholder="{{ 'FORM.PLACEHOLDER.SELECTOREXAM' | translate }}" [clearable]="false" >
-      <ng-option [value]="candidateExam.exam">{{getExamName(candidateExam.exam)}}</ng-option>
-    </ng-select>
-    <p *ngIf="disabled">{{getExamName(candidateExam.exam)}}</p>
-  </div>
-
-  <!-- Score -->
-  <div class="mb-3">
-    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.SCORE' | translate }}</label>
-    <input type="text" class="form-control" [(ngModel)]="candidateExam.score" [disabled]="disabled">
-  </div>
-
-  <!-- Other Exam -->
-  <div  *ngIf="candidateExam.exam === 'Other'" class="mb-3">
-    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.OTHEREXAM' | translate }} <sup>*</sup></label>
-    <input type="text" class="form-control" [(ngModel)]="candidateExam.otherExam" [disabled]="disabled">
-  </div>
-
-  <!-- Exam Year -->
-  <div class="mb-3">
-    <label class="form-label" for="year">{{ 'REGISTRATION.EXAM.LABEL.YEAR' | translate }} <sup>*</sup></label>
-    <ng-select id="year" [items]="years" [(ngModel)]="candidateExam.year" [disabled]="disabled" [clearable]="false"
-               placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
-
-    </ng-select>
-  </div>
-
-  <!-- Notes -->
-  <div class="mb-3">
-    <label class="form-label">{{ 'REGISTRATION.EXAM.LABEL.NOTES' | translate }}</label>
-    <textarea class="form-control" [(ngModel)]="candidateExam.notes" [disabled]="disabled"></textarea>
-  </div>
-
-</ng-container>
+<h5>{{getExamName(exam.exam)}}</h5>
+<p>{{exam.otherExam}}</p>
+<p>{{exam.year}}</p>
+<p>{{exam.score}}</p>
+<p>{{exam.notes}}</p>
