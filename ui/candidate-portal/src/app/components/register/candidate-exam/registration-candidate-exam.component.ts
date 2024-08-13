@@ -149,7 +149,6 @@ export class RegistrationCandidateExamComponent implements OnInit {
 
   clearForm() {
     this.form = this.fb.group({
-      id: ['', Validators.required],
       exam: ['', Validators.required],
       otherExam: ['', Validators.required],
       score: ['', Validators.required],
