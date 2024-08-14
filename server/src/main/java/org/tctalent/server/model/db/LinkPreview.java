@@ -95,8 +95,16 @@ public class LinkPreview extends AbstractDomainObject<Long> {
     private String faviconUrl;
 
     /**
-     * Since we cannot rely on a natural identifier for equality checks, we need to use the entity
-     * identifier instead for the equals method. See
+     * We override hashCode and equals here to make sure that two entities with the same important
+     * data (like the same ID) are treated as the same, even if they are different objects in memory.
+     * This is particularly important with one-to-many relationships because the child entities
+     * might be used in a set or map, which check for equality; or removal from the parent entity's
+     * collection might fail because it might not be recognised that the child we're attempting to
+     * remove is actually present in the collection.
+     *
+     * <p>With respect to the equals method specifically, since we cannot rely on a natural
+     * identifier for equality checks, we may need to use the entity identifier (id) instead.</p>
+     * See
      * <a href="https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/#:~:text=OneToMany%20Set%20association.-,Bidirectional%20%40OneToMany,-The%20best%20way">
      *   this article</a> for best practices in defining bi-directional one-to-many relationships, and
      *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">this article</a> for
@@ -112,14 +120,23 @@ public class LinkPreview extends AbstractDomainObject<Long> {
     }
 
     /**
-     * We can’t use an auto-incrementing database id in the hashCode method since the transient and
-     * the attached object versions will no longer be located in the same hashed bucket. The
-     * possibility arises that we will instantiate two different objects that represent the same
-     * row in the database. See
+     * We override hashCode and equals here to make sure that two entities with the same important
+     * data (like the same ID) are treated as the same, even if they are different objects in memory.
+     * This is particularly important with one-to-many relationships because the child entities
+     * might be used in a set or map, which check for equality; or removal from the parent entity's
+     * collection might fail because it might not be recognised that the child we're attempting to
+     * remove is actually present in the collection.
+     *
+     * <p>With respect to the hashcode method specifically, since child items might be added to a
+     * parent collection before they have the stable, unique identifier (id) that is used to get the
+     * hashcode in the overridden method, we instead get the hashcode of the class, which will
+     * always be the same.</p>
+     *
+     * See
      * <a href="https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/#:~:text=OneToMany%20Set%20association.-,Bidirectional%20%40OneToMany,-The%20best%20way">
-     *   this article</a> for best practices in defining bidirectional one-to-many relationships,
-     *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">this article</a> for
-     *   implementing equals and hashCode specificall discussion of the reasons this is required
+     *   here</a> for best practices in defining bidirectional one-to-many relationships,
+     *   <a href="https://vladmihalcea.com/hibernate-facts-equals-and-hashcode/">here</a> for
+     *   implementing equals and hashCode specifically, and discussion of the reasons this is required
      *   <a href="http://www.onjava.com/pub/a/onjava/2006/09/13/dont-let-hibernate-steal-your-identity.html">
      *     here.</a>
      * @return integer representing the hash value of the LinkPreview class
