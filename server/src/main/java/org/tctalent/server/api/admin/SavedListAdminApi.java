@@ -46,7 +46,6 @@ import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -58,17 +57,14 @@ public class SavedListAdminApi implements
     private final CandidateService candidateService;
     private final SavedListService savedListService;
     private final CandidateSavedListService candidateSavedListService;
-    private final SalesforceService salesforceService;
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
 
     @Autowired
     public SavedListAdminApi(SavedListService savedListService,
-        CandidateService candidateService, CandidateSavedListService candidateSavedListService,
-        SalesforceService salesforceService) {
+        CandidateService candidateService, CandidateSavedListService candidateSavedListService) {
         this.candidateService = candidateService;
         this.savedListService = savedListService;
         this.candidateSavedListService = candidateSavedListService;
-        this.salesforceService = salesforceService;
     }
 
     /*
@@ -129,7 +125,7 @@ public class SavedListAdminApi implements
     public @NotNull List<Map<String, Object>> search(
             @Valid SearchSavedListRequest request) {
         List<SavedList> savedLists = savedListService.listSavedLists(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(request.getMinimalData());
         return builder.buildList(savedLists);
     }
 
