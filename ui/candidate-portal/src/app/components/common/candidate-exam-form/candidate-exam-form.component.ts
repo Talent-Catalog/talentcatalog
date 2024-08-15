@@ -62,7 +62,7 @@ export class CandidateExamFormComponent implements OnInit {
       otherExam: [ex ? ex.otherExam : null , Validators.required],
       score: [ex ? ex.score : null , Validators.required],
       year: [ex ? ex.year : null , Validators.required],
-      notes: [ex ? ex.notes : null , Validators.required]
+      notes: [ex ? ex.notes : null ]
     });
     // Subscribe to changes in the examType control
     this.form.get('exam').valueChanges.subscribe(value => {
