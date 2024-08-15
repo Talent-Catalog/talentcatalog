@@ -3004,7 +3004,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         if (request.isUnreadOnly()) {
             List<Long> candidateIds =
-                candidateRepository.findCandidatesWithActiveAndUnreadChat(
+                candidateRepository.findIdsOfCandidatesWithActiveAndUnreadChat(
                     loggedInUser.getPartner().getId(),
                     loggedInUser.getId(),
                     keyword

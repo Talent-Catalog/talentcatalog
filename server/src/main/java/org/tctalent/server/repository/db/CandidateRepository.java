@@ -845,7 +845,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                 )
             """, nativeQuery = true
     )
-    List<Long> findCandidatesWithActiveAndUnreadChat(
+    List<Long> findIdsOfCandidatesWithActiveAndUnreadChat(
         @Param("partnerId") long partnerId,
         @Param("userId") long userId,
         @Param("keyword") String keyword
