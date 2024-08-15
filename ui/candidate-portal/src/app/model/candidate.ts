@@ -332,8 +332,6 @@ export interface CandidateVisa {
 export interface CandidateVisaJobCheck {
   jobOpp?: Job;
   id?: number;
-  name?: string;
-  sfJobLink?: string;
   occupation?: Occupation;
   occupationNotes?: string;
   qualification?: YesNo;
