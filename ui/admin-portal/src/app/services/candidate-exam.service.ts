@@ -41,6 +41,10 @@ export class CandidateExamService {
       `${this.apiUrl}/${candidateId}`, request);
   }
 
+  list(id: number): Observable<CandidateExam[]> {
+    return this.http.get<CandidateExam[]>(`${this.apiUrl}/${id}/list`);
+  }
+
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
