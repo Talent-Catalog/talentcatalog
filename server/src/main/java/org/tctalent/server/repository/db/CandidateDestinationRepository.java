@@ -16,9 +16,16 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.CandidateDestination;
 
 public interface CandidateDestinationRepository
         extends JpaRepository<CandidateDestination, Long> {
+    @Query(" select cd from CandidateDestination cd "
+            + " left join cd.candidate c "
+            + " where c.id = :candidateId")
+    List<CandidateDestination> findByCandidateId(@Param("candidateId") Long candidateId);
 }

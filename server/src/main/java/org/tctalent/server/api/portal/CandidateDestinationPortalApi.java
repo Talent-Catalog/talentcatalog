@@ -30,6 +30,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
+import org.tctalent.server.request.candidate.destination.UpdateCandidateDestinationRequest;
 import org.tctalent.server.service.db.CandidateDestinationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -37,7 +38,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RequestMapping("/api/portal/candidate-destination")
 @RequiredArgsConstructor
 public class CandidateDestinationPortalApi implements IJoinedTableApi<CreateCandidateDestinationRequest,
-        CreateCandidateDestinationRequest, CreateCandidateDestinationRequest> {
+        CreateCandidateDestinationRequest, UpdateCandidateDestinationRequest> {
 
     private final CandidateDestinationService candidateDestinationService;
 
@@ -59,7 +60,7 @@ public class CandidateDestinationPortalApi implements IJoinedTableApi<CreateCand
 
     @Override
     @PutMapping("{id}")
-    public @NotNull Map<String, Object> update(@PathVariable long id, CreateCandidateDestinationRequest request)
+    public @NotNull Map<String, Object> update(@PathVariable long id, UpdateCandidateDestinationRequest request)
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         CandidateDestination candidateDestination = candidateDestinationService.updateDestination(id, request);
         return candidateDestinationDto().build(candidateDestination);

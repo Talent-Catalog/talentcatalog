@@ -21,7 +21,7 @@
 
   <div class="mb-3">
     <label class="form-label" [for]="'interest'+country.id">
-      {{ 'REGISTRATION.DESTINATIONS.LABEL.INTEREST' | translate: {countryName: country.name} }}
+      {{ 'REGISTRATION.DESTINATIONS.LABEL.INTEREST' | translate: {countryName: country.name} }}<sup>*</sup>
     </label>
     <ng-select [id]="'interest'+country.id" [formControlName]="'interest'"
                [items]="destInterestOptions" [clearOnBackspace]="false"

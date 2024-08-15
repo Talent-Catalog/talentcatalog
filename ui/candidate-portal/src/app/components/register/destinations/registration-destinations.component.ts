@@ -8,8 +8,9 @@ import {Country} from "../../../model/country";
 import {DestinationComponent} from "./destination/destination.component";
 import {forkJoin, Observable} from "rxjs";
 import {
-  CandidateDestinationRequest,
-  CandidateDestinationService
+  CandidateDestinationService,
+  CreateCandidateDestinationRequest,
+  UpdateCandidateDestinationRequest
 } from "../../../services/candidate-destination.service";
 
 @Component({
@@ -33,7 +34,7 @@ export class RegistrationDestinationsComponent implements OnInit {
   saving: boolean;
   candidateDestinations: CandidateDestination[];
   destinations: Country[];
-  candidateDestinationRequests: CandidateDestinationRequest[];
+  destinationForms: any[];
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -71,12 +72,21 @@ export class RegistrationDestinationsComponent implements OnInit {
   save(dir: string) {
     this.saving = true;
 
-    if (this.candidateDestinationRequests.length > 0) {
+    if (this.destinationForms.length > 0) {
       let destinations$: Observable<CandidateDestination>[] = [];
-      for (const request of this.candidateDestinationRequests) {
-        if (request.id != null) {
-          destinations$.push(this.candidateDestinationService.update(request.id, request))
+      for (const dest of this.destinationForms) {
+        if (dest.id != null) {
+          let request: UpdateCandidateDestinationRequest = {
+            interest: dest.interest,
+            notes: dest.notes
+          }
+          destinations$.push(this.candidateDestinationService.update(dest.id, request))
         } else {
+          let request: CreateCandidateDestinationRequest = {
+            countryId: dest.countryId,
+            interest: dest.interest,
+            notes: dest.notes
+          }
           destinations$.push(this.candidateDestinationService.create(this.candidate.id, request))
         }
       }
@@ -112,11 +122,11 @@ export class RegistrationDestinationsComponent implements OnInit {
   }
 
   next() {
-    this.candidateDestinationRequests = [];
+    this.destinationForms = [];
     // Create request of form data that has been changed (touched) - no need to update forms that are unchanged
     this.destinationFormComponents.map(d => {
       if (d.form.dirty) {
-        this.candidateDestinationRequests.push(d.form.value)
+        this.destinationForms.push(d.form.value)
       }
     });
     this.save('next');

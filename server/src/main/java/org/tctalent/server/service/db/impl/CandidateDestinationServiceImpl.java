@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -29,6 +30,7 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
+import org.tctalent.server.request.candidate.destination.UpdateCandidateDestinationRequest;
 import org.tctalent.server.service.db.CandidateDestinationService;
 
 /**
@@ -66,8 +68,6 @@ public class CandidateDestinationServiceImpl implements CandidateDestinationServ
         cd.setCountry(country);
 
         cd.setInterest(request.getInterest());
-        cd.setFamily(request.getFamily());
-        cd.setLocation(request.getLocation());
         cd.setNotes(request.getNotes());
 
         return candidateDestinationRepository.save(cd);
@@ -75,15 +75,13 @@ public class CandidateDestinationServiceImpl implements CandidateDestinationServ
 
     @Override
     public CandidateDestination updateDestination(
-            long id, CreateCandidateDestinationRequest request)
+            long id, UpdateCandidateDestinationRequest request)
             throws NoSuchObjectException {
 
         CandidateDestination cd = candidateDestinationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateDestination.class, id));
 
         cd.setInterest(request.getInterest());
-        cd.setFamily(request.getFamily());
-        cd.setLocation(request.getLocation());
         cd.setNotes(request.getNotes());
 
         return candidateDestinationRepository.save(cd);
@@ -112,5 +110,10 @@ public class CandidateDestinationServiceImpl implements CandidateDestinationServ
             cd.populateIntakeData(candidate, country, data);
             candidateDestinationRepository.save(cd);
         }
+    }
+
+    @Override
+    public List<CandidateDestination> list(long candidateId) {
+        return candidateDestinationRepository.findByCandidateId(candidateId);
     }
 }

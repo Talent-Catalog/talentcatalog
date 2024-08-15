@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -25,6 +26,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
+import org.tctalent.server.request.candidate.destination.UpdateCandidateDestinationRequest;
 
 public interface CandidateDestinationService {
 
@@ -50,7 +52,7 @@ public interface CandidateDestinationService {
      * @throws NoSuchObjectException if the there is no destination record with that id
      */
     CandidateDestination updateDestination(long id,
-            CreateCandidateDestinationRequest request)
+            UpdateCandidateDestinationRequest request)
             throws NoSuchObjectException;
 
     /**
@@ -77,4 +79,11 @@ public interface CandidateDestinationService {
     void updateIntakeData(
             @Nullable Long countryId, @NonNull Candidate candidate,
             CandidateIntakeDataUpdate data) throws NoSuchObjectException;
+
+    /**
+     * List of all destinations associated to candidate with given id.
+     * @param candidateId ID of candidate whose destinations we want
+     * @return list of candidate destinations
+     */
+    List<CandidateDestination> list(long candidateId);
 }
