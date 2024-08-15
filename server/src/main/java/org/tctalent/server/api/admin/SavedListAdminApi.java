@@ -142,7 +142,7 @@ public class SavedListAdminApi implements
             @Valid SearchSavedListRequest request) {
         Page<SavedList> savedLists = savedListService.searchSavedLists(request);
 
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(request.getMinimalData());
         return builder.buildPage(savedLists);
     }
 

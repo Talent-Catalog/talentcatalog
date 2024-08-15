@@ -200,6 +200,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     //Default sort for them is alpha
     req.sortFields = ['name'];
     req.sortDirection = 'ASC';
+    req.minimalData = true;
 
     switch (this.searchBy) {
       case SearchBy.mine:
