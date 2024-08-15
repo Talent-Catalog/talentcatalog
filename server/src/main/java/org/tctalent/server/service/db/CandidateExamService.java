@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
@@ -34,4 +35,7 @@ public interface CandidateExamService {
     CandidateExam createExam(
             long candidateId, CreateCandidateExamRequest request)
             throws NoSuchObjectException;
+
+    List<CandidateExam> list(long id);
+
 }
