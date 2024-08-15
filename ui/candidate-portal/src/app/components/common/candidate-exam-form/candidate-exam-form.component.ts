@@ -48,7 +48,7 @@ export class CandidateExamFormComponent implements OnInit {
               private candidateExamService: CandidateExamService,
               public registrationService: RegistrationService) { }
   ngOnInit() {
-    this.candidateService.getCandidateNumber().subscribe(candidate=>{
+    this.candidateService.getCandidateAdditionalInfo().subscribe(candidate=>{
       this.candidate = candidate;
     })
     this.saving = false;
@@ -96,7 +96,7 @@ export class CandidateExamFormComponent implements OnInit {
     }
 
     if (!this.form.value.id) {
-      this.candidateExamService.createCandidateExam(this.candidate.candidateNumber,this.form.value).subscribe(
+      this.candidateExamService.createCandidateExam(this.candidate.id,this.form.value).subscribe(
         (response) => {
           this.saved.emit(response);
         },
