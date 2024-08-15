@@ -18,7 +18,6 @@ package org.tctalent.server.model.db;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -26,7 +25,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 import org.springframework.lang.Nullable;
 
 /**
@@ -44,10 +42,6 @@ import org.springframework.lang.Nullable;
 @Table(name = "link_preview")
 @SequenceGenerator(name = "seq_gen", sequenceName = "link_preview_id_seq", allocationSize = 1)
 public class LinkPreview extends AbstractDomainObject<Long> {
-
-    @Id
-    @GeneratedValue
-    private Long id;
 
     /**
      * Associated chat post.
