@@ -19,7 +19,7 @@
   </ng-container>
 </div>
 
-<app-registration-footer [nextDisabled]="loading || saving"
+<app-registration-footer [nextDisabled]="loading || saving || !validationPassed"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? cancel() : back()"
                          (nextClicked)="next()">

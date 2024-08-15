@@ -35,10 +35,22 @@ public interface CandidateDestinationService {
      * @param request Request containing destination details
      * @return Created record - including database id of destination record
      * @throws NoSuchObjectException if the there is no Candidate record with
-     * that candidateId or no Nationality with the id given in the request
+     * that candidateId or no country with the id given in the request
      */
     CandidateDestination createDestination(
             long candidateId, CreateCandidateDestinationRequest request)
+            throws NoSuchObjectException;
+
+    /**
+     * Update an existing candidate destination record with the data in the given
+     * request.
+     * @param id ID of candidate destination to be updated
+     * @param request Request containing destination details
+     * @return Created record - including database id of destination record
+     * @throws NoSuchObjectException if the there is no destination record with that id
+     */
+    CandidateDestination updateDestination(long id,
+            CreateCandidateDestinationRequest request)
             throws NoSuchObjectException;
 
     /**

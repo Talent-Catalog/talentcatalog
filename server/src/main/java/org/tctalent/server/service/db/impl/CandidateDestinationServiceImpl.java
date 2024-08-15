@@ -55,14 +55,32 @@ public class CandidateDestinationServiceImpl implements CandidateDestinationServ
     public CandidateDestination createDestination(
             long candidateId, CreateCandidateDestinationRequest request)
             throws NoSuchObjectException {
+        CandidateDestination cd = new CandidateDestination();
 
         Candidate candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
-
-        CandidateDestination cd = new CandidateDestination();
         cd.setCandidate(candidate);
 
-        cd.setCountry(request.getCountry());
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+        cd.setCountry(country);
+
+        cd.setInterest(request.getInterest());
+        cd.setFamily(request.getFamily());
+        cd.setLocation(request.getLocation());
+        cd.setNotes(request.getNotes());
+
+        return candidateDestinationRepository.save(cd);
+    }
+
+    @Override
+    public CandidateDestination updateDestination(
+            long id, CreateCandidateDestinationRequest request)
+            throws NoSuchObjectException {
+
+        CandidateDestination cd = candidateDestinationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateDestination.class, id));
+
         cd.setInterest(request.getInterest());
         cd.setFamily(request.getFamily());
         cd.setLocation(request.getLocation());

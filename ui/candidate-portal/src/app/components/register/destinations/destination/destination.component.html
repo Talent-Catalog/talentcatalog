@@ -20,22 +20,22 @@
 <form [formGroup]="form">
 
   <div class="mb-3">
-    <label class="form-label" [for]="'destinationInterest'+country.id">
+    <label class="form-label" [for]="'interest'+country.id">
       Are you interested in {{country.name}}?
     </label>
-    <ng-select [id]="'destinationInterest'+country.id" [formControlName]="'destinationInterest'"
+    <ng-select [id]="'interest'+country.id" [formControlName]="'interest'"
                [items]="destInterestOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
 
   <div  *ngIf="interest != null">
     <div class="mb-3">
-      <label class="form-label" [for]="'destinationNotes'+country.id">Notes</label>
+      <label class="form-label" [for]="'notes'+country.id">Notes</label>
       <textarea type="text"
                 class="md-textarea-auto form-control"
                 rows="3"
-                [id]="'destinationNotes'+country.id"
-                [formControlName]="'destinationNotes'"
+                [id]="'notes'+country.id"
+                [formControlName]="'notes'"
                 placeholder="" ></textarea>
     </div>
   </div>

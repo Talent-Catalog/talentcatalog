@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateDestination, YesNoUnsureLearn} from '../../../../model/candidate';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Country} from '../../../../model/country';
 import {RegistrationService} from "../../../../services/registration.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
@@ -42,14 +42,14 @@ export class DestinationComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      destinationId: [this.candidateDestination?.id],
-      destinationCountryId: [this.country.id],
-      destinationInterest: [this.candidateDestination?.interest],
-      destinationNotes: [this.candidateDestination?.notes],
+      id: [this.candidateDestination?.id],
+      countryId: [this.country.id],
+      interest: [this.candidateDestination?.interest, Validators.required],
+      notes: [this.candidateDestination?.notes],
     });
   }
 
   get interest(): string {
-    return this.form?.value?.destinationInterest;
+    return this.form?.value?.interest;
   }
 }

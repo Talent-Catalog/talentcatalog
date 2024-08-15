@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.YesNoUnsure;
 
@@ -28,8 +27,7 @@ import org.tctalent.server.model.db.YesNoUnsure;
 @Setter
 @ToString
 public class CreateCandidateDestinationRequest {
-    @Nullable
-    private Country country;
+    private Long countryId;
 
     @Nullable
     private YesNoUnsure interest;
