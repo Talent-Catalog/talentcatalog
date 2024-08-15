@@ -796,7 +796,7 @@ import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
-import { ViewCandidateExamComponent } from './components/candidates/view/exam/view-candidate-exam.component';
+import {ViewCandidateExamComponent} from './components/candidates/view/exam/view-candidate-exam.component';
 
 @NgModule({
   declarations: [
