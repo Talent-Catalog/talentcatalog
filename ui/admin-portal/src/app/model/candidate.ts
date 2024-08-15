@@ -127,7 +127,8 @@ export interface CandidateProperty {
 
 export interface CandidateIntakeData {
   asylumYear?: string;
-  availImmediate?: YesNoUnsure;
+  availDate?: string;
+  availImmediate?: YesNo;
   availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
@@ -370,7 +371,6 @@ export interface CandidateVisaJobCheck {
   languagesRequired?: string;
   languagesThresholdMet?: YesNo;
   languagesThresholdNotes?: string;
-  relocatingDependantIds?: number[];
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)

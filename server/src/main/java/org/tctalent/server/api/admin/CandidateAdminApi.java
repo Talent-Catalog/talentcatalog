@@ -16,7 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
+
 import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -35,6 +37,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
@@ -77,6 +80,7 @@ import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
+@Slf4j
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
@@ -254,6 +258,12 @@ public class CandidateAdminApi {
     @PostMapping(value = "{id}/cv.pdf")
     public void downloadCandidateCVPdf(@RequestBody DownloadCvRequest request, HttpServletResponse response)
             throws IOException {
+
+        LogBuilder.builder(log)
+            .candidateId(request.getCandidateId())
+            .action("downloadCandidateCVPdf")
+            .message("Downloading CV for candidate")
+            .logInfo();
 
         Candidate candidate = candidateService.getCandidate(request.getCandidateId());
         String name = candidate.getUser().getDisplayName()+"-"+ "CV";

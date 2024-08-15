@@ -16,14 +16,11 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Occupation;
@@ -116,17 +113,5 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
         cvj.populateIntakeData(occupation, data);
         candidateVisaJobRepository.save(cvj);
 
-    }
-
-    @Override
-    public List<CandidateDependant> getRelocatingDependants(CandidateVisaJobCheck visaJobCheck)
-        throws NoSuchObjectException {
-        List<Long> relocatingDependantIds = visaJobCheck.getRelocatingDependantIds();
-
-        return relocatingDependantIds != null ?
-            relocatingDependantIds
-            .stream()
-            .map(candidateDependantService::getDependant)
-            .collect(Collectors.toList()) : null;
     }
 }

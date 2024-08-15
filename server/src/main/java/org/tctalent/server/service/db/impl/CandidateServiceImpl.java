@@ -442,7 +442,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Get candidate ids from Elasticsearch then fetch and return from the database
-        Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmail(s);
+        Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmailWithLimit(s);
         Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
         LogBuilder.builder(log)
@@ -465,10 +465,10 @@ public class CandidateServiceImpl implements CandidateService {
         // Get candidate ids from Elasticsearch
         Set<Long> candidateIds;
         if (searchForNumber) {
-            candidateIds = elasticsearchService.findByNumber(s);
+            candidateIds = elasticsearchService.findByNumberWithLimit(s);
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                candidateIds = elasticsearchService.findByName(s);
+                candidateIds = elasticsearchService.findByNameWithLimit(s);
             } else {
                 return null;
             }
@@ -494,7 +494,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
             // Get candidate ids from Elasticsearch then fetch and return from the database
-            Set<Long> candidateIds = elasticsearchService.findByExternalId(s);
+            Set<Long> candidateIds = elasticsearchService.findByExternalIdWithLimit(s);
             Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
             LogBuilder.builder(log)
@@ -2413,6 +2413,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
         if (data.getAsylumYear() != null) {
             candidate.setAsylumYear(data.getAsylumYear());
+        }
+        if (data.getAvailDate() != null) {
+            candidate.setAvailDate(data.getAvailDate());
         }
         if (data.getAvailImmediate() != null) {
             candidate.setAvailImmediate(data.getAvailImmediate());

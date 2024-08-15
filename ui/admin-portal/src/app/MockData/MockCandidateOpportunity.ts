@@ -59,7 +59,8 @@ const mockCandidateOpportunity: CandidateOpportunity = {
   name: 'Mock Opportunity',
   nextStep: 'Mock next step',
   nextStepDueDate: new Date(),
-  won: false
+  won: false,
+  relocatingDependantIds: [1, 2, 3]
 };
 
 export { mockCandidateOpportunity };

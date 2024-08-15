@@ -7,10 +7,8 @@ import {
 } from "../../../../../../services/candidate-visa-job.service";
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
 import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
-import {CandidateVisaCheckService} from "../../../../../../services/candidate-visa-check.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
@@ -36,10 +34,8 @@ export class CandidateVisaJobComponent implements OnInit {
   error: string;
   form: FormGroup;
 
-  constructor(private candidateVisaCheckService: CandidateVisaCheckService,
-              private candidateVisaJobService: CandidateVisaJobService,
+  constructor(private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
-              private localStorageService: LocalStorageService,
               private fb: FormBuilder,
               private authService: AuthorizationService) { }
 
@@ -128,15 +124,16 @@ export class CandidateVisaJobComponent implements OnInit {
     confirmationModal.result
     .then((result) => {
       if (result === true) {
-        this.doDelete(i, visaJobCheck);
+        this.doDelete(i);
       }
     })
     .catch(() => {});
   }
 
-  private doDelete(i: number, visaJobCheck: CandidateVisaJobCheck) {
+  private doDelete(i: number) {
     this.loading = true;
-    this.candidateVisaJobService.delete(visaJobCheck.id).subscribe(
+    let jobCheck = this.visaCheckRecord.candidateVisaJobChecks[i];
+    this.candidateVisaJobService.delete(jobCheck.id).subscribe(
       (done) => {
         this.loading = false;
         this.visaCheckRecord.candidateVisaJobChecks.splice(i, 1);
@@ -155,15 +152,24 @@ export class CandidateVisaJobComponent implements OnInit {
    * This allows us to retain the changed form data when switching between visa jobs.
    */
   fetchUpdatedSelectedJob(visaJob: CandidateVisaJobCheck) {
-    this.candidateVisaJobService.get(visaJob.id).subscribe(
-      (result) => {
-        this.visaCheckRecord.candidateVisaJobChecks[this.form.controls.jobIndex.value] = result;
-        this.selectedJobChange.emit(result);
-      }
-    )
+    if (visaJob) {
+      this.candidateVisaJobService.get(visaJob.id).subscribe(
+        (result) => {
+          this.visaCheckRecord.candidateVisaJobChecks[this.form.controls.jobIndex.value] = result;
+          this.selectedJobChange.emit(result);
+        }
+      )
+    }
   }
 
   canDeleteVisaJob() : boolean {
     return this.authService.isSystemAdminOnly();
+  }
+
+  fetchCandidateOppIdForJob(jobId: number): number {
+    if (this.hasJobOpps) {
+      return this.candidate.candidateOpportunities.find(
+        co => co.jobOpp.id === jobId).id;
+    }
   }
 }
