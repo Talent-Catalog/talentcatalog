@@ -21,7 +21,7 @@
 
   <div class="mb-3">
     <label class="form-label" [for]="'interest'+country.id">
-      Are you interested in {{country.name}}?
+      {{ 'REGISTRATION.DESTINATIONS.LABEL.INTEREST' | translate: {countryName: country.name} }}
     </label>
     <ng-select [id]="'interest'+country.id" [formControlName]="'interest'"
                [items]="destInterestOptions" [clearOnBackspace]="false"
@@ -30,7 +30,7 @@
 
   <div  *ngIf="interest != null">
     <div class="mb-3">
-      <label class="form-label" [for]="'notes'+country.id">Notes</label>
+      <label class="form-label" [for]="'notes'+country.id">{{ 'REGISTRATION.DESTINATIONS.LABEL.NOTES' | translate }}</label>
       <textarea type="text"
                 class="md-textarea-auto form-control"
                 rows="3"
