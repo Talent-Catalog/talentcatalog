@@ -23,8 +23,11 @@
           (click)="editExam()"><fa-icon icon="edit" size="xs"></fa-icon></button>
 </div>
 
-<h5>{{getExamName(exam.exam)}}</h5>
-<p>{{exam.otherExam}}</p>
-<p>{{exam.year}}</p>
-<p>{{exam.score}}</p>
-<p>{{exam.notes}}</p>
+<h5><strong>Exam:</strong> {{ getExamName(exam.exam) || 'N/A' }}</h5>
+<!-- Conditionally display the Other Exam Name label -->
+<p *ngIf="exam.exam === 'Other'">
+  <strong>Other Exam Name:</strong> {{ exam.otherExam || 'N/A' }}
+</p>
+<p><strong>Year:</strong> {{ exam.year || 'N/A' }}</p>
+<p><strong>Score:</strong> {{ exam.score || 'N/A' }}</p>
+<p><strong>Notes:</strong> {{ exam.notes || 'N/A' }}</p>
