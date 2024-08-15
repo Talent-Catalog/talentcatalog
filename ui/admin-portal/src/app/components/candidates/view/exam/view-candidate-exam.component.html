@@ -47,6 +47,16 @@
             </label>
           </span>
         </div>
+
+        <div class="col-6">
+          <div class="btn-group float-end" *ngIf="editable">
+            <button type="button" class="btn btn-default" ><i
+              class="fas fa-edit"></i></button>
+            <button class="btn btn-default" *ngIf="adminUser" >
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="row mb-3" *ngIf="candidateExam.exam === 'Other'">
@@ -80,7 +90,6 @@
           </label>
         </div>
       </div>
-
       <hr/>
     </div>
   </div>
