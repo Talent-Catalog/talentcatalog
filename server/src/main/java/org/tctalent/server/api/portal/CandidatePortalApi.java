@@ -372,6 +372,7 @@ public class CandidatePortalApi {
     
     private DtoBuilder candidateWithDestinationsDto() {
         return new DtoBuilder()
+                .add("id")
                 .add("candidateDestinations", destinationsDto())
                 ;
     }
@@ -464,6 +465,7 @@ public class CandidatePortalApi {
                 .add("linkedInLink")
                 .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 .add("candidateOpportunities", candidateOpportunityDto())
+                .add("candidateDestinations", destinationsDto())
                 ;
     }
 

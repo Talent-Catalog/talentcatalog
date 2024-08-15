@@ -63,6 +63,11 @@
                                    (onSave)="handleSave()">
   </app-registration-certifications>
 
+  <app-registration-destinations *ngSwitchCase="'destinations'"
+                                   [edit]="true"
+                                   (onSave)="handleSave()">
+  </app-registration-destinations>
+
   <app-registration-additional-info *ngSwitchCase="'additional'"
                                    [edit]="true"
                                    (onSave)="handleSave()">

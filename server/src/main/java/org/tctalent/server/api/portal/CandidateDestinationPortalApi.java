@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.api.admin.IJoinedTableApi;
 import org.tctalent.server.exception.EntityExistsException;
-import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateDestination;
@@ -64,19 +63,6 @@ public class CandidateDestinationPortalApi implements IJoinedTableApi<CreateCand
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         CandidateDestination candidateDestination = candidateDestinationService.updateDestination(id, request);
         return candidateDestinationDto().build(candidateDestination);
-    }
-
-    /**
-     * Delete the candidate destination with the given id.
-     * @param id ID of record to be deleted
-     * @return True if record was deleted, false if it was not found.
-     * @throws EntityReferencedException if the object cannot be deleted because
-     * it is referenced by another object.
-     * @throws InvalidRequestException if not authorized to delete this list.
-     */
-    @Override
-    public boolean delete(long id) throws EntityReferencedException, InvalidRequestException {
-        return candidateDestinationService.deleteDestination(id);
     }
 
     private DtoBuilder candidateDestinationDto() {
