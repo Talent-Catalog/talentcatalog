@@ -123,6 +123,7 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -778,17 +779,23 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  downloadCv(candidate) {
-    const tab = window.open();
-    this.candidateService.downloadCv(candidate.id).subscribe(
-      result => {
-        const fileUrl = URL.createObjectURL(result);
-        tab.location.href = fileUrl;
-      },
-      error => {
-          this.error = error;
-      }
-    )
+  /**
+   * Lightly adapted version of {@link ViewCandidateComponent.downloadGeneratedCV}.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   */
+  downloadGeneratedCV(candidate) {
+    // Modal
+    const downloadCVModal = this.modalService.open(DownloadCvComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    downloadCVModal.componentInstance.candidateId = candidate.id;
+
+    downloadCVModal.result
+    .then((result) => {
+    })
+    .catch(() => { /* Isn't possible */ });
   }
 
   getBreadcrumb(): string {

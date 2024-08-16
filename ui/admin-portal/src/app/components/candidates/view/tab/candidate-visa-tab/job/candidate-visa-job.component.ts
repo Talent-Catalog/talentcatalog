@@ -118,7 +118,7 @@ export class CandidateVisaJobComponent implements OnInit {
   deleteJob(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
     const visaJobCheck: CandidateVisaJobCheck = this.visaCheckRecord.candidateVisaJobChecks[i];
-    const jobName = visaJobCheck.jobOpp ? visaJobCheck.jobOpp.name : visaJobCheck.name
+    const jobName = visaJobCheck.jobOpp.name;
     confirmationModal.componentInstance.message =
       "Are you sure you want to delete the job check for " + jobName + '?';
     confirmationModal.result

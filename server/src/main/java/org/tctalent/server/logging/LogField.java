@@ -28,10 +28,12 @@ import lombok.RequiredArgsConstructor;
  *
  * <ul>
  *     <li>USER_ID - User ID field</li>
- *     <li>CANDIDATE_NUMBER - Candidate number field</li>
+ *     <li>CANDIDATE_ID - Candidate ID field</li>
  *     <li>JOB_ID - Job ID field</li>
  *     <li>LIST_ID - List ID field</li>
  *     <li>SEARCH_ID - Search ID field</li>
+ *     <li>JOB_OPP_ID - Job Opportunity ID field</li>
+ *     <li>CASE_ID - Candidate Opportunity ID field</li>
  *     <li>ACTION - Action field</li>
  *     <li>MESSAGE - Message field</li>
  * </ul>
@@ -55,8 +57,10 @@ public enum LogField {
   JOB_ID("jid", 102),
   LIST_ID("lid", 103),
   SEARCH_ID("sid", 104),
-  ACTION("action", 105),
-  MESSAGE("msg", 106);
+  JOB_OPP_ID("jpid", 105),
+  CASE_ID("cxid", 106),
+  ACTION("action", 107),
+  MESSAGE("msg", 108);
 
   /**
    * The label of the log field, used as a prefix in log messages.
