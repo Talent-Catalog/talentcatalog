@@ -41,7 +41,7 @@
         </button>
 
         <button [ngClass]="!this.linkBtnSelected ? 'custom-link-btn' : 'custom-link-btn-selected'"
-                title="Add link"
+                title="{{ 'CHAT.ADD-LINK' | translate }}"
                 (click)="onLinkBtnClickOrKeyShortcut()">
           <fa-icon icon="link" size="xs"></fa-icon>
         </button>

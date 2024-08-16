@@ -11,7 +11,7 @@
 <div class="modal-body">
   <form [formGroup]="form">
     <div class="my-2">
-      <label class="form-label" for="placeholder">Display text:</label>
+      <label class="form-label" for="placeholder">{{ 'CHAT.LINK-PLACEHOLDER' | translate }}</label>
       <input type="text"
              class="form-control"
              id="placeholder"
@@ -20,20 +20,19 @@
       >
     </div>
     <div class="my-2">
-      <label class="form-label" for="url">Link to:</label>
+      <label class="form-label" for="url">{{ 'CHAT.LINK-URL' | translate }}</label>
       <input #urlInput
              type="text"
              class="form-control"
              id="url"
-             placeholder="URL including http(s):// or mailto: prefix"
+             placeholder="{{ 'CHAT.URL-PREFIX' | translate }}"
              [formControlName]="'url'"
              (keydown.enter)="onKeydownEnter($event)"
              pattern="{{urlRegex}}"
       >
       <div *ngIf="form.get('url').touched || form.get('url').dirty" class="my-2">
         <small *ngIf="form.get('url').errors?.['pattern']" class="text-danger">
-          Please enter a valid URL including the prefix<br>
-          (e.g. 'https://tctalent.org/' or 'mailto:name@email.com')
+          {{ 'CHAT.URL-PREFIX-ERROR' | translate }}
         </small>
       </div>
     </div>
@@ -42,7 +41,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-accent-2" (click)="cancel()">
-    Cancel
+    {{ 'CHAT.LINK-CANCEL-BTN' | translate }}
   </button>
 
   <button [disabled]="form.invalid"
@@ -50,6 +49,6 @@
           class="btn btn-success"
           (click)="save()"
   >
-    Save
+    {{ 'CHAT.LINK-SAVE-BTN' | translate }}
   </button>
 </div>

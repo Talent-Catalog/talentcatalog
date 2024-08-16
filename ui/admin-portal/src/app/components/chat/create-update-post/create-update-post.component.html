@@ -22,7 +22,7 @@
           <button class="ql-underline" title="Underline text"></button>
 
           <button [ngClass]="!this.linkBtnSelected ? 'custom-link-btn' : 'custom-link-btn-selected'"
-                  title="Add link"
+                  title="{{ 'CHAT.ADD-LINK' | translate }}"
                   (click)="onLinkBtnClickOrKeyShortcut()">
             <i class="fas fa-link small"></i>
           </button>
