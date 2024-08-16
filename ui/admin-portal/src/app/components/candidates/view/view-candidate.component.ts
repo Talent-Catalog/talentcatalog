@@ -137,9 +137,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   private loadLists() {
-    /*load all our non fixed lists */
+    /*load all our non-fixed lists */
     this.loading = true;
     const request: SearchSavedListRequest = {
+      minimalData: true, //We just need the names and ids of the lists
       owned: true,
       shared: true,
       global: true,
@@ -227,7 +228,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     )
   }
 
-  downloadCV() {
+  /**
+   * Very similar to {@link ShowCandidatesComponent.downloadGeneratedCV}.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   */
+  downloadGeneratedCV() {
     // Modal
     const downloadCVModal = this.modalService.open(DownloadCvComponent, {
       centered: true,

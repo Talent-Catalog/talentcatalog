@@ -202,6 +202,7 @@ export interface PostJobToSlackResponse {
 }
 
 export class PagedSearchRequest {
+  minimalData?: boolean;
   pageSize?: number;
   pageNumber?: number;
   sortFields?: string[];

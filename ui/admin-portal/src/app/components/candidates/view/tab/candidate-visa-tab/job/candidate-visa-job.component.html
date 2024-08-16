@@ -14,7 +14,7 @@
           <input class="form-check-input" type="radio" [value]="i" name="jobIndex" [id]="'radioJob'+i"
                  [formControlName]="'jobIndex'" (change)="fetchUpdatedSelectedJob(visaJob)">
           <label class="form-check-label fw-light" [for]="'radioJob'+i">
-            {{visaJob?.jobOpp ? visaJob?.jobOpp?.name : visaJob.name}}
+            {{visaJob?.jobOpp?.name}}
             <a [routerLink]="visaJob?.jobOpp ? ['/job',visaJob.jobOpp.id] : null" target="_blank" class="link-info">
               <i *ngIf="visaJob?.jobOpp" class="fa-solid fa-briefcase" title="Open job in new tab"></i>
             </a>

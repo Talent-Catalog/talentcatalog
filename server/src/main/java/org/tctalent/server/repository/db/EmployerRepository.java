@@ -17,11 +17,10 @@
 package org.tctalent.server.repository.db;
 
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.tctalent.server.model.db.Employer;
 
-public interface EmployerRepository extends JpaRepository<Employer, Long>,
+public interface EmployerRepository extends CacheEvictingRepository<Employer, Long>,
     JpaSpecificationExecutor<Employer> {
 
     /**

@@ -230,6 +230,7 @@ public class SystemAdminApi {
             String sfid = candidateOpportunityService.fetchSalesforceId(opp);
             if (sfid == null) {
                 LogBuilder.builder(log)
+                    .caseId(opp.getId())
                     .user(authService.getLoggedInUser())
                     .action("FixNullCaseSfids")
                     .message("No Salesforce opp for case " + opp.getId())
@@ -238,6 +239,7 @@ public class SystemAdminApi {
                 opp.setSfId(sfid);
                 candidateOpportunityRepository.save(opp);
                 LogBuilder.builder(log)
+                    .caseId(opp.getId())
                     .user(authService.getLoggedInUser())
                     .action("FixNullCaseSfids")
                     .message("Updated Sfid of case " + opp.getId())
