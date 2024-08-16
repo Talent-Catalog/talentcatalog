@@ -174,7 +174,7 @@ public class SavedListCandidateAdminApi implements
 
         savedListService.setCandidateContext(savedListId, candidates);
 
-        DtoBuilder builder = candidateBuilderSelector.selectBuilder();
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);
     }
 
