@@ -98,6 +98,15 @@ public class CandidateBuilderSelector {
 
     @NonNull
     public DtoBuilder selectBuilder() {
+        return selectBuilder(false);
+    }
+
+    @NonNull
+    public DtoBuilder selectBuilder(boolean minimal) {
+        if (minimal) {
+            return minimalCandidateDto();
+        }
+
         User user = userService.getLoggedInUser();
         Partner partner = user == null ? null : user.getPartner();
 
@@ -216,6 +225,14 @@ public class CandidateBuilderSelector {
                 .add("updatedDate")
                 .add("partner", partnerDto())
                 ;
+    }
+
+    private DtoBuilder minimalCandidateDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("candidateNumber")
+            .add("user", userDto())
+            ;
     }
 
     private DtoBuilder userDto() {

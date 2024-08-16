@@ -461,21 +461,24 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
+        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+
+        Page<Candidate> candidates;
 
         // Get candidate ids from Elasticsearch
         Set<Long> candidateIds;
         if (searchForNumber) {
-            candidateIds = elasticsearchService.findByNumberWithLimit(s);
+            candidates = candidateRepository.searchCandidateNumber(
+                s +'%', sourceCountries,
+                request.getPageRequestWithoutSort());
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
                 candidateIds = elasticsearchService.findByNameWithLimit(s);
+                candidates = fetchCandidates(request, candidateIds);
             } else {
                 return null;
             }
         }
-
-        // then fetch and return from the database
-        Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())

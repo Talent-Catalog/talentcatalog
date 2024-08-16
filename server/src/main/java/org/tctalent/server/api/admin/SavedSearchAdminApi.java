@@ -114,7 +114,8 @@ public class SavedSearchAdminApi implements
     @Override
     public @NotNull Map<String, Object> searchPaged(@Valid SearchSavedSearchRequest request) {
         Page<SavedSearch> savedSearches = this.savedSearchService.searchPaged(request);
-        return savedSearchDto().buildPage(savedSearches);
+        DtoBuilder builder = selectedDtoBuilder(request);
+        return builder.buildPage(savedSearches);
     }
 
     @Override
@@ -343,10 +344,29 @@ public class SavedSearchAdminApi implements
         savedSearchService.updateDisplayedFieldPaths(id, request);
     }
 
+    private DtoBuilder selectedDtoBuilder(SearchSavedSearchRequest request) {
+        DtoBuilder builder;
+        if (request.getMinimalData() != null && request.getMinimalData()) {
+            builder = minimalSavedSearchDto();
+        } else {
+            builder = savedSearchDto();
+        }
+        return builder;
+    }
+
     private DtoBuilder savedSearchNameDto() {
         return new DtoBuilder()
                 .add("name")
                 ;
+    }
+
+    private DtoBuilder minimalSavedSearchDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("savedSearchType")
+            .add("savedSearchSubtype")
+            ;
     }
 
     private DtoBuilder savedSearchDto() {

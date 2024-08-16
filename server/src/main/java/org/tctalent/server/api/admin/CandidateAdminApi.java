@@ -16,8 +16,13 @@
 
 package org.tctalent.server.api.admin;
 
-
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,13 +76,6 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
 @RestController()
 @RequestMapping("/api/admin/candidate")
 @Slf4j
@@ -119,28 +117,40 @@ public class CandidateAdminApi {
     @PostMapping("findbyemail")
     public Map<String, Object> findByCandidateEmail(@RequestBody CandidateEmailSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyemailorphone")
     public Map<String, Object> findByCandidateEmailOrPhone(@RequestBody CandidateEmailOrPhoneSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbynumberorname")
     public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateNumberOrNameSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyexternalid")
     public Map<String, Object> findByCandidateExternalId(@RequestBody CandidateExternalIdSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
