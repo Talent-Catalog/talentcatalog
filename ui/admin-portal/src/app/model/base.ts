@@ -201,8 +201,14 @@ export interface PostJobToSlackResponse {
   slackChannelUrl: string;
 }
 
+export enum DtoType {
+  MINIMAL = 'MINIMAL',
+  FULL = 'FULL',
+  PREVIEW = 'PREVIEW'
+}
+
 export class PagedSearchRequest {
-  minimalData?: boolean;
+  dtoType?: DtoType;
   pageSize?: number;
   pageNumber?: number;
   sortFields?: string[];
