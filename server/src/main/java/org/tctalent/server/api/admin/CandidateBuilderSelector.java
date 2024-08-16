@@ -98,12 +98,12 @@ public class CandidateBuilderSelector {
 
     @NonNull
     public DtoBuilder selectBuilder() {
-        return selectBuilder(false);
+        return selectBuilder(DtoType.FULL);
     }
 
     @NonNull
-    public DtoBuilder selectBuilder(boolean minimal) {
-        if (minimal) {
+    public DtoBuilder selectBuilder(DtoType type) {
+        if (DtoType.MINIMAL.equals(type)) {
             return minimalCandidateDto();
         }
 
@@ -131,7 +131,8 @@ public class CandidateBuilderSelector {
             partner, role, fullyVisibleCandidates, candidatePublicProperties, candidateSemiLimitedExtraProperties);
         DtoPropertyFilter userPropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
             partner, role, fullyVisibleCandidates, userPublicProperties, null);
-        return candidateDto(candidatePropertyFilter, userPropertyFilter);
+
+        return candidateDto(candidatePropertyFilter, userPropertyFilter, type);
     }
 
     /**
@@ -142,8 +143,8 @@ public class CandidateBuilderSelector {
      * @return DtoBuilder
      */
     private DtoBuilder candidateDto(
-        DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter) {
-        return new DtoBuilder(candidatePropertyFilter)
+        DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter, DtoType type) {
+        DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
             .add("status")
             .add("candidateNumber")
@@ -190,29 +191,34 @@ public class CandidateBuilderSelector {
             .add("regoUtmMedium")
             .add("regoUtmSource")
             .add("regoUtmTerm")
-            .add("candidateExams", examsDto())
             .add("maxEducationLevel", educationLevelDto())
             .add("surveyType", surveyTypeDto())
             .add("country", countryDto())
             .add("nationality", countryDto())
-            .add("candidateOpportunities", candidateOpportunityDto())
             .add("user", userDto(userPropertyFilter))
             .add("candidateReviewStatusItems", reviewDto())
-
             .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter))
             .add("shareableCv", candidateAttachmentDto(userPropertyFilter))
             .add("shareableDoc", candidateAttachmentDto(userPropertyFilter))
             .add("listShareableCv", candidateAttachmentDto(userPropertyFilter))
             .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter))
-            .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
-            .add("candidateProperties", candidatePropertyDto())
             .add("shareableNotes")
             .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
             .add("miniIntakeCompletedDate")
             .add("fullIntakeCompletedBy", userDto(userPropertyFilter))
             .add("fullIntakeCompletedDate")
-
             ;
+
+            if (!DtoType.PREVIEW.equals(type)) {
+                builder
+                    .add("candidateOpportunities", candidateOpportunityDto())
+                    .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
+                    .add("candidateExams", examsDto())
+                    .add("candidateProperties", candidatePropertyDto())
+                    ;
+            }
+
+            return builder;
     }
 
     private DtoBuilder userDto(DtoPropertyFilter propertyFilter) {
