@@ -21,14 +21,16 @@
   <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading">
-    <div class="d-sm-flex justify-content-between">
-      <h3 class="mb-3 text-center text-sm-left">
-        {{ 'HEADER.NAV.ACCOUNT' | translate }} {{candidate?.candidateNumber}}</h3>
+    <div class="d-sm-flex justify-content-between align-items-center">
+      <div class="mb-3 text-center text-sm-start">
+        <h3>{{ 'PROFILE.TAB.PROFILE' | translate }}</h3>
+        <h5 class="text-muted">{{ 'HEADER.NAV.ACCOUNT' | translate }} #{{candidate?.candidateNumber}}</h5>
+      </div>
       <app-download-cv></app-download-cv>
     </div>
 
     <!-- CONTACT -->
-    <section>
+    <section class="mt-4 mt-sm-0">
 
       <div class="section-heading">
 

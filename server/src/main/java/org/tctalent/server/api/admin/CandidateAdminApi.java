@@ -16,6 +16,13 @@
 
 package org.tctalent.server.api.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -34,6 +41,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -65,15 +73,9 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
 @RestController()
 @RequestMapping("/api/admin/candidate")
+@Slf4j
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
@@ -112,28 +114,40 @@ public class CandidateAdminApi {
     @PostMapping("findbyemail")
     public Map<String, Object> findByCandidateEmail(@RequestBody CandidateEmailSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyemailorphone")
     public Map<String, Object> findByCandidateEmailOrPhone(@RequestBody CandidateEmailOrPhoneSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbynumberorname")
     public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateNumberOrNameSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyexternalid")
     public Map<String, Object> findByCandidateExternalId(@RequestBody CandidateExternalIdSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
@@ -251,6 +265,12 @@ public class CandidateAdminApi {
     @PostMapping(value = "{id}/cv.pdf")
     public void downloadCandidateCVPdf(@RequestBody DownloadCvRequest request, HttpServletResponse response)
             throws IOException {
+
+        LogBuilder.builder(log)
+            .candidateId(request.getCandidateId())
+            .action("downloadCandidateCVPdf")
+            .message("Downloading CV for candidate")
+            .logInfo();
 
         Candidate candidate = candidateService.getCandidate(request.getCandidateId());
         String name = candidate.getUser().getDisplayName()+"-"+ "CV";

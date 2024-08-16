@@ -88,6 +88,20 @@ public class LogBuilder {
   }
 
   /**
+   * Adds the candidate ID to the log fields if the candidate ID is not null.
+   *
+   * @param candidateId the candidate ID
+   * @return the current {@code LogBuilder} instance for chaining
+   */
+  public LogBuilder candidateId(Long candidateId) {
+    if (candidateId == null) {
+      return this;
+    }
+    addField(LogField.CANDIDATE_ID, candidateId.toString());
+    return this;
+  }
+
+  /**
    * Adds the list ID to the log fields if the list ID is not null.
    *
    * @param listId the list ID
@@ -126,6 +140,35 @@ public class LogBuilder {
       return this;
     }
     addField(LogField.JOB_ID, jobId.toString());
+    return this;
+  }
+
+  /**
+   * Adds the job opportunity ID to the log fields if the job opportunity ID is not null.
+   *
+   * @param jobOppId the job opportunity ID
+   * @return the current {@code LogBuilder} instance for chaining
+   */
+  public LogBuilder jobOppId(Long jobOppId) {
+    if (jobOppId == null) {
+      return this;
+    }
+    addField(LogField.JOB_OPP_ID, jobOppId.toString());
+    return this;
+  }
+
+  /**
+   * Adds the candidate opportunity ID (case ID) to the log fields if the candidate opportunity ID
+   * is not null.
+   *
+   * @param caseId the candidate opportunity ID
+   * @return the current {@code LogBuilder} instance for chaining
+   */
+  public LogBuilder caseId(Long caseId) {
+    if (caseId == null) {
+      return this;
+    }
+    addField(LogField.CASE_ID, caseId.toString());
     return this;
   }
 

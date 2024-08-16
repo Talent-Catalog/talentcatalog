@@ -40,6 +40,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("arrestImprison")
                 .add("arrestImprisonNotes")
                 .add("asylumYear")
+                .add("availDate")
                 .add("availImmediate")
                 .add("availImmediateJobOps")
                 .add("availImmediateReason")

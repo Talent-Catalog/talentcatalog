@@ -23,15 +23,23 @@ import lombok.ToString;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.lang.Nullable;
 
 /**
- * Request that includes paging and sorting fields.
+ * Request that may include paging and sorting fields.
  */
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 public class PagedSearchRequest {
+
+    /**
+     * If non-null and true, means that only minimal data is required to be returned for each
+     * search result.
+     */
+    @Nullable
+    private Boolean minimalData;
     private Integer pageSize;
     private Integer pageNumber;
     private Sort.Direction sortDirection;

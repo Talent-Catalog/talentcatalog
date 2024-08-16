@@ -20,13 +20,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -36,7 +37,39 @@ import org.tctalent.server.model.db.ReviewStatus;
 /**
  * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
  */
-public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
+public interface CandidateRepository extends CacheEvictingRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
+
+    /**
+     * This method overrides the default save behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the saved candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to save; must not be null
+     */
+    @NonNull
+    @Override
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
+    <S extends Candidate> S save(@NonNull S candidate);
+
+    /**
+     * This method overrides the default saveAndFlush behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the saved candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to save; must not be null
+     */
+    @NonNull
+    @Override
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
+    <S extends Candidate> S saveAndFlush(@NonNull S candidate);
+
+    /**
+     * This method overrides the default delete behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the deleted candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to delete; must not be null
+     */
+    @Override
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
+    void delete(@NonNull Candidate candidate);
 
     /**
      * CANDIDATE PORTAL METHODS: Used to display candidate in registration/profile.
@@ -133,6 +166,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Transactional
     @Modifying
     @Query("update Candidate c set c.textSearchId = null")
+    @CacheEvict(value = "users", allEntries = true)
     void clearAllCandidateTextSearchIds();
 
     /**
@@ -152,7 +186,26 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
+
                                          Pageable pageable);
+    /**
+     * Note that we need to pass in a CandidateStatus.deleted constant in the
+     * "exclude" parameter because I haven't been able to just put
+     * CanadidateStatus.deleted constant directly into the query.
+     * Theoretically the fully qualified name should work eg
+     * " and c.status <> db.model.org.tctalent.server.CandidateStatus.deleted"
+     * See https://stackoverflow.com/questions/8217144/problems-with-making-a-query-when-using-enum-in-entity
+     * but Hibernate rejects that at run time with the following error:
+     * org.hibernate.hql.internal.ast.QuerySyntaxException: Invalid path
+     * - JC
+     */
+    @Query(" select distinct c from Candidate c "
+        + " where c.candidateNumber like :candidateNumber "
+        + excludeDeleted
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
 
     @Query(" select c from Candidate c "
             + " join c.user u "
