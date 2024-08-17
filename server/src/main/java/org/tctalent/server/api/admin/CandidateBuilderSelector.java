@@ -102,10 +102,12 @@ public class CandidateBuilderSelector {
     }
 
     @NonNull
-    public DtoBuilder selectBuilder(boolean minimal) {
-        if (minimal) {
-            return minimalCandidateDto();
-        }
+    public DtoBuilder selectMinimalBuilder() {
+        return minimalCandidateDto();
+    }
+
+    @NonNull
+    public DtoBuilder selectBuilder(boolean summary) {
 
         User user = userService.getLoggedInUser();
         Partner partner = user == null ? null : user.getPartner();
@@ -131,7 +133,7 @@ public class CandidateBuilderSelector {
             partner, role, fullyVisibleCandidates, candidatePublicProperties, candidateSemiLimitedExtraProperties);
         DtoPropertyFilter userPropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
             partner, role, fullyVisibleCandidates, userPublicProperties, null);
-        return candidateDto(candidatePropertyFilter, userPropertyFilter);
+        return candidateDto(candidatePropertyFilter, userPropertyFilter, summary);
     }
 
     /**
@@ -139,11 +141,14 @@ public class CandidateBuilderSelector {
      * every candidate is a user).
      * @param candidatePropertyFilter Filter for candidate properties
      * @param userPropertyFilter Filter for candidate's user properties
+     * @param summary True if only summary info about the candidate is needed
      * @return DtoBuilder
      */
     private DtoBuilder candidateDto(
-        DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter) {
-        return new DtoBuilder(candidatePropertyFilter)
+        DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter, 
+        boolean summary) {
+
+        final DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
             .add("status")
             .add("candidateNumber")
@@ -195,22 +200,30 @@ public class CandidateBuilderSelector {
             .add("surveyType", surveyTypeDto())
             .add("country", countryDto())
             .add("nationality", countryDto())
-            .add("candidateOpportunities", candidateOpportunityDto())
             .add("user", userDto(userPropertyFilter))
-            .add("candidateReviewStatusItems", reviewDto())
 
-            .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter))
-            .add("shareableCv", candidateAttachmentDto(userPropertyFilter))
-            .add("shareableDoc", candidateAttachmentDto(userPropertyFilter))
-            .add("listShareableCv", candidateAttachmentDto(userPropertyFilter))
-            .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter))
-            .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
-            .add("candidateProperties", candidatePropertyDto())
+            .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter, summary))
+            .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto(summary))
             .add("shareableNotes")
-            .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
             .add("miniIntakeCompletedDate")
-            .add("fullIntakeCompletedBy", userDto(userPropertyFilter))
-            .add("fullIntakeCompletedDate")
+            .add("fullIntakeCompletedDate");
+        
+        //The above is what is needed for summary lines - ie candidate in results.
+        //If it is not a summary, we need extra info as below
+        if (!summary) {
+            builder
+                .add("candidateOpportunities", candidateOpportunityDto())
+                .add("candidateReviewStatusItems", reviewDto())
+                .add("shareableCv", candidateAttachmentDto(userPropertyFilter, summary))
+                .add("shareableDoc", candidateAttachmentDto(userPropertyFilter, summary))
+                .add("listShareableCv", candidateAttachmentDto(userPropertyFilter, summary))
+                .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter, summary))
+                .add("candidateProperties", candidatePropertyDto())
+                .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
+                .add("fullIntakeCompletedBy", userDto(userPropertyFilter));
+        }
+        
+        return builder
 
             ;
     }
@@ -354,8 +367,8 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder candidateAttachmentDto(DtoPropertyFilter userPropertyFilter) {
-        return new DtoBuilder()
+    private DtoBuilder candidateAttachmentDto(DtoPropertyFilter userPropertyFilter, boolean summary) {
+        final DtoBuilder builder = new DtoBuilder()
             .add("id")
             .add("type")
             .add("name")
@@ -363,10 +376,14 @@ public class CandidateBuilderSelector {
             .add("fileType")
             .add("migrated")
             .add("cv")
-            .add("createdBy", userDto(userPropertyFilter))
             .add("createdDate")
             .add("uploadType")
-            .add("url")
-            ;
+            .add("url");
+        
+        if (!summary) {
+            builder
+            .add("createdBy", userDto(userPropertyFilter));             
+        }
+        return builder;
     }
 }

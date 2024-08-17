@@ -59,11 +59,13 @@ export class CvIconComponent implements OnInit {
       this.cvs.push(this.attachment)
     } else {
       // Only want to open/DL CV attachments
-      this.candidate.candidateAttachments.forEach(attachment => {
-        if (attachment.cv) {
-          this.cvs.push(attachment);
-        }
-      })
+      if (this.candidate.candidateAttachments) {
+        this.candidate.candidateAttachments.forEach(attachment => {
+          if (attachment.cv) {
+            this.cvs.push(attachment);
+          }
+        })
+      }
     }
   }
 

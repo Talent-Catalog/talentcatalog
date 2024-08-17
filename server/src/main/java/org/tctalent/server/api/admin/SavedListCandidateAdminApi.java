@@ -103,7 +103,7 @@ public class SavedListCandidateAdminApi implements
     public List<Map<String, Object>> list(long savedListId) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(savedListId);
         Set<Candidate> candidates = savedList.getCandidates();
-        DtoBuilder builder = candidateBuilderSelector.selectBuilder();
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(true);
         return builder.buildList(candidates);
     }
 
@@ -160,7 +160,7 @@ public class SavedListCandidateAdminApi implements
 
         savedListService.setCandidateContext(savedListId, candidates);
 
-        DtoBuilder builder = candidateBuilderSelector.selectBuilder();
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(true);
         return builder.buildList(candidates);
     }
 
@@ -174,7 +174,7 @@ public class SavedListCandidateAdminApi implements
 
         savedListService.setCandidateContext(savedListId, candidates);
 
-        DtoBuilder builder = candidateBuilderSelector.selectBuilder();
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 

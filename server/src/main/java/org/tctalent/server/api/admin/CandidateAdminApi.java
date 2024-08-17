@@ -107,7 +107,7 @@ public class CandidateAdminApi {
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = savedSearchService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(true);
         return builder.buildPage(candidates);
     }
 
@@ -117,7 +117,7 @@ public class CandidateAdminApi {
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
         //need to fetch more data from the database than that.
-        DtoBuilder builder = builderSelector.selectBuilder(true);
+        DtoBuilder builder = builderSelector.selectMinimalBuilder();
         return builder.buildPage(candidates);
     }
 
@@ -127,7 +127,7 @@ public class CandidateAdminApi {
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
         //need to fetch more data from the database than that.
-        DtoBuilder builder = builderSelector.selectBuilder(true);
+        DtoBuilder builder = builderSelector.selectMinimalBuilder();
         return builder.buildPage(candidates);
     }
 
@@ -137,7 +137,7 @@ public class CandidateAdminApi {
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
         //need to fetch more data from the database than that.
-        DtoBuilder builder = builderSelector.selectBuilder(true);
+        DtoBuilder builder = builderSelector.selectMinimalBuilder();
         return builder.buildPage(candidates);
     }
 
@@ -147,7 +147,7 @@ public class CandidateAdminApi {
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
         //need to fetch more data from the database than that.
-        DtoBuilder builder = builderSelector.selectBuilder(true);
+        DtoBuilder builder = builderSelector.selectMinimalBuilder();
         return builder.buildPage(candidates);
     }
 

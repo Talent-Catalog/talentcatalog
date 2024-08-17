@@ -56,9 +56,13 @@ public class TaskDtoHelper {
 
             return ignore;
         }
-    };
+    }
 
     public static DtoBuilder getTaskAssignmentDto() {
+        return getTaskAssignmentDto(false);
+    }
+    
+    public static DtoBuilder getTaskAssignmentDto(boolean summary) {
         return new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("abandonedDate")
@@ -66,13 +70,17 @@ public class TaskDtoHelper {
             .add("completedDate")
             .add("dueDate")
             .add("status")
-            .add("task", getTaskDto())
+            .add("task", getTaskDto(summary))
             .add("answer")
             ;
     }
 
     public static DtoBuilder getTaskDto() {
-        return new DtoBuilder(new TaskDtoPropertyFilter())
+        return getTaskDto(false);
+    }
+    
+    public static DtoBuilder getTaskDto(boolean summary) {
+        final DtoBuilder builder = new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("name")
             .add("daysToComplete")
@@ -85,10 +93,14 @@ public class TaskDtoHelper {
             .add("uploadSubfolderName")
             .add("uploadableFileTypes")
             .add("candidateAnswerField")
+            .add("createdDate");
+        
+        if (!summary) {
+            builder
             .add("allowedAnswers", getAllowedQuestionTaskAnswerDto())
-            .add("createdBy", getUserDto())
-            .add("createdDate")
-            ;
+            .add("createdBy", getUserDto());
+        }
+        return builder;
     }
 
     private static DtoBuilder getAllowedQuestionTaskAnswerDto() {
