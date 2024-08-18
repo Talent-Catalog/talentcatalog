@@ -39,6 +39,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,6 +84,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.CandidateSummary;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.EducationMajor;
@@ -142,6 +145,7 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.util.jpa.QueryHelper;
 
 @Service
 @RequiredArgsConstructor
@@ -176,6 +180,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationLevelRepository educationLevelRepository;
     private final EntityManager entityManager;
     private final AuthService authService;
+    private final QueryHelper queryHelper;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
@@ -285,6 +290,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         markUserSelectedCandidates(savedSearchId, candidates);
 
         return candidates;
+    }
+
+    @Override
+    public Page<CandidateSummary> searchCandidateSummaries(
+        long savedSearchId, SavedSearchGetRequest request)
+        throws NoSuchObjectException {
+
+        SearchCandidateRequest searchRequest =
+            loadSavedSearch(savedSearchId);
+
+        final List<CandidateSummary> candidateSummaries = doSearchCandidates2(searchRequest);
+        //TODO JC 
+        return null;
     }
 
     private Page<Candidate> reviewedCandidates(SearchCandidateRequest request) {
@@ -1763,6 +1781,31 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return unhcrStatusList != null ? Stream.of(unhcrStatusList.split(","))
             .map(UnhcrStatus::valueOf)
             .collect(Collectors.toList()) : null;
+    }
+
+    private List<CandidateSummary> doSearchCandidates2(SearchCandidateRequest searchRequest) {
+
+        String sql = searchRequest.extractSQL(true);
+        String constraint = "candidate.id in (" + sql + ")";
+
+        String selectSql =
+            """
+                    select id, candidate_number,
+               (select first_name from users where id = candidate.user_id) as first_name
+                         from candidate
+             where
+            """;
+        
+        selectSql += constraint;
+
+        Query query = entityManager.createNativeQuery(selectSql, Tuple.class);
+
+        final List<?> resultList = query.getResultList();
+        
+        List<CandidateSummary> candidateSummaries 
+            = queryHelper.parseTupleResult(resultList, CandidateSummary.class);
+        
+        return candidateSummaries;
     }
 
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest searchRequest) {

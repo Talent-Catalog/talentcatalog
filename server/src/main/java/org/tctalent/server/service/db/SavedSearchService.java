@@ -27,6 +27,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateSummary;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
@@ -77,7 +78,12 @@ public interface SavedSearchService {
     Page<Candidate> searchCandidates(
         long savedSearchId, SavedSearchGetRequest request)
         throws NoSuchObjectException;
-
+    
+    //TODO JC Doc
+    Page<CandidateSummary> searchCandidateSummaries(
+        long savedSearchId, SavedSearchGetRequest request)
+        throws NoSuchObjectException;
+    
     /**
      * Returns a set of the ids of all candidates matching the given saved search.
      * <p/>

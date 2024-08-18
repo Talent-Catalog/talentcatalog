@@ -69,6 +69,8 @@ public class SavedSearchCandidateAdminApi implements
             long savedSearchId, @Valid SavedSearchGetRequest request)
             throws NoSuchObjectException {
 
+        //TODO JC Add request parameter which requests summaries. Can have extra button
+        //to compare calls.
         Page<Candidate> candidates =
                 savedSearchService.searchCandidates(savedSearchId, request);
 
