@@ -2,6 +2,10 @@ import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import {Candidate, CandidateExam} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateExamService} from "../../../../services/candidate-exam.service";
+import {
+  CreateCandidateCertificationComponent
+} from "../certification/create/create-candidate-certification.component";
+import {CreateCandidateExamComponent} from "./create/create-candidate-exam.component";
 
 @Component({
   selector: 'app-view-candidate-exam',
@@ -48,4 +52,17 @@ export class ViewCandidateExamComponent implements OnInit {
     ;
   }
 
+  createCandidateExam() {
+    const createCandidateExamModal = this.modalService.open(CreateCandidateExamComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    createCandidateExamModal.componentInstance.candidateId = this.candidate.id;
+
+    createCandidateExamModal.result
+    .then((candidateExam) => this.doSearch())
+    .catch(() => { /* Isn't possible */ });
+
+  }
 }
