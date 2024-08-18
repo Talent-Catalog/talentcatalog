@@ -168,6 +168,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
     /**
      * Extracts the database query SQL corresponding to the given search request.
+     * <p/>
+     * The SQL generated for native queries will return the id's of the candidates matching the search 
+     * request 
+     * (ie SELECT id FROM candidate WHERE...). 
+     * For non native queries the candidate entities will be returned
+     * (ie SELECT c FROM Candidate c WHERE...).  
      *
      * @param nativeQuery True if native database SQL is required, otherwise JPQL is returned
      * @return String containing the SQL or JPQL
