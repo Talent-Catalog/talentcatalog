@@ -52,7 +52,7 @@
           <div class="btn-group float-end" *ngIf="editable">
             <button type="button" class="btn btn-default" ><i
               class="fas fa-edit"></i></button>
-            <button class="btn btn-default" *ngIf="adminUser" >
+            <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateExam(candidateExam)">
               <i class="fas fa-trash"></i>
             </button>
           </div>
