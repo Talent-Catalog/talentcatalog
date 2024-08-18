@@ -797,6 +797,8 @@ import {
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
 import {ViewCandidateExamComponent} from './components/candidates/view/exam/view-candidate-exam.component';
+import {CreateCandidateExamComponent} from './components/candidates/view/exam/create/create-candidate-exam.component';
+import {EditCandidateExamComponent} from './components/candidates/view/exam/edit/edit-candidate-exam.component';
 
 @NgModule({
   declarations: [
@@ -1121,7 +1123,9 @@ import {ViewCandidateExamComponent} from './components/candidates/view/exam/view
     SelectJobCopyComponent,
     VisaJobCheckUkComponent,
     PreviewLinkComponent,
-    ViewCandidateExamComponent
+    ViewCandidateExamComponent,
+    CreateCandidateExamComponent,
+    EditCandidateExamComponent
   ],
   imports: [
     BrowserModule,
