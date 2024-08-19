@@ -46,4 +46,7 @@ public interface CandidateExamService {
      * @return List of updated candidate exam records
      */
     CandidateExam updateCandidateExam(UpdateCandidateExamRequest request);
+
+    List<CandidateExam> list(long id);
+
 }
