@@ -178,7 +178,7 @@ public class SavedSearchAdminApi implements
      * @param request Request containing details of the list to be saved to,
      *                the associated user and whether or not the save should
      *                add to or replace existing contents.
-     * @return List which selection was saved to
+     * @return Map which selection was saved to
      * @throws EntityExistsException If a new list needs to be created but the
      * list name already exists.
      * @throws InvalidRequestException if not authorized.
