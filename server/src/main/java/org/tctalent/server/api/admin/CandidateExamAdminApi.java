@@ -20,11 +20,14 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
+import org.tctalent.server.request.candidate.exam.SearchCandidateExamRequest;
+import org.tctalent.server.request.candidate.exam.UpdateCandidateExamRequest;
 import org.tctalent.server.service.db.CandidateExamService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -36,9 +39,10 @@ import java.util.Map;
 @RestController()
 @RequestMapping("/api/admin/candidate-exam")
 @RequiredArgsConstructor
-public class CandidateExamAdminApi implements IJoinedTableApi<CreateCandidateExamRequest,
+public class CandidateExamAdminApi implements IJoinedTableApi<SearchCandidateExamRequest,
                                                               CreateCandidateExamRequest,
-                                                              CreateCandidateExamRequest> {
+    UpdateCandidateExamRequest> {
+
     private final CandidateExamService candidateExamService;
     private final CandidateService candidateService;
 
@@ -67,6 +71,27 @@ public class CandidateExamAdminApi implements IJoinedTableApi<CreateCandidateExa
     public List<Map<String, Object>> list(long parentId) {
         List<CandidateExam> candidateExams = candidateExamService.list(parentId);
         return candidateExamDto().buildList(candidateExams);
+    }
+
+    /**
+     * Update the record with the given id from the data in the given request.
+     * @param id ID of record to be updated
+     * @param request Request containing details from which the record is updated.
+     *                Details which are not specified in the request (ie are null)
+     *                cause no change to the record. Therefore, there is no way
+     *                to set a field of the record to null.
+     * @return Updated record
+     * @throws EntityExistsException if the updated record would clash with an
+     * existing record - eg with the same name.
+     * @throws InvalidRequestException if not authorized to update this record.
+     * @throws NoSuchObjectException if there is no such record with the given id
+     */
+    @Override
+    public Map<String, Object> update(long id, UpdateCandidateExamRequest request)
+        throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+
+        CandidateExam candidateExam = candidateExamService.updateCandidateExam(request);
+        return candidateExamDto().build(candidateExam);
     }
 
     /**
