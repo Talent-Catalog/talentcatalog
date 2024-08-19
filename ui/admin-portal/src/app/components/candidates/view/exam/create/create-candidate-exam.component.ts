@@ -69,7 +69,6 @@ export class CreateCandidateExamComponent implements OnInit {
       year: this.candidateForm.value.year,
       notes: this.candidateForm.value.notes,
     }
-    console.log(request)
     this.candidateExamService.create(this.candidateId,request).subscribe(
       (candidateExam) => {
         this.closeModal(candidateExam);
