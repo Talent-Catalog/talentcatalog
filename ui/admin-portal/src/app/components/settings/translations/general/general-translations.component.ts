@@ -289,6 +289,7 @@ const ALL_FIELDS = {
           "EDUCATION/UNIVERSITY": null,
           "EDUCATION/SCHOOL": null,
           "LANGUAGE": null,
+          "EXAM": null,
           "CERTIFICATIONS": null,
           "ADDITIONAL": null,
           "UPLOAD": null,
@@ -382,6 +383,24 @@ const ALL_FIELDS = {
           "ADD": null
         }
       },
+      "EXAM": {
+        "LABEL": {
+          "EXAM": null,
+          "SCORE": null,
+          "YEAR": null,
+          "NOTES": null,
+          "OTHEREXAM":null
+        },
+        "BUTTON": {
+          "ADD": null
+        },
+        "DELETE": {
+          "TITLE": null,
+          "CONFIRMATION": null,
+          "YES": null,
+          "NO": null
+        }
+      },
       "CERTIFICATIONS": {
         "LABEL": {
           "NAME": null,
@@ -466,6 +485,9 @@ const ALL_FIELDS = {
       "EDUCATION": {
         "TITLE": null
       },
+      "EXAMS": {
+        "TITLE": null
+      },
       "CERTIFICATIONS": {
         "TITLE": null
       },
@@ -497,6 +519,7 @@ const ALL_FIELDS = {
         "EXPERIENCE": null,
         "EDUCATION": null,
         "LANGUAGES": null,
+        "EXAMS": null,
         "CERTIFICATIONS": null,
         "ADDITIONAL": null,
         "UPLOAD": null
@@ -512,7 +535,8 @@ const ALL_FIELDS = {
       },
       "PLACEHOLDER" : {
         "SELECT": null,
-        "SELECTORTYPE": null
+        "SELECTORTYPE": null,
+        "SELECTOREXAM": null
       },
       "ERROR": {
         "REQUIRED": null,

@@ -16,14 +16,23 @@
 
 package org.tctalent.server.service.db.impl;
 
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateExam;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateExamRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
+import org.tctalent.server.request.candidate.exam.UpdateCandidateExamRequest;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateExamService;
+import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.util.audit.AuditHelper;
 
 /**
  * Manage candidate exams
@@ -31,15 +40,25 @@ import org.tctalent.server.service.db.CandidateExamService;
  * @author John Cameron
  */
 @Service
+@Slf4j
 public class CandidateExamServiceImpl implements CandidateExamService {
     private final CandidateExamRepository candidateExamRepository;
     private final CandidateRepository candidateRepository;
-
+    private final AuthService authService;
+    private final EmailHelper emailHelper;
+    private final CandidateService candidateService;
     public CandidateExamServiceImpl(
         CandidateExamRepository candidateExamRepository,
-        CandidateRepository candidateRepository) {
+        CandidateRepository candidateRepository,
+        AuthService authService,
+        EmailHelper emailHelper,
+        CandidateService candidateService
+        ) {
         this.candidateExamRepository = candidateExamRepository;
         this.candidateRepository = candidateRepository;
+        this.authService = authService;
+        this.emailHelper = emailHelper;
+        this.candidateService = candidateService;
     }
 
     @Override
@@ -52,7 +71,39 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
         CandidateExam ce = new CandidateExam();
         ce.setCandidate(candidate);
+        ce.setExam(request.getExam());
+        ce.setOtherExam(request.getOtherExam());
+        ce.setScore(request.getScore());
+        ce.setYear(request.getYear());
+        ce.setNotes(request.getNotes());
 
         return candidateExamRepository.save(ce);
     }
+
+    @Override
+    public CandidateExam updateCandidateExam(UpdateCandidateExamRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        CandidateExam candidateExam = this.candidateExamRepository.findByIdLoadCandidate(request.getId())
+            .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, request.getId()));
+
+        // Update exam object to insert into the database
+        candidateExam.setExam(request.getExam());
+        candidateExam.setOtherExam(request.getOtherExam());
+        candidateExam.setScore(request.getScore());
+        candidateExam.setYear(request.getYear());
+        candidateExam.setNotes(request.getNotes());
+
+        Candidate candidate = candidateExam.getCandidate();
+
+        // Save the candidate exam
+        candidateExam = candidateExamRepository.save(candidateExam);
+
+        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
+        candidateService.save(candidate, true);
+
+        return candidateExam;
+    }
+
 }
