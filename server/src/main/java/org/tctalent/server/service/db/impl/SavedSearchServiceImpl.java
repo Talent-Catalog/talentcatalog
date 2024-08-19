@@ -300,7 +300,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
 
-        final List<CandidateSummary> candidateSummaries = doSearchCandidates2(searchRequest);
+        final List<CandidateSummary> candidateSummaries = doSearchCandidateSummaries(searchRequest);
         //TODO JC 
         return null;
     }
@@ -1783,7 +1783,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             .collect(Collectors.toList()) : null;
     }
 
-    private List<CandidateSummary> doSearchCandidates2(SearchCandidateRequest searchRequest) {
+    private List<CandidateSummary> doSearchCandidateSummaries(SearchCandidateRequest searchRequest) {
 
         String sql = searchRequest.extractSQL(true);
         String constraint = "candidate.id in (" + sql + ")";
