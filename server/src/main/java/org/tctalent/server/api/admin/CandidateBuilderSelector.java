@@ -193,10 +193,8 @@ public class CandidateBuilderSelector {
             .add("nationality", countryDto())
             .add("user", userDto(userPropertyFilter))
             .add("candidateReviewStatusItems", reviewDto())
-            .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter))
-            .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
+            .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter, type))
             .add("miniIntakeCompletedDate")
-            .add("fullIntakeCompletedBy", userDto(userPropertyFilter))
             .add("fullIntakeCompletedDate")
             ;
 
@@ -206,10 +204,12 @@ public class CandidateBuilderSelector {
                     .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                     .add("candidateExams", examsDto())
                     .add("candidateProperties", candidatePropertyDto())
-                    .add("shareableCv", candidateAttachmentDto(userPropertyFilter))
-                    .add("shareableDoc", candidateAttachmentDto(userPropertyFilter))
-                    .add("listShareableCv", candidateAttachmentDto(userPropertyFilter))
-                    .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter))
+                    .add("shareableCv", candidateAttachmentDto(userPropertyFilter, type))
+                    .add("shareableDoc", candidateAttachmentDto(userPropertyFilter, type))
+                    .add("listShareableCv", candidateAttachmentDto(userPropertyFilter, type))
+                    .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter, type))
+                    .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
+                    .add("fullIntakeCompletedBy", userDto(userPropertyFilter))
                     .add("contextNote")
                     .add("shareableNotes")
                     .add("additionalInfo")
@@ -359,8 +359,8 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder candidateAttachmentDto(DtoPropertyFilter userPropertyFilter) {
-        return new DtoBuilder()
+    private DtoBuilder candidateAttachmentDto(DtoPropertyFilter userPropertyFilter, DtoType type) {
+        DtoBuilder builder = new DtoBuilder()
             .add("id")
             .add("type")
             .add("name")
@@ -368,10 +368,17 @@ public class CandidateBuilderSelector {
             .add("fileType")
             .add("migrated")
             .add("cv")
-            .add("createdBy", userDto(userPropertyFilter))
             .add("createdDate")
             .add("uploadType")
             .add("url")
             ;
+
+        if (DtoType.PREVIEW.equals(type)) {
+            builder
+                .add("createdBy", userDto(userPropertyFilter))
+            ;
+        }
+
+        return builder;
     }
 }
