@@ -20,10 +20,6 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateExamService} from "../../../../services/candidate-exam.service";
 import {CreateCandidateExamComponent} from "./create/create-candidate-exam.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {CandidateCertification} from "../../../../model/candidate-certification";
-import {
-  EditCandidateCertificationComponent
-} from "../certification/edit/edit-candidate-certification.component";
 import {EditCandidateExamComponent} from "./edit/edit-candidate-exam.component";
 
 @Component({
@@ -61,7 +57,6 @@ export class ViewCandidateExamComponent implements OnInit {
     this.candidateExamService.list(this.candidate.id).subscribe(
       candidateExams => {
         this.candidateExams = candidateExams;
-        console.log(candidateExams)
         this.loading = false;
       },
       error => {
