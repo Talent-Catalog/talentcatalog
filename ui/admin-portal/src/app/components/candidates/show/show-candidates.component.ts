@@ -219,7 +219,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
@@ -827,7 +827,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isContentModifiable(): boolean {
-    return !isSavedSearch(this.candidateSource);
+    let modifiable = false;
+    if (!isSavedSearch(this.candidateSource)) {
+      if (this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
+        modifiable = true
+      } else {
+        modifiable = !this.authorizationService.isReadOnly();
+      }
+    }
+    return modifiable;
   }
 
   isReviewable(): boolean {
@@ -836,11 +844,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isSalesforceUpdatable(): boolean {
-    return !isSavedSearch(this.candidateSource) && this.authService.canUpdateSalesforce();
+    return !isSavedSearch(this.candidateSource) && this.authorizationService.canUpdateSalesforce();
   }
 
   canResolveTasks(): boolean {
-    return isSavedList(this.candidateSource) && this.authService.canManageCandidateTasks();
+    return isSavedList(this.candidateSource) && this.authorizationService.canManageCandidateTasks();
   }
 
   isSavedList(): boolean {
@@ -875,11 +883,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isImportable(): boolean {
-    return isSavedList(this.candidateSource);
+    return !this.authorizationService.isReadOnly() && isSavedList(this.candidateSource);
   }
 
   isPublishable(): boolean {
-    return isSavedList(this.candidateSource) && this.authService.canPublishList();
+    return isSavedList(this.candidateSource) && this.authorizationService.canPublishList();
   }
 
   isStarred(): boolean {
@@ -1079,6 +1087,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
+    modal.componentInstance.myListsOnly = this.authorizationService.isReadOnly();
     if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
     }
@@ -1821,7 +1830,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canAssignTasks() {
-    return this.authService.canAssignTask();
+    return this.authorizationService.canAssignTask();
   }
 
 
@@ -1852,7 +1861,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   closeSelectedOpportunities() {

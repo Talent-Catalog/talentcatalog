@@ -20,6 +20,7 @@ import {Candidate, ShortCandidate} from "../model/candidate";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
 import {AuthenticationService} from "./authentication.service";
+import {CandidateSource} from "../model/base";
 
 @Injectable({
   providedIn: 'root'
@@ -124,6 +125,18 @@ export class AuthorizationService {
     return ours;
   }
 
+  isCandidateSourceMine(candidateSource: CandidateSource): boolean {
+    let mine = false;
+    if (candidateSource) {
+      const loggedInUser = this.authenticationService.getLoggedInUser()
+      //Must be logged in
+      if (loggedInUser) {
+        mine = candidateSource.createdBy?.id === loggedInUser.id;
+      }
+    }
+    return mine;
+  }
+
   /**
    * True if the logged-in user works for the default job creator, or works for the partner who created
    * the given job.
@@ -196,14 +209,14 @@ export class AuthorizationService {
    * True if the currently logged in user is permitted to manage candidate tasks.
    */
   canManageCandidateTasks(): boolean {
-    return this.commonSeniorPartnerAuth();
+    return !this.isReadOnly() && this.commonSeniorPartnerAuth();
   }
 
   /**
    * True if the currently logged in user is permitted to publish lists.
    */
   canPublishList(): boolean {
-    return this.commonSeniorPartnerAuth();
+    return !this.isReadOnly() && this.commonSeniorPartnerAuth();
   }
 
   /**
@@ -217,7 +230,7 @@ export class AuthorizationService {
    * True if the currently logged in user is permitted to update salesforce.
    */
   canUpdateSalesforce(): boolean {
-    return this.commonSeniorPartnerAuth();
+    return !this.isReadOnly() && this.commonSeniorPartnerAuth();
   }
 
   isAnAdmin(): boolean {
@@ -355,7 +368,7 @@ export class AuthorizationService {
     let result: boolean = false;
 
     //Can only change stage of jobs that have been published
-    if (job.publishedDate != null) {
+    if (!this.isReadOnly() && job.publishedDate != null) {
       result = this.isPartnerAdminOrGreater();
     }
     return result
@@ -366,7 +379,7 @@ export class AuthorizationService {
    * @param opp Candidate opportunity
    */
   canEditCandidateOpp(opp: CandidateOpportunity) {
-    return this.isPartnerAdminOrGreater() &&
+    return !this.isReadOnly() && this.isPartnerAdminOrGreater() &&
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
 }
