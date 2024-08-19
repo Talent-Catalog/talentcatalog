@@ -18,7 +18,6 @@ package org.tctalent.server.repository.db;
 
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,7 +25,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.SavedSearch;
 
-public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>, JpaSpecificationExecutor<SavedSearch> {
+public interface SavedSearchRepository extends CacheEvictingRepository<SavedSearch, Long>, JpaSpecificationExecutor<SavedSearch> {
 
     /**
      * Deletes all {@link SavedSearch} entries associated with the specified job ID.
@@ -37,6 +36,7 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
     @Modifying
     @Query("DELETE FROM SavedSearch s WHERE s.sfJobOpp.id = :jobId")
     void deleteByJobId(@Param("jobId") Long jobId);
+
     @Query(" select distinct s from SavedSearch s "
             + " where lower(s.name) = lower(:name)"
             + " and s.createdBy.id = :userId"

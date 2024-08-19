@@ -19,7 +19,6 @@ import {MockJob} from "./MockJob";
 
 export const MockCandidateVisaJobCheck: CandidateVisaJobCheck = {
   id: 1,
-  name: 'Mock Job',
   jobOpp: MockJob,
   occupation: {
     id: 1,
