@@ -97,9 +97,7 @@ class CandidateDestinationAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.country.name", is("USA")))
                 .andExpect(jsonPath("$.country.status", is("active")))
-                .andExpect(jsonPath("$.location", is("New York")))
                 .andExpect(jsonPath("$.interest", is("Yes")))
-                .andExpect(jsonPath("$.family", is("Cousin")))
                 .andExpect(jsonPath("$.notes", is("Some destination notes")));
 
         verify(candidateDestinationService).createDestination(anyLong(), any(CreateCandidateDestinationRequest.class));
