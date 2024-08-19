@@ -169,7 +169,7 @@ public class CandidateBuilderSelector {
             .add("folderlink")
             .add("sflink")
             .add("videolink")
-            .add("surveyComment") // remove?
+            .add("surveyComment")
             .add("selected")
             .add("createdDate")
             .add("updatedDate")
@@ -182,13 +182,13 @@ public class CandidateBuilderSelector {
             .add("numberDependants")
             .add("regoPartnerParam")
             .add("regoReferrerParam")
-            .add("regoUtmCampaign") // remove?
-            .add("regoUtmContent") // remove?
-            .add("regoUtmMedium") // remove?
-            .add("regoUtmSource") // remove?
-            .add("regoUtmTerm") // remove?
+            .add("regoUtmCampaign")
+            .add("regoUtmContent")
+            .add("regoUtmMedium")
+            .add("regoUtmSource")
+            .add("regoUtmTerm")
             .add("maxEducationLevel", educationLevelDto())
-            .add("surveyType", surveyTypeDto()) // remove?
+            .add("surveyType", surveyTypeDto())
             .add("country", countryDto())
             .add("nationality", countryDto())
             .add("user", userDto(userPropertyFilter))
