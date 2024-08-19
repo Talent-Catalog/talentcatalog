@@ -62,18 +62,18 @@ export class EditCandidateExamComponent implements OnInit {
       year: this.candidateForm.value.year,
       notes: this.candidateForm.value.notes,
     };
-    // this.candidateExamService.update(request).subscribe(
-    //   (candidateExam) => {
-    //     this.closeModal(candidateExam);
-    //     this.saving = false;
-    //   },
-    //   (error) => {
-    //     this.error = error;
-    //     this.saving = false;
-    //   });
+    this.candidateExamService.update(this.candidateExam.id,request).subscribe(
+      (candidateExam) => {
+        this.closeModal(candidateExam);
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 
-  closeModal(candidateExam: CandidateCertification) {
+  closeModal(candidateExam: CandidateExam) {
     this.activeModal.close(candidateExam);
   }
 
