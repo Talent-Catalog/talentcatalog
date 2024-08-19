@@ -17,11 +17,13 @@
 package org.tctalent.server.service.db.impl;
 
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateExamRepository;
@@ -104,6 +106,11 @@ public class CandidateExamServiceImpl implements CandidateExamService {
         candidateService.save(candidate, true);
 
         return candidateExam;
+    }
+
+    @Override
+    public List<CandidateExam> list(long id) {
+        return candidateExamRepository.findByCandidateId(id);
     }
 
 }
