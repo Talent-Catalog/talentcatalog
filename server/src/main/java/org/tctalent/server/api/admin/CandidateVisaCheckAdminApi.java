@@ -137,6 +137,8 @@ public class CandidateVisaCheckAdminApi
                 .add("validTravelDocsNotes")
                 .add("pathwayAssessment")
                 .add("pathwayAssessmentNotes")
+                .add("destinationFamily")
+                .add("destinationFamilyLocation")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

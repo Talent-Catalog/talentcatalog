@@ -382,8 +382,6 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("country", countryDto())
                 .add("interest")
-                .add("family")
-                .add("location")
                 .add("notes")
                 ;
     }

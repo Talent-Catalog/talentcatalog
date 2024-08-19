@@ -97,8 +97,6 @@ public class CandidateDestinationAdminApi implements IJoinedTableApi<CreateCandi
                 .add("id")
                 .add("country", countryDto())
                 .add("interest")
-                .add("family")
-                .add("location")
                 .add("notes")
                 ;
     }

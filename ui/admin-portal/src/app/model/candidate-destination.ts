@@ -15,28 +15,13 @@
  */
 
 import {Country} from './country';
-import {Candidate, CandidateIntakeData, FamilyRelations, YesNoUnsure} from './candidate';
+import {Candidate, YesNoUnsure} from './candidate';
 
 export interface CandidateDestination {
   id?: number;
   country?: Country;
   candidate?: Candidate;
   interest?: YesNoUnsure;
-  family?: FamilyRelations;
-  location?: string;
   notes?: string;
 }
 
-export function describeFamilyInDestination(countryId: number, candidateIntakeData: CandidateIntakeData): string {
-  let dest = candidateIntakeData?.candidateDestinations.find(d => d.country.id == countryId)
-  let family: string = 'No family entered'
-  if (dest?.family) {
-    if (dest?.location) {
-      family = dest?.family + ' in ' + dest?.location;
-    } else {
-      family = dest?.family;
-    }
-    return family;
-  }
-  return family;
-}
