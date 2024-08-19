@@ -50,7 +50,7 @@
 
         <div class="col-6">
           <div class="btn-group float-end" *ngIf="editable">
-            <button type="button" class="btn btn-default" ><i
+            <button type="button" class="btn btn-default" (click)="editCandidateExam(candidateExam)"><i
               class="fas fa-edit"></i></button>
             <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateExam(candidateExam)">
               <i class="fas fa-trash"></i>
