@@ -26,6 +26,7 @@ public interface CandidateDestinationRepository
         extends JpaRepository<CandidateDestination, Long> {
     @Query(" select cd from CandidateDestination cd "
             + " left join cd.candidate c "
-            + " where c.id = :candidateId")
+            + " where c.id = :candidateId"
+            + " order by cd.country.name asc")
     List<CandidateDestination> findByCandidateId(@Param("candidateId") Long candidateId);
 }
