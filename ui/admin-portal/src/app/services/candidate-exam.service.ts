@@ -55,4 +55,8 @@ export class CandidateExamService {
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
+
+  update(examId: number, request: UpdateCandidateExamRequest): Observable<CandidateExam>  {
+    return this.http.put<CandidateExam>(`${this.apiUrl}/${examId}`, request);
+  }
 }
