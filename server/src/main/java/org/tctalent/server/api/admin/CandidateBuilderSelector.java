@@ -140,6 +140,7 @@ public class CandidateBuilderSelector {
      * every candidate is a user).
      * @param candidatePropertyFilter Filter for candidate properties
      * @param userPropertyFilter Filter for candidate's user properties
+     * @param type Type of DTO to build
      * @return DtoBuilder
      */
     private DtoBuilder candidateDto(
@@ -154,8 +155,6 @@ public class CandidateBuilderSelector {
             .add("whatsapp")
             .add("city")
             .add("state")
-            .add("address1")
-            .add("yearOfArrival")
             .add("externalId")
             .add("externalIdSource")
             .add("partnerRef")
@@ -165,18 +164,15 @@ public class CandidateBuilderSelector {
             .add("unhcrConsent")
             .add("unrwaRegistered")
             .add("unrwaNumber")
-            .add("additionalInfo")
             .add("mediaWillingness")
             .add("linkedInLink")
-            .add("candidateMessage")
             .add("folderlink")
             .add("sflink")
             .add("videolink")
-            .add("surveyComment")
+            .add("surveyComment") // remove?
             .add("selected")
             .add("createdDate")
             .add("updatedDate")
-            .add("contextNote")
             .add("maritalStatus")
             .add("drivingLicense")
             .add("englishAssessmentScoreIelts")
@@ -186,23 +182,18 @@ public class CandidateBuilderSelector {
             .add("numberDependants")
             .add("regoPartnerParam")
             .add("regoReferrerParam")
-            .add("regoUtmCampaign")
-            .add("regoUtmContent")
-            .add("regoUtmMedium")
-            .add("regoUtmSource")
-            .add("regoUtmTerm")
+            .add("regoUtmCampaign") // remove?
+            .add("regoUtmContent") // remove?
+            .add("regoUtmMedium") // remove?
+            .add("regoUtmSource") // remove?
+            .add("regoUtmTerm") // remove?
             .add("maxEducationLevel", educationLevelDto())
-            .add("surveyType", surveyTypeDto())
+            .add("surveyType", surveyTypeDto()) // remove?
             .add("country", countryDto())
             .add("nationality", countryDto())
             .add("user", userDto(userPropertyFilter))
             .add("candidateReviewStatusItems", reviewDto())
             .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter))
-            .add("shareableCv", candidateAttachmentDto(userPropertyFilter))
-            .add("shareableDoc", candidateAttachmentDto(userPropertyFilter))
-            .add("listShareableCv", candidateAttachmentDto(userPropertyFilter))
-            .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter))
-            .add("shareableNotes")
             .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
             .add("miniIntakeCompletedDate")
             .add("fullIntakeCompletedBy", userDto(userPropertyFilter))
@@ -215,7 +206,15 @@ public class CandidateBuilderSelector {
                     .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                     .add("candidateExams", examsDto())
                     .add("candidateProperties", candidatePropertyDto())
-                    ;
+                    .add("shareableCv", candidateAttachmentDto(userPropertyFilter))
+                    .add("shareableDoc", candidateAttachmentDto(userPropertyFilter))
+                    .add("listShareableCv", candidateAttachmentDto(userPropertyFilter))
+                    .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter))
+                    .add("contextNote")
+                    .add("shareableNotes")
+                    .add("additionalInfo")
+                    .add("candidateMessage")
+                ;
             }
 
             return builder;
