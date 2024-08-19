@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,6 +59,17 @@ public class CandidateExamAdminApi implements IJoinedTableApi<CreateCandidateExa
     }
 
     /**
+     * Get all records joined to the given parent
+     * @param parentId ID of parent record
+     * @return All records associated with the given parent
+     */
+    @Override
+    public List<Map<String, Object>> list(long parentId) {
+        List<CandidateExam> candidateExams = candidateExamService.list(parentId);
+        return candidateExamDto().buildList(candidateExams);
+    }
+
+    /**
      * Delete the candidate exam with the given id.
      * @param id ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
@@ -75,6 +87,7 @@ public class CandidateExamAdminApi implements IJoinedTableApi<CreateCandidateExa
                 .add("id")
                 .add("exam")
                 .add("otherExam")
+                .add("year")
                 .add("score")
                 .add("notes")
                 ;
