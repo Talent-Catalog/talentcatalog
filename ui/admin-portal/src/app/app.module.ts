@@ -1173,7 +1173,8 @@ import {EditCandidateExamComponent} from './components/candidates/view/exam/edit
   ],
   exports: [
     ViewChatPostsComponent,
-    ChatReadStatusComponent
+    ChatReadStatusComponent,
+    CandidateExamCardComponent
   ],
   bootstrap: [AppComponent]
 })
