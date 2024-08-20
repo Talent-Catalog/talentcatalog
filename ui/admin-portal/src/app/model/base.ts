@@ -320,3 +320,7 @@ export enum Status {
   inactive = "inactive",
   deleted = "deleted"
 }
+
+export interface FetchCandidatesWithChatRequest extends PagedFilteredSearchRequest {
+  unreadOnly: boolean;
+}

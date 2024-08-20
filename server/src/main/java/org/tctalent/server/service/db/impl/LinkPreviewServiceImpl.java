@@ -52,8 +52,11 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (EntityReferencedException | InvalidRequestException e) {
       LogBuilder.builder(log)
           .action("DeleteLinkPreview")
-          .message("Link preview with ID " + linkPreviewId + " could not be deleted.")
-          .logError(e);
+          .message(
+              "Link preview with ID " + linkPreviewId + " could not be deleted. Details: " +
+              e.getMessage()
+          )
+          .logError();
 
       return false;
     }
@@ -92,8 +95,8 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (IOException e) {
       LogBuilder.builder(log)
           .action("BuildLinkPreview")
-          .message("Jsoup was unable to retrieve a valied HTML document from this URL.")
-          .logError(e);
+          .message("Jsoup was unable to retrieve a valied HTML document from " + url)
+          .logError();
 
       return null;
     }
@@ -197,8 +200,8 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (IllegalArgumentException | MalformedURLException e) {
       LogBuilder.builder(log)
           .action("ConvertUrlToDomain")
-          .message("String provided doesn't match URI or URL scheme.")
-          .logError(e);
+          .message(url + " doesn't match URI or URL scheme")
+          .logError();
 
       return "";
     }
@@ -309,8 +312,8 @@ public class LinkPreviewServiceImpl implements LinkPreviewService {
     } catch (IOException e) {
       LogBuilder.builder(log)
           .action("CheckImageIsAccessible")
-          .message("URL doesn't point to an accessible image")
-          .logError(e);
+          .message(imageUrl + " doesn't point to an accessible image")
+          .logError();
 
       // Return false if there was an exception or non-200 status
       return false;

@@ -70,6 +70,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
@@ -559,5 +560,21 @@ public interface CandidateService {
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
 
+    /**
+     * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in
+     * user's partner organisation, if they contain posts unread by same user.
+     * @return list of IDs of Job Chats matching the criteria
+     */
+    List<Long> findUnreadChatsInCandidates();
+
+    /**
+     * If unreadOnly boolean contained in request is true, returns paged search results of
+     * candidates managed by the logged-in user's partner organisation, if they have a Job Chat of
+     * type 'CandidateProspect' containing at least one post that is unread by the logged-in user.
+     * If unreadOnly is false, the candidates' chat only has to contain one post, read or unread.
+     * @param request {@link FetchCandidatesWithChatRequest}
+     * @return paged search results of candidates matching the criteria
+     */
+    Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
 
 }
