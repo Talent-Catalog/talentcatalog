@@ -798,6 +798,15 @@ import {
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
 import { CandidatesWithChatComponent } from './components/chat/candidates-with-chat/candidates-with-chat.component';
 import { ShowCandidatesWithChatComponent } from './components/chat/show-candidates-with-chat/show-candidates-with-chat.component';
+import {
+  ViewCandidateExamComponent
+} from "./components/candidates/view/exam/view-candidate-exam.component";
+import {
+  CreateCandidateExamComponent
+} from "./components/candidates/view/exam/create/create-candidate-exam.component";
+import {
+  EditCandidateExamComponent
+} from "./components/candidates/view/exam/edit/edit-candidate-exam.component";
 
 @NgModule({
   declarations: [
@@ -1124,7 +1133,10 @@ import { ShowCandidatesWithChatComponent } from './components/chat/show-candidat
     PreviewLinkComponent,
     VisaJobCheckUkComponent,
     CandidatesWithChatComponent,
-    ShowCandidatesWithChatComponent
+    ShowCandidatesWithChatComponent,
+    ViewCandidateExamComponent,
+    CreateCandidateExamComponent,
+    EditCandidateExamComponent
   ],
   imports: [
     BrowserModule,
