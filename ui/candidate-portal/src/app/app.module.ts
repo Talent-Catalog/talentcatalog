@@ -280,7 +280,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     FileSelectorComponent,
     PreviewLinkComponent,
     LinkTooltipComponent,
-    BuildLinkComponent
+    BuildLinkComponent,
     CandidateExamFormComponent,
     CandidateExamCardComponent,
     RegistrationCandidateExamComponent,
