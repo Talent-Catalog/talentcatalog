@@ -145,7 +145,7 @@ public class CandidateBuilderSelector {
      */
     private DtoBuilder candidateDto(
         DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter, DtoType type) {
-        DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
+        final DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
             .add("status")
             .add("candidateNumber")
@@ -194,6 +194,8 @@ public class CandidateBuilderSelector {
             .add("user", userDto(userPropertyFilter))
             .add("candidateReviewStatusItems", reviewDto())
             .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter, type))
+            .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto(type))
+            .add("candidateExams", examsDto())
             .add("miniIntakeCompletedDate")
             .add("fullIntakeCompletedDate")
             ;
@@ -201,8 +203,6 @@ public class CandidateBuilderSelector {
             if (!DtoType.PREVIEW.equals(type)) {
                 builder
                     .add("candidateOpportunities", candidateOpportunityDto())
-                    .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
-                    .add("candidateExams", examsDto())
                     .add("candidateProperties", candidatePropertyDto())
                     .add("shareableCv", candidateAttachmentDto(userPropertyFilter, type))
                     .add("shareableDoc", candidateAttachmentDto(userPropertyFilter, type))
@@ -360,7 +360,7 @@ public class CandidateBuilderSelector {
     }
 
     private DtoBuilder candidateAttachmentDto(DtoPropertyFilter userPropertyFilter, DtoType type) {
-        DtoBuilder builder = new DtoBuilder()
+        final DtoBuilder builder = new DtoBuilder()
             .add("id")
             .add("type")
             .add("name")
