@@ -1171,7 +1171,8 @@ import { LinkTooltipComponent } from './util/link-tooltip/link-tooltip.component
   ],
   exports: [
     ViewChatPostsComponent,
-    ChatReadStatusComponent
+    ChatReadStatusComponent,
+    CandidateExamCardComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -204,6 +204,10 @@ import {PickerModule} from "@ctrl/ngx-emoji-mart";
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
 import { BuildLinkComponent } from './util/build-link/build-link.component';
 import { LinkTooltipComponent } from './util/link-tooltip/link-tooltip.component';
+import {CandidateExamFormComponent} from "./components/common/candidate-exam-form/candidate-exam-form.component";
+import {CandidateExamCardComponent} from "./components/common/candidate-exam-card/candidate-exam-card.component";
+import {RegistrationCandidateExamComponent} from "./components/register/candidate-exam/registration-candidate-exam.component";
+import {DeleteExamComponent} from "./components/register/candidate-exam/delete/delete-exam.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -277,6 +281,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     PreviewLinkComponent,
     LinkTooltipComponent,
     BuildLinkComponent
+    CandidateExamFormComponent,
+    CandidateExamCardComponent,
+    RegistrationCandidateExamComponent,
+    DeleteExamComponent
   ],
   imports: [
     BrowserModule,
