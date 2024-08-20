@@ -1125,7 +1125,7 @@ import { ShowCandidatesWithChatComponent } from './components/chat/show-candidat
     VisaJobCheckUkComponent,
     PreviewLinkComponent,
     BuildLinkComponent,
-    LinkTooltipComponent
+    LinkTooltipComponent,
     VisaJobCheckUkComponent,
     CandidatesWithChatComponent,
     ShowCandidatesWithChatComponent
