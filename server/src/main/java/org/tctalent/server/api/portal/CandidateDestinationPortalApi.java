@@ -71,8 +71,6 @@ public class CandidateDestinationPortalApi implements IJoinedTableApi<CreateCand
                 .add("id")
                 .add("country", countryDto())
                 .add("interest")
-                .add("family")
-                .add("location")
                 .add("notes")
                 ;
     }
