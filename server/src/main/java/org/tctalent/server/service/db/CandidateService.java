@@ -577,4 +577,14 @@ public interface CandidateService {
      */
     Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
 
+    /**
+     * Reassigns all candidates on given saved list to partner organisation with given ID.
+     * Previously done by direct DB edit which necessitated additional manual steps of flushing the
+     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
+     * ES index update proceed as usual with this in-code implementation.
+     * @param savedList saved list containing all the candidates to be reassigned
+     * @param partnerId id of the partner org to which the candidates will be reassigned
+     */
+    void reassignSavedListCandidates(SavedList savedList, int partnerId);
+
 }

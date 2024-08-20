@@ -96,14 +96,11 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
-import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
-import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -130,12 +127,10 @@ public class SystemAdminApi {
     private final CountryService countryService;
     private final FileSystemService fileSystemService;
     private final JobService jobService;
-    private final JobChatService jobChatService;
     private final LanguageService languageService;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
     private final SalesforceConfig salesforceConfig;
-    private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListRepository savedListRepository;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SavedListService savedListService;
@@ -185,11 +180,11 @@ public class SystemAdminApi {
             CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
             CountryService countryService,
             FileSystemService fileSystemService,
-            JobService jobService, JobChatService jobChatService, LanguageService languageService,
+            JobService jobService, LanguageService languageService,
             PopulateElasticsearchService populateElasticsearchService,
             SalesforceService salesforceService,
-            SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
-            SavedListRepository savedListRepository, SavedSearchService savedSearchService,
+            SalesforceConfig salesforceConfig, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
+            SavedListRepository savedListRepository,
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService) {
@@ -204,12 +199,10 @@ public class SystemAdminApi {
         this.countryService = countryService;
         this.fileSystemService = fileSystemService;
         this.jobService = jobService;
-        this.jobChatService = jobChatService;
         this.languageService = languageService;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.salesforceConfig = salesforceConfig;
-        this.salesforceJobOppService = salesforceJobOppService;
         this.savedListRepository = savedListRepository;
         this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.savedListService = savedListService;
@@ -2805,4 +2798,26 @@ public class SystemAdminApi {
         savedListRepository.deleteAll(savedLists);
         savedSearchRepository.deleteByJobId(jobId);
     }
+
+    /**
+     * Reassigns all candidates on saved list with given ID to partner organisation with given ID.
+     * Previously done by direct DB edit but this necessitated additional steps of flushing the
+     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
+     * ES index update proceed as usual with this in-code implementation.
+     * <p>Here's an example of how to call this method from the Settings > System Admin API input:
+     * <br><code>reassign-candidates/list-393-to-partner-16</code></p>
+     * @param listId id of saved list containing all the candidates to be reassigned
+     * @param partnerId id of the partner org to which the candidates will be reassigned
+     */
+    @GetMapping("reassign-candidates/list-{listId}-to-partner-{partnerId}")
+    public void reassignCandidates(
+        @PathVariable("listId") int listId,
+        @PathVariable("partnerId") int partnerId
+    ) {
+        // SavedListService can't be injected into CandidateService due to circular dependency, so
+        // we're obtaining the Saved List from the given ID here.
+        SavedList savedList = savedListService.get(listId);
+        candidateService.reassignSavedListCandidates(savedList, partnerId);
+    }
+
 }
