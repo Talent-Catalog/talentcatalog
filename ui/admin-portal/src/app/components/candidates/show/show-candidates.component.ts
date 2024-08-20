@@ -59,7 +59,6 @@ import {
 } from '../../../model/saved-search';
 import {
   CandidateSource,
-  canEditSource,
   defaultReviewStatusFilter,
   indexOfHasId,
   isMine,
@@ -903,7 +902,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isEditable(): boolean {
-    return canEditSource(this.candidateSource, this.authenticationService);
+    return this.authorizationService.canEditCandidateSource(this.candidateSource);
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
@@ -1088,6 +1087,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
     modal.componentInstance.myListsOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.canChangeStatuses = !this.authorizationService.isReadOnly();
     if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
     }

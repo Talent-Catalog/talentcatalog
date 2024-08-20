@@ -34,7 +34,7 @@ import {
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {User} from '../../../model/user';
-import {CandidateSource, canEditSource, isMine, isStarredByMe} from '../../../model/base';
+import {CandidateSource, isMine, isStarredByMe} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
@@ -102,7 +102,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     private location: Location,
     private modalService: NgbModal,
     private router: Router,
-    private authService: AuthorizationService,
+    private authorizationService: AuthorizationService,
     private authenticationService: AuthenticationService
   ) {
   }
@@ -207,7 +207,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isEditable() {
-    return canEditSource(this.candidateSource, this.authenticationService);
+    return this.authorizationService.canEditCandidateSource(this.candidateSource);
   }
 
   isRemovable() {
@@ -296,7 +296,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
 }

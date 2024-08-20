@@ -382,4 +382,23 @@ export class AuthorizationService {
     return !this.isReadOnly() && this.isPartnerAdminOrGreater() &&
       (this.isCandidateOurs(opp.candidate) || this.isJobOurs(opp.jobOpp));
   }
+
+  /**
+   * True if the currently logged-in user can edit the given candidate source.
+   * @param candidateSource Candidate source - ie SavedList or SavedSearch
+   * @return true if can be edited, false if source is null
+   */
+  canEditCandidateSource(candidateSource: CandidateSource) {
+    let editable = false;
+    if (candidateSource) {
+      if (this.isCandidateSourceMine(candidateSource)) {
+        //If it is mine, I can edit it
+        editable = true;
+      } else {
+        //If it is not mine I can still edit it if is not fixed and I am not a read only user
+        editable = !candidateSource.fixed && !this.isReadOnly();
+      }
+    }
+    return editable
+  }
 }

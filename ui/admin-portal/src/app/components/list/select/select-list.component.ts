@@ -56,6 +56,7 @@ export class SelectListComponent implements OnInit {
   jobName: string;
   jobId: number;
   loading: boolean;
+  canChangeStatuses: boolean = true;
   myListsOnly: boolean = false;
   saving: boolean;
   action: string = "Save";

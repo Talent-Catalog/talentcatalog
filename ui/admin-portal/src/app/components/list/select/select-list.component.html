@@ -68,7 +68,7 @@
       <input type="checkbox" [formControlName]="'replace'" id="replace">
     </div>
 
-    <div class="mb-3">
+    <div *ngIf="canChangeStatuses" class="mb-3">
       <label class="form-label" for="changeStatuses">Change status for all candidates in list?</label>
       <input type="checkbox" [formControlName]="'changeStatuses'" id="changeStatuses">
     </div>

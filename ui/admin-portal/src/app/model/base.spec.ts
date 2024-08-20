@@ -15,14 +15,15 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {User, Role} from './user';
+import {User} from './user';
 import {AuthenticationService} from '../services/authentication.service';
 import {
-  CandidateSource, canEditSource,
+  CandidateSource,
   EMAIL_REGEX,
   findHasId,
   indexOfHasId,
-  isMine, isStarredByMe,
+  isMine,
+  isStarredByMe,
   salesforceUrlRegExp
 } from "./base";
 import {MockUser} from "../MockData/MockUser";
@@ -85,19 +86,6 @@ fdescribe('Miscellaneous Tests', () => {
     expect(isStarredByMe(users, authenticationService)).toBeTrue();
     authenticationService.getLoggedInUser.and.returnValue({ ...mockUser, id: 2 });
     expect(isStarredByMe(users, authenticationService)).toBeFalse();
-  });
-
-  it('should determine if source can be edited', () => {
-    const source: CandidateSource = { fixed: false } as CandidateSource;
-    authenticationService.getLoggedInUser.and.returnValue(mockUser);
-
-    expect(canEditSource(source, authenticationService)).toBeTrue();
-    source.fixed = true;
-    source.createdBy = mockUser;
-    expect(canEditSource(source, authenticationService)).toBeTrue();
-
-    source.createdBy = { ...mockUser, id: 2 };
-    expect(canEditSource(source, authenticationService)).toBeFalse();
   });
 
   it('should validate Salesforce URL regex', () => {
