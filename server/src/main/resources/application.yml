@@ -48,6 +48,8 @@ spring:
 
   cache:
     type: redis
+    redis:
+      time-to-live: 300000
 
   redis:
     host: ${REDIS_HOST:localhost}
