@@ -28,6 +28,13 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * At the end of a displayed sent post is a button allowing users to 'react' to its content by
+ * selecting an emoji which is then appended to the post with their name attributed. Each user
+ * selection is a unique reaction, but reactions using the same emoji are collated into one emoji
+ * badge display, with a hover-over list of associated users and a count thereof. Works in much the
+ * same way as Slack, Facebook et al. at time of writing (Aug '24).
+ */
 @Getter
 @Setter
 @Entity
@@ -53,5 +60,8 @@ public class Reaction extends AbstractDomainObject<Long> {
     @JoinColumn(name = "chat_post_id")
     private ChatPost chatPost;
 
+    /**
+     * The user-selected emoji
+     */
     private String emoji;
 }
