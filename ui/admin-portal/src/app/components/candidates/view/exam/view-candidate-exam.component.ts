@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Candidate, CandidateExam} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateExamService} from "../../../../services/candidate-exam.service";
@@ -27,7 +27,7 @@ import {EditCandidateExamComponent} from "./edit/edit-candidate-exam.component";
   templateUrl: './view-candidate-exam.component.html',
   styleUrls: ['./view-candidate-exam.component.scss']
 })
-export class ViewCandidateExamComponent implements OnInit {
+export class ViewCandidateExamComponent implements OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -40,10 +40,6 @@ export class ViewCandidateExamComponent implements OnInit {
 
   constructor(private candidateExamService: CandidateExamService,
               private modalService: NgbModal) {
-  }
-
-  ngOnInit() {
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
