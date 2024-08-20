@@ -372,4 +372,7 @@ export interface EditorSelection {
    * URL if selection is a link
    */
   linkUrl?: string
+
+export interface FetchCandidatesWithChatRequest extends PagedFilteredSearchRequest {
+  unreadOnly: boolean;
 }

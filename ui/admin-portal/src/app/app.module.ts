@@ -798,6 +798,8 @@ import {
 import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
 import { BuildLinkComponent } from './util/build-link/build-link.component';
 import { LinkTooltipComponent } from './util/link-tooltip/link-tooltip.component';
+import { CandidatesWithChatComponent } from './components/chat/candidates-with-chat/candidates-with-chat.component';
+import { ShowCandidatesWithChatComponent } from './components/chat/show-candidates-with-chat/show-candidates-with-chat.component';
 
 @NgModule({
   declarations: [
@@ -1124,6 +1126,9 @@ import { LinkTooltipComponent } from './util/link-tooltip/link-tooltip.component
     PreviewLinkComponent,
     BuildLinkComponent,
     LinkTooltipComponent
+    VisaJobCheckUkComponent,
+    CandidatesWithChatComponent,
+    ShowCandidatesWithChatComponent
   ],
   imports: [
     BrowserModule,
