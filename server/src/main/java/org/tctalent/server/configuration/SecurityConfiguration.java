@@ -53,7 +53,7 @@ import org.tctalent.server.security.TcUserDetailsService;
 /**
  * Talent Catalog security configuration.
  * <p/>
- * See https://docs.spring.io/spring-security/site/docs/3.2.0.RC2/reference/htmlsingle/#jc
+ * See <a href="https://docs.spring.io/spring-security/site/docs/3.2.0.RC2/reference/htmlsingle/#jc">...</a>
  * also
  * https://www.marcobehler.com/guides/spring-security
  * <p/>
@@ -93,7 +93,7 @@ import org.tctalent.server.security.TcUserDetailsService;
  * </ul>
  */
 @Configuration
-@EnableWebSecurity(debug = false)
+@EnableWebSecurity()
 @EnableMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
@@ -321,12 +321,6 @@ public class SecurityConfiguration {
                 // PUT: UPDATE CONTEXT NOTES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
-                // PUT: ADD SHARED LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
-                // PUT: REMOVE SHARED LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
                 // PUT: COPY LIST
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/copy/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -345,6 +339,23 @@ public class SecurityConfiguration {
 
                 // PUT (EXC. READ ONLY)
                 .requestMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                /*
+                 * READONLY can star and share things
+                 */
+                .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/starred").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: SHARE LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UNSHARE LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: SHARE SEARCH
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UNSHARE SEARCH
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 /*
                  * JOB INTAKE ENDPOINTS
