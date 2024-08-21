@@ -32,7 +32,9 @@
           <ng-template ngbNavContent>
             <app-candidate-context-note
               [candidate]="candidate"
-              [candidateSource]="candidateSource">
+              [candidateSource]="candidateSource"
+              [editable]="editable"
+            >
             </app-candidate-context-note>
           </ng-template>
         </ng-container>
@@ -95,7 +97,9 @@
     <!-- AUTO UPDATING SHAREABLE NOTES -->
     <ng-container *ngIf="showNotes">
       <app-candidate-shareable-notes
-        [candidate]="candidate">
+        [candidate]="candidate"
+        [editable] = "editable"
+      >
       </app-candidate-shareable-notes>
     </ng-container>
 

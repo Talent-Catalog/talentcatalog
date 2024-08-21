@@ -45,6 +45,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   @Input() candidateSource: CandidateSource;
   @Input() sourceType: String;
   @Input() defaultSearch: boolean;
+  @Input() editable: boolean;
   @Input() savedSearchSelectionChange: boolean;
 
   @Output() closeEvent = new EventEmitter();
