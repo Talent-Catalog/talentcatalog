@@ -63,31 +63,30 @@ public class CandidateExamAdminApi implements IJoinedTableApi<SearchCandidateExa
     }
 
     /**
-     * Get all records joined to the given parent
-     * @param parentId ID of parent record
-     * @return All records associated with the given parent
+     * Retrieves all candidate exam records associated with the given candidate ID.
+     * @param parentId ID of the candidate whose exam records are to be listed.
+     * @return A list of candidate exam records associated with the specified candidate ID.
      */
     @Override
-    public List<Map<String, Object>> list(long parentId) {
+    public @NotNull List<Map<String, Object>> list(long parentId) {
         List<CandidateExam> candidateExams = candidateExamService.list(parentId);
         return candidateExamDto().buildList(candidateExams);
     }
 
     /**
-     * Update the record with the given id from the data in the given request.
-     * @param id ID of record to be updated
-     * @param request Request containing details from which the record is updated.
-     *                Details which are not specified in the request (ie are null)
-     *                cause no change to the record. Therefore, there is no way
-     *                to set a field of the record to null.
-     * @return Updated record
-     * @throws EntityExistsException if the updated record would clash with an
-     * existing record - eg with the same name.
-     * @throws InvalidRequestException if not authorized to update this record.
-     * @throws NoSuchObjectException if there is no such record with the given id
+     * Updates the candidate exam record with the specified ID using the data in the request.
+     * @param id ID of the candidate exam record to be updated.
+     * @param request Request containing the updated details for the candidate exam.
+     *                Fields that are not specified in the request (i.e., are null)
+     *                will not be changed. Therefore, fields cannot be set to null.
+     * @return The updated candidate exam record.
+     * @throws EntityExistsException if the updated exam record would clash with an
+     * existing record (e.g., with the same name).
+     * @throws InvalidRequestException if the request is not authorized to update this candidate exam record.
+     * @throws NoSuchObjectException if no candidate exam record exists with the specified ID.
      */
     @Override
-    public Map<String, Object> update(long id, UpdateCandidateExamRequest request)
+    public @NotNull Map<String, Object> update(long id, UpdateCandidateExamRequest request)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
 
         CandidateExam candidateExam = candidateExamService.updateCandidateExam(request);
