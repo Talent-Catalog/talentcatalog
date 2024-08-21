@@ -373,7 +373,7 @@ public class CandidateBuilderSelector {
             .add("url")
             ;
 
-        if (DtoType.PREVIEW.equals(type)) {
+        if (!DtoType.PREVIEW.equals(type)) {
             builder
                 .add("createdBy", userDto(userPropertyFilter))
             ;
