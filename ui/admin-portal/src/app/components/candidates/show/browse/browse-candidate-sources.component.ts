@@ -44,7 +44,7 @@ import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
 import {
   CandidateSource,
-  CandidateSourceType,
+  CandidateSourceType, DtoType,
   isMine,
   isStarredByMe,
   SearchBy
@@ -200,7 +200,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     //Default sort for them is alpha
     req.sortFields = ['name'];
     req.sortDirection = 'ASC';
-    req.minimalData = true;
+    req.dtoType = DtoType.MINIMAL;
 
     switch (this.searchBy) {
       case SearchBy.mine:

@@ -668,7 +668,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
     }
 
     private static List<DataRow> runQuery(Query query, int limit) {
-        final List resultList = query.getResultList();
+        final List<?> resultList = query.getResultList();
         List<DataRow> rows = toRows(resultList);
         if (limit > 0) {
             rows = limitRows(rows, limit);
@@ -727,9 +727,10 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         return s;
     }
 
-    private static List<DataRow> toRows(List<Object[]> objects) {
+    private static List<DataRow> toRows(List<?> objects) {
         List<DataRow> dataRows = new ArrayList<>(objects.size());
-        for (Object[] row: objects) {
+        for (Object obj: objects) {
+            Object[] row = (Object[]) obj;
             String label = row[0] == null ? "undefined" : row[0].toString();
             DataRow dataRow = new DataRow(label, (BigInteger)row[1]);
             dataRows.add(dataRow);
