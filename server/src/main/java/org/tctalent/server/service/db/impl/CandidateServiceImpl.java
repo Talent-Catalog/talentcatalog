@@ -3047,12 +3047,12 @@ public class CandidateServiceImpl implements CandidateService {
         int pagesProcessed = 0;
 
         while (pagesProcessed < totalPagesToProcess) {
+            request.setPageNumber(pagesProcessed);
+            candidatePage = getSavedListCandidates(savedList, request);
             List<Candidate> candidates = candidatePage.getContent();
             processCandidateReassignment(candidates, newPartner);
             entityManager.clear(); // Keeps candidates from piling up in persistence context
             pagesProcessed++;
-            request.setPageNumber(pagesProcessed);
-            candidatePage = getSavedListCandidates(savedList, request);
         }
     }
 
