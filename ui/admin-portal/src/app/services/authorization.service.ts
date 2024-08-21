@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Role} from "../model/user";
+import {Role, User} from "../model/user";
 import {Candidate, ShortCandidate} from "../model/candidate";
 import {Job, ShortJob} from "../model/job";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
@@ -152,6 +152,15 @@ export class AuthorizationService {
         }
       }
       return ours;
+  }
+
+  isStarredByMe(users: User[]) {
+    let starredByMe: boolean = false;
+    const me: User = this.authenticationService.getLoggedInUser();
+    if (users && me) {
+      starredByMe = users.find(u => u.id === me.id ) !== undefined;
+    }
+    return starredByMe;
   }
 
   /**

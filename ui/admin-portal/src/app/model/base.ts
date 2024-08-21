@@ -17,7 +17,6 @@
 import {Role, User} from './user';
 import {ExportColumn} from "./saved-list";
 import {OpportunityIds} from "./opportunity";
-import {AuthenticationService} from "../services/authentication.service";
 
 export interface HasName {
   name?: string;
@@ -279,24 +278,6 @@ export class LoginRequest {
 
 export const EMAIL_REGEX: string =
   '(?!.*[@.]{2})[a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~]+[a-zA-Z0-9.!#$%&\'*+-/=?^_`{|}~]*@(?!-)[a-zA-Z0-9-]+(?<!-)(\\.(?!-)[a-zA-Z0-9-]+(?<!-))*$';
-
-export function isMine(source: CandidateSource, authenticationService: AuthenticationService) {
-  let mine: boolean = false;
-  const me: User = authenticationService.getLoggedInUser();
-  if (source && source.createdBy && me) {
-    mine = source.createdBy.id === me.id;
-  }
-  return mine;
-}
-
-export function isStarredByMe(users: User[], authenticationService: AuthenticationService) {
-  let starredByMe: boolean = false;
-  const me: User = authenticationService.getLoggedInUser();
-  if (users && me) {
-    starredByMe = users.find(u => u.id === me.id ) !== undefined;
-  }
-  return starredByMe;
-}
 
 export enum Status {
   active = "active",

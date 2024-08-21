@@ -17,15 +17,7 @@
 import {TestBed} from '@angular/core/testing';
 import {User} from './user';
 import {AuthenticationService} from '../services/authentication.service';
-import {
-  CandidateSource,
-  EMAIL_REGEX,
-  findHasId,
-  indexOfHasId,
-  isMine,
-  isStarredByMe,
-  salesforceUrlRegExp
-} from "./base";
+import {EMAIL_REGEX, findHasId, indexOfHasId, salesforceUrlRegExp} from "./base";
 import {MockUser} from "../MockData/MockUser";
 
 
@@ -68,24 +60,6 @@ fdescribe('Miscellaneous Tests', () => {
     invalidEmails.forEach(email => {
       expect(new RegExp(EMAIL_REGEX).test(email)).toBeFalse();
     });
-  });
-
-  it('should determine if source is mine', () => {
-    const source: CandidateSource = { createdBy: mockUser } as CandidateSource;
-    authenticationService.getLoggedInUser.and.returnValue(mockUser);
-
-    expect(isMine(source, authenticationService)).toBeTrue();
-    authenticationService.getLoggedInUser.and.returnValue({ ...mockUser, id: 2 });
-    expect(isMine(source, authenticationService)).toBeFalse();
-  });
-
-  it('should determine if source is starred by me', () => {
-    const users: User[] = [mockUser];
-    authenticationService.getLoggedInUser.and.returnValue(mockUser);
-
-    expect(isStarredByMe(users, authenticationService)).toBeTrue();
-    authenticationService.getLoggedInUser.and.returnValue({ ...mockUser, id: 2 });
-    expect(isStarredByMe(users, authenticationService)).toBeFalse();
   });
 
   it('should validate Salesforce URL regex', () => {

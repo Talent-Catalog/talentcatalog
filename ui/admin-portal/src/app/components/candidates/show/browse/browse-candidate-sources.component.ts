@@ -42,13 +42,7 @@ import {Router} from '@angular/router';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
-import {
-  CandidateSource,
-  CandidateSourceType,
-  isMine,
-  isStarredByMe,
-  SearchBy
-} from '../../../../model/base';
+import {CandidateSource, CandidateSourceType, SearchBy} from '../../../../model/base';
 import {
   ContentUpdateType,
   CopySourceContentsRequest,
@@ -105,7 +99,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private modalService: NgbModal,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
@@ -373,7 +367,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   onDeleteSource(source: CandidateSource) {
     this.loading = true;
-    if (isMine(source, this.authenticationService)) {
+    if (this.authorizationService.isCandidateSourceMine(source)) {
       this.deleteOwnedSource(source)
       // If it's not mine I can't delete it.
     } else {
@@ -427,7 +421,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   onToggleStarred(source: CandidateSource) {
     this.loading = true;
     this.error = null
-    if (isStarredByMe(source?.users, this.authenticationService)) {
+    if (this.authorizationService.isStarredByMe(source?.users)) {
       this.candidateSourceService.unstarSourceForUser(
         source, {userId: this.loggedInUser.id}).subscribe(
         result => {

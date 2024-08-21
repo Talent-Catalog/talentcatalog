@@ -34,7 +34,7 @@ import {
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {User} from '../../../model/user';
-import {CandidateSource, isMine, isStarredByMe} from '../../../model/base';
+import {CandidateSource} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
@@ -181,7 +181,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.candidateSource?.users);
   }
 
   doToggleWatch() {
@@ -203,7 +203,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isShared() {
-    return !isMine(this.candidateSource, this.authenticationService);
+    return !this.authorizationService.isCandidateSourceMine(this.candidateSource);
   }
 
   isEditable() {

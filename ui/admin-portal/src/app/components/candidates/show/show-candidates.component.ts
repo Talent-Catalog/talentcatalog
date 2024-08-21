@@ -61,8 +61,6 @@ import {
   CandidateSource,
   defaultReviewStatusFilter,
   indexOfHasId,
-  isMine,
-  isStarredByMe,
   ReviewStatus,
   Status
 } from '../../../model/base';
@@ -870,7 +868,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Is shareable with me if it is not created by me.
     if (this.candidateSource) {
         //was it created by me?
-        if (!isMine(this.candidateSource, this.authenticationService)) {
+        if (!this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
           shareable = true;
         }
     }
@@ -890,7 +888,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.candidateSource?.users);
   }
 
   isJobList(): boolean {

@@ -271,4 +271,25 @@ fdescribe('AuthorizationService', () => {
     source.createdBy = { ...user, id: 2 };
     expect(service.canEditCandidateSource(source)).toBeFalse();
   });
+
+  it('should determine if source is mine', () => {
+    const user: User = { id: 1 } as User;
+    const source: CandidateSource = { createdBy: user } as CandidateSource;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+    expect(service.isCandidateSourceMine(source)).toBeTrue();
+
+    authenticationServiceSpy.getLoggedInUser.and.returnValue({ ...user, id: 2 });
+    expect(service.isCandidateSourceMine(source)).toBeFalse();
+  });
+
+  it('should determine if source is starred by me', () => {
+    const user: User = { id: 1 } as User;
+    const users: User[] = [user];
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+    expect(service.isStarredByMe(users)).toBeTrue();
+
+    authenticationServiceSpy.getLoggedInUser.and.returnValue({ ...user, id: 2 });
+    expect(service.isStarredByMe(users)).toBeFalse();
+  });
+
 });
