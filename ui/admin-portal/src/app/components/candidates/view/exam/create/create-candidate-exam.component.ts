@@ -55,8 +55,14 @@ export class CreateCandidateExamComponent implements OnInit {
       otherExam: ['', null],
       score: ['', [Validators.required]],
       year: ['', [Validators.required]],
-      notes: ['', [Validators.required]]
+      notes: ['']
     });
+
+    // Subscribe to changes in the 'exam' field to toggle validation on 'otherExam'
+    this.candidateForm.get('exam').valueChanges.subscribe((selectedExam) => {
+      this.toggleOtherExamValidation(selectedExam);
+    });
+
     this.loading = false;
   }
 
@@ -108,5 +114,17 @@ export class CreateCandidateExamComponent implements OnInit {
       }
     }
     return found;
+  }
+
+  toggleOtherExamValidation(selectedExam: string) {
+    const otherExamControl = this.candidateForm.get('otherExam');
+
+    if (selectedExam === 'Other') {
+      otherExamControl.setValidators([Validators.required]);
+    } else {
+      otherExamControl.clearValidators();
+    }
+
+    otherExamControl.updateValueAndValidity();
   }
 }
