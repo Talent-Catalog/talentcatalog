@@ -138,6 +138,20 @@ export class AuthorizationService {
   }
 
   /**
+   * True if the logged-in user created the job or who is the contact for the job.
+   * @param job
+   */
+  isJobMine(job: Job): boolean {
+      let ours = false;
+      const loggedInUser = this.authenticationService.getLoggedInUser()
+      //Must be logged in
+      if (loggedInUser) {
+        ours = job.createdBy?.id === loggedInUser.id || job.contactUser?.id === loggedInUser.id;
+      }
+      return ours;
+  }
+
+  /**
    * True if the logged-in user works for the default job creator, or works for the partner who created
    * the given job.
    * @param job

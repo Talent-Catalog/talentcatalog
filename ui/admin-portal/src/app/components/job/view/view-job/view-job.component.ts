@@ -125,8 +125,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     }
   }
 
-  get editable(): boolean {
-    return this.loggedInUser && !this.loggedInUser.readOnly
+  /**
+   * Job is editable only by the user who created it or the contact user.
+   * Also by a non read only user working for the default job creator.
+   */
+  isEditable(): boolean {
+    return this.authorizationService.isJobMine(this.job) ||
+      (this.authorizationService.isDefaultJobCreator() && !this.authorizationService.isReadOnly());
   }
 
   private fetchGroupChats() {
