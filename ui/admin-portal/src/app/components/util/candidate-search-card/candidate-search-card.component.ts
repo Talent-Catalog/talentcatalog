@@ -45,7 +45,6 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   @Input() candidateSource: CandidateSource;
   @Input() sourceType: String;
   @Input() defaultSearch: boolean;
-  @Input() editable: boolean;
   @Input() savedSearchSelectionChange: boolean;
 
   @Output() closeEvent = new EventEmitter();
@@ -65,7 +64,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   private lastContextTabKey: string = 'SelectedCandidateContextLastTab';
 
   constructor(private localStorageService: LocalStorageService,
-              private authService: AuthorizationService) { }
+              private authorizationService: AuthorizationService) { }
 
   ngOnInit() {
   }
@@ -105,6 +104,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     return display;
   }
 
+  isEditable(): boolean {
+    return this.authorizationService.isEditableCandidate(this.candidate);
+  }
+
   onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
   }
@@ -140,7 +143,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   }
 
   canViewPrivateInfo() {
-    return this.authService.canViewPrivateCandidateInfo(this.candidate);
+    return this.authorizationService.canViewPrivateCandidateInfo(this.candidate);
   }
 
   /**

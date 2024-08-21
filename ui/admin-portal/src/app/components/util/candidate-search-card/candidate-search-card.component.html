@@ -33,7 +33,7 @@
             <app-candidate-context-note
               [candidate]="candidate"
               [candidateSource]="candidateSource"
-              [editable]="editable"
+              [editable]="isEditable()"
             >
             </app-candidate-context-note>
           </ng-template>
@@ -98,7 +98,7 @@
     <ng-container *ngIf="showNotes">
       <app-candidate-shareable-notes
         [candidate]="candidate"
-        [editable] = "editable"
+        [editable] = "isEditable()"
       >
       </app-candidate-shareable-notes>
     </ng-container>
