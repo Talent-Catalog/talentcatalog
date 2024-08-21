@@ -1084,8 +1084,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
-    modal.componentInstance.myListsOnly = this.authorizationService.isReadOnly();
-    modal.componentInstance.canChangeStatuses = !this.authorizationService.isReadOnly();
+    let readOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.myListsOnly = readOnly;
+    modal.componentInstance.canChangeStatuses = !readOnly;
     if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
     }
@@ -1693,6 +1694,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Copy";
     modal.componentInstance.title = "Copy to another List";
+    let readOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.myListsOnly = readOnly;
+    modal.componentInstance.canChangeStatuses = !readOnly;
+
     modal.componentInstance.excludeList = this.candidateSource;
 
     modal.result

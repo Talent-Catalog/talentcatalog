@@ -330,6 +330,10 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       const modal = this.modalService.open(SelectListComponent);
       modal.componentInstance.action = "Copy";
       modal.componentInstance.title = "Copy to another List";
+      let readOnly = this.authorizationService.isReadOnly();
+      modal.componentInstance.myListsOnly = readOnly;
+      modal.componentInstance.canChangeStatuses = !readOnly;
+
       modal.componentInstance.excludeList = source;
 
       modal.result

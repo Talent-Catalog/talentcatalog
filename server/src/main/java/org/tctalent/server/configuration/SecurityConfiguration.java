@@ -239,6 +239,9 @@ public class SecurityConfiguration {
                 // PUT: UPDATE SAVED SEARCHES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: UPDATE SAVED SEARCH DESCRIPTION
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // PUT: UPDATE CONTEXT NOTES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -297,7 +300,7 @@ public class SecurityConfiguration {
                 // CHAT LINK PREVIEWS - permits all
                 .requestMatchers(HttpMethod.POST, "/api/admin/link-preview/**").permitAll()
 
-            /*
+                /*
                  * LIST ENDPOINTS
                  */
                 // POST: CREATE LIST
@@ -312,11 +315,17 @@ public class SecurityConfiguration {
                 // PUT: REMOVE CANDIDATE FROM LIST
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/remove").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: SAVE SELECTION FROM LIST
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/save-selection").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // PUT: UPDATE SF
                 .requestMatchers(HttpMethod.PUT, "/api/admin/sf/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT: UPDATE SAVED LIST
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UPDATE SAVED LIST DESCRIPTION
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT: UPDATE CONTEXT NOTES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
