@@ -19,6 +19,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges
@@ -34,7 +35,7 @@ import {
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {User} from '../../../model/user';
-import {CandidateSource, canEditSource, isMine, isStarredByMe} from '../../../model/base';
+import {CandidateSource, canEditSource, DtoType, isMine, isStarredByMe} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
@@ -44,6 +45,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../services/saved-list.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";
 
 
 /**
@@ -51,15 +53,16 @@ import {AuthenticationService} from "../../../services/authentication.service";
  * <p/>
  * It does not display the candidates associated with that source.
  * For that reason some of the events (from clicking on the icons) may have to be passed up to
- * a parent who does managed the associated displayed candidates because actioning the event
+ * a parent who manages the associated displayed candidates because actioning the event
  * may require knowledge of, for example, what is the current page of candidates being displayed.
  */
 @Component({
   selector: 'app-candidate-source',
   templateUrl: './candidate-source.component.html',
-  styleUrls: ['./candidate-source.component.scss']
+  styleUrls: ['./candidate-source.component.scss'],
+  providers: [CandidateSourceCacheService]  // Provide a new cache instance for each component
 })
-export class CandidateSourceComponent implements OnInit, OnChanges {
+export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
 
   // The data processing is dependant on these variables
   // The candidate source passed in
@@ -103,7 +106,8 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     private modalService: NgbModal,
     private router: Router,
     private authService: AuthorizationService,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private candidateSourceCacheService: CandidateSourceCacheService
   ) {
   }
 
@@ -111,16 +115,23 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     this.loggedInUser = this.authenticationService.getLoggedInUser();
   }
 
-  ngOnChanges (changes: SimpleChanges){
-    // WHEN candidateSource changes IF showAll fetch the savedSearch object
-    // which has the multi select Names to display (not just Ids).
-    if (this.seeMore && changes && changes.candidateSource
-      && changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
+  ngOnChanges(changes: SimpleChanges) {
+    const candidateSourceChange = changes?.candidateSource;
+
+    if (candidateSourceChange?.currentValue && candidateSourceChange.previousValue !== candidateSourceChange.currentValue) {
+      const candidateSourceId = candidateSourceChange.currentValue.id;
 
       //Only fetch if we have an id - otherwise changes will just be local
       //modifications of a candidate source which has not been created yet.
-      if (this.candidateSource.id) {
-        this.getSavedSearch(this.candidateSource.id);
+      if (candidateSourceId) {
+        // WHEN candidateSource changes IF seeMore fetch the extended savedSearch dto
+        // which has the multi select Names to display (not just Ids).
+        if (this.seeMore) {
+          this.getSavedSearch(candidateSourceId, DtoType.EXTENDED);
+        } else {
+          // Otherwise fetch full details, do not need extended details
+          this.getSavedSearch(candidateSourceId, DtoType.FULL);
+        }
       }
     }
   }
@@ -130,7 +141,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     // Get extra data from saved search if needed (canLoad:true)
     if (this.canLoad) {
       this.loading = true;
-      this.getSavedSearch(this.candidateSource.id);
+      this.getSavedSearch(this.candidateSource.id, DtoType.EXTENDED);
     }
   }
 
@@ -215,14 +226,47 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     return !this.candidateSource.global;
   }
 
-  getSavedSearch(savedSearchId: number) {
-    this.savedSearchService.get(savedSearchId).subscribe(result => {
-      this.candidateSource = result;
+  getSavedSearch(savedSearchId: number, dtoType: DtoType) {
+    this.loading = true;
+    let done: boolean = false;
+
+    this.getFromCache(this.candidateSource);
+
+    if (dtoType === DtoType.FULL &&
+      (this.candidateSource.dtoType === DtoType.FULL || this.candidateSource.dtoType === DtoType.EXTENDED)) {
+      done = true;
+    } else if (dtoType === DtoType.EXTENDED && this.candidateSource.dtoType === DtoType.EXTENDED) {
+      done = true;
+    }
+
+    if (!done) {
+      this.savedSearchService.get(savedSearchId, dtoType).subscribe(result => {
+        this.candidateSource = {
+          ...this.candidateSource,
+          ...result,
+          dtoType: dtoType
+        };
+        this.loading = false;
+        const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
+        this.candidateSourceCacheService.cache(cacheKey, this.candidateSource);
+      }, err => {
+        this.loading = false;
+        this.error = err;
+      })
+    }
+  }
+
+  private getFromCache(source: CandidateSource) {
+    const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
+    const cached = this.candidateSourceCacheService.getFromCache(cacheKey);
+    if (cached) {
+      this.candidateSource = {
+        ...this.candidateSource,
+        ...cached
+      };
       this.loading = false;
-    }, err => {
-      this.loading = false;
-      this.error = err;
-    })
+      return;
+    }
   }
 
   private getSavedSearchSource(): SavedSearchRef {
@@ -299,4 +343,8 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     return this.authService.canAccessSalesforce();
   }
 
+  ngOnDestroy(): void {
+    console.log('Destroying CandidateSourceComponent');
+    this.candidateSourceCacheService.clearAll();
+  }
 }
