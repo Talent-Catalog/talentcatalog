@@ -63,9 +63,14 @@ export class RegistrationService {
       section: 6
     },
     {
+      key: 'exam',
+      title: 'Provide details of your language exams',
+      section: 7
+    },
+    {
       key: 'certifications',
       title: 'Do you have any other professional certifications?',
-      section: 7
+      section: 8
     },
     {
       key: 'destinations',

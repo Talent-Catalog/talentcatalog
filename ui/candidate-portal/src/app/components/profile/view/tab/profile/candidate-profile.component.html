@@ -274,6 +274,32 @@
       </div>
 
     </section>
+    <!-- EXAMS -->
+    <section>
+
+      <div class="section-heading">
+
+        <h5>{{ 'PROFILE.EXAMS.TITLE' | translate }}</h5>
+
+        <a class="btn btn-outline-primary" [routerLink]="['edit', 'exams']">
+          {{ 'PROFILE.BUTTON.EDIT' | translate }}
+        </a>
+
+      </div>
+
+      <div class="card">
+        <ng-container *ngFor="let exam of candidate?.candidateExams; let i = index;">
+          <app-candidate-exam-card [exam]="exam"
+                                            [preview]="true">
+          </app-candidate-exam-card>
+
+          <div class="text-center" *ngIf="i < candidate?.candidateExams?.length - 1">
+            <hr>
+          </div>
+        </ng-container>
+      </div>
+
+    </section>
 
     <!-- CERTIFICATIONS -->
     <section>

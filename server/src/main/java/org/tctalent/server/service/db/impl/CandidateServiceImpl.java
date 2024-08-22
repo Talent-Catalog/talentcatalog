@@ -157,6 +157,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
@@ -1465,6 +1466,18 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             Candidate candidate = candidateRepository
                     .findByIdLoadCandidateOccupations(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
+    }
+
+    @Override
+    public Optional<Candidate> getLoggedInCandidateLoadCandidateExams() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                .findByIdLoadCandidateExams(candidateId);
             return candidate == null ? Optional.empty() : Optional.of(candidate);
         }
     }
@@ -2984,4 +2997,54 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
+
+    @Override
+    public List<Long> findUnreadChatsInCandidates() {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        List<Long> unreadChatIds =
+            candidateRepository.findUnreadChatsInCandidates(
+                loggedInUser.getPartner().getId(),
+                loggedInUser.getId()
+            );
+
+        return unreadChatIds;
+    }
+
+    @Override
+    public Page<Candidate> fetchCandidatesWithChat(
+        FetchCandidatesWithChatRequest request
+    ) {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        // If the keyword is empty or contains non-numeric characters, we want matches for first and
+        // last names that match the string in any part - e.g. 'sam' would match 'samuel' - but if
+        // the keyword contains only numbers, we assume a candidate number is sought and return
+        // only full matches - e.g. '00' will not match '60011'.
+        String keyword = request.getKeyword();
+        if (keyword.isEmpty() || !StringUtils.isNumeric(keyword)) {
+            keyword = StringUtils.lowerCase("%" + request.getKeyword() + "%");
+        }
+
+        if (request.isUnreadOnly()) {
+            List<Long> candidateIds =
+                candidateRepository.findIdsOfCandidatesWithActiveAndUnreadChat(
+                    loggedInUser.getPartner().getId(),
+                    loggedInUser.getId(),
+                    keyword
+                );
+            return candidateRepository.findByIdIn(candidateIds, request.getPageRequest());
+        } else {
+            return candidateRepository.findCandidatesWithActiveChat(
+                loggedInUser.getPartner().getId(), keyword, request.getPageRequest()
+            );
+        }
+    }
+
 }

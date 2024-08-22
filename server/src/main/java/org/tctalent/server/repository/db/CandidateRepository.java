@@ -17,6 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -106,6 +107,11 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
             + " left join fetch c.candidateOccupations p "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateOccupations(@Param("id") Long id);
+
+    @Query(" select c from Candidate c "
+        + " left join fetch c.candidateExams p "
+        + " where c.id = :id ")
+    Candidate findByIdLoadCandidateExams(@Param("id") Long id);
 
     @Query(" select c from Candidate c "
             + " left join fetch c.candidateCertifications cert "
@@ -746,4 +752,175 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                                              @Param("dateFrom") LocalDate dateFrom,
                                              @Param("dateTo") LocalDate dateTo,
                                              @Param("candidateIds") Set<Long> candidateIds);
+
+    /**
+     * CANDIDATE CHAT
+     * These methods are used to find candidates and check read statuses for the
+     * [Partner] Candidate Chats tab.
+     */
+
+    /**
+     * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in
+     * user's partner organisation, if they contain posts unread by same user.
+     * @param partnerId logged-in user's partner org's ID
+     * @param userId logged in user's ID
+     * @return list of IDs of Job Chats matching the criteria
+     */
+    @Query(
+        value =
+        """
+        SELECT chats.id
+        FROM (
+            SELECT job_chat.id
+            FROM candidate
+            JOIN job_chat ON candidate.id = job_chat.candidate_id
+                AND job_chat.type = 'CandidateProspect'
+            WHERE candidate.id IN (
+                SELECT candidate.id
+                FROM candidate
+                JOIN users ON candidate.user_id = users.id
+                WHERE users.partner_id = :partnerId
+            )
+        ) AS chats
+        WHERE (
+            (SELECT last_read_post_id
+             FROM job_chat_user
+             WHERE job_chat_id = chats.id
+               AND user_id = :userId
+            ) < (
+                SELECT MAX(id)
+                FROM chat_post
+                WHERE job_chat_id = chats.id
+            )
+        )
+        OR (
+            (SELECT last_read_post_id
+             FROM job_chat_user
+             WHERE job_chat_id = chats.id
+               AND user_id = :userId
+            ) IS NULL
+            AND (
+                SELECT COUNT(*)
+                FROM chat_post
+                WHERE job_chat_id = chats.id
+            ) > 0
+        )
+        """, nativeQuery = true
+    )
+    List<Long> findUnreadChatsInCandidates(
+        @Param("partnerId") long partnerId,
+        @Param("userId") long userId
+    );
+
+    /**
+     * Paged search finding candidates managed by the logged-in user's partner organisation, if
+     * they have a Job Chat of type 'CandidateProspect' containing at least one post.
+     * @param partnerId logged-in user's partner org's ID
+     * @param keyword pre-processed keyword entered in search filter, may represent candidate
+     *                number, first name or last name of candidate
+     * @param pageable details of requested pagination
+     * @return paged search results of matching candidates
+     */
+    @Query(
+        value =
+            """
+            SELECT c
+            FROM Candidate c
+            WHERE c.id IN (
+                SELECT c1.id
+                FROM Candidate c1
+                JOIN c1.user u
+                WHERE u.partner.id = :partnerId
+                AND (
+                    LOWER(u.firstName) LIKE :keyword
+                    OR LOWER(u.lastName) LIKE :keyword
+                    OR c.candidateNumber LIKE :keyword
+                )
+            )
+            AND c.id IN (
+                SELECT c2.id
+                FROM Candidate c2
+                JOIN JobChat jc ON c2.id = jc.candidate.id
+                WHERE jc.type = 'CandidateProspect'
+                AND jc.id IN (
+                    SELECT jc2.id
+                    FROM JobChat jc2
+                    JOIN ChatPost cp ON jc2.id = cp.jobChat.id
+                )
+            )
+            """
+    )
+    Page<Candidate> findCandidatesWithActiveChat(
+        @Param("partnerId") long partnerId,
+        @Param("keyword") String keyword,
+        Pageable pageable
+    );
+
+    /**
+     * Search finding IDs of candidates managed by the logged-in user's partner organisation, if they
+     * have a Job Chat of type 'CandidateProspect' containing at least one post that is unread by
+     * the logged-in user.
+     * Being a complex query, this was not suitable for JPQL so is instead written in regular SQL,
+     * requiring return of IDs rather than the whole candidate object.
+     * @param partnerId logged-in user's partner org's ID
+     * @param userId logged-in user's ID
+     * @param keyword pre-processed keyword entered in search filter, may represent candidate
+     *                number, first name or last name of candidate
+     * @return list of IDs of candidates who match the criteria
+     */
+    @Query(
+        value =
+            """
+            SELECT candidate.id
+            FROM candidate
+                     JOIN users ON candidate.user_id = users.id
+            WHERE candidate.id IN (
+                SELECT job_chat.candidate_id
+                FROM (
+                         SELECT job_chat.id
+                         FROM candidate
+                                  JOIN job_chat ON candidate.id = job_chat.candidate_id
+                         WHERE type = 'CandidateProspect'
+                     ) AS chats
+                         JOIN job_chat ON job_chat.id = chats.id
+                WHERE
+                    (SELECT last_read_post_id
+                     FROM job_chat_user
+                     WHERE job_chat_id = chats.id AND user_id = :userId) <
+                    (SELECT max(id)
+                     FROM chat_post
+                     WHERE job_chat_id = chats.id)
+                   OR (
+                    (SELECT last_read_post_id
+                     FROM job_chat_user
+                     WHERE job_chat_id = chats.id AND user_id = :userId) IS NULL
+                        AND
+                    (SELECT count(*)
+                     FROM chat_post
+                     WHERE job_chat_id = chats.id) > 0
+                    )
+            )
+              AND users.partner_id = :partnerId
+              AND (
+                LOWER(users.first_name) LIKE :keyword
+                OR LOWER(users.last_name) LIKE :keyword
+                OR candidate.candidate_number LIKE :keyword
+                )
+            """, nativeQuery = true
+    )
+    List<Long> findIdsOfCandidatesWithActiveAndUnreadChat(
+        @Param("partnerId") long partnerId,
+        @Param("userId") long userId,
+        @Param("keyword") String keyword
+    );
+
+    /**
+     * Takes a collection of candidate IDs and returns their corresponding candidates. Used here to
+     * get around SQL limitations.
+     * @param candidateIds any Collection of candidate IDs
+     * @param pageable details of requested pagination
+     * @return paged search result of candidates who match the criteria
+     */
+    Page<Candidate> findByIdIn(Collection<Long> candidateIds, Pageable pageable);
+
 }

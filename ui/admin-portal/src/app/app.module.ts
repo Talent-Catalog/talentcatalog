@@ -789,6 +789,11 @@ import {SelectJobCopyComponent} from './components/util/select-job-copy/select-j
 import {
   VisaJobCheckUkComponent
 } from './components/candidates/view/tab/candidate-visa-tab/uk/job/visa-job-check-uk.component';
+import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
+import { BuildLinkComponent } from './util/build-link/build-link.component';
+import { LinkTooltipComponent } from './util/link-tooltip/link-tooltip.component';
+import { CandidatesWithChatComponent } from './components/chat/candidates-with-chat/candidates-with-chat.component';
+import { ShowCandidatesWithChatComponent } from './components/chat/show-candidates-with-chat/show-candidates-with-chat.component';
 import {PreviewLinkComponent} from './components/chat/preview-link/preview-link.component';
 import {
   ViewCandidateDestinationsComponent
@@ -1120,6 +1125,11 @@ import {
     SelectJobCopyComponent,
     VisaJobCheckUkComponent,
     PreviewLinkComponent,
+    BuildLinkComponent,
+    LinkTooltipComponent,
+    VisaJobCheckUkComponent,
+    CandidatesWithChatComponent,
+    ShowCandidatesWithChatComponent,
     ViewCandidateDestinationsComponent,
     EditCandidateDestinationsComponent,
     DestinationFamilyComponent
@@ -1170,7 +1180,8 @@ import {
   ],
   exports: [
     ViewChatPostsComponent,
-    ChatReadStatusComponent
+    ChatReadStatusComponent,
+    CandidateExamCardComponent
   ],
   bootstrap: [AppComponent]
 })
