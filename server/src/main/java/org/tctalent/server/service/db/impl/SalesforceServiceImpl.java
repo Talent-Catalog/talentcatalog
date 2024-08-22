@@ -857,11 +857,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                         + request.getName()
                         + ": " + result.getErrorMessage())
                     .logError();
-                errors.add(request.getName());
+                // Create list of errors to return to admin portal
+                errors.add(request.getName() + ": " + result.getErrorMessage());
             }
         }
         if (!errors.isEmpty()) {
-            throw new SalesforceException("The following update/s failed:" + errors + ")");
+            throw new SalesforceException("The following update/s failed: " + String.join(",", errors) + ")");
         }
     }
 
