@@ -27,31 +27,33 @@
   </div>
 
   <div class="card-body">
-    <p *ngIf="!candidateDestinations?.length" class="m-1">
-      No language data has been entered by this candidate.
+    <p *ngIf="checkForEmptyDestinations(); else hasDestinations" class="m-1">
+      No destination data has been entered by this candidate.
     </p>
-    <ng-container *ngFor="let destination of candidateDestinations; let i = index;">
-      <div class="row align-items-center">
-        <div class="col-3 d-flex">
-          <label>{{destination.country.name}}</label>
-          <p class="mb-0 ms-2">
-            <i *ngIf="destination.interest == 'No'" class="fa-regular fa-circle-xmark text-danger"></i>
-            <i *ngIf="destination.interest == 'Yes'" class="fa-regular fa-circle-check text-success"></i>
-            <i *ngIf="destination.interest == 'Unsure'" class="fa-regular fa-circle-question text-warning"></i>
-            {{destination.interest}}
-          </p>
+    <ng-template #hasDestinations>
+      <div *ngFor="let destination of candidateDestinations; let i = index;">
+        <div class="row align-items-center">
+          <div class="d-flex" [ngClass]="editable ? 'col-md-3': 'col-md-4'">
+            <label>{{destination.country.name}}</label>
+            <p class="mb-0 ms-2">
+              <i *ngIf="destination.interest == 'No'" class="fa-regular fa-circle-xmark text-danger"></i>
+              <i *ngIf="destination.interest == 'Yes'" class="fa-regular fa-circle-check text-success"></i>
+              <i *ngIf="destination.interest == 'Unsure'" class="fa-regular fa-circle-question text-warning"></i>
+              {{destination.interest}}
+            </p>
+          </div>
+          <div class="col-sm-12 col-md-8">
+            <span>Notes: {{destination.notes}}</span>
+          </div>
+          <div class="col-1" *ngIf="editable">
+            <button class="btn btn-default"
+                    (click)="editDestinationsDetails(destination)">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
         </div>
-        <div class="col-sm-12 col-md-8">
-          <span>Notes: {{destination.notes}}</span>
-        </div>
-        <div class="col-1" *ngIf="editable">
-          <button class="btn btn-default"
-                  (click)="editDestinationsDetails(destination)">
-            <i class="fas fa-edit"></i>
-          </button>
-        </div>
+        <hr *ngIf="i < candidateDestinations?.length - 1">
       </div>
-      <hr *ngIf="i < candidateDestinations?.length - 1">
-    </ng-container>
+    </ng-template>
   </div>
 </div>

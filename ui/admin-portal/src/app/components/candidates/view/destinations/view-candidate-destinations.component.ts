@@ -39,6 +39,7 @@ export class ViewCandidateDestinationsComponent implements OnInit {
     this.candidateDestinationService.list(this.candidate.id).subscribe(
       candidateDestinations => {
         this.candidateDestinations = candidateDestinations;
+        console.log(candidateDestinations)
         this.loading = false;
       },
       error => {
@@ -63,5 +64,17 @@ export class ViewCandidateDestinationsComponent implements OnInit {
       } )
       .catch(() => { /* Isn't possible */ });
 
+  }
+  // Some candidates have 'empty' candidate destinations so run a check to only display them if they have data.
+  // These were created automatically in old code, having a country ID & candidate ID but no useful data inside.
+  // Now we have moved candidate destinations to the registration so all candidates will have to have these filled out.
+  checkForEmptyDestinations() {
+    let empty = false;
+    if (this.candidateDestinations.length === 0) {
+      empty = true;
+    } else if (this.candidateDestinations.length > 0) {
+      empty = this.candidateDestinations.every(cd => cd.interest == null && cd.notes == null);
+    }
+    return empty;
   }
 }
