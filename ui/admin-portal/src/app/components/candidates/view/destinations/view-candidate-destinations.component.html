@@ -31,13 +31,13 @@
       No language data has been entered by this candidate.
     </p>
     <ng-container *ngFor="let destination of candidateDestinations; let i = index;">
-      <div class="row">
-        <div class="col-3">
+      <div class="row align-items-center">
+        <div class="col-3 d-flex">
           <label>{{destination.country.name}}</label>
-          <p class="mb-0">
-            <i *ngIf="destination.interest == 'No'" class="fa-regular fa-circle-xmark"></i>
-            <i *ngIf="destination.interest == 'Yes'" class="fa-regular fa-circle-check"></i>
-            <i *ngIf="destination.interest == 'Unsure'" class="fa-regular fa-circle-question"></i>
+          <p class="mb-0 ms-2">
+            <i *ngIf="destination.interest == 'No'" class="fa-regular fa-circle-xmark text-danger"></i>
+            <i *ngIf="destination.interest == 'Yes'" class="fa-regular fa-circle-check text-success"></i>
+            <i *ngIf="destination.interest == 'Unsure'" class="fa-regular fa-circle-question text-warning"></i>
             {{destination.interest}}
           </p>
         </div>
