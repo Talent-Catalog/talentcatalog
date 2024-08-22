@@ -57,8 +57,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
     private final SalesforceService salesforceService;
 
     @Override
-    @GetMapping("{id}")
-    public @NotNull Map<String, Object> get(@PathVariable long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(@PathVariable long id, DtoType dtoType) throws NoSuchObjectException {
         CandidateOpportunity opp = candidateOpportunityService.getCandidateOpportunity(id);
         return candidateOpportunityDto().build(opp);
     }

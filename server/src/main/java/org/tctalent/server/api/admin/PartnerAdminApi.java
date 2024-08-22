@@ -67,7 +67,7 @@ public class PartnerAdminApi implements
     }
 
     @Override
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         Partner partner = partnerService.getPartner(id);
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }
