@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,7 +56,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
     private final SalesforceService salesforceService;
 
     @Override
-    public @NotNull Map<String, Object> get(@PathVariable long id, DtoType dtoType) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         CandidateOpportunity opp = candidateOpportunityService.getCandidateOpportunity(id);
         return candidateOpportunityDto().build(opp);
     }

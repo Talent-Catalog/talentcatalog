@@ -96,8 +96,7 @@ public class PartnerAdminApi implements
     }
 
     @Override
-    public @NotNull Map<String, Object> update(
-        @PathVariable("id") long id, @Valid UpdatePartnerRequest request)
+    public @NotNull Map<String, Object> update(long id, @Valid UpdatePartnerRequest request)
             throws EntityExistsException, NoSuchObjectException {
 
         //Note - have to look up contact user here rather than in partnerService to avoid
