@@ -228,32 +228,45 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
 
   getSavedSearch(savedSearchId: number, dtoType: DtoType) {
     this.loading = true;
-    let done: boolean = false;
 
     this.getFromCache(this.candidateSource);
 
-    if (dtoType === DtoType.FULL &&
-      (this.candidateSource.dtoType === DtoType.FULL || this.candidateSource.dtoType === DtoType.EXTENDED)) {
-      done = true;
-    } else if (dtoType === DtoType.EXTENDED && this.candidateSource.dtoType === DtoType.EXTENDED) {
-      done = true;
+    if (this.isAlreadyLoaded(dtoType)) {
+      this.loading = false;
+      return;
     }
 
-    if (!done) {
-      this.savedSearchService.get(savedSearchId, dtoType).subscribe(result => {
-        this.candidateSource = {
-          ...this.candidateSource,
-          ...result,
-          dtoType: dtoType
-        };
-        this.loading = false;
-        const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
-        this.candidateSourceCacheService.cache(cacheKey, this.candidateSource);
-      }, err => {
-        this.loading = false;
-        this.error = err;
-      })
+    this.savedSearchService.get(savedSearchId, dtoType).subscribe({
+      next: (result) => this.handleSuccessfulFetch(result, dtoType),
+      error: (err) => this.handleError(err),
+    });
+  }
+
+  private isAlreadyLoaded(dtoType: DtoType): boolean {
+    if (dtoType === DtoType.FULL) {
+      return this.candidateSource.dtoType === DtoType.FULL || this.candidateSource.dtoType === DtoType.EXTENDED;
     }
+    return dtoType === DtoType.EXTENDED && this.candidateSource.dtoType === DtoType.EXTENDED;
+  }
+
+  private handleSuccessfulFetch(result: any, dtoType: DtoType): void {
+    this.candidateSource = {
+      ...this.candidateSource,
+      ...result,
+      dtoType: dtoType
+    };
+    this.cacheCandidateSource();
+    this.loading = false;
+  }
+
+  private handleError(err: any): void {
+    this.loading = false;
+    this.error = err;
+  }
+
+  private cacheCandidateSource(): void {
+    const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
+    this.candidateSourceCacheService.cache(cacheKey, this.candidateSource);
   }
 
   private getFromCache(source: CandidateSource) {
