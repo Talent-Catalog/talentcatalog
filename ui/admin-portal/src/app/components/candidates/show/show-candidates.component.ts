@@ -195,6 +195,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
   savedSearchSelectionChange: boolean;
 
+  /**
+   * Stores search card scroll bar distance from top in px for restoring if > 0.
+   * @private
+   */
+  private searchCardScrollTop: number = 0;
+
   private noCandidatesMessage = "No candidates are selected";
 
   public filterSearch: boolean = false;
@@ -312,6 +318,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private saveShowClosedOpps(): void {
     const showClosedOppsValue = this.searchForm.get('showClosedOpps').value;
     this.localStorageService.set(this.savedListStateKey() + this.showClosedOppsSuffix, showClosedOppsValue.toString());
+  }
+
+  public setSearchCardScrollTop() {
+    if (this.currentCandidate && this.searchCardScrollTop > 0) {
+      let searchCard = document.querySelector('.profile');
+      searchCard.scrollTo(0, this.searchCardScrollTop);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -563,6 +576,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   selectCandidate(candidate: Candidate) {
+    if (this.currentCandidate) {
+      let searchCard = document.querySelector('.profile');
+      this.searchCardScrollTop = searchCard.scrollTop;
+    }
     this.setCurrentCandidate(candidate);
   }
 
