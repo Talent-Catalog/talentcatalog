@@ -66,7 +66,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   /**
    * Compliments ngAfterViewChecked, which runs multiple times with each change, by ensuring the
-   * desired attendant methods are only run once per view change.
+   * desired attendant methods are only run once per content change.
    */
   afterViewCheckedHasRun: boolean = false;
 
@@ -77,8 +77,8 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    if (!this.afterViewCheckedHasRun) {
-      this.afterViewCheckedHasRun = false;
+    if (!this.afterViewCheckedHasRun) { // Don't execute if already run
+      this.afterViewCheckedHasRun = true; // Prohibit further execution
       // This is called in order for the navigation tabs, this.nav, to be set.
       this.selectDefaultTab();
       // Parent component has stored previous scroll position, will restore if pixels from top > 0.

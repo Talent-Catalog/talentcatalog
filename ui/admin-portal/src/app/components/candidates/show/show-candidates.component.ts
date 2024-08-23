@@ -196,6 +196,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   savedSearchSelectionChange: boolean;
 
   /**
+   * Once set, refers to candidate profile search card.
+   * @private
+   */
+  private searchCard: Element;
+  /**
    * Stores search card scroll bar distance from top in px for restoring if > 0.
    * @private
    */
@@ -320,10 +325,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.localStorageService.set(this.savedListStateKey() + this.showClosedOppsSuffix, showClosedOppsValue.toString());
   }
 
+  /**
+   * Restores candidate profile search card to previous px distance from top if > 0.
+   */
   public setSearchCardScrollTop() {
-    if (this.currentCandidate && this.searchCardScrollTop > 0) {
-      let searchCard = document.querySelector('.profile');
-      searchCard.scrollTo(0, this.searchCardScrollTop);
+    // Starting at 0 is default behaviour so no action needed in that case.
+    if (this.searchCardScrollTop > 0) {
+      // The card has to fully render before scrolling, so a short delay is necessary.
+      setTimeout(() => {
+        this.searchCard.scrollTo({ top: this.searchCardScrollTop, behavior: 'smooth' });
+      }, 200)
     }
   }
 
@@ -576,9 +587,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   selectCandidate(candidate: Candidate) {
+    // Save scrollbar px distance from top on previous candidate profile search card, if any.
     if (this.currentCandidate) {
-      let searchCard = document.querySelector('.profile');
-      this.searchCardScrollTop = searchCard.scrollTop;
+      this.searchCard = document.querySelector('.profile');
+      this.searchCardScrollTop = this.searchCard.scrollTop;
     }
     this.setCurrentCandidate(candidate);
   }
