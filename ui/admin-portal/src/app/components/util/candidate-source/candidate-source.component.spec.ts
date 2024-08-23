@@ -29,9 +29,6 @@ import {of, throwError} from "rxjs";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {MockSavedList} from "../../../MockData/MockSavedList";
-import {
-  CandidateSourceResultsCacheService
-} from "../../../services/candidate-source-results-cache.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";
 
@@ -46,7 +43,7 @@ fdescribe('CandidateSourceComponent', () => {
   let router: jasmine.SpyObj<Router>;
   let location: jasmine.SpyObj<Location>;
   let modalService: jasmine.SpyObj<NgbModal>;
-  let cacheService: CandidateSourceResultsCacheService;
+  let cacheService: CandidateSourceCacheService;
   let localStorageService: jasmine.SpyObj<LocalStorageService>;
 
   beforeEach(async () => {
@@ -71,7 +68,6 @@ fdescribe('CandidateSourceComponent', () => {
         { provide: Router, useValue: routerSpy },
         { provide: Location, useValue: locationSpy },
         { provide: NgbModal, useValue: modalSpy },
-        CandidateSourceCacheService,
         { provide: LocalStorageService, useValue: localStorageServiceSpy }
       ],
     }).compileComponents();
@@ -86,8 +82,8 @@ fdescribe('CandidateSourceComponent', () => {
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     location = TestBed.inject(Location) as jasmine.SpyObj<Location>;
     modalService = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-    cacheService = TestBed.inject(CandidateSourceResultsCacheService);
     localStorageService = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
+    cacheService = TestBed.inject(CandidateSourceCacheService);
 
     component.candidateSource = new MockCandidateSource();
     fixture.detectChanges();
@@ -207,4 +203,105 @@ fdescribe('CandidateSourceComponent', () => {
     });
     expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.FULL);
   });
+
+  it('should not call the API if data is already loaded', () => {
+    component.candidateSource.dtoType = DtoType.FULL;
+    spyOn(component, 'isAlreadyLoaded').and.returnValue(true);
+
+    component.getSavedSearch(1, DtoType.FULL);
+
+    expect(component.isAlreadyLoaded).toHaveBeenCalledWith(DtoType.FULL);
+    expect(savedSearchService.get).not.toHaveBeenCalled();
+    expect(component.loading).toBeFalse();
+  });
+
+  it('should call the API and handle successful fetch', () => {
+    spyOn(component, 'isAlreadyLoaded').and.returnValue(false);
+    savedSearchService.get.and.returnValue(of(new MockSavedSearch()));
+    spyOn(component, 'handleSuccessfulFetch');
+
+    component.getSavedSearch(1, DtoType.FULL);
+
+    expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.FULL);
+    expect(component.handleSuccessfulFetch).toHaveBeenCalledWith(jasmine.anything(), DtoType.FULL);
+  });
+
+  it('should handle error if API call fails', () => {
+    spyOn(component, 'isAlreadyLoaded').and.returnValue(false);
+    savedSearchService.get.and.returnValue(throwError('Error'));
+    spyOn(component, 'handleError');
+
+    component.getSavedSearch(1, DtoType.FULL);
+
+    expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.FULL);
+    expect(component.handleError).toHaveBeenCalledWith('Error');
+  });
+
+  it('should correctly identify if the data is already loaded', () => {
+    component.candidateSource.dtoType = DtoType.EXTENDED;
+    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeTrue();
+    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeTrue();
+
+    component.candidateSource.dtoType = DtoType.FULL;
+    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeTrue();
+    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeFalse();
+
+    component.candidateSource.dtoType = DtoType.MINIMAL;
+    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeFalse();
+    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeFalse();
+
+    component.candidateSource.dtoType = DtoType.PREVIEW;
+    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeFalse();
+    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeFalse();
+
+    component.candidateSource.dtoType = undefined;
+    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeFalse();
+    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeFalse();
+  });
+
+  it('should handle successful fetch and cache the result', () => {
+    const result = new MockSavedSearch();
+    spyOn(component, 'cacheCandidateSource');
+
+    component.handleSuccessfulFetch(result, DtoType.FULL);
+
+    expect(component.candidateSource.dtoType).toBe(DtoType.FULL);
+    expect(component.candidateSource).toEqual(jasmine.objectContaining(result));
+    expect(component.cacheCandidateSource).toHaveBeenCalled();
+    expect(component.loading).toBeFalse();
+  });
+
+  it('should handle error correctly', () => {
+    component.handleError('Error');
+
+    expect(component.loading).toBeFalse();
+    expect(component.error).toBe('Error');
+  });
+
+  it('should retrieve candidate source from cache if available', () => {
+    component.loading = true;
+    component.candidateSource = { id: 1 } as CandidateSource;
+    const cachedResult = new MockSavedSearch()
+    spyOn(cacheService, 'getFromCache').and.returnValue(cachedResult);
+
+    component.getFromCache(new MockCandidateSource());
+
+    expect(cacheService.getFromCache).toHaveBeenCalled();
+    expect(component.candidateSource).toEqual(jasmine.objectContaining(cachedResult));
+    expect(component.loading).toBeFalse();
+  });
+
+  it('should not modify candidate source if cache is empty', () => {
+    component.loading = true;
+    component.candidateSource = { id: 1 } as CandidateSource;
+    spyOn(cacheService, 'getFromCache').and.returnValue(null);
+
+    component.getFromCache(component.candidateSource);
+
+    expect(cacheService.getFromCache).toHaveBeenCalled();
+    expect(component.candidateSource).toEqual({ id: 1 } as CandidateSource);
+    expect(component.loading).toBeTrue(); // Because getSavedSearch continues to run if not loaded from cache
+  });
+
+
 });
