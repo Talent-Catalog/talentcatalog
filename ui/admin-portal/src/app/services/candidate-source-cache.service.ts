@@ -4,7 +4,9 @@ import {CandidateSource} from "../model/base";
 import {getCandidateSourceType} from "../model/saved-search";
 import {CachedSourceResults} from "./candidate-source-results-cache.service";
 
-@Injectable()
+@Injectable({
+  providedIn: 'any' // Will provide a new instance for each component
+})
 export class CandidateSourceCacheService {
   private cacheKeys: Set<string> = new Set();
 

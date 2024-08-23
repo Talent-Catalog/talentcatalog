@@ -60,7 +60,6 @@ import {CandidateSourceCacheService} from "../../../services/candidate-source-ca
   selector: 'app-candidate-source',
   templateUrl: './candidate-source.component.html',
   styleUrls: ['./candidate-source.component.scss'],
-  providers: [CandidateSourceCacheService]  // Provide a new cache instance for each component
 })
 export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -242,14 +241,28 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  private isAlreadyLoaded(dtoType: DtoType): boolean {
+  /**
+   * This method checks the current state of the `candidateSource` and returns `true`
+   * if the data has already been loaded with sufficient detail to satisfy the requested `dtoType`.
+   *
+   * If the requested `dtoType` is `FULL`, the method will return `true` if the candidate source
+   * is already loaded with either `FULL` or `EXTENDED` details. This is because `EXTENDED` contains
+   * all the details of `FULL` and more, so it's sufficient for the request.
+   *
+   * If the requested `dtoType` is `EXTENDED`, the method will return `true` only if the candidate source
+   * is already loaded with `EXTENDED` details. The `EXTENDED` type represents a more detailed dataset.
+   *
+   * @param dtoType The type of data transfer object (DTO) requested (either `FULL` or `EXTENDED`).
+   * @returns `true` if the data is already loaded with sufficient detail; otherwise, `false`.
+   */
+  isAlreadyLoaded(dtoType: DtoType): boolean {
     if (dtoType === DtoType.FULL) {
       return this.candidateSource.dtoType === DtoType.FULL || this.candidateSource.dtoType === DtoType.EXTENDED;
     }
     return dtoType === DtoType.EXTENDED && this.candidateSource.dtoType === DtoType.EXTENDED;
   }
 
-  private handleSuccessfulFetch(result: any, dtoType: DtoType): void {
+  handleSuccessfulFetch(result: any, dtoType: DtoType): void {
     this.candidateSource = {
       ...this.candidateSource,
       ...result,
@@ -259,17 +272,17 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
     this.loading = false;
   }
 
-  private handleError(err: any): void {
+  handleError(err: any): void {
     this.loading = false;
     this.error = err;
   }
 
-  private cacheCandidateSource(): void {
+  cacheCandidateSource(): void {
     const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
     this.candidateSourceCacheService.cache(cacheKey, this.candidateSource);
   }
 
-  private getFromCache(source: CandidateSource) {
+  getFromCache(source: CandidateSource) {
     const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
     const cached = this.candidateSourceCacheService.getFromCache(cacheKey);
     if (cached) {
@@ -357,7 +370,6 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('Destroying CandidateSourceComponent');
     this.candidateSourceCacheService.clearAll();
   }
 }
