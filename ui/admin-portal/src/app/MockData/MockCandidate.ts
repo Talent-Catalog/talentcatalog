@@ -109,6 +109,21 @@ export class MockCandidate implements Candidate {
       updatedDate: 1620000000000,
       migrated: false,
       cv: false,
+      uploadType: UploadType.other,
+      fileType: 'pdf'
+    },
+    {
+      id: 2,
+      type: AttachmentType.file,
+      name: 'Attachment 2',
+      location: 'location2',
+      url: 'http://example.com/attachment2',
+      createdBy: mockUser,
+      createdDate: 1620000000000,
+      updatedBy: mockUser,
+      updatedDate: 1620000000000,
+      migrated: false,
+      cv: true,
       uploadType: UploadType.cv,
       fileType: 'pdf'
     }

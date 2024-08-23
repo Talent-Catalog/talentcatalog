@@ -67,7 +67,7 @@ fdescribe('CvIconComponent', () => {
     const candidate: Candidate = mockCanidiate;
     component.candidate = candidate;
     component.getAttachments();
-    expect(component.cvs).toEqual(candidate.candidateAttachments);
+    expect(component.cvs).toEqual(candidate.candidateAttachments.filter(attachment => attachment.cv));
   });
 
   it('should return true if user can view CV and cvs are present', () => {
@@ -138,6 +138,7 @@ fdescribe('CvIconComponent', () => {
     component.cvs = mockCanidiate.candidateAttachments;
     fixture.detectChanges();
     const link: DebugElement = fixture.debugElement.query(By.css('.link-info'));
+    expect(link).toBeTruthy();
     link.triggerEventHandler('click', null);
     expect(component.openCVs).toHaveBeenCalled();
   });
