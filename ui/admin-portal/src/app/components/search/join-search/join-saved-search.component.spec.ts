@@ -74,6 +74,7 @@ fdescribe('JoinSavedSearchComponent', () => {
   it('should emit selected base search on selection', () => {
     savedSearchServiceSpy.get.and.returnValue(of(new MockSavedSearch()));
     component.selected(1);
+    // @ts-ignore: The TypeScript compiler requires the second overload signature, but the first overload is valid here
     expect(savedSearchServiceSpy.get).toHaveBeenCalledWith(1);
     expect(component.selectedBaseSearch).toEqual(new MockSavedSearch());
   })

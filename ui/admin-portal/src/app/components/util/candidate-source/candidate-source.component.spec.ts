@@ -199,12 +199,12 @@ fdescribe('CandidateSourceComponent', () => {
     savedSearchService.get.and.returnValue(of(new MockSavedSearch()));
     component.ngOnChanges({
       candidateSource: {
-        currentValue: { id: 2 } as CandidateSource,
+        currentValue: { id: 1 } as CandidateSource,
         previousValue: { } as CandidateSource,
         firstChange: false,
         isFirstChange: () => true,
       },
     });
-    expect(savedSearchService.get).toHaveBeenCalledWith(2, DtoType.FULL);
+    expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.FULL);
   });
 });
