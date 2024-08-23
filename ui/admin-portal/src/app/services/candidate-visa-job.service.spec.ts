@@ -46,7 +46,7 @@ fdescribe('CandidateVisaJobService', () => {
     it('should return a CandidateVisaJobCheck object when called', () => {
       const mockJobCheck: CandidateVisaJobCheck = {
         id: 1,
-        name: 'visa job',
+        notes: 'visa job',
       };
 
       service.get(1).subscribe((jobCheck: CandidateVisaJobCheck) => {
@@ -63,7 +63,7 @@ fdescribe('CandidateVisaJobService', () => {
     it('should return a CandidateVisaJobCheck object when created successfully', () => {
       const mockJobCheck: CandidateVisaJobCheck = {
         id: 1,
-        name: 'test',
+        notes: 'test',
       };
       const requestPayload: CreateCandidateVisaJobRequest = { jobOppId: 456 };
 

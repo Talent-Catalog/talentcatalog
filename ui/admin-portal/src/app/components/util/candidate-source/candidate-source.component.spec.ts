@@ -23,12 +23,17 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {Router} from "@angular/router";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateSource} from "../../../model/base";
+import {CandidateSource, DtoType} from "../../../model/base";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {of, throwError} from "rxjs";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {MockSavedList} from "../../../MockData/MockSavedList";
+import {
+  CandidateSourceResultsCacheService
+} from "../../../services/candidate-source-results-cache.service";
+import {LocalStorageService} from "angular-2-local-storage";
+import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";
 
 fdescribe('CandidateSourceComponent', () => {
   let component: CandidateSourceComponent;
@@ -41,6 +46,8 @@ fdescribe('CandidateSourceComponent', () => {
   let router: jasmine.SpyObj<Router>;
   let location: jasmine.SpyObj<Location>;
   let modalService: jasmine.SpyObj<NgbModal>;
+  let cacheService: CandidateSourceResultsCacheService;
+  let localStorageService: jasmine.SpyObj<LocalStorageService>;
 
   beforeEach(async () => {
     const savedSearchSpy = jasmine.createSpyObj('SavedSearchService', ['get']);
@@ -51,6 +58,7 @@ fdescribe('CandidateSourceComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const locationSpy = jasmine.createSpyObj('Location', ['path']);
     const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
+    const localStorageServiceSpy = jasmine.createSpyObj('LocalStorageService', ['set', 'get', 'remove']);
 
     await TestBed.configureTestingModule({
       declarations: [CandidateSourceComponent,RouterLinkStubDirective],
@@ -63,6 +71,8 @@ fdescribe('CandidateSourceComponent', () => {
         { provide: Router, useValue: routerSpy },
         { provide: Location, useValue: locationSpy },
         { provide: NgbModal, useValue: modalSpy },
+        CandidateSourceCacheService,
+        { provide: LocalStorageService, useValue: localStorageServiceSpy }
       ],
     }).compileComponents();
 
@@ -76,6 +86,8 @@ fdescribe('CandidateSourceComponent', () => {
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     location = TestBed.inject(Location) as jasmine.SpyObj<Location>;
     modalService = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
+    cacheService = TestBed.inject(CandidateSourceResultsCacheService);
+    localStorageService = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
 
     component.candidateSource = new MockCandidateSource();
     fixture.detectChanges();
@@ -140,7 +152,7 @@ fdescribe('CandidateSourceComponent', () => {
     expect(component.toggleWatch.emit).toHaveBeenCalledWith(component.candidateSource);
   });
 
-  it('should fetch saved search when seeMore is true', () => {
+  it('should fetch extended saved search when seeMore is true', () => {
     component.seeMore = true;
     savedSearchService.get.and.returnValue(of(new MockSavedSearch()));
     component.ngOnChanges({
@@ -151,7 +163,7 @@ fdescribe('CandidateSourceComponent', () => {
         isFirstChange: () => false,
       },
     });
-    expect(savedSearchService.get).toHaveBeenCalledWith(1);
+    expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.EXTENDED);
   });
 
   it('should handle errors when fetching saved search', () => {
@@ -183,16 +195,16 @@ fdescribe('CandidateSourceComponent', () => {
   });
 
   it('should fetch saved search on init', () => {
-    component.seeMore = true;
+    expect(component.seeMore).toBeUndefined();
     savedSearchService.get.and.returnValue(of(new MockSavedSearch()));
     component.ngOnChanges({
       candidateSource: {
         currentValue: { id: 2 } as CandidateSource,
-        previousValue: { id: 1 } as CandidateSource,
+        previousValue: { } as CandidateSource,
         firstChange: false,
-        isFirstChange: () => false,
+        isFirstChange: () => true,
       },
     });
-    expect(savedSearchService.get).toHaveBeenCalledWith(1);
+    expect(savedSearchService.get).toHaveBeenCalledWith(2, DtoType.FULL);
   });
 });
