@@ -22,7 +22,7 @@ export class CandidateSourceCacheService {
   }
 
   /**
-   * Adds an object to the cache with the specified cache key.
+   * Adds a candidate source to the cache with the specified cache key.
    * @param cacheKey - The key to use for the cached object.
    * @param source - The candidate source to cache.
    */
@@ -32,12 +32,12 @@ export class CandidateSourceCacheService {
   }
 
   /**
-   * Retrieves an object from the cache using the specified cache key.
+   * Retrieves a candidate source from the cache using the specified cache key.
    * @param cacheKey - The key of the cached object.
-   * @returns - The cached result, or null if the key doesn't exist.
+   * @returns - The cached source, or null if the key doesn't exist.
    */
-  getFromCache(cacheKey: string): CachedSourceResults | null {
-    return this.localStorageService.get<CachedSourceResults>(cacheKey);
+  getFromCache(cacheKey: string): CandidateSource | null {
+    return this.localStorageService.get<CandidateSource>(cacheKey);
   }
 
   /**
