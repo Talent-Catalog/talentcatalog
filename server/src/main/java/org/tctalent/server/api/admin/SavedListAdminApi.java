@@ -125,7 +125,7 @@ public class SavedListAdminApi implements
     public @NotNull List<Map<String, Object>> search(
             @Valid SearchSavedListRequest request) {
         List<SavedList> savedLists = savedListService.listSavedLists(request);
-        DtoBuilder builder = builderSelector.selectBuilder(request.getMinimalData());
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildList(savedLists);
     }
 
@@ -142,7 +142,7 @@ public class SavedListAdminApi implements
             @Valid SearchSavedListRequest request) {
         Page<SavedList> savedLists = savedListService.searchSavedLists(request);
 
-        DtoBuilder builder = builderSelector.selectBuilder(request.getMinimalData());
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(savedLists);
     }
 

@@ -741,5 +741,14 @@ const ALL_FIELDS = {
       "POST-SEND": null,
       "MARK-AS-READ": null,
       "NO-POSTS": null,
+      "ADD-LINK": null,
+      "LINK-PLACEHOLDER": null,
+      "LINK-URL": null,
+      "URL-PREFIX": null,
+      "URL-PREFIX-ERROR": null,
+      "LINK-EDIT-BTN": null,
+      "LINK-REMOVE-BTN": null,
+      "LINK-SAVE-BTN": null,
+      "LINK-CANCEL-BTN": null
   }
 }
