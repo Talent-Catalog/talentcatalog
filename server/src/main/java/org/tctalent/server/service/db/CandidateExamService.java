@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateExam;
@@ -36,6 +37,7 @@ public interface CandidateExamService {
      * @throws NoSuchObjectException if the there is no Candidate record with
      * that candidateId or no Nationality with the id given in the request
      */
+
     CandidateExam createExam(
             long candidateId, CreateCandidateExamRequest request)
             throws NoSuchObjectException;
@@ -45,6 +47,7 @@ public interface CandidateExamService {
      * @param request Request containing exam updates
      * @return List of updated candidate exam records
      */
+    @NotNull
     CandidateExam updateCandidateExam(UpdateCandidateExamRequest request);
 
     /**
@@ -52,6 +55,7 @@ public interface CandidateExamService {
      * @param id ID of candidate whose CandidateExam we want
      * @return list of candidate CandidateExam
      */
+    @NotNull
     List<CandidateExam> list(long id);
 
 }
