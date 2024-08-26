@@ -35,7 +35,10 @@ import {
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal, NgbOffcanvas, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
-import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
+import {
+  CreateFromDefaultSavedSearchRequest,
+  SavedSearchService
+} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -86,7 +89,9 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService
+} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {
   EditCandidateReviewStatusItemComponent
@@ -105,7 +110,9 @@ import {
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {EditCandidateOppComponent} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
+import {
+  EditCandidateOppComponent
+} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -1843,7 +1850,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
    * @param candidate Candidate who opportunities we need to search
    */
   getCandidateOppForThisJob(candidate: Candidate): CandidateOpportunity {
-    return candidate.candidateOpportunities?.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+    return candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
   }
 
   canAccessSalesforce(): boolean {
