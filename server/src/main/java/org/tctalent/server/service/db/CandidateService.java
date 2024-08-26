@@ -263,6 +263,16 @@ public interface CandidateService {
 
     /**
      * Returns the currently logged in candidate entity preloaded with
+     * candidate destinations.
+     * <p/>
+     * See doc for {@link #getLoggedInCandidate()}
+     * @return candidate entity preloaded with candidate destinations.
+     * Returned as Optional - can be empty if nobody is logged in.
+     */
+    Optional<Candidate> getLoggedInCandidateLoadDestinations();
+
+    /**
+     * Returns the currently logged in candidate entity preloaded with
      * candidate languages.
      * <p/>
      * See doc for {@link #getLoggedInCandidate()}

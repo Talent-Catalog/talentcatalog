@@ -45,7 +45,7 @@ fdescribe('CandidateVisaTabComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     candidateServiceMock = jasmine.createSpyObj('CandidateService', ['getIntakeData']);
-    countryServiceMock = jasmine.createSpyObj('CountryService', ['listTBBDestinations']);
+    countryServiceMock = jasmine.createSpyObj('CountryService', ['listTCDestinations']);
     candidateVisaCheckServiceMock = jasmine.createSpyObj('CandidateVisaCheckService', ['create', 'list']);
     modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
     authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly']);
@@ -70,7 +70,7 @@ fdescribe('CandidateVisaTabComponent', () => {
     component = fixture.componentInstance;
     component.candidate = mockCandidate;
     candidateServiceMock.getIntakeData.and.returnValue(of({}));
-    countryServiceMock.listTBBDestinations.and.returnValue(of([MockJob.country]));
+    countryServiceMock.listTCDestinations.and.returnValue(of([MockJob.country]));
     candidateVisaCheckServiceMock.list.and.returnValue(of([]));
     fixture.detectChanges();
   });

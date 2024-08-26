@@ -154,6 +154,14 @@ public class CandidatePortalApi {
         return candidateWithCertificationsDto().build(candidate);
     }
 
+    @GetMapping("destinations")
+    public Map<String, Object> getCandidateDestinations() {
+        Candidate candidate = this.candidateService
+            .getLoggedInCandidateLoadDestinations()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        return candidateWithDestinationsDto().build(candidate);
+    }
+
     @GetMapping("status")
     public Map<String, Object> getCandidateStatus() {
         Candidate candidate = this.candidateService.getLoggedInCandidate()
@@ -384,6 +392,22 @@ public class CandidatePortalApi {
                 .add("dateCompleted")
                 ;
     }
+    
+    private DtoBuilder candidateWithDestinationsDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("candidateDestinations", destinationsDto())
+                ;
+    }
+
+    private DtoBuilder destinationsDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("country", countryDto())
+                .add("interest")
+                .add("notes")
+                ;
+    }
 
     private DtoBuilder candidateWithCandidateLanguagesDto() {
         return new DtoBuilder()
@@ -463,6 +487,7 @@ public class CandidatePortalApi {
                 .add("linkedInLink")
                 .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 .add("candidateOpportunities", candidateOpportunityDto())
+                .add("candidateDestinations", destinationsDto())
                 ;
     }
 

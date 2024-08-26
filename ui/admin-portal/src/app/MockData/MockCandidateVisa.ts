@@ -14,7 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {CandidateVisa, TBBEligibilityAssessment, YesNo, YesNoUnsure} from "../model/candidate";
+import {
+  CandidateVisa,
+  FamilyRelations,
+  TBBEligibilityAssessment,
+  YesNo,
+  YesNoUnsure
+} from "../model/candidate";
 import {MockUser} from "./MockUser";
 import {MockJob} from "./MockJob";
 import {MockCandidateVisaJobCheck} from "./MockCandidateVisaCheck";
@@ -46,5 +52,7 @@ export const MockCandidateVisa: CandidateVisa = {
   visaEligibilityAssessment: YesNo.Yes,
   pathwayAssessment: YesNoUnsure.Unsure,
   pathwayAssessmentNotes: 'Not sure about the pathway',
+  destinationFamily: FamilyRelations.Child,
+  destinationFamilyLocation:'USA',
   candidateVisaJobChecks: [MockCandidateVisaJobCheck]
 };

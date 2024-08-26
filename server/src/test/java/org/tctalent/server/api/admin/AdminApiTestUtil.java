@@ -184,8 +184,6 @@ public class AdminApiTestUtil {
         destination.setCandidate(getCandidate());
         destination.setCountry(new Country("USA", Status.active));
         destination.setInterest(YesNoUnsure.Yes);
-        destination.setFamily(FamilyRelations.Cousin);
-        destination.setLocation("New York");
         destination.setNotes("Some destination notes");
         return destination;
     }
@@ -342,6 +340,8 @@ public class AdminApiTestUtil {
             candidateVisaCheck.setValidTravelDocsNotes( "These are some travel docs notes.");
             candidateVisaCheck.setPathwayAssessment(YesNoUnsure.No);
             candidateVisaCheck.setPathwayAssessmentNotes( "These are some pathway assessment notes.");
+            candidateVisaCheck.setDestinationFamily(FamilyRelations.Cousin);
+            candidateVisaCheck.setDestinationFamilyLocation("New York");
         }
         return candidateVisaCheck;
     }

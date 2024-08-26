@@ -73,6 +73,11 @@ export class RegistrationService {
       section: 8
     },
     {
+      key: 'destinations',
+      title: 'Do you have any destination preferences?',
+      section: 8
+    },
+    {
       key: 'additional',
       title: 'How did you hear about us?',
       section: 9

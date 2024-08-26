@@ -52,8 +52,8 @@ import {
   CandidateExam,
   CandidateIntakeData,
   Exam,
-  FamilyRelations,
-  HasPassport, YesNo,
+  HasPassport,
+  YesNo,
   YesNoUnsure
 } from "../../../../../model/candidate";
 import {MockJob} from "../../../../../MockData/MockJob";
@@ -121,8 +121,6 @@ const mockCandidateDestination: CandidateDestination = {
   id: 1,
   country:MockJob.country,
   interest: YesNoUnsure.Yes,
-  family: FamilyRelations.Child,
-  location:'USA',
   notes:'SimpleNote'
 }
 export const mockCandidateIntakeData: CandidateIntakeData = {
@@ -154,7 +152,7 @@ fdescribe('CandidateIntakeTabComponent', () => {
 
   beforeEach(async () => {
     const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData']);
-    const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTBBDestinations']);
+    const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTCDestinations']);
     const educationSpy = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     const occupationSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
     const languageSpy = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);

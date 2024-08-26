@@ -117,6 +117,11 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
             + " left join fetch c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
+    
+    @Query(" select c from Candidate c "
+            + " left join fetch c.candidateDestinations dest "
+            + " where c.id = :id ")
+    Candidate findByIdLoadDestinations(@Param("id") Long id);
 
     @Query(" select c from Candidate c "
             + " left join fetch c.candidateLanguages lang "

@@ -401,6 +401,12 @@ const ALL_FIELDS = {
           "NO": null
         }
       },
+      "DESTINATIONS": {
+        "LABEL": {
+          "INTEREST": null,
+          "NOTES": null,
+        },
+      },
       "CERTIFICATIONS": {
         "LABEL": {
           "NAME": null,
@@ -492,6 +498,9 @@ const ALL_FIELDS = {
         "TITLE": null
       },
       "LANGUAGES": {
+        "TITLE": null
+      },
+      "DESTINATIONS": {
         "TITLE": null
       },
       "OTHER": {

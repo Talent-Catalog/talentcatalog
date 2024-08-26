@@ -16,19 +16,19 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface CandidateVisaRepository
         extends JpaRepository<CandidateVisaCheck, Long> {
 
     @Query(" select v from CandidateVisaCheck v "
-            + " where v.candidate.id = :candidateId")
+            + " where v.candidate.id = :candidateId"
+            + " order by v.country.name asc")
     List<CandidateVisaCheck> findByCandidateId(
             @Param("candidateId") Long candidateId);
 
