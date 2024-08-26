@@ -42,6 +42,7 @@ import {TailoredCvComponent} from 'src/app/components/candidates/view/tailored-c
 import {AuthenticationService} from "../../../services/authentication.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
+import {DtoType} from "../../../model/base";
 
 
 @Component({
@@ -140,7 +141,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     /*load all our non-fixed lists */
     this.loading = true;
     const request: SearchSavedListRequest = {
-      minimalData: true, //We just need the names and ids of the lists
+      dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
       owned: true,
       shared: true,
       global: true,

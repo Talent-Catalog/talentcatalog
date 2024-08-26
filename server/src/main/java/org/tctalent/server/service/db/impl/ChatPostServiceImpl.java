@@ -36,6 +36,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.LinkPreview;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.repository.db.ChatPostRepository;
@@ -67,7 +68,11 @@ public class ChatPostServiceImpl implements ChatPostService {
         chatPost.setContent(post.getContent());
         chatPost.setCreatedDate(OffsetDateTime.now());
         chatPost.setCreatedBy(user);
-        chatPost.setLinkPreviews(post.getLinkPreviews());
+        if (post.getLinkPreviews() != null) {
+            for (LinkPreview linkPreview : post.getLinkPreviews()) {
+                chatPost.addLinkPreview(linkPreview);
+            }
+        }
 
         chatPost = chatPostRepository.save(chatPost);
 

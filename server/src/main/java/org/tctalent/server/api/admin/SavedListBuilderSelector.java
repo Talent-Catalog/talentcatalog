@@ -34,9 +34,9 @@ public class SavedListBuilderSelector {
         return selectBuilder(null);
     }
 
-    public @NotNull DtoBuilder selectBuilder(@Nullable Boolean minimalData) {
+    public @NotNull DtoBuilder selectBuilder(@Nullable DtoType dtoType) {
         DtoBuilder dtoBuilder;
-        if (minimalData != null && minimalData) {
+        if (dtoType == DtoType.MINIMAL) {
             dtoBuilder = minimalSavedListDto();
         } else {
             dtoBuilder = savedListDto();

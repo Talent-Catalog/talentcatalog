@@ -1,0 +1,16 @@
+<div class="link-tooltip"
+     [ngStyle]="{'left': leftOffset + 'px', 'bottom': bottomOffset + 'px'}"
+>
+  <a href="{{url}}" target="_blank">
+    {{url}}
+    <fa-icon icon="arrow-up-right-from-square" size="sm"></fa-icon>
+  </a>
+  <div class="button-group">
+    <button type="button" id="editBtn" (click)="onEditClick()">
+      {{ 'CHAT.LINK-EDIT-BTN' | translate }}
+    </button>
+    <button type="button" id="removeBtn" (click)="onRemoveClick()">
+      {{ 'CHAT.LINK-REMOVE-BTN' | translate }}
+    </button>
+  </div>
+</div>
