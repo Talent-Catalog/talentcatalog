@@ -265,7 +265,7 @@ export class CandidateFieldService {
 
   getIeltsScore(candidate: Candidate): string {
     let score: string = null;
-    if (candidate?.ieltsScore) {
+    if (candidate?.ieltsScore != null) {
       const type = checkIeltsScoreType(candidate)
       if (type === "IELTSGen") {
         score = candidate?.ieltsScore + ' (Gen)';

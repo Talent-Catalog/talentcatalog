@@ -113,6 +113,7 @@ export interface Candidate extends HasId {
   candidateJobExperiences?: CandidateJobExperience[];
   candidateLanguages?: CandidateLanguage[];
   candidateOccupations?: CandidateOccupation[];
+  candidateDestinations?: CandidateDestination[];
 
 }
 
@@ -293,7 +294,7 @@ export interface CandidateExam {
 export interface CandidateDestination {
   id?: number;
   country?: Country;
-  interest?: YesNoUnsure;
+  interest?: YesNoUnsureLearn;
   family?: FamilyRelations;
   location?: string;
   notes?: string;

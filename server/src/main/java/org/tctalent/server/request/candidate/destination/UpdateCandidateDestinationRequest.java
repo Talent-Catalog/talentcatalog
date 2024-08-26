@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,22 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
+package org.tctalent.server.request.candidate.destination;
 
-@Component({
-  selector: 'app-destinations',
-  templateUrl: './destinations.component.html',
-  styleUrls: ['./destinations.component.scss']
-})
-export class DestinationsComponent implements OnInit {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.YesNoUnsure;
 
-  @Input() candidate: Candidate;
-  @Input() candidateIntakeData: CandidateIntakeData;
+/**
+ * Required fields for updating a candidate destination
+ *
+ * @author Caroline Cameron
+ */
+@Getter
+@Setter
+@ToString
+public class UpdateCandidateDestinationRequest {
+    private YesNoUnsure interest;
 
-  constructor() {}
-
-  ngOnInit(): void {
-  }
-
+    @Nullable
+    private String notes;
 }

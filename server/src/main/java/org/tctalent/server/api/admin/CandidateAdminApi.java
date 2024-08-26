@@ -120,7 +120,7 @@ public class CandidateAdminApi {
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
         //need to fetch more data from the database than that.
-        DtoBuilder builder = builderSelector.selectBuilder(true);
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 
@@ -130,7 +130,7 @@ public class CandidateAdminApi {
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
         //need to fetch more data from the database than that.
-        DtoBuilder builder = builderSelector.selectBuilder(true);
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 
@@ -140,7 +140,7 @@ public class CandidateAdminApi {
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
         //need to fetch more data from the database than that.
-        DtoBuilder builder = builderSelector.selectBuilder(true);
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 
@@ -150,7 +150,7 @@ public class CandidateAdminApi {
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
         //need to fetch more data from the database than that.
-        DtoBuilder builder = builderSelector.selectBuilder(true);
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 

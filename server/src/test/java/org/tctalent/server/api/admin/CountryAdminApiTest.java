@@ -154,7 +154,7 @@ class CountryAdminApiTest extends ApiTestBase {
   @DisplayName("get destination countries succeeds")
   void getDestinationCountriesSucceeds() throws Exception {
     given(countryService
-        .getTBBDestinations())
+        .getTCDestinations())
         .willReturn(countries);
 
     mockMvc.perform(get(BASE_PATH + "/" + DESTINATIONS_LIST_PATH)
@@ -175,7 +175,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[2].status", is("active")));
 
 
-    verify(countryService).getTBBDestinations();
+    verify(countryService).getTCDestinations();
   }
 
   @Test

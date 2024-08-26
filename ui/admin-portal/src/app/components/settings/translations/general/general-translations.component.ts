@@ -401,6 +401,12 @@ const ALL_FIELDS = {
           "NO": null
         }
       },
+      "DESTINATIONS": {
+        "LABEL": {
+          "INTEREST": null,
+          "NOTES": null,
+        },
+      },
       "CERTIFICATIONS": {
         "LABEL": {
           "NAME": null,
@@ -492,6 +498,9 @@ const ALL_FIELDS = {
         "TITLE": null
       },
       "LANGUAGES": {
+        "TITLE": null
+      },
+      "DESTINATIONS": {
         "TITLE": null
       },
       "OTHER": {
@@ -741,5 +750,14 @@ const ALL_FIELDS = {
       "POST-SEND": null,
       "MARK-AS-READ": null,
       "NO-POSTS": null,
+      "ADD-LINK": null,
+      "LINK-PLACEHOLDER": null,
+      "LINK-URL": null,
+      "URL-PREFIX": null,
+      "URL-PREFIX-ERROR": null,
+      "LINK-EDIT-BTN": null,
+      "LINK-REMOVE-BTN": null,
+      "LINK-SAVE-BTN": null,
+      "LINK-CANCEL-BTN": null
   }
 }

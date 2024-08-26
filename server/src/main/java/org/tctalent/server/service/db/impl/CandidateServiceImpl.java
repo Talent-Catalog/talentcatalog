@@ -547,10 +547,10 @@ public class CandidateServiceImpl implements CandidateService {
             candidateDestinationCountryIds.add(destination.getCountry().getId());
         }
 
-        //Check that all TBB destinations are present for candidate, adding
+        //Check that all TC destinations are present for candidate, adding
         //missing ones if necessary
         boolean addedDestinations = false;
-        for (Country country : countryService.getTBBDestinations()) {
+        for (Country country : countryService.getTCDestinations()) {
             //Does candidate have this destination preference?
             if (!candidateDestinationCountryIds.contains(country.getId())) {
                 //If not, add in a new one
@@ -1214,12 +1214,23 @@ public class CandidateServiceImpl implements CandidateService {
 
     private void checkForChangedPartner(Candidate candidate, Country country) {
         //Do we have an auto assignable partner in this country
-        Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
-        User user = candidate.getUser();
-        if (partner != null && !partner.equals(user.getPartner())) {
-            //Partner of candidate needs to change
-            user.setPartner((PartnerImpl) partner);
-            userRepository.save(user);
+        Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
+
+        //Is there a country assigned partner?
+        if (autoAssignedCountryPartner != null) {
+
+            //Get current user partner.
+            User user = candidate.getUser();
+            final PartnerImpl currentUserPartner = user.getPartner();
+
+            //The country assigned partner only overrides the default source partner.
+            if (currentUserPartner.isDefaultSourcePartner()) {
+                if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
+                    //Partner of candidate needs to change
+                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
+                    userRepository.save(user);
+                }
+            }
         }
     }
 
@@ -1490,6 +1501,18 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             Candidate candidate = candidateRepository
                     .findByIdLoadCertifications(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
+    }
+    
+    @Override
+    public Optional<Candidate> getLoggedInCandidateLoadDestinations() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadDestinations(candidateId);
             return candidate == null ? Optional.empty() : Optional.of(candidate);
         }
     }

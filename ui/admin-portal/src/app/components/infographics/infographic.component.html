@@ -98,7 +98,7 @@
         <ul class="navbar-nav ms-auto">
           <div ngbDropdown display="dynamic" placement="bottom-end">
             <button type="button" class="btn btn-info float-end" id="jumpToStats" ngbDropdownToggle>Go to stat <i class="fa-solid fa-hand-point-down"></i></button>
-            <div ngbDropdownMenu aria-labelledby="jumpToStats">
+            <div ngbDropdownMenu aria-labelledby="jumpToStats" class="scroll-dropdown">
               <ng-container *ngFor="let statReport of statReports; let i = index">
                 <a ngbDropdownItem (click)="scroll(i)">{{statReport.name}}</a>
               </ng-container>

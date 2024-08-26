@@ -25,7 +25,7 @@ import {
   CachedSourceResults,
   CandidateSourceResultsCacheService
 } from '../../../../services/candidate-source-results-cache.service';
-import {CandidateSource, defaultReviewStatusFilter} from '../../../../model/base';
+import {CandidateSource, defaultReviewStatusFilter, DtoType} from '../../../../model/base';
 import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
 import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthorizationService} from '../../../../services/authorization.service';
@@ -170,6 +170,7 @@ constructor(
       request.pageSize = this.pageSize;
       request.sortFields = [this.sortField];
       request.sortDirection = this.sortDirection;
+      request.dtoType = DtoType.PREVIEW;
       if (reviewable) {
         request.reviewStatusFilter = defaultReviewStatusFilter;
       }
