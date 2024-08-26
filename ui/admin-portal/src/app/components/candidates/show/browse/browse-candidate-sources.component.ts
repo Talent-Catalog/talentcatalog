@@ -44,7 +44,8 @@ import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
 import {
   CandidateSource,
-  CandidateSourceType, DtoType,
+  CandidateSourceType,
+  DtoType,
   isMine,
   isStarredByMe,
   SearchBy
@@ -333,7 +334,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         });
     } else {
       //Show modal allowing for list selection
-      const modal = this.modalService.open(SelectListComponent);
+      const modal = this.modalService.open(SelectListComponent, {size: "lg"});
       modal.componentInstance.action = "Copy";
       modal.componentInstance.title = "Copy to another List";
       modal.componentInstance.excludeList = source;

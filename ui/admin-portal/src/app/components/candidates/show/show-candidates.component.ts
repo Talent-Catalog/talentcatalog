@@ -60,7 +60,8 @@ import {
 import {
   CandidateSource,
   canEditSource,
-  defaultReviewStatusFilter, DtoType,
+  defaultReviewStatusFilter,
+  DtoType,
   indexOfHasId,
   isMine,
   isStarredByMe,
@@ -1077,7 +1078,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private requestSaveSelection() {
     //Show modal allowing for list selection
-    const modal = this.modalService.open(SelectListComponent);
+    const modal = this.modalService.open(SelectListComponent, {size: "lg"});
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
     if (this.candidateSource.sfJobOpp != null) {
@@ -1684,7 +1685,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   doCopySource() {
     //Show modal allowing for list selection
-    const modal = this.modalService.open(SelectListComponent);
+    const modal = this.modalService.open(SelectListComponent, {size: "lg"});
     modal.componentInstance.action = "Copy";
     modal.componentInstance.title = "Copy to another List";
     modal.componentInstance.excludeList = this.candidateSource;
