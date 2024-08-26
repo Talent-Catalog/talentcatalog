@@ -547,7 +547,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidateDestinationCountryIds.add(destination.getCountry().getId());
         }
 
-        //Check that all TBB destinations are present for candidate, adding
+        //Check that all TC destinations are present for candidate, adding
         //missing ones if necessary
         boolean addedDestinations = false;
         for (Country country : countryService.getTCDestinations()) {
