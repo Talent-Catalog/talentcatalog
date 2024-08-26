@@ -47,6 +47,11 @@ public interface CandidateExamService {
      */
     CandidateExam updateCandidateExam(UpdateCandidateExamRequest request);
 
+    /**
+     * List of CandidateExam associated to candidate with given candidate id.
+     * @param id ID of candidate whose CandidateExam we want
+     * @return list of candidate CandidateExam
+     */
     List<CandidateExam> list(long id);
 
 }
