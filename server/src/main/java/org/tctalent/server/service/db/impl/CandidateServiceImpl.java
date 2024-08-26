@@ -1214,12 +1214,23 @@ public class CandidateServiceImpl implements CandidateService {
 
     private void checkForChangedPartner(Candidate candidate, Country country) {
         //Do we have an auto assignable partner in this country
-        Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
-        User user = candidate.getUser();
-        if (partner != null && !partner.equals(user.getPartner())) {
-            //Partner of candidate needs to change
-            user.setPartner((PartnerImpl) partner);
-            userRepository.save(user);
+        Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
+
+        //Is there a country assigned partner?
+        if (autoAssignedCountryPartner != null) {
+
+            //Get current user partner.
+            User user = candidate.getUser();
+            final PartnerImpl currentUserPartner = user.getPartner();
+
+            //The country assigned partner only overrides the default source partner.
+            if (currentUserPartner.isDefaultSourcePartner()) {
+                if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
+                    //Partner of candidate needs to change
+                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
+                    userRepository.save(user);
+                }
+            }
         }
     }
 
