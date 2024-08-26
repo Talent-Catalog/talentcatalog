@@ -550,7 +550,7 @@ public class CandidateServiceImpl implements CandidateService {
         //Check that all TBB destinations are present for candidate, adding
         //missing ones if necessary
         boolean addedDestinations = false;
-        for (Country country : countryService.getTBBDestinations()) {
+        for (Country country : countryService.getTCDestinations()) {
             //Does candidate have this destination preference?
             if (!candidateDestinationCountryIds.contains(country.getId())) {
                 //If not, add in a new one

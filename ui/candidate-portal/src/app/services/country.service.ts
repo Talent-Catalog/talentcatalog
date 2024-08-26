@@ -29,7 +29,7 @@ export class CountryService {
 
   private apiUrl: string = environment.apiUrl + '/country';
 
-  private tbbDestinations: Country[] = [];
+  private tcDestinations: Country[] = [];
 
   constructor(private http: HttpClient, private languageService: LanguageService) { }
 
@@ -133,15 +133,15 @@ export class CountryService {
     );
   }
 
-  listTBBDestinations(): Observable<Country[]> {
+  listTCDestinations(): Observable<Country[]> {
     //If we already have the data return it, otherwise get it.
-    return this.tbbDestinations.length > 0 ?
+    return this.tcDestinations.length > 0 ?
       //"of" turns the data into an Observable
-      of(this.tbbDestinations) :
+      of(this.tcDestinations) :
       this.http.get<Country[]>(`${this.apiUrl}/destinations`)
       .pipe(
         //Save data the first time we fetch it
-        tap(data => {this.tbbDestinations = data})
+        tap(data => {this.tcDestinations = data})
       );
   }
 

@@ -45,8 +45,8 @@ public class CountryPortalApi {
     }
 
     @GetMapping("destinations")
-    public @NotNull List<Map<String, Object>> listTBBDestinations() {
-        List<Country> countries = countryService.getTBBDestinations();
+    public @NotNull List<Map<String, Object>> listTCDestinations() {
+        List<Country> countries = countryService.getTCDestinations();
         return countryDto().buildList(countries);
     }
 

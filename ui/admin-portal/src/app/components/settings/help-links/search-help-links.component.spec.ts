@@ -50,7 +50,7 @@ fdescribe('SearchHelpLinksComponent', () => {
 
   beforeEach(async () => {
     const helpLinkServiceMock = jasmine.createSpyObj('HelpLinkService', ['searchPaged']);
-    const countryServiceMock = jasmine.createSpyObj('CountryService', ['listTBBDestinations']);
+    const countryServiceMock = jasmine.createSpyObj('CountryService', ['listTCDestinations']);
     const modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
     const authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isReadOnly']);
 
@@ -75,7 +75,7 @@ fdescribe('SearchHelpLinksComponent', () => {
 
     // Mock initial data and methods
     helpLinkServiceSpy.searchPaged.and.returnValue(of(searchResults));
-    countryServiceSpy.listTBBDestinations.and.returnValue(of([]));
+    countryServiceSpy.listTCDestinations.and.returnValue(of([]));
     authServiceSpy.isReadOnly.and.returnValue(false);
 
     fixture.detectChanges();

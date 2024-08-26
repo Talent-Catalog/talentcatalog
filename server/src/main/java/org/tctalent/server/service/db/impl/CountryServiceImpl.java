@@ -54,7 +54,7 @@ import org.tctalent.server.util.locale.LocaleHelper;
 public class CountryServiceImpl implements CountryService, InitializingBean {
 
     @Value("${tbb.destinations}")
-    private String[] tbbDestinations;
+    private String[] tcDestinations;
     private List<Country> tbbDestinationCountries;
 
     private Map<Long, Country> cache = null;
@@ -78,7 +78,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     public void afterPropertiesSet() {
         //Extract the TBB destination countries array from the configuration
         tbbDestinationCountries = new ArrayList<>();
-        for (String tbbDestination : tbbDestinations) {
+        for (String tbbDestination : tcDestinations) {
             Country country = countryRepository.findByNameIgnoreCase(tbbDestination);
             if (country == null) {
                 LogBuilder.builder(log)
@@ -130,7 +130,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
-    public List<Country> getTBBDestinations() {
+    public List<Country> getTCDestinations() {
         return tbbDestinationCountries;
     }
 

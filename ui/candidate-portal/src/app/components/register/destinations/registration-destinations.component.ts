@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Candidate, CandidateDestination} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
@@ -47,7 +55,7 @@ export class RegistrationDestinationsComponent implements OnInit {
     this.saving = false;
     this.loading = true;
 
-    this.countryService.listTBBDestinations().subscribe(
+    this.countryService.listTCDestinations().subscribe(
       (results) => {
         this.destinations = results;
       }

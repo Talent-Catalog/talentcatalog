@@ -152,7 +152,7 @@ fdescribe('CandidateIntakeTabComponent', () => {
 
   beforeEach(async () => {
     const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData']);
-    const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTBBDestinations']);
+    const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTCDestinations']);
     const educationSpy = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     const occupationSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
     const languageSpy = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
