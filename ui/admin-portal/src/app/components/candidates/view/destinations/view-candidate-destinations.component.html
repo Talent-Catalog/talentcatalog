@@ -27,7 +27,7 @@
   </div>
 
   <div class="card-body">
-    <p *ngIf="checkForEmptyDestinations(); else hasDestinations" class="m-1">
+    <p *ngIf="this.emptyDestinations; else hasDestinations" class="m-1">
       No destination data has been entered by this candidate.
     </p>
     <ng-template #hasDestinations>

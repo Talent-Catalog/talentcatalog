@@ -20,6 +20,7 @@ export class ViewCandidateDestinationsComponent implements OnInit {
   loading: boolean;
   error;
   candidateDestinations: CandidateDestination[];
+  emptyDestinations: boolean;
 
   constructor(private candidateDestinationService: CandidateDestinationService,
               private modalService: NgbModal) { }
@@ -39,8 +40,8 @@ export class ViewCandidateDestinationsComponent implements OnInit {
     this.candidateDestinationService.list(this.candidate.id).subscribe(
       candidateDestinations => {
         this.candidateDestinations = candidateDestinations;
-        console.log(candidateDestinations)
         this.loading = false;
+        this.emptyDestinations = this.checkForEmptyDestinations();
       },
       error => {
         this.error = error;
