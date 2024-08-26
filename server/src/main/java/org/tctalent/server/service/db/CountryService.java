@@ -56,7 +56,7 @@ public interface CountryService {
 
     boolean deleteCountry(long id) throws EntityReferencedException;
 
-    List<Country> getTBBDestinations();
+    List<Country> getTCDestinations();
 
     /**
      * Sets the country ISO codes of all countries with names matching the English country names

@@ -3,7 +3,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {CandidateDestinationService} from './candidate-destination.service';
 import {environment} from '../../environments/environment';
 import {CandidateDestination} from '../model/candidate-destination';
-import {FamilyRelations, YesNoUnsure} from "../model/candidate";
+import {YesNoUnsure} from "../model/candidate";
 import {MockJob} from "../MockData/MockJob";
 import {MockCandidate} from "../MockData/MockCandidate";
 
@@ -37,8 +37,6 @@ fdescribe('CandidateDestinationService', () => {
       country: MockJob.country,
       candidate: new MockCandidate(),
       interest:YesNoUnsure.Yes,
-      family:FamilyRelations.Child,
-      location:'AFC',
       notes:'Notes'
     };
 

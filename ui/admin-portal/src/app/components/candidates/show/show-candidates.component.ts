@@ -60,7 +60,8 @@ import {
 import {
   CandidateSource,
   canEditSource,
-  defaultReviewStatusFilter, DtoType,
+  defaultReviewStatusFilter,
+  DtoType,
   indexOfHasId,
   isMine,
   isStarredByMe,

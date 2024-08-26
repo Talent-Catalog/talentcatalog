@@ -54,8 +54,8 @@ import org.tctalent.server.util.locale.LocaleHelper;
 public class CountryServiceImpl implements CountryService, InitializingBean {
 
     @Value("${tbb.destinations}")
-    private String[] tbbDestinations;
-    private List<Country> tbbDestinationCountries;
+    private String[] tcDestinations;
+    private List<Country> tcDestinationCountries;
 
     private Map<Long, Country> cache = null;
     private final CandidateRepository candidateRepository;
@@ -76,18 +76,18 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        //Extract the TBB destination countries array from the configuration
-        tbbDestinationCountries = new ArrayList<>();
-        for (String tbbDestination : tbbDestinations) {
-            Country country = countryRepository.findByNameIgnoreCase(tbbDestination);
+        //Extract the TC destination countries array from the configuration
+        tcDestinationCountries = new ArrayList<>();
+        for (String tcDestination : tcDestinations) {
+            Country country = countryRepository.findByNameIgnoreCase(tcDestination);
             if (country == null) {
                 LogBuilder.builder(log)
                     .action("CountryServiceImpl")
                     .message("Error in application.yml file. See tbb.destinations. " +
-                            "No country found called " + tbbDestination)
+                            "No country found called " + tcDestination)
                     .logError();
             } else {
-                tbbDestinationCountries.add(country);
+                tcDestinationCountries.add(country);
             }
         }
     }
@@ -130,8 +130,8 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
-    public List<Country> getTBBDestinations() {
-        return tbbDestinationCountries;
+    public List<Country> getTCDestinations() {
+        return tcDestinationCountries;
     }
 
     @Override

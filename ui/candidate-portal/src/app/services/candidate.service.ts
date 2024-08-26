@@ -145,4 +145,7 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/exams`);
   }
 
+  getCandidateDestinations(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/destinations`);
+  }
 }
