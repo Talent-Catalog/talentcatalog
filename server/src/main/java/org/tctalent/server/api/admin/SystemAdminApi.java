@@ -2809,6 +2809,7 @@ public class SystemAdminApi {
      * @param listId id of saved list containing all the candidates to be reassigned
      * @param partnerId id of the partner org to which the candidates will be reassigned
      */
+    @Transactional
     @GetMapping("reassign-candidates/list-{listId}-to-partner-{partnerId}")
     public void reassignCandidates(
         @PathVariable("listId") int listId,

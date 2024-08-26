@@ -3076,10 +3076,17 @@ public class CandidateServiceImpl implements CandidateService {
     private void processCandidateReassignment(
         List<Candidate> candidateList, Partner newPartner
     ) {
-        for (Candidate candidate : candidateList) {
-            User candidateUser = candidate.getUser();
-            candidateUser.setPartner((PartnerImpl) newPartner);
-            save(candidate, true);
+        if (newPartner instanceof PartnerImpl) {
+            for (Candidate candidate : candidateList) {
+                User candidateUser = candidate.getUser();
+                candidateUser.setPartner((PartnerImpl) newPartner);
+                save(candidate, true);
+            }
+        } else {
+            LogBuilder.builder(log)
+                .action("Process candidate reassignment")
+                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation of Partner.")
+                .logError();
         }
     }
 
