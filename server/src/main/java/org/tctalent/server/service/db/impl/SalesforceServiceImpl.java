@@ -847,6 +847,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Log any failures
         int count = 0;
+        List<String> errors = new ArrayList<>();
         for (CandidateOpportunityRecordComposite request : requests) {
             UpsertResult result = results[count++];
             if (!result.isSuccess()) {
@@ -856,7 +857,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                         + request.getName()
                         + ": " + result.getErrorMessage())
                     .logError();
+                // Create list of errors to return to admin portal
+                errors.add(request.getName() + ": " + result.getErrorMessage());
             }
+        }
+        if (!errors.isEmpty()) {
+            throw new SalesforceException("The following update/s failed: " + String.join(",", errors) + ")");
         }
     }
 
