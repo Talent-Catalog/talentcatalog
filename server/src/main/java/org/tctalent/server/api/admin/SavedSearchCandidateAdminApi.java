@@ -74,7 +74,7 @@ public class SavedSearchCandidateAdminApi implements
 
         savedSearchService.setCandidateContext(savedSearchId, candidates);
 
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);
     }
 

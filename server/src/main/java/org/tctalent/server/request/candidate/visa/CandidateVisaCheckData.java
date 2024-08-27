@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.RiskLevel;
 import org.tctalent.server.model.db.TBBEligibilityAssessment;
@@ -56,6 +57,8 @@ public class CandidateVisaCheckData {
     private String visaCreatedById;
     private YesNoUnsure visaPathwayAssessment;
     private String visaPathwayAssessmentNotes;
+    private FamilyRelations visaDestinationFamily;
+    private String visaDestinationFamilyLocation;
 
     //Corresponds to CandidateVisaJobCheck fields
     private Long visaJobId;

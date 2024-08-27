@@ -87,5 +87,18 @@
     </ng-template>
   </ng-container>
 
+  <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCandidateChatsAsSourcePartner">
+    <a ngbNavLink title="Active chats with candidates managed by my partner organization">
+      {{loggedInPartner.abbreviation}} Candidate Chats  <i class="fa-solid fa-user"></i>
+      <app-chat-read-status
+        [observable]="candidatesWithChatRead$"
+      ></app-chat-read-status>
+    </a>
+    <ng-template ngbNavContent>
+      <app-candidates-with-chat [chatsRead$]="candidatesWithChatRead$">
+      </app-candidates-with-chat>
+    </ng-template>
+  </ng-container>
+
 </nav>
 <div [ngbNavOutlet]="nav" class="m-2"></div>

@@ -198,15 +198,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "max_education_level_id")
     private EducationLevel maxEducationLevel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //EAGER loading here reduces number of DB accesses
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "country_id")
     private Country country;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "nationality_id")
     private Country nationality;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 

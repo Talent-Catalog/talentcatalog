@@ -289,6 +289,7 @@ const ALL_FIELDS = {
           "EDUCATION/UNIVERSITY": null,
           "EDUCATION/SCHOOL": null,
           "LANGUAGE": null,
+          "EXAM": null,
           "CERTIFICATIONS": null,
           "ADDITIONAL": null,
           "UPLOAD": null,
@@ -382,6 +383,30 @@ const ALL_FIELDS = {
           "ADD": null
         }
       },
+      "EXAM": {
+        "LABEL": {
+          "EXAM": null,
+          "SCORE": null,
+          "YEAR": null,
+          "NOTES": null,
+          "OTHEREXAM":null
+        },
+        "BUTTON": {
+          "ADD": null
+        },
+        "DELETE": {
+          "TITLE": null,
+          "CONFIRMATION": null,
+          "YES": null,
+          "NO": null
+        }
+      },
+      "DESTINATIONS": {
+        "LABEL": {
+          "INTEREST": null,
+          "NOTES": null,
+        },
+      },
       "CERTIFICATIONS": {
         "LABEL": {
           "NAME": null,
@@ -466,10 +491,16 @@ const ALL_FIELDS = {
       "EDUCATION": {
         "TITLE": null
       },
+      "EXAMS": {
+        "TITLE": null
+      },
       "CERTIFICATIONS": {
         "TITLE": null
       },
       "LANGUAGES": {
+        "TITLE": null
+      },
+      "DESTINATIONS": {
         "TITLE": null
       },
       "OTHER": {
@@ -497,6 +528,7 @@ const ALL_FIELDS = {
         "EXPERIENCE": null,
         "EDUCATION": null,
         "LANGUAGES": null,
+        "EXAMS": null,
         "CERTIFICATIONS": null,
         "ADDITIONAL": null,
         "UPLOAD": null
@@ -512,7 +544,8 @@ const ALL_FIELDS = {
       },
       "PLACEHOLDER" : {
         "SELECT": null,
-        "SELECTORTYPE": null
+        "SELECTORTYPE": null,
+        "SELECTOREXAM": null
       },
       "ERROR": {
         "REQUIRED": null,
@@ -717,5 +750,14 @@ const ALL_FIELDS = {
       "POST-SEND": null,
       "MARK-AS-READ": null,
       "NO-POSTS": null,
+      "ADD-LINK": null,
+      "LINK-PLACEHOLDER": null,
+      "LINK-URL": null,
+      "URL-PREFIX": null,
+      "URL-PREFIX-ERROR": null,
+      "LINK-EDIT-BTN": null,
+      "LINK-REMOVE-BTN": null,
+      "LINK-SAVE-BTN": null,
+      "LINK-CANCEL-BTN": null
   }
 }

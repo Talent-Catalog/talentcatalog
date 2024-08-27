@@ -24,13 +24,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
-
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -52,11 +50,6 @@ public class CandidateDestination extends AbstractDomainObject<Long>
     @Enumerated(EnumType.STRING)
     private YesNoUnsure interest;
 
-    @Enumerated(EnumType.STRING)
-    private FamilyRelations family;
-
-    private String location;
-
     private String notes;
 
     @Override
@@ -74,12 +67,6 @@ public class CandidateDestination extends AbstractDomainObject<Long>
         setCountry(country);
         if (data.getDestinationInterest() != null) {
             setInterest(data.getDestinationInterest());
-        }
-        if (data.getDestinationFamily() != null) {
-            setFamily(data.getDestinationFamily());
-        }
-        if (data.getDestinationLocation() != null) {
-            setLocation(data.getDestinationLocation());
         }
         if (data.getDestinationNotes() != null) {
             setNotes(data.getDestinationNotes());

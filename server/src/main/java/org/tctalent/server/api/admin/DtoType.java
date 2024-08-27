@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,3 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+package org.tctalent.server.api.admin;
+
+public enum DtoType {
+  MINIMAL,
+  FULL,
+  PREVIEW
+}

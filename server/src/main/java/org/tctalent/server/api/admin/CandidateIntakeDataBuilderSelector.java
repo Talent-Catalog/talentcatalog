@@ -206,8 +206,6 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("country", countryDto())
                 .add("interest")
-                .add("family")
-                .add("location")
                 .add("notes")
                 ;
     }
@@ -243,8 +241,6 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder visaJobCheckDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("name")
-                .add("sfJobLink")
                 .add("jobOpp", jobOppDto())
                 .add("interest")
                 .add("interestNotes")

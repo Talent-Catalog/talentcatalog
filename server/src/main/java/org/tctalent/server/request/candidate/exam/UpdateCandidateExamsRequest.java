@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+package org.tctalent.server.request.candidate.exam;/*
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,22 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
-@Component({
-  selector: 'app-destinations',
-  templateUrl: './destinations.component.html',
-  styleUrls: ['./destinations.component.scss']
-})
-export class DestinationsComponent implements OnInit {
+@Setter
+@Getter
+public class UpdateCandidateExamsRequest {
 
-  @Input() candidate: Candidate;
-  @Input() candidateIntakeData: CandidateIntakeData;
-
-  constructor() {}
-
-  ngOnInit(): void {
-  }
+    List<UpdateCandidateExamRequest> updates;
 
 }
+
+

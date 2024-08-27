@@ -11,14 +11,21 @@
                   placeholder="Write your message..."
                   [formControlName]="'content'"
                   (onEditorCreated)="editorCreated($event)"
-                  (onContentChanged)="checkForLinks($event)">
+                  (onContentChanged)="contentChanged($event)"
+                  (onSelectionChanged)="editorSelectionChanged($event)"
+    >
       <div quill-editor-toolbar id="quillToolbar">
           <button class="ql-list" value="ordered" title="Ordered list"></button>
           <button class="ql-list" value="bullet" title="Bullet list"></button>
           <button class="ql-bold" title="Bold text"></button>
           <button class="ql-italic" title="Italic text"></button>
           <button class="ql-underline" title="Underline text"></button>
-          <button class="ql-link" title="Add link"></button>
+
+          <button [ngClass]="!this.linkBtnSelected ? 'custom-link-btn' : 'custom-link-btn-selected'"
+                  title="{{ 'CHAT.ADD-LINK' | translate }}"
+                  (click)="onLinkBtnClickOrKeyShortcut()">
+            <i class="fas fa-link small"></i>
+          </button>
 
           <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
             <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
@@ -41,12 +48,19 @@
             [autoFocus]="true"
             [perLine]="8"
           ></emoji-mart>
+          <app-link-tooltip *ngIf="this.linkTooltipVisible"
+                            [leftOffset]="linkTooltipLeftOffset"
+                            [bottomOffset]="linkTooltipBottomOffset"
+                            [url]="editorSelection.linkUrl"
+                            (editClicked)="onEditLinkTooltipClick()"
+                            (removeClicked)="onRemoveLinkTooltipClick()"
+          ></app-link-tooltip>
         </div>
     </quill-editor>
   </div>
 
   <div class="d-flex justify-content-end">
-    <button type="button" class="btn btn-success " (click)="onSend()"
+    <button type="button" class="btn btn-success" (click)="onSend()"
             [disabled]="postForm.invalid">
       Send <i class="fa-solid fa-paper-plane"></i>
     </button>

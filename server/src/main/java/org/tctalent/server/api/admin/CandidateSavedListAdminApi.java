@@ -71,7 +71,7 @@ public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedLis
             long candidateId, @Valid SearchSavedListRequest request)
             throws NoSuchObjectException {
         List<SavedList> savedLists = savedListService.search(candidateId, request);
-        DtoBuilder builder = builderSelector.selectBuilder(request.getMinimalData());
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildList(savedLists);
     }
 }

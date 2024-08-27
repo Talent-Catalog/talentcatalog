@@ -42,7 +42,11 @@ import {Router} from '@angular/router';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
-import {CandidateSource, CandidateSourceType, SearchBy} from '../../../../model/base';
+import {
+  CandidateSource,
+  CandidateSourceType, DtoType,
+  SearchBy
+} from '../../../../model/base';
 import {
   ContentUpdateType,
   CopySourceContentsRequest,
@@ -194,7 +198,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     //Default sort for them is alpha
     req.sortFields = ['name'];
     req.sortDirection = 'ASC';
-    req.minimalData = true;
+    req.dtoType = DtoType.MINIMAL;
 
     switch (this.searchBy) {
       case SearchBy.mine:

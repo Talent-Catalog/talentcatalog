@@ -346,7 +346,7 @@ public class SavedSearchAdminApi implements
 
     private DtoBuilder selectedDtoBuilder(SearchSavedSearchRequest request) {
         DtoBuilder builder;
-        if (request.getMinimalData() != null && request.getMinimalData()) {
+        if (DtoType.MINIMAL.equals(request.getDtoType())) {
             builder = minimalSavedSearchDto();
         } else {
             builder = savedSearchDto();

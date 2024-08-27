@@ -30,8 +30,9 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
-import {CandidateSource} from "../model/base";
+import {CandidateSource, FetchCandidatesWithChatRequest} from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
+import {JobChatUserInfo} from "../model/chat";
 
 export interface DownloadCVRequest {
   candidateId: number,
@@ -204,4 +205,16 @@ export class CandidateService implements IntakeService {
         responseType: 'text'
       });
   }
+
+  checkUnreadChats(): Observable<JobChatUserInfo> {
+    return this.http.post<JobChatUserInfo>(`${this.apiUrl}/check-unread-chats`, null);
+  }
+
+  fetchCandidatesWithChat(request: FetchCandidatesWithChatRequest):
+    Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(
+      `${this.apiUrl}/fetch-candidates-with-chat`, request
+    );
+  }
+
 }
