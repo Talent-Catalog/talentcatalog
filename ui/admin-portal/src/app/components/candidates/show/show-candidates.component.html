@@ -476,6 +476,7 @@ arrays with more than one value display in drop down
                                  [candidate]="currentCandidate"
                                  [loggedInUser]="loggedInUser"
                                  [savedSearchSelectionChange]="savedSearchSelectionChange"
+                                 (onSearchCardRendered)="setSearchCardScrollTop()"
                                  (closeEvent)="setCurrentCandidate(null)">
       </app-candidate-search-card>
 
