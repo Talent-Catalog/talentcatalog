@@ -507,7 +507,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         request.pageSize = this.pageSize;
         request.sortFields = [this.sortField];
         request.sortDirection = this.sortDirection;
-        request.dtoType = DtoType.PREVIEW;
         if (reviewable) {
           request.reviewStatusFilter = this.reviewStatusFilter;
         }
