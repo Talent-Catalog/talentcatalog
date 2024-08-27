@@ -47,13 +47,14 @@ public interface CandidateExamService {
      * @param request Request containing exam updates
      * @return List of updated candidate exam records
      */
+
     @NotNull
     CandidateExam updateCandidateExam(UpdateCandidateExamRequest request);
 
     /**
      * List of CandidateExam associated to candidate with given candidate id.
      * @param id ID of candidate whose CandidateExam we want
-     * @return list of candidate CandidateExam
+     * @return list of candidate CandidateExam - empty if the candidate id is unknown
      */
     @NotNull
     List<CandidateExam> list(long id);
