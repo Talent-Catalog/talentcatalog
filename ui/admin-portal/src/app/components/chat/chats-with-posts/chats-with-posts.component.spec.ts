@@ -18,6 +18,7 @@ import {QuillModule} from "ngx-quill";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {MockUser} from "../../../MockData/MockUser";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 
 fdescribe('ChatsWithPostsComponent', () => {
   let component: ChatsWithPostsComponent;
@@ -31,7 +32,8 @@ fdescribe('ChatsWithPostsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsWithPostsComponent, ChatsComponent, ViewChatPostsComponent, ViewPostComponent, CreateUpdatePostComponent ],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbTooltipModule,FormsModule,ReactiveFormsModule,QuillModule],
+      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbTooltipModule,FormsModule,ReactiveFormsModule,QuillModule,
+        TranslateModule.forRoot({})],
 
       providers: [
         FormBuilder,

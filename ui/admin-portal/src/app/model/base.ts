@@ -176,6 +176,7 @@ export interface CandidateSource extends Auditable {
   sfJobOpp?: OpportunityIds;
   users?: User[];
   watcherUserIds?: number[];
+  dtoType?: DtoType;
 }
 
 
@@ -203,8 +204,9 @@ export interface PostJobToSlackResponse {
 
 export enum DtoType {
   MINIMAL = 'MINIMAL',
+  PREVIEW = 'PREVIEW',
   FULL = 'FULL',
-  PREVIEW = 'PREVIEW'
+  EXTENDED = 'EXTENDED'
 }
 
 export class PagedSearchRequest {

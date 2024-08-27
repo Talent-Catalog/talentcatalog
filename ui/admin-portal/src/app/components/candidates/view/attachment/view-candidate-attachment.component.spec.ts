@@ -84,6 +84,6 @@ fdescribe('ViewCandidateAttachmentComponent', () => {
     expect(candidateAttachmentServiceSpy.searchPaged).toHaveBeenCalledTimes(1);
 
     // Check that more attachments are added to the list
-    expect(component.attachments.length).toBe(1);
+    expect(component.attachments.length).toBe(2);
   });
 });

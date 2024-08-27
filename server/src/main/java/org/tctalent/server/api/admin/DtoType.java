@@ -18,6 +18,7 @@ package org.tctalent.server.api.admin;
 
 public enum DtoType {
   MINIMAL,
+  PREVIEW,
   FULL,
-  PREVIEW
+  EXTENDED
 }
