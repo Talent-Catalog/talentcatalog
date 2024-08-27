@@ -4,6 +4,7 @@ import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Candidate} from "../../../model/candidate";
 import {JobChat} from "../../../model/chat";
 import {BehaviorSubject} from "rxjs";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidates-with-chat',
@@ -28,7 +29,10 @@ export class CandidatesWithChatComponent extends MainSidePanelBase implements On
   selectedCandidateChat: JobChat;
   chatHeader: string = "";
 
-  constructor(private chatService: ChatService) { super(5); }
+  constructor(
+    private chatService: ChatService,
+    private authorizationService: AuthorizationService
+  ) { super(5); }
 
   ngOnInit(): void { }
 
@@ -58,6 +62,10 @@ export class CandidatesWithChatComponent extends MainSidePanelBase implements On
     this.chatHeader =
       "Chat with " + this.selectedCandidate.user.firstName + " " +
       this.selectedCandidate.user.lastName;
+  }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
   }
 
 }

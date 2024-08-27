@@ -27,6 +27,7 @@
         </div>
 
         <app-view-chat-posts
+          [readOnly] = "isReadOnlyUser()"
           [chat]="selectedChat"
         >
         </app-view-chat-posts>

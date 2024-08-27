@@ -16,6 +16,7 @@
          (click)="selectCurrent(post)"
          [ngClass]="{'current': currentPost?.id == post.id}">
       <app-view-post
+        [readOnly]="readOnly"
         [currentPost] ="currentPost"
         [post]="post">
       </app-view-post>

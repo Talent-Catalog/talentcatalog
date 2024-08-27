@@ -23,6 +23,7 @@
           {{error}}
         </div>
         <app-view-chat-posts
+            [readOnly] = "isReadOnlyUser()"
             [chat]="selectedSourcePartnerChat"
         >
         </app-view-chat-posts>

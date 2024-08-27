@@ -37,6 +37,7 @@ export class ViewPostComponent implements OnInit {
   }
 
   @Input() post: ChatPost;
+  @Input() readOnly = false;
 
   @ViewChild('thisPost') thisPost: ElementRef;
 
