@@ -13,8 +13,8 @@
     </div>
   </div>
 
-  <div *ngIf="!readOnly" class="d-flex flex-row-reverse flex-wrap">
-    <button
+  <div class="d-flex flex-row-reverse flex-wrap">
+    <button *ngIf="!readOnly"
     id="reactionBtn"
     [ngClass]="!this.reactionPickerVisible ?
     'reaction-btn' : 'reaction-btn-selected'"
