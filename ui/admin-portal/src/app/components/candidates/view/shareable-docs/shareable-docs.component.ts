@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
@@ -124,6 +132,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
   }
 
   filterByCv(isCV: boolean) {
-    return this.candidate.candidateAttachments.filter(a => a.cv === isCV);
+    return this.candidate.candidateAttachments?.filter(a => a.cv === isCV);
   }
 }
