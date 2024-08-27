@@ -17,6 +17,8 @@
 package org.tctalent.server.service.db.impl;
 
 
+import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidSessionException;
@@ -81,7 +83,7 @@ public class CandidateExamServiceImpl implements CandidateExamService {
     }
 
     @Override
-    public CandidateExam updateCandidateExam(UpdateCandidateExamRequest request) {
+    public @NotNull CandidateExam updateCandidateExam(UpdateCandidateExamRequest request) {
         User loggedInUser = authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
@@ -104,6 +106,11 @@ public class CandidateExamServiceImpl implements CandidateExamService {
         candidateService.save(candidate, true);
 
         return candidateExam;
+    }
+
+    @Override
+    public @NotNull List<CandidateExam> list(long id) {
+        return candidateExamRepository.findByCandidateId(id);
     }
 
 }

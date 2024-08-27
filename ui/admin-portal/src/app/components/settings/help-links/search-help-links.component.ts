@@ -39,7 +39,7 @@ export class SearchHelpLinksComponent implements OnInit {
     private authService: AuthorizationService) { }
 
   ngOnInit(): void {
-    this.countryService.listTBBDestinations().subscribe((results) => {
+    this.countryService.listTCDestinations().subscribe((results) => {
       this.destinationCountries = results;
     })
 

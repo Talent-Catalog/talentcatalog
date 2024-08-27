@@ -177,6 +177,38 @@ public interface CandidateService {
      * Registers a new candidate by creating a new candidate and user.
      * It returns a login request for the generated candidate so that they are processed as
      * a normal login.
+     * <p/>
+     * Logic for assigning a candidate to a partner.
+     * <p/>
+     * A source partner is assigned to a candidate when the candidate registers with the TC.
+     * This is the process:
+     * <ul>
+     *     <li>
+     * Candidate follows a url link which directs them to TC registration
+     *     </li>
+     *     <li>
+     * If they have a p=, then the branding of the TC registration is set to that of the partner
+     *     </li>
+     *     <li>
+     * Initially (step 0) they provide email and accept our conditions - then click Register
+     *     </li>
+     *     <li>
+     * They then proceed to step 1 (contact )where the email can be changed and they also can 
+     * supply phone and whatsapp.
+     * When they click Next, the user is actually created using p= branding, or defaulting to TBB 
+     * - in this method.
+     *     </li>
+     *     <li>
+     * Arriving at step 2 (tell us about yourself - registration personal) they say where they are 
+     * located.
+     * When they click Next, the user is updated with the supplied info 
+     * (in private method CandidateServiceImpl.checkForChangedPartner). 
+     * The partner can be changed here if the currently defined partner is the DefaultSourcePartner
+     * and there is a partner set up as auto-assignable from the country where the candidate is 
+     * located. 
+     *     </li>
+     * </ul>
+     *
      * @param request Registration request
      * @param httpRequest HTTP request for registration
      * @return A login request generated for the newly created candidate.
@@ -228,6 +260,16 @@ public interface CandidateService {
      * Returned as Optional - can be empty if nobody is logged in.
      */
     Optional<Candidate> getLoggedInCandidateLoadCandidateExams();
+
+    /**
+     * Returns the currently logged in candidate entity preloaded with
+     * candidate destinations.
+     * <p/>
+     * See doc for {@link #getLoggedInCandidate()}
+     * @return candidate entity preloaded with candidate destinations.
+     * Returned as Optional - can be empty if nobody is logged in.
+     */
+    Optional<Candidate> getLoggedInCandidateLoadDestinations();
 
     /**
      * Returns the currently logged in candidate entity preloaded with

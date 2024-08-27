@@ -19,6 +19,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {CandidateVisaJobService, CreateCandidateVisaJobRequest} from './candidate-visa-job.service';
 import {environment} from '../../environments/environment';
 import {CandidateVisaJobCheck} from '../model/candidate';
+import {MockJob} from "../MockData/MockJob";
 
 fdescribe('CandidateVisaJobService', () => {
   let service: CandidateVisaJobService;
@@ -46,7 +47,7 @@ fdescribe('CandidateVisaJobService', () => {
     it('should return a CandidateVisaJobCheck object when called', () => {
       const mockJobCheck: CandidateVisaJobCheck = {
         id: 1,
-        notes: 'visa job',
+        jobOpp: MockJob,
       };
 
       service.get(1).subscribe((jobCheck: CandidateVisaJobCheck) => {
@@ -63,7 +64,7 @@ fdescribe('CandidateVisaJobService', () => {
     it('should return a CandidateVisaJobCheck object when created successfully', () => {
       const mockJobCheck: CandidateVisaJobCheck = {
         id: 1,
-        notes: 'test',
+        jobOpp: MockJob,
       };
       const requestPayload: CreateCandidateVisaJobRequest = { jobOppId: 456 };
 

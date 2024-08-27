@@ -1,0 +1,96 @@
+<!--
+  ~ Copyright (c) 2024 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> Loading...
+</div>
+<div *ngIf="error">
+  {{ error }}
+</div>
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    Exams
+    <div class="float-end" *ngIf="editable">
+      <button type="button" class="btn btn-primary btn-sm" (click)="createCandidateExam()">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="!candidateExams || candidateExams.length == 0">
+      <div class="row">
+        <div class="col-sm-12">
+          No exams entered
+        </div>
+      </div>
+    </div>
+    <div *ngFor="let candidateExam of candidateExams">
+      <div class="row mb-3">
+        <div class="col-6">
+          <span class="card-title" appHighlightSearch>
+            <label class="col-form-label text-muted">
+              <strong>Exam:</strong> {{ candidateExam.exam || 'N/A' }}
+            </label>
+          </span>
+        </div>
+
+        <div class="col-6">
+          <div class="btn-group float-end" *ngIf="editable">
+            <button type="button" class="btn btn-default" (click)="editCandidateExam(candidateExam)"><i
+              class="fas fa-edit"></i></button>
+            <button class="btn btn-default" *ngIf="adminUser" (click)="deleteCandidateExam(candidateExam)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3" *ngIf="candidateExam.exam === 'Other'">
+        <div class="col-6">
+          <label class="col-form-label text-muted">
+            <strong>Other Exam Name:</strong> {{ candidateExam.otherExam || 'N/A' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label text-muted card-subtitle">
+            <strong>Year:</strong> {{ candidateExam.year || 'N/A' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label text-muted">
+            <strong>Score:</strong> {{ candidateExam.score || 'N/A' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label text-muted card-subtitle">
+            <strong>Notes:</strong> {{ candidateExam.notes || 'N/A' }}
+          </label>
+        </div>
+      </div>
+      <hr/>
+    </div>
+  </div>
+</div>

@@ -56,8 +56,8 @@ public class CountryAdminApi implements
     }
 
     @GetMapping("destinations")
-    public @NotNull List<Map<String, Object>> listTBBDestinations() {
-        List<Country> countries = countryService.getTBBDestinations();
+    public @NotNull List<Map<String, Object>> listTCDestinations() {
+        List<Country> countries = countryService.getTCDestinations();
         return countryDto().buildList(countries);
     }
 

@@ -208,6 +208,12 @@ import {CandidateExamFormComponent} from "./components/common/candidate-exam-for
 import {CandidateExamCardComponent} from "./components/common/candidate-exam-card/candidate-exam-card.component";
 import {RegistrationCandidateExamComponent} from "./components/register/candidate-exam/registration-candidate-exam.component";
 import {DeleteExamComponent} from "./components/register/candidate-exam/delete/delete-exam.component";
+import {
+  RegistrationDestinationsComponent
+} from './components/register/destinations/registration-destinations.component';
+import {
+  DestinationComponent
+} from "./components/register/destinations/destination/destination.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -284,7 +290,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     CandidateExamFormComponent,
     CandidateExamCardComponent,
     RegistrationCandidateExamComponent,
-    DeleteExamComponent
+    DeleteExamComponent,
+    RegistrationDestinationsComponent,
+    DestinationComponent
   ],
   imports: [
     BrowserModule,

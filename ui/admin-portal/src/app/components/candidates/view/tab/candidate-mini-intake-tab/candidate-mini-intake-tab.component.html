@@ -97,19 +97,6 @@
         </ng-template>
       </ngb-panel>
 
-      <ngb-panel id="intake-destinations" title="Destinations">
-        <ng-template ngbPanelContent>
-          <app-destinations
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-destinations>
-          <app-destination-limit
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-destination-limit>
-        </ng-template>
-      </ngb-panel>
-
       <!-- CITIZENSHIPS -->
       <ngb-panel id="intake-citizenships">
         <ng-template ngbPanelTitle let-opened="opened">

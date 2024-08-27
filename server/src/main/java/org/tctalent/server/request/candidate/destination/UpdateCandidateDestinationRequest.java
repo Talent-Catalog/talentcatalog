@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+/*
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,3 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+package org.tctalent.server.request.candidate.destination;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.YesNoUnsure;
+
+/**
+ * Required fields for updating a candidate destination
+ *
+ * @author Caroline Cameron
+ */
+@Getter
+@Setter
+@ToString
+public class UpdateCandidateDestinationRequest {
+    private YesNoUnsure interest;
+
+    @Nullable
+    private String notes;
+}

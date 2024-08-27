@@ -4,10 +4,10 @@ import {
   CandidateIntakeData,
   CandidateVisa,
   CandidateVisaJobCheck,
+  describeFamilyInDestination,
   getDestinationPathwayInfoLink,
   IeltsStatus
 } from "../../../../../../../model/candidate";
-import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {
   CandidateOccupationService
@@ -63,7 +63,7 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
     )
 
     // Process & fetch values that need to be displayed.
-    this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
+    this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord);
     if (this.candidateIntakeData?.partnerIelts) {
       this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts] +
         (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);

@@ -1,0 +1,26 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="mb-3">
+    <label class="form-label" [for]="'visaDestinationFamily'">Do you have family in {{visaCheck?.country.name}} and if so what is the closest relative?</label>
+    <div class="float-end">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <ng-select [id]="'visaDestinationFamily'" [formControlName]="'visaDestinationFamily'" (clear)="setNoResponse('visaDestinationFamily')"
+               [items]="destFamilyOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+  </div>
+  <div  *ngIf="showLocation()">
+    <div class="mb-3">
+      <label class="form-label" [for]="'visaDestinationFamilyLocation'">Where are they located in {{visaCheck?.country.name}}?</label>
+      <input type="text"
+             class="form-control"
+             [id]="'visaDestinationFamilyLocation'"
+             [formControlName]="'visaDestinationFamilyLocation'">
+    </div>
+  </div>
+</form>
