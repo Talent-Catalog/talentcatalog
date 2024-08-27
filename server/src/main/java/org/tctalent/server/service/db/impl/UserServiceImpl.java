@@ -69,9 +69,7 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
-import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
@@ -94,7 +92,6 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
@@ -102,7 +99,6 @@ public class UserServiceImpl implements UserService {
     private final AuthService authService;
     private final EmailHelper emailHelper;
     private final PartnerService partnerService;
-    private final SavedSearchRepository savedSearchRepository;
 
     @Value("${web.portal}")
     private String portalUrl;
@@ -123,18 +119,14 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-        CandidateRepository candidateRepository,
         CountryRepository countryRepository,
-        SavedSearchRepository savedSearchRepository,
         PasswordHelper passwordHelper,
         AuthenticationManager authenticationManager,
         JwtTokenProvider tokenProvider,
         AuthService authService,
         EmailHelper emailHelper, PartnerService partnerService) {
         this.userRepository = userRepository;
-        this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
-        this.savedSearchRepository = savedSearchRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
@@ -432,7 +424,8 @@ public class UserServiceImpl implements UserService {
                     //Log details to check for nature of brute force attacks.
                     LogBuilder.builder(log)
                         .action("Login")
-                        .message("Invalid credentials for user: " + request)
+                        .message("Invalid credentials for user with given username: " +
+                            request.getUsername())
                         .logError(ex);
 
                     //Exception if there is more than one user associated with email.
@@ -462,7 +455,8 @@ public class UserServiceImpl implements UserService {
             //Log details to check for nature of brute force attacks.
             LogBuilder.builder(log)
                 .action("Login")
-                .message("Invalid credentials for user: " + request)
+                .message("Invalid credentials for user with given username: " +
+                    request.getUsername())
                 .logError(e);
 
             // map spring exception to a service exception for better handling
@@ -689,7 +683,7 @@ public class UserServiceImpl implements UserService {
     public void mfaVerify(String mfaCode) throws InvalidCredentialsException {
         User user = fetchLoggedInUser();
         if (user.getUsingMfa()) {
-            if (mfaCode == null || mfaCode.length() == 0) {
+            if (mfaCode == null || mfaCode.isEmpty()) {
                 throw new InvalidCredentialsException("You need to enter an authentication code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
@@ -708,7 +702,7 @@ public class UserServiceImpl implements UserService {
     @SchedulerLock(name = "UserService_searchStaffNotUsingMfa", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void checkMfaUsers() {
         List<User> users = searchStaffNotUsingMfa();
-        if (users.size() > 0) {
+        if (!users.isEmpty()) {
             String s = users.stream()
                 .map(User::getUsername)
                 .collect(Collectors.joining(","));
