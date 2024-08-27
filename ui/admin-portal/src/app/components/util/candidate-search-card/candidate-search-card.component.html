@@ -40,7 +40,7 @@
         </ng-container>
 
         <!-- SHAREABLE DOCS -->
-        <ng-container ngbNavItem="docs">
+        <ng-container *ngIf="canViewPrivateInfo()" ngbNavItem="docs">
           <a ngbNavLink>{{isList ? "List Specific " : null}}Shareable Docs</a>
           <ng-template ngbNavContent>
             <app-shareable-docs
@@ -51,7 +51,7 @@
         </ng-container>
 
         <!-- PREVIEW CV -->
-        <ng-container ngbNavItem="cv">
+        <ng-container *ngIf="canViewPrivateInfo()" ngbNavItem="cv">
           <a ngbNavLink>Preview CV</a>
           <ng-template ngbNavContent>
             <app-cv-preview
