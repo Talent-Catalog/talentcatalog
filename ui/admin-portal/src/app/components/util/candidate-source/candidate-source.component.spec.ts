@@ -206,73 +206,75 @@ fdescribe('CandidateSourceComponent', () => {
 
   it('should not call the API if data is already loaded', () => {
     component.candidateSource.dtoType = DtoType.FULL;
-    spyOn(component, 'isAlreadyLoaded').and.returnValue(true);
+    // MODEL: spying on private method
+    spyOn(component as any, 'isAlreadyLoaded').and.returnValue(true);
 
     component.getSavedSearch(1, DtoType.FULL);
 
-    expect(component.isAlreadyLoaded).toHaveBeenCalledWith(DtoType.FULL);
+    // MODEL: verifying private method was called
+    expect((component)['isAlreadyLoaded']).toHaveBeenCalledWith(DtoType.FULL);
     expect(savedSearchService.get).not.toHaveBeenCalled();
     expect(component.loading).toBeFalse();
   });
 
   it('should call the API and handle successful fetch', () => {
-    spyOn(component, 'isAlreadyLoaded').and.returnValue(false);
+    spyOn(component as any, 'isAlreadyLoaded').and.returnValue(false);
     savedSearchService.get.and.returnValue(of(new MockSavedSearch()));
-    spyOn(component, 'handleSuccessfulFetch');
+    spyOn(component as any, 'handleSuccessfulFetch');
 
     component.getSavedSearch(1, DtoType.FULL);
 
     expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.FULL);
-    expect(component.handleSuccessfulFetch).toHaveBeenCalledWith(jasmine.anything(), DtoType.FULL);
+    expect((component)['handleSuccessfulFetch']).toHaveBeenCalledWith(jasmine.anything(), DtoType.FULL);
   });
 
   it('should handle error if API call fails', () => {
-    spyOn(component, 'isAlreadyLoaded').and.returnValue(false);
+    spyOn(component as any, 'isAlreadyLoaded').and.returnValue(false);
     savedSearchService.get.and.returnValue(throwError('Error'));
-    spyOn(component, 'handleError');
+    spyOn(component as any, 'handleError');
 
     component.getSavedSearch(1, DtoType.FULL);
 
     expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.FULL);
-    expect(component.handleError).toHaveBeenCalledWith('Error');
+    expect((component)['handleError']).toHaveBeenCalledWith('Error');
   });
 
   it('should correctly identify if the data is already loaded', () => {
     component.candidateSource.dtoType = DtoType.EXTENDED;
-    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeTrue();
-    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeTrue();
+    expect((component)['isAlreadyLoaded'](DtoType.FULL)).toBeTrue();
+    expect((component)['isAlreadyLoaded'](DtoType.EXTENDED)).toBeTrue();
 
     component.candidateSource.dtoType = DtoType.FULL;
-    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeTrue();
-    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeFalse();
+    expect((component)['isAlreadyLoaded'](DtoType.FULL)).toBeTrue();
+    expect((component)['isAlreadyLoaded'](DtoType.EXTENDED)).toBeFalse();
 
     component.candidateSource.dtoType = DtoType.MINIMAL;
-    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeFalse();
-    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeFalse();
+    expect((component)['isAlreadyLoaded'](DtoType.FULL)).toBeFalse();
+    expect((component)['isAlreadyLoaded'](DtoType.EXTENDED)).toBeFalse();
 
     component.candidateSource.dtoType = DtoType.PREVIEW;
-    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeFalse();
-    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeFalse();
+    expect((component)['isAlreadyLoaded'](DtoType.FULL)).toBeFalse();
+    expect((component)['isAlreadyLoaded'](DtoType.EXTENDED)).toBeFalse();
 
     component.candidateSource.dtoType = undefined;
-    expect(component.isAlreadyLoaded(DtoType.FULL)).toBeFalse();
-    expect(component.isAlreadyLoaded(DtoType.EXTENDED)).toBeFalse();
+    expect((component)['isAlreadyLoaded'](DtoType.FULL)).toBeFalse();
+    expect((component)['isAlreadyLoaded'](DtoType.EXTENDED)).toBeFalse();
   });
 
   it('should handle successful fetch and cache the result', () => {
     const result = new MockSavedSearch();
-    spyOn(component, 'cacheCandidateSource');
+    spyOn(component as any, 'cacheCandidateSource');
 
-    component.handleSuccessfulFetch(result, DtoType.FULL);
+    (component)['handleSuccessfulFetch'](result, DtoType.FULL);
 
     expect(component.candidateSource.dtoType).toBe(DtoType.FULL);
     expect(component.candidateSource).toEqual(jasmine.objectContaining(result));
-    expect(component.cacheCandidateSource).toHaveBeenCalled();
+    expect((component)['cacheCandidateSource']).toHaveBeenCalled();
     expect(component.loading).toBeFalse();
   });
 
   it('should handle error correctly', () => {
-    component.handleError('Error');
+    (component)['handleError']('Error');
 
     expect(component.loading).toBeFalse();
     expect(component.error).toBe('Error');
@@ -284,7 +286,7 @@ fdescribe('CandidateSourceComponent', () => {
     const cachedResult = new MockSavedSearch()
     spyOn(cacheService, 'getFromCache').and.returnValue(cachedResult);
 
-    component.getFromCache(new MockCandidateSource());
+    (component)['getFromCache'](new MockCandidateSource());
 
     expect(cacheService.getFromCache).toHaveBeenCalled();
     expect(component.candidateSource).toEqual(jasmine.objectContaining(cachedResult));
@@ -296,12 +298,11 @@ fdescribe('CandidateSourceComponent', () => {
     component.candidateSource = { id: 1 } as CandidateSource;
     spyOn(cacheService, 'getFromCache').and.returnValue(null);
 
-    component.getFromCache(component.candidateSource);
+    (component)['getFromCache'](component.candidateSource);
 
     expect(cacheService.getFromCache).toHaveBeenCalled();
     expect(component.candidateSource).toEqual({ id: 1 } as CandidateSource);
     expect(component.loading).toBeTrue(); // Because getSavedSearch continues to run if not loaded from cache
   });
-
 
 });

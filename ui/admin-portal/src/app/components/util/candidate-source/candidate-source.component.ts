@@ -255,14 +255,14 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
    * @param dtoType The type of data transfer object (DTO) requested (either `FULL` or `EXTENDED`).
    * @returns `true` if the data is already loaded with sufficient detail; otherwise, `false`.
    */
-  isAlreadyLoaded(dtoType: DtoType): boolean {
+  private isAlreadyLoaded(dtoType: DtoType): boolean {
     if (dtoType === DtoType.FULL) {
       return this.candidateSource.dtoType === DtoType.FULL || this.candidateSource.dtoType === DtoType.EXTENDED;
     }
     return dtoType === DtoType.EXTENDED && this.candidateSource.dtoType === DtoType.EXTENDED;
   }
 
-  handleSuccessfulFetch(result: any, dtoType: DtoType): void {
+  private handleSuccessfulFetch(result: any, dtoType: DtoType): void {
     this.candidateSource = {
       ...this.candidateSource,
       ...result,
@@ -272,17 +272,17 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
     this.loading = false;
   }
 
-  handleError(err: any): void {
+  private handleError(err: any): void {
     this.loading = false;
     this.error = err;
   }
 
-  cacheCandidateSource(): void {
+  private cacheCandidateSource(): void {
     const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
     this.candidateSourceCacheService.cache(cacheKey, this.candidateSource);
   }
 
-  getFromCache(source: CandidateSource) {
+  private getFromCache(source: CandidateSource) {
     const cacheKey = this.candidateSourceCacheService.cacheKey(this.candidateSource);
     const cached = this.candidateSourceCacheService.getFromCache(cacheKey);
     if (cached) {
