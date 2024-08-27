@@ -1,28 +1,55 @@
 <div id="VisaUK">
-    <div>
-    <div class="row my-4">
-      <div class="col-6">
-        <h5>Job Specific Assessment</h5>
+  <div class="row my-4">
+    <div class="col-6">
+      <h5>Section 1: Visa Assessment - UK</h5>
+    </div>
+
+    <div class="col-6">
+      <div class="row">
+        <div class="col text-end">
+          <button (click)="visaUK.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
+          <button (click)="visaUK.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+        </div>
       </div>
     </div>
+  </div>
 
-    <app-candidate-visa-job
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [visaCheckRecord]="visaCheckRecord"
-      [(selectedJob)]="selectedJob">
-    </app-candidate-visa-job>
+  <div>
+    <!-- ACCORDION VERSION OF FORM  -->
+    <ngb-accordion #visaUK="ngbAccordion" [destroyOnHide]="false" [activeIds]="'visa-uk-destination'">
 
-    <!--  Generate all job entries - but only one is enabled and loaded at a time. Reloaded with selectedJobIndex changes.-->
-    <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;" class="mt-3">
-      <app-visa-job-check-uk *ngIf="job.id == selectedJob.id"
-                             [selectedJobCheck]="job"
-                             [candidate]="candidate"
-                             [candidateIntakeData]="candidateIntakeData"
-                             [visaCheckRecord]="visaCheckRecord"
-      ></app-visa-job-check-uk>
+
+      <ngb-panel id="visa-uk-destination" title="Destination">
+        <ng-template ngbPanelContent>
+          <app-destination-family
+            [entity]="visaCheckRecord">
+          </app-destination-family>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </div>
+
+  <div class="row my-4">
+    <div class="col-6">
+      <h5>Job Specific Assessment</h5>
     </div>
+  </div>
 
+  <app-candidate-visa-job
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [visaCheckRecord]="visaCheckRecord"
+    [(selectedJob)]="selectedJob">
+  </app-candidate-visa-job>
+
+  <!--  Generate all job entries - but only one is enabled and loaded at a time. Reloaded with selectedJobIndex changes.-->
+  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;" class="mt-3">
+    <app-visa-job-check-uk *ngIf="job.id == selectedJob.id"
+                           [selectedJobCheck]="job"
+                           [candidate]="candidate"
+                           [candidateIntakeData]="candidateIntakeData"
+                           [visaCheckRecord]="visaCheckRecord"
+    ></app-visa-job-check-uk>
   </div>
 
 </div>

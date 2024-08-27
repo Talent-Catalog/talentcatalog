@@ -547,10 +547,10 @@ public class CandidateServiceImpl implements CandidateService {
             candidateDestinationCountryIds.add(destination.getCountry().getId());
         }
 
-        //Check that all TBB destinations are present for candidate, adding
+        //Check that all TC destinations are present for candidate, adding
         //missing ones if necessary
         boolean addedDestinations = false;
-        for (Country country : countryService.getTBBDestinations()) {
+        for (Country country : countryService.getTCDestinations()) {
             //Does candidate have this destination preference?
             if (!candidateDestinationCountryIds.contains(country.getId())) {
                 //If not, add in a new one
@@ -1501,6 +1501,18 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             Candidate candidate = candidateRepository
                     .findByIdLoadCertifications(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
+    }
+    
+    @Override
+    public Optional<Candidate> getLoggedInCandidateLoadDestinations() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadDestinations(candidateId);
             return candidate == null ? Optional.empty() : Optional.of(candidate);
         }
     }

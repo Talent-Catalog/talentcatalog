@@ -29,7 +29,10 @@ import {LanguageLevel} from '../../../model/language-level';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
+import {
+  CandidateNoteService,
+  CreateCandidateNoteRequest
+} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -92,7 +95,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
   /**
    * All TBB destinations
    */
-  tbbDestinations: Country[];
+  tcDestinations: Country[];
 
   /**
    * All Education Levels
@@ -149,7 +152,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
     this.loading = true;
     forkJoin({
       'countries': this.countryService.listCountries(),
-      'tbbDestinations': this.countryService.listTBBDestinations(),
+      'tcDestinations': this.countryService.listTCDestinations(),
       'nationalities': this.countryService.listCountries(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'occupations': this.occupationService.listOccupations(),
@@ -159,7 +162,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
     }).subscribe(results => {
       this.loading = false;
       this.countries = results['countries'];
-      this.tbbDestinations = results['tbbDestinations'];
+      this.tcDestinations = results['tcDestinations'];
       this.nationalities = results['nationalities'];
       this.educationLevels = results['educationLevels'];
       this.occupations = results['occupations'];

@@ -17,6 +17,7 @@
 
 import {
   Candidate,
+  CandidateDestination,
   DrivingLicenseStatus,
   Exam,
   Gender,
@@ -297,6 +298,20 @@ export class MockCandidate implements Candidate {
       updatedBy: mockUser,
       updatedDate: 2024
     }
+  ];
+  candidateDestinations: CandidateDestination[] = [
+    {
+      id: 1,
+      country: { id: 1, name: "Australia", status: "active", translatedName: "Australia" },
+      interest: YesNoUnsure.Yes,
+      notes: "I like this country."
+    },
+    {
+      id: 1,
+      country: { id: 2, name: "Canada", status: "active", translatedName: "Canada" },
+      interest: YesNoUnsure.No,
+      notes: "I do not like Toronto."
+    },
   ];
 
 

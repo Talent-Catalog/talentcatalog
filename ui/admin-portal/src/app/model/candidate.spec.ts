@@ -16,7 +16,12 @@
 
 import {TestBed} from "@angular/core/testing";
 import {
-  Candidate, CandidateExam, checkIeltsScoreType, Exam,
+  Candidate,
+  CandidateExam,
+  CandidateVisa,
+  checkIeltsScoreType,
+  describeFamilyInDestination,
+  Exam,
   getCandidateExternalHref,
   getCandidateNavigation,
   hasIeltsExam
@@ -113,6 +118,38 @@ fdescribe('Candidate Utility Functions', () => {
       const result = checkIeltsScoreType(candidate);
       expect(result).toBeUndefined();
     });
+  });
+  it('should return correct family description when family and location are present', () => {
+    const candidateVisaCheck = {
+      destinationFamily: 'Parents', destinationFamilyLocation: 'City Y'
+    } as unknown as CandidateVisa;
+
+    const result = describeFamilyInDestination(candidateVisaCheck);
+    expect(result).toBe('Parents in City Y');
+  });
+
+
+  it('should return correct family description when only family is present', () => {
+    const candidateVisaCheck = {
+      destinationFamily: 'Siblings'
+    } as unknown as CandidateVisa;
+    const result = describeFamilyInDestination(candidateVisaCheck);
+    expect(result).toBe('Siblings');
+  });
+
+  it('should return "No family entered" when family is not present', () => {
+    const candidateVisaCheck = {
+    } as unknown as CandidateVisa;
+
+    const result = describeFamilyInDestination(candidateVisaCheck);
+    expect(result).toBe('No family entered');
+  });
+
+  it('should return "No family entered" when candidateIntakeData is null or undefined', () => {
+    const candidateVisaCheck = null;
+
+    const result = describeFamilyInDestination(candidateVisaCheck);
+    expect(result).toBe('No family entered');
   });
 
 });

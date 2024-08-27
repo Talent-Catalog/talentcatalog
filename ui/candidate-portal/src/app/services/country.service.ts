@@ -19,7 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Country} from "../model/country";
 import {Observable, of, throwError} from "rxjs";
-import {catchError, map} from "rxjs/operators";
+import {catchError, map, tap} from "rxjs/operators";
 import {LanguageService} from "./language.service";
 
 @Injectable({
@@ -28,6 +28,8 @@ import {LanguageService} from "./language.service";
 export class CountryService {
 
   private apiUrl: string = environment.apiUrl + '/country';
+
+  private tcDestinations: Country[] = [];
 
   constructor(private http: HttpClient, private languageService: LanguageService) { }
 
@@ -129,6 +131,18 @@ export class CountryService {
       }),
       catchError(e => throwError(e))
     );
+  }
+
+  listTCDestinations(): Observable<Country[]> {
+    //If we already have the data return it, otherwise get it.
+    return this.tcDestinations.length > 0 ?
+      //"of" turns the data into an Observable
+      of(this.tcDestinations) :
+      this.http.get<Country[]>(`${this.apiUrl}/destinations`)
+      .pipe(
+        //Save data the first time we fetch it
+        tap(data => {this.tcDestinations = data})
+      );
   }
 
 }

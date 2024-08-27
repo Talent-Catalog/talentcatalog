@@ -34,6 +34,13 @@
   [adminUser]="adminUser">
 </app-view-candidate-language>
 
+<hr/>
+
+<app-view-candidate-destinations
+  [candidate]="candidate"
+  [editable]="editable">
+</app-view-candidate-destinations>
+
 <ng-container *ngIf="adminUser">
   <hr/>
   <app-view-candidate-account
