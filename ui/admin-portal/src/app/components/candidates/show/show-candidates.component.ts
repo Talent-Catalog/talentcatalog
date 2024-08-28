@@ -34,7 +34,12 @@ import {
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
-import {NgbModal, NgbOffcanvas, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
+import {
+  ModalDismissReasons,
+  NgbModal,
+  NgbOffcanvas,
+  NgbOffcanvasRef
+} from '@ng-bootstrap/ng-bootstrap';
 import {
   CreateFromDefaultSavedSearchRequest,
   SavedSearchService
@@ -1603,10 +1608,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     modal.result
       .then(
-        () => this.loadSelectedFields(),
-        error => this.error = error
+        () => this.loadSelectedFields()
       )
-      .catch();
+      .catch(error => {
+        if (error !== ModalDismissReasons.ESC) {
+          this.error = error;
+        }
+      });
   }
 
   isCandidateNameViewable() {

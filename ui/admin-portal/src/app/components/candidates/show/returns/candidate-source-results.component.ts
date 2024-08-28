@@ -35,7 +35,7 @@ import {CandidateFieldService} from "../../../../services/candidate-field.servic
 import {
   CandidateColumnSelectorComponent
 } from "../../../util/candidate-column-selector/candidate-column-selector.component";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ModalDismissReasons, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-candidate-source-results',
@@ -254,10 +254,14 @@ constructor(
 
     modal.result
       .then(
-        () => this.loadSelectedFields(),
-        error => this.error = error
+        () => this.loadSelectedFields()
       )
-      .catch();
+      .catch(
+        error => {
+          if (error !== ModalDismissReasons.ESC) {
+            this.error = error;
+          }
+        });
   }
 
   isCandidateNameViewable(): boolean {
