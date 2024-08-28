@@ -561,6 +561,9 @@ import {
   EditCandidateDestinationsComponent
 } from './components/candidates/view/destinations/edit/edit-candidate-destinations/edit-candidate-destinations.component';
 import {DestinationFamilyComponent} from './components/candidates/visa/destination-family/destination-family.component';
+import {ViewCandidateExamComponent} from "./components/candidates/view/exam/view-candidate-exam.component";
+import {CreateCandidateExamComponent} from "./components/candidates/view/exam/create/create-candidate-exam.component";
+import {EditCandidateExamComponent} from "./components/candidates/view/exam/edit/edit-candidate-exam.component";
 
 @NgModule({
   declarations: [
@@ -889,7 +892,10 @@ import {DestinationFamilyComponent} from './components/candidates/visa/destinati
     ShowCandidatesWithChatComponent,
     ViewCandidateDestinationsComponent,
     EditCandidateDestinationsComponent,
-    DestinationFamilyComponent
+    DestinationFamilyComponent,
+    ViewCandidateExamComponent,
+    CreateCandidateExamComponent,
+    EditCandidateExamComponent
   ],
   imports: [
     BrowserModule,
