@@ -899,10 +899,7 @@ public class JobServiceImpl implements JobService {
      * @param stage New stage
      */
     private void changeJobStage(SalesforceJobOpp job, JobOpportunityStage stage) {
-        job.setStage(stage);
-
         //Do automation logic
-
         // If stage changing, send automate post to JobCreatorAllSourcePartners chat
         if (!stage.equals(job.getStage())) {
 
