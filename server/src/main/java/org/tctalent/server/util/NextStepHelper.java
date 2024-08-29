@@ -33,9 +33,13 @@ public class NextStepHelper {
     public static DateTimeFormatter nextStepDateFormatter = DateTimeFormatter.ofPattern("ddMMMuu");
 
     /**
-     * The audit stamp starts with this string
+     * The audit name stamp starts with this string
      */
-    public static String nextStepAuditStampDelimiter = " --";
+    public static String nextStepAuditNameDelimiter = " --";
+    /**
+     * The audit date ends with this string
+     */
+    public static String nextStepAuditDateDelimiter = "| ";
 
     /**
      * If the requested next step is different from the current next step, the next step
@@ -69,7 +73,7 @@ public class NextStepHelper {
 
                 //Now just add the new audit stamp on to the stripped version of the requested next
                 //step,
-                processedNextStep = stripped + constructNextStepAuditStamp(name, date);
+                processedNextStep = constructNextStepAuditStamp(name, date, stripped);
             }
         }
         return processedNextStep;
@@ -82,9 +86,13 @@ public class NextStepHelper {
      */
     private static String removeExistingStamp(String requestedNextStep) {
         String stripped = requestedNextStep;
-        final int endIndex = requestedNextStep.lastIndexOf(nextStepAuditStampDelimiter);
+        final int endIndex = requestedNextStep.lastIndexOf(nextStepAuditNameDelimiter);
+        final int startIndex = requestedNextStep.indexOf(nextStepAuditDateDelimiter);
         if (endIndex >= 0) {
-            stripped = requestedNextStep.substring(0, endIndex);
+            stripped = stripped.substring(0, endIndex);
+        }
+        if (startIndex >= 0) {
+            stripped = stripped.substring(startIndex + 2);
         }
         return stripped;
     }
@@ -95,9 +103,9 @@ public class NextStepHelper {
      * @param date Date to be used on timestamp
      * @return The audit stamp text
      */
-    public static String constructNextStepAuditStamp(String name, LocalDate date) {
+    public static String constructNextStepAuditStamp(String name, LocalDate date, String strippedNextStep) {
         String dateStamp = nextStepDateFormatter.format(date);
-        return nextStepAuditStampDelimiter + dateStamp + " " + name;
+        return dateStamp + nextStepAuditDateDelimiter + strippedNextStep + nextStepAuditNameDelimiter + name;
     }
 
 }
