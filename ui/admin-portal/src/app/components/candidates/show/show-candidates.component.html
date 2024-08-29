@@ -176,7 +176,8 @@
           Publish <i class="fas fa-globe"></i>
         </button>
 
-        <button  *ngIf="hasPublishedDoc() && salesforceService.joblink(candidateSource)"
+        <button  *ngIf= "hasPublishedDoc() && isContentModifiable()
+                      && salesforceService.joblink(candidateSource)"
                  class="btn btn-sm btn-secondary" (click)="importEmployerFeedback()"
                  title="Import employer feedback from published list">
           <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
