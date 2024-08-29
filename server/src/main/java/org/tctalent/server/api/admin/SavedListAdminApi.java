@@ -49,7 +49,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/saved-list")
 public class SavedListAdminApi implements
         ITableApi<SearchSavedListRequest, UpdateSavedListInfoRequest, UpdateSavedListInfoRequest> {
@@ -107,7 +107,7 @@ public class SavedListAdminApi implements
      * @throws NoSuchObjectException if there is no saved list with this id.
      */
     @Override
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);

@@ -432,7 +432,8 @@ public class UserServiceImpl implements UserService {
                     //Log details to check for nature of brute force attacks.
                     LogBuilder.builder(log)
                         .action("Login")
-                        .message("Invalid credentials for user: " + request)
+                        .message("Invalid credentials for user with given username: " +
+                            request.getUsername())
                         .logError(ex);
 
                     //Exception if there is more than one user associated with email.
@@ -462,7 +463,8 @@ public class UserServiceImpl implements UserService {
             //Log details to check for nature of brute force attacks.
             LogBuilder.builder(log)
                 .action("Login")
-                .message("Invalid credentials for user: " + request)
+                .message("Invalid credentials for user with given username: " +
+                    request.getUsername())
                 .logError(e);
 
             // map spring exception to a service exception for better handling

@@ -193,6 +193,17 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
   savedSearchSelectionChange: boolean;
 
+  /**
+   * Once set, refers to candidate profile search card.
+   * @private
+   */
+  private searchCard: Element;
+  /**
+   * Stores search card scroll bar distance from top in px for restoring if > 0.
+   * @private
+   */
+  private searchCardScrollTop: number = 0;
+
   private noCandidatesMessage = "No candidates are selected";
 
   public filterSearch: boolean = false;
@@ -310,6 +321,19 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private saveShowClosedOpps(): void {
     const showClosedOppsValue = this.searchForm.get('showClosedOpps').value;
     this.localStorageService.set(this.savedListStateKey() + this.showClosedOppsSuffix, showClosedOppsValue.toString());
+  }
+
+  /**
+   * Restores candidate profile search card to previous px distance from top if > 0.
+   */
+  public setSearchCardScrollTop() {
+    // Starting at 0 is default behaviour so no action needed in that case.
+    if (this.searchCardScrollTop > 0) {
+      // The card has to fully render before scrolling, so a short delay is necessary.
+      setTimeout(() => {
+        this.searchCard.scrollTo({ top: this.searchCardScrollTop, behavior: 'smooth' });
+      }, 200)
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -504,7 +528,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         request.pageSize = this.pageSize;
         request.sortFields = [this.sortField];
         request.sortDirection = this.sortDirection;
-        request.dtoType = DtoType.PREVIEW;
         if (reviewable) {
           request.reviewStatusFilter = this.reviewStatusFilter;
         }
@@ -561,6 +584,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   selectCandidate(candidate: Candidate) {
+    // Save scrollbar px distance from top on previous candidate profile search card, if any.
+    if (this.currentCandidate) {
+      this.searchCard = document.querySelector('.profile');
+      this.searchCardScrollTop = this.searchCard.scrollTop;
+    }
     this.setCurrentCandidate(candidate);
   }
 

@@ -18,7 +18,7 @@
 <!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
   <div class="card-body d-flex min-height-150 align-items-center">
       <div class="w-75 align-self-center ps-2">
-        <div>
+        <div *ngIf="!loading">
           <strong>{{candidateSource?.name + ' (' + candidateSource?.id + ')'}} </strong>
           <span class="d-flex align-items-baseline">
             <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>

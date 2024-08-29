@@ -35,7 +35,7 @@ import org.tctalent.server.request.country.UpdateCountryRequest;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/country")
 @RequiredArgsConstructor
 public class CountryAdminApi implements
@@ -69,7 +69,7 @@ public class CountryAdminApi implements
     }
 
     @Override
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         Country country = countryService.getCountry(id);
         return countryDto().build(country);
     }
