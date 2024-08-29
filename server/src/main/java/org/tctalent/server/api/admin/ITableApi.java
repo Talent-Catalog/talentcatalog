@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -85,7 +86,8 @@ public interface ITableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogWebApi 
      * @throws NoSuchObjectException if there is no such record with the given id
      */
     @GetMapping("{id}")
-    default @NotNull Map<String, Object> get(@PathVariable("id") long id)
+    default @NotNull Map<String, Object> get(@PathVariable("id") long id,
+        @RequestParam(name = "dtoType", required = false, defaultValue = "EXTENDED") DtoType dtoType)
             throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "get");
     }

@@ -157,6 +157,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
@@ -441,7 +442,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Get candidate ids from Elasticsearch then fetch and return from the database
-        Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmail(s);
+        Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmailWithLimit(s);
         Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
         LogBuilder.builder(log)
@@ -460,21 +461,24 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
+        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+
+        Page<Candidate> candidates;
 
         // Get candidate ids from Elasticsearch
         Set<Long> candidateIds;
         if (searchForNumber) {
-            candidateIds = elasticsearchService.findByNumber(s);
+            candidates = candidateRepository.searchCandidateNumber(
+                s +'%', sourceCountries,
+                request.getPageRequestWithoutSort());
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                candidateIds = elasticsearchService.findByName(s);
+                candidateIds = elasticsearchService.findByNameWithLimit(s);
+                candidates = fetchCandidates(request, candidateIds);
             } else {
                 return null;
             }
         }
-
-        // then fetch and return from the database
-        Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
@@ -493,7 +497,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
             // Get candidate ids from Elasticsearch then fetch and return from the database
-            Set<Long> candidateIds = elasticsearchService.findByExternalId(s);
+            Set<Long> candidateIds = elasticsearchService.findByExternalIdWithLimit(s);
             Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
             LogBuilder.builder(log)
@@ -543,10 +547,10 @@ public class CandidateServiceImpl implements CandidateService {
             candidateDestinationCountryIds.add(destination.getCountry().getId());
         }
 
-        //Check that all TBB destinations are present for candidate, adding
+        //Check that all TC destinations are present for candidate, adding
         //missing ones if necessary
         boolean addedDestinations = false;
-        for (Country country : countryService.getTBBDestinations()) {
+        for (Country country : countryService.getTCDestinations()) {
             //Does candidate have this destination preference?
             if (!candidateDestinationCountryIds.contains(country.getId())) {
                 //If not, add in a new one
@@ -1210,12 +1214,23 @@ public class CandidateServiceImpl implements CandidateService {
 
     private void checkForChangedPartner(Candidate candidate, Country country) {
         //Do we have an auto assignable partner in this country
-        Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
-        User user = candidate.getUser();
-        if (partner != null && !partner.equals(user.getPartner())) {
-            //Partner of candidate needs to change
-            user.setPartner((PartnerImpl) partner);
-            userRepository.save(user);
+        Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
+
+        //Is there a country assigned partner?
+        if (autoAssignedCountryPartner != null) {
+
+            //Get current user partner.
+            User user = candidate.getUser();
+            final PartnerImpl currentUserPartner = user.getPartner();
+
+            //The country assigned partner only overrides the default source partner.
+            if (currentUserPartner.isDefaultSourcePartner()) {
+                if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
+                    //Partner of candidate needs to change
+                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
+                    userRepository.save(user);
+                }
+            }
         }
     }
 
@@ -1467,6 +1482,18 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Optional<Candidate> getLoggedInCandidateLoadCandidateExams() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                .findByIdLoadCandidateExams(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
+    }
+
+    @Override
     public Optional<Candidate> getLoggedInCandidateLoadCertifications() {
         Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
@@ -1474,6 +1501,18 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             Candidate candidate = candidateRepository
                     .findByIdLoadCertifications(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
+    }
+    
+    @Override
+    public Optional<Candidate> getLoggedInCandidateLoadDestinations() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadDestinations(candidateId);
             return candidate == null ? Optional.empty() : Optional.of(candidate);
         }
     }
@@ -2413,6 +2452,9 @@ public class CandidateServiceImpl implements CandidateService {
         if (data.getAsylumYear() != null) {
             candidate.setAsylumYear(data.getAsylumYear());
         }
+        if (data.getAvailDate() != null) {
+            candidate.setAvailDate(data.getAvailDate());
+        }
         if (data.getAvailImmediate() != null) {
             candidate.setAvailImmediate(data.getAvailImmediate());
         }
@@ -2966,4 +3008,98 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
+
+    @Override
+    public List<Long> findUnreadChatsInCandidates() {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        List<Long> unreadChatIds =
+            candidateRepository.findUnreadChatsInCandidates(
+                loggedInUser.getPartner().getId(),
+                loggedInUser.getId()
+            );
+
+        return unreadChatIds;
+    }
+
+    @Override
+    public Page<Candidate> fetchCandidatesWithChat(
+        FetchCandidatesWithChatRequest request
+    ) {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        // If the keyword is empty or contains non-numeric characters, we want matches for first and
+        // last names that match the string in any part - e.g. 'sam' would match 'samuel' - but if
+        // the keyword contains only numbers, we assume a candidate number is sought and return
+        // only full matches - e.g. '00' will not match '60011'.
+        String keyword = request.getKeyword();
+        if (keyword.isEmpty() || !StringUtils.isNumeric(keyword)) {
+            keyword = StringUtils.lowerCase("%" + request.getKeyword() + "%");
+        }
+
+        if (request.isUnreadOnly()) {
+            List<Long> candidateIds =
+                candidateRepository.findIdsOfCandidatesWithActiveAndUnreadChat(
+                    loggedInUser.getPartner().getId(),
+                    loggedInUser.getId(),
+                    keyword
+                );
+            return candidateRepository.findByIdIn(candidateIds, request.getPageRequest());
+        } else {
+            return candidateRepository.findCandidatesWithActiveChat(
+                loggedInUser.getPartner().getId(), keyword, request.getPageRequest()
+            );
+        }
+    }
+
+    @Override
+    public void reassignSavedListCandidates(SavedList savedList, int partnerId) {
+        Partner newPartner = partnerService.getPartner(partnerId);
+
+        SavedListGetRequest request = new SavedListGetRequest();
+
+        Page<Candidate> candidatePage = getSavedListCandidates(savedList, request);
+
+        int totalPagesToProcess = candidatePage.getTotalPages();
+        int pagesProcessed = 0;
+
+        while (pagesProcessed < totalPagesToProcess) {
+            request.setPageNumber(pagesProcessed);
+            candidatePage = getSavedListCandidates(savedList, request);
+            List<Candidate> candidates = candidatePage.getContent();
+            processCandidateReassignment(candidates, newPartner);
+            entityManager.clear(); // Keeps candidates from piling up in persistence context
+            pagesProcessed++;
+        }
+    }
+
+    /**
+     * For each candidate on given list, sets partnerId on associated user object, saves to DB and
+     * updates the corresponding elasticsearch index entry.
+     * @param candidateList list of candidates
+     * @param newPartner the new partner to which they will be assigned
+     */
+    private void processCandidateReassignment(
+        List<Candidate> candidateList, Partner newPartner
+    ) {
+        if (newPartner instanceof PartnerImpl) {
+            for (Candidate candidate : candidateList) {
+                User candidateUser = candidate.getUser();
+                candidateUser.setPartner((PartnerImpl) newPartner);
+                save(candidate, true);
+            }
+        } else {
+            LogBuilder.builder(log)
+                .action("Process candidate reassignment")
+                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation of Partner.")
+                .logError();
+        }
+    }
+
 }

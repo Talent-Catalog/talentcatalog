@@ -16,10 +16,10 @@
 
 package org.tctalent.server.api.admin;
 
+import javax.validation.constraints.NotNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting a SavedList DTO builder
@@ -31,7 +31,24 @@ public class SavedListBuilderSelector {
         = new ExportColumnsBuilderSelector();
 
     public @NotNull DtoBuilder selectBuilder() {
-        return savedListDto();
+        return selectBuilder(null);
+    }
+
+    public @NotNull DtoBuilder selectBuilder(@Nullable DtoType dtoType) {
+        DtoBuilder dtoBuilder;
+        if (dtoType == DtoType.MINIMAL) {
+            dtoBuilder = minimalSavedListDto();
+        } else {
+            dtoBuilder = savedListDto();
+        }
+        return dtoBuilder;
+    }
+
+    private DtoBuilder minimalSavedListDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
     }
 
     private DtoBuilder savedListDto() {

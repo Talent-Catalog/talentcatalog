@@ -18,15 +18,13 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Set;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
 
-public interface CountryRepository extends JpaRepository<Country, Long>, JpaSpecificationExecutor<Country> {
-
+public interface CountryRepository extends CacheEvictingRepository<Country, Long>, JpaSpecificationExecutor<Country> {
 
     @Query(" select c from Country c "
             + " where c.status = :status order by c.name asc")

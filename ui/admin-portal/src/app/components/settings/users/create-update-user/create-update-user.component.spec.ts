@@ -30,11 +30,14 @@ import {MockUser} from "../../../../MockData/MockUser";
 import {SearchUserRequest} from "../../../../model/base";
 import {Role} from "../../../../model/user";
 import {config_test} from "../../../../../config-test";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {AuthenticationService} from "../../../../services/authentication.service";
 
 fdescribe('CreateUpdateUserComponent', () => {
   let component: CreateUpdateUserComponent;
   let fixture: ComponentFixture<CreateUpdateUserComponent>;
   let userServiceSpy: jasmine.SpyObj<UserService>;
+  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
   let authServiceSpy: jasmine.SpyObj<AuthorizationService>;
   let countryServiceSpy: jasmine.SpyObj<CountryService>;
   let partnerServiceSpy: jasmine.SpyObj<PartnerService>;
@@ -46,16 +49,20 @@ fdescribe('CreateUpdateUserComponent', () => {
   }
   beforeEach(waitForAsync(() => {
     const userServiceSpyObj = jasmine.createSpyObj('UserService', ['create', 'update', 'search']);
+    const authenticationServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['getLoggedInRole', 'canAssignPartner']);
     const countryServiceSpyObj = jasmine.createSpyObj('CountryService', ['listCountriesRestricted']);
     const partnerServiceSpyObj = jasmine.createSpyObj('PartnerService', ['listPartners']);
 
     TestBed.configureTestingModule({
       declarations: [CreateUpdateUserComponent],
-      imports: [FormsModule,ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [FormsModule,ReactiveFormsModule,NgSelectModule,HttpClientTestingModule,
+        LocalStorageModule.forRoot({}),
+      ],
       providers: [
         NgbActiveModal,
         { provide: UserService, useValue: userServiceSpyObj },
+        { provide: AuthenticationService, useValue: authenticationServiceSpyObj },
         { provide: AuthorizationService, useValue: authServiceSpyObj },
         { provide: CountryService, useValue: countryServiceSpyObj },
         { provide: PartnerService, useValue: partnerServiceSpyObj }
@@ -64,6 +71,7 @@ fdescribe('CreateUpdateUserComponent', () => {
     }).compileComponents();
 
     userServiceSpy = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
+    authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
     authServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
     countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
     partnerServiceSpy = TestBed.inject(PartnerService) as jasmine.SpyObj<PartnerService>;
@@ -74,6 +82,8 @@ fdescribe('CreateUpdateUserComponent', () => {
 
     authServiceSpy.getLoggedInRole.and.returnValue(mockSearchUserReq.role);
     authServiceSpy.canAssignPartner.and.returnValue(true);
+
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(mockUser);
 
     countryServiceSpy.listCountriesRestricted.and.returnValue(of([]));
     partnerServiceSpy.listPartners.and.returnValue(of([]));

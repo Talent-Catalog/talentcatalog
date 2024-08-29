@@ -49,3 +49,32 @@ emoji-mart#editorPicker {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
+
+#quillToolbar {
+  position: relative;
+}
+
+button.custom-link-btn {
+  color: #444 !important;
+  padding-bottom: 4px !important;
+  padding-left: 0 !important;
+}
+
+button.custom-link-btn:hover {
+  color: #0066cc !important;
+  padding-bottom: 4px !important;
+  padding-left: 0 !important;
+}
+
+button.custom-link-btn-selected {
+  color: #0066cc !important;
+  padding-bottom: 4px !important;
+  padding-left: 0 !important;
+}
+
+/* Mobile screen styling */
+@media only screen and (max-width: 600px) {
+  button.custom-link-btn:hover {
+    color: #444 !important;
+  }
+}

@@ -98,6 +98,15 @@ public class CandidateBuilderSelector {
 
     @NonNull
     public DtoBuilder selectBuilder() {
+        return selectBuilder(DtoType.FULL);
+    }
+
+    @NonNull
+    public DtoBuilder selectBuilder(DtoType type) {
+        if (DtoType.MINIMAL.equals(type)) {
+            return minimalCandidateDto();
+        }
+
         User user = userService.getLoggedInUser();
         Partner partner = user == null ? null : user.getPartner();
 
@@ -122,7 +131,8 @@ public class CandidateBuilderSelector {
             partner, role, fullyVisibleCandidates, candidatePublicProperties, candidateSemiLimitedExtraProperties);
         DtoPropertyFilter userPropertyFilter = new PartnerAndRoleBasedDtoPropertyFilter(
             partner, role, fullyVisibleCandidates, userPublicProperties, null);
-        return candidateDto(candidatePropertyFilter, userPropertyFilter);
+
+        return candidateDto(candidatePropertyFilter, userPropertyFilter, type);
     }
 
     /**
@@ -130,11 +140,12 @@ public class CandidateBuilderSelector {
      * every candidate is a user).
      * @param candidatePropertyFilter Filter for candidate properties
      * @param userPropertyFilter Filter for candidate's user properties
+     * @param type Type of DTO to build
      * @return DtoBuilder
      */
     private DtoBuilder candidateDto(
-        DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter) {
-        return new DtoBuilder(candidatePropertyFilter)
+        DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter, DtoType type) {
+        final DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
             .add("status")
             .add("candidateNumber")
@@ -144,8 +155,6 @@ public class CandidateBuilderSelector {
             .add("whatsapp")
             .add("city")
             .add("state")
-            .add("address1")
-            .add("yearOfArrival")
             .add("externalId")
             .add("externalIdSource")
             .add("partnerRef")
@@ -155,10 +164,8 @@ public class CandidateBuilderSelector {
             .add("unhcrConsent")
             .add("unrwaRegistered")
             .add("unrwaNumber")
-            .add("additionalInfo")
             .add("mediaWillingness")
             .add("linkedInLink")
-            .add("candidateMessage")
             .add("folderlink")
             .add("sflink")
             .add("videolink")
@@ -166,7 +173,6 @@ public class CandidateBuilderSelector {
             .add("selected")
             .add("createdDate")
             .add("updatedDate")
-            .add("contextNote")
             .add("maritalStatus")
             .add("drivingLicense")
             .add("englishAssessmentScoreIelts")
@@ -181,29 +187,37 @@ public class CandidateBuilderSelector {
             .add("regoUtmMedium")
             .add("regoUtmSource")
             .add("regoUtmTerm")
-            .add("candidateExams", examsDto())
             .add("maxEducationLevel", educationLevelDto())
             .add("surveyType", surveyTypeDto())
             .add("country", countryDto())
             .add("nationality", countryDto())
-            .add("candidateOpportunities", candidateOpportunityDto())
             .add("user", userDto(userPropertyFilter))
             .add("candidateReviewStatusItems", reviewDto())
-
-            .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter))
-            .add("shareableCv", candidateAttachmentDto(userPropertyFilter))
-            .add("shareableDoc", candidateAttachmentDto(userPropertyFilter))
-            .add("listShareableCv", candidateAttachmentDto(userPropertyFilter))
-            .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter))
-            .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
-            .add("candidateProperties", candidatePropertyDto())
-            .add("shareableNotes")
-            .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
+            .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter, type))
+            .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto(type))
+            .add("candidateExams", examsDto())
             .add("miniIntakeCompletedDate")
-            .add("fullIntakeCompletedBy", userDto(userPropertyFilter))
             .add("fullIntakeCompletedDate")
-
             ;
+
+            if (!DtoType.PREVIEW.equals(type)) {
+                builder
+                    .add("candidateOpportunities", candidateOpportunityDto())
+                    .add("candidateProperties", candidatePropertyDto())
+                    .add("shareableCv", candidateAttachmentDto(userPropertyFilter, type))
+                    .add("shareableDoc", candidateAttachmentDto(userPropertyFilter, type))
+                    .add("listShareableCv", candidateAttachmentDto(userPropertyFilter, type))
+                    .add("listShareableDoc", candidateAttachmentDto(userPropertyFilter, type))
+                    .add("miniIntakeCompletedBy", userDto(userPropertyFilter))
+                    .add("fullIntakeCompletedBy", userDto(userPropertyFilter))
+                    .add("contextNote")
+                    .add("shareableNotes")
+                    .add("additionalInfo")
+                    .add("candidateMessage")
+                ;
+            }
+
+            return builder;
     }
 
     private DtoBuilder userDto(DtoPropertyFilter propertyFilter) {
@@ -216,6 +230,14 @@ public class CandidateBuilderSelector {
                 .add("updatedDate")
                 .add("partner", partnerDto())
                 ;
+    }
+
+    private DtoBuilder minimalCandidateDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("candidateNumber")
+            .add("user", userDto())
+            ;
     }
 
     private DtoBuilder userDto() {
@@ -337,8 +359,8 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder candidateAttachmentDto(DtoPropertyFilter userPropertyFilter) {
-        return new DtoBuilder()
+    private DtoBuilder candidateAttachmentDto(DtoPropertyFilter userPropertyFilter, DtoType type) {
+        final DtoBuilder builder = new DtoBuilder()
             .add("id")
             .add("type")
             .add("name")
@@ -346,10 +368,17 @@ public class CandidateBuilderSelector {
             .add("fileType")
             .add("migrated")
             .add("cv")
-            .add("createdBy", userDto(userPropertyFilter))
             .add("createdDate")
             .add("uploadType")
             .add("url")
             ;
+
+        if (!DtoType.PREVIEW.equals(type)) {
+            builder
+                .add("createdBy", userDto(userPropertyFilter))
+            ;
+        }
+
+        return builder;
     }
 }

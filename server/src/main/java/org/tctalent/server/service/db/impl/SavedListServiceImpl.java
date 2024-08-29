@@ -167,6 +167,7 @@ public class SavedListServiceImpl implements SavedListService {
             csl.setContextNote(contextNote);
         }
 
+        //If destination list does not already contain the candidate...
         if (!destinationList.getCandidateSavedLists().contains(csl)) {
             //Add candidate to the collection of candidates in this list
             destinationList.getCandidateSavedLists().add(csl);

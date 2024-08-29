@@ -73,7 +73,7 @@
         <button class="btn btn-link" *ngIf="isEditable() && !isDefaultSavedSearch()" (click)="doEditSource()">
           <i class="fas fa-edit" title="Rename"></i>
         </button>
-        <button class="btn btn-link" (click)="doSelectColumns()">
+        <button class="btn btn-link" *ngIf="isEditable()" (click)="doSelectColumns()">
           <i class="fas fa-columns" title="Select columns to display"></i>
         </button>
         <button class="btn btn-link" *ngIf="canAssignTasks()" (click)="assignTasks()">
@@ -126,7 +126,7 @@
           <i class="fa fa-envelope"></i>
         </button>
 
-        <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
+        <button *ngIf="isContentModifiable()" class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
                 (click)="updateStatusOfSelection()" title="Update Statuses of Selection">
           <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
           <i class="fas fa-user-check"></i>
@@ -151,7 +151,7 @@
           Remove <i class="fas fa-user-check"></i>
         </button>
 
-        <button class="btn btn-sm btn-secondary" *ngIf="isJobList()" [disabled]="!isSelection()"
+        <button class="btn btn-sm btn-secondary" *ngIf="isJobList() && isContentModifiable()" [disabled]="!isSelection()"
                 (click)="closeSelectedOpportunities()"
                 title="Close selected candidate cases. Not removed from list but hidden unless 'Show closed cases' checkbox is checked.">
           <i class="fas fa-spinner fa-spin" *ngIf=closing></i>
@@ -176,7 +176,8 @@
           Publish <i class="fas fa-globe"></i>
         </button>
 
-        <button  *ngIf="hasPublishedDoc() && salesforceService.joblink(candidateSource)"
+        <button  *ngIf= "hasPublishedDoc() && isContentModifiable()
+                      && salesforceService.joblink(candidateSource)"
                  class="btn btn-sm btn-secondary" (click)="importEmployerFeedback()"
                  title="Import employer feedback from published list">
           <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
@@ -354,15 +355,34 @@
                   <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
                     <i class="fas fa-ellipsis-h"></i>
                   </button>
-                  <ul ngbDropdownMenu>
-                    <li *ngIf="isReviewable()" ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
-                    <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
-                    <li class="dropdown-divider"></li>
-                    <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
-                      in new tab</a></li>
-                    <li class="dropdown-divider"></li>
-                    <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
-                    <li *ngIf="isJobList()" ngbDropdownItem (click)="closeOpportunity(candidate)">Close opportunity for this job</li>
+                  <ul ngbDropdownMenu id="candidate-dropdown">
+                    <span *ngIf="isReviewable()">
+                      <li ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
+                      <li class="dropdown-divider"></li>
+                    </span>
+                    <span *ngIf="isCandidateNameViewable()">
+                      <li ngbDropdownItem (click)="downloadGeneratedCV(candidate)"
+                          title="Opens/DLs CV generated from candidate profile"
+                      >
+                        Download CV
+                      </li>
+                      <li class="dropdown-divider"></li>
+                    </span>
+                    <li ngbDropdownItem>
+                      <a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">
+                        Open in new tab
+                      </a>
+                    </li>
+                    <li class="dropdown-divider"
+                        *ngIf="(!isJobList() && isContentModifiable()) || isJobList()"
+                    ></li>
+                    <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem
+                        (click)="removeCandidateFromList(candidate)">
+                      Remove from list
+                    </li>
+                    <li *ngIf="isJobList()" ngbDropdownItem (click)="closeOpportunity(candidate)">
+                      Close opportunity for this job
+                    </li>
                   </ul>
                 </div>
               </td>
@@ -457,6 +477,7 @@ arrays with more than one value display in drop down
                                  [candidate]="currentCandidate"
                                  [loggedInUser]="loggedInUser"
                                  [savedSearchSelectionChange]="savedSearchSelectionChange"
+                                 (onSearchCardRendered)="setSearchCardScrollTop()"
                                  (closeEvent)="setCurrentCandidate(null)">
       </app-candidate-search-card>
 

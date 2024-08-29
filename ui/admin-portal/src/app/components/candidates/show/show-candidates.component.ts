@@ -59,11 +59,9 @@ import {
 } from '../../../model/saved-search';
 import {
   CandidateSource,
-  canEditSource,
   defaultReviewStatusFilter,
+  DtoType,
   indexOfHasId,
-  isMine,
-  isStarredByMe,
   ReviewStatus,
   Status
 } from '../../../model/base';
@@ -123,6 +121,7 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -194,6 +193,17 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
   savedSearchSelectionChange: boolean;
 
+  /**
+   * Once set, refers to candidate profile search card.
+   * @private
+   */
+  private searchCard: Element;
+  /**
+   * Stores search card scroll bar distance from top in px for restoring if > 0.
+   * @private
+   */
+  private searchCardScrollTop: number = 0;
+
   private noCandidatesMessage = "No candidates are selected";
 
   public filterSearch: boolean = false;
@@ -218,7 +228,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
@@ -311,6 +321,19 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private saveShowClosedOpps(): void {
     const showClosedOppsValue = this.searchForm.get('showClosedOpps').value;
     this.localStorageService.set(this.savedListStateKey() + this.showClosedOppsSuffix, showClosedOppsValue.toString());
+  }
+
+  /**
+   * Restores candidate profile search card to previous px distance from top if > 0.
+   */
+  public setSearchCardScrollTop() {
+    // Starting at 0 is default behaviour so no action needed in that case.
+    if (this.searchCardScrollTop > 0) {
+      // The card has to fully render before scrolling, so a short delay is necessary.
+      setTimeout(() => {
+        this.searchCard.scrollTo({ top: this.searchCardScrollTop, behavior: 'smooth' });
+      }, 200)
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -561,6 +584,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   selectCandidate(candidate: Candidate) {
+    // Save scrollbar px distance from top on previous candidate profile search card, if any.
+    if (this.currentCandidate) {
+      this.searchCard = document.querySelector('.profile');
+      this.searchCardScrollTop = this.searchCard.scrollTop;
+    }
     this.setCurrentCandidate(candidate);
   }
 
@@ -778,17 +806,23 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  downloadCv(candidate) {
-    const tab = window.open();
-    this.candidateService.downloadCv(candidate.id).subscribe(
-      result => {
-        const fileUrl = URL.createObjectURL(result);
-        tab.location.href = fileUrl;
-      },
-      error => {
-          this.error = error;
-      }
-    )
+  /**
+   * Lightly adapted version of {@link ViewCandidateComponent.downloadGeneratedCV}.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   */
+  downloadGeneratedCV(candidate) {
+    // Modal
+    const downloadCVModal = this.modalService.open(DownloadCvComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    downloadCVModal.componentInstance.candidateId = candidate.id;
+
+    downloadCVModal.result
+    .then((result) => {
+    })
+    .catch(() => { /* Isn't possible */ });
   }
 
   getBreadcrumb(): string {
@@ -820,7 +854,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isContentModifiable(): boolean {
-    return !isSavedSearch(this.candidateSource);
+    let modifiable = false;
+    if (!isSavedSearch(this.candidateSource)) {
+      if (this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
+        modifiable = true
+      } else {
+        modifiable = !this.authorizationService.isReadOnly();
+      }
+    }
+    return modifiable;
   }
 
   isReviewable(): boolean {
@@ -829,11 +871,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isSalesforceUpdatable(): boolean {
-    return !isSavedSearch(this.candidateSource) && this.authService.canUpdateSalesforce();
+    return !isSavedSearch(this.candidateSource) && this.authorizationService.canUpdateSalesforce();
   }
 
   canResolveTasks(): boolean {
-    return isSavedList(this.candidateSource) && this.authService.canManageCandidateTasks();
+    return isSavedList(this.candidateSource) && this.authorizationService.canManageCandidateTasks();
   }
 
   isSavedList(): boolean {
@@ -856,7 +898,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Is shareable with me if it is not created by me.
     if (this.candidateSource) {
         //was it created by me?
-        if (!isMine(this.candidateSource, this.authenticationService)) {
+        if (!this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
           shareable = true;
         }
     }
@@ -868,15 +910,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isImportable(): boolean {
-    return isSavedList(this.candidateSource);
+    return !this.authorizationService.isReadOnly() && isSavedList(this.candidateSource);
   }
 
   isPublishable(): boolean {
-    return isSavedList(this.candidateSource) && this.authService.canPublishList();
+    return isSavedList(this.candidateSource) && this.authorizationService.canPublishList();
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.candidateSource?.users);
   }
 
   isJobList(): boolean {
@@ -888,7 +930,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isEditable(): boolean {
-    return canEditSource(this.candidateSource, this.authenticationService);
+    return this.authorizationService.canEditCandidateSource(this.candidateSource);
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
@@ -1069,9 +1111,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private requestSaveSelection() {
     //Show modal allowing for list selection
-    const modal = this.modalService.open(SelectListComponent);
+    const modal = this.modalService.open(SelectListComponent, {size: "lg"});
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
+    let readOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.myListsOnly = readOnly;
+    modal.componentInstance.canChangeStatuses = !readOnly;
     if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
     }
@@ -1676,9 +1721,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   doCopySource() {
     //Show modal allowing for list selection
-    const modal = this.modalService.open(SelectListComponent);
+    const modal = this.modalService.open(SelectListComponent, {size: "lg"});
     modal.componentInstance.action = "Copy";
     modal.componentInstance.title = "Copy to another List";
+    let readOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.myListsOnly = readOnly;
+    modal.componentInstance.canChangeStatuses = !readOnly;
+
     modal.componentInstance.excludeList = this.candidateSource;
 
     modal.result
@@ -1814,7 +1863,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canAssignTasks() {
-    return this.authService.canAssignTask();
+    return this.authorizationService.canAssignTask();
   }
 
 
@@ -1845,7 +1894,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   closeSelectedOpportunities() {

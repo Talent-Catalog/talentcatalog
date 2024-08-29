@@ -21,14 +21,16 @@
   <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading">
-    <div class="d-sm-flex justify-content-between">
-      <h3 class="mb-3 text-center text-sm-left">
-        {{ 'HEADER.NAV.ACCOUNT' | translate }} {{candidate?.candidateNumber}}</h3>
+    <div class="d-sm-flex justify-content-between align-items-center">
+      <div class="mb-3 text-center text-sm-start">
+        <h3>{{ 'PROFILE.TAB.PROFILE' | translate }}</h3>
+        <h5 class="text-muted">{{ 'HEADER.NAV.ACCOUNT' | translate }} #{{candidate?.candidateNumber}}</h5>
+      </div>
       <app-download-cv></app-download-cv>
     </div>
 
     <!-- CONTACT -->
-    <section>
+    <section class="mt-4 mt-sm-0">
 
       <div class="section-heading">
 
@@ -272,6 +274,32 @@
       </div>
 
     </section>
+    <!-- EXAMS -->
+    <section>
+
+      <div class="section-heading">
+
+        <h5>{{ 'PROFILE.EXAMS.TITLE' | translate }}</h5>
+
+        <a class="btn btn-outline-primary" [routerLink]="['edit', 'exams']">
+          {{ 'PROFILE.BUTTON.EDIT' | translate }}
+        </a>
+
+      </div>
+
+      <div class="card">
+        <ng-container *ngFor="let exam of candidate?.candidateExams; let i = index;">
+          <app-candidate-exam-card [exam]="exam"
+                                            [preview]="true">
+          </app-candidate-exam-card>
+
+          <div class="text-center" *ngIf="i < candidate?.candidateExams?.length - 1">
+            <hr>
+          </div>
+        </ng-container>
+      </div>
+
+    </section>
 
     <!-- CERTIFICATIONS -->
     <section>
@@ -324,6 +352,32 @@
           <hr *ngIf="i < candidate?.candidateLanguages?.length - 1">
         </ng-container>
 
+      </div>
+
+    </section>
+
+    <!-- DESTINATIONS -->
+    <section>
+
+      <div class="section-heading">
+
+        <h5>{{ 'PROFILE.DESTINATIONS.TITLE' | translate }}</h5>
+
+        <a class="btn btn-outline-primary" [routerLink]="['edit', 'destinations']">
+          {{ 'PROFILE.BUTTON.EDIT' | translate }}
+        </a>
+
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <ng-container *ngFor="let destination of candidate?.candidateDestinations; let i = index;">
+            <div class="col-md-6">
+              <h6>{{destination.country.name}}: </h6>
+              <p>{{destination.interest}} {{destination.notes}}</p>
+            </div>
+          </ng-container>
+        </div>
       </div>
 
     </section>

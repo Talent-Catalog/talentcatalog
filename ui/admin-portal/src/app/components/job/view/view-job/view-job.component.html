@@ -54,6 +54,7 @@
     <div class="col-sm-4">
       <app-view-job-summary
         [job]="job"
+        [editable]="isEditable()"
         [nRows]=2
         [highlight]="currentPrepItemIsSummary()"
       >
@@ -79,7 +80,7 @@
           <ng-template ngbNavContent>
             <app-job-general-tab
               [job]="job"
-              [editable]="editable"
+              [editable]="isEditable()"
               [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)"
             >
@@ -93,7 +94,7 @@
           <ng-template ngbNavContent>
             <app-job-suggested-searches-tab
               [job]="job"
-              [editable]="editable"
+              [editable]="isEditable()"
               [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)">
             </app-job-suggested-searches-tab>
@@ -106,7 +107,7 @@
           <ng-template ngbNavContent>
             <app-job-upload-tab
               [job]="job"
-              [editable]="editable"
+              [editable]="isEditable()"
               [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)"
             >
@@ -136,7 +137,7 @@
           <ng-template ngbNavContent>
             <app-job-source-contacts-tab
               [job]="job"
-              [editable]="editable">
+              [editable]="isEditable()">
             </app-job-source-contacts-tab>
           </ng-template>
         </ng-container>

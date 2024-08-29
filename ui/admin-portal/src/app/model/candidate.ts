@@ -127,7 +127,8 @@ export interface CandidateProperty {
 
 export interface CandidateIntakeData {
   asylumYear?: string;
-  availImmediate?: YesNoUnsure;
+  availDate?: string;
+  availImmediate?: YesNo;
   availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
@@ -302,8 +303,6 @@ export interface CandidateDestination {
   id?: number;
   country?: Country;
   interest?: YesNoUnsure;
-  family?: FamilyRelations;
-  location?: string;
   notes?: string;
 }
 
@@ -333,6 +332,8 @@ export interface CandidateVisa {
   visaEligibilityAssessment?: YesNo;
   pathwayAssessment?: YesNoUnsure;
   pathwayAssessmentNotes?: string;
+  destinationFamily?: FamilyRelations;
+  destinationFamilyLocation?: String;
   candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }
@@ -340,8 +341,6 @@ export interface CandidateVisa {
 export interface CandidateVisaJobCheck {
   jobOpp?: Job;
   id?: number;
-  name?: string;
-  sfJobLink?: string;
   occupation?: Occupation;
   occupationNotes?: string;
   qualification?: YesNo;
@@ -788,4 +787,17 @@ export function calculateAge(dob: Date): number {
 
 export class SendResetPasswordEmailRequest {
   email: string;
+}
+
+export function describeFamilyInDestination(visaCheck: CandidateVisa): string {
+  let family: string = 'No family entered'
+  if (visaCheck?.destinationFamily) {
+    if (visaCheck?.destinationFamilyLocation) {
+      family = visaCheck?.destinationFamily + ' in ' + visaCheck?.destinationFamilyLocation;
+    } else {
+      family = visaCheck?.destinationFamily;
+    }
+    return family;
+  }
+  return family;
 }

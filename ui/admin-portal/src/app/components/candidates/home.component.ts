@@ -139,6 +139,10 @@ export class HomeComponent implements OnInit {
     return this.authorizationService.isJobCreator();
   }
 
+  isReadOnly(): boolean {
+    return this.authorizationService.isReadOnly();
+  }
+
   isSourcePartner(): boolean {
     return this.authorizationService.isSourcePartner();
   }

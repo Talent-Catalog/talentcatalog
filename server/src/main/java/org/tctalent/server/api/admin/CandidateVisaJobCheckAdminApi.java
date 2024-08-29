@@ -88,8 +88,6 @@ public class CandidateVisaJobCheckAdminApi
     private DtoBuilder candidateVisaJobDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("name")
-                .add("sfJobLink")
                 .add("jobOpp", jobOppDto())
                 .add("interest")
                 .add("interestNotes")

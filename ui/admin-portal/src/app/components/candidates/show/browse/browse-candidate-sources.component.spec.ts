@@ -1,5 +1,5 @@
-import {TestBed, ComponentFixture} from '@angular/core/testing';
-import {ReactiveFormsModule, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {NgbModal, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 import {LocalStorageModule, LocalStorageService} from 'angular-2-local-storage';
 import {Router} from '@angular/router';
@@ -9,7 +9,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateSourceService} from "../../../../services/candidate-source.service";
 import {of} from "rxjs";
-import {CandidateSourceType} from "../../../../model/base";
+import {CandidateSourceType, DtoType} from "../../../../model/base";
 import {MockSearchResults} from "../../../../MockData/MockSearchResults";
 import {MockCandidateSource} from "../../../../MockData/MockCandidateSource";
 import {CandidateSourceResultsComponent} from "../returns/candidate-source-results.component";
@@ -79,7 +79,7 @@ fdescribe('BrowseCandidateSourcesComponent', () => {
     expect(component.loading).toBeFalsy();
     expect(component.results).toEqual(mockResults);
   });
-  
+
   it('should select a source when select method is called', () => {
     const mockSource = new MockCandidateSource();
     component.select(mockSource);
@@ -94,6 +94,7 @@ fdescribe('BrowseCandidateSourcesComponent', () => {
     expectedRequest.sortFields = ['name'];
     expectedRequest.sortDirection = 'ASC';
     expectedRequest.owned = true;
+    expectedRequest.dtoType = DtoType.MINIMAL;
 
     component.search();
 

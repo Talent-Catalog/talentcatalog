@@ -17,6 +17,7 @@
 
 import {
   Candidate,
+  CandidateDestination,
   DrivingLicenseStatus,
   Exam,
   Gender,
@@ -109,6 +110,21 @@ export class MockCandidate implements Candidate {
       updatedDate: 1620000000000,
       migrated: false,
       cv: false,
+      uploadType: UploadType.other,
+      fileType: 'pdf'
+    },
+    {
+      id: 2,
+      type: AttachmentType.file,
+      name: 'Attachment 2',
+      location: 'location2',
+      url: 'http://example.com/attachment2',
+      createdBy: mockUser,
+      createdDate: 1620000000000,
+      updatedBy: mockUser,
+      updatedDate: 1620000000000,
+      migrated: false,
+      cv: true,
       uploadType: UploadType.cv,
       fileType: 'pdf'
     }
@@ -297,6 +313,20 @@ export class MockCandidate implements Candidate {
       updatedBy: mockUser,
       updatedDate: 2024
     }
+  ];
+  candidateDestinations: CandidateDestination[] = [
+    {
+      id: 1,
+      country: { id: 1, name: "Australia", status: "active", translatedName: "Australia" },
+      interest: YesNoUnsure.Yes,
+      notes: "I like this country."
+    },
+    {
+      id: 1,
+      country: { id: 2, name: "Canada", status: "active", translatedName: "Canada" },
+      interest: YesNoUnsure.No,
+      notes: "I do not like Toronto."
+    },
   ];
 
 

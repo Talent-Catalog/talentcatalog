@@ -9,6 +9,7 @@ import {
   UpdateRelocatingDependantIds
 } from "../../../../../services/candidate-opportunity.service";
 import {CandidateDependantService} from "../../../../../services/candidate-dependant.service";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-relocating-dependants',
@@ -25,7 +26,8 @@ export class RelocatingDependantsComponent extends AutoSaveComponentBase impleme
 
   constructor(private fb: FormBuilder,
               private candidateOpportunityService: CandidateOpportunityService,
-              private candidateDependantService: CandidateDependantService) {
+              private candidateDependantService: CandidateDependantService,
+              private authorizationService: AuthorizationService) {
     super(null);
   }
 
@@ -47,6 +49,10 @@ export class RelocatingDependantsComponent extends AutoSaveComponentBase impleme
         this.loading = false;
       }
     )
+  }
+
+  isReadOnly(): boolean {
+    return this.authorizationService.isReadOnly();
   }
 
   doSave(formValue: any): Observable<void> {

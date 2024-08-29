@@ -137,6 +137,8 @@ public class CandidateVisaCheckAdminApi
                 .add("validTravelDocsNotes")
                 .add("pathwayAssessment")
                 .add("pathwayAssessmentNotes")
+                .add("destinationFamily")
+                .add("destinationFamilyLocation")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())
@@ -147,8 +149,6 @@ public class CandidateVisaCheckAdminApi
     private DtoBuilder visaJobCheckDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("name")
-                .add("sfJobLink")
                 .add("jobOpp", jobOppDto())
                 .add("interest")
                 .add("interestNotes")

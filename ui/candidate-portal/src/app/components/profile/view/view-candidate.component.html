@@ -7,11 +7,15 @@
   <ng-container *ngIf="!loading">
 
     <!-- TABS -->
-    <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+    <nav ngbNav #nav="ngbNav" class="nav-pills nav-fill" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
       <!-- PROFILE -->
       <ng-container ngbNavItem="Profile">
-        <a ngbNavLink>{{ 'PROFILE.TAB.PROFILE' | translate }}</a>
+
+        <a ngbNavLink>
+          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.PROFILE' | translate }}</span>
+          <fa-icon icon="user"></fa-icon>
+        </a>
         <ng-template ngbNavContent>
           <app-candidate-profile
             [candidate]="candidate">
@@ -21,7 +25,10 @@
 
       <!-- TASKS -->
       <ng-container ngbNavItem="Tasks">
-        <a ngbNavLink>{{ 'PROFILE.TAB.TASKS' | translate }}</a>
+        <a ngbNavLink>
+          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.TASKS' | translate }}</span>
+          <fa-icon icon="list-check"></fa-icon>
+        </a>
         <ng-template ngbNavContent>
           <app-candidate-tasks
             [candidate]="candidate"
@@ -32,7 +39,9 @@
 
       <!-- JOBS (Candidate Opportunities) -->
       <ng-container ngbNavItem="Opps">
-        <a ngbNavLink>{{ 'PROFILE.TAB.OPPS' | translate }}
+        <a ngbNavLink>
+          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
+          <fa-icon icon="briefcase" class="me-2"></fa-icon>
           <app-chat-read-status
             [chats]="chatsForAllJobs"
           ></app-chat-read-status>
@@ -46,7 +55,9 @@
 
       <!-- CHAT with source partner -->
       <ng-container *ngIf="sourceChatHasPosts" ngbNavItem="Chat">
-        <a ngbNavLink>{{ 'CHAT.HEADER' | translate }}
+        <a ngbNavLink>
+          <span class="me-2 d-none d-md-inline">{{ 'CHAT.HEADER' | translate }}</span>
+          <fa-icon icon="message" class="me-2"></fa-icon>
           <app-chat-read-status
             [chats]="[sourceChat]"
           >

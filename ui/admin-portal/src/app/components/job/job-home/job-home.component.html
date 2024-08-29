@@ -80,10 +80,23 @@
     </ng-template>
   </ng-container>
 
-  <ng-container *ngIf="isJobCreator()" ngbNavItem="NewJob">
+  <ng-container *ngIf="isJobCreator() && !isReadOnly()" ngbNavItem="NewJob">
     <a ngbNavLink title="Create a new TC job">New Job <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-new-job></app-new-job>
+    </ng-template>
+  </ng-container>
+
+  <ng-container *ngIf="isSourcePartner()" ngbNavItem="MyCandidateChatsAsSourcePartner">
+    <a ngbNavLink title="Active chats with candidates managed by my partner organization">
+      {{loggedInPartner.abbreviation}} Candidate Chats  <i class="fa-solid fa-user"></i>
+      <app-chat-read-status
+        [observable]="candidatesWithChatRead$"
+      ></app-chat-read-status>
+    </a>
+    <ng-template ngbNavContent>
+      <app-candidates-with-chat [chatsRead$]="candidatesWithChatRead$">
+      </app-candidates-with-chat>
     </ng-template>
   </ng-container>
 

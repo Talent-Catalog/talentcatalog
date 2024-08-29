@@ -198,15 +198,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "max_education_level_id")
     private EducationLevel maxEducationLevel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //EAGER loading here reduces number of DB accesses
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "country_id")
     private Country country;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "nationality_id")
     private Country nationality;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -385,9 +386,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String visaIssuesNotes;
 
+    /**
+     * Date that candidate will become available for international opportunities.
+     */
+    @Nullable
+    private LocalDate availDate;
+
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnsure availImmediate;
+    private YesNo availImmediate;
 
     @Nullable
     private String availImmediateJobOps;
@@ -1448,9 +1455,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public YesNoUnsure getAvailImmediate() { return availImmediate; }
+    public LocalDate getAvailDate() {
+        return availDate;
+    }
 
-    public void setAvailImmediate(@Nullable YesNoUnsure availImmediate) { this.availImmediate = availImmediate; }
+    public void setAvailDate(@Nullable LocalDate availDate) {
+        this.availDate = availDate;
+    }
+
+    @Nullable
+    public YesNo getAvailImmediate() { return availImmediate; }
+
+    public void setAvailImmediate(@Nullable YesNo availImmediate) { this.availImmediate = availImmediate; }
 
     @Nullable
     public String getAvailImmediateJobOps() { return availImmediateJobOps; }

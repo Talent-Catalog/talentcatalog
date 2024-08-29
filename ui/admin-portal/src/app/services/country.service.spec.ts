@@ -77,13 +77,13 @@ fdescribe('CountryService', () => {
     });
   });
 
-  describe('#listTBBDestinations', () => {
+  describe('#listTCDestinations', () => {
     it('should return an Observable Country[] ', () => {
       const mockCountries: Country[] = [
         MockJob.country
       ];
 
-      service.listTBBDestinations().subscribe(countries => {
+      service.listTCDestinations().subscribe(countries => {
         expect(countries.length).toBe(1);
         expect(countries).toEqual(mockCountries);
       });

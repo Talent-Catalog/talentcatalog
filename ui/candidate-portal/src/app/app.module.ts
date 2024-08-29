@@ -115,6 +115,8 @@ import {MonthPickerComponent} from './components/common/month-picker/month-picke
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft,
+  faArrowUpRightFromSquare,
+  faBriefcase,
   faCalendar,
   faCheck,
   faChevronDown,
@@ -125,11 +127,16 @@ import {
   faFaceSmile,
   faFileUpload,
   faFolderOpen,
-  faGlobe, faLink,
+  faGlobe,
+  faLink,
+  faListCheck,
+  faMessage,
   faPlus,
   faQuestion,
   faQuestionCircle,
-  faTimes, faXmark
+  faTimes,
+  faUser,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -194,7 +201,27 @@ import {
 } from './components/register/create-account/registration-create-account.component';
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
-import { PreviewLinkComponent } from './components/chat/preview-link/preview-link.component';
+import {PreviewLinkComponent} from './components/chat/preview-link/preview-link.component';
+import {BuildLinkComponent} from './util/build-link/build-link.component';
+import {LinkTooltipComponent} from './util/link-tooltip/link-tooltip.component';
+import {
+  CandidateExamFormComponent
+} from "./components/common/candidate-exam-form/candidate-exam-form.component";
+import {
+  CandidateExamCardComponent
+} from "./components/common/candidate-exam-card/candidate-exam-card.component";
+import {
+  RegistrationCandidateExamComponent
+} from "./components/register/candidate-exam/registration-candidate-exam.component";
+import {
+  DeleteExamComponent
+} from "./components/register/candidate-exam/delete/delete-exam.component";
+import {
+  RegistrationDestinationsComponent
+} from './components/register/destinations/registration-destinations.component';
+import {
+  DestinationComponent
+} from "./components/register/destinations/destination/destination.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -265,7 +292,15 @@ export function HttpLoaderFactory(http: HttpClient) {
     TruncatePipe,
     RegistrationCreateAccountComponent,
     FileSelectorComponent,
-    PreviewLinkComponent
+    PreviewLinkComponent,
+    LinkTooltipComponent,
+    BuildLinkComponent,
+    CandidateExamFormComponent,
+    CandidateExamCardComponent,
+    RegistrationCandidateExamComponent,
+    DeleteExamComponent,
+    RegistrationDestinationsComponent,
+    DestinationComponent
   ],
   imports: [
     BrowserModule,
@@ -317,7 +352,8 @@ export function HttpLoaderFactory(http: HttpClient) {
   exports: [
     CandidateOppsComponent,
     CandidateEducationCardComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    ViewChatPostsComponent
   ],
   bootstrap: [AppComponent]
 })
@@ -326,6 +362,7 @@ export class AppModule {
   constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
     library.addIcons(
+      faArrowUpRightFromSquare,
       faEdit,
       faSpinner,
       faChevronDown,
@@ -344,7 +381,11 @@ export class AppModule {
       faFaceSmile,
       faPlus,
       faXmark,
-      faLink
+      faLink,
+      faUser,
+      faListCheck,
+      faBriefcase,
+      faMessage
     );
   }
 }

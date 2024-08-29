@@ -8,6 +8,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {QuillModule} from "ngx-quill";
 import {of} from "rxjs";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {TranslateModule} from "@ngx-translate/core";
 
 fdescribe('CreateUpdatePostComponent', () => {
   let component: CreateUpdatePostComponent;
@@ -23,7 +24,8 @@ fdescribe('CreateUpdatePostComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateUpdatePostComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,QuillModule],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,QuillModule,
+        TranslateModule.forRoot({})],
       providers: [
         { provide: NgbModal, useValue: modalServiceSpy },
         { provide: RxStompService, useValue: rxStompServiceSpy },

@@ -88,25 +88,12 @@
         </ng-template>
       </ngb-panel>
 
-      <ngb-panel id="intake-int-recruit" title="Interest in International Recruitment">
+      <ngb-panel id="intake-int-recruit" title="Availability for International Recruitment">
         <ng-template ngbPanelContent>
           <app-avail-immediate
             [entity]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-avail-immediate>
-        </ng-template>
-      </ngb-panel>
-
-      <ngb-panel id="intake-destinations" title="Destinations">
-        <ng-template ngbPanelContent>
-          <app-destinations
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-destinations>
-          <app-destination-limit
-            [entity]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-destination-limit>
         </ng-template>
       </ngb-panel>
 

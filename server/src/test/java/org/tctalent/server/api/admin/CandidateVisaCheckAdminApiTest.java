@@ -116,7 +116,9 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.validTravelDocs", is("Valid")))
                 .andExpect(jsonPath("$.validTravelDocsNotes", is("These are some travel docs notes.")))
                 .andExpect(jsonPath("$.pathwayAssessment", is("No")))
-                .andExpect(jsonPath("$.pathwayAssessmentNotes", is("These are some pathway assessment notes.")));
+                .andExpect(jsonPath("$.pathwayAssessmentNotes", is("These are some pathway assessment notes.")))
+                .andExpect(jsonPath("$.destinationFamily", is("Cousin")))
+                .andExpect(jsonPath("$.destinationFamilyLocation", is("New York")));
 
         verify(candidateVisaService).getVisaCheck(anyLong());
     }
@@ -155,7 +157,9 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.[0].validTravelDocs", is("Valid")))
                 .andExpect(jsonPath("$.[0].validTravelDocsNotes", is("These are some travel docs notes.")))
                 .andExpect(jsonPath("$.[0].pathwayAssessment", is("No")))
-                .andExpect(jsonPath("$.[0].pathwayAssessmentNotes", is("These are some pathway assessment notes.")));
+                .andExpect(jsonPath("$.[0].pathwayAssessmentNotes", is("These are some pathway assessment notes.")))
+                .andExpect(jsonPath("$.[0].destinationFamily", is("Cousin")))
+                .andExpect(jsonPath("$.[0].destinationFamilyLocation", is("New York")));
 
         verify(candidateVisaService).listCandidateVisaChecks(CANDIDATE_ID);
     }

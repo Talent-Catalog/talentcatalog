@@ -42,6 +42,7 @@ import {TailoredCvComponent} from 'src/app/components/candidates/view/tailored-c
 import {AuthenticationService} from "../../../services/authentication.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
+import {DtoType} from "../../../model/base";
 
 
 @Component({
@@ -78,7 +79,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
               private router: Router,
               private modalService: NgbModal,
               private titleService: Title,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService) {
     super(2, 4);
   }
@@ -137,9 +138,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   private loadLists() {
-    /*load all our non fixed lists */
+    /*load all our non-fixed lists */
     this.loading = true;
     const request: SearchSavedListRequest = {
+      dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
       owned: true,
       shared: true,
       global: true,
@@ -227,7 +229,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     )
   }
 
-  downloadCV() {
+  /**
+   * Very similar to {@link ShowCandidatesComponent.downloadGeneratedCV}.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   */
+  downloadGeneratedCV() {
     // Modal
     const downloadCVModal = this.modalService.open(DownloadCvComponent, {
       centered: true,
@@ -269,11 +275,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   isCVViewable(): boolean {
-    return this.authService.canViewCandidateCV();
+    return this.authorizationService.canViewCandidateCV();
   }
 
   isAnAdmin(): boolean {
-    return this.authService.isAnAdmin();
+    return this.authorizationService.isAnAdmin();
   }
 
   onMarkCandidateChatAsRead() {
@@ -391,15 +397,15 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   isEditable(): boolean {
-    return this.authService.isEditableCandidate(this.candidate);
+    return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
   canViewPrivateInfo() {
-    return this.authService.canViewPrivateCandidateInfo(this.candidate);
+    return this.authorizationService.canViewPrivateCandidateInfo(this.candidate);
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   createTailoredCv() {
@@ -411,5 +417,9 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     createTailoredCvModal.componentInstance.candidateId = this.candidate?.id;
     createTailoredCvModal.componentInstance.candidateNumber = this.candidate?.candidateNumber;
 
+  }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
   }
 }

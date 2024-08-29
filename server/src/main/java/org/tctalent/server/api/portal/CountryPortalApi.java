@@ -16,6 +16,9 @@
 
 package org.tctalent.server.api.portal;
 
+import java.util.List;
+import java.util.Map;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/portal/country")
@@ -41,6 +41,12 @@ public class CountryPortalApi {
     @GetMapping()
     public List<Map<String, Object>> listAllCountries() {
         List<Country> countries = countryService.listCountries(false);
+        return countryDto().buildList(countries);
+    }
+
+    @GetMapping("destinations")
+    public @NotNull List<Map<String, Object>> listTCDestinations() {
+        List<Country> countries = countryService.getTCDestinations();
         return countryDto().buildList(countries);
     }
 

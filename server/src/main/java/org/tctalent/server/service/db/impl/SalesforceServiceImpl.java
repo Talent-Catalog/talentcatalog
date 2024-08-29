@@ -411,6 +411,25 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 closingCommentsForCandidate = candidateOppParams.getClosingCommentsForCandidate();
                 employerFeedback = candidateOppParams.getEmployerFeedback();
                 relocationInfo = candidateOppParams.getRelocationInfo();
+
+                // If relocationInfo not already included in params and new stage is 'Relocated',
+                // update the SF case relocation info - just to assist with monitoring & evaluation,
+                // a failsafe in case admin users haven't clicked the 'Update case stats' button
+                // when updating relocating dependant info, which can be set on a visa job check
+                // or directly on the Candidate Opp via the 'Upload' tab.
+                // Typically, would use CandidateOpportunityService here, but that would create a
+                // dependency cycle between beans — so instead querying the SalesforceJobOpp to get
+                // the CandidateOpportunity required for processSfCaseRelocationInfo()
+                if (relocationInfo == null && stage == CandidateOpportunityStage.relocated) {
+                    Optional<CandidateOpportunity> candidateOpp =
+                        jobOpportunity.getCandidateOpportunities()
+                            .stream()
+                            .filter(opp -> opp.getCandidate().getId().equals(candidate.getId()))
+                            .findFirst();
+                    if (candidateOpp.isPresent()) {
+                        relocationInfo = processSfCaseRelocationInfo(candidateOpp.get(), candidate);
+                    }
+                }
             }
 
             //Always need to specify a stage name when creating a new opp
@@ -828,6 +847,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Log any failures
         int count = 0;
+        List<String> errors = new ArrayList<>();
         for (CandidateOpportunityRecordComposite request : requests) {
             UpsertResult result = results[count++];
             if (!result.isSuccess()) {
@@ -837,7 +857,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                         + request.getName()
                         + ": " + result.getErrorMessage())
                     .logError();
+                // Create list of errors to return to admin portal
+                errors.add(request.getName() + ": " + result.getErrorMessage());
             }
+        }
+        if (!errors.isEmpty()) {
+            throw new SalesforceException("The following update/s failed: " + String.join(",", errors) + ")");
         }
     }
 
@@ -1946,7 +1971,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             Partner partner = jobOpp.getJobCreator();
 
-            //Update candidate partner Salesforce account id
+            //Update job creator partner Salesforce account id
             if (partner != null) {
                 String partnerSfAccountId = partner.getSfId();
                 if (partnerSfAccountId != null) {

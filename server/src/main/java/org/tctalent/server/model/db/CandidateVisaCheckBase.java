@@ -82,6 +82,11 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
 
     private String pathwayAssessmentNotes;
 
+    @Enumerated(EnumType.STRING)
+    private FamilyRelations destinationFamily;
+
+    private String destinationFamilyLocation;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateVisaCheck", cascade = CascadeType.MERGE)
     private Set<CandidateVisaJobCheck> candidateVisaJobChecks = new HashSet<>();
 
