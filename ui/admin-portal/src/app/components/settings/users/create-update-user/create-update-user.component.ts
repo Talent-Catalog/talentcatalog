@@ -79,7 +79,7 @@ export class CreateUpdateUserComponent implements OnInit {
       formControlsConfig["password"] = [null, Validators.required];
 
       //Need to initialize partnerId to existing user's partner
-      formControlsConfig["partnerId"] = [this.authenticationService.getLoggedInUser().partner.id];
+      formControlsConfig["partnerId"] = [this.authenticationService.getLoggedInUser()?.partner?.id];
     }
 
     this.userForm = this.fb.group(formControlsConfig);
