@@ -130,6 +130,7 @@ import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
+import {CandidateSourceBaseComponent} from "./candidate-source-base";
 
 interface CachedTargetList {
   sourceID: number;
@@ -143,11 +144,10 @@ interface CachedTargetList {
   templateUrl: './show-candidates.component.html',
   styleUrls: ['./show-candidates.component.scss']
 })
-export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
+export class ShowCandidatesComponent extends CandidateSourceBaseComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
-  @Input() candidateSource: CandidateSource;
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
   @Input() pageNumber: number;
@@ -156,10 +156,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
 
-  selectedFields: CandidateFieldInfo[] = [];
-
-
-  error: any;
   loading: boolean;
   searching: boolean;
   closing: boolean;
@@ -230,25 +226,27 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private savedSearchService: SavedSearchService,
               private savedListCandidateService: SavedListCandidateService,
               private savedListService: SavedListService,
-              private modalService: NgbModal,
               private localStorageService: LocalStorageService,
               private location: Location,
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
-              private candidateFieldService: CandidateFieldService,
               private authService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
-              private offcanvasService: NgbOffcanvas
-
-  ) {}
+              private offcanvasService: NgbOffcanvas,
+              protected candidateFieldService: CandidateFieldService,
+              protected modalService: NgbModal,
+  ) {
+    super(candidateFieldService, modalService);
+  }
 
   ngOnInit() {
 
     this.setCurrentCandidate(null);
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectedCandidates = [];
+    this.longFormat = true;
 
     this.statuses = [
       ReviewStatus[ReviewStatus.rejected],
@@ -355,7 +353,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         if (this.candidateSource) {
 
           //Set the selected fields to be displayed.
-          this.loadSelectedFields()
+          this.loadSelectedFields();
 
           //Retrieve the list previously used for saving selections from this
           // source (if any)
@@ -399,11 +397,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       isSelection = this.selectedCandidates != null && this.selectedCandidates.length > 0;
     }
     return isSelection;
-  }
-
-  private loadSelectedFields() {
-    this.selectedFields = this.candidateFieldService
-      .getCandidateSourceFields(this.candidateSource, true);
   }
 
   ngOnDestroy(): void {
@@ -1598,23 +1591,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Navigate to the infographics requesting it to run stats on this source.
     const urlCommands = getCandidateSourceStatsNavigation(this.candidateSource);
     this.router.navigate(urlCommands);
-  }
-
-  doSelectColumns() {
-    //Initialize with current configuration
-    //Output is new configuration
-    const modal = this.modalService.open(CandidateColumnSelectorComponent, {scrollable: true});
-    modal.componentInstance.setSourceAndFormat(this.candidateSource, true);
-
-    modal.result
-      .then(
-        () => this.loadSelectedFields()
-      )
-      .catch(error => {
-        if (error !== ModalDismissReasons.ESC) {
-          this.error = error;
-        }
-      });
   }
 
   isCandidateNameViewable() {

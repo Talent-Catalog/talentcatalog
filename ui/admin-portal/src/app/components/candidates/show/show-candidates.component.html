@@ -73,7 +73,7 @@
         <button class="btn btn-link" *ngIf="isEditable() && !isDefaultSavedSearch()" (click)="doEditSource()">
           <i class="fas fa-edit" title="Rename"></i>
         </button>
-        <button class="btn btn-link" (click)="doSelectColumns()">
+        <button class="btn btn-link" (click)="onSelectColumns()">
           <i class="fas fa-columns" title="Select columns to display"></i>
         </button>
         <button class="btn btn-link" *ngIf="canAssignTasks()" (click)="assignTasks()">
