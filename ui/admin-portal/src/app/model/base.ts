@@ -17,7 +17,6 @@
 import {Role, User} from './user';
 import {ExportColumn} from "./saved-list";
 import {OpportunityIds} from "./opportunity";
-import {AuthenticationService} from "../services/authentication.service";
 
 export interface HasName {
   name?: string;
@@ -294,41 +293,6 @@ export const EMAIL_REGEX: string =
  */
 export const URL_REGEX: string =
   '(mailto:[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)|(((?:https?)|(?:ftp)):\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})'
-
-export function isMine(source: CandidateSource, authenticationService: AuthenticationService) {
-  let mine: boolean = false;
-  const me: User = authenticationService.getLoggedInUser();
-  if (source && source.createdBy && me) {
-    mine = source.createdBy.id === me.id;
-  }
-  return mine;
-}
-
-export function isStarredByMe(users: User[], authenticationService: AuthenticationService) {
-  let starredByMe: boolean = false;
-  const me: User = authenticationService.getLoggedInUser();
-  if (users && me) {
-    starredByMe = users.find(u => u.id === me.id ) !== undefined;
-  }
-  return starredByMe;
-}
-
-export function canEditSource(source: CandidateSource, authenticationService: AuthenticationService) {
-  //We can change the source if we own the savedSearch or if it not fixed.
-  let changeable: boolean = false;
-  const me: User = authenticationService.getLoggedInUser();
-  if (source) {
-    // If source is NOT FIXED anyone can edit it
-    if (!source.fixed) {
-      changeable = true;
-      // If source is FIXED but it belongs to me, I can change it. If it doesn't belong to me I can't.
-    } else {
-      //Only can edit source if we own that source.
-      changeable = isMine(source, authenticationService);
-    }
-  }
-  return changeable;
-}
 
 export enum Status {
   active = "active",

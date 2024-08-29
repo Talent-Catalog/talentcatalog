@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
@@ -10,7 +18,6 @@ import {JobService} from "../../../../services/job.service";
 import {SlackService} from "../../../../services/slack.service";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
-import {isStarredByMe} from "../../../../model/base";
 import {
   JobPrepDueDate,
   JobPrepItem,
@@ -21,7 +28,9 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
+import {
+  CandidateSourceCandidateService
+} from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
 import {forkJoin, Observable} from "rxjs";
@@ -116,8 +125,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     }
   }
 
-  get editable(): boolean {
-    return this.loggedInUser && !this.loggedInUser.readOnly
+  /**
+   * Job is editable only by the user who created it or the contact user.
+   * Also by a non read only user working for the default job creator.
+   */
+  isEditable(): boolean {
+    return this.authorizationService.isJobMine(this.job) ||
+      (this.authorizationService.isDefaultJobCreator() && !this.authorizationService.isReadOnly());
   }
 
   private fetchGroupChats() {
@@ -299,7 +313,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.job?.starringUsers, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.job?.starringUsers);
   }
 
   onPrepItemSelected(item: JobPrepItem) {

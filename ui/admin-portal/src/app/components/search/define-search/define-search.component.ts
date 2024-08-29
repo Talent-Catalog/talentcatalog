@@ -68,7 +68,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {canEditSource, SearchPartnerRequest} from '../../../model/base';
+import {SearchPartnerRequest} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -152,7 +152,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private route: ActivatedRoute,
               private router: Router,
               private savedListService: SavedListService,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private searchQueryService: SearchQueryService
               ) {
@@ -705,7 +705,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   canChangeSearchRequest(): boolean {
-    return canEditSource(this.savedSearch, this.authenticationService)
+    return this.authorizationService.canEditCandidateSource(this.savedSearch);
   }
 
   public onSelectAll(options: any, formControl: any) {
@@ -735,7 +735,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     let s: string;
 
     //Source partners default to seeing only their candidates (unless they are the default partner)
-    if (this.authService.isSourcePartner() && !this.authService.isDefaultPartner()) {
+    if (this.authorizationService.isSourcePartner() && !this.authorizationService.isDefaultPartner()) {
       s = "If nothing is specified here, the default is just to show candidates belonging to your partner.";
     } else {
       s = "If nothing is specified here, the default is to show candidates managed by any partner.";

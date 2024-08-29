@@ -20,6 +20,7 @@
     </label>
 
     <textarea id="jobSummary" class="md-textarea-auto form-control" rows="{{nRows}}"
+              [readOnly]="!editable"
               placeholder="Enter short summary of job..."
               [formControlName]="'jobSummary'">{{job.jobSummary}}</textarea>
   </div>

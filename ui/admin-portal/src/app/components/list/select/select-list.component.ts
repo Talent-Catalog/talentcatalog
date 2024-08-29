@@ -56,6 +56,8 @@ export class SelectListComponent implements OnInit {
   jobName: string;
   jobId: number;
   loading: boolean;
+  canChangeStatuses: boolean = true;
+  myListsOnly: boolean = false;
   saving: boolean;
   action: string = "Save";
   title: string = "Select List";
@@ -97,8 +99,8 @@ export class SelectListComponent implements OnInit {
     this.loading = true;
     const request: SearchSavedListRequest = {
       owned: true,
-      shared: true,
-      global: true,
+      shared: !this.myListsOnly,
+      global: !this.myListsOnly,
       fixed: false
     };
 

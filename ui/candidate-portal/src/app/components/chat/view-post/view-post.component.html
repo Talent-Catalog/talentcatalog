@@ -14,7 +14,7 @@
   </div>
 
   <div class="d-flex flex-row-reverse flex-wrap">
-    <button id="reactionBtn"
+    <button *ngIf="!readOnly" id="reactionBtn"
             [ngClass]="!this.reactionPickerVisible ? 'reaction-btn' : 'reaction-btn-selected'"
             (click)="toggleReactionPicker()">
       <fa-icon id="reactionBtnSmiley" icon="face-smile" size="xs"></fa-icon>+

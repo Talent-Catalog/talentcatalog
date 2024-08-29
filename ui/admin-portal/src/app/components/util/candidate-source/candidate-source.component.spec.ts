@@ -49,7 +49,8 @@ fdescribe('CandidateSourceComponent', () => {
   beforeEach(async () => {
     const savedSearchSpy = jasmine.createSpyObj('SavedSearchService', ['get']);
     const savedListSpy = jasmine.createSpyObj('SavedListService', ['createFolder']);
-    const authSpy = jasmine.createSpyObj('AuthorizationService', ['canAccessSalesforce']);
+    const authSpy = jasmine.createSpyObj('AuthorizationService',
+      ['canAccessSalesforce','isCandidateSourceMine','isStarredByMe']);
     const authServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const salesforceSpy = jasmine.createSpyObj('SalesforceService', ['joblink']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);

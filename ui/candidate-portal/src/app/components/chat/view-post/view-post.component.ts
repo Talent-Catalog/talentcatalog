@@ -37,6 +37,7 @@ export class ViewPostComponent implements OnInit {
   }
 
   @Input() post: ChatPost;
+  @Input() readOnly = false;
 
   @ViewChild('thisPost') thisPost: ElementRef;
 
@@ -60,27 +61,31 @@ export class ViewPostComponent implements OnInit {
 
   // Toggles the picker on and off, focuses the scroll bar on this post if reaction button clicked.
   public toggleReactionPicker() {
-    this.reactionPickerVisible = !this.reactionPickerVisible;
-    // Scrolls entire post into view when picker has been toggled on by reaction button
-    if(this.reactionPickerVisible) {
-      setTimeout(() => {
-        this.thisPost.nativeElement.scrollIntoView({behavior: 'smooth'});
-      });
+    if (!this.readOnly) {
+      this.reactionPickerVisible = !this.reactionPickerVisible;
+      // Scrolls entire post into view when picker has been toggled on by reaction button
+      if(this.reactionPickerVisible) {
+        setTimeout(() => {
+          this.thisPost.nativeElement.scrollIntoView({behavior: 'smooth'});
+        });
+      }
     }
   }
 
   // This method may also update or even delete a reaction, if the user submits an emoji already
   // associated with the post. This behaviour is managed by ReactionService on the server.
   public onSelectEmoji(event) {
-    this.reactionPickerVisible = false;
-    const request: AddReactionRequest = {
-      emoji: `${event.emoji.native}`
+    if (!this.readOnly) {
+      this.reactionPickerVisible = false;
+      const request: AddReactionRequest = {
+        emoji: `${event.emoji.native}`
+      }
+      this.reactionService.addReaction(this.post.id, request)
+      .subscribe({
+        next: (updatedReactions) =>
+          this.post.reactions = updatedReactions
+      })
     }
-    this.reactionService.addReaction(this.post.id, request)
-                          .subscribe({
-                            next: (updatedReactions) =>
-                            this.post.reactions = updatedReactions
-                          })
   }
 
   public onSelectReaction(reaction: Reaction) {

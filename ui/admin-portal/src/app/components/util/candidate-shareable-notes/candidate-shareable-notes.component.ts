@@ -45,7 +45,9 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
     //Replace the form value with the new candidates data when
     //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      this.form.controls['shareableNotes'].patchValue(this.candidate.shareableNotes);
+      if (this.editable) {
+        this.form.controls['shareableNotes'].patchValue(this.candidate.shareableNotes);
+      }
     }
   }
 }
