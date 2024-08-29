@@ -46,7 +46,7 @@ import org.tctalent.server.service.db.util.PartnerTableDefinition;
 /**
  * Data is shared with destination partners by copying to their own databases,
  * as configured in an XML configuration file stored in resources whose path is
- * specified in tbb.partner-dbcopy-config in application.yml.
+ * specified in tc.partner-dbcopy-config in application.yml.
  * <p/>
  * The configuration file contains a different configuration for each partner
  * (typically by country - eg Australian partner, UK partner etc).

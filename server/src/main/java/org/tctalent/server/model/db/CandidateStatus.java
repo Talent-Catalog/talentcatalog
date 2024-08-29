@@ -46,7 +46,7 @@ public enum CandidateStatus {
     draft,
 
     /**
-     * Candidate is no longer looking for placement through TBB.
+     * Candidate is no longer looking for placement through TC.
      */
     employed,
 
@@ -56,12 +56,12 @@ public enum CandidateStatus {
     incomplete,
 
     /**
-     * The candidate is not eligible for TBB's support
+     * The candidate is not eligible for TC's support
      */
     ineligible,
 
     /**
-     * Candidate has completed registration but TBB staff have not yet reviewed the registration.
+     * Candidate has completed registration but TC staff have not yet reviewed the registration.
      */
     pending,
 

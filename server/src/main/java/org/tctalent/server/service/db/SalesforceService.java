@@ -68,8 +68,7 @@ public interface SalesforceService {
     Opportunity fetchJobOpportunity(String id) throws SalesforceException;
 
     /**
-     * Searches Salesforce for all Contact records relating to TBB
-     * candidates.
+     * Searches Salesforce for all Contact records relating to TC candidates.
      * <p/>
      * Contact records of candidates are identified because they have a non zero TBBid.
      * @return List of Salesforce Contact records

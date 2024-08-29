@@ -53,7 +53,7 @@ import org.tctalent.server.util.locale.LocaleHelper;
 @Slf4j
 public class CountryServiceImpl implements CountryService, InitializingBean {
 
-    @Value("${tbb.destinations}")
+    @Value("${tc.destinations}")
     private String[] tcDestinations;
     private List<Country> tcDestinationCountries;
 
@@ -83,7 +83,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
             if (country == null) {
                 LogBuilder.builder(log)
                     .action("CountryServiceImpl")
-                    .message("Error in application.yml file. See tbb.destinations. " +
+                    .message("Error in application.yml file. See tc.destinations. " +
                             "No country found called " + tcDestination)
                     .logError();
             } else {
