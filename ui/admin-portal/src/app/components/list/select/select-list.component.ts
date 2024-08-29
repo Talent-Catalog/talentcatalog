@@ -164,6 +164,11 @@ export class SelectListComponent implements OnInit {
         if (!newListName) {
           return { invalidName: "Name can't be blank" }
         }
+      } else {
+        const existingList: string = group.controls['savedList'].value;
+        if (!existingList){
+          return { invalidName: "List can't be blank"}
+        }
       }
       return {}
     }
