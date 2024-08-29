@@ -71,6 +71,9 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
       case SearchOppsBy.starredByMe:
         req.starred = true;
+
+        //If it is starred I want to see it even if it is closed
+        req.sfOppClosed = true;
         break;
     }
 

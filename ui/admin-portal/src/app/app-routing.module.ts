@@ -28,7 +28,6 @@ import {
 import {
   CandidatesListComponent
 } from "./components/candidates/candidates-list/candidates-list.component";
-import {NewJobComponent} from "./components/job/new-job/new-job.component";
 import {Role} from "./model/user";
 import {RoleGuardService} from "./services/role-guard.service";
 import {
@@ -100,8 +99,8 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            component: NewJobComponent,
-            data: {title: 'TC New Job'}
+            component: JobHomeComponent,
+            data: {title: 'TC Jobs'}
           },
           {
             path: ':id',

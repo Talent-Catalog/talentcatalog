@@ -14,6 +14,8 @@ import {CandidateOpportunityService} from "../../../../../services/candidate-opp
 import {CandidateDependantService} from "../../../../../services/candidate-dependant.service";
 import {CandidateOpportunity} from "../../../../../model/candidate-opportunity";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 fdescribe('RelocatingDependantsComponent', () => {
   let component: RelocatingDependantsComponent;
@@ -21,6 +23,7 @@ fdescribe('RelocatingDependantsComponent', () => {
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
   let candidateOpportunityService: jasmine.SpyObj<CandidateOpportunityService>;
   let candidateDependantService: jasmine.SpyObj<CandidateDependantService>;
+  let authorizationService: jasmine.SpyObj<AuthorizationService>;
   let fb: FormBuilder;
 
   const mockCandidate = new MockCandidate();
@@ -34,21 +37,27 @@ fdescribe('RelocatingDependantsComponent', () => {
     const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
     const candidateOpportunityServiceSpy = jasmine.createSpyObj('CandidateOpportunityService', ['updateSfCaseRelocationInfo']);
     const candidateDependantServiceSpy = jasmine.createSpyObj('CandidateDependantService', ['list']);
+    const authorizationServiceSpy = jasmine.createSpyObj('AuthorizationService',
+      ['isReadOnly']);
 
     await TestBed.configureTestingModule({
       declarations: [RelocatingDependantsComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
+      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule,
+        LocalStorageModule.forRoot({}),
+      ],
       providers: [
         { provide: FormBuilder  },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
         { provide: CandidateOpportunityService, useValue: candidateOpportunityServiceSpy },
-        { provide: CandidateDependantService, useValue: candidateDependantServiceSpy }
+        { provide: CandidateDependantService, useValue: candidateDependantServiceSpy },
+        { provide: AuthorizationService, useValue: authorizationServiceSpy }
       ]
     }).compileComponents();
 
     candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
     candidateOpportunityService = TestBed.inject(CandidateOpportunityService) as jasmine.SpyObj<CandidateOpportunityService>;
     candidateDependantService = TestBed.inject(CandidateDependantService) as jasmine.SpyObj<CandidateDependantService>;
+    authorizationService = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
     fb = TestBed.inject(FormBuilder);
   });
 
@@ -58,6 +67,7 @@ fdescribe('RelocatingDependantsComponent', () => {
     component.candidateId = mockCandidate.id;
     component.candidateOpp = mockOpp;
     candidateDependantService.list.and.returnValue(of(mockDependants));
+    authorizationService.isReadOnly.and.returnValue(false);
     fixture.detectChanges();
   });
 

@@ -48,7 +48,14 @@ export class UserService {
       if (this.isCandidate(user)) {
         extras = user.partner?.abbreviation + " candidate"
       } else {
-        extras = user.partner?.abbreviation + (showRole ? " " + user.role : "")
+
+        extras = user.partner?.abbreviation;
+        if (showRole) {
+          extras += " " + user.role;
+          if (user.readOnly) {
+            extras +="-read only";
+          }
+        }
       }
       s = name + " (" + extras + ")";
     }

@@ -101,4 +101,8 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
     }
 
   }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
+  }
 }

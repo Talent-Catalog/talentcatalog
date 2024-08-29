@@ -59,12 +59,9 @@ import {
 } from '../../../model/saved-search';
 import {
   CandidateSource,
-  canEditSource,
   defaultReviewStatusFilter,
   DtoType,
   indexOfHasId,
-  isMine,
-  isStarredByMe,
   ReviewStatus,
   Status
 } from '../../../model/base';
@@ -231,7 +228,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
@@ -857,7 +854,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isContentModifiable(): boolean {
-    return !isSavedSearch(this.candidateSource);
+    let modifiable = false;
+    if (!isSavedSearch(this.candidateSource)) {
+      if (this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
+        modifiable = true
+      } else {
+        modifiable = !this.authorizationService.isReadOnly();
+      }
+    }
+    return modifiable;
   }
 
   isReviewable(): boolean {
@@ -866,11 +871,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isSalesforceUpdatable(): boolean {
-    return !isSavedSearch(this.candidateSource) && this.authService.canUpdateSalesforce();
+    return !isSavedSearch(this.candidateSource) && this.authorizationService.canUpdateSalesforce();
   }
 
   canResolveTasks(): boolean {
-    return isSavedList(this.candidateSource) && this.authService.canManageCandidateTasks();
+    return isSavedList(this.candidateSource) && this.authorizationService.canManageCandidateTasks();
   }
 
   isSavedList(): boolean {
@@ -893,7 +898,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Is shareable with me if it is not created by me.
     if (this.candidateSource) {
         //was it created by me?
-        if (!isMine(this.candidateSource, this.authenticationService)) {
+        if (!this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
           shareable = true;
         }
     }
@@ -905,15 +910,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isImportable(): boolean {
-    return isSavedList(this.candidateSource);
+    return !this.authorizationService.isReadOnly() && isSavedList(this.candidateSource);
   }
 
   isPublishable(): boolean {
-    return isSavedList(this.candidateSource) && this.authService.canPublishList();
+    return isSavedList(this.candidateSource) && this.authorizationService.canPublishList();
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.candidateSource?.users);
   }
 
   isJobList(): boolean {
@@ -925,7 +930,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isEditable(): boolean {
-    return canEditSource(this.candidateSource, this.authenticationService);
+    return this.authorizationService.canEditCandidateSource(this.candidateSource);
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
@@ -1109,6 +1114,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent, {size: "lg"});
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
+    let readOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.myListsOnly = readOnly;
+    modal.componentInstance.canChangeStatuses = !readOnly;
     if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
     }
@@ -1716,6 +1724,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent, {size: "lg"});
     modal.componentInstance.action = "Copy";
     modal.componentInstance.title = "Copy to another List";
+    let readOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.myListsOnly = readOnly;
+    modal.componentInstance.canChangeStatuses = !readOnly;
+
     modal.componentInstance.excludeList = this.candidateSource;
 
     modal.result
@@ -1851,7 +1863,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canAssignTasks() {
-    return this.authService.canAssignTask();
+    return this.authorizationService.canAssignTask();
   }
 
 
@@ -1882,7 +1894,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   closeSelectedOpportunities() {

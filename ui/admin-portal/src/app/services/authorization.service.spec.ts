@@ -20,6 +20,7 @@ import {AuthorizationService} from './authorization.service';
 import {Role, User} from '../model/user';
 import {Candidate} from '../model/candidate';
 import {Partner} from "../model/partner";
+import {CandidateSource} from "../model/base";
 
 fdescribe('AuthorizationService', () => {
   let service: AuthorizationService;
@@ -251,4 +252,44 @@ fdescribe('AuthorizationService', () => {
     const isAdminOrPartnerAdmin = service.isPartnerAdminOrGreater();
     expect(isAdminOrPartnerAdmin).toBeFalse();
   });
+
+  it('should determine if source can be edited', () => {
+    const source: CandidateSource = { fixed: false } as CandidateSource;
+    const user: User = { id: 1, name: 'Limited User', role: 'limited', readOnly: false } as User;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    expect(service.canEditCandidateSource(source)).toBeTrue();
+
+    user.readOnly = true;
+    expect(service.canEditCandidateSource(source)).toBeFalse();
+
+    user.readOnly = false;
+    source.fixed = true;
+    source.createdBy = user;
+    expect(service.canEditCandidateSource(source)).toBeTrue();
+
+    source.createdBy = { ...user, id: 2 };
+    expect(service.canEditCandidateSource(source)).toBeFalse();
+  });
+
+  it('should determine if source is mine', () => {
+    const user: User = { id: 1 } as User;
+    const source: CandidateSource = { createdBy: user } as CandidateSource;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+    expect(service.isCandidateSourceMine(source)).toBeTrue();
+
+    authenticationServiceSpy.getLoggedInUser.and.returnValue({ ...user, id: 2 });
+    expect(service.isCandidateSourceMine(source)).toBeFalse();
+  });
+
+  it('should determine if source is starred by me', () => {
+    const user: User = { id: 1 } as User;
+    const users: User[] = [user];
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+    expect(service.isStarredByMe(users)).toBeTrue();
+
+    authenticationServiceSpy.getLoggedInUser.and.returnValue({ ...user, id: 2 });
+    expect(service.isStarredByMe(users)).toBeFalse();
+  });
+
 });

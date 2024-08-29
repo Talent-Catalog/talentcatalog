@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {JobChat} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-chats-with-posts',
@@ -16,7 +17,8 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
   selectedChat: JobChat;
 
   constructor(
-    private chatService: ChatService
+    private chatService: ChatService,
+    private authorizationService: AuthorizationService
   ) {
     super(6);
   }
@@ -37,5 +39,9 @@ export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit
     if (this.selectedChat) {
       this.chatService.markChatAsRead(this.selectedChat);
     }
+  }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
   }
 }
