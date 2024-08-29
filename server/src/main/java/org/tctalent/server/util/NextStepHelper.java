@@ -30,7 +30,7 @@ public class NextStepHelper {
     /**
      * Format used for date timestamp in next step audit stamp
      */
-    public static DateTimeFormatter nextStepDateFormatter = DateTimeFormatter.ofPattern("yyMMdd");
+    public static DateTimeFormatter nextStepDateFormatter = DateTimeFormatter.ofPattern("ddMMMuu");
 
     /**
      * The audit stamp starts with this string
