@@ -35,17 +35,19 @@ class NextStepHelperTest {
 
     String name;
     LocalDate date;
+    String strippedNextStep;
 
     @BeforeEach
     void setUp() {
         name = "Jim";
         date = LocalDate.of(2024, Month.MARCH, 1);
+        strippedNextStep = "This is a next step";
     }
 
     @Test
     void checkAuditStampFormat() {
-        String stamp = constructNextStepAuditStamp(name, date);
-        assertEquals(" --240301 Jim", stamp);
+        String stamp = constructNextStepAuditStamp(name, date, strippedNextStep);
+        assertEquals("01Mar24| This is a next step --Jim", stamp);
     }
 
     @Test
@@ -76,17 +78,16 @@ class NextStepHelperTest {
         String currentNextStep = "Complete intake";
         String requestedNextStep = "Prepare CV";
         String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
-        assertEquals(requestedNextStep + constructNextStepAuditStamp(name, date), processed);
+        assertEquals(constructNextStepAuditStamp(name, date, requestedNextStep), processed);
     }
 
     @Test
     void ignoreExistingStampOnRequest() {
         String currentNextStep = "Complete intake";
         String requestedNextStepUnstamped = "Prepare CV";
-        String requestedNextStep = requestedNextStepUnstamped + " --240301 john";
+        String requestedNextStep = "01Mar24| " + requestedNextStepUnstamped + " --john";
         String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
-        assertEquals(requestedNextStepUnstamped
-            + constructNextStepAuditStamp(name, date), processed);
+        assertEquals(constructNextStepAuditStamp(name, date, requestedNextStepUnstamped), processed);
     }
 
     @Test
@@ -94,6 +95,6 @@ class NextStepHelperTest {
         String currentNextStep = "Complete intake --240301 john";
         String requestedNextStep = "Prepare CV";
         String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
-        assertEquals(requestedNextStep + constructNextStepAuditStamp(name, date), processed);
+        assertEquals(constructNextStepAuditStamp(name, date, requestedNextStep), processed);
     }
 }
