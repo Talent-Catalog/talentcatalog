@@ -90,13 +90,8 @@ export class CandidateSourceResultsComponent extends CandidateSourceBaseComponen
     }
   }
 
-  toggleSort(column) {
-    if (this.sortField === column) {
-      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-      this.sortField = column;
-      this.sortDirection = 'ASC';
-    }
+  toggleSort(column: string) {
+    super.toggleSort(column);
     this.search(true);
   }
 

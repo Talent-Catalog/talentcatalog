@@ -503,13 +503,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.doSearch(true);
   }
 
-  toggleSort(column) {
-    if (this.sortField === column) {
-      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-      this.sortField = column;
-      this.sortDirection = 'ASC';
-    }
+  toggleSort(column: string) {
+    super.toggleSort(column);
     this.doSearch(true);
   }
 

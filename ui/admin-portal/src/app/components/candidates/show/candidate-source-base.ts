@@ -209,4 +209,13 @@ export class CandidateSourceBaseComponent {
     });
   }
 
+  protected toggleSort(column: string) {
+    if (this.sortField === column) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortField = column;
+      this.sortDirection = 'ASC';
+    }
+  }
+
 }
