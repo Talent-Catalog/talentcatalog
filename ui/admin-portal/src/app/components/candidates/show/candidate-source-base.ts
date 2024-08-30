@@ -145,24 +145,8 @@ export class CandidateSourceBaseComponent {
     this.sortDirection = this.sortDirection || 'DESC';
 
     //Create the appropriate request
-    let request;
-    let reviewable = false;
-    if (isSavedSearch(this.candidateSource)) {
-      reviewable = this.candidateSource.reviewable;
-      request = new SavedSearchGetRequest();
-    } else {
-      request = new SavedListGetRequest();
-    }
-    request.keyword = keyword;
-    request.showClosedOpps = showClosedOpps;
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
-    request.sortFields = [this.sortField];
-    request.sortDirection = this.sortDirection;
+    const request = this.createSearchRequest(keyword, showClosedOpps);
     request.dtoType = dtoType;
-    if (reviewable) {
-      request.reviewStatusFilter = this.reviewStatusFilter;
-    }
 
     // Return the observable so the caller can subscribe to it
     return this.candidateSourceCandidateService.searchPaged(this.candidateSource, request).pipe(
@@ -177,6 +161,27 @@ export class CandidateSourceBaseComponent {
         return throwError(error);
       })
     );
+  }
+
+  createSearchRequest(keyword: string = null, showClosedOpps: boolean = false) {
+    let request;
+    if (isSavedSearch(this.candidateSource)) {
+      const reviewable = this.candidateSource.reviewable;
+      request = new SavedSearchGetRequest();
+      if (reviewable) {
+        request.reviewStatusFilter = this.reviewStatusFilter;
+      }
+    } else {
+      request = new SavedListGetRequest();
+      request.keyword = keyword;
+      request.showClosedOpps = showClosedOpps;
+    }
+    request.pageNumber = this.pageNumber - 1;
+    request.pageSize = this.pageSize;
+    request.sortFields = [this.sortField];
+    request.sortDirection = this.sortDirection;
+
+    return request;
   }
 
   private isCacheable(): boolean {
