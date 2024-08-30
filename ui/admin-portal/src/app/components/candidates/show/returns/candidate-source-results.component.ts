@@ -15,19 +15,15 @@
  */
 
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {getCandidateSourceNavigation, isSavedSearch, SavedSearchGetRequest} from '../../../../model/saved-search';
+import {getCandidateSourceNavigation} from '../../../../model/saved-search';
 import {CandidateService} from '../../../../services/candidate.service';
-import {Candidate} from '../../../../model/candidate';
-import {SearchResults} from '../../../../model/search-results';
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {
-  CachedSourceResults,
   CandidateSourceResultsCacheService
 } from '../../../../services/candidate-source-results-cache.service';
-import {CandidateSource, defaultReviewStatusFilter, DtoType} from '../../../../model/base';
+import {CandidateSource, DtoType} from '../../../../model/base';
 import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
-import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthorizationService} from '../../../../services/authorization.service';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
@@ -40,33 +36,30 @@ import {CandidateSourceBaseComponent} from "../candidate-source-base";
   styleUrls: ['./candidate-source-results.component.scss']
 })
 export class CandidateSourceResultsComponent extends CandidateSourceBaseComponent implements OnInit, OnChanges {
-  pageNumber: number;
-  pageSize: number;
-  results: SearchResults<Candidate>;
   @Input() showSourceDetails = true;
   @Output() toggleStarred = new EventEmitter<CandidateSource>();
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
   @Output() copySource = new EventEmitter<CandidateSource>();
   @Output() deleteSource = new EventEmitter<CandidateSource>();
   @Output() editSource = new EventEmitter<CandidateSource>();
-  searching: boolean;
-  sortField: string;
-  sortDirection: string;
-  timestamp: number;
 
-constructor(
-    private authService: AuthorizationService,
-    private candidateService: CandidateService,
-    private candidateSourceService: CandidateSourceService,
-    private candidateSourceCandidateService: CandidateSourceCandidateService,
-    private router: Router,
-    private savedSearchService: SavedSearchService,
-    private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
-    protected candidateFieldService: CandidateFieldService,
-    protected modalService: NgbModal
-  ) {
-    super(candidateFieldService, modalService);
-};
+  constructor(
+      private authService: AuthorizationService,
+      private candidateService: CandidateService,
+      private candidateSourceService: CandidateSourceService,
+      private router: Router,
+      private savedSearchService: SavedSearchService,
+      protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
+      protected candidateSourceCandidateService: CandidateSourceCandidateService,
+      protected candidateFieldService: CandidateFieldService,
+      protected modalService: NgbModal
+    ) {
+      super(
+        candidateSourceResultsCacheService,
+        candidateSourceCandidateService,
+        candidateFieldService,
+        modalService);
+  };
 
   ngOnInit() {
     this.longFormat = false;
@@ -94,104 +87,13 @@ constructor(
   }
 
   search(refresh: boolean) {
-    this.results = null;
-    this.timestamp = null;
-    this.error = null;
-
-    //If already searching just exit.
-    if (this.searching) {
-      return;
-    }
-
-    this.searching = true;
-
-    let done: boolean = false;
-    if (!refresh) {
-      const cached: CachedSourceResults =
-        this.candidateSourceResultsCacheService.getFromCache(this.candidateSource);
-      if (cached) {
-        this.results = cached.results;
-        this.pageNumber = cached.pageNumber;
-        // Keep page size smaller for this component. It is a preview of the source, so doesn't need to be long.
-        // It works better on all screen sizes, especially when we have a long split page.
-        this.pageSize = 12;
-        this.sortField = cached.sortFields[0];
-        this.sortDirection = cached.sortDirection;
-        this.timestamp = cached.timestamp;
-        done = true;
-        this.searching = false;
-      } else {
-        //If there is no cached value, reset all search parameters
-        this.pageNumber = 0;
-        this.pageSize = 0;
-        this.sortField = null;
-        this.sortDirection = null;
-      }
-    }
-
+    let done = this.checkCache(refresh, false);
     if (!done) {
-      //todo Is this the best place to do the defaulting?
-      //todo Need do defaulting in search request, then pick up actual info
-      //from returned results.
-      //todo Currently server sends back used page number and size but does
-      //not echo back sort info. It should be changed to do so.
-
-      if (!this.pageNumber) {
-        this.pageNumber = 1;
-      }
-      if (!this.pageSize) {
-        this.pageSize = 12;
-      }
-      if (!this.sortField) {
-        this.sortField = 'id';
-      }
-      if (!this.sortDirection) {
-        this.sortDirection = 'DESC';
-      }
-
-      //Create the appropriate request
-      let request;
-      let reviewable = false;
-      if (isSavedSearch(this.candidateSource)) {
-        reviewable = this.candidateSource.reviewable;
-        request = new SavedSearchGetRequest();
-      } else {
-        request = new SavedListGetRequest();
-      }
-      request.pageNumber = this.pageNumber - 1;
-      request.pageSize = this.pageSize;
-      request.sortFields = [this.sortField];
-      request.sortDirection = this.sortDirection;
-      request.dtoType = DtoType.PREVIEW;
-      if (reviewable) {
-        request.reviewStatusFilter = defaultReviewStatusFilter;
-      }
-
-      this.candidateSourceCandidateService.searchPaged(
-        this.candidateSource, request).subscribe(
-        results => {
-          this.timestamp = Date.now();
-          this.results = results;
-
-          this.candidateSourceResultsCacheService.cache(this.candidateSource,
-            {
-            id: this.candidateSource.id,
-            pageNumber: this.pageNumber,
-            pageSize: this.pageSize,
-            sortFields: [this.sortField],
-            sortDirection: this.sortDirection,
-            results: this.results,
-            timestamp: this.timestamp
-          });
-
-          this.searching = false;
-        },
-        error => {
-          this.error = error;
-          this.searching = false;
-        });
+      // Keep page size smaller for this component (12). It is a preview of the source, so doesn't
+      // need to be long.
+      // It works better on all screen sizes, especially when we have a long split page.
+      this.performSearch(12, DtoType.PREVIEW).subscribe();
     }
-
   }
 
   toggleSort(column) {

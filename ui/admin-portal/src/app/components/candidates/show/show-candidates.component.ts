@@ -194,7 +194,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   targetListReplace: boolean;
   savedSelection: boolean;
   timestamp: number;
-  private reviewStatusFilter: string[] = defaultReviewStatusFilter;
   savedSearchSelectionChange: boolean;
 
   /**
@@ -221,7 +220,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
               private fb: FormBuilder,
               private candidateService: CandidateService,
               private candidateSourceService: CandidateSourceService,
-              private candidateSourceCandidateService: CandidateSourceCandidateService,
               private userService: UserService,
               private savedSearchService: SavedSearchService,
               private savedListCandidateService: SavedListCandidateService,
@@ -229,16 +227,21 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
               private localStorageService: LocalStorageService,
               private location: Location,
               private router: Router,
-              private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private authService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
               private offcanvasService: NgbOffcanvas,
+              protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
+              protected candidateSourceCandidateService: CandidateSourceCandidateService,
               protected candidateFieldService: CandidateFieldService,
               protected modalService: NgbModal,
   ) {
-    super(candidateFieldService, modalService);
+    super(
+      candidateSourceResultsCacheService,
+      candidateSourceCandidateService,
+      candidateFieldService,
+      modalService);
   }
 
   ngOnInit() {
@@ -435,38 +438,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   doSearch(refresh: boolean, usePageNumber = true) {
-
-    this.results = null;
-    this.error = null;
-
-    let done: boolean = false;
-
-    if (!refresh) {
-
-      //Is there anything in cache?
-      //We only cache certain results
-      if (this.isCacheable()) {
-        const cached: CachedSourceResults =
-          this.candidateSourceResultsCacheService.getFromCache(this.candidateSource);
-        if (cached) {
-          //If we are not required to use the pageNumber (usePageNumber = false)
-          //we can take the pageNumber of whatever the cache has.
-          //If we have to use the page number, the pageNumber and size must match
-          //what is in the cache or we can't use it.
-          done = !usePageNumber ||
-            (cached.pageNumber === this.pageNumber && cached.pageSize === this.pageSize);
-          if (done) {
-            this.results = cached.results;
-            this.sortField = cached.sortFields[0];
-            this.sortDirection = cached.sortDirection;
-            this.reviewStatusFilter = []; //We don't cache reviewable sources
-            this.timestamp = cached.timestamp;
-            this.pageNumber = cached.pageNumber;
-            this.pageSize = cached.pageSize;
-          }
-        }
-      }
-    }
+    let done = this.checkCache(refresh, usePageNumber);
 
     if (!done) {
       /*
@@ -499,81 +471,28 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       //If we are being driven by a manually modifiable search request (eg someone has changed the
       //search parameters and clicked on the Apply button) submit that search.
       if (this.searchRequest) {
-
         this.updatedSearch()
-
       } else {
-
-        //Run the saved list or saved search as stored on the server.
-
-        //Saved the current candidate selection, then set it to null while we are searching.
+        //Save the current candidate selection, then set it to null while we are searching.
         //Then we restore it at the end of the search. This means that anything displaying
         //info on the current selection will update its data.
         const saveCurrentCandidate = this.currentCandidate;
         this.setCurrentCandidate(null);
 
-        this.searching = true;
-
-        //Create the appropriate request
-        let request;
-        let reviewable = false;
-        if (isSavedSearch(this.candidateSource)) {
-          reviewable = this.candidateSource.reviewable;
-          request = new SavedSearchGetRequest();
-        } else {
-          request = new SavedListGetRequest();
-        }
-        request.keyword = this.keyword;
-        request.showClosedOpps = this.showClosedOpps;
-        request.pageNumber = this.pageNumber - 1;
-        request.pageSize = this.pageSize;
-        request.sortFields = [this.sortField];
-        request.sortDirection = this.sortDirection;
-        if (reviewable) {
-          request.reviewStatusFilter = this.reviewStatusFilter;
-        }
-
-        this.candidateSourceCandidateService.searchPaged(
-          this.candidateSource, request).subscribe(
-          results => {
-
-            this.results = results;
-            this.cacheResults();
-
-            //Restore the selection prior to the search
+        //Run the saved list or saved search as stored on the server.
+        this.performSearch(
+          this.pageSize,
+          DtoType.FULL, // @todo will change to Previews in #1321
+          this.keyword,
+          this.showClosedOpps).subscribe(() => {
+            // Restore the selection prior to the search
             this.setCurrentCandidate(saveCurrentCandidate);
-
-            this.searching = false;
-          },
-          error => {
-            this.error = error;
-            this.searching = false;
-          });
+          }, error => {
+            // Error is already displayed in the UI
+          }
+        );
       }
     }
-  }
-
-  private cacheResults() {
-    this.timestamp = Date.now();
-
-    //We only cache certain results, and we don't cache filter keyword searches
-    if (this.isCacheable() && !this.filterSearch) {
-      this.candidateSourceResultsCacheService.cache(this.candidateSource,
-        {
-        id: this.candidateSource.id,
-        pageNumber: this.pageNumber,
-        pageSize: this.pageSize,
-        sortFields: [this.sortField],
-        sortDirection: this.sortDirection,
-        results: this.results,
-        timestamp: this.timestamp
-      });
-    }
-  }
-
-  private isCacheable(): boolean {
-    //Reviewable sources are not cacheable because the review filtering makes it too complicated.
-    return !this.isReviewable();
   }
 
   setCurrentCandidate(candidate: Candidate) {
@@ -856,11 +775,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   isContentModifiable(): boolean {
     return !isSavedSearch(this.candidateSource);
-  }
-
-  isReviewable(): boolean {
-    return isSavedSearch(this.candidateSource)
-      ? this.candidateSource.reviewable : false;
   }
 
   isSalesforceUpdatable(): boolean {
