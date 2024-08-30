@@ -85,8 +85,8 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Value("${spring.datasource.password}")
     private String masterPwd;
 
-    @Value("${tbb.partner-dbcopy-config}")
-    private String partnerDbcopyConfig = "data.sharing/tbbCopies.xml";
+    @Value("${tc.partner-dbcopy-config}")
+    private String partnerDbcopyConfig = "data.sharing/tcCopies.xml";
 
     private static final String DB_LOCAL_COPY_URL = "jdbc:h2:mem:";
 
