@@ -16,8 +16,6 @@
 
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {getCandidateSourceNavigation} from '../../../../model/saved-search';
-import {CandidateService} from '../../../../services/candidate.service';
-import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {
   CandidateSourceResultsCacheService
@@ -25,7 +23,6 @@ import {
 import {CandidateSource, DtoType} from '../../../../model/base';
 import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
 import {AuthorizationService} from '../../../../services/authorization.service';
-import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSourceBaseComponent} from "../candidate-source-base";
@@ -45,10 +42,7 @@ export class CandidateSourceResultsComponent extends CandidateSourceBaseComponen
 
   constructor(
       private authService: AuthorizationService,
-      private candidateService: CandidateService,
-      private candidateSourceService: CandidateSourceService,
       private router: Router,
-      private savedSearchService: SavedSearchService,
       protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
       protected candidateSourceCandidateService: CandidateSourceCandidateService,
       protected candidateFieldService: CandidateFieldService,

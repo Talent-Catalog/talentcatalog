@@ -34,12 +34,7 @@ import {
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
-import {
-  ModalDismissReasons,
-  NgbModal,
-  NgbOffcanvas,
-  NgbOffcanvasRef
-} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {
   CreateFromDefaultSavedSearchRequest,
   SavedSearchService
@@ -74,13 +69,11 @@ import {
   Status
 } from '../../../model/base';
 import {
-  CachedSourceResults,
   CandidateSourceResultsCacheService
 } from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
-import {UserService} from '../../../services/user.service';
 import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
 import {
   ContentUpdateType,
@@ -109,10 +102,6 @@ import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
-import {
-  CandidateColumnSelectorComponent
-} from '../../util/candidate-column-selector/candidate-column-selector.component';
-import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
 import {
@@ -220,7 +209,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
               private fb: FormBuilder,
               private candidateService: CandidateService,
               private candidateSourceService: CandidateSourceService,
-              private userService: UserService,
               private savedSearchService: SavedSearchService,
               private savedListCandidateService: SavedListCandidateService,
               private savedListService: SavedListService,
@@ -231,7 +219,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
               private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
-              private offcanvasService: NgbOffcanvas,
               protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               protected candidateSourceCandidateService: CandidateSourceCandidateService,
               protected candidateFieldService: CandidateFieldService,
