@@ -22,11 +22,9 @@ import {ModalDismissReasons, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {Directive, Input} from "@angular/core";
 import {
-  CandidateSource, canEditSource,
+  CandidateSource,
   defaultReviewStatusFilter,
-  DtoType,
-  isMine,
-  isStarredByMe
+  DtoType
 } from "../../../model/base";
 import {CandidateFieldInfo} from "../../../model/candidate-field-info";
 import {SearchResults} from "../../../model/search-results";
@@ -43,7 +41,6 @@ import {isSavedList, SavedListGetRequest} from "../../../model/saved-list";
 import {Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {AuthenticationService} from "../../../services/authentication.service";
 
 @Directive()
 export class CandidateSourceBaseComponent {
@@ -65,7 +62,6 @@ export class CandidateSourceBaseComponent {
 
   constructor(
     protected authorizationService: AuthorizationService,
-    protected authenticationService: AuthenticationService,
     protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
     protected candidateSourceCandidateService: CandidateSourceCandidateService,
     protected candidateFieldService: CandidateFieldService,

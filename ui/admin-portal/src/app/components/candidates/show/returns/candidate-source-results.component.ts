@@ -44,7 +44,6 @@ export class CandidateSourceResultsComponent extends CandidateSourceBaseComponen
   constructor(
       private router: Router,
       protected authorizationService: AuthorizationService,
-      protected authenticationService: AuthenticationService,
       protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
       protected candidateSourceCandidateService: CandidateSourceCandidateService,
       protected candidateFieldService: CandidateFieldService,
@@ -52,7 +51,6 @@ export class CandidateSourceResultsComponent extends CandidateSourceBaseComponen
     ) {
       super(
         authorizationService,
-        authenticationService,
         candidateSourceResultsCacheService,
         candidateSourceCandidateService,
         candidateFieldService,

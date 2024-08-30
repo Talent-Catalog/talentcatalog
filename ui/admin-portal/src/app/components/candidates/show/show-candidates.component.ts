@@ -223,7 +223,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   ) {
     super(
       authorizationService,
-      authenticationService,
       candidateSourceResultsCacheService,
       candidateSourceCandidateService,
       candidateFieldService,
