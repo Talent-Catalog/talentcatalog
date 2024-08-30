@@ -26,7 +26,6 @@ import {AuthorizationService} from '../../../../services/authorization.service';
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSourceBaseComponent} from "../candidate-source-base";
-import {AuthenticationService} from "../../../../services/authentication.service";
 
 @Component({
   selector: 'app-candidate-source-results',
