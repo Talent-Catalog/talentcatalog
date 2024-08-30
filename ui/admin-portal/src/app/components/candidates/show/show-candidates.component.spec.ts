@@ -56,7 +56,9 @@ fdescribe('CandidateShowComponent', () => {
   const mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
   const mockNgbModal = jasmine.createSpyObj('NgbModal', ['open']);
   const mockNgbOffcanvas = jasmine.createSpyObj('NgbOffcanvas', ['open', 'dismiss']);
-  const mockAuthorizationService = jasmine.createSpyObj('AuthorizationService', ['canAssignTask','canAccessSalesforce','canPublishList','canUpdateSalesforce','canManageCandidateTasks']);
+  const mockAuthorizationService = jasmine.createSpyObj('AuthorizationService',
+    ['canAssignTask','canAccessSalesforce','canEditCandidateSource','canPublishList','canUpdateSalesforce',
+      'canManageCandidateTasks','isCandidateSourceMine','isReadOnly','isStarredByMe']);
   const mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
   const mockSalesforceService = jasmine.createSpyObj('SalesforceService', ['joblink']);
   const mockLocation = jasmine.createSpyObj('Location', ['back']);

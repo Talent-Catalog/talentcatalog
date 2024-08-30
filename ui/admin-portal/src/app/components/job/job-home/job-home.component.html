@@ -80,7 +80,7 @@
     </ng-template>
   </ng-container>
 
-  <ng-container *ngIf="isJobCreator()" ngbNavItem="NewJob">
+  <ng-container *ngIf="isJobCreator() && !isReadOnly()" ngbNavItem="NewJob">
     <a ngbNavLink title="Create a new TC job">New Job <i class="fa-solid fa-briefcase"></i></a>
     <ng-template ngbNavContent>
       <app-new-job></app-new-job>

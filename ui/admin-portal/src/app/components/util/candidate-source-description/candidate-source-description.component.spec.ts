@@ -6,16 +6,19 @@ import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateSource} from "../../../model/base";
 import {of, throwError} from "rxjs";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 fdescribe('CandidateSourceDescriptionComponent', () => {
   let component: CandidateSourceDescriptionComponent;
   let fixture: ComponentFixture<CandidateSourceDescriptionComponent>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;
   let mockCandidateSourceService: jasmine.SpyObj<CandidateSourceService>;
+  let mockAuthorizationService: jasmine.SpyObj<AuthorizationService>;
 
   beforeEach(async () => {
     mockCandidateService = jasmine.createSpyObj('CandidateService', ['']);
     mockCandidateSourceService = jasmine.createSpyObj('CandidateSourceService', ['updateDescription']);
+    mockAuthorizationService = jasmine.createSpyObj('AuthorizationService', ['canEditCandidateSource']);
 
     await TestBed.configureTestingModule({
       declarations: [CandidateSourceDescriptionComponent,AutosaveStatusComponent],
@@ -23,7 +26,8 @@ fdescribe('CandidateSourceDescriptionComponent', () => {
       providers: [
         FormBuilder,
         { provide: CandidateService, useValue: mockCandidateService },
-        { provide: CandidateSourceService, useValue: mockCandidateSourceService }
+        { provide: CandidateSourceService, useValue: mockCandidateSourceService },
+        { provide: AuthorizationService, useValue: mockAuthorizationService }
       ]
     }).compileComponents();
   });

@@ -79,7 +79,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
               private router: Router,
               private modalService: NgbModal,
               private titleService: Title,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService) {
     super(2, 4);
   }
@@ -275,11 +275,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   isCVViewable(): boolean {
-    return this.authService.canViewCandidateCV();
+    return this.authorizationService.canViewCandidateCV();
   }
 
   isAnAdmin(): boolean {
-    return this.authService.isAnAdmin();
+    return this.authorizationService.isAnAdmin();
   }
 
   onMarkCandidateChatAsRead() {
@@ -397,15 +397,15 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   isEditable(): boolean {
-    return this.authService.isEditableCandidate(this.candidate);
+    return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
   canViewPrivateInfo() {
-    return this.authService.canViewPrivateCandidateInfo(this.candidate);
+    return this.authorizationService.canViewPrivateCandidateInfo(this.candidate);
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   createTailoredCv() {
@@ -417,5 +417,9 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     createTailoredCvModal.componentInstance.candidateId = this.candidate?.id;
     createTailoredCvModal.componentInstance.candidateNumber = this.candidate?.candidateNumber;
 
+  }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
   }
 }

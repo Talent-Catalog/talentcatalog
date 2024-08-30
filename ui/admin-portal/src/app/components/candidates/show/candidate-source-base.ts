@@ -242,7 +242,7 @@ export class CandidateSourceBaseComponent {
   }
 
   isImportable(): boolean {
-    return isSavedList(this.candidateSource);
+    return !this.authorizationService.isReadOnly() && isSavedList(this.candidateSource);
   }
 
   isPublishable(): boolean {
@@ -250,7 +250,7 @@ export class CandidateSourceBaseComponent {
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.candidateSource?.users);
   }
 
   isJobList(): boolean {
@@ -262,11 +262,19 @@ export class CandidateSourceBaseComponent {
   }
 
   isEditable(): boolean {
-    return canEditSource(this.candidateSource, this.authenticationService);
+    return this.authorizationService.canEditCandidateSource(this.candidateSource);
   }
 
   isContentModifiable(): boolean {
-    return !isSavedSearch(this.candidateSource);
+    let modifiable = false;
+    if (!isSavedSearch(this.candidateSource)) {
+      if (this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
+        modifiable = true
+      } else {
+        modifiable = !this.authorizationService.isReadOnly();
+      }
+    }
+    return modifiable;
   }
 
   canAccessSalesforce(): boolean {
@@ -291,7 +299,7 @@ export class CandidateSourceBaseComponent {
     //Is shareable with me if it is not created by me.
     if (this.candidateSource) {
       //was it created by me?
-      if (!isMine(this.candidateSource, this.authenticationService)) {
+      if (!this.authorizationService.isCandidateSourceMine(this.candidateSource)) {
         shareable = true;
       }
     }

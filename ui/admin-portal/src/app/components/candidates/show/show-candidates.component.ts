@@ -59,12 +59,9 @@ import {
 } from '../../../model/saved-search';
 import {
   CandidateSource,
-  canEditSource,
   defaultReviewStatusFilter,
   DtoType,
   indexOfHasId,
-  isMine,
-  isStarredByMe,
   ReviewStatus,
   Status
 } from '../../../model/base';
@@ -945,9 +942,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   private requestSaveSelection() {
     //Show modal allowing for list selection
-    const modal = this.modalService.open(SelectListComponent);
+    const modal = this.modalService.open(SelectListComponent, {size: "lg"});
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
+    let readOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.myListsOnly = readOnly;
+    modal.componentInstance.canChangeStatuses = !readOnly;
     if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
     }
@@ -1538,9 +1538,13 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   doCopySource() {
     //Show modal allowing for list selection
-    const modal = this.modalService.open(SelectListComponent);
+    const modal = this.modalService.open(SelectListComponent, {size: "lg"});
     modal.componentInstance.action = "Copy";
     modal.componentInstance.title = "Copy to another List";
+    let readOnly = this.authorizationService.isReadOnly();
+    modal.componentInstance.myListsOnly = readOnly;
+    modal.componentInstance.canChangeStatuses = !readOnly;
+
     modal.componentInstance.excludeList = this.candidateSource;
 
     modal.result

@@ -45,8 +45,6 @@ import {User} from '../../../../model/user';
 import {
   CandidateSource,
   CandidateSourceType, DtoType,
-  isMine,
-  isStarredByMe,
   SearchBy
 } from '../../../../model/base';
 import {
@@ -105,7 +103,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private modalService: NgbModal,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
@@ -333,9 +331,13 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         });
     } else {
       //Show modal allowing for list selection
-      const modal = this.modalService.open(SelectListComponent);
+      const modal = this.modalService.open(SelectListComponent, {size: "lg"});
       modal.componentInstance.action = "Copy";
       modal.componentInstance.title = "Copy to another List";
+      let readOnly = this.authorizationService.isReadOnly();
+      modal.componentInstance.myListsOnly = readOnly;
+      modal.componentInstance.canChangeStatuses = !readOnly;
+
       modal.componentInstance.excludeList = source;
 
       modal.result
@@ -373,7 +375,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   onDeleteSource(source: CandidateSource) {
     this.loading = true;
-    if (isMine(source, this.authenticationService)) {
+    if (this.authorizationService.isCandidateSourceMine(source)) {
       this.deleteOwnedSource(source)
       // If it's not mine I can't delete it.
     } else {
@@ -427,7 +429,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   onToggleStarred(source: CandidateSource) {
     this.loading = true;
     this.error = null
-    if (isStarredByMe(source?.users, this.authenticationService)) {
+    if (this.authorizationService.isStarredByMe(source?.users)) {
       this.candidateSourceService.unstarSourceForUser(
         source, {userId: this.loggedInUser.id}).subscribe(
         result => {
