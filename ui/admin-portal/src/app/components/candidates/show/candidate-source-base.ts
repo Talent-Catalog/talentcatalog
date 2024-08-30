@@ -21,7 +21,13 @@ import {
 import {ModalDismissReasons, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {Input} from "@angular/core";
-import {CandidateSource, defaultReviewStatusFilter, DtoType} from "../../../model/base";
+import {
+  CandidateSource, canEditSource,
+  defaultReviewStatusFilter,
+  DtoType,
+  isMine,
+  isStarredByMe
+} from "../../../model/base";
 import {CandidateFieldInfo} from "../../../model/candidate-field-info";
 import {SearchResults} from "../../../model/search-results";
 import {Candidate} from "../../../model/candidate";
@@ -33,9 +39,11 @@ import {
   CandidateSourceCandidateService
 } from "../../../services/candidate-source-candidate.service";
 import {isSavedSearch, SavedSearchGetRequest} from "../../../model/saved-search";
-import {SavedListGetRequest} from "../../../model/saved-list";
+import {isSavedList, SavedListGetRequest} from "../../../model/saved-list";
 import {Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
+import {AuthorizationService} from "../../../services/authorization.service";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 export class CandidateSourceBaseComponent {
   error: any = null;
@@ -55,6 +63,8 @@ export class CandidateSourceBaseComponent {
   protected selectedFields: CandidateFieldInfo[] = [];
 
   constructor(
+    protected authorizationService: AuthorizationService,
+    protected authenticationService: AuthenticationService,
     protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
     protected candidateSourceCandidateService: CandidateSourceCandidateService,
     protected candidateFieldService: CandidateFieldService,
@@ -216,6 +226,79 @@ export class CandidateSourceBaseComponent {
       this.sortField = column;
       this.sortDirection = 'ASC';
     }
+  }
+
+  protected isCandidateNameViewable(): boolean {
+    return this.authorizationService.canViewCandidateName();
+  }
+
+  protected isCountryViewable(): boolean {
+    return this.authorizationService.canViewCandidateCountry();
+  }
+
+  protected sourceType(): string {
+    return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
+  }
+
+  protected isImportable(): boolean {
+    return isSavedList(this.candidateSource);
+  }
+
+  protected isPublishable(): boolean {
+    return isSavedList(this.candidateSource) && this.authorizationService.canPublishList();
+  }
+
+  protected isStarred(): boolean {
+    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
+  }
+
+  protected isJobList(): boolean {
+    return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
+  }
+
+  protected isShowStage(): boolean {
+    return this.isJobList();
+  }
+
+  protected isEditable(): boolean {
+    return canEditSource(this.candidateSource, this.authenticationService);
+  }
+
+  protected isContentModifiable(): boolean {
+    return !isSavedSearch(this.candidateSource);
+  }
+
+  protected canAccessSalesforce(): boolean {
+    return this.authorizationService.canAccessSalesforce();
+  }
+
+  protected isSalesforceUpdatable(): boolean {
+    return !isSavedSearch(this.candidateSource) && this.authorizationService.canUpdateSalesforce();
+  }
+
+  protected canAssignTasks() {
+    return this.authorizationService.canAssignTask();
+  }
+
+  protected canResolveTasks(): boolean {
+    return isSavedList(this.candidateSource) && this.authorizationService.canManageCandidateTasks();
+  }
+
+  protected isShareable(): boolean {
+    let shareable: boolean = false;
+
+    //Is shareable with me if it is not created by me.
+    if (this.candidateSource) {
+      //was it created by me?
+      if (!isMine(this.candidateSource, this.authenticationService)) {
+        shareable = true;
+      }
+    }
+    return shareable;
+  }
+
+  protected isGlobal(): boolean {
+    return this.candidateSource.global;
   }
 
 }

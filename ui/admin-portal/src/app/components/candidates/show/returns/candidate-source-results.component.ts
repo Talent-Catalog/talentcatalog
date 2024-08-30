@@ -26,6 +26,7 @@ import {AuthorizationService} from '../../../../services/authorization.service';
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSourceBaseComponent} from "../candidate-source-base";
+import {AuthenticationService} from "../../../../services/authentication.service";
 
 @Component({
   selector: 'app-candidate-source-results',
@@ -41,14 +42,17 @@ export class CandidateSourceResultsComponent extends CandidateSourceBaseComponen
   @Output() editSource = new EventEmitter<CandidateSource>();
 
   constructor(
-      private authService: AuthorizationService,
       private router: Router,
+      protected authorizationService: AuthorizationService,
+      protected authenticationService: AuthenticationService,
       protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
       protected candidateSourceCandidateService: CandidateSourceCandidateService,
       protected candidateFieldService: CandidateFieldService,
       protected modalService: NgbModal
     ) {
       super(
+        authorizationService,
+        authenticationService,
         candidateSourceResultsCacheService,
         candidateSourceCandidateService,
         candidateFieldService,
@@ -95,7 +99,7 @@ export class CandidateSourceResultsComponent extends CandidateSourceBaseComponen
     this.search(true);
   }
 
-  //Pass toggle watch up to BrowseCandidateSourcesComponent for it to
+  //Pass toggle starred up to BrowseCandidateSourcesComponent for it to
   //do the update and refresh its copy of the candidate source details
   // (which is passed through to all contained components)
   onToggleStarred(source: CandidateSource) {
@@ -127,18 +131,6 @@ export class CandidateSourceResultsComponent extends CandidateSourceBaseComponen
 
   onRefreshRequest() {
     this.search(true);
-  }
-
-  isCandidateNameViewable(): boolean {
-    return this.authService.canViewCandidateName();
-  }
-
-  isCountryViewable(): boolean {
-    return this.authService.canViewCandidateCountry();
-  }
-
-  canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
   }
 
 }

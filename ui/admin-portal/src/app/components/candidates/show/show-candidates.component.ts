@@ -215,16 +215,18 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
               private localStorageService: LocalStorageService,
               private location: Location,
               private router: Router,
-              private authService: AuthorizationService,
-              private authenticationService: AuthenticationService,
               private publishedDocColumnService: PublishedDocColumnService,
               public salesforceService: SalesforceService,
+              protected authorizationService: AuthorizationService,
+              protected authenticationService: AuthenticationService,
               protected candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               protected candidateSourceCandidateService: CandidateSourceCandidateService,
               protected candidateFieldService: CandidateFieldService,
               protected modalService: NgbModal,
   ) {
     super(
+      authorizationService,
+      authenticationService,
       candidateSourceResultsCacheService,
       candidateSourceCandidateService,
       candidateFieldService,
@@ -755,18 +757,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return this.targetListName && this.targetListName.length > 0;
   }
 
-  isContentModifiable(): boolean {
-    return !isSavedSearch(this.candidateSource);
-  }
-
-  isSalesforceUpdatable(): boolean {
-    return !isSavedSearch(this.candidateSource) && this.authService.canUpdateSalesforce();
-  }
-
-  canResolveTasks(): boolean {
-    return isSavedList(this.candidateSource) && this.authService.canManageCandidateTasks();
-  }
-
   isSavedList(): boolean {
     return !isSavedSearch(this.candidateSource);
   }
@@ -775,51 +765,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     //Not supported for saved searches because swapping an empty selection on a search could
     //potentially end up selecting huge numbers of candidates - up to the whole database.
     return !isSavedSearch(this.candidateSource);
-  }
-
-  sourceType(): string {
-    return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
-  }
-
-  isShareable(): boolean {
-    let shareable: boolean = false;
-
-    //Is shareable with me if it is not created by me.
-    if (this.candidateSource) {
-        //was it created by me?
-        if (!isMine(this.candidateSource, this.authenticationService)) {
-          shareable = true;
-        }
-    }
-    return shareable;
-  }
-
-  isGlobal(): boolean {
-    return this.candidateSource.global;
-  }
-
-  isImportable(): boolean {
-    return isSavedList(this.candidateSource);
-  }
-
-  isPublishable(): boolean {
-    return isSavedList(this.candidateSource) && this.authService.canPublishList();
-  }
-
-  isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
-  }
-
-  isJobList(): boolean {
-    return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
-  }
-
-  isShowStage(): boolean {
-    return this.isJobList();
-  }
-
-  isEditable(): boolean {
-    return canEditSource(this.candidateSource, this.authenticationService);
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
@@ -1730,11 +1675,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
   }
 
-  canAssignTasks() {
-    return this.authService.canAssignTask();
-  }
-
-
   /**
    * Get candidate stage in opportunity matching current job
     * @param candidate Candidate who opportunities we need to search
@@ -1759,10 +1699,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
    */
   getCandidateOppForThisJob(candidate: Candidate): CandidateOpportunity {
     return candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
-  }
-
-  canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
   }
 
   closeSelectedOpportunities() {
