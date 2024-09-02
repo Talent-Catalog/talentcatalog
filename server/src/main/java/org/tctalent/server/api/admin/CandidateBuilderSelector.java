@@ -286,6 +286,7 @@ public class CandidateBuilderSelector {
 
     private DtoBuilder shortCandidateDto() {
         return new DtoBuilder()
+            .add("id")
             .add("candidateNumber")
             ;
     }
