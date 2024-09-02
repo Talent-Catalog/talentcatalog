@@ -33,7 +33,7 @@ logging:
 spring:
   autoconfigure:
     exclude:
-      # We only want to use Redis as a cache so we do not want it to auto configure as a data store
+      # We only want to use Redis as a cache so we do not want it to auto-configure as a data store
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
   servlet:
