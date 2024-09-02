@@ -9,46 +9,46 @@
   <div class="d-flex justify-content-between">
     <h5 class="mb-4">Job Opportunity Intake (JOI)</h5>
   </div>
-  <!-- JOB DESTINATION -->
-
 
   <ngb-accordion #joi="ngbAccordion" [destroyOnHide]="false" activeIds="employer-details, position-details, immigration-considerations">
 
-    <!-- GENERAL INFORMATION -->
+    <!-- EMPLOYER DETAILS -->
     <ngb-panel id="employer-details" title="Employer Details: {{job.employerEntity?.name}}">
       <ng-template ngbPanelContent>
-        <div class="row cols-3 mb-2">
-          <div class="col">
-            <label>Destination: </label>
-            <span>{{job.country?.name}}</span>
+        <div *ngIf="canViewEmployerDetails()">
+          <div class="row cols-3 mb-2">
+            <div class="col">
+              <label>Destination: </label>
+              <span>{{job.country?.name}}</span>
+            </div>
+            <div class="col">
+              <label>Company website: </label>
+              <span><a [href]="job.employerEntity?.website" target="_blank">{{job.employerEntity.website}}</a></span>
+            </div>
+            <div class="col">
+              <label>Opportunity Score: </label>
+              <span>{{job.opportunityScore}}</span>
+            </div>
           </div>
-          <div class="col">
-            <label>Company website: </label>
-            <span><a [href]="job.employerEntity?.website" target="_blank">{{job.employerEntity.website}}</a></span>
+          <div class="row cols-3 mb-2">
+            <div class="col">
+              <label>Hiring commitment: </label>
+              <span>{{job.hiringCommitment}}</span>
+            </div>
+            <div class="col">
+              <label>Have they hired from abroad before? </label>
+              <span>{{job.employerEntity?.hasHiredInternationally}}</span>
+            </div>
+            <div class="col"></div>
           </div>
-          <div class="col">
-            <label>Opportunity Score: </label>
-            <span>{{job.opportunityScore}}</span>
+          <div class="row">
+            <div class="col">
+              <label>Employer description:</label>
+              <span>{{job.employerEntity?.description}}</span>
+            </div>
           </div>
+          <hr>
         </div>
-        <div class="row cols-3 mb-2">
-          <div class="col">
-            <label>Hiring commitment: </label>
-            <span>{{job.hiringCommitment}}</span>
-          </div>
-          <div class="col">
-            <label>Have they hired from abroad before? </label>
-            <span>{{job.employerEntity?.hasHiredInternationally}}</span>
-          </div>
-          <div class="col"></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <label>Employer description:</label>
-            <span>{{job.employerEntity?.description}}</span>
-          </div>
-        </div>
-        <hr>
         <app-recruitment-process
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
