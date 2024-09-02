@@ -13,23 +13,21 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <a href="./v220/employer_access" class="card">
-    <img src="./assets/images/v220/EmployerAccess.png" alt="Employer Access" class="card-image">
+    <img src="./assets/images/v222/NewStatsButton.png" alt="New stats button" class="card-image">
     <div class="card-body">
       <div class="card-title">New way of running stats on saved searches</div>
       <div class="card-description">
-        New more efficient Run Stats button, able to run stats for > 30,200 candidates.
+        New more efficient 'Run Stats' button, able to run stats for > 30,200 candidates.
       </div>
     </div>
  </a>
 
   <a href="./v220/job_chats" class="card">
-    <img src="./assets/images/v220/JobChats.png" alt="Job Chats" class="card-image">
+    <img src="./assets/images/v222/AutomatedJobChatsDark.svg" alt="Job Chats" class="card-image">
     <div class="card-body">
       <div class="card-title">Automated Messages</div>
       <div class="card-description">
-        Job Chats introduce a unified way for Talent Catalog users to communicate. Employers, 
-destinations, source partners and candidates can all communicate regarding job opportunities and 
-candidate relocation directly from the Talent Catalog.
+        Automatically update partners, candidates and employers throughout the recruitment process.
       </div>
     </div>
   </a>
@@ -78,30 +76,23 @@ candidate relocation directly from the Talent Catalog.
 <div class="card-container">
 
   <div class="card-no-border">
-    <img src="./assets/images/v220/EmployerReadyNavigation.png" alt="Employer-ready Navigation" class="card-image">
+    <img src="./assets/images/v222/IntakeSummary3.png" alt="Employer-ready Navigation" class="card-image">
     <div class="card-body">
-      <div class="card-title">Employer-Ready Navigation</div>
+      <div class="card-title">Highlight Intake Data</div>
       <div class="card-description">
-        We've reorganised the TC main menu and sub-menus to make it easier for new and existing 
-users to navigate. The main menu is now simply: <em>Jobs</em>, <em>Searches</em>, <em>Lists</em>, 
-and <em>Stats</em>. Clicking on Jobs navigates to all things jobs related, Searches for all things 
-search related, and so on. <a href="https://tctalent-test.org/admin-portal/login" target="_blank">
-Login to our staging environment</a> to take a look.
+        Preview key intake information in the intake headers to allow easy access 
+        when intake panels are closed.
       </div>
     </div>
   </div>
 
   <div class="card-no-border">
-    <img src="./assets/images/v220/WidenedColourPalette.png" alt="Widened Colour Palette" class="card-image">
+    <img src="./assets/images/v222/CandidatePortalNavDesktop.png" alt="Widened Colour Palette" class="card-image">
     <div class="card-body">
-      <div class="card-title">Widened Colour Palette</div>
+      <div class="card-title">Larger more mobile friendly tab navigation on candidate portal profile</div>
       <div class="card-description">
-        With this release we bid farewell to the old bright blue and teal colour scheme, which did
-not contrast terribly well against the white background. In some cases leading to eye strain over 
-prolonged periods of use. We hope the new muted yet strongly contrasted colours will be 
-significantly more accessible for all. Here's John with a 
-<a href="https://drive.google.com/file/d/1ONFcuvZxKZKwEUcn9wmbBNM5t2c-5e8B/view" target="_blank">
-quick video</a> introduction.
+        Focusing on mobile friendly design first, we've created some simple navigation buttons using
+ space saving but distinctive icons to modernise and simplify the navigation.
       </div>
     </div>
   </div>
