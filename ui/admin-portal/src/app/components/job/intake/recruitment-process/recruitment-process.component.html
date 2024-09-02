@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="recruitmentProcess">
+    <label class="form-label" [title]="tooltip">
       Outline of recruitment process
     </label>
     <div *ngIf="editable" class="float-end">
@@ -12,6 +12,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ngx-wig id="recruitmentProcess" [formControlName]="'recruitmentProcess'"></ngx-wig>
+    <ngx-wig formControlName="recruitmentProcess"></ngx-wig>
   </div>
 </form>

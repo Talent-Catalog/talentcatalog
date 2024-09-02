@@ -9,6 +9,7 @@ import {JobService} from "../../../../services/job.service";
   styleUrls: ['./cost-commit-employer.component.scss']
 })
 export class CostCommitEmployerComponent extends JobIntakeComponentBase implements OnInit {
+  tooltip = "Costs that employer has agreed to pay. Typically visa costs and airfares.";
 
   constructor(fb: FormBuilder, jobService: JobService) {
     super(fb, jobService);

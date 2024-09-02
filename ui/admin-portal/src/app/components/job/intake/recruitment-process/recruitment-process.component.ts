@@ -10,6 +10,9 @@ import {JobService} from "../../../../services/job.service";
 })
 export class RecruitmentProcessComponent extends JobIntakeComponentBase implements OnInit {
 
+  tooltip = "Provide a brief description of the recruitment process so that candidates " +
+    "and source partners know what is expected.";
+
   constructor(fb: FormBuilder, jobService: JobService) {
     super(fb, jobService);
   }

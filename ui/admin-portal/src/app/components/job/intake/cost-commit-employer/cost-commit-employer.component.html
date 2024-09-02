@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div class="mb-3">
-    <label class="form-label" for="employerCostCommitment">
+    <label class="form-label" [title]="tooltip">
       Employer cost commitments
       <sup class="text-danger fw-light">* required</sup>
     </label>
@@ -13,6 +13,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ngx-wig id="employerCostCommitment" [formControlName]="'employerCostCommitment'"></ngx-wig>
+    <ngx-wig formControlName="employerCostCommitment"></ngx-wig>
   </div>
 </form>
