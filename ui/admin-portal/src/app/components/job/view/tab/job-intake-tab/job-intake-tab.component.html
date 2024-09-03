@@ -49,6 +49,14 @@
           </div>
           <hr>
         </div>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.RECRUITMENT_PROCESS"
+          formFieldName="recruitmentProcess"
+          richText="true"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
         <app-recruitment-process
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
@@ -57,6 +65,10 @@
         <app-cost-commit-employer
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.COST_COMMITMENT"
+          formFieldName="employerCostCommitment"
+          richText="true"
+          required="true"
           [editable]="!loggedInUser.readOnly"
           (intakeChanged)="onIntakeChanged($event)"
         >
@@ -64,6 +76,7 @@
       </ng-template>
     </ngb-panel>
 
+<!-- POSITION DETAILS   -->
     <ngb-panel id="position-details" title="Position Details: {{job.name}}">
       <ng-template ngbPanelContent>
         <div class="row mb-3">
@@ -72,13 +85,75 @@
             <span *ngIf="job.submissionList?.fileJdLink; else noJd">
               <a target="_blank" href="{{job.submissionList.fileJdLink}}">
                 {{job.submissionList.fileJdName ? job.submissionList.fileJdName : job.submissionList.fileJdLink}}</a>
-              <div class="form-text">You can update this link under the Job Description tab</div>
+              <div class="form-text">You update this in the Job Summary - see top of page</div>
             </span>
             <ng-template #noJd>
               <span>Please upload or provide link under Job Description tab</span>
             </ng-template>
           </div>
         </div>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.SALARY_RANGE"
+          formFieldName="salaryRange"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.LOCATION"
+          formFieldName="location"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.LOCATION_DETAILS"
+          formFieldName="locationDetails"
+          richText="true"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.BENEFITS"
+          formFieldName="benefits"
+          richText="true"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.LANGUAGE_REQUIREMENTS"
+          formFieldName="languageRequirements"
+          richText="true"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.EMPLOYMENT_EXPERIENCE"
+          formFieldName="employmentExperience"
+          richText="true"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.EDUCATION_REQUIREMENTS"
+          formFieldName="educationRequirements"
+          richText="true"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.SKILL_REQUIREMENTS"
+          formFieldName="skillRequirements"
+          richText="true"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
         <app-job-salary
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
@@ -124,6 +199,30 @@
 
     <ngb-panel id="immigration-considerations" title="Immigration Considerations">
       <ng-template ngbPanelContent>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.VISA_PATHWAYS"
+          formFieldName="visaPathways"
+          required="true"
+          richText="true"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.OCCUPATION_CODE"
+          formFieldName="occupationCode"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
+        <app-joi-component
+          [entity]="job"
+          [jobIntakeData]="jobIntakeData"
+          componentKey="JOI.MIN_SALARY"
+          formFieldName="minSalary"
+          inputType="number"
+          [editable]="!loggedInUser.readOnly">
+        </app-joi-component>
         <app-visa-pathways
           [entity]="job"
           [jobIntakeData]="jobIntakeData"

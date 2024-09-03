@@ -187,7 +187,61 @@ const ALL_FIELDS = {
         "SELECT": null,
       }
     },
-     "STAFF_INSTRUCTION": {
+    "JOI": {
+      "BENEFITS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "COST_COMMITMENT": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "EDUCATION_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "EMPLOYMENT_EXPERIENCE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LANGUAGE_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LOCATION": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LOCATION_DETAILS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "MIN_SALARY": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "OCCUPATION_CODE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "RECRUITMENT_PROCESS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "SALARY_RANGE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "SKILL_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "VISA_PATHWAYS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+    },
+    "STAFF_INSTRUCTION": {
        "CANDIDATE_NO_INTEREST": null,
        "CANDIDATE_UNSURE_INTEREST": null
      },
