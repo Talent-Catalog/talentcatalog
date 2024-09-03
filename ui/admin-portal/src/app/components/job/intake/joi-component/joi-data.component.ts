@@ -5,10 +5,10 @@ import {JobService} from "../../../../services/job.service";
 
 @Component({
   selector: 'app-joi-component',
-  templateUrl: './joi-component.component.html',
-  styleUrls: ['./joi-component.component.scss']
+  templateUrl: './joi-data.component.html',
+  styleUrls: ['./joi-data.component.scss']
 })
-export class JoiComponentComponent extends JobIntakeComponentBase implements OnInit {
+export class JoiDataComponent extends JobIntakeComponentBase implements OnInit {
   @Input() formFieldName: string;
   @Input() richText = false;
   @Input() inputType = "text";

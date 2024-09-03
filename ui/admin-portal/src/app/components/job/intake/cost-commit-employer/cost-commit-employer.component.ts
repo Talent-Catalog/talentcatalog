@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
-import {JoiComponentComponent} from "../joi-component/joi-component.component";
+import {JoiDataComponent} from "../joi-component/joi-data.component";
 
 @Component({
   selector: 'app-cost-commit-employer',
   templateUrl: './cost-commit-employer.component.html',
   styleUrls: ['./cost-commit-employer.component.scss']
 })
-export class CostCommitEmployerComponent extends JoiComponentComponent implements OnInit {
+export class CostCommitEmployerComponent extends JoiDataComponent implements OnInit {
 
   constructor(fb: FormBuilder, jobService: JobService) {
     super(fb, jobService);
