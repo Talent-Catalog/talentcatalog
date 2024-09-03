@@ -57,11 +57,6 @@
           richText="true"
           [editable]="!loggedInUser.readOnly">
         </app-joi-component>
-        <app-recruitment-process
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-recruitment-process>
         <app-cost-commit-employer
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
@@ -154,46 +149,6 @@
           richText="true"
           [editable]="!loggedInUser.readOnly">
         </app-joi-component>
-        <app-job-salary
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-salary>
-        <app-job-location
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-location>
-        <app-job-location-details
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-location-details>
-        <app-job-benefits
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-benefits>
-        <app-job-language
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-language>
-        <app-job-experience
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-experience>
-        <app-job-education
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-education>
-        <app-job-skills
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-job-skills>
       </ng-template>
     </ngb-panel>
 
@@ -223,21 +178,6 @@
           inputType="number"
           [editable]="!loggedInUser.readOnly">
         </app-joi-component>
-        <app-visa-pathways
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-visa-pathways>
-        <app-occupation-code
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-occupation-code>
-        <app-min-salary
-          [entity]="job"
-          [jobIntakeData]="jobIntakeData"
-          [editable]="!loggedInUser.readOnly">
-        </app-min-salary>
       </ng-template>
     </ngb-panel>
 
