@@ -12,6 +12,12 @@ export class CostCommitEmployerComponent extends JoiComponentComponent implement
 
   constructor(fb: FormBuilder, jobService: JobService) {
     super(fb, jobService);
+
+    //These inputs are predefined for this component
+    this.formFieldName = "employerCostCommitment";
+    this.componentKey="JOI.COST_COMMITMENT"
+    this.richText=true
+    this.required=true
   }
 
   onSuccessfulSave() {

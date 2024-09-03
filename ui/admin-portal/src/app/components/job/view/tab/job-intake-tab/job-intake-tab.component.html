@@ -60,10 +60,6 @@
         <app-cost-commit-employer
           [entity]="job"
           [jobIntakeData]="jobIntakeData"
-          componentKey="JOI.COST_COMMITMENT"
-          formFieldName="employerCostCommitment"
-          richText="true"
-          required="true"
           [editable]="!loggedInUser.readOnly"
           (intakeChanged)="onIntakeChanged($event)"
         >
