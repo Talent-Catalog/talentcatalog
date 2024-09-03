@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
-import {JoiDataComponent} from "../joi-component/joi-data.component";
+import {JoiDataComponent} from "../joi-data/joi-data.component";
 
 @Component({
   selector: 'app-cost-commit-employer',
