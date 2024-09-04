@@ -27,7 +27,8 @@ fdescribe('ShowCandidatesWithChatComponent', () => {
     'CandidateService', ['fetchCandidatesWithChat', 'checkUnreadChats']
   )
   candidateService.fetchCandidatesWithChat.and.returnValue(of(mockSearchResults));
-  candidateService.checkUnreadChats.and.returnValue(of(null)); // Not testing this one at present
+  // Not testing this one at present, so we just skip and avoid having to resolve downstream errors
+  candidateService.checkUnreadChats.and.returnValue(of(null));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
