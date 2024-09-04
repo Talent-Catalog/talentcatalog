@@ -61,6 +61,8 @@ Check out the newest features and enhancements.
 - The "read only" for any user has been reviewed and now should work well for any kind of user. Read only users can create and modify their own lists and searches - but they can't change anything else.
 - Salesforce errors appearing on admin portal to confirm if a Salesforce update has or hasn't been successful
 - Destination preferences moved from Mini Intake and added to the candidate's registration process on the candidate portal. On the admin portal this data appears and is editable under the General tab of the candidate's profile.
+- Added 'IETLS Score' to default columns, replacing 'Updated Date'. 
+- The updated date can be now viewed in the candidate profile card on the General tab under Additional Information.
 
 ## Data Improvements
 
