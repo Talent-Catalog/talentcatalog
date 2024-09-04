@@ -12,15 +12,16 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
 
-  <a href="./v220/employer_access" class="card">
-    <img src="./assets/images/v222/NewStatsButton.png" alt="New stats button" class="card-image">
+  <a href="./v220/candidate_data_in_salesforce" class="card">
+    <img src="./assets/images/v222/CandidateChats.png" 
+            alt="Candidate Data in Salesforce" class="card-image">
     <div class="card-body">
-      <div class="card-title">New way of running stats on saved searches</div>
+      <div class="card-title">Candidate Chats</div>
       <div class="card-description">
-        New more efficient 'Run Stats' button, able to run stats for > 30,200 candidates.
+        Manage all active chats with candidates in one location with the new Candidate Chats tab.
       </div>
     </div>
- </a>
+  </a>
 
   <a href="./v220/job_chats" class="card">
     <img src="./assets/images/v222/AutomatedJobChatsDark.svg" alt="Job Chats" class="card-image">
@@ -36,16 +37,15 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
 
-  <a href="./v220/candidate_data_in_salesforce" class="card">
-    <img src="./assets/images/v222/CandidateChats.png" 
-            alt="Candidate Data in Salesforce" class="card-image">
+  <a href="./v220/employer_access" class="card">
+    <img src="./assets/images/v222/NewStatsButton.png" alt="New stats button" class="card-image">
     <div class="card-body">
-      <div class="card-title">Candidate Chats</div>
+      <div class="card-title">New way of running stats on saved searches</div>
       <div class="card-description">
-        Manage all active chats with candidates in one location with the new Candidate Chats tab.
+        New more efficient 'Run Stats' button, able to run stats for > 30,200 candidates.
       </div>
     </div>
-  </a>
+ </a>
 
 </div>
 
