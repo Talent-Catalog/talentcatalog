@@ -10,7 +10,7 @@ import {Partner} from "../../../model/partner";
 import {of} from "rxjs";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 
-fdescribe('ViewChatPostsComponent', () => {
+describe('ViewChatPostsComponent', () => {
   let component: ViewChatPostsComponent;
   let fixture: ComponentFixture<ViewChatPostsComponent>;
   let chatService: jasmine.SpyObj<ChatService>;

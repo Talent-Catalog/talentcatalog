@@ -8,7 +8,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {By} from "@angular/platform-browser";
 
-fdescribe('DestinationFamilyComponent', () => {
+describe('DestinationFamilyComponent', () => {
   let component: DestinationFamilyComponent;
   let fixture: ComponentFixture<DestinationFamilyComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;

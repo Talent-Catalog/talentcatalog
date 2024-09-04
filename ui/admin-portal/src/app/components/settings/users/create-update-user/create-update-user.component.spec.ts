@@ -33,7 +33,7 @@ import {config_test} from "../../../../../config-test";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../../services/authentication.service";
 
-fdescribe('CreateUpdateUserComponent', () => {
+describe('CreateUpdateUserComponent', () => {
   let component: CreateUpdateUserComponent;
   let fixture: ComponentFixture<CreateUpdateUserComponent>;
   let userServiceSpy: jasmine.SpyObj<UserService>;

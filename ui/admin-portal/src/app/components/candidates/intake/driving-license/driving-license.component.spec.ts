@@ -22,7 +22,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateIntakeData, DrivingLicenseStatus, YesNo} from "../../../../model/candidate";
 
-fdescribe('DrivingLicenseComponent', () => {
+describe('DrivingLicenseComponent', () => {
   let component: DrivingLicenseComponent;
   let fixture: ComponentFixture<DrivingLicenseComponent>;
 

@@ -24,7 +24,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('EditCandidateMediaWillingnessComponent', () => {
+describe('EditCandidateMediaWillingnessComponent', () => {
   let component: EditCandidateMediaWillingnessComponent;
   let fixture: ComponentFixture<EditCandidateMediaWillingnessComponent>;
   let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;

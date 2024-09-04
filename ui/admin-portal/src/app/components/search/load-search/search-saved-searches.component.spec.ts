@@ -38,7 +38,7 @@ const mockSearchResult:SearchResults<SavedSearch> = {
   content : [new MockSavedSearch()] // Use the MockCandidateSource as content
 }
 
-fdescribe('SearchSavedSearchesComponent', () => {
+describe('SearchSavedSearchesComponent', () => {
   let component: SearchSavedSearchesComponent;
   let fixture: ComponentFixture<SearchSavedSearchesComponent>;
   let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;

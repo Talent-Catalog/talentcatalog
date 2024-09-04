@@ -31,7 +31,7 @@ import {
   CreateUpdateHelpLinkComponent
 } from "./create-update-help-link/create-update-help-link.component";
 
-fdescribe('SearchHelpLinksComponent', () => {
+describe('SearchHelpLinksComponent', () => {
   let component: SearchHelpLinksComponent;
   let fixture: ComponentFixture<SearchHelpLinksComponent>;
   let helpLinkServiceSpy: jasmine.SpyObj<HelpLinkService>;

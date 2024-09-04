@@ -4,7 +4,7 @@ import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FileUploadComponent} from "../file-upload/file-upload.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('FileSelectorComponent', () => {
+describe('FileSelectorComponent', () => {
   let component: FileSelectorComponent;
   let fixture: ComponentFixture<FileSelectorComponent>;
   let modalServiceSpy: jasmine.SpyObj<NgbModal>;

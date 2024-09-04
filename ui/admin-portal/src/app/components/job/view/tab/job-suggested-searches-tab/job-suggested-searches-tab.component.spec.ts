@@ -10,7 +10,7 @@ import {LocalStorageModule} from "angular-2-local-storage";
 import {MockJobPrepItem} from "../../../../../MockData/MockJobPrepItem";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 
-fdescribe('JobSuggestedSearchesTabComponent', () => {
+describe('JobSuggestedSearchesTabComponent', () => {
   let component: JobSuggestedSearchesTabComponent;
   let fixture: ComponentFixture<JobSuggestedSearchesTabComponent>;
   // Define mock data

@@ -20,7 +20,7 @@ import {MockUser} from "../../../MockData/MockUser";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 
-fdescribe('ChatsWithPostsComponent', () => {
+describe('ChatsWithPostsComponent', () => {
   let component: ChatsWithPostsComponent;
   let fixture: ComponentFixture<ChatsWithPostsComponent>;
   let chatService: jasmine.SpyObj<ChatService>;

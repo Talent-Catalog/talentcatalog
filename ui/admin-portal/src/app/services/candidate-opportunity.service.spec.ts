@@ -27,7 +27,7 @@ import {SearchResults} from '../model/search-results';
 import {CandidateOpportunityParams} from '../model/candidate';
 import {JobChatUserInfo} from '../model/chat';
 
-fdescribe('CandidateOpportunityService', () => {
+describe('CandidateOpportunityService', () => {
   let service: CandidateOpportunityService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/opp';

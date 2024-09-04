@@ -16,7 +16,7 @@
 
 import {Task, TaskType, UploadType} from './task';
 
-fdescribe('Task Interface', () => {
+describe('Task Interface', () => {
   const mockTask: Task = {
     id: 1,
     name: 'Sample Task',

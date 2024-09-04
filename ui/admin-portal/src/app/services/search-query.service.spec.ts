@@ -18,7 +18,7 @@ import {TestBed} from '@angular/core/testing';
 import {SearchQueryService} from './search-query.service';
 import {take} from 'rxjs/operators';
 
-fdescribe('SearchQueryService', () => {
+describe('SearchQueryService', () => {
   let service: SearchQueryService;
 
   beforeEach(() => {

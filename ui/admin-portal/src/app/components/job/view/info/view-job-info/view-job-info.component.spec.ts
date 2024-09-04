@@ -5,7 +5,7 @@ import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 
-fdescribe('ViewJobInfoComponent', () => {
+describe('ViewJobInfoComponent', () => {
   let component: ViewJobInfoComponent;
   let fixture: ComponentFixture<ViewJobInfoComponent>;
   let modalService: NgbModal;

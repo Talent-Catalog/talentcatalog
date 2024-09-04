@@ -23,7 +23,7 @@ import {SearchResults} from '../model/search-results';
 import {CandidateFieldService} from './candidate-field.service';
 import {CopySourceContentsRequest} from "../model/saved-list";
 
-fdescribe('CandidateSourceService', () => {
+describe('CandidateSourceService', () => {
   let service: CandidateSourceService;
   let httpMock: HttpTestingController;
   let candidateFieldService: jasmine.SpyObj<CandidateFieldService>;

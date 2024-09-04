@@ -15,7 +15,7 @@
  */
 import {Country} from "./country";
 
-fdescribe('Country interface', () => {
+describe('Country interface', () => {
   it('should create a Country instance', () => {
     const country: Country = {
       id: 1,

@@ -4,7 +4,7 @@ import {MinSalaryComponent} from './min-salary.component';
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('MinSalaryComponent', () => {
+describe('MinSalaryComponent', () => {
   let component: MinSalaryComponent;
   let fixture: ComponentFixture<MinSalaryComponent>;
 

@@ -21,7 +21,7 @@ import {environment} from '../../environments/environment';
 import {Language, SystemLanguage} from '../model/language';
 import {SearchResults} from '../model/search-results';
 
-fdescribe('LanguageService', () => {
+describe('LanguageService', () => {
   let service: LanguageService;
   let httpMock: HttpTestingController;
 

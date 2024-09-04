@@ -22,7 +22,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {VisaEligibility} from "../../../../model/candidate";
 
-fdescribe('VisaAssessmentComponent', () => {
+describe('VisaAssessmentComponent', () => {
   let component: VisaAssessmentComponent;
   let fixture: ComponentFixture<VisaAssessmentComponent>;
 

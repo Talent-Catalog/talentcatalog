@@ -22,7 +22,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('CharacterAssessmentComponent', () => {
+describe('CharacterAssessmentComponent', () => {
   let component: CharacterAssessmentComponent;
   let fixture: ComponentFixture<CharacterAssessmentComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;

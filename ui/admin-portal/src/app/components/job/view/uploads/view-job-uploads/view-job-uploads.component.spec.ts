@@ -6,7 +6,7 @@ import { of, throwError } from 'rxjs';
 import {MockJob} from "../../../../../MockData/MockJob";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
 
-fdescribe('ViewJobUploadsComponent', () => {
+describe('ViewJobUploadsComponent', () => {
   let component: ViewJobUploadsComponent;
   let fixture: ComponentFixture<ViewJobUploadsComponent>;
   let mockJobService: jasmine.SpyObj<JobService>;

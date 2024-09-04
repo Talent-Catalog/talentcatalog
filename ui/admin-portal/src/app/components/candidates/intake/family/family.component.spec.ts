@@ -24,7 +24,7 @@ import {By} from '@angular/platform-browser';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('FamilyComponent', () => {
+describe('FamilyComponent', () => {
   let component: FamilyComponent;
   let fixture: ComponentFixture<FamilyComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;

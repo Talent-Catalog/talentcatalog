@@ -17,7 +17,7 @@
 import {Partner, sourceCountriesAsString} from "./partner";
 import {Country} from "./country";
 
-fdescribe('sourceCountriesAsString function', () => {
+describe('sourceCountriesAsString function', () => {
   it('should return a comma-separated string of country names', () => {
     const partner: Partner = {
       id: 1,

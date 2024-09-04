@@ -23,7 +23,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {EnumOption} from "../../../../util/enum";
 import {YesNo} from "../../../../model/candidate";
 
-fdescribe('HostEntryLegallyComponent', () => {
+describe('HostEntryLegallyComponent', () => {
   let component: HostEntryLegallyComponent;
   let fixture: ComponentFixture<HostEntryLegallyComponent>;
 

@@ -31,7 +31,7 @@ import {MockUser} from "../../../../MockData/MockUser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 
-fdescribe('CreateUpdatePartnerComponent', () => {
+describe('CreateUpdatePartnerComponent', () => {
   let component: CreateUpdatePartnerComponent;
   let fixture: ComponentFixture<CreateUpdatePartnerComponent>;
   let partnerServiceSpy: jasmine.SpyObj<PartnerService>;

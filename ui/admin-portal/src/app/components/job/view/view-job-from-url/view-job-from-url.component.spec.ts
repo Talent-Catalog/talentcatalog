@@ -16,7 +16,7 @@ import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
 import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 
-fdescribe('ViewJobFromUrlComponent', () => {
+describe('ViewJobFromUrlComponent', () => {
   let component: ViewJobFromUrlComponent;
   let fixture: ComponentFixture<ViewJobFromUrlComponent>;
   let mockJobService: jasmine.SpyObj<JobService>;

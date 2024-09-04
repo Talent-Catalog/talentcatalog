@@ -19,7 +19,7 @@ import {MockCandidate} from "../../../MockData/MockCandidate";
 import {UploadType} from "../../../model/task";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
 
-fdescribe('ViewTaskDetailsComponent', () => {
+describe('ViewTaskDetailsComponent', () => {
   let component: ViewTaskDetailsComponent;
   let fixture: ComponentFixture<ViewTaskDetailsComponent>;
 

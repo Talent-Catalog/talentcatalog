@@ -20,7 +20,7 @@ import {FormsModule} from "@angular/forms";
 import {NgbDate, NgbDateStruct, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('DateRangePickerComponent', () => {
+describe('DateRangePickerComponent', () => {
   let component: DateRangePickerComponent;
   let fixture: ComponentFixture<DateRangePickerComponent>;
 

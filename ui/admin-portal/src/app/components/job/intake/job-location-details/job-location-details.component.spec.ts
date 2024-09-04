@@ -5,7 +5,7 @@ import {NgxWigModule} from "ngx-wig";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('JobLocationDetailsComponent', () => {
+describe('JobLocationDetailsComponent', () => {
   let component: JobLocationDetailsComponent;
   let fixture: ComponentFixture<JobLocationDetailsComponent>;
 

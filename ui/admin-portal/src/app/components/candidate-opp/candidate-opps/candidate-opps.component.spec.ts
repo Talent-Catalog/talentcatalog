@@ -19,7 +19,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {CommonModule} from "@angular/common";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 
-fdescribe('CandidateOppsComponent', () => {
+describe('CandidateOppsComponent', () => {
   let component: CandidateOppsComponent;
   let fixture: ComponentFixture<CandidateOppsComponent>;
   let mockChatService: jasmine.SpyObj<ChatService>;

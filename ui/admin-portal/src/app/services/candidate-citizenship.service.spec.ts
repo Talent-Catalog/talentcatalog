@@ -20,7 +20,7 @@ import {CandidateCitizenshipService, CreateCandidateCitizenshipRequest} from './
 import {environment} from '../../environments/environment';
 import {CandidateCitizenship, HasPassport} from '../model/candidate';
 
-fdescribe('CandidateCitizenshipService', () => {
+describe('CandidateCitizenshipService', () => {
   let service: CandidateCitizenshipService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-citizenship';

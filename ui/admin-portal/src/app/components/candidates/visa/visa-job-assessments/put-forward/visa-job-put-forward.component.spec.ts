@@ -23,7 +23,7 @@ import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('VisaJobPutForwardComponent', () => {
+describe('VisaJobPutForwardComponent', () => {
   let component: VisaJobPutForwardComponent;
   let fixture: ComponentFixture<VisaJobPutForwardComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;

@@ -23,7 +23,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {By} from "@angular/platform-browser";
 import {TaskAssignment} from "../../../../../model/task-assignment";
 import {of, throwError} from "rxjs";
-fdescribe('EditTaskAssignmentComponent', () => {
+describe('EditTaskAssignmentComponent', () => {
   let component: EditTaskAssignmentComponent;
   let fixture: ComponentFixture<EditTaskAssignmentComponent>;
   let mockActiveModal: NgbActiveModal;

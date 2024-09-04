@@ -49,7 +49,7 @@ import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {MockPartner} from "../../../MockData/MockPartner";
 
-fdescribe('ViewCandidateComponent', () => {
+describe('ViewCandidateComponent', () => {
   let component: ViewCandidateComponent;
   let fixture: ComponentFixture<ViewCandidateComponent>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;

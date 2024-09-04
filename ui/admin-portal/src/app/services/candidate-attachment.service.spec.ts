@@ -20,7 +20,7 @@ import {CandidateAttachmentService, UpdateCandidateAttachmentRequest, SearchCand
 import {environment} from '../../environments/environment';
 import {CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
 
-fdescribe('CandidateAttachmentService', () => {
+describe('CandidateAttachmentService', () => {
   let service: CandidateAttachmentService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-attachment';

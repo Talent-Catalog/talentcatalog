@@ -5,7 +5,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {of, throwError} from "rxjs";
 
-fdescribe('DownloadCvComponent', () => {
+describe('DownloadCvComponent', () => {
   let component: DownloadCvComponent;
   let fixture: ComponentFixture<DownloadCvComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;

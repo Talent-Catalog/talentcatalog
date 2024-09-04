@@ -25,7 +25,7 @@ import {
 import {Task, TaskType, UploadType} from './task';
 import {Status} from "./base";
 
-fdescribe('Task Assignment Sort Function', () => {
+describe('Task Assignment Sort Function', () => {
   const mockTask1: Task = {
     id: 1,
     name: 'Task 1',
@@ -105,10 +105,10 @@ fdescribe('Task Assignment Sort Function', () => {
     expect(sorted[0]).toBe(mockTaskAssignment1);
     expect(sorted[1]).toBe(mockTaskAssignment2);
   });
-  
+
 });
 
-fdescribe('Check For Overdue Function', () => {
+describe('Check For Overdue Function', () => {
   it('should return true if there are overdue task assignments that are not abandoned, completed, or optional', () => {
     const mockTaskAssignment1: TaskAssignment = {
       id: 1,
@@ -175,7 +175,7 @@ fdescribe('Check For Overdue Function', () => {
   });
 });
 
-fdescribe('Check For Abandoned Function', () => {
+describe('Check For Abandoned Function', () => {
   it('should return true if there are abandoned task assignments that are not completed or optional', () => {
     const mockTaskAssignment1: TaskAssignment = {
       id: 1,
@@ -231,7 +231,7 @@ fdescribe('Check For Abandoned Function', () => {
   });
 });
 
-fdescribe('Check For Completed Function', () => {
+describe('Check For Completed Function', () => {
   it('should return true if there are completed task assignments', () => {
     const mockTaskAssignment1: TaskAssignment = {
       id: 1,
@@ -287,7 +287,7 @@ fdescribe('Check For Completed Function', () => {
   });
 });
 
-fdescribe('Check For Ongoing Function', () => {
+describe('Check For Ongoing Function', () => {
   it('should return true if there are ongoing task assignments that are not abandoned or completed', () => {
     const mockTaskAssignment1: TaskAssignment = {
       id: 1,

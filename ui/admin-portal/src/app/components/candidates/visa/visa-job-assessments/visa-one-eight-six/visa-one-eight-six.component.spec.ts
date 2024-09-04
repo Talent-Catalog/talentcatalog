@@ -5,7 +5,7 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('VisaOneEightSixComponent', () => {
+describe('VisaOneEightSixComponent', () => {
   let component: VisaOneEightSixComponent;
   let fixture: ComponentFixture<VisaOneEightSixComponent>;
 

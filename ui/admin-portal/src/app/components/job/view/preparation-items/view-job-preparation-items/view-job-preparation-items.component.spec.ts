@@ -4,7 +4,7 @@ import {MockJobPrepItem} from "../../../../../MockData/MockJobPrepItem";
 
 
 
-fdescribe('ViewJobPreparationItemsComponent', () => {
+describe('ViewJobPreparationItemsComponent', () => {
   let component: ViewJobPreparationItemsComponent;
   let fixture: ComponentFixture<ViewJobPreparationItemsComponent>;
   let compiled: HTMLElement;

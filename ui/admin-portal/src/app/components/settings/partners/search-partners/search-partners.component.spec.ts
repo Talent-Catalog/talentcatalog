@@ -31,7 +31,7 @@ import {
   CreateUpdatePartnerComponent
 } from "../create-update-partner/create-update-partner.component";
 
-fdescribe('SearchPartnersComponent', () => {
+describe('SearchPartnersComponent', () => {
   let component: SearchPartnersComponent;
   let fixture: ComponentFixture<SearchPartnersComponent>;
   let partnerService: jasmine.SpyObj<PartnerService>;

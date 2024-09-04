@@ -16,7 +16,7 @@
 
 import {Language, SystemLanguage} from "./language";
 
-fdescribe('Language Interface', () => {
+describe('Language Interface', () => {
   it('should create a valid Language object', () => {
     // Mock data
     const language: Language = {

@@ -23,7 +23,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnsure} from "../../../../model/candidate";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-fdescribe('ReturnedHomeComponent', () => {
+describe('ReturnedHomeComponent', () => {
   let component: ReturnedHomeComponent;
   let fixture: ComponentFixture<ReturnedHomeComponent>;
 

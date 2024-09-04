@@ -25,7 +25,7 @@ import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('EditCandidateSurveyComponent', () => {
+describe('EditCandidateSurveyComponent', () => {
   let component: EditCandidateSurveyComponent;
   let fixture: ComponentFixture<EditCandidateSurveyComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;
@@ -85,5 +85,5 @@ fdescribe('EditCandidateSurveyComponent', () => {
     expect(component.candidateForm.get('surveyComment').value).toBe(candidate.surveyComment);
     expect(component.loading).toBeFalse();
   }));
-  
+
 });

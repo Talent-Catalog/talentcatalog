@@ -20,7 +20,7 @@ import {SlackService} from './slack.service';
 import {environment} from '../../environments/environment';
 import {PostJobToSlackRequest, PostJobToSlackResponse} from '../model/base';
 
-fdescribe('SlackService', () => {
+describe('SlackService', () => {
   let service: SlackService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/slack';

@@ -8,7 +8,7 @@ import {YesNo} from '../../../../../model/candidate';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('RegionalAreaComponent', () => {
+describe('RegionalAreaComponent', () => {
   let component: RegionalAreaComponent;
   let fixture: ComponentFixture<RegionalAreaComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;

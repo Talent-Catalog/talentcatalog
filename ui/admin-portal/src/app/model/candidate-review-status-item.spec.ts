@@ -20,7 +20,7 @@ import {CandidateReviewStatusItem} from "./candidate-review-status-item";
 import {MockUser} from "../MockData/MockUser";
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
 
-fdescribe('CandidateReviewStatusItem Model', () => {
+describe('CandidateReviewStatusItem Model', () => {
   let user: User;
   let savedSearch: SavedSearch;
   let candidateReviewStatusItem: CandidateReviewStatusItem;

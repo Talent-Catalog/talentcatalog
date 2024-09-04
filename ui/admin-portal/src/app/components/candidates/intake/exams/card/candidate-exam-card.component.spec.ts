@@ -25,7 +25,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('CandidateExamCardComponent', () => {
+describe('CandidateExamCardComponent', () => {
   let component: CandidateExamCardComponent;
   let fixture: ComponentFixture<CandidateExamCardComponent>;
   let candidateExamService: jasmine.SpyObj<CandidateExamService>;

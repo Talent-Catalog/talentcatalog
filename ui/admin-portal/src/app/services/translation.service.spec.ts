@@ -22,7 +22,7 @@ import {Translation} from '../model/translation';
 import {SearchResults} from '../model/search-results';
 import {TranslatedObject} from '../model/translated-object';
 
-fdescribe('TranslationService', () => {
+describe('TranslationService', () => {
   let service: TranslationService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/translation';

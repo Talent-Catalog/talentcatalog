@@ -22,7 +22,7 @@ import {YesNoUnsure} from '../../../../model/candidate';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('VisaRejectComponent', () => {
+describe('VisaRejectComponent', () => {
   let component: VisaRejectComponent;
   let fixture: ComponentFixture<VisaRejectComponent>;
 

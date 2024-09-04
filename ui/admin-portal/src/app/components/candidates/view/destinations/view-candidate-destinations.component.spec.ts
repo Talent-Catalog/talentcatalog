@@ -10,7 +10,7 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateDestination} from "../../../../model/candidate";
 import {of} from "rxjs";
 
-fdescribe('ViewCandidateDestinationsComponent', () => {
+describe('ViewCandidateDestinationsComponent', () => {
   let component: ViewCandidateDestinationsComponent;
   let fixture: ComponentFixture<ViewCandidateDestinationsComponent>;
   let candidateDestinationServiceSpy: jasmine.SpyObj<CandidateDestinationService>;

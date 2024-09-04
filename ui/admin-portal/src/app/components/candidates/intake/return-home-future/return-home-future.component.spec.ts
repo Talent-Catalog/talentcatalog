@@ -22,7 +22,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {YesNoUnsure} from "../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('ReturnHomeFutureComponent', () => {
+describe('ReturnHomeFutureComponent', () => {
   let component: ReturnHomeFutureComponent;
   let fixture: ComponentFixture<ReturnHomeFutureComponent>;
 

@@ -7,7 +7,7 @@ import {Candidate, UpdateCandidateShareableNotesRequest} from "../../../model/ca
 import {of} from "rxjs";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
 
-fdescribe('CandidateShareableNotesComponent', () => {
+describe('CandidateShareableNotesComponent', () => {
   let component: CandidateShareableNotesComponent;
   let fixture: ComponentFixture<CandidateShareableNotesComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;

@@ -16,7 +16,7 @@
 import {SafePipe} from './safe.pipe';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 
-fdescribe('SafePipe', () => {
+describe('SafePipe', () => {
   let pipe: SafePipe;
   let sanitizer: DomSanitizer;
 

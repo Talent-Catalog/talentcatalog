@@ -22,7 +22,7 @@ import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('CrimeComponent', () => {
+describe('CrimeComponent', () => {
   let component: CrimeComponent;
   let fixture: ComponentFixture<CrimeComponent>;
 

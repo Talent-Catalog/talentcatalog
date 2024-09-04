@@ -21,7 +21,7 @@ import {environment} from '../../environments/environment';
 import {CandidateVisaJobCheck} from '../model/candidate';
 import {MockJob} from "../MockData/MockJob";
 
-fdescribe('CandidateVisaJobService', () => {
+describe('CandidateVisaJobService', () => {
   let service: CandidateVisaJobService;
   let httpMock: HttpTestingController;
 

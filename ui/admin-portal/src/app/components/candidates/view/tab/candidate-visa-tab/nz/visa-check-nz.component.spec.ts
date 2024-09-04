@@ -23,7 +23,7 @@ import {
   mockCandidateIntakeData
 } from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {By} from '@angular/platform-browser';
-fdescribe('VisaCheckNzComponent', () => {
+describe('VisaCheckNzComponent', () => {
   let component: VisaCheckNzComponent;
   let fixture: ComponentFixture<VisaCheckNzComponent>;
   const mockCandidate  = new MockCandidate();

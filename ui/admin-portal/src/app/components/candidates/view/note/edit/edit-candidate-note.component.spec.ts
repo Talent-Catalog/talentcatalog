@@ -29,7 +29,7 @@ import {SearchResults} from "../../../../../model/search-results";
 import {of} from "rxjs";
 import {NgxWigModule} from "ngx-wig";
 
-fdescribe('EditCandidateNoteComponent', () => {
+describe('EditCandidateNoteComponent', () => {
   let component: EditCandidateNoteComponent;
   let fixture: ComponentFixture<EditCandidateNoteComponent>;
   let mockActiveModal: any;

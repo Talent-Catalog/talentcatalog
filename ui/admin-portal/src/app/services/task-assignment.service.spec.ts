@@ -21,7 +21,7 @@ import {environment} from '../../environments/environment';
 import {TaskAssignment} from '../model/task-assignment';
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('TaskAssignmentService', () => {
+describe('TaskAssignmentService', () => {
   let service: TaskAssignmentService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/task-assignment';

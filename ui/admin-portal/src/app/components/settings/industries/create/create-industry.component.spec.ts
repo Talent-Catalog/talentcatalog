@@ -23,7 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {Industry} from "../../../../model/industry";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateIndustryComponent', () => {
+describe('CreateIndustryComponent', () => {
   let component: CreateIndustryComponent;
   let fixture: ComponentFixture<CreateIndustryComponent>;
   let industryServiceSpy: jasmine.SpyObj<IndustryService>;

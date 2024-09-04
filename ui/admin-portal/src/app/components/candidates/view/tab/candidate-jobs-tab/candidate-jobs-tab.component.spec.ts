@@ -28,7 +28,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {LocalStorageModule} from "angular-2-local-storage";
 
-fdescribe('CandidateJobsTabComponent', () => {
+describe('CandidateJobsTabComponent', () => {
   let component: CandidateJobsTabComponent;
   let fixture: ComponentFixture<CandidateJobsTabComponent>;
 

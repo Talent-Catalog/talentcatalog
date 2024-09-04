@@ -24,7 +24,7 @@ import {ViewCandidateSurveyComponent} from "../../survey/view-candidate-survey.c
 import {
   ViewCandidateMediaWillingnessComponent
 } from "../../media/view-candidate-media-willingness.component";
-fdescribe('CandidateAdditionalInfoTabComponent', () => {
+describe('CandidateAdditionalInfoTabComponent', () => {
   let component: CandidateAdditionalInfoTabComponent;
   let fixture: ComponentFixture<CandidateAdditionalInfoTabComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;

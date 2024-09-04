@@ -23,7 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {EducationMajor} from "../../../../model/education-major";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateEducationMajorComponent', () => {
+describe('CreateEducationMajorComponent', () => {
   let component: CreateEducationMajorComponent;
   let fixture: ComponentFixture<CreateEducationMajorComponent>;
   let educationMajorServiceSpy: jasmine.SpyObj<EducationMajorService>;

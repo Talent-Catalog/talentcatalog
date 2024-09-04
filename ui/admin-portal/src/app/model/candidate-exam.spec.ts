@@ -15,7 +15,7 @@
  */
 import {CandidateExam} from './candidate-exam';
 
-fdescribe('CandidateExam', () => {
+describe('CandidateExam', () => {
   let exam: CandidateExam;
 
   beforeEach(() => {

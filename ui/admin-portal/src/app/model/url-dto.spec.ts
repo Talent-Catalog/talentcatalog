@@ -16,7 +16,7 @@
 
 import {UrlDto} from "./url-dto";
 
-fdescribe('UrlDto Class', () => {
+describe('UrlDto Class', () => {
   it('should create an instance of UrlDto', () => {
     const urlDto = new UrlDto();
     expect(urlDto).toBeTruthy();

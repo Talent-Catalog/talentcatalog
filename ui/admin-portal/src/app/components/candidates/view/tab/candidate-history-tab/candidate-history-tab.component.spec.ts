@@ -22,7 +22,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('CandidateHistoryTabComponent', () => {
+describe('CandidateHistoryTabComponent', () => {
   let component: CandidateHistoryTabComponent;
   let fixture: ComponentFixture<CandidateHistoryTabComponent>;
   const mockCandidate = new MockCandidate();

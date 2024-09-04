@@ -24,7 +24,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {CandidateDependantService} from "../../../../services/candidate-dependant.service";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-fdescribe('DependantsComponent', () => {
+describe('DependantsComponent', () => {
   let component: DependantsComponent;
   let fixture: ComponentFixture<DependantsComponent>;
 

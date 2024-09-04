@@ -22,7 +22,7 @@ import {UnhcrStatus, YesNo} from "../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('RegistrationUnhcrComponent', () => {
+describe('RegistrationUnhcrComponent', () => {
   let component: RegistrationUnhcrComponent;
   let fixture: ComponentFixture<RegistrationUnhcrComponent>;
 

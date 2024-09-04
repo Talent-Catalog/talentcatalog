@@ -30,7 +30,7 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('SearchCountriesComponent', () => {
+describe('SearchCountriesComponent', () => {
   let component: SearchCountriesComponent;
   let fixture: ComponentFixture<SearchCountriesComponent>;
   let modalService: NgbModal;

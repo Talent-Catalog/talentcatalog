@@ -21,7 +21,7 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateLanguage} from "../../../../model/candidate-language";
 import {of, throwError} from "rxjs";
 
-fdescribe('ViewCandidateLanguageComponent', () => {
+describe('ViewCandidateLanguageComponent', () => {
   let component: ViewCandidateLanguageComponent;
   let fixture: ComponentFixture<ViewCandidateLanguageComponent>;
   let mockCandidateLanguageService: jasmine.SpyObj<CandidateLanguageService>;

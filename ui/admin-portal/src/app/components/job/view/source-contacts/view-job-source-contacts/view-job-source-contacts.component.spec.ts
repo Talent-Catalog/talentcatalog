@@ -4,7 +4,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockPartner} from "../../../../../MockData/MockPartner";
 
-fdescribe('ViewJobSourceContactsComponent', () => {
+describe('ViewJobSourceContactsComponent', () => {
   let component: ViewJobSourceContactsComponent;
   let fixture: ComponentFixture<ViewJobSourceContactsComponent>;
 

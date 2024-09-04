@@ -3,7 +3,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SimpleChanges} from "@angular/core";
 
-fdescribe('IeltsScoreValidationComponent', () => {
+describe('IeltsScoreValidationComponent', () => {
   let component: IeltsScoreValidationComponent;
   let fixture: ComponentFixture<IeltsScoreValidationComponent>;
 

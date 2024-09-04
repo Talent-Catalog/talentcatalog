@@ -23,7 +23,7 @@ import {By} from "@angular/platform-browser";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
 import {of} from "rxjs";
 
-fdescribe('CandidateContextNoteComponent', () => {
+describe('CandidateContextNoteComponent', () => {
   let component: CandidateContextNoteComponent;
   let fixture: ComponentFixture<CandidateContextNoteComponent>;
   let candidateSourceService: jasmine.SpyObj<CandidateSourceService>;

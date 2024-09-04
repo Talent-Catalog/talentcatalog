@@ -24,7 +24,7 @@ import {JobChatUserInfo} from '../model/chat';
 import {environment} from "../../environments/environment";
 import {MockJob} from "../MockData/MockJob";
 
-fdescribe('JobService', () => {
+describe('JobService', () => {
   let service: JobService;
   let httpTestingController: HttpTestingController;
   const apiUrl = `${environment.apiUrl}/job`;

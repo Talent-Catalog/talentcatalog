@@ -21,7 +21,7 @@ import {environment} from "../../environments/environment";
 import {UpdateExplicitSavedListContentsRequest, SavedList} from '../model/saved-list';
 import {MockSavedList} from "../MockData/MockSavedList";
 
-fdescribe('SavedListCandidateService', () => {
+describe('SavedListCandidateService', () => {
   let service: SavedListCandidateService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/saved-list-candidate';

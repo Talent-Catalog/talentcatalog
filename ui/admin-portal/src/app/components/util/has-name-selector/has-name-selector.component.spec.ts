@@ -21,7 +21,7 @@ import {NgSelectComponent, NgSelectModule} from '@ng-select/ng-select';
 import {HasNameSelectorComponent} from './has-name-selector.component';
 import {HasName} from '../../../model/base';
 
-fdescribe('HasNameSelectorComponent', () => {
+describe('HasNameSelectorComponent', () => {
   let component: HasNameSelectorComponent;
   let fixture: ComponentFixture<HasNameSelectorComponent>;
   let activeModal: jasmine.SpyObj<NgbActiveModal>;

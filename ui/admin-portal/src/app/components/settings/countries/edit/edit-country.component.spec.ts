@@ -25,7 +25,7 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockJob} from "../../../../MockData/MockJob";
 
-fdescribe('EditCountryComponent', () => {
+describe('EditCountryComponent', () => {
   let component: EditCountryComponent;
   let fixture: ComponentFixture<EditCountryComponent>;
   let countryServiceSpy: jasmine.SpyObj<CountryService>;

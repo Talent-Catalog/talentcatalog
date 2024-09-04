@@ -23,7 +23,7 @@ import {SearchResults} from '../model/search-results';
 import {CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from '../model/base';
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('CandidateSourceCandidateService', () => {
+describe('CandidateSourceCandidateService', () => {
   let service: CandidateSourceCandidateService;
   let httpMock: HttpTestingController;
 

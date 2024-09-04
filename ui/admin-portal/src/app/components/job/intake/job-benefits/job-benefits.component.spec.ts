@@ -6,7 +6,7 @@ import {of} from 'rxjs';
 import {AutosaveStatusComponent} from '../../../util/autosave-status/autosave-status.component';
 import {NgxWigModule} from 'ngx-wig';
 
-fdescribe('JobBenefitsComponent', () => {
+describe('JobBenefitsComponent', () => {
   let component: JobBenefitsComponent;
   let fixture: ComponentFixture<JobBenefitsComponent>;
   let jobServiceSpy: jasmine.SpyObj<JobService>;

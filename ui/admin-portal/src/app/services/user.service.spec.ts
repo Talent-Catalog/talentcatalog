@@ -22,7 +22,7 @@ import {User, UpdateUserRequest} from '../model/user';
 import {SearchUserRequest} from '../model/base';
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('UserService', () => {
+describe('UserService', () => {
   let service: UserService;
   let httpMock: HttpTestingController;
   const mockUser: User = new MockUser();

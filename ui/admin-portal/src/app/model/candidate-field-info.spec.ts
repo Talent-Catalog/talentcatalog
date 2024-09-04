@@ -17,7 +17,7 @@
 import {Candidate} from "./candidate";
 import {CandidateFieldInfo} from "./candidate-field-info";
 
-fdescribe('CandidateFieldInfo Class', () => {
+describe('CandidateFieldInfo Class', () => {
   let candidate: Candidate;
 
   beforeEach(() => {

@@ -8,7 +8,7 @@ import {of, throwError} from "rxjs";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
 import {AuthorizationService} from "../../../services/authorization.service";
 
-fdescribe('CandidateSourceDescriptionComponent', () => {
+describe('CandidateSourceDescriptionComponent', () => {
   let component: CandidateSourceDescriptionComponent;
   let fixture: ComponentFixture<CandidateSourceDescriptionComponent>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;

@@ -21,7 +21,7 @@ import {Industry} from '../model/industry';
 import {SearchResults} from '../model/search-results';
 import {environment} from "../../environments/environment";
 
-fdescribe('IndustryService', () => {
+describe('IndustryService', () => {
   let service: IndustryService;
   let httpTestingController: HttpTestingController;
   const apiUrl = `${environment.apiUrl}/industry`;

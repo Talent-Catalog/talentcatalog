@@ -22,7 +22,7 @@ import {Status} from '../model/base';
 import {Candidate} from '../model/candidate';
 import {TaskAssignment} from '../model/task-assignment';
 
-fdescribe('CandidateFieldService', () => {
+describe('CandidateFieldService', () => {
   let service: CandidateFieldService;
   let authService: jasmine.SpyObj<AuthorizationService>;
   let datePipe: DatePipe;

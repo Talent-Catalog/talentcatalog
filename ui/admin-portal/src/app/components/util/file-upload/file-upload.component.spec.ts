@@ -22,7 +22,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('FileUploadComponent', () => {
+describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
   let fixture: ComponentFixture<FileUploadComponent>;
   let candidateAttachmentService: jasmine.SpyObj<CandidateAttachmentService>;

@@ -16,7 +16,7 @@
 
 import {SurveyType} from "./survey-type";
 
-fdescribe('SurveyType Interface', () => {
+describe('SurveyType Interface', () => {
   it('should have an id property of type number', () => {
     const surveyType: SurveyType = {
       id: 1,

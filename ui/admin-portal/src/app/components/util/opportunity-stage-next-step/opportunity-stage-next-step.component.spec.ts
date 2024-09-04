@@ -12,7 +12,7 @@ import {OpportunityProgressParams} from "../../../model/opportunity";
 import {EditOppComponent} from "../../opportunity/edit-opp/edit-opp.component";
 import {of, throwError} from "rxjs";
 
-fdescribe('OpportunityStageNextStepComponent', () => {
+describe('OpportunityStageNextStepComponent', () => {
   let component: OpportunityStageNextStepComponent;
   let fixture: ComponentFixture<OpportunityStageNextStepComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthorizationService>;

@@ -6,7 +6,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {NgxWigModule} from "ngx-wig";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('CostCommitEmployerComponent', () => {
+describe('CostCommitEmployerComponent', () => {
   let component: CostCommitEmployerComponent;
   let fixture: ComponentFixture<CostCommitEmployerComponent>;
 

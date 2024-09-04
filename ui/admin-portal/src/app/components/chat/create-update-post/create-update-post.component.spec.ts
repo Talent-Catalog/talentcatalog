@@ -10,7 +10,7 @@ import {of} from "rxjs";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {TranslateModule} from "@ngx-translate/core";
 
-fdescribe('CreateUpdatePostComponent', () => {
+describe('CreateUpdatePostComponent', () => {
   let component: CreateUpdatePostComponent;
   let fixture: ComponentFixture<CreateUpdatePostComponent>;
   let modalService: jasmine.SpyObj<NgbModal>;

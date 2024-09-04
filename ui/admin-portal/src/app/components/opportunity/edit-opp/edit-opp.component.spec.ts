@@ -24,7 +24,7 @@ import {MockJob} from "../../../MockData/MockJob";
 import {ShortJob} from "../../../model/job";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 
-fdescribe('EditOppComponent', () => {
+describe('EditOppComponent', () => {
   let component: EditOppComponent;
   let fixture: ComponentFixture<EditOppComponent>;
   let modalService: NgbActiveModal;

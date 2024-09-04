@@ -6,7 +6,7 @@ import {MockJobChat} from "../../../MockData/MockJobChat";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 
-fdescribe('ManageChatsComponent', () => {
+describe('ManageChatsComponent', () => {
   let component: ManageChatsComponent;
   let fixture: ComponentFixture<ManageChatsComponent>;
   let chatService: jasmine.SpyObj<ChatService>;

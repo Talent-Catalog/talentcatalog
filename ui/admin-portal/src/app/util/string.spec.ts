@@ -16,8 +16,8 @@
 
 import {isHtml, truncate} from "./string";
 
-fdescribe('Utility Functions', () => {
-  fdescribe('truncate', () => {
+describe('Utility Functions', () => {
+  describe('truncate', () => {
     it('should truncate the string to the specified length and add "..." at the end', () => {
       const str = 'This is a long string that needs to be truncated';
       const num = 20;
@@ -51,7 +51,7 @@ fdescribe('Utility Functions', () => {
     });
   });
 
-  fdescribe('isHtml', () => {
+  describe('isHtml', () => {
     it('should return true for a string containing HTML tags', () => {
       const text = '<p>This is a paragraph.</p>';
       const result = isHtml(text);

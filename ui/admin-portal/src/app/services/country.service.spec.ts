@@ -22,7 +22,7 @@ import {environment} from '../../environments/environment';
 import {SearchResults} from '../model/search-results';
 import {MockJob} from "../MockData/MockJob";
 
-fdescribe('CountryService', () => {
+describe('CountryService', () => {
   let service: CountryService;
   let httpMock: HttpTestingController;
 

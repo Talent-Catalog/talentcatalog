@@ -16,7 +16,7 @@
 
 import {CandidateCertification} from "./candidate-certification";
 
-fdescribe('CandidateCertification Interface', () => {
+describe('CandidateCertification Interface', () => {
   it('should create an object that conforms to the CandidateCertification interface', () => {
     const certification: CandidateCertification = {
       id: 1,

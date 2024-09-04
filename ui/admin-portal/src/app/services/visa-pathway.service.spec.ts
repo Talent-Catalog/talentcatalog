@@ -20,7 +20,7 @@ import {VisaPathwayService, VisaPathway} from './visa-pathway.service';
 import {environment} from '../../environments/environment';
 import {Country} from "../model/country";
 
-fdescribe('VisaPathwayService', () => {
+describe('VisaPathwayService', () => {
   let service: VisaPathwayService;
   let httpMock: HttpTestingController;
 

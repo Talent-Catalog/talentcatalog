@@ -25,7 +25,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {Candidate} from "../../../../../model/candidate";
 import {of, throwError} from "rxjs";
 
-fdescribe('EditCandidateSpecialLinksComponent', () => {
+describe('EditCandidateSpecialLinksComponent', () => {
   let component: EditCandidateSpecialLinksComponent;
   let fixture: ComponentFixture<EditCandidateSpecialLinksComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;
