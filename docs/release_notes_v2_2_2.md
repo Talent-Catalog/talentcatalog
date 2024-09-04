@@ -78,7 +78,7 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <div class="card-no-border">
-    <img src="./assets/images/v222/IntakeSummary2.png" alt="Employer-ready Navigation" class="card-image">
+    <img src="./assets/images/v222/IntakeSummaryFull.png" alt="Employer-ready Navigation" class="card-image">
     <div class="card-body">
       <div class="card-title">Highlight Intake Data</div>
       <div class="card-description">
