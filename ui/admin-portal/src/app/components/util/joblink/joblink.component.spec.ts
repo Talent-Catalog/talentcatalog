@@ -27,7 +27,7 @@ import {SearchResults} from "../../../model/search-results";
 import {EducationLevel} from "../../../model/education-level";
 import {Job} from "../../../model/job";
 
-fdescribe('JoblinkComponent', () => {
+describe('JoblinkComponent', () => {
   let component: JoblinkComponent;
   let fixture: ComponentFixture<JoblinkComponent>;
   let jobService: jasmine.SpyObj<JobService>;
@@ -71,7 +71,7 @@ fdescribe('JoblinkComponent', () => {
     component.ngOnChanges({});
 
     expect(component.searchHeading).toBe('Change job association');
-    expect(component.currentJobName).toBe('NEW JOB');
+    expect(component.currentJobName).toBe('XYZ');
   });
 
   it('should emit job selection correctly', (done) => {
