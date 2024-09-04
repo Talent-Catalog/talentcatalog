@@ -138,44 +138,22 @@ Check out the newest features and enhancements.
 - IELTS scores of 0 now displayed in candidate search results
 - Help text clarified on Admin Portal date picker component
 - Potential password exposure in server logs removed
-- Pop ups with a 'select list' dropdown made larger to avoid list names being cut off
+- Pop-ups with a 'select list' dropdown made larger to avoid list names being cut off
 
 
 # Developer Notes
 
 ## Test Coverage
 
-- This release expands our unit test coverage by ~30% across various components, including
-  JobAdminApi, PartnerAdminApi, UserAdminApi, CandidateStatAdminApi, and more, with incremental
-  effects on code quality and system robustness.
-- The introduction of Gatling/Scala performance testing harnesses to the TC build lifecycle, will
-  now execute routine system and database performance tests, for the early detection of any
-  performance issues or bottlenecks. Forthcoming releases will build further on this.
-
 ## Code Refactoring
 - Deprecated candidate visa job check fields removed from code
 - Emoji picker code refactored for better readability
 
 ## Continuous Integration & Deployment
-- Pushing changes to developer branches will now trigger a full build and a complete cycle of unit
-  testing and performance testing - failure alerts will be notified to contributors for the early
-  detection and resolution of breaking code.
-- We've introduced [hot-fix branching](https://github.com/Talent-Catalog/talentcatalog/wiki/Release#hotfix-branches)
-  which is to be used for out-of-band quick fixing of production issues.
+
 
 ## Cloud Enhancements
-- Elasticsearch's versions have been upgraded from the end-of-life v7.12 to v7.17.11.
-- The elasticsearch index has been rebuilt and the old v7.12 clusters have been safely
-  decommissioned.
-- Elasticsearch production clusters have been migrated to the US for proximity to the TC cloud
-  hosting, which also resides in the US. Co-locating both services will alleviate unnecessary
-  transatlantic network hops when running elastic searches, with improved network search performance.
-- Postgres DB version 11 reaches end of life on AWS in February 2024, and has therefore been
-  upgraded to Postgres DB version 14.7 with this release.
-- Data storage has been upgraded to AWS provisioned storage, which is AWS's recommended data storage
-  type for Talent Catalog production data.
-- Last but not least, we've upgraded to a 4 CPU RDS database to allow the application to scale with
-  peak system usage.
+
 
 
 
