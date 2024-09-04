@@ -49,7 +49,6 @@ export const MockCandidateVisa: CandidateVisa = {
   createdDate: 2012,
   updatedBy: mockUser,
   updatedDate: 2017,
-  visaEligibilityAssessment: YesNo.Yes,
   pathwayAssessment: YesNoUnsure.Unsure,
   pathwayAssessmentNotes: 'Not sure about the pathway',
   destinationFamily: FamilyRelations.Child,
