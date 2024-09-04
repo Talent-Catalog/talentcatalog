@@ -244,6 +244,14 @@ export class AuthorizationService {
   }
 
   /**
+   * True if the currently logged in user is permitted to export data from candidate sources.
+   */
+  canExportFromSource(): boolean {
+    //Employer partners can't export.
+    return !this.isEmployerPartner();
+  }
+
+  /**
    * True if the currently logged in user is permitted to publish lists.
    */
   canPublishList(): boolean {

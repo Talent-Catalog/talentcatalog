@@ -239,6 +239,10 @@ export class CandidateSourceBaseComponent {
     return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
   }
 
+  isExportable(): boolean {
+    return this.authorizationService.canExportFromSource();
+  }
+
   isImportable(): boolean {
     return isSavedList(this.candidateSource) && this.authorizationService.canImportToList();
   }

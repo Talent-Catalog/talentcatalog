@@ -166,7 +166,8 @@
           Import <i class="fas fa-file-excel"></i>
         </button>
 
-        <button *ngIf="!isSavedList()" class="btn btn-sm btn-secondary" (click)="exportCandidates()"
+        <button *ngIf="!isSavedList() && isExportable()" class="btn btn-sm btn-secondary"
+                (click)="exportCandidates()"
                 title="Export candidates">
           <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
           Export <i class="fas fa-file-excel"></i>
