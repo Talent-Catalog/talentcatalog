@@ -71,7 +71,7 @@ describe('JoblinkComponent', () => {
     component.ngOnChanges({});
 
     expect(component.searchHeading).toBe('Change job association');
-    expect(component.currentJobName).toBe('XYZ');
+    expect(component.currentJobName).toBe('NEW JOB');
   });
 
   it('should emit job selection correctly', (done) => {
