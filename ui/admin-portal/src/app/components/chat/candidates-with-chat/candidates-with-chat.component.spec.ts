@@ -15,8 +15,9 @@ import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {ViewChatPostsComponent} from "../view-chat-posts/view-chat-posts.component";
 import {MockChatPost} from "../../../MockData/MockChatPost";
-import {ViewPostComponent} from "../view-post/view-post.component";
 import {LocalStorageModule} from "angular-2-local-storage";
+import {Component, Input} from "@angular/core";
+import {ChatPost} from "../../../model/chat";
 
 fdescribe('CandidatesWithChatComponent', () => {
   let component: CandidatesWithChatComponent;
@@ -38,7 +39,7 @@ fdescribe('CandidatesWithChatComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CandidatesWithChatComponent, ShowCandidatesWithChatComponent,
-        SortedByComponent, NgbPagination, ViewChatPostsComponent, ViewPostComponent],
+        SortedByComponent, NgbPagination, ViewChatPostsComponent, MockViewPostComponent],
       imports: [HttpClientTestingModule, ReactiveFormsModule, LocalStorageModule.forRoot({})],
       providers: [
         { provide: ChatService, useValue: chatService },
@@ -103,15 +104,25 @@ fdescribe('CandidatesWithChatComponent', () => {
     expect(component.chatHeader).toBe('Chat with John Doe');
   });
 
-  // TODO: currently this creates an error because of ngOnInit in ViewPostComponent - resolve and reinstate test
-  // it('should check whether user is read only when candidate is selected and chat fetched',
-  //   () => {
-  //   component.selectedCandidate = mockCandidate;
-  //   component.selectedCandidateChat = mockJobChat;
-  //
-  //   fixture.detectChanges()
-  //
-  //   expect(authorizationService.isReadOnly).toHaveBeenCalled();
-  // })
+  it('should check whether user is read only when candidate is selected and chat fetched',
+    () => {
+    component.selectedCandidate = mockCandidate;
+    component.selectedCandidateChat = mockJobChat;
+
+    fixture.detectChanges()
+
+    expect(authorizationService.isReadOnly).toHaveBeenCalled();
+  })
+
+  // Using a mock component here resolves an error caused by the real version's ngOnInit method
+  @Component({
+    selector: "app-view-post",
+    template: "",
+  })
+  class MockViewPostComponent {
+    @Input() post: ChatPost;
+    @Input() currentPost: ChatPost;
+    @Input() readOnly = false;
+  }
 
 });
