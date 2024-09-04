@@ -172,7 +172,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   }
 
   isAnAdmin(): boolean {
-    return this.authService.isAnAdmin();
+    return this.authorizationService.isAnAdmin();
   }
 
 }
