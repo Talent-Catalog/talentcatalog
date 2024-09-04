@@ -23,7 +23,7 @@ import {
 import {UploadType} from "./task";
 import {User} from "./user";
 
-fdescribe('CandidateAttachmentRequest', () => {
+describe('CandidateAttachmentRequest', () => {
   it('should create an instance of CandidateAttachmentRequest with required fields', () => {
     const request = new CandidateAttachmentRequest();
     request.candidateId = 1;
@@ -85,7 +85,7 @@ fdescribe('CandidateAttachmentRequest', () => {
   });
 });
 
-fdescribe('CandidateAttachment', () => {
+describe('CandidateAttachment', () => {
   it('should create an instance of CandidateAttachment with required fields', () => {
     const createdBy: User = { id: 1, name: 'Creator' } as User;
     const updatedBy: User = { id: 2, name: 'Updater' } as User;
