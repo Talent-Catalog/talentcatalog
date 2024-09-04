@@ -74,7 +74,7 @@ export class CandidateFieldService {
     "user.lastName",
     "status",
     "latestIntake",
-    "updatedDate",
+    "ieltsScore",
     "nationality.name",
     "country.name",
     "user.partner.abbreviation",
