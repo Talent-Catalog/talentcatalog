@@ -30,17 +30,25 @@ public class NextStepHelper {
     /**
      * Format used for date timestamp in next step audit stamp
      */
-    public static DateTimeFormatter nextStepDateFormatter = DateTimeFormatter.ofPattern("yyMMdd");
+    public static DateTimeFormatter nextStepDateFormatter = DateTimeFormatter.ofPattern("ddMMMuu");
 
     /**
-     * The audit stamp starts with this string
+     * The audit name stamp starts with this string
      */
-    public static String nextStepAuditStampDelimiter = " --";
+    public static String nextStepAuditNameDelimiter = " --";
+    /**
+     * The audit date stamp ends with this string
+     */
+    public static String nextStepAuditDateDelimiter = "| ";
 
     /**
      * If the requested next step is different from the current next step, the next step
-     * will be updated. In that case we add special text (the audit timestamp) to the
-     * end of the nextStep - indicating who has made this change to the next step, wand when.
+     * will be updated. In that case we add special text:
+     * <ul>
+     *     <li> the audit name to the end of the stripped nextStep.</li>
+     *     <li> the audit date to the start of the stripped nextStep. </li>
+     * </ul>
+     * This indicates who has made this change to the next step, and when. 
      * This is useful for auditing purposes.
      * <p/>
      * This method performs this logic, returning the processed next step which is what should be
@@ -48,7 +56,7 @@ public class NextStepHelper {
      * @param name Name of person initiating the next step update
      * @param date Date of the update
      * @param currentNextStep The current next step
-     * @param requestedNextStep Thw requested new next step
+     * @param requestedNextStep The requested new next step
      * @return The processed text which should be used for the next step update
      */
     public static String auditStampNextStep(String name, LocalDate date,
@@ -69,35 +77,40 @@ public class NextStepHelper {
 
                 //Now just add the new audit stamp on to the stripped version of the requested next
                 //step,
-                processedNextStep = stripped + constructNextStepAuditStamp(name, date);
+                processedNextStep = constructNextStepAuditStamp(name, date, stripped);
             }
         }
         return processedNextStep;
     }
 
     /**
-     * Strips of any existing audit time stamp
+     * Strips of any existing audit stamp
      * @param requestedNextStep Requested new next step
-     * @return Same text just with any existing next step stripped off.
+     * @return Same text just with any existing audit stamp stripped off.
      */
     private static String removeExistingStamp(String requestedNextStep) {
         String stripped = requestedNextStep;
-        final int endIndex = requestedNextStep.lastIndexOf(nextStepAuditStampDelimiter);
+        final int endIndex = requestedNextStep.lastIndexOf(nextStepAuditNameDelimiter);
+        final int startIndex = requestedNextStep.indexOf(nextStepAuditDateDelimiter);
         if (endIndex >= 0) {
-            stripped = requestedNextStep.substring(0, endIndex);
+            stripped = stripped.substring(0, endIndex);
+        }
+        if (startIndex >= 0) {
+            stripped = stripped.substring(startIndex + 2);
         }
         return stripped;
     }
 
     /**
-     * Constructs the audit stamp from the given name and date
+     * Constructs the audited next step from the given name, date and stripped next step
      * @param name Name of user initiating update
      * @param date Date to be used on timestamp
-     * @return The audit stamp text
+     * @param strippedNextStep Next step text to have audit added to
+     * @return The next step text with the audit stamp text added
      */
-    public static String constructNextStepAuditStamp(String name, LocalDate date) {
+    public static String constructNextStepAuditStamp(String name, LocalDate date, String strippedNextStep) {
         String dateStamp = nextStepDateFormatter.format(date);
-        return nextStepAuditStampDelimiter + dateStamp + " " + name;
+        return dateStamp + nextStepAuditDateDelimiter + strippedNextStep + nextStepAuditNameDelimiter + name;
     }
 
 }
