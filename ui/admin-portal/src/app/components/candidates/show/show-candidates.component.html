@@ -126,7 +126,7 @@
           <i class="fa fa-envelope"></i>
         </button>
 
-        <button *ngIf="isContentModifiable()" class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
+        <button *ngIf="canUpdateStatuses()" class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
                 (click)="updateStatusOfSelection()" title="Update Statuses of Selection">
           <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
           <i class="fas fa-user-check"></i>
@@ -145,13 +145,15 @@
           <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
         </button>
 
-        <button class="btn btn-sm btn-secondary" *ngIf="!isJobList() && isContentModifiable()" [disabled]="!isSelection()"
+        <button class="btn btn-sm btn-secondary" *ngIf="!isJobList() && isContentModifiable()"
+                [disabled]="!isSelection()"
                 (click)="removeSelectedCandidatesFromList()"
-                title="Remove Selection">
+                title="Remove selected candidates from list">
           Remove <i class="fas fa-user-check"></i>
         </button>
 
-        <button class="btn btn-sm btn-secondary" *ngIf="isJobList() && isContentModifiable()" [disabled]="!isSelection()"
+        <button class="btn btn-sm btn-secondary" *ngIf="isJobList() && isSalesforceUpdatable()"
+                [disabled]="!isSelection()"
                 (click)="closeSelectedOpportunities()"
                 title="Close selected candidate cases. Not removed from list but hidden unless 'Show closed cases' checkbox is checked.">
           <i class="fas fa-spinner fa-spin" *ngIf=closing></i>
@@ -192,7 +194,7 @@
 
         <button class="btn btn-sm btn-secondary" *ngIf="canResolveTasks()" [disabled]="!isSelection()"
                 (click)="resolveTaskAssignments()"
-                title="Remove Selection">
+                title="Resolve any outstanding tasks">
           <i class="fas fa-spinner fa-spin" *ngIf=updatingTasks></i>
           <i class="fas fa-user-check"></i> Resolve tasks
         </button>
@@ -360,7 +362,7 @@
                       <li ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
                       <li class="dropdown-divider"></li>
                     </span>
-                    <span *ngIf="isCandidateNameViewable()">
+                    <span *ngIf="isCvDropDownAvailable()">
                       <li ngbDropdownItem (click)="downloadGeneratedCV(candidate)"
                           title="Opens/DLs CV generated from candidate profile"
                       >
@@ -374,13 +376,13 @@
                       </a>
                     </li>
                     <li class="dropdown-divider"
-                        *ngIf="(!isJobList() && isContentModifiable()) || isJobList()"
+                        *ngIf="(!isJobList() && isContentModifiable()) || (isJobList() && isSalesforceUpdatable())"
                     ></li>
                     <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem
                         (click)="removeCandidateFromList(candidate)">
                       Remove from list
                     </li>
-                    <li *ngIf="isJobList()" ngbDropdownItem (click)="closeOpportunity(candidate)">
+                    <li *ngIf="isJobList() && isSalesforceUpdatable()" ngbDropdownItem (click)="closeOpportunity(candidate)">
                       Close opportunity for this job
                     </li>
                   </ul>

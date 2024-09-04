@@ -236,10 +236,19 @@ export class AuthorizationService {
   }
 
   /**
+   * True if the currently logged in user is permitted to import to lists.
+   */
+  canImportToList(): boolean {
+    //Read only and employer partners can't import to lists.
+    return !this.isReadOnly() && !this.isEmployerPartner();
+  }
+
+  /**
    * True if the currently logged in user is permitted to publish lists.
    */
   canPublishList(): boolean {
-    return !this.isReadOnly() && this.commonSeniorPartnerAuth();
+    //Read only and employer partners can't publish lists.
+    return !this.isReadOnly() && !this.isEmployerPartner() && this.commonSeniorPartnerAuth();
   }
 
   /**
@@ -247,6 +256,14 @@ export class AuthorizationService {
    */
   canAccessSalesforce(): boolean {
     return this.isDefaultSourcePartner();
+  }
+
+  /**
+   * True if the currently logged in user is permitted to change a candidate's status.
+   */
+  canUpdateCandidateStatus(): boolean {
+    //Employer partners cannot change a candidate's status
+    return !this.isReadOnly() && !this.isEmployerPartner() && this.commonSeniorPartnerAuth();
   }
 
   /**
