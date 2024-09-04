@@ -76,7 +76,9 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.visaJobCanada.expandAll();
+    if(this.visaJobCanada){
+      this.visaJobCanada.expandAll();
+    }
   }
 }
 

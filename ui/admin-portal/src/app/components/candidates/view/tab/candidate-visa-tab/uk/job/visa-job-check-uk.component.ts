@@ -38,6 +38,8 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.visaJobUk.expandAll();
+    if(this.visaJobUk){
+      this.visaJobUk.expandAll();
+    }
   }
 }
