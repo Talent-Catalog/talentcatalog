@@ -19,8 +19,9 @@
     </div>
 
     <div *ngIf="showProgressParams" class="mb-3">
-      <label class="form-label" for="nextStep">Next step - please start with date: eg 9Nov21-...</label>
+      <label class="form-label" for="nextStep">Next step</label>
       <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
+      <div class="form-text">Note: when a new next step is saved, the date and user will be appended to the next step automatically for audit purposes.</div>
     </div>
 
     <div *ngIf="showProgressParams" class="mb-3">

@@ -33,6 +33,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
 
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
+  @Input() editable: boolean;
 
   constructor(private fb: FormBuilder,
               private candidateSourceService: CandidateSourceService) {

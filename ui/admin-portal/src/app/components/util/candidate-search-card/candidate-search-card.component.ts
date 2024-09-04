@@ -72,7 +72,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   afterViewCheckedHasRun: boolean = false;
 
   constructor(private localStorageService: LocalStorageService,
-              private authService: AuthorizationService) { }
+              private authorizationService: AuthorizationService) { }
 
   ngOnInit() {
   }
@@ -122,6 +122,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     return display;
   }
 
+  isEditable(): boolean {
+    return this.authorizationService.isEditableCandidate(this.candidate);
+  }
+
   onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
   }
@@ -157,7 +161,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   }
 
   canViewPrivateInfo() {
-    return this.authService.canViewPrivateCandidateInfo(this.candidate);
+    return this.authorizationService.canViewPrivateCandidateInfo(this.candidate);
   }
 
   /**

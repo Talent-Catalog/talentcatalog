@@ -43,6 +43,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
 
   @Input() post: ChatPost;
   @Input() currentPost: ChatPost;
+  @Input() readOnly = false;
 
   @ViewChild('thisPost') thisPost: ElementRef;
 
@@ -78,22 +79,25 @@ export class ViewPostComponent implements OnInit, OnChanges {
     return UserService.userToString(user, false, false);
   }
 
-  // Toggles the picker on and off, situating it appropriately in relation to the button
+  //If readonly does nothing.
+  //Otherwise, toggles the picker on and off, situating it appropriately in relation to the button
   // The picker's height is 353 x 425 px, navbar is 85px
   public onClickReactionBtn(event) {
-    if (event.clientY < 510 && window.innerHeight - event.clientY < 425) {
-      // Won't fit above, won't fit below - place halfway
-      this.reactionPickerYPos = event.clientY - 213;
-    } else if (window.innerHeight - event.clientY < 425 && event.clientY > 510) {
-      // Won't fit below, will fit above - place above
-      this.reactionPickerYPos = event.clientY - 425;
-    } else {
-      // Will fit below, won't fit above OR will fit either side - place below
-      this.reactionPickerYPos = event.clientY;
+    if (!this.readOnly) {
+      if (event.clientY < 510 && window.innerHeight - event.clientY < 425) {
+        // Won't fit above, won't fit below - place halfway
+        this.reactionPickerYPos = event.clientY - 213;
+      } else if (window.innerHeight - event.clientY < 425 && event.clientY > 510) {
+        // Won't fit below, will fit above - place above
+        this.reactionPickerYPos = event.clientY - 425;
+      } else {
+        // Will fit below, won't fit above OR will fit either side - place below
+        this.reactionPickerYPos = event.clientY;
+      }
+      // Always place to the left of the button without concealing it
+      this.reactionPickerXPos = event.clientX - 370;
+      this.reactionPickerVisible = !this.reactionPickerVisible;
     }
-    // Always place to the left of the button without concealing it
-    this.reactionPickerXPos = event.clientX - 370;
-    this.reactionPickerVisible = !this.reactionPickerVisible;
   }
 
   // This method may also update or even delete a reaction, if the user submits an emoji already
@@ -111,11 +115,13 @@ export class ViewPostComponent implements OnInit, OnChanges {
   }
 
   public onSelectReaction(reaction: Reaction) {
-    this.reactionService.modifyReaction(reaction.id)
-                          .subscribe({
-                            next: (updatedReactions) =>
-                            this.post.reactions = updatedReactions
-                          })
+    if (!this.readOnly) {
+      this.reactionService.modifyReaction(reaction.id)
+      .subscribe({
+        next: (updatedReactions) =>
+          this.post.reactions = updatedReactions
+      })
+    }
   }
 
   private setIsCurrentPostClosePickerIfFalse(currentPost: ChatPost) {

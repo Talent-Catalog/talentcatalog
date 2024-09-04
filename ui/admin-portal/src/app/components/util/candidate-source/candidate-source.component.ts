@@ -35,7 +35,7 @@ import {
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {User} from '../../../model/user';
-import {CandidateSource, canEditSource, DtoType, isMine, isStarredByMe} from '../../../model/base';
+import {CandidateSource, DtoType} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
@@ -104,7 +104,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
     private location: Location,
     private modalService: NgbModal,
     private router: Router,
-    private authService: AuthorizationService,
+    private authorizationService: AuthorizationService,
     private authenticationService: AuthenticationService,
     private candidateSourceCacheService: CandidateSourceCacheService
   ) {
@@ -191,7 +191,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.candidateSource?.users, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.candidateSource?.users);
   }
 
   doToggleWatch() {
@@ -213,11 +213,11 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isShared() {
-    return !isMine(this.candidateSource, this.authenticationService);
+    return !this.authorizationService.isCandidateSourceMine(this.candidateSource);
   }
 
   isEditable() {
-    return canEditSource(this.candidateSource, this.authenticationService);
+    return this.authorizationService.canEditCandidateSource(this.candidateSource);
   }
 
   isRemovable() {
@@ -366,7 +366,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   ngOnDestroy(): void {

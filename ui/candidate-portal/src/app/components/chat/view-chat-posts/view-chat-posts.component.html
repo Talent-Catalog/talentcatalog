@@ -6,7 +6,7 @@
 </div>
 
 <div class="container my-lg-5">
-  <div *ngIf="!chatIsRead" class="d-flex justify-content-end mb-2">
+  <div *ngIf="!readOnly && !chatIsRead" class="d-flex justify-content-end mb-2">
     <button type="button" class="btn btn-sm btn-secondary" (click)="onMarkChatAsRead()">
       {{'CHAT.MARK-AS-READ' | translate}} <i class="fa-solid fa-envelope-circle-check ms-1"></i>
     </button>
