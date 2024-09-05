@@ -21,11 +21,7 @@ import {
 import {ModalDismissReasons, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {Directive, Input} from "@angular/core";
-import {
-  CandidateSource,
-  defaultReviewStatusFilter,
-  DtoType
-} from "../../../model/base";
+import {CandidateSource, defaultReviewStatusFilter, DtoType} from "../../../model/base";
 import {CandidateFieldInfo} from "../../../model/candidate-field-info";
 import {SearchResults} from "../../../model/search-results";
 import {Candidate} from "../../../model/candidate";
@@ -37,7 +33,7 @@ import {
   CandidateSourceCandidateService
 } from "../../../services/candidate-source-candidate.service";
 import {isSavedSearch, SavedSearchGetRequest} from "../../../model/saved-search";
-import {isSavedList, SavedListGetRequest} from "../../../model/saved-list";
+import {isSavedList, isSubmissionList, SavedListGetRequest} from "../../../model/saved-list";
 import {Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {AuthorizationService} from "../../../services/authorization.service";
@@ -251,6 +247,10 @@ export class CandidateSourceBaseComponent {
 
   isJobList(): boolean {
     return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
+  }
+
+  isSubmissionList(): boolean {
+    return isSubmissionList(this.candidateSource);
   }
 
   isShowStage(): boolean {

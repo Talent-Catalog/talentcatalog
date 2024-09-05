@@ -177,9 +177,11 @@ public class SavedListServiceImpl implements SavedListService {
 
             assignListTasksToCandidate(destinationList, candidate);
 
+            //TODO JC Change this to only work for submission list
             //If a job list, automatically create a candidate opp if needed
             final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
-            if (jobOpp != null) {
+            final Boolean isSubmissionList = destinationList.getRegisteredJob();
+            if (isSubmissionList && jobOpp != null ) {
                 //With no params specified will not change any existing opp associated with this job,
                 //but will create a new opp if needed, with stage defaulting to "prospect"
                 candidateOpportunityService.createUpdateCandidateOpportunities(
