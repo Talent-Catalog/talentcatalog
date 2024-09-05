@@ -73,7 +73,7 @@ fdescribe('CandidateSourceResultsComponent', () => {
   });
 
   it('should initialize with the correct initial state', () => {
-    expect(component.error).toBeUndefined();
+    expect(component.error).toBeNull();
     expect(component.pageNumber).toBeUndefined();
     expect(component.pageSize).toBeUndefined();
     expect(component.results).toBeUndefined();
