@@ -611,7 +611,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
     //Construct the request
     const request: PublishListRequest = new PublishListRequest();
-    if (this.isJobList()) {
+    if (this.isSubmissionList()) {
       request.publishClosedOpps = this.showClosedOpps;
     }
     request.columns = exportColumns;
