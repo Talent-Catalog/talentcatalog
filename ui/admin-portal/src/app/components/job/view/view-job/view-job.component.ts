@@ -297,8 +297,12 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
       centered: true, backdrop: 'static'});
     showReport.componentInstance.title = "Published job: " + this.job.name;
     showReport.componentInstance.showCancel = false;
-    let mess = "Job has been updated to 'Candidate Search' if it wasn't already at that stage or " +
-      "later. Also posted to Slack.";
+    let mess =
+      "Job has been updated to 'Candidate Search' if it wasn't already at that stage or later.";
+
+    if (this.authorizationService.isDefaultJobCreator()) {
+      mess += " Also posted to Slack."
+    }
 
     showReport.componentInstance.message = mess;
   }

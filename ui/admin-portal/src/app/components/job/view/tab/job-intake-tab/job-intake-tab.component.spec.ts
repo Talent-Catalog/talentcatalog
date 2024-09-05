@@ -1,35 +1,20 @@
 import {AuthenticationService} from "../../../../../services/authentication.service";
 import {JobService} from "../../../../../services/job.service";
-import {ComponentFixture,  TestBed } from "@angular/core/testing";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {JobIntakeTabComponent} from "./job-intake-tab.component";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {NgbAccordionModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {
   CostCommitEmployerComponent
 } from "../../../intake/cost-commit-employer/cost-commit-employer.component";
-import {
-  RecruitmentProcessComponent
-} from "../../../intake/recruitment-process/recruitment-process.component";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgxWigModule} from "ngx-wig";
 import {MockPartner} from "../../../../../MockData/MockPartner";
-import {MinSalaryComponent} from "../../../intake/min-salary/min-salary.component";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {OccupationCodeComponent} from "../../../intake/occupation-code/occupation-code.component";
-import {VisaPathwaysComponent} from "../../../intake/visa-pathways/visa-pathways.component";
-import {JobSkillsComponent} from "../../../intake/job-skills/job-skills.component";
-import {JobExperienceComponent} from "../../../intake/job-experience/job-experience.component";
-import {JobLanguageComponent} from "../../../intake/job-language/job-language.component";
-import {JobBenefitsComponent} from "../../../intake/job-benefits/job-benefits.component";
-import {JobLocationComponent} from "../../../intake/job-location/job-location.component";
-import {
-  JobLocationDetailsComponent
-} from "../../../intake/job-location-details/job-location-details.component";
-import {JobSalaryComponent} from "../../../intake/job-salary/job-salary.component";
-import {JobEducationComponent} from "../../../intake/job-education/job-education.component";
 import {JobOppIntake} from "../../../../../model/job-opp-intake";
 import {MockJobOppIntake} from "../../../../../MockData/MockJobOppIntake";
 import {HttpClientModule} from "@angular/common/http";
+import {TranslateModule} from "@ngx-translate/core";
 
 fdescribe('JobIntakeTabComponent', () => {
   let component: JobIntakeTabComponent;
@@ -40,8 +25,9 @@ fdescribe('JobIntakeTabComponent', () => {
     const authServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const jobServiceObj = jasmine.createSpyObj('JobService', ['updateIntakeData', 'get']);
     await TestBed.configureTestingModule({
-      declarations: [ JobIntakeTabComponent,CostCommitEmployerComponent,RecruitmentProcessComponent,MinSalaryComponent,JobEducationComponent,AutosaveStatusComponent,OccupationCodeComponent,VisaPathwaysComponent,JobSkillsComponent,JobExperienceComponent,JobLanguageComponent,JobBenefitsComponent,JobLocationDetailsComponent,JobSalaryComponent,JobLocationComponent ],
-      imports:[HttpClientModule,NgbAccordionModule,NgbModule,NgxWigModule,FormsModule,ReactiveFormsModule],
+      declarations: [ JobIntakeTabComponent,CostCommitEmployerComponent,AutosaveStatusComponent],
+      imports:[HttpClientModule,NgbAccordionModule,NgbModule,NgxWigModule,FormsModule,
+        ReactiveFormsModule,TranslateModule.forRoot()],
       providers: [
         { provide: AuthenticationService, useValue: authServiceSpyObj },
         { provide: JobService, useValue: jobServiceObj  },

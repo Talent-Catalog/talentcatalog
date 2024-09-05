@@ -1,10 +1,10 @@
 import {CostCommitEmployerComponent} from "./cost-commit-employer.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {JobService} from "../../../../services/job.service";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {NgxWigModule} from "ngx-wig";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {TranslateModule} from "@ngx-translate/core";
 
 fdescribe('CostCommitEmployerComponent', () => {
   let component: CostCommitEmployerComponent;
@@ -13,7 +13,7 @@ fdescribe('CostCommitEmployerComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CostCommitEmployerComponent,AutosaveStatusComponent ],
-      imports: [ ReactiveFormsModule,NgxWigModule,HttpClientTestingModule ]
+      imports: [ ReactiveFormsModule,NgxWigModule,HttpClientTestingModule,TranslateModule.forRoot() ],
     })
     .compileComponents();
   }));
