@@ -46,12 +46,19 @@ export class CandidateFieldService {
   private intakeTypeFormatter = (value) => {
     return this.getIntakesCompleted(value);
   }
+
   private intakeDateFormatter = (value) => {
     return this.getLatestIntakeDates(value);
   }
-  private getIeltsScoreType = (value) => {
+
+  private ieltsScoreFormatter = (value) => {
     return this.getIeltsScore(value);
   }
+
+  private nclcScoreFormatter = (value) => {
+    return this.getNclcScore(value);
+  }
+
   private getOverallTasksStatus = (value) => {
     return this.getTasksStatus(value);
   }
@@ -136,8 +143,10 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level", null,
         this.levelGetNameFormatter, null, true),
       new CandidateFieldInfo("IELTS Score", "ieltsScore", null,
-        this.getIeltsScoreType, null, true),
-      new CandidateFieldInfo("Legal status", "residenceStatus", null,
+        this.ieltsScoreFormatter, null, true),
+      new CandidateFieldInfo("NCLC Score", "frenchAssessmentScoreNclc", null,
+        this.nclcScoreFormatter, null, true),
+    new CandidateFieldInfo("Legal status", "residenceStatus", null,
         this.residenceStatusFormatter, null, true),
       new CandidateFieldInfo("Dependants", "numberDependants", null,
         null, null, true),
@@ -285,6 +294,15 @@ export class CandidateFieldService {
       } else {
         score = candidate?.ieltsScore + ' (Est)'
       }
+    }
+    return score;
+  }
+
+  getNclcScore(candidate: Candidate): string {
+    let score: string = null;
+    if (candidate?.frenchAssessmentScoreNclc != null) {
+      // todo - add check for type of score (e.g. TEF, TCF, etc.) when available - see #768
+      score = candidate?.frenchAssessmentScoreNclc + ' (Est)'
     }
     return score;
   }
