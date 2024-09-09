@@ -67,6 +67,7 @@ describe('JoblinkComponent', () => {
 
   it('should initialize correctly', () => {
     component.jobId = 1;
+    component.currentJobName = 'New JOB';
 
     component.ngOnChanges({});
 
