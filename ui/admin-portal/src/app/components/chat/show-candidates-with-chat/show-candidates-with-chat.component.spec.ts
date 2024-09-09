@@ -1,6 +1,6 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import { ShowCandidatesWithChatComponent } from './show-candidates-with-chat.component';
+import {ShowCandidatesWithChatComponent} from './show-candidates-with-chat.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {LocalStorageModule} from "angular-2-local-storage";
@@ -13,7 +13,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {SearchResults} from "../../../model/search-results";
 import {of} from "rxjs";
 
-fdescribe('ShowCandidatesWithChatComponent', () => {
+describe('ShowCandidatesWithChatComponent', () => {
   let component: ShowCandidatesWithChatComponent;
   let fixture: ComponentFixture<ShowCandidatesWithChatComponent>;
   let formBuilder: FormBuilder;

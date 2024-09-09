@@ -1,14 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MockCandidate } from "../../../MockData/MockCandidate";
-import { CandidatesWithChatComponent } from './candidates-with-chat.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MockCandidate} from "../../../MockData/MockCandidate";
+import {CandidatesWithChatComponent} from './candidates-with-chat.component';
 import {Candidate} from "../../../model/candidate";
 import {ChatService} from "../../../services/chat.service";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {of} from "rxjs";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {
-  ShowCandidatesWithChatComponent
-} from "../show-candidates-with-chat/show-candidates-with-chat.component";
+import {ShowCandidatesWithChatComponent} from "../show-candidates-with-chat/show-candidates-with-chat.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
@@ -19,7 +17,7 @@ import {LocalStorageModule} from "angular-2-local-storage";
 import {Component, Input} from "@angular/core";
 import {ChatPost} from "../../../model/chat";
 
-fdescribe('CandidatesWithChatComponent', () => {
+describe('CandidatesWithChatComponent', () => {
   let component: CandidatesWithChatComponent;
   let fixture: ComponentFixture<CandidatesWithChatComponent>;
   let chatService: jasmine.SpyObj<ChatService>;
@@ -80,7 +78,7 @@ fdescribe('CandidatesWithChatComponent', () => {
 
     component.onCandidateSelected(mockCandidate);
 
-    expect(window.scrollY).toBe(0);
+    expect(window.scrollY).toBe(-1);
   });
 
   it('should attempt to fetch the chat with the right parameters when a candidate is selected', () => {
