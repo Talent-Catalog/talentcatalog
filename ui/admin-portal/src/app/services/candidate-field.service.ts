@@ -155,7 +155,11 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Latest Intake", "latestIntake", this.intakeDatesTooltip,
       this.intakeTypeFormatter, null, false),
       new CandidateFieldInfo("Latest Intake Date", "latestIntakeDate", null,
-      this.intakeDateFormatter, null, false)
+      this.intakeDateFormatter, null, false),
+      new CandidateFieldInfo("Survey Type", "surveyType.name", null,
+        null, null, true),
+      new CandidateFieldInfo("Survey Comment", "surveyComment", null,
+        null, null, true)
       // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
       // new CandidateFieldInfo("Tasks Status", "taskAssignments", null,
       //   this.getOverallTasksStatus, null),
