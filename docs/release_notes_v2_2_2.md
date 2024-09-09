@@ -43,10 +43,12 @@ Check out the newest features and enhancements.
       <div class="card-title">New way of running stats on saved searches</div>
       <div class="card-description">
         Temporarily there are two ways of running stats, and two buttons "Run stats" and "New run stats".
+        <br>
         They should both produce the same results, but the new way should get over one of the
         limitations of the old way - for example, reported by Sarah Walder where she could not run stats
         on searches showing candidates in Lebanon or Jordan because there were too many of them
         (greater than 32,000). The new way of running stats should avoid that limitation.
+        <br>
         Once we are happy that the new way of running stats produces the same results as the old way,
         we can remove the old way altogether.
       </div>
@@ -63,8 +65,15 @@ Check out the newest features and enhancements.
       <div class="card-description">
         The "submission list" is the main list associated with a job. It is automatically created when the job is created.
         Its use is unchanged.
-        However, it used to be possible for a user to manually associate a job with any list - and that list would behave a bit like a submission list even though it wasn't. For example, adding a candidate to that list would automatically create a candidate opportunity. This ability to associate a job with any list wasn't widely used - but it did cause some nasty bugs with people accidentally creating or modifying candidate opportunities when they didn't mean to. So we decided it was best to remove the ability.
-        If you feel that you need that ability to manually associate jobs with lists, please let us know and perhaps we can find a different solution for you.
+        <br>
+        However, it used to be possible for a user to manually associate a job with any list - and that list would 
+        behave a bit like a submission list even though it wasn't. For example, adding a candidate to that list would 
+        automatically create a candidate opportunity. This ability to associate a job with any list wasn't widely used
+        - but it did cause some nasty bugs with people accidentally creating or modifying candidate opportunities when 
+        they didn't mean to. So we decided it was best to remove the ability.
+        <br>
+        If you feel that you need that ability to manually associate jobs with lists, please let us know and perhaps 
+        we can find a different solution for you.
       </div>
     </div>
  </div>
