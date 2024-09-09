@@ -12,17 +12,6 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
 
-  <a href="./v222/candidate_chats" class="card">
-    <img src="./assets/images/v222/CandidateChats.png" 
-            alt="Candidate Data in Salesforce" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Candidate Chats</div>
-      <div class="card-description">
-        Manage all active chats with candidates in one location with the new Candidate Chats tab.
-      </div>
-    </div>
-  </a>
-
   <a href="./v222/automated_messages" class="card">
     <img src="./assets/images/v222/AutomatedJobChatsDark.svg" alt="Job Chats" class="card-image">
     <div class="card-body">
@@ -30,8 +19,24 @@ Check out the newest features and enhancements.
       <div class="card-description">
         Automatically update partners, candidates and employers throughout the recruitment process.
       </div>
+      <div class="card-footer">
+        Learn more
+      </div>
     </div>
   </a>
+
+  <div class="card">
+    <img src="./assets/images/v222/CandidateChats.png" 
+            alt="Candidate Data in Salesforce" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Candidate Chats</div>
+      <div class="card-description">
+        Admins belonging to a source partner organisation can now manage all their active chats with candidates from 
+        the 'Candidate Chats' tab on the 'Jobs' screen. Candidate results are searchable and sortable by name and 
+        candidate number, and can be filtered to show only candidates whose chats have unread posts.
+      </div>
+    </div>
+  </div>
 
 </div>
 
