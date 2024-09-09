@@ -118,8 +118,12 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Partner", "user.partner.abbreviation", null,
         null, null, true),
       new CandidateFieldInfo("Phone", "phone", null,
-        null, null, true),
-      new CandidateFieldInfo("Referrer", "regoReferrerParam", null,
+        null, this.isCandidateContactViewable, true),
+      new CandidateFieldInfo("Whatsapp", "whatsapp", null,
+        null, this.isCandidateContactViewable, true),
+      new CandidateFieldInfo("Email", "user.email", null,
+        null, this.isCandidateContactViewable, true),
+    new CandidateFieldInfo("Referrer", "regoReferrerParam", null,
         null, null, true),
       new CandidateFieldInfo("Status", "status", null,
         this.titleCaseFormatter, null, true),
@@ -234,6 +238,13 @@ export class CandidateFieldService {
    */
   isCountryViewable = (): boolean => {
     return this.authService.canViewCandidateCountry()
+  }
+
+  /**
+   * Regarding funny syntax, see above comments for isCandidateNameViewable
+   */
+  isCandidateContactViewable = (): boolean => {
+    return this.authService.canViewCandidateContact()
   }
 
   isAnAdmin(): boolean {
