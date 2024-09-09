@@ -25,7 +25,7 @@ Check out the newest features and enhancements.
     </div>
   </a>
 
-  <div class="card">
+  <div class="card-no-border">
     <img src="./assets/images/v222/CandidateChats.png" 
             alt="Candidate Data in Salesforce" class="card-image">
     <div class="card-body">
