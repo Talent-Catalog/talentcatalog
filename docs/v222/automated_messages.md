@@ -4,8 +4,8 @@ sass:
   style: compressed
 ---
 
-Following on from the Job Chats feature in an earlier release [(see Job Chats release here)](./../v220/job_chats.md) 
-we are building on the feature by introducing 'Automated Chats'. This new feature allows the TC to send out 'updates' to all 
+Following on from the Job Chats feature in release 2.2 [(see Job Chats release here)](./../v220/job_chats.md) 
+we are introducing 'Automated Chats'. This new feature allows the TC to send out 'updates' to all 
 relevant parties via job chat channels. The Automated Chats can be broadcast to multiple chats, are triggered by actions
 on the TC and are fully customisable. We are starting by introducing some standard automated posts in this release, but 
 more can be created as requested. 
