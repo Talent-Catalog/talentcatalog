@@ -112,7 +112,8 @@
         <ng-template ngbNavContent>
           <app-candidate-general-tab
             [candidate]="candidate"
-            [editable]="false">
+            [editable]="false"
+            [adminUser]="isAnAdmin()">>
           </app-candidate-general-tab>
         </ng-template>
       </ng-container>
@@ -123,7 +124,8 @@
         <ng-template ngbNavContent>
           <app-candidate-experience-tab
             [candidate]="candidate"
-            [editable]="false">
+            [editable]="false"
+            [adminUser]="isAnAdmin()">
           </app-candidate-experience-tab>
         </ng-template>
       </ng-container>
@@ -134,7 +136,8 @@
         <ng-template ngbNavContent>
           <app-candidate-education-tab
             [candidate]="candidate"
-            [editable]="false">
+            [editable]="false"
+            [adminUser]="isAnAdmin()">
           </app-candidate-education-tab>
         </ng-template>
       </ng-container>
@@ -152,7 +155,7 @@
       </ng-container>
 
       <!-- TASKS -->
-      <ng-container ngbNavItem="tasks">
+      <ng-container ngbNavItem="tasks" *ngIf="canViewPrivateInfo()">
         <a ngbNavLink>Tasks</a>
         <ng-template ngbNavContent>
           <app-candidate-task-tab
@@ -163,7 +166,7 @@
       </ng-container>
 
       <!-- NOTES -->
-      <ng-container ngbNavItem="notes">
+      <ng-container ngbNavItem="notes" *ngIf="canViewPrivateInfo()">
         <a ngbNavLink>Notes</a>
         <ng-template ngbNavContent>
           <app-candidate-history-tab
