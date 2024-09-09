@@ -68,8 +68,8 @@ body {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
 }
 
-a.card:hover .card-description {
-  text-decoration: none;
+.card:hover .card-description {
+  text-decoration: none !important;
 }
 
 .a:hover .card-description {
