@@ -68,10 +68,12 @@ body {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
 }
 
-.card:hover {
-  .card-description {
-    text-decoration: none;
-  }
+.card:hover .card-description {
+  text-decoration: none;
+}
+
+.a:hover .card-description {
+  text-decoration: none;
 }
 
 .card-no-border {
@@ -159,6 +161,7 @@ body {
   font-size: 0.75em;
   text-align: center;
   text-decoration: underline;
+  margin-top: 0.75em;
   color: #045067;
   flex-grow: 1;
 }
