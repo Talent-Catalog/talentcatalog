@@ -240,10 +240,17 @@ public class CandidatePortalApi {
                 .add("state")
                 .add("yearOfArrival")
                 .add("nationality", countryDto())
+                .add("candidateCitizenships", candidateCitizenshipDto())
                 .add("externalId")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
                 .add("unhcrConsent")
+                ;
+    }
+
+    private DtoBuilder candidateCitizenshipDto() {
+        return new DtoBuilder()
+                .add("nationality", countryDto())
                 ;
     }
 
@@ -258,7 +265,7 @@ public class CandidatePortalApi {
             .add("candidateExams", candidateExamDto())
             ;
     }
-    
+
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
@@ -392,7 +399,7 @@ public class CandidatePortalApi {
                 .add("dateCompleted")
                 ;
     }
-    
+
     private DtoBuilder candidateWithDestinationsDto() {
         return new DtoBuilder()
                 .add("id")

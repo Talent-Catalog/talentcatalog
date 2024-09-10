@@ -386,12 +386,15 @@ const ALL_FIELDS = {
           "STATE": null,
           "YEAROFARRIVAL": null,
           "NATIONALITY": null,
+          "OTHER_NATIONALITY": null,
+          "OTHER_NATIONALITIES": null,
           "EXTERNALID": null,
           "REGISTEREDWITHUN": null,
           "REGISTRATIONID": null,
           "UNHCRCONSENT": null
         },
         "NOTE": {
+          "STATELESS": null,
           "UNHCRREGISTERED": null,
           "UNHCRCONSENT": null
         }
