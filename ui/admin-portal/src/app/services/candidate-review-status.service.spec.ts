@@ -22,7 +22,7 @@ import {CandidateReviewStatusItem} from "../model/candidate-review-status-item";
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('CandidateReviewStatusService', () => {
+describe('CandidateReviewStatusService', () => {
   let service: CandidateReviewStatusService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-reviewstatus';

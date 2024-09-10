@@ -6,7 +6,7 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
 
-fdescribe('VisaJobNotesComponent', () => {
+describe('VisaJobNotesComponent', () => {
   let component: VisaJobNotesComponent;
   let fixture: ComponentFixture<VisaJobNotesComponent>;
 

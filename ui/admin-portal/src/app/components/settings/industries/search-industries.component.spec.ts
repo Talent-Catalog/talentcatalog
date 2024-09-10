@@ -29,7 +29,7 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {EditIndustryComponent} from "./edit/edit-industry.component";
 import {CreateIndustryComponent} from "./create/create-industry.component";
 
-fdescribe('SearchIndustriesComponent', () => {
+describe('SearchIndustriesComponent', () => {
   let component: SearchIndustriesComponent;
   let fixture: ComponentFixture<SearchIndustriesComponent>;
   let industryServiceSpy: jasmine.SpyObj<IndustryService>;

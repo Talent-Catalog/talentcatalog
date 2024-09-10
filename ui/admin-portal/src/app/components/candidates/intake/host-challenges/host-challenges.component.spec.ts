@@ -21,7 +21,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-fdescribe('HostChallengesComponent', () => {
+describe('HostChallengesComponent', () => {
   let component: HostChallengesComponent;
   let fixture: ComponentFixture<HostChallengesComponent>;
 

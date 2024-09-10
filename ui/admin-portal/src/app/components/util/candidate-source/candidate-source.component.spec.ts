@@ -32,7 +32,7 @@ import {MockSavedList} from "../../../MockData/MockSavedList";
 import {LocalStorageService} from "angular-2-local-storage";
 import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";
 
-fdescribe('CandidateSourceComponent', () => {
+describe('CandidateSourceComponent', () => {
   let component: CandidateSourceComponent;
   let fixture: ComponentFixture<CandidateSourceComponent>;
   let savedSearchService: jasmine.SpyObj<SavedSearchService>;

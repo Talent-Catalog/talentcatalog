@@ -27,7 +27,7 @@ import {ShareableDocsComponent} from "../shareable-docs/shareable-docs.component
 import {UserPipe} from "../../../util/user/user.pipe";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('ViewCandidateAttachmentComponent', () => {
+describe('ViewCandidateAttachmentComponent', () => {
   let component: ViewCandidateAttachmentComponent;
   let fixture: ComponentFixture<ViewCandidateAttachmentComponent>;
   let candidateAttachmentServiceSpy: jasmine.SpyObj<CandidateAttachmentService>;

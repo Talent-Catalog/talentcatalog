@@ -24,7 +24,7 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateEducation} from "../../../../model/candidate-education";
 import {of, throwError} from "rxjs";
 
-fdescribe('ViewCandidateEducationComponent', () => {
+describe('ViewCandidateEducationComponent', () => {
   let component: ViewCandidateEducationComponent;
   let fixture: ComponentFixture<ViewCandidateEducationComponent>;
   let mockCandidateEducationService: jasmine.SpyObj<CandidateEducationService>;

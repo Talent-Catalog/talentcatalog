@@ -22,7 +22,7 @@ import {environment } from '../../environments/environment';
 import {CandidateSource, UpdateEmployerOpportunityRequest} from '../model/base';
 import {Opportunity} from "../model/opportunity";
 
-fdescribe('SalesforceService', () => {
+describe('SalesforceService', () => {
   let service: SalesforceService;
   let httpMock: HttpTestingController;
   let envServiceSpy: jasmine.SpyObj<EnvService>;

@@ -20,7 +20,7 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {Candidate} from "../../../../model/candidate";
 import {of, throwError} from "rxjs";
 
-fdescribe('ViewCandidateSkillComponent', () => {
+describe('ViewCandidateSkillComponent', () => {
   let component: ViewCandidateSkillComponent;
   let fixture: ComponentFixture<ViewCandidateSkillComponent>;
   let candidateSkillService: jasmine.SpyObj<CandidateSkillService>;
@@ -56,7 +56,7 @@ fdescribe('ViewCandidateSkillComponent', () => {
         { skill: 'JavaScript', timePeriod: 5 },
         { skill: 'Angular', timePeriod: 3 }
       ]
-    }; 
+    };
 
     // Simulate candidateSkillService.search() returning mock data
     // @ts-expect-error

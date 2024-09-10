@@ -34,7 +34,7 @@ import {User} from "../../model/user";
 import {CreatedByComponent} from "../util/user/created-by/created-by.component";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 
-fdescribe('HeaderComponent', () => {
+describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthorizationService>;

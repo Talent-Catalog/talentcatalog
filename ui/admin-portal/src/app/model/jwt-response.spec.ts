@@ -18,7 +18,7 @@ import {JwtResponse} from "./jwt-response";
 import {User} from "./user";
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('JwtResponse', () => {
+describe('JwtResponse', () => {
   it('should create a valid JwtResponse object', () => {
     // Mock data
     const mockUser: User = new MockUser();

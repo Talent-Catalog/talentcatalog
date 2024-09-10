@@ -20,7 +20,7 @@ import {SavedSearchService} from '../../../services/saved-search.service';
 import {of, throwError } from 'rxjs';
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 
-fdescribe('CandidatesSearchComponent', () => {
+describe('CandidatesSearchComponent', () => {
   let component: CandidatesSearchComponent;
   let fixture: ComponentFixture<CandidatesSearchComponent>;
   let mockActivatedRoute: any;

@@ -19,7 +19,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {BrandingService, BrandingInfo} from './branding.service';
 import {environment} from '../../environments/environment';
 
-fdescribe('BrandingService', () => {
+describe('BrandingService', () => {
   let service: BrandingService;
   let httpMock: HttpTestingController;
 

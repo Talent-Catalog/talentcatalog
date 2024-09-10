@@ -29,7 +29,7 @@ import {
   IeltsScoreValidationComponent
 } from "../../../util/ielts-score-validation/ielts-score-validation.component";
 
-fdescribe('LangAssessmentComponent', () => {
+describe('LangAssessmentComponent', () => {
   let component: LangAssessmentComponent;
   let fixture: ComponentFixture<LangAssessmentComponent>;
   const mockCandidateIntakeData: CandidateIntakeData = {

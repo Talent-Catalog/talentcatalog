@@ -5,7 +5,7 @@ import {NgxWigModule} from 'ngx-wig';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('VisaPathwaysComponent', () => {
+describe('VisaPathwaysComponent', () => {
   let component: VisaPathwaysComponent;
   let fixture: ComponentFixture<VisaPathwaysComponent>;
 

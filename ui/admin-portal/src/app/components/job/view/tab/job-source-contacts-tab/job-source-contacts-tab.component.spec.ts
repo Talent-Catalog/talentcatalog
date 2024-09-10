@@ -13,7 +13,7 @@ import {
   ViewJobSourceContactsComponent
 } from "../../source-contacts/view-job-source-contacts/view-job-source-contacts.component";
 
-fdescribe('JobSourceContactsTabComponent', () => {
+describe('JobSourceContactsTabComponent', () => {
   let component: JobSourceContactsTabComponent;
   let fixture: ComponentFixture<JobSourceContactsTabComponent>;
 

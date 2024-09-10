@@ -22,7 +22,7 @@ import {Candidate} from '../model/candidate';
 import {Partner} from "../model/partner";
 import {CandidateSource} from "../model/base";
 
-fdescribe('AuthorizationService', () => {
+describe('AuthorizationService', () => {
   let service: AuthorizationService;
   let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
 

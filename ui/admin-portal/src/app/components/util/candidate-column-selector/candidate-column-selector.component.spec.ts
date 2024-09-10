@@ -23,7 +23,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {DragulaModule, DragulaService} from "ng2-dragula";
 
 
-fdescribe('CandidateColumnSelectorComponent', () => {
+describe('CandidateColumnSelectorComponent', () => {
   let component: CandidateColumnSelectorComponent;
   let fixture: ComponentFixture<CandidateColumnSelectorComponent>;
   let candidateFieldService: jasmine.SpyObj<CandidateFieldService>;

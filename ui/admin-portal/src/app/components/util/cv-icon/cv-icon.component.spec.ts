@@ -24,7 +24,7 @@ import {of, throwError} from "rxjs";
 import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
 
-fdescribe('CvIconComponent', () => {
+describe('CvIconComponent', () => {
   let component: CvIconComponent;
   let fixture: ComponentFixture<CvIconComponent>;
   let mockAuthService;

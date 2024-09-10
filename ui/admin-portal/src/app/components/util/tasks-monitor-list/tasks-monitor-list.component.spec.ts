@@ -6,7 +6,7 @@ import {MockCandidate} from "../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 
-fdescribe('TasksMonitorListComponent', () => {
+describe('TasksMonitorListComponent', () => {
   let component: TasksMonitorListComponent;
   let fixture: ComponentFixture<TasksMonitorListComponent>;
   let taskAssignmentServiceSpy: jasmine.SpyObj<TaskAssignmentService>;

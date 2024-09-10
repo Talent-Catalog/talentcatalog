@@ -16,7 +16,7 @@
 
 import {generateYearArray} from "./year-helper";
 
-fdescribe('generateYearArray', () => {
+describe('generateYearArray', () => {
 
   it('should generate an array of years from 1950 to the current year by default', () => {
     const currentYear = new Date().getFullYear();

@@ -26,7 +26,7 @@ import {DatePickerComponent} from "../../../../util/date-picker/date-picker.comp
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {of} from "rxjs";
 
-fdescribe('DependantsCardComponent', () => {
+describe('DependantsCardComponent', () => {
   let component: DependantsCardComponent;
   let fixture: ComponentFixture<DependantsCardComponent>;
 

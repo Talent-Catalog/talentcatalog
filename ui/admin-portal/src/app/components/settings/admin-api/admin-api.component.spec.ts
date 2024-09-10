@@ -4,7 +4,7 @@ import {By} from '@angular/platform-browser';
 import {AdminApiComponent} from './admin-api.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('AdminApiComponent', () => {
+describe('AdminApiComponent', () => {
   let component: AdminApiComponent;
   let fixture: ComponentFixture<AdminApiComponent>;
 

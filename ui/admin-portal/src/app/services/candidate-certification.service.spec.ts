@@ -20,7 +20,7 @@ import {CandidateCertificationService, CreateCandidateCertificationRequest, Upda
 import {environment} from '../../environments/environment';
 import {CandidateCertification} from '../model/candidate-certification';
 
-fdescribe('CandidateCertificationService', () => {
+describe('CandidateCertificationService', () => {
   let service: CandidateCertificationService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-certification';

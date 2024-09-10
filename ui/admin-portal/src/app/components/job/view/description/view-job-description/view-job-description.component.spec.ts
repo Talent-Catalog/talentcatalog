@@ -5,7 +5,7 @@ import {SafePipe} from "../../../../../pipes/safe.pipe";
 import {NgModule} from "@angular/core";
 import {BrowserDynamicTestingModule} from "@angular/platform-browser-dynamic/testing";
 import {MockJob} from "../../../../../MockData/MockJob";
- fdescribe('ViewJobDescriptionComponent', () => {
+ describe('ViewJobDescriptionComponent', () => {
   let component: ViewJobDescriptionComponent;
   let fixture: ComponentFixture<ViewJobDescriptionComponent>;
 

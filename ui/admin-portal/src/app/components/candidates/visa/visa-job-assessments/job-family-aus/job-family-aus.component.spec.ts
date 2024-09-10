@@ -7,7 +7,7 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
 
-fdescribe('JobFamilyAusComponent', () => {
+describe('JobFamilyAusComponent', () => {
   let component: JobFamilyAusComponent;
   let fixture: ComponentFixture<JobFamilyAusComponent>;
   let fb: FormBuilder;

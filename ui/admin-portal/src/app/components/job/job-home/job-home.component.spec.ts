@@ -15,7 +15,7 @@ import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {ChatReadStatusComponent} from "../../chat/chat-read-status/chat-read-status.component";
 import {CandidateService} from "../../../services/candidate.service";
 
-fdescribe('JobHomeComponent', () => {
+describe('JobHomeComponent', () => {
   let component: JobHomeComponent;
   let fixture: ComponentFixture<JobHomeComponent>;
   let candidateOpportunityService: jasmine.SpyObj<CandidateOpportunityService>;

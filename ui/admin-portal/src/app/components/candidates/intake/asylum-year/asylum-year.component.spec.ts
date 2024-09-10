@@ -23,7 +23,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {DatePickerComponent} from "../../../util/date-picker/date-picker.component";
 
-fdescribe('AsylumYearComponent', () => {
+describe('AsylumYearComponent', () => {
   let component: AsylumYearComponent;
   let fixture: ComponentFixture<AsylumYearComponent>;
   let fb: FormBuilder;

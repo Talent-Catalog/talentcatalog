@@ -18,7 +18,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
 
-fdescribe('ConfirmationComponent', () => {
+describe('ConfirmationComponent', () => {
   let component: ConfirmationComponent;
   let fixture: ComponentFixture<ConfirmationComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;

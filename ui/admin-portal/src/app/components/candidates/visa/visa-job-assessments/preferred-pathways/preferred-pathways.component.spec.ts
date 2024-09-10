@@ -4,7 +4,7 @@ import {PreferredPathwaysComponent} from './preferred-pathways.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('PreferredPathwaysComponent', () => {
+describe('PreferredPathwaysComponent', () => {
   let component: PreferredPathwaysComponent;
   let fixture: ComponentFixture<PreferredPathwaysComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;

@@ -23,7 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {of, throwError} from "rxjs";
 import {Task} from "../../../../model/task";
 
-fdescribe('EditTaskComponent', () => {
+describe('EditTaskComponent', () => {
   let component: EditTaskComponent;
   let fixture: ComponentFixture<EditTaskComponent>;
   let taskServiceSpy: jasmine.SpyObj<TaskService>;

@@ -24,7 +24,7 @@ import {CreateLanguageComponent} from "./create-language.component";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
 
-fdescribe('CreateLanguageComponent', () => {
+describe('CreateLanguageComponent', () => {
   let component: CreateLanguageComponent;
   let fixture: ComponentFixture<CreateLanguageComponent>;
   let languageServiceSpy: jasmine.SpyObj<LanguageService>;

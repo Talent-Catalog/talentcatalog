@@ -19,7 +19,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {of} from "rxjs";
-fdescribe('TailoredCvComponent', () => {
+describe('TailoredCvComponent', () => {
   let component: TailoredCvComponent;
   let fixture: ComponentFixture<TailoredCvComponent>;
   let mockActiveModal: Partial<NgbActiveModal>;

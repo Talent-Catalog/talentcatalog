@@ -4,7 +4,7 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {NgxWigModule} from "ngx-wig";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-fdescribe('JobSkillsComponent', () => {
+describe('JobSkillsComponent', () => {
   let component: JobSkillsComponent;
   let fixture: ComponentFixture<JobSkillsComponent>;
   beforeEach(async () => {

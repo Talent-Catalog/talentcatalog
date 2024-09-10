@@ -26,7 +26,7 @@ import {JoblinkComponent} from "../../util/joblink/joblink.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import MOCK_SAVED_SEARCH_TYPE_INFO from "../../../MockData/MockSavedSearchTypeInfo";
 
-fdescribe('CreateUpdateSearchComponent', () => {
+describe('CreateUpdateSearchComponent', () => {
   let component: CreateUpdateSearchComponent;
   let fixture: ComponentFixture<CreateUpdateSearchComponent>;
   let mockSavedSearchService;

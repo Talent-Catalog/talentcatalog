@@ -24,7 +24,7 @@ import {CandidateNoteService} from "../../../../../services/candidate-note.servi
 import {CountryService} from "../../../../../services/country.service";
 import {of} from "rxjs";
 
-fdescribe('CreateCandidateNoteComponent', () => {
+describe('CreateCandidateNoteComponent', () => {
   let component: CreateCandidateNoteComponent;
   let fixture: ComponentFixture<CreateCandidateNoteComponent>;
   let mockActiveModal: any;

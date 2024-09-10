@@ -22,7 +22,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnsure} from "../../../../model/candidate";
 
-fdescribe('RuralComponent', () => {
+describe('RuralComponent', () => {
   let component: RuralComponent;
   let fixture: ComponentFixture<RuralComponent>;
 

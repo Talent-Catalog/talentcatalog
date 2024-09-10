@@ -20,7 +20,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {of} from "rxjs";
 
-fdescribe('ViewCandidateRegistrationComponent', () => {
+describe('ViewCandidateRegistrationComponent', () => {
   let component: ViewCandidateRegistrationComponent;
   let fixture: ComponentFixture<ViewCandidateRegistrationComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;
@@ -69,7 +69,7 @@ fdescribe('ViewCandidateRegistrationComponent', () => {
         firstChange: true,
         isFirstChange: () => true
       }} );
-    
+
     // Expect candidateService.get() to have been called with the correct candidate ID
     expect(candidateService.get).toHaveBeenCalledWith(mockCandidate.id);
 

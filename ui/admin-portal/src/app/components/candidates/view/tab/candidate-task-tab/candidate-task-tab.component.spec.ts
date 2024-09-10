@@ -22,7 +22,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {LocalStorageModule} from "angular-2-local-storage";
 
-fdescribe('CandidateTaskTabComponent', () => {
+describe('CandidateTaskTabComponent', () => {
   let component: CandidateTaskTabComponent;
   let fixture: ComponentFixture<CandidateTaskTabComponent>;
   const mockCandidate = new MockCandidate();

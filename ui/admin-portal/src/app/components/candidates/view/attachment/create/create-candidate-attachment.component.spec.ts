@@ -27,7 +27,7 @@ import {
 import {UploadType} from "../../../../../model/task";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateCandidateAttachmentComponent', () => {
+describe('CreateCandidateAttachmentComponent', () => {
   let component: CreateCandidateAttachmentComponent;
   let fixture: ComponentFixture<CreateCandidateAttachmentComponent>;
   let candidateAttachmentServiceSpy: jasmine.SpyObj<CandidateAttachmentService>;

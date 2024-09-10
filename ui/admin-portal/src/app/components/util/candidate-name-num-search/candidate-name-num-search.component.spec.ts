@@ -25,7 +25,7 @@ import {SearchResults} from "../../../model/search-results";
 import {Candidate} from "../../../model/candidate";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
-fdescribe('CandidateNameNumSearchComponent', () => {
+describe('CandidateNameNumSearchComponent', () => {
   let component: CandidateNameNumSearchComponent;
   let fixture: ComponentFixture<CandidateNameNumSearchComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;

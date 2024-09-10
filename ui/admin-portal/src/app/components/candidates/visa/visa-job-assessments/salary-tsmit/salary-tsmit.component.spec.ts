@@ -10,7 +10,7 @@ import {enumOptions} from '../../../../../util/enum';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('SalaryTsmitComponent', () => {
+describe('SalaryTsmitComponent', () => {
   let component: SalaryTsmitComponent;
   let fixture: ComponentFixture<SalaryTsmitComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;

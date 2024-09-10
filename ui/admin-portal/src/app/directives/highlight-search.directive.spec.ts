@@ -33,7 +33,7 @@ import {SearchQueryService} from "../services/search-query.service";
 })
 class TestComponent {}
 
-fdescribe('DirectiveModule', () => {
+describe('DirectiveModule', () => {
   let fixture: ComponentFixture<TestComponent>;
   let debugElement: DebugElement;
   let searchTerms$: Subject<string[]>;

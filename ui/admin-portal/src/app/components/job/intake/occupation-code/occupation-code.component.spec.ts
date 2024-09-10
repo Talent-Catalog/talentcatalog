@@ -4,7 +4,7 @@ import {OccupationCodeComponent} from './occupation-code.component';
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('OccupationCodeComponent', () => {
+describe('OccupationCodeComponent', () => {
   let component: OccupationCodeComponent;
   let fixture: ComponentFixture<OccupationCodeComponent>;
 

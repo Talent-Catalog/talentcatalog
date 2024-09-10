@@ -23,7 +23,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {EducationLevel} from "../../../../model/education-level";
 import {of, throwError} from "rxjs";
 
-fdescribe('EditEducationLevelComponent', () => {
+describe('EditEducationLevelComponent', () => {
   let component: EditEducationLevelComponent;
   let fixture: ComponentFixture<EditEducationLevelComponent>;
   let educationLevelServiceSpy: jasmine.SpyObj<EducationLevelService>;

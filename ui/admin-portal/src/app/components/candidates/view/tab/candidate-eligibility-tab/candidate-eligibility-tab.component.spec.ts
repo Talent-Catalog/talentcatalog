@@ -18,7 +18,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {Candidate} from "../../../../../model/candidate";
 
-fdescribe('CandidateEligibilityTabComponent', () => {
+describe('CandidateEligibilityTabComponent', () => {
   let component: CandidateEligibilityTabComponent;
   let fixture: ComponentFixture<CandidateEligibilityTabComponent>;
 

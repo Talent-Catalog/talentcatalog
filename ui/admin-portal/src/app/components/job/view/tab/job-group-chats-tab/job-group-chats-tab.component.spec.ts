@@ -11,7 +11,7 @@ import {ChatsComponent} from "../../../../chat/chats/chats.component";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {MockJobChat} from "../../../../../MockData/MockJobChat";
 
-fdescribe('JobGroupChatsTabComponent', () => {
+describe('JobGroupChatsTabComponent', () => {
   let component: JobGroupChatsTabComponent;
   let fixture: ComponentFixture<JobGroupChatsTabComponent>;
   let chatServiceSpy: jasmine.SpyObj<ChatService>;

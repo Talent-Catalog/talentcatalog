@@ -21,7 +21,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('TravelDocumentComponent', () => {
+describe('TravelDocumentComponent', () => {
   let component: TravelDocumentComponent;
   let fixture: ComponentFixture<TravelDocumentComponent>;
 

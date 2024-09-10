@@ -25,7 +25,7 @@ import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candida
 import {JobNameAndId} from "../../../model/job";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('SelectListComponent', () => {
+describe('SelectListComponent', () => {
   let component: SelectListComponent;
   let fixture: ComponentFixture<SelectListComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;

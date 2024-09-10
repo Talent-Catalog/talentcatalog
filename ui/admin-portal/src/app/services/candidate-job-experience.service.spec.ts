@@ -21,7 +21,7 @@ import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {environment} from "../../environments/environment";
 import {SearchResults} from "../model/search-results";
 
-fdescribe('CandidateJobExperienceService', () => {
+describe('CandidateJobExperienceService', () => {
   let service: CandidateJobExperienceService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-job-experience';

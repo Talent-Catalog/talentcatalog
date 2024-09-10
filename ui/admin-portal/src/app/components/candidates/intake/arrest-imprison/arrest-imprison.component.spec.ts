@@ -22,7 +22,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('ArrestImprisonComponent', () => {
+describe('ArrestImprisonComponent', () => {
   let component: ArrestImprisonComponent;
   let fixture: ComponentFixture<ArrestImprisonComponent>;
   let fb: FormBuilder;

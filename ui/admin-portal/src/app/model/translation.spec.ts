@@ -16,7 +16,7 @@
 
 import {Translation} from "./translation";
 
-fdescribe('Translation Interface', () => {
+describe('Translation Interface', () => {
   it('should create an instance of Translation', () => {
     const translation: Translation = {
       id: 1,

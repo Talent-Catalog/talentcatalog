@@ -26,7 +26,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 
-fdescribe('EditCandidateStatusComponent', () => {
+describe('EditCandidateStatusComponent', () => {
   let component: EditCandidateStatusComponent;
   let fixture: ComponentFixture<EditCandidateStatusComponent>;
   let activeModal: jasmine.SpyObj<NgbActiveModal>;

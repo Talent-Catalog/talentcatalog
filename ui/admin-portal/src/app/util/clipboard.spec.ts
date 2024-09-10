@@ -16,7 +16,7 @@
 
 import {copyToClipboard} from "./clipboard";
 
-fdescribe('copyToClipboard', () => {
+describe('copyToClipboard', () => {
   let execCommandSpy: jasmine.Spy;
   let appendChildSpy: jasmine.Spy;
   let removeChildSpy: jasmine.Spy;

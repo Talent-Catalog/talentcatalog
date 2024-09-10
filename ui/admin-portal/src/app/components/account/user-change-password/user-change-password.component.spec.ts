@@ -6,7 +6,7 @@ import {of, throwError} from 'rxjs';
 import {UserService} from '../../../services/user.service';
 import {config_test} from "../../../../config-test";
 
-fdescribe('UserChangePasswordComponent', () => {
+describe('UserChangePasswordComponent', () => {
   let component: UserChangePasswordComponent;
   let fixture: ComponentFixture<UserChangePasswordComponent>;
   let mockUserService: jasmine.SpyObj<UserService>;

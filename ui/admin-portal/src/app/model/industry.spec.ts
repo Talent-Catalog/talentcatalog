@@ -16,7 +16,7 @@
 
 import {Industry} from "./industry";
 
-fdescribe('Industry', () => {
+describe('Industry', () => {
   it('should create an Industry instance', () => {
     // Mock data
     const industry: Industry = {

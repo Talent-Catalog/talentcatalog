@@ -16,7 +16,7 @@
 
 import {TruncatePipe} from './truncate.pipe';
 
-fdescribe('TruncatePipe', () => {
+describe('TruncatePipe', () => {
   let pipe: TruncatePipe;
 
   beforeEach(() => {

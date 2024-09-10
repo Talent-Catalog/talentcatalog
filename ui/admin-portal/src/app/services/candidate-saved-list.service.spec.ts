@@ -20,7 +20,7 @@ import {CandidateSavedListService} from './candidate-saved-list.service';
 import {environment} from '../../environments/environment';
 import {IHasSetOfSavedLists, SavedList, SearchSavedListRequest} from '../model/saved-list';
 
-fdescribe('CandidateSavedListService', () => {
+describe('CandidateSavedListService', () => {
   let service: CandidateSavedListService;
   let httpMock: HttpTestingController;
 

@@ -37,7 +37,7 @@ import {
 } from "../../util/form/date-range-picker/date-range-picker.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 
-fdescribe('DefineSearchComponent', () => {
+describe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
   let fixture: ComponentFixture<DefineSearchComponent>;
   let searchQueryServiceSpy: jasmine.SpyObj<SearchQueryService>;

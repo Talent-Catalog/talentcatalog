@@ -21,7 +21,7 @@ import {DatePipe} from "@angular/common";
 import {By} from "@angular/platform-browser";
 import {MockUser} from "../../../../MockData/MockUser";
 
-fdescribe('UpdatedByComponent', () => {
+describe('UpdatedByComponent', () => {
   let component: UpdatedByComponent;
   let fixture: ComponentFixture<UpdatedByComponent>;
   let userPipe: UserPipe;

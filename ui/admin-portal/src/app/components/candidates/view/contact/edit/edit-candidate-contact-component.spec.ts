@@ -25,7 +25,7 @@ import {of} from "rxjs";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {Candidate} from "../../../../../model/candidate";
 
-fdescribe('EditCandidateContactComponent', () => {
+describe('EditCandidateContactComponent', () => {
   let component: EditCandidateContactComponent;
   let fixture: ComponentFixture<EditCandidateContactComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;

@@ -21,7 +21,7 @@ import {CandidateLanguage} from '../model/candidate-language';
 import {environment} from '../../environments/environment';
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('CandidateLanguageService', () => {
+describe('CandidateLanguageService', () => {
   let service: CandidateLanguageService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-language';

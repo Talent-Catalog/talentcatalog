@@ -5,7 +5,7 @@ import {environment} from '../../environments/environment';
 import {of} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 
-fdescribe('AdminService', () => {
+describe('AdminService', () => {
   let service: AdminService;
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;

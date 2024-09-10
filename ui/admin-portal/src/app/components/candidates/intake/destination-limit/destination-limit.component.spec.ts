@@ -22,7 +22,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('DestinationLimitComponent', () => {
+describe('DestinationLimitComponent', () => {
   let component: DestinationLimitComponent;
   let fixture: ComponentFixture<DestinationLimitComponent>;
 

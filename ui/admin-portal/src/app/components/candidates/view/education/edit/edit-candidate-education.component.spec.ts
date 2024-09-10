@@ -27,7 +27,7 @@ import {MockJob} from "../../../../../MockData/MockJob";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('EditCandidateEducationComponent', () => {
+describe('EditCandidateEducationComponent', () => {
   let component: EditCandidateEducationComponent;
   let fixture: ComponentFixture<EditCandidateEducationComponent>;
   let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;

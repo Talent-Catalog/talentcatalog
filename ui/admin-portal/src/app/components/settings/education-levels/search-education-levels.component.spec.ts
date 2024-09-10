@@ -30,7 +30,7 @@ import {EditEducationLevelComponent} from "./edit/edit-education-level.component
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
-fdescribe('SearchEducationLevelsComponent', () => {
+describe('SearchEducationLevelsComponent', () => {
   let component: SearchEducationLevelsComponent;
   let fixture: ComponentFixture<SearchEducationLevelsComponent>;
   let modalService: NgbModal;

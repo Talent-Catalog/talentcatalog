@@ -31,7 +31,7 @@ import {MockSavedList} from "../../MockData/MockSavedList";
 import {MockSavedSearch} from "../../MockData/MockSavedSearch";
 import {StatReport} from "../../model/stat-report";
 import {ChartType} from "chart.js"
-fdescribe('InfographicComponent', () => {
+describe('InfographicComponent', () => {
   let component: InfographicComponent;
   let fixture: ComponentFixture<InfographicComponent>;
   let mockActivatedRoute: any;
