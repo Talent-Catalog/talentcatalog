@@ -17,11 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {
-  AvailImmediateReason,
-  YesNo,
-  YesNoUnsure
-} from '../../../../model/candidate';
+import {AvailImmediateReason, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 
@@ -70,7 +66,7 @@ export class AvailImmediateComponent extends IntakeComponentBase implements OnIn
     } else {
       //If the candidate's status is not that they have withdrawn then compute their status from
       //any response they have made to the availImmediate question.
-      //If they have got as far as answering that question - even with a "NoResponse" response,
+      //If they have got as far as answering that question with a Yes or No,
       //we can assume that they said that they were interested.
       if (this.candidateIntakeData?.availImmediate &&
         this.candidateIntakeData?.availImmediate != YesNo.NoResponse) {
