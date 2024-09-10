@@ -24,7 +24,7 @@ import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
 import {of, throwError} from "rxjs";
 import {MockSavedList} from "../../../../MockData/MockSavedList";
 
-fdescribe('CreateExternalLinkComponent', () => {
+describe('CreateExternalLinkComponent', () => {
   let component: CreateExternalLinkComponent;
   let fixture: ComponentFixture<CreateExternalLinkComponent>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;

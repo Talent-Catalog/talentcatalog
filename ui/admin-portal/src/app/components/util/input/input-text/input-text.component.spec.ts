@@ -3,7 +3,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
-fdescribe('InputTextComponent', () => {
+describe('InputTextComponent', () => {
   let component: InputTextComponent;
   let fixture: ComponentFixture<InputTextComponent>;
   let modalMock: Partial<NgbActiveModal>;

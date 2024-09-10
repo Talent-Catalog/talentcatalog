@@ -20,7 +20,7 @@ import {CandidateStatService, CandidateStatsRequest} from './candidate-stat.serv
 import {environment} from '../../environments/environment';
 import {StatReport} from '../model/stat-report';
 
-fdescribe('CandidateStatService', () => {
+describe('CandidateStatService', () => {
   let service: CandidateStatService;
   let httpMock: HttpTestingController;
 

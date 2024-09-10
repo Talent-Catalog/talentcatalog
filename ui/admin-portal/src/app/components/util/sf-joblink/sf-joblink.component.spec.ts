@@ -8,7 +8,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 
-fdescribe('SfJoblinkComponent', () => {
+describe('SfJoblinkComponent', () => {
   let component: SfJoblinkComponent;
   let fixture: ComponentFixture<SfJoblinkComponent>;
   let salesforceServiceSpy: jasmine.SpyObj<SalesforceService>;

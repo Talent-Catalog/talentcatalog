@@ -16,7 +16,7 @@ import {ChatReadStatusComponent} from "../../chat/chat-read-status/chat-read-sta
 import {MockJob} from "../../../MockData/MockJob";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('JobsWithDetailComponent', () => {
+describe('JobsWithDetailComponent', () => {
   let component: JobsWithDetailComponent;
   let fixture: ComponentFixture<JobsWithDetailComponent>;
   let jobService: jasmine.SpyObj<JobService>;

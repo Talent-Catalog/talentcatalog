@@ -646,8 +646,31 @@ import {
   CostCommitEmployerComponent
 } from './components/job/intake/cost-commit-employer/cost-commit-employer.component';
 import {
-  VisaEligibilityAssessmentComponent
-} from './components/candidates/visa/visa-eligibility-assessment/visa-eligibility-assessment.component';
+  JobIntakeTabComponent
+} from './components/job/view/tab/job-intake-tab/job-intake-tab.component';
+import {JobBenefitsComponent} from './components/job/intake/job-benefits/job-benefits.component';
+import {
+  JobExperienceComponent
+} from './components/job/intake/job-experience/job-experience.component';
+import {JobEducationComponent} from './components/job/intake/job-education/job-education.component';
+import {JobSkillsComponent} from './components/job/intake/job-skills/job-skills.component';
+import {JobLocationComponent} from './components/job/intake/job-location/job-location.component';
+import {
+  JobLocationDetailsComponent
+} from './components/job/intake/job-location-details/job-location-details.component';
+import {JobSalaryComponent} from './components/job/intake/job-salary/job-salary.component';
+import {
+  OccupationCodeComponent
+} from './components/job/intake/occupation-code/occupation-code.component';
+import {MinSalaryComponent} from './components/job/intake/min-salary/min-salary.component';
+import {VisaPathwaysComponent} from './components/job/intake/visa-pathways/visa-pathways.component';
+import {
+  RecruitmentProcessComponent
+} from './components/job/intake/recruitment-process/recruitment-process.component';
+import {
+  CostCommitEmployerComponent
+} from './components/job/intake/cost-commit-employer/cost-commit-employer.component';
+import {JobLanguageComponent} from './components/job/intake/job-language/job-language.component';
 import {
   CandidateJobsTabComponent
 } from './components/candidates/view/tab/candidate-jobs-tab/candidate-jobs-tab.component';
@@ -1052,6 +1075,7 @@ import {JoiDataComponent} from './components/job/intake/joi-data/joi-data.compon
     JobIntakeTabComponent,
     CostCommitEmployerComponent,
     VisaEligibilityAssessmentComponent,
+    JobLanguageComponent,
     CandidateJobsTabComponent,
     ViewCandidateJobsComponent,
     ViewCandidateOppFromUrlComponent,

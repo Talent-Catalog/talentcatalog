@@ -22,7 +22,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {WorkPermitValidity, YesNoUnsure} from "../../../../model/candidate";
 
-fdescribe('WorkPermitComponent', () => {
+describe('WorkPermitComponent', () => {
   let component: WorkPermitComponent;
   let fixture: ComponentFixture<WorkPermitComponent>;
 

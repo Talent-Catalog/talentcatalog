@@ -16,7 +16,7 @@ import {MockJobOppIntake} from "../../../../../MockData/MockJobOppIntake";
 import {HttpClientModule} from "@angular/common/http";
 import {TranslateModule} from "@ngx-translate/core";
 
-fdescribe('JobIntakeTabComponent', () => {
+describe('JobIntakeTabComponent', () => {
   let component: JobIntakeTabComponent;
   let fixture: ComponentFixture<JobIntakeTabComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthenticationService>;

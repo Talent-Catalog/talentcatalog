@@ -25,7 +25,7 @@ const mockDataRow: DataRow = {
 };
 const mockChartType: ChartType = 'bar'; // or any valid ChartType
 
-fdescribe('StatReport Interface', () => {
+describe('StatReport Interface', () => {
   it('should have a name property of type string', () => {
     const statReport: StatReport = {
       name: 'Sample Report',

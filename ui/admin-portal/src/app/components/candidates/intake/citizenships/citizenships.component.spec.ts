@@ -24,7 +24,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateCitizenshipCardComponent} from "./card/candidate-citizenship-card.component";
 
-fdescribe('CitizenshipsComponent', () => {
+describe('CitizenshipsComponent', () => {
   let component: CitizenshipsComponent;
   let fixture: ComponentFixture<CitizenshipsComponent>;
 

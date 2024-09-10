@@ -14,7 +14,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {MockUser} from "../../../MockData/MockUser";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 
-fdescribe('ViewPostComponent', () => {
+describe('ViewPostComponent', () => {
   let component: ViewPostComponent;
   let fixture: ComponentFixture<ViewPostComponent>;
   let reactionServiceSpy: jasmine.SpyObj<ReactionService>;

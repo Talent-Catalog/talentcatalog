@@ -7,7 +7,7 @@ import {MOCK_HELP_LINK} from "../../MockData/MockHelpLink";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {SearchHelpLinkRequest} from "../../model/help-link";
 
-fdescribe('HelpComponent', () => {
+describe('HelpComponent', () => {
   let component: HelpComponent;
   let fixture: ComponentFixture<HelpComponent>;
   let helpLinkService: jasmine.SpyObj<HelpLinkService>;

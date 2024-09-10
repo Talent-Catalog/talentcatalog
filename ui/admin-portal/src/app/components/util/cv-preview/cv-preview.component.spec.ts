@@ -7,7 +7,7 @@ import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {SafePipe} from "../../../pipes/safe.pipe";
 
-fdescribe('CvPreviewComponent', () => {
+describe('CvPreviewComponent', () => {
   let component: CvPreviewComponent;
   let fixture: ComponentFixture<CvPreviewComponent>;
   const mockCandidate = new MockCandidate();

@@ -22,7 +22,7 @@ import {Router} from '@angular/router';
 import {AuthenticationService} from './authentication.service';
 import {ErrorInterceptor} from './error.interceptor';
 
-fdescribe('ErrorInterceptor', () => {
+describe('ErrorInterceptor', () => {
   let interceptor: ErrorInterceptor;
   let httpTestingController: HttpTestingController;
   let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;

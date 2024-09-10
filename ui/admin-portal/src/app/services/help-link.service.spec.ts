@@ -22,7 +22,7 @@ import {SearchHelpLinkRequest, UpdateHelpLinkRequest, HelpLink} from '../model/h
 import {SearchResults } from '../model/search-results';
 import {MockJob} from "../MockData/MockJob";
 
-fdescribe('HelpLinkService', () => {
+describe('HelpLinkService', () => {
   let service: HelpLinkService;
   let httpTestingController: HttpTestingController;
   const apiUrl = `${environment.apiUrl}/help-link`;

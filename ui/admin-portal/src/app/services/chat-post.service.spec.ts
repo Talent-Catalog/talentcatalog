@@ -21,7 +21,7 @@ import {ChatPost} from '../model/chat';
 import {UrlDto} from '../model/url-dto';
 import {environment} from '../../environments/environment';
 
-fdescribe('ChatPostService', () => {
+describe('ChatPostService', () => {
   let service: ChatPostService;
   let httpMock: HttpTestingController;
 

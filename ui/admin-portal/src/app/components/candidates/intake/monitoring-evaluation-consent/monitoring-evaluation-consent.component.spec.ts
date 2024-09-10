@@ -22,7 +22,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('MonitoringEvaluationConsentComponent', () => {
+describe('MonitoringEvaluationConsentComponent', () => {
   let component: MonitoringEvaluationConsentComponent;
   let fixture: ComponentFixture<MonitoringEvaluationConsentComponent>;
 

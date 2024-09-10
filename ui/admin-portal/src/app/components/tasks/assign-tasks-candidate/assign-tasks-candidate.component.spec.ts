@@ -25,7 +25,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 
-fdescribe('AssignTasksCandidateComponent', () => {
+describe('AssignTasksCandidateComponent', () => {
   let component: AssignTasksCandidateComponent;
   let fixture: ComponentFixture<AssignTasksCandidateComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;

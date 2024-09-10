@@ -24,7 +24,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateIntakeData, IntRecruitReason, LeftHomeReason} from "../../../../model/candidate";
 
-fdescribe('LeftHomeReasonComponent', () => {
+describe('LeftHomeReasonComponent', () => {
   let component: LeftHomeReasonComponent;
   let fixture: ComponentFixture<LeftHomeReasonComponent>;
   const mockCandidateIntakeData: CandidateIntakeData = {

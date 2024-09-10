@@ -23,7 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {Occupation} from "../../../../model/occupation";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateOccupationComponent', () => {
+describe('CreateOccupationComponent', () => {
   let component: CreateOccupationComponent;
   let fixture: ComponentFixture<CreateOccupationComponent>;
   let occupationServiceSpy: jasmine.SpyObj<OccupationService>;

@@ -20,7 +20,7 @@ import {getExternalHref} from "./url";
 import {Environment} from "../services/env.service";
 import {environment} from "../../environments/environment";
 
-fdescribe('getExternalHref', () => {
+describe('getExternalHref', () => {
   let routerMock: jasmine.SpyObj<Router>;
   let locationMock: jasmine.SpyObj<Location>;
 

@@ -36,7 +36,7 @@ import {UpdatedByComponent} from "../../../../../../util/user/updated-by/updated
 import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidateVisaJobCheck} from "../../../../../../../MockData/MockCandidateVisaCheck";
 
-fdescribe('VisaJobCheckAuComponent', () => {
+describe('VisaJobCheckAuComponent', () => {
   let component: VisaJobCheckAuComponent;
   let fixture: ComponentFixture<VisaJobCheckAuComponent>;
   let candidateEducationService: jasmine.SpyObj<CandidateEducationService>;

@@ -23,7 +23,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnemployedOther} from "../../../../model/candidate";
 
-fdescribe('WorkStatusComponent', () => {
+describe('WorkStatusComponent', () => {
   let component: WorkStatusComponent;
   let fixture: ComponentFixture<WorkStatusComponent>;
 

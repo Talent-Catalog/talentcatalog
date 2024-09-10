@@ -25,7 +25,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {SearchUsersComponent} from "./users/search-users.component";
 
-fdescribe('SettingsComponent', () => {
+describe('SettingsComponent', () => {
   let component: SettingsComponent;
   let fixture: ComponentFixture<SettingsComponent>;
   let authService: jasmine.SpyObj<AuthorizationService>;

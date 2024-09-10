@@ -19,7 +19,7 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {CandidateSourceResultsCacheService, CachedSourceResults} from './candidate-source-results-cache.service';
 import {CandidateSource} from '../model/base';
 
-fdescribe('CandidateSourceResultsCacheService', () => {
+describe('CandidateSourceResultsCacheService', () => {
   let service: CandidateSourceResultsCacheService;
   let localStorageService: jasmine.SpyObj<LocalStorageService>;
 

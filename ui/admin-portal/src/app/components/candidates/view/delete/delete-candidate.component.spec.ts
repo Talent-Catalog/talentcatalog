@@ -27,7 +27,7 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidatePipe} from "../../../../pipes/candidate.pipe";
 import {of} from "rxjs";
 
-fdescribe('DeleteCandidateComponent', () => {
+describe('DeleteCandidateComponent', () => {
   let component: DeleteCandidateComponent;
   let fixture: ComponentFixture<DeleteCandidateComponent>;
   let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;

@@ -25,7 +25,7 @@ import {SavedListService} from "../../../../services/saved-list.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockSavedList} from "../../../../MockData/MockSavedList";
 
-fdescribe('EditExternalLinkComponent', () => {
+describe('EditExternalLinkComponent', () => {
   let component: EditExternalLinkComponent;
   let fixture: ComponentFixture<EditExternalLinkComponent>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;

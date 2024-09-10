@@ -24,7 +24,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {AvailImmediateReason, YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('AvailImmediateComponent', () => {
+describe('AvailImmediateComponent', () => {
   let component: AvailImmediateComponent;
   let fixture: ComponentFixture<AvailImmediateComponent>;
   let fb: FormBuilder;

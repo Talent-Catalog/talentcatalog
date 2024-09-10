@@ -29,7 +29,7 @@ import {
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
 
-fdescribe('Candidate Utility Functions', () => {
+describe('Candidate Utility Functions', () => {
 
   let router: Router;
   let location: Location;

@@ -24,7 +24,7 @@ import {SearchTaskRequest} from '../model/base';
 import {MockJob} from "../MockData/MockJob";
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('TaskService', () => {
+describe('TaskService', () => {
   let service: TaskService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/task';

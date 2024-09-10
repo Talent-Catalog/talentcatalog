@@ -7,7 +7,7 @@ import {YesNoUnsure} from "../model/candidate";
 import {MockJob} from "../MockData/MockJob";
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('CandidateDestinationService', () => {
+describe('CandidateDestinationService', () => {
   let service: CandidateDestinationService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-destination';

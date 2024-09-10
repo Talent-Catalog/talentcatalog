@@ -18,7 +18,7 @@ import {User} from "./user";
 import {Occupation} from "./occupation";
 import {CandidateOccupation} from "./candidate-occupation";
 
-fdescribe('CandidateOccupation Model', () => {
+describe('CandidateOccupation Model', () => {
   let user1: User;
   let user2: User;
   let occupation: Occupation;

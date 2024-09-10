@@ -20,7 +20,7 @@ import {RoleGuardService} from './role-guard.service';
 import {AuthorizationService} from './authorization.service';
 import {Role} from "../model/user";
 
-fdescribe('RoleGuardService', () => {
+describe('RoleGuardService', () => {
   let service: RoleGuardService;
   let authService: jasmine.SpyObj<AuthorizationService>;
   let router: jasmine.SpyObj<Router>;

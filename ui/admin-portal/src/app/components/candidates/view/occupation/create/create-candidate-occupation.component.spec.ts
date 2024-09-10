@@ -25,7 +25,7 @@ import {OccupationService} from "../../../../../services/occupation.service";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateCandidateOccupationComponent', () => {
+describe('CreateCandidateOccupationComponent', () => {
   let component: CreateCandidateOccupationComponent
   let fixture: ComponentFixture<CreateCandidateOccupationComponent>;
   let mockActiveModal: any;

@@ -20,7 +20,7 @@ import {ReactionService, AddReactionRequest} from './reaction.service';
 import {Reaction} from '../model/reaction';
 import {environment} from '../../environments/environment';
 
-fdescribe('ReactionService', () => {
+describe('ReactionService', () => {
   let service: ReactionService;
   let httpMock: HttpTestingController;
   const displayUser = {
@@ -38,7 +38,7 @@ fdescribe('ReactionService', () => {
   });
 
   afterEach(() => {
-    httpMock.verify(); 
+    httpMock.verify();
   });
 
   it('should be created', () => {

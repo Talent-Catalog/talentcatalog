@@ -12,7 +12,7 @@ import {of} from "rxjs";
 import {MockSavedSearch} from "../../../../../MockData/MockSavedSearch";
 import {JobPrepSuggestedSearches} from "../../../../../model/job-prep-item";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
-fdescribe('ViewJobSuggestedSearchesComponent', () => {
+describe('ViewJobSuggestedSearchesComponent', () => {
   let component: ViewJobSuggestedSearchesComponent;
   let fixture: ComponentFixture<ViewJobSuggestedSearchesComponent>;
   let jobService: jasmine.SpyObj<JobService>;

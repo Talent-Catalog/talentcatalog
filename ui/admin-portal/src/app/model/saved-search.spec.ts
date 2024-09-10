@@ -26,7 +26,7 @@ import {
 import {CandidateSource, HasId, indexOfHasId} from "./base";
 import {SearchCandidateRequest} from "./search-candidate-request";
 
-fdescribe('SavedSearch Utilities', () => {
+describe('SavedSearch Utilities', () => {
   let location: Location;
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ fdescribe('SavedSearch Utilities', () => {
     location = jasmine.createSpyObj('Location', ['path']);
   });
 
-  fdescribe('Navigation Functions', () => {
+  describe('Navigation Functions', () => {
     let savedSearch: SavedSearch;
     let candidateSource: CandidateSource;
 
@@ -71,7 +71,7 @@ fdescribe('SavedSearch Utilities', () => {
 
   });
 
-  fdescribe('Type Checking and Breadcrumbs', () => {
+  describe('Type Checking and Breadcrumbs', () => {
     let savedSearch: SavedSearch;
     let candidateSource: CandidateSource;
 
@@ -115,7 +115,7 @@ fdescribe('SavedSearch Utilities', () => {
     });
   });
 
-  fdescribe('Utility Functions', () => {
+  describe('Utility Functions', () => {
     let hasIds: HasId[];
 
     beforeEach(() => {

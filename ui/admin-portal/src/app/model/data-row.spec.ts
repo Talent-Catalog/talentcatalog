@@ -16,7 +16,7 @@
 
 import {DataRow} from "./data-row";
 
-fdescribe('DataRow interface', () => {
+describe('DataRow interface', () => {
   it('should create a DataRow instance', () => {
     const dataRow: DataRow = {
       label: 'Example Label',

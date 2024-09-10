@@ -20,7 +20,7 @@ import {S3HelperService} from './s3-helper.service';
 import {S3UploadParams} from '../model/s3-upload-params';
 import {environment} from '../../environments/environment';
 
-fdescribe('S3HelperService', () => {
+describe('S3HelperService', () => {
   let service: S3HelperService;
   let httpMock: HttpTestingController;
 

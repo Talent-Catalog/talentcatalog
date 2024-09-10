@@ -21,7 +21,7 @@ interface DummyResult {
   name: string;
 }
 
-fdescribe('SearchResults', () => {
+describe('SearchResults', () => {
   let searchResults: SearchResults<DummyResult>;
 
   beforeEach(() => {

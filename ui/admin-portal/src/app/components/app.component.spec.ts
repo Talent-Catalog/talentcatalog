@@ -34,7 +34,7 @@ class AuthenticationServiceStub {
 }
 
 // Test suite declaration
-fdescribe('AppComponent', () => {
+describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
   let authService: AuthenticationServiceStub;

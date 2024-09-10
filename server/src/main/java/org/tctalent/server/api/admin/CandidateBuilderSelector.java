@@ -196,13 +196,13 @@ public class CandidateBuilderSelector {
             .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter, type))
             .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto(type))
             .add("candidateExams", examsDto())
+            .add("candidateOpportunities", candidateOpportunityDto(type))
             .add("miniIntakeCompletedDate")
             .add("fullIntakeCompletedDate")
             ;
 
             if (!DtoType.PREVIEW.equals(type)) {
                 builder
-                    .add("candidateOpportunities", candidateOpportunityDto())
                     .add("candidateProperties", candidatePropertyDto())
                     .add("shareableCv", candidateAttachmentDto(userPropertyFilter, type))
                     .add("shareableDoc", candidateAttachmentDto(userPropertyFilter, type))
@@ -256,30 +256,37 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder candidateOpportunityDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("sfId")
-            .add("candidate", shortCandidateDto())
-            .add("closingComments")
-            .add("closingCommentsForCandidate")
-            .add("employerFeedback")
+    private DtoBuilder candidateOpportunityDto(DtoType type) {
+        final DtoBuilder builder = new DtoBuilder()
+            .add("id")
+            .add("sfId")
             .add("jobOpp", jobDto())
+            .add("candidate", shortCandidateDto())
             .add("name")
+            .add("stage")
             .add("nextStep")
             .add("nextStepDueDate")
-            .add("lastActiveStage")
-            .add("stage")
-            .add("createdBy", userDto())
-            .add("createdDate")
-            .add("updatedBy", userDto())
-            .add("updatedDate")
-            .add("relocatingDependantIds")
             ;
+
+        if (!DtoType.PREVIEW.equals(type)) {
+            builder
+                .add("closingComments")
+                .add("closingCommentsForCandidate")
+                .add("employerFeedback")
+                .add("lastActiveStage")
+                .add("createdBy", userDto())
+                .add("createdDate")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
+                .add("relocatingDependantIds")
+            ;
+        }
+        return builder;
     }
 
     private DtoBuilder shortCandidateDto() {
         return new DtoBuilder()
+            .add("id")
             .add("candidateNumber")
             ;
     }

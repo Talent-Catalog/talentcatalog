@@ -20,7 +20,7 @@ import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
 import {JwtInterceptor} from './jwt.interceptor';
 import {AuthenticationService} from './authentication.service';
 
-fdescribe('JwtInterceptor', () => {
+describe('JwtInterceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
   let authServiceSpy: jasmine.SpyObj<AuthenticationService>;

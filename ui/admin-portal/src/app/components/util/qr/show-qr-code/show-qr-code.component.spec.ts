@@ -18,7 +18,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 
-fdescribe('ShowQrCodeComponent', () => {
+describe('ShowQrCodeComponent', () => {
   let component: ShowQrCodeComponent;
   let fixture: ComponentFixture<ShowQrCodeComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;

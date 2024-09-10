@@ -25,7 +25,7 @@ import {ChatPost, CreateChatRequest, JobChat, JobChatType, JobChatUserInfo} from
 import {Message} from '@stomp/stompjs';
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('ChatService', () => {
+describe('ChatService', () => {
   let service: ChatService;
   let httpMock: HttpTestingController;
   let rxStompServiceMock: jasmine.SpyObj<RxStompService>;

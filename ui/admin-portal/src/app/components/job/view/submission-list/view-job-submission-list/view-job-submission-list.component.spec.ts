@@ -17,7 +17,7 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {RouterTestingModule} from "@angular/router/testing";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockJob} from "../../../../../MockData/MockJob";
-fdescribe('ViewJobSubmissionListComponent', () => {
+describe('ViewJobSubmissionListComponent', () => {
   let component: ViewJobSubmissionListComponent;
   let fixture: ComponentFixture<ViewJobSubmissionListComponent>;
    beforeEach(waitForAsync(() => {

@@ -28,7 +28,7 @@ import {MockUser} from "../../../MockData/MockUser";
 import {SearchResults} from "../../../model/search-results";
 import {Occupation} from "../../../model/occupation";
 
-fdescribe('SearchOccupationsComponent', () => {
+describe('SearchOccupationsComponent', () => {
   let component: SearchOccupationsComponent;
   let fixture: ComponentFixture<SearchOccupationsComponent>;
   let occupationServiceSpy: jasmine.SpyObj<OccupationService>;

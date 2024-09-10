@@ -27,7 +27,7 @@ import {SearchResults} from "../../../model/search-results";
 import {EducationLevel} from "../../../model/education-level";
 import {Job} from "../../../model/job";
 
-fdescribe('JoblinkComponent', () => {
+describe('JoblinkComponent', () => {
   let component: JoblinkComponent;
   let fixture: ComponentFixture<JoblinkComponent>;
   let jobService: jasmine.SpyObj<JobService>;
@@ -67,6 +67,7 @@ fdescribe('JoblinkComponent', () => {
 
   it('should initialize correctly', () => {
     component.jobId = 1;
+    component.currentJobName = 'New JOB';
 
     component.ngOnChanges({});
 

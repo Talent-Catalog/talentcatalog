@@ -34,7 +34,7 @@ import {CandidateVisa} from "../../../../../model/candidate";
 import {Country} from "../../../../../model/country";
 import {ExportPdfComponent} from "../../../../util/export-pdf/export-pdf.component";
 
-fdescribe('CandidateVisaTabComponent', () => {
+describe('CandidateVisaTabComponent', () => {
   let component: CandidateVisaTabComponent;
   let fixture: ComponentFixture<CandidateVisaTabComponent>;
   let candidateServiceMock: jasmine.SpyObj<CandidateService>;

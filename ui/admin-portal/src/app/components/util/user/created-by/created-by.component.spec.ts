@@ -20,14 +20,16 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {UserPipe} from "../user.pipe";
 import {DatePipe} from "@angular/common";
 import {MockUser} from "../../../../MockData/MockUser";
-fdescribe('CreatedByComponent', () => {
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+describe('CreatedByComponent', () => {
   let component: CreatedByComponent;
   let fixture: ComponentFixture<CreatedByComponent>;
   let userPipe: UserPipe;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CreatedByComponent,UserPipe],
-      providers:[DatePipe]
+      providers:[DatePipe],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });
 

@@ -25,7 +25,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {VaccinationStatus, YesNo} from "../../../../model/candidate";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-fdescribe('CovidVaccinationComponent', () => {
+describe('CovidVaccinationComponent', () => {
   let component: CovidVaccinationComponent;
   let fixture: ComponentFixture<CovidVaccinationComponent>;
 

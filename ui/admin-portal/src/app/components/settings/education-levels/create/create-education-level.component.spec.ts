@@ -23,7 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {EducationLevel} from "../../../../model/education-level";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateEducationLevelComponent', () => {
+describe('CreateEducationLevelComponent', () => {
   let component: CreateEducationLevelComponent;
   let fixture: ComponentFixture<CreateEducationLevelComponent>;
   let educationLevelServiceSpy: jasmine.SpyObj<EducationLevelService>;

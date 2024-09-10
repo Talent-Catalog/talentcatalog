@@ -19,7 +19,7 @@ import {NclcScoreValidationComponent} from "./nclc-score-validation.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 
-fdescribe('NclcScoreValidationComponent', () => {
+describe('NclcScoreValidationComponent', () => {
   let component: NclcScoreValidationComponent;
   let fixture: ComponentFixture<NclcScoreValidationComponent>;
 

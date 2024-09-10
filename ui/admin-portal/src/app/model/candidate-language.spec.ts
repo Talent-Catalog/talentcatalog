@@ -20,7 +20,7 @@ import {LanguageLevel} from './language-level';
 import {Candidate} from './candidate';
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('CandidateLanguage Interface', () => {
+describe('CandidateLanguage Interface', () => {
   it('should create a valid CandidateLanguage object', () => {
     const language: Language = {
       id: 1,

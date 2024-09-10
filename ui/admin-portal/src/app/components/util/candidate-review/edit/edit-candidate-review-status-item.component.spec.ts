@@ -28,7 +28,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {UpdatedByComponent} from "../../user/updated-by/updated-by.component";
 
-fdescribe('EditCandidateReviewStatusItemComponent', () => {
+describe('EditCandidateReviewStatusItemComponent', () => {
   let component: EditCandidateReviewStatusItemComponent;
   let fixture: ComponentFixture<EditCandidateReviewStatusItemComponent>;
   let candidateReviewStatusService: jasmine.SpyObj<CandidateReviewStatusService>;

@@ -30,7 +30,7 @@ import {CreateExternalLinkComponent} from "./create/create-external-link.compone
 import {EditExternalLinkComponent} from "./edit/edit-external-link.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
-fdescribe('SearchExternalLinksComponent', () => {
+describe('SearchExternalLinksComponent', () => {
   let component: SearchExternalLinksComponent;
   let fixture: ComponentFixture<SearchExternalLinksComponent>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;

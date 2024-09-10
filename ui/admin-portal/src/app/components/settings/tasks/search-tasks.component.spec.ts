@@ -27,7 +27,7 @@ import {Task} from "../../../model/task";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('SearchTasksComponent', () => {
+describe('SearchTasksComponent', () => {
   let component: SearchTasksComponent;
   let fixture: ComponentFixture<SearchTasksComponent>;
   let taskServiceSpy: jasmine.SpyObj<TaskService>;

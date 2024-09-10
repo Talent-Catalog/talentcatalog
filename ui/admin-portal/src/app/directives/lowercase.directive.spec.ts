@@ -29,7 +29,7 @@ class TestComponent {
   inputValue = '';
 }
 
-fdescribe('LowercaseDirective', () => {
+describe('LowercaseDirective', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
   let inputEl: DebugElement;

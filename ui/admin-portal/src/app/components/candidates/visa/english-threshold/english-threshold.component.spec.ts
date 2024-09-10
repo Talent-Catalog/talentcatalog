@@ -22,7 +22,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('EnglishThresholdComponent', () => {
+describe('EnglishThresholdComponent', () => {
   let component: EnglishThresholdComponent;
   let fixture: ComponentFixture<EnglishThresholdComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;

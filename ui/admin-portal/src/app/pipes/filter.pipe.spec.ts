@@ -16,7 +16,7 @@
 
 import {FilterPipe} from './filter.pipe';
 
-fdescribe('FilterPipe', () => {
+describe('FilterPipe', () => {
   let pipe: FilterPipe;
 
   beforeEach(() => {

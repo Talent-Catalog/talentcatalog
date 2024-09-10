@@ -25,7 +25,7 @@ import {CandidateSource} from "../../../../model/base";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {of} from "rxjs";
 
-fdescribe('ShareableDocsComponent', () => {
+describe('ShareableDocsComponent', () => {
   let component: ShareableDocsComponent;
   let fixture: ComponentFixture<ShareableDocsComponent>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;

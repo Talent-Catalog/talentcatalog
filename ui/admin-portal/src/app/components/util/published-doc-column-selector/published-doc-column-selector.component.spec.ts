@@ -14,7 +14,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {DragulaModule, DragulaService} from "ng2-dragula";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
-fdescribe('PublishedDocColumnSelectorComponent', () => {
+describe('PublishedDocColumnSelectorComponent', () => {
   let component: PublishedDocColumnSelectorComponent;
   let fixture: ComponentFixture<PublishedDocColumnSelectorComponent>;
   let publishedDocColumnServiceSpy: jasmine.SpyObj<PublishedDocColumnService>;

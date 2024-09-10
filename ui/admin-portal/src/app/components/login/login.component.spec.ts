@@ -17,7 +17,7 @@ export class RouterLinkStubDirective {
   @Input('routerLink') linkParams: any;
 }
 
-fdescribe('LoginComponent', () => {
+describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let authenticationService: AuthenticationService;

@@ -30,7 +30,7 @@ import {SearchResults} from "../../../../model/search-results";
 import {UpdatedByComponent} from "../../../util/user/updated-by/updated-by.component";
 import {UserPipe} from "../../../util/user/user.pipe";
 
-fdescribe('ViewCandidateNoteComponent', () => {
+describe('ViewCandidateNoteComponent', () => {
   let component: ViewCandidateNoteComponent;
   let fixture: ComponentFixture<ViewCandidateNoteComponent>;
   let mockCandidateNoteService: jasmine.SpyObj<CandidateNoteService>;

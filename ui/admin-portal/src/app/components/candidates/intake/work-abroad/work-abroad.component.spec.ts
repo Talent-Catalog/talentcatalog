@@ -22,7 +22,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {YesNo} from "../../../../model/candidate";
 
-fdescribe('WorkAbroadComponent', () => {
+describe('WorkAbroadComponent', () => {
   let component: WorkAbroadComponent;
   let fixture: ComponentFixture<WorkAbroadComponent>;
 

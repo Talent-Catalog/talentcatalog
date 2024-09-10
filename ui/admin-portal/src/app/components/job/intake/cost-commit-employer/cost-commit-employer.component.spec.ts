@@ -6,7 +6,7 @@ import {NgxWigModule} from "ngx-wig";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TranslateModule} from "@ngx-translate/core";
 
-fdescribe('CostCommitEmployerComponent', () => {
+describe('CostCommitEmployerComponent', () => {
   let component: CostCommitEmployerComponent;
   let fixture: ComponentFixture<CostCommitEmployerComponent>;
 

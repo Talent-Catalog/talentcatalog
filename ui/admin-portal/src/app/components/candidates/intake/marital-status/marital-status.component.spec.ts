@@ -22,7 +22,7 @@ import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('MaritalStatusComponent', () => {
+describe('MaritalStatusComponent', () => {
   let component: MaritalStatusComponent;
   let fixture: ComponentFixture<MaritalStatusComponent>;
 

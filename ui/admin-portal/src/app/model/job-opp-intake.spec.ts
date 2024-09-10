@@ -16,7 +16,7 @@
 
 import {JobOppIntake} from "./job-opp-intake";
 
-fdescribe('JobOppIntake', () => {
+describe('JobOppIntake', () => {
   let intake: JobOppIntake;
 
   beforeEach(() => {

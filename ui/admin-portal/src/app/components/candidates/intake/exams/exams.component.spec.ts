@@ -23,7 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-fdescribe('ExamsComponent', () => {
+describe('ExamsComponent', () => {
   let component: ExamsComponent;
   let fixture: ComponentFixture<ExamsComponent>;
 

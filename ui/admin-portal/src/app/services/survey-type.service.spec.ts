@@ -20,7 +20,7 @@ import {SurveyTypeService} from './survey-type.service';
 import {SurveyType} from '../model/survey-type';
 import {environment} from '../../environments/environment';
 
-fdescribe('SurveyTypeService', () => {
+describe('SurveyTypeService', () => {
   let service: SurveyTypeService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/survey-type';

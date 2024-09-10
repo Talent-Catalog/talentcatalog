@@ -22,7 +22,7 @@ import {SearchResults} from '../model/search-results';
 import {SystemLanguage} from '../model/language';
 import {environment} from '../../environments/environment';
 
-fdescribe('OccupationService', () => {
+describe('OccupationService', () => {
   let service: OccupationService;
   let httpMock: HttpTestingController;
 

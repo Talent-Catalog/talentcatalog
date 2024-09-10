@@ -4,7 +4,7 @@ import {IneligiblePathwaysComponent} from './ineligible-pathways.component';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('IneligiblePathwaysComponent', () => {
+describe('IneligiblePathwaysComponent', () => {
   let component: IneligiblePathwaysComponent;
   let fixture: ComponentFixture<IneligiblePathwaysComponent>;
   let fb: FormBuilder;

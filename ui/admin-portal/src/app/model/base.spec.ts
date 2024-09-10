@@ -21,7 +21,7 @@ import {EMAIL_REGEX, findHasId, indexOfHasId, salesforceUrlRegExp} from "./base"
 import {MockUser} from "../MockData/MockUser";
 
 
-fdescribe('Miscellaneous Tests', () => {
+describe('Miscellaneous Tests', () => {
   let authenticationService: jasmine.SpyObj<AuthenticationService>;
   let mockUser: User;
 

@@ -20,7 +20,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('MilitaryServiceComponent', () => {
+describe('MilitaryServiceComponent', () => {
   let component: MilitaryServiceComponent;
   let fixture: ComponentFixture<MilitaryServiceComponent>;
   let fb: FormBuilder;

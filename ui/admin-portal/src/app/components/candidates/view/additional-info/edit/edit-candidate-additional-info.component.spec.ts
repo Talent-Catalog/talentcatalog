@@ -24,7 +24,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
 import {CreatedByComponent} from "../../../../util/user/created-by/created-by.component";
 
-fdescribe('EditCandidateAdditionalInfoComponent', () => {
+describe('EditCandidateAdditionalInfoComponent', () => {
   let component: EditCandidateAdditionalInfoComponent;
   let fixture: ComponentFixture<EditCandidateAdditionalInfoComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
