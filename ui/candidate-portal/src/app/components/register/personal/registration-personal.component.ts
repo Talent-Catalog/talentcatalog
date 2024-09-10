@@ -86,6 +86,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       yearOfArrival: [''],
       /* NATIONALITY */
       nationalityId: [null, Validators.required],
+      otherNationality: ['No', Validators.required],
       otherNationalityIds: [null],
       externalId: [null],
       externalIdSource: ['US Afghan Parolee Id'],
@@ -178,6 +179,10 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
     ].includes(country);
   }
 
+  get hasOtherNationality(): boolean {
+    return this.form.value.otherNationality === 'Yes';
+  }
+
   get nationality() {
     return this.form.value.nationalityId;
   }
@@ -186,7 +191,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
     return this.form.value.countryId;
   }
 
-  get hasUnhcr() {
+  get registeredWithUnhcr() {
    return this.form.value.unhcrRegistered === 'Yes';
   }
 

@@ -127,14 +127,33 @@
         <ng-select id="nationalityId" [formControlName]="'nationalityId'" [items]="countries" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
         </ng-select>
+        <p class="text-muted small">
+          {{ 'REGISTRATION.PERSONAL.NOTE.STATELESS' | translate }}
+        </p>
         <app-form-control-error [control]="form.controls.nationalityId"></app-form-control-error>
       </div>
     </div>
 
     <!-- OTHER NATIONALITIES -->
-    <div class="col-12">
+    <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="nationalityId">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
+        <label class="form-label" for="otherNationality">
+          {{ 'REGISTRATION.PERSONAL.LABEL.OTHER_NATIONALITY' | translate }} <sup>*</sup></label>
+        <ng-select id="otherNationality" class="custom" formControlName="otherNationality"
+                   [clearable]="false" [searchable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
+          <ng-option value="Yes">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
+          <ng-option value="No">{{ 'CONFIRMATION.NO' | translate }}</ng-option>
+          <ng-option value="Unsure">{{ 'CONFIRMATION.UNSURE' | translate }}</ng-option>
+        </ng-select>
+      </div>
+    </div>
+
+    <!-- OTHER NATIONALITIES -->
+    <div *ngIf="hasOtherNationality" class="col-12">
+      <div class="mb-3">
+        <label class="form-label" for="otherNationalityId">
+          {{ 'REGISTRATION.PERSONAL.LABEL.OTHER_NATIONALITIES' | translate }}</label>
         <ng-select id="otherNationalityId" [formControlName]="'otherNationalityIds'" multiple="true"
                    [items]="countries" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
@@ -172,7 +191,7 @@
     </div>
 
     <!-- REGISTRATION NUMBER -->
-    <div *ngIf="hasUnhcr && !languageService.isUsAfghan()" class="col-12 col-md-6" >
+    <div *ngIf="registeredWithUnhcr && !languageService.isUsAfghan()" class="col-12 col-md-6" >
       <div class="mb-3">
         <label class="form-label" for="unhcrNumber">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
         <input type="text" class="form-control" id="unhcrNumber" placeholder="" [formControlName]="'unhcrNumber'">
@@ -180,7 +199,7 @@
     </div>
 
     <!-- UNHCR REGISTRATION -->
-    <div *ngIf="hasUnhcr && !languageService.isUsAfghan()" class="col-12" >
+    <div *ngIf="registeredWithUnhcr && !languageService.isUsAfghan()" class="col-12" >
       <div class="mb-3">
         <label class="form-label" for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
         <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" [clearable]="false" [searchable]="false"
