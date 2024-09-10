@@ -145,14 +145,14 @@
           <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
         </button>
 
-        <button class="btn btn-sm btn-secondary" *ngIf="!isJobList() && isContentModifiable()"
+        <button class="btn btn-sm btn-secondary" *ngIf="!isSubmissionList() && isContentModifiable()"
                 [disabled]="!isSelection()"
                 (click)="removeSelectedCandidatesFromList()"
                 title="Remove selected candidates from list">
           Remove <i class="fas fa-user-check"></i>
         </button>
 
-        <button class="btn btn-sm btn-secondary" *ngIf="isJobList() && isSalesforceUpdatable()"
+        <button class="btn btn-sm btn-secondary" *ngIf="isSubmissionList() && isSalesforceUpdatable()"
                 [disabled]="!isSelection()"
                 (click)="closeSelectedOpportunities()"
                 title="Close selected candidate cases. Not removed from list but hidden unless 'Show closed cases' checkbox is checked.">
@@ -186,7 +186,7 @@
           <i class="fas fa-spinner fa-spin" *ngIf=importingFeedback></i>
           Feedback <i class="fas fa-globe"></i>
         </button>
-        <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
+        <button *ngIf="isSubmissionList() && isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
                 (click)="createUpdateSalesforce()"
                 title="Create or update selected candidate cases">
           <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
@@ -377,13 +377,13 @@
                       </a>
                     </li>
                     <li class="dropdown-divider"
-                        *ngIf="(!isJobList() && isContentModifiable()) || (isJobList() && isSalesforceUpdatable())"
+                        *ngIf="(!isSubmissionList() && isContentModifiable()) || (isSubmissionList() && isSalesforceUpdatable())"
                     ></li>
-                    <li *ngIf="!isJobList() && isContentModifiable()" ngbDropdownItem
+                    <li *ngIf="!isSubmissionList() && isContentModifiable()" ngbDropdownItem
                         (click)="removeCandidateFromList(candidate)">
                       Remove from list
                     </li>
-                    <li *ngIf="isJobList() && isSalesforceUpdatable()" ngbDropdownItem (click)="closeOpportunity(candidate)">
+                    <li *ngIf="isSubmissionList() && isSalesforceUpdatable()" ngbDropdownItem (click)="closeOpportunity(candidate)">
                       Close opportunity for this job
                     </li>
                   </ul>

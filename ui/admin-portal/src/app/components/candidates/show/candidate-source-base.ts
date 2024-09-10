@@ -33,7 +33,7 @@ import {
   CandidateSourceCandidateService
 } from "../../../services/candidate-source-candidate.service";
 import {isSavedSearch, SavedSearchGetRequest} from "../../../model/saved-search";
-import {isSavedList, SavedListGetRequest} from "../../../model/saved-list";
+import {isSavedList, isSubmissionList, SavedListGetRequest} from "../../../model/saved-list";
 import {Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {AuthorizationService} from "../../../services/authorization.service";
@@ -257,6 +257,10 @@ export class CandidateSourceBaseComponent {
 
   isJobList(): boolean {
     return isSavedList(this.candidateSource) && this.candidateSource.sfJobOpp != null;
+  }
+
+  isSubmissionList(): boolean {
+    return isSubmissionList(this.candidateSource);
   }
 
   isShowStage(): boolean {

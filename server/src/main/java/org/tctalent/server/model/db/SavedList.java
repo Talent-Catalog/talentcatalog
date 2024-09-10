@@ -16,13 +16,9 @@
 
 package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.service.db.CandidateSavedListService;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,9 +31,12 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.service.db.CandidateSavedListService;
 
 /**
  * There are two kinds of SavedList:
@@ -165,6 +164,8 @@ public class SavedList extends AbstractCandidateSource {
     private String tbbShortName;
 
     /**
+     * If true defines the list as the "submission list" for a job.
+     * <p/>
      * If true, this list is associated with a "registered" job. See the Angular "New Job" menu
      * item. A link to the job record on Salesforce is in {@link #getSfJobOpp()}.
      * There should only be one list registered to a particular job, as defined by its sfJobOpp.
