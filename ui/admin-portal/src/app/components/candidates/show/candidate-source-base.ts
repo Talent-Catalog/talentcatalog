@@ -21,11 +21,7 @@ import {
 import {ModalDismissReasons, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {Directive, Input} from "@angular/core";
-import {
-  CandidateSource,
-  defaultReviewStatusFilter,
-  DtoType
-} from "../../../model/base";
+import {CandidateSource, defaultReviewStatusFilter, DtoType} from "../../../model/base";
 import {CandidateFieldInfo} from "../../../model/candidate-field-info";
 import {SearchResults} from "../../../model/search-results";
 import {Candidate} from "../../../model/candidate";
@@ -225,6 +221,12 @@ export class CandidateSourceBaseComponent {
     }
   }
 
+  isCvDropDownAvailable(): boolean {
+    //Employer partners do not see a Cv drop down option in candidate sources.
+    //They can only see CV's (if authorized) in the candidate display
+    return !this.authorizationService.isEmployerPartner();
+  }
+
   isCandidateNameViewable(): boolean {
     return this.authorizationService.canViewCandidateName();
   }
@@ -237,8 +239,12 @@ export class CandidateSourceBaseComponent {
     return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
   }
 
+  isExportable(): boolean {
+    return this.authorizationService.canExportFromSource();
+  }
+
   isImportable(): boolean {
-    return !this.authorizationService.isReadOnly() && isSavedList(this.candidateSource);
+    return isSavedList(this.candidateSource) && this.authorizationService.canImportToList();
   }
 
   isPublishable(): boolean {
@@ -278,15 +284,24 @@ export class CandidateSourceBaseComponent {
   }
 
   isSalesforceUpdatable(): boolean {
-    return !isSavedSearch(this.candidateSource) && this.authorizationService.canUpdateSalesforce();
+    //Employer partners can't update Salesforce from a candidate source - only from each
+    //candidate's display (assuming that they authorized to).
+    return !isSavedSearch(this.candidateSource) && !this.authorizationService.isEmployerPartner()
+      && this.authorizationService.canUpdateSalesforce() && this.isContentModifiable();
   }
 
   canAssignTasks() {
     return this.authorizationService.canAssignTask();
   }
 
+  canUpdateStatuses() {
+    return this.isContentModifiable() && this.authorizationService.canUpdateCandidateStatus();
+  }
+
   canResolveTasks(): boolean {
-    return isSavedList(this.candidateSource) && this.authorizationService.canManageCandidateTasks();
+    //Employer partners can't resolve outstanding candidate tasks from a list
+    return isSavedList(this.candidateSource) && !this.authorizationService.isEmployerPartner()
+    && this.authorizationService.canManageCandidateTasks();
   }
 
   isShareable(): boolean {
