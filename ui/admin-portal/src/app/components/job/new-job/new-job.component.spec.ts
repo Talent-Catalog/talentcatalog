@@ -20,7 +20,7 @@ import {MockSavedList} from "../../../MockData/MockSavedList";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 
 
-fdescribe('NewJobComponent', () => {
+describe('NewJobComponent', () => {
   let component: NewJobComponent;
   let fixture: ComponentFixture<NewJobComponent>;
 

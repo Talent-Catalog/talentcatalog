@@ -11,7 +11,7 @@ import {HttpClient} from '@angular/common/http';
 import {config_test} from "../../config-test";
 import {EncodedQrImage} from "../util/qr";
 
-fdescribe('AuthenticationService', () => {
+describe('AuthenticationService', () => {
   let service: AuthenticationService;
   let httpMock: HttpTestingController;
   let localStorageService: jasmine.SpyObj<LocalStorageService>;

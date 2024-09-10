@@ -32,7 +32,7 @@ import {LocalStorageModule} from "angular-2-local-storage";
 import {ReactiveFormsModule} from "@angular/forms";
 
 
-fdescribe('CandidateSourceResultsComponent', () => {
+describe('CandidateSourceResultsComponent', () => {
   let component: CandidateSourceResultsComponent;
   let fixture: ComponentFixture<CandidateSourceResultsComponent>;
   beforeEach(async () => {

@@ -29,7 +29,7 @@ import {of, throwError} from "rxjs";
 import {CandidateJobExperience} from "../../../../../model/candidate-job-experience";
 import {SearchResults} from "../../../../../model/search-results";
 
-fdescribe('ViewCandidateJobExperienceComponent', () => {
+describe('ViewCandidateJobExperienceComponent', () => {
   let component: ViewCandidateJobExperienceComponent;
   let fixture: ComponentFixture<ViewCandidateJobExperienceComponent>;
   let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;

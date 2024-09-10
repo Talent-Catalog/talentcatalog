@@ -5,7 +5,7 @@ import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
 
-fdescribe('DatePickerComponent', () => {
+describe('DatePickerComponent', () => {
   let component: DatePickerComponent;
   let fixture: ComponentFixture<DatePickerComponent>;
   let control: AbstractControl;

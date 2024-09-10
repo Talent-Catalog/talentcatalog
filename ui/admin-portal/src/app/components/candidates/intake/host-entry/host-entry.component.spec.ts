@@ -24,7 +24,7 @@ import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {HostChallengesComponent} from "../host-challenges/host-challenges.component";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-fdescribe('HostEntryComponent', () => {
+describe('HostEntryComponent', () => {
   let component: HostEntryComponent;
   let fixture: ComponentFixture<HostEntryComponent>;
 

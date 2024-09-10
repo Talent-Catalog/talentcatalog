@@ -33,7 +33,7 @@ import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {RouterTestingModule} from "@angular/router/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 
-fdescribe('ListHomeComponent', () => {
+describe('ListHomeComponent', () => {
   let component: ListHomeComponent;
   let fixture: ComponentFixture<ListHomeComponent>;
   let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;

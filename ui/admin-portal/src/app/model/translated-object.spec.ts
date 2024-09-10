@@ -16,7 +16,7 @@
 
 import {TranslatedObject} from "./translated-object";
 
-fdescribe('TranslatedObject Interface', () => {
+describe('TranslatedObject Interface', () => {
   it('should create an instance of TranslatedObject', () => {
     const translatedObject: TranslatedObject = {
       id: 1,

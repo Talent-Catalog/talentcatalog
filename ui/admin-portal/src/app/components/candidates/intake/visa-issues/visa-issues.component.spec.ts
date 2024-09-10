@@ -22,7 +22,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnsure} from "../../../../model/candidate";
 
-fdescribe('VisaIssuesComponent', () => {
+describe('VisaIssuesComponent', () => {
   let component: VisaIssuesComponent;
   let fixture: ComponentFixture<VisaIssuesComponent>;
 

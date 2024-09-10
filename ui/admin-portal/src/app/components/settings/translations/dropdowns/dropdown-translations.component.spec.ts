@@ -30,7 +30,7 @@ import {SearchResults} from "../../../../model/search-results";
 import {TranslatedObject} from "../../../../model/translated-object";
 import {Translation} from "../../../../model/translation";
 
-fdescribe('DropdownTranslationsComponent', () => {
+describe('DropdownTranslationsComponent', () => {
   let component: DropdownTranslationsComponent;
   let fixture: ComponentFixture<DropdownTranslationsComponent>;
   let languageServiceSpy: jasmine.SpyObj<LanguageService>;

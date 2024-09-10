@@ -22,7 +22,7 @@ import {environment} from '../../environments/environment';
 import {SearchResults} from '../model/search-results';
 import {SystemLanguage} from '../model/language';
 
-fdescribe('EducationMajorService', () => {
+describe('EducationMajorService', () => {
   let service: EducationMajorService;
   let httpMock: HttpTestingController;
 

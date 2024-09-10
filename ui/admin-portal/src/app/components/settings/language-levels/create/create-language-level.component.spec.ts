@@ -24,7 +24,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {LanguageLevel} from "../../../../model/language-level";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateLanguageLevelComponent', () => {
+describe('CreateLanguageLevelComponent', () => {
   let component: CreateLanguageLevelComponent;
   let fixture: ComponentFixture<CreateLanguageLevelComponent>;
   let languageLevelServiceSpy: jasmine.SpyObj<LanguageLevelService>;

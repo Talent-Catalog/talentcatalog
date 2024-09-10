@@ -23,7 +23,7 @@ import {
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 
-fdescribe('VisaCheckCaComponent', () => {
+describe('VisaCheckCaComponent', () => {
   let component: VisaCheckCaComponent;
   let fixture: ComponentFixture<VisaCheckCaComponent>;
   const mockCandidate = new MockCandidate();

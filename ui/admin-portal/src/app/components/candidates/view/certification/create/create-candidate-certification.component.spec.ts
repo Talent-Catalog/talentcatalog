@@ -26,7 +26,7 @@ import {CountryService} from "../../../../../services/country.service";
 import {NgbActiveModal, NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
 
-fdescribe('CreateCandidateCertificationComponent', () => {
+describe('CreateCandidateCertificationComponent', () => {
   let component: CreateCandidateCertificationComponent;
   let fixture: ComponentFixture<CreateCandidateCertificationComponent>;
   let candidateCertificationServiceSpy: jasmine.SpyObj<CandidateCertificationService>;

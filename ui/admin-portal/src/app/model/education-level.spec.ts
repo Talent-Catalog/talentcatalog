@@ -16,7 +16,7 @@
 
 import {EducationLevel} from "./education-level";
 
-fdescribe('EducationLevel interface', () => {
+describe('EducationLevel interface', () => {
   it('should create an EducationLevel instance', () => {
     const educationLevel: EducationLevel = {
       id: 1,

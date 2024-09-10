@@ -30,7 +30,7 @@ import {of, throwError} from "rxjs";
 import {MockJob} from "../../../../../../MockData/MockJob";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 
-fdescribe('EditCandidateJobExperienceComponent', () => {
+describe('EditCandidateJobExperienceComponent', () => {
   let component: EditCandidateJobExperienceComponent;
   let fixture: ComponentFixture<EditCandidateJobExperienceComponent>;
   let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;

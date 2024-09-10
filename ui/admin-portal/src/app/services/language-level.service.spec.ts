@@ -22,7 +22,7 @@ import {LanguageLevel} from '../model/language-level';
 import {SystemLanguage} from '../model/language';
 import {SearchResults} from '../model/search-results';
 
-fdescribe('LanguageLevelService', () => {
+describe('LanguageLevelService', () => {
   let service: LanguageLevelService;
   let httpMock: HttpTestingController;
 

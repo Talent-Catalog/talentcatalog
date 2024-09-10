@@ -27,7 +27,7 @@ import {EducationMajor} from "../../../model/education-major";
 import {of} from "rxjs";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
-fdescribe('SearchEducationMajorsComponent', () => {
+describe('SearchEducationMajorsComponent', () => {
   let component: SearchEducationMajorsComponent;
   let fixture: ComponentFixture<SearchEducationMajorsComponent>;
   let educationMajorService: jasmine.SpyObj<EducationMajorService>;

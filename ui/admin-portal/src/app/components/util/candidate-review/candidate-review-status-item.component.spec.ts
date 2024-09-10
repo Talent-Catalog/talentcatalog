@@ -23,7 +23,7 @@ import {
   EditCandidateReviewStatusItemComponent
 } from "./edit/edit-candidate-review-status-item.component";
 
-fdescribe('CandidateReviewStatusItemComponent', () => {
+describe('CandidateReviewStatusItemComponent', () => {
   let component: CandidateReviewStatusItemComponent;
   let fixture: ComponentFixture<CandidateReviewStatusItemComponent>;
   let modalService: jasmine.SpyObj<NgbModal>;

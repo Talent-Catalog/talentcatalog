@@ -329,7 +329,6 @@ export interface CandidateVisa {
   createdDate?: number;
   updatedBy?: User;
   updatedDate?: number;
-  visaEligibilityAssessment?: YesNo;
   pathwayAssessment?: YesNoUnsure;
   pathwayAssessmentNotes?: string;
   destinationFamily?: FamilyRelations;

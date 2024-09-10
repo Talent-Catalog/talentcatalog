@@ -28,7 +28,7 @@ import {
   mockCandidateIntakeData
 } from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 
-fdescribe('VisaCheckAuComponent', () => {
+describe('VisaCheckAuComponent', () => {
   let component: VisaCheckAuComponent;
   let fixture: ComponentFixture<VisaCheckAuComponent>;
   const mockCandidate = new MockCandidate();

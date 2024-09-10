@@ -31,7 +31,7 @@ import {ChangePasswordComponent} from "../../account/change-password/change-pass
 import {SearchResults} from "../../../model/search-results";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('SearchUsersComponent', () => {
+describe('SearchUsersComponent', () => {
   let component: SearchUsersComponent;
   let fixture: ComponentFixture<SearchUsersComponent>;
   let userServiceSpy: jasmine.SpyObj<UserService>;

@@ -29,7 +29,7 @@ import {CreateLanguageLevelComponent} from "./create/create-language-level.compo
 import {EditLanguageLevelComponent} from "./edit/edit-language-level.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
-fdescribe('SearchLanguageLevelsComponent', () => {
+describe('SearchLanguageLevelsComponent', () => {
   let component: SearchLanguageLevelsComponent;
   let fixture: ComponentFixture<SearchLanguageLevelsComponent>;
   let languageLevelServiceSpy: jasmine.SpyObj<LanguageLevelService>;

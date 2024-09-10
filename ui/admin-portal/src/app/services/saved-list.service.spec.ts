@@ -29,7 +29,7 @@ import {
 import {SearchResults} from "../model/search-results";
 import {MockSavedList} from "../MockData/MockSavedList";
 
-fdescribe('SavedListService', () => {
+describe('SavedListService', () => {
   let service: SavedListService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/saved-list';

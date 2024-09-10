@@ -17,7 +17,7 @@ import {CandidatePipe} from "./candidate.pipe";
 import {Candidate} from "../model/candidate";
 import {MockCandidate} from "../MockData/MockCandidate";
 
-fdescribe('CandidatePipe', () => {
+describe('CandidatePipe', () => {
   let pipe: CandidatePipe;
 
   beforeEach(() => {

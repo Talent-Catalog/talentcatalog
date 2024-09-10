@@ -15,7 +15,7 @@ import {
 } from "../../util/opportunity-stage-next-step/opportunity-stage-next-step.component";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 
-fdescribe('ViewCandidateOppFromUrlComponent', () => {
+describe('ViewCandidateOppFromUrlComponent', () => {
   let component: ViewCandidateOppFromUrlComponent;
   let fixture: ComponentFixture<ViewCandidateOppFromUrlComponent>;
   let mockActivatedRoute: any;

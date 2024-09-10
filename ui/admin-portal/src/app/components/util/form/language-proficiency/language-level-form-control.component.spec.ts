@@ -25,7 +25,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of} from "rxjs";
 
-fdescribe('LanguageLevelFormControlComponent', () => {
+describe('LanguageLevelFormControlComponent', () => {
   let component: LanguageLevelFormControlComponent;
   let fixture: ComponentFixture<LanguageLevelFormControlComponent>;
   let languageService: jasmine.SpyObj<LanguageService>;

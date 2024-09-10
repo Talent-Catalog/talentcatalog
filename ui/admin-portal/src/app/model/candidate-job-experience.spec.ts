@@ -17,7 +17,7 @@
 import {CandidateJobExperience} from './candidate-job-experience';
 import {Country} from './country';
 
-fdescribe('CandidateJobExperience Interface', () => {
+describe('CandidateJobExperience Interface', () => {
   it('should create a valid CandidateJobExperience object', () => {
     const country: Country = {
       id: 1,

@@ -5,7 +5,7 @@ import {ViewJobInfoComponent} from "../../info/view-job-info/view-job-info.compo
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 import {Job} from "../../../../../model/job";
 
-fdescribe('JobGeneralTabComponent', () => {
+describe('JobGeneralTabComponent', () => {
   let component: JobGeneralTabComponent;
   let fixture: ComponentFixture<JobGeneralTabComponent>;
 

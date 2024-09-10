@@ -9,7 +9,7 @@ import {CommonModule} from "@angular/common";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {CandidateOppsComponent} from "../candidate-opps/candidate-opps.component";
 
-fdescribe('CandidateOppsWithDetailComponent', () => {
+describe('CandidateOppsWithDetailComponent', () => {
   let component: CandidateOppsWithDetailComponent;
   let fixture: ComponentFixture<CandidateOppsWithDetailComponent>;
 

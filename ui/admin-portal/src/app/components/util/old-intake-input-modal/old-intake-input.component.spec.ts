@@ -26,7 +26,7 @@ import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {DatePickerComponent} from "../date-picker/date-picker.component";
 
-fdescribe('OldIntakeInputComponent', () => {
+describe('OldIntakeInputComponent', () => {
   let component: OldIntakeInputComponent;
   let fixture: ComponentFixture<OldIntakeInputComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;

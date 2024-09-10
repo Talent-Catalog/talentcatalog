@@ -2,7 +2,7 @@ import {ExportPdfComponent} from "./export-pdf.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 
-fdescribe('ExportPdfComponent', () => {
+describe('ExportPdfComponent', () => {
   let component: ExportPdfComponent;
   let fixture: ComponentFixture<ExportPdfComponent>;
 

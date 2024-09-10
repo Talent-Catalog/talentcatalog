@@ -25,7 +25,7 @@ import {Country} from "../../../../../model/country";
 import {CandidateIntakeData, HasPassport} from "../../../../../model/candidate";
 import {of} from "rxjs";
 
-fdescribe('CandidateCitizenshipCardComponent', () => {
+describe('CandidateCitizenshipCardComponent', () => {
   let component: CandidateCitizenshipCardComponent;
   let fixture: ComponentFixture<CandidateCitizenshipCardComponent>;
   let mockCitizenshipService: jasmine.SpyObj<CandidateCitizenshipService>;

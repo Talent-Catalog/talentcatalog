@@ -10,7 +10,7 @@ import {of, throwError} from "rxjs";
 import {Job} from "../../../model/job";
 import {By} from "@angular/platform-browser";
 
-fdescribe('SelectJobCopyComponent', () => {
+describe('SelectJobCopyComponent', () => {
   let component: SelectJobCopyComponent;
   let fixture: ComponentFixture<SelectJobCopyComponent>;
   let jobServiceSpy: jasmine.SpyObj<JobService>;

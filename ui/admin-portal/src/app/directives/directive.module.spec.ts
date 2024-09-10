@@ -32,7 +32,7 @@ import {Subject} from "rxjs";
 })
 class TestComponent {}
 
-fdescribe('DirectiveModule', () => {
+describe('DirectiveModule', () => {
   let fixture: ComponentFixture<TestComponent>;
   let debugElement: DebugElement;
   let searchTerms$: Subject<string[]>;

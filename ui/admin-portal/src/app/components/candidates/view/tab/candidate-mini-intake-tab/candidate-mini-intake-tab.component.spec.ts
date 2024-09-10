@@ -33,7 +33,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
-fdescribe('CandidateMiniIntakeTabComponent', () => {
+describe('CandidateMiniIntakeTabComponent', () => {
   let component: CandidateMiniIntakeTabComponent;
   let fixture: ComponentFixture<CandidateMiniIntakeTabComponent>;
 

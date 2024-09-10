@@ -79,7 +79,9 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.visaJobAus.expandAll();
+    if(this.visaJobAus){
+      this.visaJobAus.expandAll();
+    }
   }
 
   get ieltsScoreType(): string {

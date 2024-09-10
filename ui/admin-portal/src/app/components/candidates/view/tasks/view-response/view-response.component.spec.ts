@@ -20,7 +20,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-fdescribe('ViewResponseComponent', () => {
+describe('ViewResponseComponent', () => {
   let component: ViewResponseComponent;
   let fixture: ComponentFixture<ViewResponseComponent>;
   let mockActiveModal: NgbActiveModal;

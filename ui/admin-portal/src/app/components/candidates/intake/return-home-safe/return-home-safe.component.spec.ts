@@ -22,7 +22,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnsure} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('ReturnHomeSafeComponent', () => {
+describe('ReturnHomeSafeComponent', () => {
   let component: ReturnHomeSafeComponent;
   let fixture: ComponentFixture<ReturnHomeSafeComponent>;
 

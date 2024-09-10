@@ -23,7 +23,7 @@ import {
   EditCandidateMediaWillingnessComponent
 } from "./edit/edit-candidate-media-willingness.component";
 
-fdescribe('ViewCandidateMediaWillingnessComponent', () => {
+describe('ViewCandidateMediaWillingnessComponent', () => {
   let component: ViewCandidateMediaWillingnessComponent;
   let fixture: ComponentFixture<ViewCandidateMediaWillingnessComponent>;
   let mockModalService: jasmine.SpyObj<NgbModal>;

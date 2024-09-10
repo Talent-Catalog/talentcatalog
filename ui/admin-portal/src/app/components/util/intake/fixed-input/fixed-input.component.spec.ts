@@ -18,7 +18,7 @@ import {FixedInputComponent} from "./fixed-input.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {By} from "@angular/platform-browser";
 
-fdescribe('FixedInputComponent', () => {
+describe('FixedInputComponent', () => {
   let component: FixedInputComponent;
   let fixture: ComponentFixture<FixedInputComponent>;
 

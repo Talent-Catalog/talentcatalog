@@ -30,7 +30,7 @@ import {ViewTaskDetailsComponent} from "../view-task-details/view-task-details.c
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
 
-fdescribe('BrowseTasksComponent', () => {
+describe('BrowseTasksComponent', () => {
   let component: BrowseTasksComponent;
   let fixture: ComponentFixture<BrowseTasksComponent>;
   let taskServiceSpy: jasmine.SpyObj<TaskService>;

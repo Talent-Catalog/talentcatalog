@@ -18,7 +18,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {By} from "@angular/platform-browser";
 import {DebugElement} from "@angular/core";
-fdescribe('ViewCandidateSurveyComponent', () => {
+describe('ViewCandidateSurveyComponent', () => {
   let component: ViewCandidateSurveyComponent;
   let fixture: ComponentFixture<ViewCandidateSurveyComponent>;
 

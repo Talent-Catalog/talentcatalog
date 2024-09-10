@@ -28,7 +28,7 @@ import {of, throwError} from "rxjs";
 import {LanguageLevel} from "../../../../../model/language-level";
 import {Language} from "../../../../../model/language";
 
-fdescribe('EditCandidateLanguageComponent', () => {
+describe('EditCandidateLanguageComponent', () => {
   let component: EditCandidateLanguageComponent;
   let fixture: ComponentFixture<EditCandidateLanguageComponent>;
   let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;

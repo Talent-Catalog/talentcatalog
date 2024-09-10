@@ -25,7 +25,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('CandidateEducationTabComponent', () => {
+describe('CandidateEducationTabComponent', () => {
   let component: CandidateEducationTabComponent;
   let fixture: ComponentFixture<CandidateEducationTabComponent>;
   const mockCandidate = new MockCandidate();

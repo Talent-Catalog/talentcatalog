@@ -17,7 +17,7 @@
 import {ChatPost, CreateChatRequest, JobChat, JobChatType, JobChatUserInfo, Post} from "./chat";
 import {User} from "./user";
 
-fdescribe('Job Chat and Post interface', () => {
+describe('Job Chat and Post interface', () => {
   it('should create a Post instance', () => {
     const post: Post = {
       linkPreviews: [],

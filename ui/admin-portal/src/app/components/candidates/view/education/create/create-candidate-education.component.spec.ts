@@ -28,7 +28,7 @@ import {
 import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
-fdescribe('CreateCandidateEducationComponent', () => {
+describe('CreateCandidateEducationComponent', () => {
   let component: CreateCandidateEducationComponent;
   let fixture: ComponentFixture<CreateCandidateEducationComponent>;
   let mockCandidateEducationService: jasmine.SpyObj<CandidateEducationService>;

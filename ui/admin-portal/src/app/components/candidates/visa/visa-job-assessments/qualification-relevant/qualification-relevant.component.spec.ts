@@ -8,7 +8,7 @@ import {YesNo} from '../../../../../model/candidate';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('QualificationRelevantComponent', () => {
+describe('QualificationRelevantComponent', () => {
   let component: QualificationRelevantComponent;
   let fixture: ComponentFixture<QualificationRelevantComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;

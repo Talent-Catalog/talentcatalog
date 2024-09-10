@@ -29,7 +29,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
 
-fdescribe('JoinSavedSearchComponent', () => {
+describe('JoinSavedSearchComponent', () => {
   let component: JoinSavedSearchComponent;
   let fixture: ComponentFixture<JoinSavedSearchComponent>;
   let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;

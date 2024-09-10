@@ -24,7 +24,7 @@ import {of} from 'rxjs';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-fdescribe('ViewCandidateTasksComponent', () => {
+describe('ViewCandidateTasksComponent', () => {
   let component: ViewCandidateTasksComponent;
   let fixture: ComponentFixture<ViewCandidateTasksComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;

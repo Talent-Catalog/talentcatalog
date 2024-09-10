@@ -22,7 +22,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-fdescribe('ConflictComponent', () => {
+describe('ConflictComponent', () => {
   let component: ConflictComponent;
   let fixture: ComponentFixture<ConflictComponent>;
 

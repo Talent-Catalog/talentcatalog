@@ -23,7 +23,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('DestinationJobComponent', () => {
+describe('DestinationJobComponent', () => {
   let component: DestinationJobComponent;
   let fixture: ComponentFixture<DestinationJobComponent>;
 

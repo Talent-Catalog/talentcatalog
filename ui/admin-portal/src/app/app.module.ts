@@ -646,9 +646,6 @@ import {
   CostCommitEmployerComponent
 } from './components/job/intake/cost-commit-employer/cost-commit-employer.component';
 import {
-  VisaEligibilityAssessmentComponent
-} from './components/candidates/visa/visa-eligibility-assessment/visa-eligibility-assessment.component';
-import {
   CandidateJobsTabComponent
 } from './components/candidates/view/tab/candidate-jobs-tab/candidate-jobs-tab.component';
 import {
@@ -1051,7 +1048,6 @@ import {JoiDataComponent} from './components/job/intake/joi-data/joi-data.compon
     AdminApiComponent,
     JobIntakeTabComponent,
     CostCommitEmployerComponent,
-    VisaEligibilityAssessmentComponent,
     CandidateJobsTabComponent,
     ViewCandidateJobsComponent,
     ViewCandidateOppFromUrlComponent,

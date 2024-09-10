@@ -15,7 +15,7 @@ class TestJobsComponent extends JobsComponent {
     return this.createSearchRequest();
   }
 }
-fdescribe('JobsComponent', () => {
+describe('JobsComponent', () => {
   let jobsComponent: TestJobsComponent;
   let fixture: ComponentFixture<TestJobsComponent>;
   let formBuilder: FormBuilder;

@@ -77,7 +77,7 @@ import {
   LanguageThresholdComponent
 } from "../../../../../visa/visa-job-assessments/language-threshold/language-threshold.component";
 
-fdescribe('VisaJobCheckCaComponent', () => {
+describe('VisaJobCheckCaComponent', () => {
   let component: VisaJobCheckCaComponent;
   let fixture: ComponentFixture<VisaJobCheckCaComponent>;
   let candidateEducationServiceSpy: jasmine.SpyObj<CandidateEducationService>;

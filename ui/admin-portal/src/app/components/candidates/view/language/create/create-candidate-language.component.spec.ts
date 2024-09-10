@@ -25,7 +25,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
-fdescribe('CreateCandidateLanguageComponent', () => {
+describe('CreateCandidateLanguageComponent', () => {
   let component: CreateCandidateLanguageComponent;
   let fixture: ComponentFixture<CreateCandidateLanguageComponent>;
   let mockLanguageService: jasmine.SpyObj<LanguageService>;

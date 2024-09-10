@@ -8,7 +8,7 @@ import {Language} from '../../../../../model/language';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('LanguageThresholdComponent', () => {
+describe('LanguageThresholdComponent', () => {
   let component: LanguageThresholdComponent;
   let fixture: ComponentFixture<LanguageThresholdComponent>;
   let languageService: jasmine.SpyObj<LanguageService>;
