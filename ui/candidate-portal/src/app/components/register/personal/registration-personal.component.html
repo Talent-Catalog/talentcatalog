@@ -154,7 +154,7 @@
       <div class="mb-3">
         <label class="form-label" for="otherNationalityId">
           {{ 'REGISTRATION.PERSONAL.LABEL.OTHER_NATIONALITIES' | translate }}</label>
-        <ng-select id="otherNationalityId" [formControlName]="'otherNationalityIds'" multiple="true"
+        <ng-select id="otherNationalityId" formControlName="otherNationalityIds" multiple="true"
                    [items]="countries" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
         </ng-select>
