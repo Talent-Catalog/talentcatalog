@@ -113,7 +113,7 @@
           </ng-select>
         </div>
         <ng-template #state_as_text>
-          <input type="text" class="form-control" id="state" placeholder="" [formControlName]="'state'">
+          <input type="text" class="form-control" id="stateAsText" placeholder="" [formControlName]="'state'">
         </ng-template>
       </div>
     </div>
@@ -125,6 +125,18 @@
       <div class="mb-3">
         <label class="form-label" for="nationalityId">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
         <ng-select id="nationalityId" [formControlName]="'nationalityId'" [items]="countries" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
+        </ng-select>
+        <app-form-control-error [control]="form.controls.nationalityId"></app-form-control-error>
+      </div>
+    </div>
+
+    <!-- OTHER NATIONALITIES -->
+    <div class="col-12">
+      <div class="mb-3">
+        <label class="form-label" for="nationalityId">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
+        <ng-select id="otherNationalityId" [formControlName]="'otherNationalityIds'" multiple="true"
+                   [items]="countries" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
         </ng-select>
         <app-form-control-error [control]="form.controls.nationalityId"></app-form-control-error>

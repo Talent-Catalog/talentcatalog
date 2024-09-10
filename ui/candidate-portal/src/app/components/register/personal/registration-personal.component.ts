@@ -86,6 +86,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       yearOfArrival: [''],
       /* NATIONALITY */
       nationalityId: [null, Validators.required],
+      otherNationalityIds: [null],
       externalId: [null],
       externalIdSource: ['US Afghan Parolee Id'],
       unhcrRegistered: [null, Validators.required],
