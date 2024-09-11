@@ -233,6 +233,11 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 
 ## Test Coverage
 
+- Implemented full suite of web portal unit tests for all Angular components and services
+- Fixed Gatling performance test database connection issues
+- Paused automatic execution of Gatling performance tests in cloud environments to avoid unnecessary system load
+
+
 ## Code Refactoring
 
 - Deprecated candidate visa job check fields removed from code
