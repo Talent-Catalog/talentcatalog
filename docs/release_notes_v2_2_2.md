@@ -242,6 +242,7 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 
 - Deprecated candidate visa job check fields removed from code
 - Emoji picker code refactored for better readability
+- Factored out a common base for list and search view components
 
 ## Continuous Integration & Deployment
 
@@ -251,6 +252,8 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 
 ## Cloud Enhancements
 
+- Deployed AWS Elasticache Redis clusters to reduce DB user lookups and improve general system performance
+- Renewed RDS database SSL certificates on AWS production and staging cloud environments
 
 
 ---
