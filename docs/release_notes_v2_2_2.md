@@ -193,6 +193,19 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 - Allow all columns to be selectable in list and search browse and full screen views
 - Fixed an issue where the column select modal resulted in an error when closed with the Escape key
 
+# Performance Improvements
+
+- Introduced Redis caching layer in AWS cloud environments to improve general system performance
+- Faster search results for name, number, email, and phone lookups in quick search bar
+- Introduced enhanced TC loggers for improved user action visibility in local and cloud logs which will help diagnose future performance (and other) issues
+- Implemented mechanisms for Redis cache evictions to avoid stale data in the cache
+- Implemented system API to manually trigger Redis cache evictions if required
+- Added auto-detection of high cloud resource utilisation with auto-redeployment of TC cloud services
+- Update database indexes in key tables to improve general performance of job tabs
+- Configured max time to live values for cached entries to prevent cache pollution
+- Implemented mechanism to transfer minimum required data only between TC services and web clients for candidate name and number search
+- Extended mechanism for minimum data transfer to include candidate and candidate source previews for list and search browsing and full screen views
+
 # Security Fixes
 
 - Added MFA to the AWS Production environment for an additional layer of security
