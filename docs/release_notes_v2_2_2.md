@@ -245,6 +245,9 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 
 ## Continuous Integration & Deployment
 
+- Elasticsearch starter scripts for new devs
+- Updated terraform directory structure and git actions for better control over auto deployments
+- Deactivated automatic builds in tc-build git action to avoid duplicate builds when pushing to staging and master branches
 
 ## Cloud Enhancements
 
