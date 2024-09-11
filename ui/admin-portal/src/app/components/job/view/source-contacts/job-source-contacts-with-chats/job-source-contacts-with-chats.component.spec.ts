@@ -29,7 +29,7 @@ import {MockChatPost} from "../../../../../MockData/MockChatPost";
 import {TranslateModule} from "@ngx-translate/core";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
-fdescribe('JobSourceContactsWithChatsComponent', () => {
+describe('JobSourceContactsWithChatsComponent', () => {
    let component: JobSourceContactsWithChatsComponent;
    let fixture: ComponentFixture<JobSourceContactsWithChatsComponent>;
    let partnerService: jasmine.SpyObj<PartnerService>;

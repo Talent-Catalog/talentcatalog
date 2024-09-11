@@ -51,15 +51,6 @@
         </button>
       </div>
     </div>
-
-    <app-joblink [jobId]="savedList?.sfJobOpp?.id"
-                 (jobSelection)="onJobSelection($event)"
-    ></app-joblink>
-
-    <div *ngIf="savedList">
-      <!--todo-->
-      <!--      <app-saved-list [savedList]="savedList" [seeMore]="true" [showMore]="false" [showOpen]="false"></app-saved-list>-->
-    </div>
   </form>
 </div>
 

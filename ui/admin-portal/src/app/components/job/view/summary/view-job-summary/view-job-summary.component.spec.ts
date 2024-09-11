@@ -7,7 +7,7 @@ import {JobService } from '../../../../../services/job.service';
 import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
 
-fdescribe('ViewJobSummaryComponent', () => {
+describe('ViewJobSummaryComponent', () => {
   let component: ViewJobSummaryComponent;
   let fixture: ComponentFixture<ViewJobSummaryComponent>;
   let jobServiceSpy: jasmine.SpyObj<JobService>;

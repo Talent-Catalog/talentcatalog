@@ -5,7 +5,7 @@ import {MockCandidate} from "../../../MockData/MockCandidate";
 import {Status} from "../../../model/base";
 import {TaskType, UploadType} from "../../../model/task";
 
-fdescribe('TasksMonitorComponent', () => {
+describe('TasksMonitorComponent', () => {
   let component: TasksMonitorComponent;
   let fixture: ComponentFixture<TasksMonitorComponent>;
   const candidate = new MockCandidate();

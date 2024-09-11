@@ -4,7 +4,7 @@ import {IeltsLevelComponent} from './ielts-level.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('IeltsLevelComponent', () => {
+describe('IeltsLevelComponent', () => {
   let component: IeltsLevelComponent;
   let fixture: ComponentFixture<IeltsLevelComponent>;
   let fb: FormBuilder;

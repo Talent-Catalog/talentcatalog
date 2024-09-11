@@ -6,7 +6,7 @@ import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVi
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
-fdescribe('AgeRequirementComponent', () => {
+describe('AgeRequirementComponent', () => {
   let component: AgeRequirementComponent;
   let fixture: ComponentFixture<AgeRequirementComponent>;
   let fb: FormBuilder;

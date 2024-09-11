@@ -9,7 +9,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {ChatService} from "../../../services/chat.service";
 
-fdescribe('ChatsComponent', () => {
+describe('ChatsComponent', () => {
   let component: ChatsComponent;
   let fixture: ComponentFixture<ChatsComponent>;
   let chatService: jasmine.SpyObj<ChatService>;

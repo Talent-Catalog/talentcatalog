@@ -43,7 +43,7 @@ import {MockUser} from "../../../MockData/MockUser";
 import {SavedSearchType} from "../../../model/saved-search";
 import {of, throwError} from "rxjs";
 
-fdescribe('CandidateShowComponent', () => {
+describe('CandidateShowComponent', () => {
   let component: ShowCandidatesComponent;
   let fixture: ComponentFixture<ShowCandidatesComponent>;
   let formBuilder: FormBuilder;
@@ -57,8 +57,10 @@ fdescribe('CandidateShowComponent', () => {
   const mockNgbModal = jasmine.createSpyObj('NgbModal', ['open']);
   const mockNgbOffcanvas = jasmine.createSpyObj('NgbOffcanvas', ['open', 'dismiss']);
   const mockAuthorizationService = jasmine.createSpyObj('AuthorizationService',
-    ['canAssignTask','canAccessSalesforce','canEditCandidateSource','canPublishList','canUpdateSalesforce',
-      'canManageCandidateTasks','isCandidateSourceMine','isReadOnly','isStarredByMe']);
+    ['canAssignTask','canAccessSalesforce','canEditCandidateSource','canPublishList',
+      'canImportToList','canResolveTasks','canUpdateCandidateStatus','canUpdateSalesforce',
+      'canManageCandidateTasks','isCandidateSourceMine','isEmployerPartner','isReadOnly',
+      'isStarredByMe']);
   const mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
   const mockSalesforceService = jasmine.createSpyObj('SalesforceService', ['joblink']);
   const mockLocation = jasmine.createSpyObj('Location', ['back']);

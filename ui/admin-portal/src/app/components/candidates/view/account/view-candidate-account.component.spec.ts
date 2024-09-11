@@ -26,7 +26,7 @@ import {User} from "../../../../model/user";
 import {of} from "rxjs";
 import {SimpleChange} from "@angular/core";
 
-fdescribe('ViewCandidateAccountComponent', () => {
+describe('ViewCandidateAccountComponent', () => {
   let component: ViewCandidateAccountComponent;
   let fixture: ComponentFixture<ViewCandidateAccountComponent>;
   let mockUserService;

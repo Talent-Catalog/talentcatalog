@@ -19,7 +19,7 @@ import {DebugElement} from "@angular/core";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {SortedByComponent} from "./sorted-by.component";
 
-fdescribe('SortedByComponent', () => {
+describe('SortedByComponent', () => {
   let component: SortedByComponent;
   let fixture: ComponentFixture<SortedByComponent>;
 

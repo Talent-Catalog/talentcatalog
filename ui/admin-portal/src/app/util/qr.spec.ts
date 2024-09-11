@@ -29,7 +29,7 @@ export class QrImage implements EncodedQrImage {
   }
 }
 
-fdescribe('QrImage', () => {
+describe('QrImage', () => {
   it('should create an instance of QrImage with the given base64 encoding', () => {
     const base64Encoding = 'dGVzdA==';
     const qrImage = new QrImage(base64Encoding);

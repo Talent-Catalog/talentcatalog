@@ -25,7 +25,7 @@ const isStarredByMe = (starringUsers: any[], authService: AuthenticationService)
   return starringUsers.some(user => user.id === loggedInUser.id);
 };
 
-fdescribe('ViewJobComponent', () => {
+describe('ViewJobComponent', () => {
   let component: ViewJobComponent;
   let fixture: ComponentFixture<ViewJobComponent>;
   let mockAuthService: jasmine.SpyObj<AuthenticationService>;
@@ -116,5 +116,5 @@ fdescribe('ViewJobComponent', () => {
     expect(component.job).toEqual(updatedJob);
     expect(component.loading).toBeFalsy();
   }));
-  
+
 });

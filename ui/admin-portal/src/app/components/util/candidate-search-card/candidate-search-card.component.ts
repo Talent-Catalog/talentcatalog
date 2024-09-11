@@ -20,7 +20,8 @@ import {
   EventEmitter,
   Input,
   OnInit,
-  Output, SimpleChanges,
+  Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {Candidate} from '../../../model/candidate';
@@ -168,6 +169,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
    */
   getCandidateOppForJobSource(): CandidateOpportunity {
     return this.candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+  }
+
+  isAnAdmin(): boolean {
+    return this.authorizationService.isAnAdmin();
   }
 
 }

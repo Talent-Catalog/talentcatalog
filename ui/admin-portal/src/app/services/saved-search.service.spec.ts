@@ -21,7 +21,7 @@ import {environment} from '../../environments/environment';
 import {SavedSearch, SavedSearchRequest, SavedSearchType} from '../model/saved-search';
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
 
-fdescribe('SavedSearchService', () => {
+describe('SavedSearchService', () => {
   let service: SavedSearchService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/saved-search';

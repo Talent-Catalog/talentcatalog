@@ -25,7 +25,7 @@ import {of, throwError} from "rxjs";
 import {JoblinkComponent} from "../../util/joblink/joblink.component";
 import {JobNameAndId} from "../../../model/job";
 
-fdescribe('CreateUpdateListComponent', () => {
+describe('CreateUpdateListComponent', () => {
   let component: CreateUpdateListComponent;
   let fixture: ComponentFixture<CreateUpdateListComponent>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;

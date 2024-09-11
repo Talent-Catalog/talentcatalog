@@ -29,7 +29,7 @@ import {MockPartner} from "../MockData/MockPartner";
 import {Job} from "../model/job";
 import {MockJob} from "../MockData/MockJob";
 
-fdescribe('PartnerService', () => {
+describe('PartnerService', () => {
   let service: PartnerService;
   let httpMock: HttpTestingController;
   const mockPartner = new MockPartner();

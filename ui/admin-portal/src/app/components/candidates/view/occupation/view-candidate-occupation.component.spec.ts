@@ -26,7 +26,7 @@ import {CandidateJobExperienceService} from "../../../../services/candidate-job-
 import {of} from "rxjs";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-fdescribe('ViewCandidateOccupationComponent', () => {
+describe('ViewCandidateOccupationComponent', () => {
   let component: ViewCandidateOccupationComponent;
   let fixture: ComponentFixture<ViewCandidateOccupationComponent>;
   let mockModalService: any;

@@ -16,7 +16,7 @@
 
 import {S3UploadParams} from "./s3-upload-params";
 
-fdescribe('S3UploadParams Interface Tests', () => {
+describe('S3UploadParams Interface Tests', () => {
 
   it('should create an instance of S3UploadParams', () => {
     const params: S3UploadParams = {
@@ -51,6 +51,6 @@ fdescribe('S3UploadParams Interface Tests', () => {
     expect(params.policy).toBeUndefined();
     expect(params.signature).toBeUndefined();
   });
-  
+
 });
 

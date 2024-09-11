@@ -20,7 +20,7 @@ import {
 } from "../../util/opportunity-stage-next-step/opportunity-stage-next-step.component";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {ChatReadStatusComponent} from "../../chat/chat-read-status/chat-read-status.component";
-fdescribe('ViewCandidateOppComponent', () => {
+describe('ViewCandidateOppComponent', () => {
   let component: ViewCandidateOppComponent;
   let fixture: ComponentFixture<ViewCandidateOppComponent>;
   let mockModalService: any;

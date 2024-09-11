@@ -19,7 +19,7 @@ import {TestBed} from "@angular/core/testing";
 import {LOCALE_ID} from "@angular/core";
 import {DatePipe} from "@angular/common";
 
-fdescribe('ExtendDatePipe', () => {
+describe('ExtendDatePipe', () => {
   let pipe: ExtendDatePipe;
 
   beforeEach(() => {

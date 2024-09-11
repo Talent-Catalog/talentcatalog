@@ -16,7 +16,7 @@
 
 import {User, roleGreaterThan, Role} from './user';
 
-fdescribe('User Class', () => {
+describe('User Class', () => {
   let user: User;
 
   beforeEach(() => {

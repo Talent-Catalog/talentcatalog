@@ -24,7 +24,7 @@ import {NO_ERRORS_SCHEMA} from '@angular/core';
 import MockSavedSearchTypeInfo from "../../../MockData/MockSavedSearchTypeInfo";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('SearchHomeComponent', () => {
+describe('SearchHomeComponent', () => {
   let component: SearchHomeComponent;
   let fixture: ComponentFixture<SearchHomeComponent>;
   let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;

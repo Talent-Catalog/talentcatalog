@@ -85,6 +85,7 @@ import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateCitizenship;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateExam;
@@ -157,6 +158,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
@@ -1164,6 +1166,17 @@ public class CandidateServiceImpl implements CandidateService {
         Country nationality = countryRepository.findById(request.getNationalityId())
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationalityId()));
 
+        //Construct all nationalities from primary nationality, plus any others.
+        List<Country> nationalities = new ArrayList<>();
+        nationalities.add(nationality);
+
+        Long[] otherNationalityIds = request.getOtherNationalityIds();
+        for (Long otherNationalityId : otherNationalityIds) {
+            Country otherNationality = countryRepository.findById(otherNationalityId)
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, otherNationalityId));
+            nationalities.add(otherNationality);
+        }
+
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
@@ -1192,6 +1205,8 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setUnhcrConsent(request.getUnhcrConsent());
 
             candidate.setAuditFields(user);
+
+            updateCitizenships(candidate, nationalities);
         }
 
         candidate = save(candidate, true);
@@ -1210,6 +1225,42 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         return candidate;
+    }
+
+    /**
+     * A candidate's citizenships should match their nationalities.
+     * This does the required adjustments.
+     * @param candidate Candidate in question
+     * @param nationalities Nationalities associated with the candidate.
+     */
+    private void updateCitizenships(Candidate candidate, List<Country> nationalities) {
+        //Remove any citizenships that don't appear in the nationalities
+        List<CandidateCitizenship> removed = new ArrayList<>();
+        List<CandidateCitizenship> citizenships = candidate.getCandidateCitizenships();
+        for (CandidateCitizenship citizenship : citizenships) {
+            if (!nationalities.contains(citizenship.getNationality())) {
+                //Remove the citizenship
+                candidateCitizenshipService.deleteCitizenship(citizenship.getId());
+                removed.add(citizenship);
+            }
+        }
+        for (CandidateCitizenship dead : removed) {
+            citizenships.remove(dead);
+        }
+
+        //Add any new citizenships from the nationalities
+        for (Country nat : nationalities) {
+            long natId = nat.getId();
+            final Optional<CandidateCitizenship> first = citizenships.stream()
+                .filter(c -> c.getNationality() != null)
+                .filter(c -> c.getNationality().getId() == natId).findFirst();
+            if (first.isEmpty()) {
+                //Need to add new citizenship
+                CreateCandidateCitizenshipRequest req = new CreateCandidateCitizenshipRequest();
+                req.setNationalityId(nat.getId());
+                candidateCitizenshipService.createCitizenship(candidate.getId(), req);
+            }
+        }
     }
 
     private void checkForChangedPartner(Candidate candidate, Country country) {
@@ -1504,7 +1555,7 @@ public class CandidateServiceImpl implements CandidateService {
             return candidate == null ? Optional.empty() : Optional.of(candidate);
         }
     }
-    
+
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadDestinations() {
         Long candidateId = authService.getLoggedInCandidateId();

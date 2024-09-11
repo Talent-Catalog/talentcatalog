@@ -20,7 +20,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FixedInputComponent} from "../../../util/intake/fixed-input/fixed-input.component";
-fdescribe('ConfirmContactComponent', () => {
+describe('ConfirmContactComponent', () => {
   let component: ConfirmContactComponent;
   let fixture: ComponentFixture<ConfirmContactComponent>;
 

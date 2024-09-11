@@ -26,7 +26,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of} from "rxjs";
 import {UnhcrStatus, YesNo, YesNoUnsure} from "../../../../../model/candidate";
 
-fdescribe('EditCandidateRegistrationComponent', () => {
+describe('EditCandidateRegistrationComponent', () => {
   let component: EditCandidateRegistrationComponent;
   let fixture: ComponentFixture<EditCandidateRegistrationComponent>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;

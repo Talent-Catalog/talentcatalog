@@ -177,9 +177,10 @@ public class SavedListServiceImpl implements SavedListService {
 
             assignListTasksToCandidate(destinationList, candidate);
 
-            //If a job list, automatically create a candidate opp if needed
+            //If a submission list, automatically create a candidate opp if needed
+            final Boolean isSubmissionList = destinationList.getRegisteredJob();
             final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
-            if (jobOpp != null) {
+            if (isSubmissionList && jobOpp != null ) {
                 //With no params specified will not change any existing opp associated with this job,
                 //but will create a new opp if needed, with stage defaulting to "prospect"
                 candidateOpportunityService.createUpdateCandidateOpportunities(
@@ -562,7 +563,7 @@ public class SavedListServiceImpl implements SavedListService {
             while ((tokens = reader.readNext()) != null) {
                 //tokens[] is an array of values from the line
                 //Ignore empty tokens
-                if (tokens.length > 0 && tokens[0].length() > 0) {
+                if (tokens.length > 0 && !tokens[0].isEmpty()) {
                     //A bit of logic to skip any header. Only checks once.
                     boolean skip = possibleHeader && !StringUtils.isNumeric(tokens[0]);
                     possibleHeader = false;

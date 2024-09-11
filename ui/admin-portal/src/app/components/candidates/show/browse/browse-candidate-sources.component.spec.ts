@@ -19,7 +19,7 @@ import {CandidateFieldService} from "../../../../services/candidate-field.servic
 import {SearchBy} from "../../../../model/saved-list";
 import {SearchSavedSearchRequest} from "../../../../model/saved-search";
 
-fdescribe('BrowseCandidateSourcesComponent', () => {
+describe('BrowseCandidateSourcesComponent', () => {
   let component: BrowseCandidateSourcesComponent;
   let fixture: ComponentFixture<BrowseCandidateSourcesComponent>;
    let mockCandidateSourceService: any;

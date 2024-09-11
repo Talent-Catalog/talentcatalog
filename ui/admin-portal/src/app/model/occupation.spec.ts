@@ -15,7 +15,7 @@
  */
 import {Occupation} from "./occupation";
 
-fdescribe('Occupation Interface', () => {
+describe('Occupation Interface', () => {
   it('should create a valid Occupation object', () => {
     // Mock data
     const occupation: Occupation = {

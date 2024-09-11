@@ -8,7 +8,7 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
-fdescribe('VisaFinalAssessmentComponent', () => {
+describe('VisaFinalAssessmentComponent', () => {
   let component: VisaFinalAssessmentComponent;
   let fixture: ComponentFixture<VisaFinalAssessmentComponent>;
 

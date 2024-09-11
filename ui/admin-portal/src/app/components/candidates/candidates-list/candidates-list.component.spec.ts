@@ -32,7 +32,7 @@ import {CandidateSourceDescriptionComponent} from "../../util/candidate-source-d
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 
-fdescribe('CandidatesListComponent', () => {
+describe('CandidatesListComponent', () => {
   let component: CandidatesListComponent;
   let fixture: ComponentFixture<CandidatesListComponent>;
   let mockActivatedRoute: any;

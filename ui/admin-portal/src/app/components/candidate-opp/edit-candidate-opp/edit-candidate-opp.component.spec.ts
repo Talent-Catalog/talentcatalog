@@ -12,7 +12,7 @@ import {DatePickerComponent} from "../../util/date-picker/date-picker.component"
 import {NgxWigComponent, NgxWigModule} from "ngx-wig";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('EditCandidateOppComponent', () => {
+describe('EditCandidateOppComponent', () => {
   let component: EditCandidateOppComponent;
   let fixture: ComponentFixture<EditCandidateOppComponent>;
   let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;

@@ -467,7 +467,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         //Run the saved list or saved search as stored on the server.
         this.performSearch(
           this.pageSize,
-          DtoType.FULL, // @todo will change to Previews in #1321
+          DtoType.PREVIEW,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
             // Restore the selection prior to the search
@@ -611,7 +611,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
     //Construct the request
     const request: PublishListRequest = new PublishListRequest();
-    if (this.isJobList()) {
+    if (this.isSubmissionList()) {
       request.publishClosedOpps = this.showClosedOpps;
     }
     request.columns = exportColumns;

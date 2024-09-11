@@ -30,7 +30,7 @@ import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {TaskType} from "../../../model/task";
 
-fdescribe('AssignTasksListComponent', () => {
+describe('AssignTasksListComponent', () => {
   let component: AssignTasksListComponent;
   let fixture: ComponentFixture<AssignTasksListComponent>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;

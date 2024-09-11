@@ -7,7 +7,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-fdescribe('JobInterestComponent', () => {
+describe('JobInterestComponent', () => {
   let component: JobInterestComponent;
   let fixture: ComponentFixture<JobInterestComponent>;
   let fb: FormBuilder;

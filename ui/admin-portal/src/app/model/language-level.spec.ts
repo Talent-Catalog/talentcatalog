@@ -16,7 +16,7 @@
 
 import {LanguageLevel} from "./language-level";
 
-fdescribe('LanguageLevel Interface', () => {
+describe('LanguageLevel Interface', () => {
   it('should create a valid LanguageLevel object', () => {
     // Mock data
     const languageLevel: LanguageLevel = {

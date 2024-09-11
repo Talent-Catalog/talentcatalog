@@ -16,7 +16,7 @@
 
 import {EducationMajor} from "./education-major";
 
-fdescribe('EducationMajor interface', () => {
+describe('EducationMajor interface', () => {
   it('should create an EducationMajor instance', () => {
     const educationMajor: EducationMajor = {
       id: 1,

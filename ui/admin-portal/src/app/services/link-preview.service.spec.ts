@@ -20,7 +20,7 @@ import {LinkPreviewService, BuildLinkPreviewRequest} from './link-preview.servic
 import {LinkPreview} from '../model/link-preview';
 import {environment} from '../../environments/environment';
 
-fdescribe('LinkPreviewService', () => {
+describe('LinkPreviewService', () => {
   let service: LinkPreviewService;
   let httpMock: HttpTestingController;
 

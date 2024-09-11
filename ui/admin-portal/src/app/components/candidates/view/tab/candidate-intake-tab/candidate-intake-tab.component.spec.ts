@@ -135,7 +135,7 @@ export const mockCandidateIntakeData: CandidateIntakeData = {
   candidateDestinations:[mockCandidateDestination]
   // Add more properties with predefined values here
 };
-fdescribe('CandidateIntakeTabComponent', () => {
+describe('CandidateIntakeTabComponent', () => {
   let component: CandidateIntakeTabComponent;
   let fixture: ComponentFixture<CandidateIntakeTabComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;

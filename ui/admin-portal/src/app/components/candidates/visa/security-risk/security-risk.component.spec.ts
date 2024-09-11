@@ -21,7 +21,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
-fdescribe('SecurityRiskComponent', () => {
+describe('SecurityRiskComponent', () => {
   let component: SecurityRiskComponent;
   let fixture: ComponentFixture<SecurityRiskComponent>;
 

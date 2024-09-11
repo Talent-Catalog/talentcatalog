@@ -5,7 +5,7 @@ import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('EligiblePathwaysComponent', () => {
+describe('EligiblePathwaysComponent', () => {
   let component: EligiblePathwaysComponent;
   let fixture: ComponentFixture<EligiblePathwaysComponent>;
 

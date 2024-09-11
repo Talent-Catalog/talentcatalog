@@ -30,7 +30,7 @@ enum CandidateStatus {
   pending = "pending",
 }
 
-fdescribe('Enum Utilities', () => {
+describe('Enum Utilities', () => {
   const candidateStatusEnum = CandidateStatus;
 
   describe('enumOptions', () => {

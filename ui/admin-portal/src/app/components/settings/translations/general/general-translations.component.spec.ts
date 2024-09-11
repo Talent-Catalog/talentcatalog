@@ -26,7 +26,7 @@ import {By} from "@angular/platform-browser";
 import {SystemLanguage} from "../../../../model/language";
 import {MockUser} from "../../../../MockData/MockUser";
 
-fdescribe('GeneralTranslationsComponent', () => {
+describe('GeneralTranslationsComponent', () => {
   let component: GeneralTranslationsComponent;
   let fixture: ComponentFixture<GeneralTranslationsComponent>;
   let translationService: jasmine.SpyObj<TranslationService>;

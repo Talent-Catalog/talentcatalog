@@ -16,7 +16,7 @@
 
 import {CandidateSkill} from "./candidate-skill";
 
-fdescribe('CandidateSkill Interface', () => {
+describe('CandidateSkill Interface', () => {
   it('should create an instance with correct properties', () => {
     const skill: CandidateSkill = {
       skill: 'Programming',

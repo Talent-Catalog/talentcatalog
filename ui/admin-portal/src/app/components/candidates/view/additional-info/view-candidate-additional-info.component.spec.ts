@@ -19,7 +19,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
-fdescribe('ViewCandidateAdditionalInfoComponent', () => {
+describe('ViewCandidateAdditionalInfoComponent', () => {
   let component: ViewCandidateAdditionalInfoComponent;
   let fixture: ComponentFixture<ViewCandidateAdditionalInfoComponent>;
   let modalService: jasmine.SpyObj<NgbModal>;

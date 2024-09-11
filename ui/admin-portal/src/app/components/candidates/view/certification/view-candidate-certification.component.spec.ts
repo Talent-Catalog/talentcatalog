@@ -24,7 +24,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateCertification} from "../../../../model/candidate-certification";
 import {of} from "rxjs";
 
-fdescribe('ViewCandidateCertificationComponent', () => {
+describe('ViewCandidateCertificationComponent', () => {
   let component: ViewCandidateCertificationComponent;
   let fixture: ComponentFixture<ViewCandidateCertificationComponent>;
   let candidateCertificationServiceSpy: jasmine.SpyObj<CandidateCertificationService>;

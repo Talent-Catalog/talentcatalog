@@ -18,7 +18,7 @@ import {Country} from './country';
 import {EducationMajor} from './education-major';
 import {CandidateEducation} from "./candidate-education";
 
-fdescribe('CandidateEducation Model Interface', () => {
+describe('CandidateEducation Model Interface', () => {
   let candidateEducation: CandidateEducation;
 
   beforeEach(() => {

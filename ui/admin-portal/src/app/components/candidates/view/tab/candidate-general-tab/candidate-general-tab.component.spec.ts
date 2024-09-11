@@ -26,7 +26,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {ViewCandidateAccountComponent} from "../../account/view-candidate-account.component";
 
-fdescribe('CandidateGeneralTabComponent', () => {
+describe('CandidateGeneralTabComponent', () => {
   let component: CandidateGeneralTabComponent;
   let fixture: ComponentFixture<CandidateGeneralTabComponent>;
   const mockCandidate = new MockCandidate();

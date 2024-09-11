@@ -6,7 +6,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
-fdescribe('EditJobInfoComponent', () => {
+describe('EditJobInfoComponent', () => {
   let component: EditJobInfoComponent;
   let fixture: ComponentFixture<EditJobInfoComponent>;
   let modalService: NgbModal;

@@ -7,7 +7,7 @@ import {MockJobChat} from "../../../MockData/MockJobChat";
 import {of, throwError} from "rxjs";
 import {DebugElement, SimpleChange} from "@angular/core";
 
-fdescribe('ChatReadStatusComponent', () => {
+describe('ChatReadStatusComponent', () => {
   let component: ChatReadStatusComponent;
   let fixture: ComponentFixture<ChatReadStatusComponent>;
   let chatService: jasmine.SpyObj<ChatService>;

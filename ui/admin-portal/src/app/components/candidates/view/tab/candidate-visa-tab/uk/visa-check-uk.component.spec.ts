@@ -34,7 +34,7 @@ import {
 import {RouterLinkStubDirective} from "../../../../../login/login.component.spec";
 import {DependantsComponent} from "../../../../intake/dependants/dependants.component";
 
-fdescribe('VisaCheckUkComponent', () => {
+describe('VisaCheckUkComponent', () => {
   let component: VisaCheckUkComponent;
   let fixture: ComponentFixture<VisaCheckUkComponent>;
   const mockCandidate = new MockCandidate();

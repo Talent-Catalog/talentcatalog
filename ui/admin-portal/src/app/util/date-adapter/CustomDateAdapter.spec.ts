@@ -16,7 +16,7 @@
 
 import {CustomDateAdapter} from "./ngb-date-adapter";
 
-fdescribe('CustomDateAdapter', () => {
+describe('CustomDateAdapter', () => {
   let adapter: CustomDateAdapter;
 
   beforeEach(() => {

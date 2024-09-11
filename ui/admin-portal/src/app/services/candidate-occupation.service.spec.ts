@@ -23,7 +23,7 @@ import {environment} from '../../environments/environment';
 import {User} from '../model/user';
 import {MockUser} from "../MockData/MockUser";
 
-fdescribe('CandidateOccupationService', () => {
+describe('CandidateOccupationService', () => {
   let service: CandidateOccupationService;
   let httpMock: HttpTestingController;
   const apiUrl = environment.apiUrl + '/candidate-occupation';

@@ -22,7 +22,7 @@ import {of} from 'rxjs';
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
 import {config_test} from "../../../../config-test";
 
-fdescribe('ResetPasswordComponent', () => {
+describe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
   let fixture: ComponentFixture<ResetPasswordComponent>;
   let userService: jasmine.SpyObj<UserService>;

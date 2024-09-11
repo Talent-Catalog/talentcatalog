@@ -4,7 +4,7 @@ import {RelocatingDependantsComponent} from './relocating-dependants.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {By} from '@angular/platform-browser';
 import {NgSelectModule} from '@ng-select/ng-select';
-import {DebugElement} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, DebugElement} from '@angular/core';
 import {CandidateDependant, DependantRelations} from "../../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -17,7 +17,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 
-fdescribe('RelocatingDependantsComponent', () => {
+describe('RelocatingDependantsComponent', () => {
   let component: RelocatingDependantsComponent;
   let fixture: ComponentFixture<RelocatingDependantsComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
@@ -51,7 +51,8 @@ fdescribe('RelocatingDependantsComponent', () => {
         { provide: CandidateOpportunityService, useValue: candidateOpportunityServiceSpy },
         { provide: CandidateDependantService, useValue: candidateDependantServiceSpy },
         { provide: AuthorizationService, useValue: authorizationServiceSpy }
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
 
     candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;

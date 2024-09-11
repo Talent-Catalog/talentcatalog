@@ -25,7 +25,7 @@ import {of} from "rxjs";
 import {CreateLanguageComponent} from "./create/create-language.component";
 import {MockUser} from "../../../MockData/MockUser";
 
-fdescribe('SearchLanguagesComponent', () => {
+describe('SearchLanguagesComponent', () => {
   let component: SearchLanguagesComponent;
   let fixture: ComponentFixture<SearchLanguagesComponent>;
   let languageServiceSpy: jasmine.SpyObj<LanguageService>;

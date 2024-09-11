@@ -6,7 +6,7 @@ import {NgxWigModule} from "ngx-wig";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../util/enum";
 
-fdescribe('CandidateStatusSelectorComponent', () => {
+describe('CandidateStatusSelectorComponent', () => {
   let component: CandidateStatusSelectorComponent;
   let fixture: ComponentFixture<CandidateStatusSelectorComponent>;
   let fb: FormBuilder;

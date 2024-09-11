@@ -25,7 +25,7 @@ import {
 } from '../model/candidate';
 import {SearchResults} from '../model/search-results';
 import {CandidateSource} from "../model/base";
-fdescribe('CandidateService', () => {
+describe('CandidateService', () => {
   let service: CandidateService;
   let httpMock: HttpTestingController;
 

@@ -22,7 +22,7 @@ import {SavedSearchService} from '../../services/saved-search.service';
 import {AuthenticationService} from '../../services/authentication.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-fdescribe('HomeComponent', () => {
+describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let localStorageService: jasmine.SpyObj<LocalStorageService>;

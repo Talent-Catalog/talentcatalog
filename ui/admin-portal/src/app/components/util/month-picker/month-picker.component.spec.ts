@@ -23,7 +23,7 @@ import {By} from "@angular/platform-browser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {generateYearArray} from "../../../util/year-helper";
 
-fdescribe('MonthPickerComponent', () => {
+describe('MonthPickerComponent', () => {
   let component: MonthPickerComponent;
   let fixture: ComponentFixture<MonthPickerComponent>;
   let debugElement: DebugElement;

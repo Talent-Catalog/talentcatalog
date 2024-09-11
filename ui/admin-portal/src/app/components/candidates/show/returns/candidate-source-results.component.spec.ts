@@ -32,7 +32,7 @@ import {LocalStorageModule} from "angular-2-local-storage";
 import {ReactiveFormsModule} from "@angular/forms";
 
 
-fdescribe('CandidateSourceResultsComponent', () => {
+describe('CandidateSourceResultsComponent', () => {
   let component: CandidateSourceResultsComponent;
   let fixture: ComponentFixture<CandidateSourceResultsComponent>;
   beforeEach(async () => {
@@ -73,7 +73,7 @@ fdescribe('CandidateSourceResultsComponent', () => {
   });
 
   it('should initialize with the correct initial state', () => {
-    expect(component.error).toBeUndefined();
+    expect(component.error).toBeNull();
     expect(component.pageNumber).toBeUndefined();
     expect(component.pageSize).toBeUndefined();
     expect(component.results).toBeUndefined();

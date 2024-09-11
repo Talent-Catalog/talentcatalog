@@ -27,7 +27,7 @@ import {
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 
-fdescribe('CreateCandidateJobExperienceComponent', () => {
+describe('CreateCandidateJobExperienceComponent', () => {
   let component: CreateCandidateJobExperienceComponent;
   let fixture: ComponentFixture<CreateCandidateJobExperienceComponent>;
   let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;

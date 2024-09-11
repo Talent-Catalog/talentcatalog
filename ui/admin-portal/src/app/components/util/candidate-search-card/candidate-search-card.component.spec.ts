@@ -24,7 +24,7 @@ import {Candidate} from "../../../model/candidate";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 
-fdescribe('CandidateSearchCardComponent', () => {
+describe('CandidateSearchCardComponent', () => {
   let component: CandidateSearchCardComponent;
   let fixture: ComponentFixture<CandidateSearchCardComponent>;
   let localStorageService: jasmine.SpyObj<LocalStorageService>;

@@ -22,7 +22,7 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNo} from "../../../../model/candidate";
 
-fdescribe('ResettlementThirdComponent', () => {
+describe('ResettlementThirdComponent', () => {
   let component: ResettlementThirdComponent;
   let fixture: ComponentFixture<ResettlementThirdComponent>;
 

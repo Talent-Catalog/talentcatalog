@@ -15,7 +15,7 @@
  */
 import {Reaction} from './reaction';
 import {DisplayUser} from './user';
-fdescribe('Reaction Interface Tests', () => {
+describe('Reaction Interface Tests', () => {
   let testReaction: Reaction;
 
   beforeEach(() => {

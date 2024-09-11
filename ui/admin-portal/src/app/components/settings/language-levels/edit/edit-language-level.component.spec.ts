@@ -23,7 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LanguageLevel} from "../../../../model/language-level";
 import {of, throwError} from "rxjs";
 
-fdescribe('EditLanguageLevelComponent', () => {
+describe('EditLanguageLevelComponent', () => {
   let component: EditLanguageLevelComponent;
   let fixture: ComponentFixture<EditLanguageLevelComponent>;
   let languageLevelServiceSpy: jasmine.SpyObj<LanguageLevelService>;

@@ -22,7 +22,7 @@ import {
 } from "./saved-list";
 import {CandidateStatus} from "./candidate";
 
-fdescribe('SavedList Interface Tests', () => {
+describe('SavedList Interface Tests', () => {
 
   // Sample SavedList object for testing
   let testSavedList: SavedList;
@@ -61,7 +61,7 @@ fdescribe('SavedList Interface Tests', () => {
 
 });
 
-fdescribe('UpdateSavedListContentsRequest Interface Tests', () => {
+describe('UpdateSavedListContentsRequest Interface Tests', () => {
 
   // Sample UpdateSavedListContentsRequest object for testing
   let updateRequest: UpdateSavedListContentsRequest;
@@ -92,7 +92,7 @@ fdescribe('UpdateSavedListContentsRequest Interface Tests', () => {
 
 });
 
-fdescribe('PublishedDocColumnDef Class Tests', () => {
+describe('PublishedDocColumnDef Class Tests', () => {
 
   // Sample PublishedDocColumnDef object for testing
   let columnDef: PublishedDocColumnDef;

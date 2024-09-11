@@ -329,7 +329,6 @@ export interface CandidateVisa {
   createdDate?: number;
   updatedBy?: User;
   updatedDate?: number;
-  visaEligibilityAssessment?: YesNo;
   pathwayAssessment?: YesNoUnsure;
   pathwayAssessmentNotes?: string;
   destinationFamily?: FamilyRelations;
@@ -557,12 +556,14 @@ export enum YesNoUnemployedOther {
 export enum YesNo {
   Yes = "Yes",
   No = "No",
+  NoResponse = "NoResponse"
 }
 
 export enum YesNoUnsure {
   Yes = "Yes",
   No = "No",
-  Unsure = "Unsure"
+  Unsure = "Unsure",
+  NoResponse = "NoResponse"
 }
 
 export enum IeltsStatus {
@@ -714,8 +715,7 @@ export function getIeltsScoreTypeString(candidate: Candidate): string {
  * Returns the immigration pathway link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationPathwayInfoLink(countryId: number): string {
   switch (countryId) {
@@ -733,8 +733,7 @@ export function getDestinationPathwayInfoLink(countryId: number): string {
  * Returns the occupation category help link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationOccupationCatLink(countryId: number): string {
   switch (countryId) {
@@ -752,8 +751,7 @@ export function getDestinationOccupationCatLink(countryId: number): string {
  * Returns the occupation sub category help link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationOccupationSubcatLink(countryId: number): string {
   switch (countryId) {

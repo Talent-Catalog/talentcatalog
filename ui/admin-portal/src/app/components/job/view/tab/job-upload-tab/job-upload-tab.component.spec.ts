@@ -8,7 +8,7 @@ import {ViewJobUploadsComponent} from "../../uploads/view-job-uploads/view-job-u
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 
-fdescribe('JobUploadTabComponent', () => {
+describe('JobUploadTabComponent', () => {
   let component: JobUploadTabComponent;
   let fixture: ComponentFixture<JobUploadTabComponent>;
 

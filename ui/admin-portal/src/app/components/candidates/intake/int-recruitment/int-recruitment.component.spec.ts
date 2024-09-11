@@ -22,7 +22,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateIntakeData, IntRecruitReason} from "../../../../model/candidate";
 
-fdescribe('IntRecruitmentComponent', () => {
+describe('IntRecruitmentComponent', () => {
   let component: IntRecruitmentComponent;
   let fixture: ComponentFixture<IntRecruitmentComponent>;
   const mockCandidateIntakeData: CandidateIntakeData = {

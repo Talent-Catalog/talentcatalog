@@ -25,7 +25,7 @@ import {
 } from "../../../../candidate-opp/candidate-opps/candidate-opps.component";
 import {LocalStorageModule} from "angular-2-local-storage";
 
-fdescribe('ViewCandidateJobsComponent', () => {
+describe('ViewCandidateJobsComponent', () => {
   let component: ViewCandidateJobsComponent;
   let fixture: ComponentFixture<ViewCandidateJobsComponent>;
 

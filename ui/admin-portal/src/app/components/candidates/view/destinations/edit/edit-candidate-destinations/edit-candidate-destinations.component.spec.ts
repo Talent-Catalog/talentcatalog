@@ -11,7 +11,7 @@ import {
 } from "../../../../../../services/candidate-destination.service";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 
-fdescribe('EditCandidateDestinationsComponent', () => {
+describe('EditCandidateDestinationsComponent', () => {
   let component: EditCandidateDestinationsComponent;
   let fixture: ComponentFixture<EditCandidateDestinationsComponent>;
   let candidateDestinationServiceSpy: jasmine.SpyObj<CandidateDestinationService>;

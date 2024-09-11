@@ -3,7 +3,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 
-fdescribe('InputLinkComponent', () => {
+describe('InputLinkComponent', () => {
   let component: InputLinkComponent;
   let fixture: ComponentFixture<InputLinkComponent>;
   let modalMock: Partial<NgbActiveModal>;

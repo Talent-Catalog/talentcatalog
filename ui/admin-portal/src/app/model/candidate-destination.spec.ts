@@ -18,7 +18,7 @@ import {CandidateDestination} from "./candidate-destination";
 import {MockCandidate} from "../MockData/MockCandidate";
 import {YesNoUnsure} from "./candidate";
 
-fdescribe('CandidateDestination Interface', () => {
+describe('CandidateDestination Interface', () => {
   const mockCandidate = new MockCandidate();
   it('should create an object that conforms to the CandidateDestination interface', () => {
     const destination: CandidateDestination = {

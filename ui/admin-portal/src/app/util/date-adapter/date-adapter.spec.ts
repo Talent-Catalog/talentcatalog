@@ -16,7 +16,7 @@
 
 import {dateString, toDateOnly} from "./date-adapter";
 
-fdescribe('dateString', () => {
+describe('dateString', () => {
   it('should format the date as "dd MMM yy"', () => {
     const dateObj = new Date('2023-07-09T12:34:56Z');
     const formattedDate = dateString(dateObj);
@@ -24,7 +24,7 @@ fdescribe('dateString', () => {
   });
 });
 
-fdescribe('toDateOnly', () => {
+describe('toDateOnly', () => {
   it('should return the oldest possible date for null input', () => {
     const result = toDateOnly(null);
     expect(result).toEqual(new Date(0));

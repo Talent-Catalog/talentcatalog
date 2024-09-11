@@ -17,7 +17,7 @@
 
 import {saveBlob} from "./file";
 
-fdescribe('saveBlob', () => {
+describe('saveBlob', () => {
   let blob: Blob;
   let filename: string;
 
