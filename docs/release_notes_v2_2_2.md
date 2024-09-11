@@ -42,7 +42,7 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
 
-  <div href="./v222/speed_improvements" class="card-full-width">
+  <div class="card-full-width">
     <img src="./assets/images/v222/NewStatsButton.png" alt="New stats button" class="card-image">
     <div class="card-body">
       <div class="card-title">New way of running stats on saved searches</div>
@@ -84,6 +84,41 @@ Check out the newest features and enhancements.
  </div>
 
 </div>
+
+## User Guides
+
+Bookmark these user guides for details on TC Chats and Employer Access:
+
+<div class="card-container">
+
+  <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" class="card">
+    <img src="./assets/images/v222/TcChatsExplainer.png" alt="TC Chats Explainer" class="card-image">
+    <div class="card-body">
+      <div class="card-title">TC Chats Explainer</div>
+      <div class="card-description">
+        An explainer doc to help users understand TC chats.
+      </div>
+      <div class="card-footer">
+        Learn more
+      </div>
+    </div>
+  </a>
+
+  <a href="https://docs.google.com/document/d/1aI7dTq9wwucPmY7UMjpsjn9V5sLf1WWpYnhiA_9q43U/edit?usp=sharing" class="card">
+    <img src="./assets/images/v222/AutomatedJobChatsDark.svg" alt="Employer Access User Guide" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Employer Access User Guide</div>
+      <div class="card-description">
+        TC user guide for employers.
+      </div>
+      <div class="card-footer">
+        Learn more
+      </div>
+    </div>
+  </a>
+
+</div>
+
 
 ## General Improvements
 - Update and sync relocating dependants to SF on the candidate case or on the candidate's visa check
