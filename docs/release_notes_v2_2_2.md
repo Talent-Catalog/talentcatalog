@@ -142,7 +142,7 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 - Elasticsearch index updated in all data interactions with candidates
 - Candidates' managing partner can now be reassigned in bulk from Settings > System Admin API, improving efficiency and data integrity
 - Consolidate UNHCR Registered and UNHCR Status fields, now stored in a single UNHCR Status field which provides most informative and up to date data.
-
+- Handle invisible LSEP characters in some candidates' job experience descriptions that were preventing CV downloads
 
 # UI / UX Enhancements
 
@@ -187,12 +187,15 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 - Updated the mark as read button and removed if a chat is already read
 - Disabled buttons appear greyed out to help active buttons stand out on the page
 - Candidate search card fills the window height
-
+- Switch off Stats menu access for employer users
+- Display TC splash image on reset password screens
+- Add custom partner logos for Map India and IRC
+- Allow all columns to be selectable in list and search browse and full screen views
+- Fixed an issue where the column select modal resulted in an error when closed with the Escape key
 
 # Security Fixes
 
 - Added MFA to the AWS Production environment for an additional layer of security
-
 
 # Bug Fixes
 
@@ -211,12 +214,12 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 - Potential password exposure in server logs removed
 - Pop-ups with a 'select list' dropdown made larger to avoid list names being cut off
 
-
 # Developer Notes
 
 ## Test Coverage
 
 ## Code Refactoring
+
 - Deprecated candidate visa job check fields removed from code
 - Emoji picker code refactored for better readability
 
@@ -224,7 +227,6 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 
 
 ## Cloud Enhancements
-
 
 
 
