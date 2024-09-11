@@ -16,19 +16,18 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.ChatPost;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
     JpaSpecificationExecutor<ChatPost> {
 
-    Optional<List<ChatPost>> findByJobChatId(Long chatId);
+    Optional<List<ChatPost>> findByJobChatIdOrderByIdAsc(Long chatId);
 
     @Query(
         value="SELECT id FROM chat_post p WHERE p.job_chat_id = :chatId ORDER BY p.id DESC LIMIT 1",
