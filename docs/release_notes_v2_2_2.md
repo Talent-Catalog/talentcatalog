@@ -109,7 +109,7 @@ Bookmark these user guides for details on TC Chats and Employer Access:
     <div class="card-body">
       <div class="card-title">Employer Access User Guide</div>
       <div class="card-description">
-        TC user guide for employers.
+        User guide for employers directly accessing the TC.
       </div>
       <div class="card-footer">
         Learn more
