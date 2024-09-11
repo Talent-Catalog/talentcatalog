@@ -109,6 +109,22 @@ export class AuthorizationService {
   }
 
   /**
+   * True if the currently logged-in user is permitted to see candidate contact details
+   */
+  canViewCandidateContact(): boolean {
+    let result: boolean = false;
+    if (this.isSourcePartner() || this.isJobCreator()) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.partneradmin:
+          result = true;
+      }
+    }
+    return result;
+  }
+
+  /**
    * True if the logged-in user work for the source partner that is currently managing the
    * given candidate
    * @param candidate
@@ -436,7 +452,7 @@ export class AuthorizationService {
    * @param candidateSource Candidate source - ie SavedList or SavedSearch
    * @return true if can be edited, false if source is null
    */
-  canEditCandidateSource(candidateSource: CandidateSource) {
+    canEditCandidateSource(candidateSource: CandidateSource) {
     let editable = false;
     if (candidateSource) {
       if (this.isCandidateSourceMine(candidateSource)) {
