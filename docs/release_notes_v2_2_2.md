@@ -209,6 +209,8 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 # Security Fixes
 
 - Added MFA to the AWS Production environment for an additional layer of security
+- Rotated, deactivated, and removed unused and quarantined AWS access keys for security breach mitigation
+- Restricted visibility of candidate contact fields in list and search column selectors
 
 # Bug Fixes
 
