@@ -255,6 +255,12 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 - Deployed AWS Elasticache Redis clusters to reduce DB user lookups and improve general system performance
 - Renewed RDS database SSL certificates on AWS production and staging cloud environments
 
+## Logging and Monitoring
+
+- Implemented new log builders for improved local and cloud logging and diagnostic capability
+- Fixed repetitive expired JWT token errors by properly handling the first occurrence of an expired token; requiring a fresh user login in this scenario
+- Introduced AWS Cloudwatch alerts with AWS Lambdas to auto-restart TC services on detection of high cloud resource utilisation
+
 
 ---
 
