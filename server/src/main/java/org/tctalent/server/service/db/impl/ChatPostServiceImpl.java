@@ -160,7 +160,7 @@ public class ChatPostServiceImpl implements ChatPostService {
     }
 
     public List<ChatPost> listChatPosts(long chatId) {
-        return chatPostRepository.findByJobChatId(chatId)
+        return chatPostRepository.findByJobChatIdOrderByIdAsc(chatId)
             .orElseThrow(() -> new NoSuchObjectException(JobChat.class, chatId));
     }
 
