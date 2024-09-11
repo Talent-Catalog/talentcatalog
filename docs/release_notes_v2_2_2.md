@@ -85,7 +85,7 @@ Check out the newest features and enhancements.
 
 </div>
 
-## User Guides
+# User Guides
 
 Bookmark these user guides for details on TC Chats and Employer Access:
 
@@ -105,7 +105,7 @@ Bookmark these user guides for details on TC Chats and Employer Access:
   </a>
 
   <a href="https://docs.google.com/document/d/1aI7dTq9wwucPmY7UMjpsjn9V5sLf1WWpYnhiA_9q43U/edit?usp=sharing" class="card">
-    <img src="./assets/images/v222/AutomatedJobChatsDark.svg" alt="Employer Access User Guide" class="card-image">
+    <img src="./assets/images/v222/EmployerAccessUserGuide.png" alt="Employer Access User Guide" class="card-image">
     <div class="card-body">
       <div class="card-title">Employer Access User Guide</div>
       <div class="card-description">
