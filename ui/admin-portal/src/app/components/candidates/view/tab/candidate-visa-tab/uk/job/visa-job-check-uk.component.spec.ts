@@ -15,7 +15,7 @@ import {mockCandidateIntakeData} from "../../../candidate-intake-tab/candidate-i
 import {MockCandidateVisaJobCheck} from "../../../../../../../MockData/MockCandidateVisaCheck";
 import {mockCandidateOpportunity} from "../../../../../../../MockData/MockCandidateOpportunity";
 
-fdescribe('VisaJobCheckUkComponent', () => {
+describe('VisaJobCheckUkComponent', () => {
   let component: VisaJobCheckUkComponent;
   let fixture: ComponentFixture<VisaJobCheckUkComponent>;
   const mockCandidate = new MockCandidate();
