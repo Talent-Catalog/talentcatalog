@@ -204,15 +204,15 @@
         <ng-template ngbNavContent>
           <app-view-chat-posts
             [readOnly] = "isReadOnlyUser()"
-            [candidateId]="opp.candidate.id"
-            [jobChatType]="JobChatType.CandidateProspect"
+            [chat]="candidateChat"
           >
           </app-view-chat-posts>
         </ng-template>
       </ng-container>
 
-      <!-- Chat including source partner and job creator-->
-      <ng-container ngbNavItem="CandidateRecruiting" *ngIf="candidateRecruitingTabVisible && cvReviewStageOrMore()">
+      <!-- Chat including source partner or job creator (whichever you are not), and candidate-->
+      <ng-container ngbNavItem="CandidateRecruiting"
+                    *ngIf="candidateRecruitingTabVisible && cvReviewStageOrMore()">
         <a ngbNavLink [title]="'Chat ' + candidateRecruitingChat?.id">{{candidateRecruitingTabTitle}}
           <app-chat-read-status *ngIf="candidateRecruitingChat"
             [chats]="[candidateRecruitingChat]"
@@ -222,9 +222,25 @@
         <ng-template ngbNavContent>
           <app-view-chat-posts
             [readOnly] = "isReadOnlyUser()"
-            [candidateId]="opp.candidate.id"
-            [jobId]="opp.jobOpp.id"
-            [jobChatType]="JobChatType.CandidateRecruiting"
+            [chat] = "candidateRecruitingChat"
+          >
+          </app-view-chat-posts>
+        </ng-template>
+      </ng-container>
+
+      <!-- Chat with source partner or job creator (whichever you are not)-->
+      <ng-container ngbNavItem="JobCreatorSourcePartner"
+                    *ngIf="jobCreatorSourcePartnerTabVisible">
+        <a ngbNavLink [title]="'Chat ' + jobCreatorSourcePartnerChat?.id">{{jobCreatorSourcePartnerTabTitle}}
+          <app-chat-read-status *ngIf="jobCreatorSourcePartnerChat"
+            [chats]="[jobCreatorSourcePartnerChat]"
+          >
+          </app-chat-read-status>
+        </a>
+        <ng-template ngbNavContent>
+          <app-view-chat-posts
+            [readOnly] = "isReadOnlyUser()"
+            [chat]="jobCreatorSourcePartnerChat"
           >
           </app-view-chat-posts>
         </ng-template>
