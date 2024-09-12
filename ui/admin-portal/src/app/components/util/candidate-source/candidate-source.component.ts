@@ -117,8 +117,13 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     const candidateSourceChange = changes?.candidateSource;
 
-    if (candidateSourceChange?.currentValue && candidateSourceChange.previousValue !== candidateSourceChange.currentValue) {
+    if (this.seeMore && candidateSourceChange?.currentValue
+      && candidateSourceChange.previousValue !== candidateSourceChange.currentValue) {
       const candidateSourceId = candidateSourceChange.currentValue.id;
+
+      let oldFilter = this.seeMore && changes && changes.candidateSource
+          && changes.candidateSource.previousValue !== changes.candidateSource.currentValue;
+      let oldIdCheck = this.candidateSource.id;
 
       //Only fetch if we have an id - otherwise changes will just be local
       //modifications of a candidate source which has not been created yet.
@@ -134,6 +139,22 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
   }
+  //todo Need to better understand the semantics of seeMore - it appears to be only linked to
+  //saved searches.
+  //Here is old ngOnChanges code with original doc.
+  // ngOnChanges (changes: SimpleChanges){
+  //   // WHEN candidateSource changes IF showAll fetch the savedSearch object
+  //   // which has the multi select Names to display (not just Ids).
+  //   if (this.seeMore && changes && changes.candidateSource
+  //     && changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
+  //
+  //     //Only fetch if we have an id - otherwise changes will just be local
+  //     //modifications of a candidate source which has not been created yet.
+  //     if (this.candidateSource.id) {
+  //       this.getSavedSearch(this.candidateSource.id, DtoType.EXTENDED);
+  //     }
+  //   }
+  // }
 
   toggleShowMore() {
     this.seeMore = !this.seeMore;
