@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,22 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
-import {AbstractControl} from "@angular/forms";
-
-@Component({
-  selector: 'app-form-control-error',
-  templateUrl: './form-control-error.component.html',
-  styleUrls: ['./form-control-error.component.scss']
-})
-export class FormControlErrorComponent {
-
-  @Input()
-  control: AbstractControl;
-
-  @Input()
-  showAlways: boolean;
-
-  constructor() { }
-
-}
+alter table salesforce_job_opp
+    drop column recruitment_process,
+    drop column employer_cost_commitment;

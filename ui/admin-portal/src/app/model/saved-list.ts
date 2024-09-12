@@ -72,6 +72,10 @@ export function isSavedList(source: CandidateSource): source is SavedList {
   return source == null ? false : !isSavedSearch(source);
 }
 
+export function isSubmissionList(source: CandidateSource): source is SavedList {
+  return isSavedList(source) && source.registeredJob && source.sfJobOpp != null;
+}
+
 export interface UpdateSavedListInfoRequest {
   name?: string;
   fixed?: boolean;

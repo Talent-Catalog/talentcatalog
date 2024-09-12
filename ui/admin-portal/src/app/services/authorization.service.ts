@@ -109,6 +109,22 @@ export class AuthorizationService {
   }
 
   /**
+   * True if the currently logged-in user is permitted to see candidate contact details
+   */
+  canViewCandidateContact(): boolean {
+    let result: boolean = false;
+    if (this.isSourcePartner() || this.isJobCreator()) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.partneradmin:
+          result = true;
+      }
+    }
+    return result;
+  }
+
+  /**
    * True if the logged-in user work for the source partner that is currently managing the
    * given candidate
    * @param candidate
@@ -236,10 +252,27 @@ export class AuthorizationService {
   }
 
   /**
+   * True if the currently logged in user is permitted to import to lists.
+   */
+  canImportToList(): boolean {
+    //Read only and employer partners can't import to lists.
+    return !this.isReadOnly() && !this.isEmployerPartner();
+  }
+
+  /**
+   * True if the currently logged in user is permitted to export data from candidate sources.
+   */
+  canExportFromSource(): boolean {
+    //Employer partners can't export.
+    return !this.isEmployerPartner();
+  }
+
+  /**
    * True if the currently logged in user is permitted to publish lists.
    */
   canPublishList(): boolean {
-    return !this.isReadOnly() && this.commonSeniorPartnerAuth();
+    //Read only and employer partners can't publish lists.
+    return !this.isReadOnly() && !this.isEmployerPartner() && this.commonSeniorPartnerAuth();
   }
 
   /**
@@ -247,6 +280,14 @@ export class AuthorizationService {
    */
   canAccessSalesforce(): boolean {
     return this.isDefaultSourcePartner();
+  }
+
+  /**
+   * True if the currently logged in user is permitted to change a candidate's status.
+   */
+  canUpdateCandidateStatus(): boolean {
+    //Employer partners cannot change a candidate's status
+    return !this.isReadOnly() && !this.isEmployerPartner() && this.commonSeniorPartnerAuth();
   }
 
   /**
@@ -411,7 +452,7 @@ export class AuthorizationService {
    * @param candidateSource Candidate source - ie SavedList or SavedSearch
    * @return true if can be edited, false if source is null
    */
-  canEditCandidateSource(candidateSource: CandidateSource) {
+    canEditCandidateSource(candidateSource: CandidateSource) {
     let editable = false;
     if (candidateSource) {
       if (this.isCandidateSourceMine(candidateSource)) {
