@@ -48,6 +48,7 @@ public class SavedListBuilderSelector {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            .add("sfJobOpp", jobOppIdsDto())
             ;
     }
 
