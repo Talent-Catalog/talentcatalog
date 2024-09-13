@@ -21,13 +21,10 @@
 
   <ng-content></ng-content>
 
-  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-      <li class="breadcrumb-item active" aria-current="page">
+  <nav aria-label="breadcrumb" class="breadcrumb-container" [hidden]="!showBreadcrumb">
+    <h3 class="breadcrumb-heading">
         {{getBreadcrumb()}}
-      </li>
-    </ol>
+    </h3>
   </nav>
 
   <div class="alert alert-danger" *ngIf="error">

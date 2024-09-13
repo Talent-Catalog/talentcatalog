@@ -111,13 +111,13 @@ export function isSavedSearch(source: CandidateSource): source is SavedSearch {
 export function getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
   const sourceType = getCandidateSourceType(candidateSource);
   return candidateSource != null ?
-    (sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')') : sourceType;
+    ('Candidate ' + sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')') : sourceType;
 }
 
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
   let breadcrumb: string = "";
   if (savedSearch) {
-    breadcrumb += getCandidateSourceType(savedSearch) + ": ";
+    breadcrumb += 'Candidate ' + getCandidateSourceType(savedSearch) + ": ";
 
     if (savedSearch.defaultSearch) {
       breadcrumb += "Unsaved"
