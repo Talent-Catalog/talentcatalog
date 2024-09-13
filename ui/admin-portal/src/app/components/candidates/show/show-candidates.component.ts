@@ -154,6 +154,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   updatingStatuses: boolean;
   updatingTasks: boolean;
   savingSelection: boolean;
+  showDescription: boolean = false;
   searchForm: FormGroup;
   monitoredTask: Task;
   tasksAssignedToList: Task[];

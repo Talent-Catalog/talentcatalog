@@ -31,11 +31,25 @@
     {{error}}
   </div>
 
-  <div>
-    <app-candidate-source-description
-      [candidateSource]="candidateSource"
-    >
-    </app-candidate-source-description>
+  <!--Toggle description -->
+  <div class="mb-3">
+    <a class="link" (click)="showDescription = !showDescription">
+      <ng-container *ngIf="!showDescription">
+        <i class="fas fa-caret-up"></i> Show description
+      </ng-container>
+      <ng-container *ngIf="showDescription">
+        <i class="fas fa-caret-right"></i> Hide description
+      </ng-container>
+    </a>
+  </div>
+
+  <div [hidden]="!showDescription">
+    <div>
+      <app-candidate-source-description
+        [candidateSource]="candidateSource"
+      >
+      </app-candidate-source-description>
+    </div>
   </div>
 
   <div class="results-area">
