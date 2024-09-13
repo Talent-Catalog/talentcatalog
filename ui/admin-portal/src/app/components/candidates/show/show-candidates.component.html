@@ -23,7 +23,7 @@
 
   <nav aria-label="breadcrumb" class="breadcrumb-container" [hidden]="!showBreadcrumb">
     <h3 class="breadcrumb-heading">
-        {{getBreadcrumb()}}
+      <i *ngIf="isSubmissionList()" class="fas fa-rectangle-list"></i> {{getBreadcrumb()}}
     </h3>
   </nav>
 

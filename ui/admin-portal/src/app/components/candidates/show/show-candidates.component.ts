@@ -44,10 +44,9 @@ import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-
 import {HttpClient} from '@angular/common/http';
 import {
   ClearSelectionRequest,
-  getCandidateSourceBreadcrumb,
   getCandidateSourceExternalHref,
   getCandidateSourceNavigation,
-  getCandidateSourceStatsNavigation,
+  getCandidateSourceStatsNavigation, getCandidateSourceType,
   getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
   isSavedSearch,
@@ -76,7 +75,7 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   IHasSetOfCandidates,
-  isSavedList,
+  isSavedList, isSubmissionList,
   PublishedDocColumnConfig,
   PublishedDocImportReport,
   PublishListRequest,
@@ -731,9 +730,16 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       const infos = this.savedSearchService.getSavedSearchTypeInfos();
       breadcrumb = getSavedSearchBreadcrumb(this.candidateSource, infos);
     } else {
-      breadcrumb = getCandidateSourceBreadcrumb(this.candidateSource);
+      breadcrumb = this.getCandidateSourceBreadcrumb(this.candidateSource);
     }
     return breadcrumb;
+  }
+
+  getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
+    const sourceType = getCandidateSourceType(candidateSource);
+    let sourcePrefix = isSubmissionList(candidateSource) ? "Submission" : "Candidate";
+    return candidateSource != null ?
+      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')') : sourceType;
   }
 
   onReviewStatusFilterChange() {
