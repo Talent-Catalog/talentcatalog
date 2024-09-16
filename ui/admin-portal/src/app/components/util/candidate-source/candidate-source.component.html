@@ -39,6 +39,54 @@
             No published doc associated with list, link will not go anywhere.
           </div>
         </div>
+        <div class="w-100 mt-2" *ngIf="seeMore && isSavedSearch()">
+          <div *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
+          <div *ngIf="savedSearch.simpleQueryString">Elasticsearch: {{savedSearch.simpleQueryString}},</div>
+          <div *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
+          <div *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
+          <div *ngIf="savedSearch.vettedOccupationNames">Vetted Occupations: <span
+            *ngFor="let name of savedSearch.vettedOccupationNames">{{name}},</span></div>
+          <div *ngIf="savedSearch.englishMinWrittenLevel">English Written: {{savedSearch.englishWrittenLevel}}
+            ,
+          </div>
+          <div *ngIf="savedSearch.englishMinSpokenLevel">English Spoken: {{savedSearch.englishSpokenLevel}},
+          </div>
+          <div *ngIf="savedSearch.occupationNames">Occupations: <span
+            *ngFor="let name of savedSearch.occupationNames">{{name}},</span></div>
+          <div *ngIf="savedSearch.orProfileKeyword">Or Keyword: {{savedSearch.orProfileKeyword}},</div>
+          <div *ngIf="savedSearch.minAge || savedSearch.maxAge">Age: {{savedSearch.minAge}}
+            -  {{savedSearch.maxAge}},
+          </div>
+          <div *ngIf="savedSearch.createdFrom">Registered: {{savedSearch.createdFrom}}
+            - {{savedSearch.createdTo}},
+          </div>
+          <div *ngIf="savedSearch.lastModifiedFrom">Modified: {{savedSearch.lastModifiedFrom}}
+            - {{savedSearch.lastModifiedTo}},
+          </div>
+          <div *ngIf="savedSearch.countryNames">Countries: <span
+            *ngFor="let name of savedSearch.countryNames">{{name}}, </span></div>
+          <div *ngIf="savedSearch.minEducationLevel">Min Education
+            Level: {{savedSearch.minEducationLevelName}},
+          </div>
+          <div *ngIf="savedSearch.educationMajors">Education Majors: <span
+            *ngFor="let name of savedSearch.educationMajors">{{name}},</span></div>
+          <div *ngIf="savedSearch.otherLanguageId">Other Language: {{savedSearch.otherLanguageId}}
+            <span *ngIf="savedSearch.otherSpokenLevel">Spoken:{{savedSearch.otherSpokenLevel}}</span>
+            <span *ngIf="savedSearch.otherWrittenLevel">Written:{{savedSearch.otherWrittenLevel}}</span>
+          </div>
+          <div *ngIf="savedSearch.partnerNames">Partners: <span
+            *ngFor="let name of savedSearch.partnerNames">{{name}},</span></div>
+          <div *ngIf="savedSearch.nationalityNames">Nationalities: <span
+            *ngFor="let name of savedSearch.nationalityNames">{{name}},</span></div>
+          <div *ngIf="savedSearch.gender">Gender: {{savedSearch.gender}},</div>
+          <div *ngIf="savedSearch.searchJoins">
+            <div *ngFor="let join of savedSearch.searchJoins">
+              <span><strong>{{join.searchType}} {{join.childSavedSearch.name}}</strong></span>
+            </div>
+          </div>
+
+
+        </div>
       </div>
       <div class="w-25 float-end">
         <div class="btn-toolbar">
@@ -78,55 +126,7 @@
           <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleShowMore()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
         </div>
       </div>
-    <div class="row ps-2 pt-1" *ngIf="seeMore && isSavedSearch()">
-      <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
-      <div class="w-100" *ngIf="savedSearch.simpleQueryString">Elasticsearch: {{savedSearch.simpleQueryString}},</div>
-      <div class="w-100" *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
-      <div class="w-100" *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
-      <div class="w-100" *ngIf="savedSearch.vettedOccupationNames">Vetted Occupations: <span
-        *ngFor="let name of savedSearch.vettedOccupationNames">{{name}},</span></div>
-      <div class="w-100" *ngIf="savedSearch.englishMinWrittenLevel">English Written: {{savedSearch.englishWrittenLevel}}
-        ,
-      </div>
-      <div class="w-100" *ngIf="savedSearch.englishMinSpokenLevel">English Spoken: {{savedSearch.englishSpokenLevel}},
-      </div>
-      <div class="w-100" *ngIf="savedSearch.occupationNames">Occupations: <span
-        *ngFor="let name of savedSearch.occupationNames">{{name}},</span></div>
-      <div class="w-100" *ngIf="savedSearch.orProfileKeyword">Or Keyword: {{savedSearch.orProfileKeyword}},</div>
-      <div class="w-100" *ngIf="savedSearch.minAge || savedSearch.maxAge">Age: {{savedSearch.minAge}}
-        -  {{savedSearch.maxAge}},
-      </div>
-      <div class="w-100" *ngIf="savedSearch.createdFrom">Registered: {{savedSearch.createdFrom}}
-        - {{savedSearch.createdTo}},
-      </div>
-      <div class="w-100" *ngIf="savedSearch.lastModifiedFrom">Modified: {{savedSearch.lastModifiedFrom}}
-        - {{savedSearch.lastModifiedTo}},
-      </div>
-      <div class="w-100" *ngIf="savedSearch.countryNames">Countries: <span
-        *ngFor="let name of savedSearch.countryNames">{{name}}, </span></div>
-      <div class="w-100" *ngIf="savedSearch.minEducationLevel">Min Education
-        Level: {{savedSearch.minEducationLevelName}},
-      </div>
-      <div class="w-100" *ngIf="savedSearch.educationMajors">Education Majors: <span
-        *ngFor="let name of savedSearch.educationMajors">{{name}},</span></div>
-      <div class="w-100" *ngIf="savedSearch.otherLanguageId">Other Language: {{savedSearch.otherLanguageId}}
-        <span *ngIf="savedSearch.otherSpokenLevel">Spoken:{{savedSearch.otherSpokenLevel}}</span>
-        <span *ngIf="savedSearch.otherWrittenLevel">Written:{{savedSearch.otherWrittenLevel}}</span>
-      </div>
-      <div class="w-100" *ngIf="savedSearch.partnerNames">Partners: <span
-        *ngFor="let name of savedSearch.partnerNames">{{name}},</span></div>
-      <div class="w-100" *ngIf="savedSearch.nationalityNames">Nationalities: <span
-        *ngFor="let name of savedSearch.nationalityNames">{{name}},</span></div>
-      <div class="w-100" *ngIf="savedSearch.gender">Gender: {{savedSearch.gender}},</div>
-      <div class="w-100" *ngIf="savedSearch.searchJoins">
-        <div *ngFor="let join of savedSearch.searchJoins">
-          <span><strong>{{join.searchType}} {{join.childSavedSearch.name}}</strong></span>
-        </div>
-      </div>
-
     </div>
-
-  </div>
   <div class="card-footer" *ngIf="seeMore">
     <div class="w-100">
       <app-updated-by [object]="candidateSource"></app-updated-by>
