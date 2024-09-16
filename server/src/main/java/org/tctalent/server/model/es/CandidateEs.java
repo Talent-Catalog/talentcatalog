@@ -261,6 +261,13 @@ public class CandidateEs {
         this.externalId = candidate.getExternalId();
         this.candidateNumber = candidate.getCandidateNumber();
 
+        this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
+            null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();
+        this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
+            null : candidate.getFullIntakeCompletedDate().toInstant().toEpochMilli();
+        this.surveyType = candidate.getSurveyType() == null ?
+            null : candidate.getSurveyType().getId();
+
         this.gender = candidate.getGender();
         this.country = candidate.getCountry() == null ? null
                 : candidate.getCountry().getName();
@@ -283,6 +290,7 @@ public class CandidateEs {
         this.residenceStatus = candidate.getResidenceStatus();
         this.ieltsScore = candidate.getIeltsScore();
         this.numberDependants = candidate.getNumberDependants();
+
 
         this.maxEducationLevel = null;
         if (candidate.getMaxEducationLevel() != null) {
@@ -413,13 +421,6 @@ public class CandidateEs {
                     }
                 }
             }
-            this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
-                null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();
-            this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
-                null : candidate.getFullIntakeCompletedDate().toInstant().toEpochMilli();
-
-            this.surveyType = candidate.getSurveyType() == null ?
-                null : candidate.getSurveyType().getId();
         }
 
         this.skills = new ArrayList<>();
