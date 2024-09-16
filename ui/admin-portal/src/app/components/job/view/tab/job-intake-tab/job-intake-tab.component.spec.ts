@@ -15,6 +15,7 @@ import {JobOppIntake} from "../../../../../model/job-opp-intake";
 import {MockJobOppIntake} from "../../../../../MockData/MockJobOppIntake";
 import {HttpClientModule} from "@angular/common/http";
 import {TranslateModule} from "@ngx-translate/core";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
 describe('JobIntakeTabComponent', () => {
   let component: JobIntakeTabComponent;
@@ -32,7 +33,8 @@ describe('JobIntakeTabComponent', () => {
         { provide: AuthenticationService, useValue: authServiceSpyObj },
         { provide: JobService, useValue: jobServiceObj  },
         FormBuilder
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
 
