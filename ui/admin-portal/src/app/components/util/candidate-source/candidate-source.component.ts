@@ -63,17 +63,23 @@ import {CandidateSourceCacheService} from "../../../services/candidate-source-ca
 })
 export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
 
-  // The data processing is dependant on these variables
+  // The data processing is dependent on these variables
   // The candidate source passed in
   @Input() candidateSource: CandidateSource;
   // If the extra data can be loaded for the dropdowns (get request)
   @Input() canLoad: boolean = true;
-  // Handles the toggle state of the candidate source (show less/show more)
+
+  //Controls whether extras data is displayed about the candidate source.
+  //If showMore is true, an ellipsis button is displayed which allows you to toggle the state of
+  //this value.
   @Input() seeMore: boolean;
 
-  // The font awesome icon buttons are dependant on these variables
-  @Input() showLink: boolean = true;
+  //Show more determines whether the ellipsis icon appears allowing you to request more detail
+  //about the candidate source.
   @Input() showMore: boolean = true;
+
+  // The font awesome icon buttons are dependent on these variables
+  @Input() showLink: boolean = true;
   @Input() showOpen: boolean = true;
   @Input() showRunStats: boolean = true;
   @Input() showWatch: boolean = true;
@@ -117,25 +123,29 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     const candidateSourceChange = changes?.candidateSource;
 
-    if (candidateSourceChange?.currentValue && candidateSourceChange.previousValue !== candidateSourceChange.currentValue) {
-      const candidateSourceId = candidateSourceChange.currentValue.id;
+    //Check if current source has changed
+    if (candidateSourceChange?.currentValue
+      && candidateSourceChange.previousValue !== candidateSourceChange.currentValue) {
 
-      //Only fetch if we have an id - otherwise changes will just be local
-      //modifications of a candidate source which has not been created yet.
-      if (candidateSourceId) {
-        // WHEN candidateSource changes IF seeMore fetch the extended savedSearch dto
-        // which has the multi select Names to display (not just Ids).
+      //We have special pre-processing for candidate sources which are saved searches.
+      //(There is no special pre-processing needed for saved lists)
+      if (isSavedSearch(this.candidateSource)) {
+        //If seeMore is set, we need to fetch extended data for the saved search.
+        //This extended data is the names of search filters (that we can display)
+        //- such as countries - rather than just their IDs.
         if (this.seeMore) {
-          this.getSavedSearch(candidateSourceId, DtoType.EXTENDED);
-        } else {
-          // Otherwise fetch full details, do not need extended details
-          this.getSavedSearch(candidateSourceId, DtoType.FULL);
+          //Only fetch extra data if we have an id - otherwise changes will just be local
+          //modifications of a candidate source which has not been created yet.
+          const candidateSourceId = candidateSourceChange.currentValue.id;
+          if (candidateSourceId) {
+            this.getSavedSearch(candidateSourceId, DtoType.EXTENDED);
+          }
         }
       }
     }
   }
 
-  toggleShowMore() {
+  toggleSeeMore() {
     this.seeMore = !this.seeMore;
     // Get extra data from saved search if needed (canLoad:true)
     if (this.canLoad) {

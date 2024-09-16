@@ -112,7 +112,6 @@ import {
 import {AssignTasksListComponent} from "../../tasks/assign-tasks-list/assign-tasks-list.component";
 import {Task} from "../../../model/task";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunity";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
@@ -1689,19 +1688,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       stage = getOpportunityStageName(opp);
     }
     return stage;
-  }
-
-  getCandidateOpportunityLink(candidate: Candidate): any[] {
-    const opp = this.getCandidateOppForThisJob(candidate);
-    return opp ? ['/opp', opp.id] : null;
-  }
-
-  /**
-   * Get candidate opportunity matching current job
-   * @param candidate Candidate who opportunities we need to search
-   */
-  getCandidateOppForThisJob(candidate: Candidate): CandidateOpportunity {
-    return candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
   }
 
   closeSelectedOpportunities() {
