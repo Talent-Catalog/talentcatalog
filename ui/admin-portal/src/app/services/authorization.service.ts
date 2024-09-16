@@ -334,6 +334,11 @@ export class AuthorizationService {
     return loggedInUser == null ? Role.limited : Role[loggedInUser.role];
   }
 
+  isJobCreatorUser(): boolean {
+    const loggedInUser = this.authenticationService.getLoggedInUser();
+    return loggedInUser == null ? false : loggedInUser.jobCreator;
+  }
+
   isJobCreatorPartner(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? false : loggedInUser.partner?.jobCreator;
@@ -348,6 +353,17 @@ export class AuthorizationService {
   isSourcePartner(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? false : loggedInUser.partner?.sourcePartner;
+  }
+
+  /**
+   * Return true if currently logged-in user is viewing the TC as a source person.
+   * <p/>
+   * This is more complicated that just asking whether the user works for a source partner because
+   * of TBB special status where it is both a source partner and a destination partner.
+   */
+  isViewingAsSource(): boolean {
+    //View as source partner as long as user is not a job creator.
+    return this.isSourcePartner() && !this.isJobCreatorUser();
   }
 
   /**

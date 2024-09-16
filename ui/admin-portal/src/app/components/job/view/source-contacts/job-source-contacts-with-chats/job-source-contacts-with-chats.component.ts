@@ -35,9 +35,8 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   ngOnInit(): void {
     this.computeChatHeader();
 
-    if (this.authorizationService.isSourcePartner()
-        && !this.authorizationService.isDefaultSourcePartner()) {
-      //Source partners (other than the default source partner) auto select and can only
+    if (this.authorizationService.isViewingAsSource()) {
+      //Source partners auto select and can only
       //display their chat with the destination partner associated with the job.
       this.selectedSourcePartner = this.authenticationService.getLoggedInUser().partner;
       this.displayChat();
@@ -81,15 +80,15 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   private computeChatHeader() {
     let name: string = "";
 
-    if (this.authorizationService.isJobCreatorPartner()) {
+    if (this.authorizationService.isViewingAsSource()) {
+      if (this.job) {
+        name = "recruiter (" + this.job.jobCreator?.name + ")";
+      }
+    } else {
       if (this.selectedSourcePartner) {
-        name = this.selectedSourcePartner.name;
+        name = "source partner: " + this.selectedSourcePartner.name;
       } else {
         name = ": Select partner to display chat with them"
-      }
-    } else if (this.authorizationService.isSourcePartner()) {
-      if (this.job) {
-        name = this.job.jobCreator?.name;
       }
     }
     this.chatHeader = "Chat with " + name;
