@@ -38,7 +38,7 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
     if (this.authorizationService.isSourcePartner()
         && !this.authorizationService.isDefaultSourcePartner()) {
       //Source partners (other than the default source partner) auto select and can only
-      //display their chat.
+      //display their chat with the destination partner associated with the job.
       this.selectedSourcePartner = this.authenticationService.getLoggedInUser().partner;
       this.displayChat();
 
