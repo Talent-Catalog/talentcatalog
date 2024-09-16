@@ -764,6 +764,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return !isSavedSearch(this.candidateSource);
   }
 
+  isSavedSearch(): boolean {
+    return isSavedSearch(this.candidateSource);
+  }
+
   isSwapSelectionSupported(): boolean {
     //Not supported for saved searches because swapping an empty selection on a search could
     //potentially end up selecting huge numbers of candidates - up to the whole database.
