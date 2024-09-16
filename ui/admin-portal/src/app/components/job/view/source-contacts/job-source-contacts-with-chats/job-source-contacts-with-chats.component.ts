@@ -81,7 +81,7 @@ export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   private computeChatHeader() {
     let name: string = "";
 
-    if (this.authorizationService.isJobCreator()) {
+    if (this.authorizationService.isJobCreatorPartner()) {
       if (this.selectedSourcePartner) {
         name = this.selectedSourcePartner.name;
       } else {
