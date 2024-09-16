@@ -46,17 +46,6 @@
         </label>
       </div>
     </div>
-
-      <div class="mb-3">
-        <app-joblink [jobId]="savedSearch.sfJobOpp.id"
-                     (jobSelection)="onJobSelection($event)"
-        ></app-joblink>
-      </div>
-
-    <div *ngIf="(savedSearch && !savedSearch.defaultSearch) || copy ">
-      <h4 *ngIf="copy">Copy Search:</h4>
-      <app-candidate-source [candidateSource]="savedSearch" [seeMore]="true" [showMore]="false" [showOpen]="false" [showWatch]="false"></app-candidate-source>
-    </div>
   </form>
 </div>
 
