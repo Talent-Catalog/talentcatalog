@@ -740,7 +740,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     const sourceType = getCandidateSourceType(candidateSource);
     let sourcePrefix = isSubmissionList(candidateSource) ? "Submission" : "Candidate";
     return candidateSource != null ?
-      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')') : sourceType;
+      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name) : sourceType;
   }
 
   onReviewStatusFilterChange() {

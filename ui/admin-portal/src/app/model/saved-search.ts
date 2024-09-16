@@ -129,7 +129,7 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
         }
       }
 
-      breadcrumb += savedSearch.name + " (" + savedSearch.id + ")";
+      breadcrumb += savedSearch.name;
     }
   }
   return breadcrumb;
