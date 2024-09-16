@@ -17,7 +17,7 @@ import {VisaCheckAuComponent} from "./visa-check-au.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
-import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -41,7 +41,7 @@ describe('VisaCheckAuComponent', () => {
         { provide: NgbModal, useValue: {} },
         { provide: LocalStorageService, useValue: {} }
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
   });
