@@ -26,6 +26,7 @@ import {UpdatedByComponent} from "../../../util/user/updated-by/updated-by.compo
 import {ShareableDocsComponent} from "../shareable-docs/shareable-docs.component";
 import {UserPipe} from "../../../util/user/user.pipe";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
 describe('ViewCandidateAttachmentComponent', () => {
   let component: ViewCandidateAttachmentComponent;
@@ -44,7 +45,8 @@ describe('ViewCandidateAttachmentComponent', () => {
         FormBuilder,
         { provide: CandidateAttachmentService, useValue: spy },
         NgbModal
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
 
