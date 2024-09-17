@@ -169,7 +169,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   doEditSource(){
-    // Remove from cache before editing
+    // Remove from cache when editing
     this.deleteFromCache(this.candidateSource);
     this.editSource.emit(this.candidateSource);
   }
@@ -199,7 +199,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   doToggleStarred() {
-    // Remove from cache before toggling starred
+    // Remove from cache when toggling starred
     this.deleteFromCache(this.candidateSource);
     this.toggleStarred.emit(this.candidateSource);
   }
@@ -209,7 +209,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   doToggleWatch() {
-    // Remove from cache before toggling watch
+    // Remove from cache when toggling watch
     this.deleteFromCache(this.candidateSource);
     this.toggleWatch.emit(this.candidateSource);
   }
