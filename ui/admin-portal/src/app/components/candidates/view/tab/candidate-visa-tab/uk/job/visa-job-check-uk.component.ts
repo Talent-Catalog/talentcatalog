@@ -6,9 +6,6 @@ import {
   CandidateVisaJobCheck
 } from "../../../../../../../model/candidate";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
-import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
-import {OccupationService} from "../../../../../../../services/occupation.service";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
@@ -28,9 +25,7 @@ export class VisaJobCheckUkComponent implements OnInit, AfterViewInit {
 
   error: string;
 
-  constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService,
-              private occupationService: OccupationService) {}
+  constructor() {}
 
   ngOnInit() {
     this.candidateOpportunity = this.candidate.candidateOpportunities
