@@ -75,7 +75,7 @@
           <button class="btn" *ngIf="showCopy" (click)="doCopySource()"><i class="fas fa-clone" title="Copy"></i></button>
           <button class="btn" *ngIf="showSelect" (click)="doSelectSource()"><i class="far fa-hand-pointer" title="Select"></i></button>
           <button class="btn" *ngIf="showDelete && isRemovable()" (click)="doDeleteSource()"><i class="fas fa-trash" title="Delete"></i></button>
-          <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleShowMore()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
+          <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleSeeMore()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
         </div>
       </div>
     <div class="row ps-2 pt-1" *ngIf="seeMore && isSavedSearch()">
