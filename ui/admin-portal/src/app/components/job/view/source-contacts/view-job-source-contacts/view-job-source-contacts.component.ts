@@ -129,9 +129,7 @@ export class ViewJobSourceContactsComponent implements OnInit {
   }
 
   isEditable(partner: Partner): boolean {
-    //Can only edit if not read only, a source partner and not a job creator user.
-    //(Note that TBB is a source partner as well as job creator partner. But TBB users who are
-    // jobCreators can't edit.)
+    //Can only edit if not read only, and viewing as source.
     let canEdit: boolean = !this.authorizationService.isReadOnly()
       && this.authorizationService.isViewingAsSource();
     if (canEdit) {
