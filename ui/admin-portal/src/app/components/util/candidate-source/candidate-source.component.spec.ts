@@ -97,7 +97,7 @@ describe('CandidateSourceComponent', () => {
   it('should toggle show more', () => {
     component.seeMore = false;
     savedSearchService.get.and.returnValue(of(new MockSavedSearch()));
-    component.toggleShowMore();
+    component.toggleSeeMore();
     expect(component.seeMore).toBeTrue();
   });
 

@@ -37,6 +37,7 @@ import {isSavedList, isSubmissionList, SavedListGetRequest} from "../../../model
 import {Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {AuthorizationService} from "../../../services/authorization.service";
+import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 
 @Directive()
 export class CandidateSourceBaseComponent {
@@ -306,6 +307,20 @@ export class CandidateSourceBaseComponent {
     //Employer partners can't resolve outstanding candidate tasks from a list
     return isSavedList(this.candidateSource) && !this.authorizationService.isEmployerPartner()
     && this.authorizationService.canManageCandidateTasks();
+  }
+
+
+  getCandidateOpportunityLink(candidate: Candidate): any[] {
+    const opp = this.getCandidateOppForThisJob(candidate);
+    return opp ? ['/opp', opp.id] : null;
+  }
+
+  /**
+   * Get candidate opportunity matching current job
+   * @param candidate Candidate who opportunities we need to search
+   */
+  getCandidateOppForThisJob(candidate: Candidate): CandidateOpportunity {
+    return candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
   }
 
   isShareable(): boolean {
