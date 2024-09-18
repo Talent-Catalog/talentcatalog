@@ -13,18 +13,16 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <a href="./v222/employer_access_beta_testing" class="card">
-      <div class="card-full-width">
-        <img src="./assets/images/v222/EmployerAccessNewJobScreenIress.png" alt="Employer Access New Job Screen - Iress" class="card-image">
-        <div class="card-body">
-          <div class="card-title">Employer</div>
-          <div class="card-description">
-            Employer Access Beta Testing with Iress
-          </div>
-          <div class="card-footer">
-            Learn more
-          </div>
-        </div>
-     </div>
+    <img src="./assets/images/v222/EmployerAccessNewJobScreenIress.png" alt="Employer Access New Job Screen - Iress" class="card-image">
+    <div class="card-full-width">
+      <div class="card-title">Employer</div>
+      <div class="card-description">
+        Employer Access Beta Testing with Iress
+      </div>
+      <div class="card-footer">
+        Learn more
+      </div>
+    </div>
   </a>
 
 </div>
