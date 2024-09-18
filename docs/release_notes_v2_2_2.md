@@ -12,7 +12,7 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
 
-  <a href="./v222/automated_messages" class="card">
+  <a href="./v222/employer_access_beta_testing" class="card">
       <div class="card-full-width">
         <img src="./assets/images/v222/EmployerAccessNewJobScreenIress.png" alt="Employer Access New Job Screen - Iress" class="card-image">
         <div class="card-body">
