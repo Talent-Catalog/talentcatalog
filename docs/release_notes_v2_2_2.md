@@ -13,6 +13,25 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <a href="./v222/automated_messages" class="card">
+      <div class="card-full-width">
+        <img src="./assets/images/v222/EmployerAccessNewJobScreenIress.png" alt="Employer Access New Job Screen - Iress" class="card-image">
+        <div class="card-body">
+          <div class="card-title">Employer</div>
+          <div class="card-description">
+            Employer Access Beta Testing with Iress
+          </div>
+          <div class="card-footer">
+            Learn more
+          </div>
+        </div>
+     </div>
+  </a>
+
+</div>
+
+<div class="card-container">
+
+  <a href="./v222/automated_messages" class="card">
     <img src="./assets/images/v222/AutomatedJobChatsDark.svg" alt="Job Chats" class="card-image">
     <div class="card-body">
       <div class="card-title">Automated Messages</div>
