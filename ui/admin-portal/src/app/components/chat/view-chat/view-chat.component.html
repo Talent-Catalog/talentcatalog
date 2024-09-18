@@ -1,6 +1,11 @@
 <div *ngIf="chat">
-  <app-chat-read-status
-    [chats]="[chat]"
-  ></app-chat-read-status>
-  {{displayName}}
+  <p>
+    <app-chat-read-status
+      [chats]="[chat]"
+    ></app-chat-read-status>
+    {{chatParticipantsKey | translate}}
+  </p>
+  <p>
+    {{chatPurposeKey | translate}}
+  </p>
 </div>

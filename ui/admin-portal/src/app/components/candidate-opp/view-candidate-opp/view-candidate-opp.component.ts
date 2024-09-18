@@ -115,19 +115,10 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
         this.loading = false;
 
         const candidateChat = results['candidateChat'];
-        candidateChat.name = JobChatType[JobChatType.CandidateProspect];
-
         const candidateRecruitingChat = results['candidateRecruitingChat'];
-        candidateRecruitingChat.name = JobChatType[JobChatType.CandidateRecruiting];
-
         const jobCreatorSourcePartnerChat = results['jobCreatorSourcePartnerChat'];
-        jobCreatorSourcePartnerChat.name = JobChatType[JobChatType.JobCreatorSourcePartner];
-
         const jobCreatorAllSourcePartnersChat = results['jobCreatorAllSourcePartnersChat'];
-        jobCreatorAllSourcePartnersChat.name = JobChatType[JobChatType.JobCreatorAllSourcePartners];
-
         const allJobCandidatesChat = results['allJobCandidatesChat'];
-        allJobCandidatesChat.name = JobChatType[JobChatType.AllJobCandidates];
 
         this.candidateChats = [candidateChat, candidateRecruitingChat, allJobCandidatesChat];
         this.nonCandidateChats = [jobCreatorSourcePartnerChat, jobCreatorAllSourcePartnersChat];
