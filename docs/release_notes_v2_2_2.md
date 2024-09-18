@@ -12,12 +12,12 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
 
-  <a href="./v222/employer_access_beta_testing" class="card">
+  <a href="./v222/employer_access_beta_testing" class="card-full-width">
     <img src="./assets/images/v222/EmployerAccessNewJobScreenIress.png" alt="Employer Access New Job Screen - Iress" class="card-image">
-    <div class="card-full-width">
-      <div class="card-title">Employer</div>
+    <div class="card-body">
+      <div class="card-title">Employer Access Beta Testing</div>
       <div class="card-description">
-        Employer Access Beta Testing with Iress
+        Employer Access to the Talent Catalog moves to beta testing with a real employer.
       </div>
       <div class="card-footer">
         Learn more
