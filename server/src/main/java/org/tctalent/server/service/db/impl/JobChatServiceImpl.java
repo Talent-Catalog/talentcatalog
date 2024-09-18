@@ -71,6 +71,7 @@ public class JobChatServiceImpl implements JobChatService {
     public DtoBuilder getJobChatDtoBuilder() {
         return new DtoBuilder()
             .add("id")
+            .add("type")
             ;
     }
 

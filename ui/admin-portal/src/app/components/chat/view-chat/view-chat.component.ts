@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {JobChat} from "../../../model/chat";
+import {JobChat, JobChatType} from "../../../model/chat";
 
 @Component({
   selector: 'app-view-chat',
@@ -15,8 +15,18 @@ export class ViewChatComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  get displayName(): any {
-    return this.chat.name ? this.chat.name : this.chat.id;
+  get displayName(): string {
+    let name = "Chat ?";
+    if (this.chat) {
+      if (this.chat.name) {
+        name = this.chat.name;
+      } else if (this.chat.type) {
+        name = JobChatType[this.chat.type];
+      } else {
+        name = "Chat " + this.chat.id;
+      }
+    }
+    return name;
   }
 
 }

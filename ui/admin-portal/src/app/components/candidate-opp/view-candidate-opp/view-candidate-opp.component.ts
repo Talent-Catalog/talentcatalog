@@ -43,6 +43,8 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   loading: boolean;
   updating: boolean;
   saving: boolean;
+  candidateChats: JobChat[];
+  nonCandidateChats: JobChat[];
   candidateChat: JobChat;
   candidateRecruitingChat: JobChat;
   jobCreatorSourcePartnerChat: JobChat;
@@ -91,6 +93,14 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       sourcePartnerId: this.opp?.candidate?.user?.partner?.id,
       jobId: this.opp?.jobOpp?.id
     }
+    const jobCreatorAllSourcePartnersChatRequest: CreateChatRequest = {
+      type: JobChatType.JobCreatorAllSourcePartners,
+      jobId: this.opp?.jobOpp?.id
+    }
+    const allJobCandidatesChatRequest: CreateChatRequest = {
+      type: JobChatType.AllJobCandidates,
+      jobId: this.opp?.jobOpp?.id
+    }
 
     this.loading = true;
     this.error = null;
@@ -98,12 +108,29 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       'candidateChat': this.chatService.getOrCreate(candidateProspectChatRequest),
       'candidateRecruitingChat': this.chatService.getOrCreate(candidateRecruitingChatRequest),
       'jobCreatorSourcePartnerChat': this.chatService.getOrCreate(jobCreatorSourcePartnerChatRequest),
+      'jobCreatorAllSourcePartnersChat': this.chatService.getOrCreate(jobCreatorAllSourcePartnersChatRequest),
+      'allJobCandidatesChat': this.chatService.getOrCreate(allJobCandidatesChatRequest),
     }).subscribe(
       results => {
         this.loading = false;
-        this.candidateChat = results['candidateChat'];
-        this.candidateRecruitingChat = results['candidateRecruitingChat'];
-        this.jobCreatorSourcePartnerChat = results['jobCreatorSourcePartnerChat'];
+
+        const candidateChat = results['candidateChat'];
+        candidateChat.name = JobChatType[JobChatType.CandidateProspect];
+
+        const candidateRecruitingChat = results['candidateRecruitingChat'];
+        candidateRecruitingChat.name = JobChatType[JobChatType.CandidateRecruiting];
+
+        const jobCreatorSourcePartnerChat = results['jobCreatorSourcePartnerChat'];
+        jobCreatorSourcePartnerChat.name = JobChatType[JobChatType.JobCreatorSourcePartner];
+
+        const jobCreatorAllSourcePartnersChat = results['jobCreatorAllSourcePartnersChat'];
+        jobCreatorAllSourcePartnersChat.name = JobChatType[JobChatType.JobCreatorAllSourcePartners];
+
+        const allJobCandidatesChat = results['allJobCandidatesChat'];
+        allJobCandidatesChat.name = JobChatType[JobChatType.AllJobCandidates];
+
+        this.candidateChats = [candidateChat, candidateRecruitingChat, allJobCandidatesChat];
+        this.nonCandidateChats = [jobCreatorSourcePartnerChat, jobCreatorAllSourcePartnersChat];
       },
       (error) => {
         this.error = error;
@@ -251,18 +278,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
         this.saving = false;
       }
     );
-  }
-
-  onMarkCandidateChatAsRead() {
-    if (this.candidateChat) {
-      this.chatService.markChatAsRead(this.candidateChat);
-    }
-  }
-
-  onMarkCandidateRecruitingChatAsRead() {
-    if (this.candidateRecruitingChat) {
-      this.chatService.markChatAsRead(this.candidateRecruitingChat);
-    }
   }
 
   /**
