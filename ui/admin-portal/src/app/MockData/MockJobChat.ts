@@ -14,9 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {JobChat} from "../model/chat";
+import {JobChat, JobChatType} from "../model/chat";
 
 export class MockJobChat implements JobChat  {
   id:number =  1;
+  type = JobChatType.CandidateProspect;
+
   name:string = "John";
 }
