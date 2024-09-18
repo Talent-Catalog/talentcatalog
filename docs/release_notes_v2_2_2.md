@@ -67,7 +67,7 @@ Check out the newest features and enhancements.
   <div class="card-full-width">
     <img src="./assets/images/v222/DistinctClarifiedSubmissionLists.png" alt="Distinct clarified submission lists" class="card-image">
     <div class="card-body">
-      <div class="card-title">Distinguished Submission Lists from General Lists for Improved Clarity</div>
+      <div class="card-title">Distinguished Submission Lists from General Lists</div>
       <div class="card-description">
         We’ve refined how lists relate to jobs to improve clarity and reduce confusion. Going forward,
         each job will continue to have a dedicated "submission list," automatically created when the 
@@ -78,10 +78,10 @@ Check out the newest features and enhancements.
         was rarely used and led to confusion and occasional issues, so we’ve streamlined the process 
         by removing the ability to manually link jobs to other lists.
         <p></p>
-        Submission lists and general lists are now clearly defined and visually distinct, helping to 
-        prevent unexpected actions and making candidate submissions management more intuitive. If 
-        you have specific needs that were addressed by manually associating jobs with other lists, 
-        please reach out, and we’d be happy to explore alternatives.
+        The purpose of submission lists versus general lists is now clearly defined and visually 
+        distinct, helping to prevent unexpected actions and making candidate submissions management 
+        more intuitive. If you have specific needs that were addressed by manually associating jobs 
+        with other lists, please reach out, and we’d be happy to explore alternatives.
       </div>
     </div>
  </div>
