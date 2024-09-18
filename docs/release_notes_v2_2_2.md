@@ -65,20 +65,23 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <div class="card-full-width">
+    <img src="./assets/images/v222/DistinctClarifiedSubmissionLists.png" alt="Distinct clarified submission lists" class="card-image">
     <div class="card-body">
-      <div class="card-title">Removed the ability of users to manually associate a job with a list</div>
+      <div class="card-title">Distinguished Submission Lists from General Lists for Improved Clarity</div>
       <div class="card-description">
-        The "submission list" is the main list associated with a job. It is automatically created when the job is created.
-        Its use is unchanged.
+        We’ve refined how lists relate to jobs to improve clarity and reduce confusion. Going forward,
+        each job will continue to have a dedicated "submission list," automatically created when the 
+        job is generated, with its behavior remaining unchanged.
         <br>
-        However, it used to be possible for a user to manually associate a job with any list - and that list would 
-        behave a bit like a submission list even though it wasn't. For example, adding a candidate to that list would 
-        automatically create a candidate opportunity. This ability to associate a job with any list wasn't widely used
-        - but it did cause some nasty bugs with people accidentally creating or modifying candidate opportunities when 
-        they didn't mean to. So we decided it was best to remove the ability.
+        Previously, users could manually associate a job with any other list, which sometimes caused 
+        unintended behavior, such as automatically creating candidate opportunities. This functionality 
+        was rarely used and led to confusion and occasional issues, so we’ve streamlined the process 
+        by removing the ability to manually link jobs to other lists.
         <br>
-        If you feel that you need that ability to manually associate jobs with lists, please let us know and perhaps 
-        we can find a different solution for you.
+        Submission lists and general lists are now clearly defined and visually distinct, helping to 
+        prevent unexpected actions and making candidate submissions management more intuitive. If 
+        you have specific needs that were addressed by manually associating jobs with other lists, 
+        please reach out, and we’d be happy to explore alternatives.
       </div>
     </div>
  </div>
