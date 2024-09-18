@@ -78,6 +78,8 @@ export class ChatService implements OnDestroy {
 
   /**
    * Returns the translation key suffix corresponding to the given chat type.
+   * <p/>
+   * These keys match the key suffixes of CHAT_INFO in GeneralTranslationsComponent.
    * @param type Chat type
    */
   private getChatTypeKey(type: JobChatType): string {
@@ -108,6 +110,8 @@ export class ChatService implements OnDestroy {
 
   /**
    * Translation key for info about the participants of the given chat type
+   * <p/>
+   * This key appears in GeneralTranslationsComponent.
    * @param type Chat type
    */
   getChatInfoParticipantsKey(type: JobChatType): string {
@@ -116,6 +120,8 @@ export class ChatService implements OnDestroy {
 
   /**
    * Translation key for info about the purpose of the given chat type
+   * <p/>
+   * This key appears in GeneralTranslationsComponent.
    * @param type Chat type
    */
   getChatInfoPurposeKey(type: JobChatType): string {
