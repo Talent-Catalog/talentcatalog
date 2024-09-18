@@ -45,17 +45,19 @@ Check out the newest features and enhancements.
   <div class="card-full-width">
     <img src="./assets/images/v222/NewStatsButton.png" alt="New stats button" class="card-image">
     <div class="card-body">
-      <div class="card-title">New way of running stats on saved searches</div>
+      <div class="card-title">Stats Reporting on Large Saved Searches</div>
       <div class="card-description">
-        Temporarily there are two ways of running stats, and two buttons "Run stats" and "New run stats".
+        We’ve introduced an improved method for running stats on saved searches, allowing you to 
+        generate reports on search results of any size, without limitations. This resolves issues 
+        previously experienced with larger searches, such as the inability to run stats on searches 
+        with more than 32,000 candidates.
         <p></p>
-        They should both produce the same results, but the new way should get over one of the
-        limitations of the old way - for example, reported by Sarah Walder where she could not run stats
-        on searches showing candidates in Lebanon or Jordan because there were too many of them
-        (greater than 32,000). The new way of running stats should avoid that limitation.
+        For a short time, you will see two options: "Run Stats" and "New Run Stats." Both methods 
+        should produce the same results, but the new version overcomes the limitations of the old one, 
+        such as those encountered with larger candidate pools in regions like Lebanon and Jordan.
         <p></p>
-        Once we are happy that the new way of running stats produces the same results as the old way,
-        we can remove the old way altogether.
+        Once we have confirmed that the new way of running stats produces the same results as the old 
+        way, we will remove the old way altogether.
       </div>
     </div>
  </div>
