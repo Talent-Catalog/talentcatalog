@@ -738,7 +738,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
     const sourceType = getCandidateSourceType(candidateSource);
-    let sourcePrefix = isSubmissionList(candidateSource) ? "Submission" : "Candidate";
+    let sourcePrefix = isSubmissionList(candidateSource) ? "Submission" : "";
     return candidateSource != null ?
       (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name) : sourceType;
   }

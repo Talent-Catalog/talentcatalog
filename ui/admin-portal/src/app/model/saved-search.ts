@@ -111,7 +111,7 @@ export function isSavedSearch(source: CandidateSource): source is SavedSearch {
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
   let breadcrumb: string = "";
   if (savedSearch) {
-    breadcrumb += 'Candidate ' + getCandidateSourceType(savedSearch) + ": ";
+    breadcrumb += getCandidateSourceType(savedSearch) + ": ";
 
     if (savedSearch.defaultSearch) {
       breadcrumb += "Unsaved"
