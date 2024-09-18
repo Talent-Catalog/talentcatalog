@@ -128,7 +128,6 @@ export class ChatService implements OnDestroy {
     return "CHAT_INFO.PURPOSE." + this.getChatTypeKey(type);
   }
 
-
   /**
    * Creates a single chat read status from a group of chats indicating whether all chats are read
    * or some are unread.
