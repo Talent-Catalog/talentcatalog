@@ -48,12 +48,12 @@ Check out the newest features and enhancements.
       <div class="card-title">New way of running stats on saved searches</div>
       <div class="card-description">
         Temporarily there are two ways of running stats, and two buttons "Run stats" and "New run stats".
-        <p>
+        <p></p>
         They should both produce the same results, but the new way should get over one of the
         limitations of the old way - for example, reported by Sarah Walder where she could not run stats
         on searches showing candidates in Lebanon or Jordan because there were too many of them
         (greater than 32,000). The new way of running stats should avoid that limitation.
-        <p>
+        <p></p>
         Once we are happy that the new way of running stats produces the same results as the old way,
         we can remove the old way altogether.
       </div>
@@ -72,12 +72,12 @@ Check out the newest features and enhancements.
         We’ve refined how lists relate to jobs to improve clarity and reduce confusion. Going forward,
         each job will continue to have a dedicated "submission list," automatically created when the 
         job is generated, with its behavior remaining unchanged.
-        <p>
+        <p></p>
         Previously, users could manually associate a job with any other list, which sometimes caused 
         unintended behavior, such as automatically creating candidate opportunities. This functionality 
         was rarely used and led to confusion and occasional issues, so we’ve streamlined the process 
         by removing the ability to manually link jobs to other lists.
-        <p>
+        <p></p>
         Submission lists and general lists are now clearly defined and visually distinct, helping to 
         prevent unexpected actions and making candidate submissions management more intuitive. If 
         you have specific needs that were addressed by manually associating jobs with other lists, 
