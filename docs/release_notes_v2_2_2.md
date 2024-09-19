@@ -212,6 +212,40 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 - Allow all columns to be selectable in list and search browse and full screen views
 - Fixed an issue where the column select modal resulted in an error when closed with the Escape key
 
+## Mini-Intake Revisions
+
+<div class="card-container">
+
+  <div class="card-full-width">
+    <img src="./assets/images/v222/AvailabilityForInternationalRecruitment.png" alt="Availability for International Recruitment" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Availability for International Recruitment</div>
+      <div class="card-description">
+        - This mini-intake panel used to be called "Interest in International Recruitment" but has ben renamed
+        to "Availability for International Recruitment" to clarify intent
+        <br>
+        - If a candidate answers "No" to "Are you available for international employment opportunities now?" 
+        they will be asked an additional follow-up question: "When will you be available?"
+        <br>
+        - If they answer "Yes", the subsequent question asking "What type of opportunities are you qualified
+        for?" has moved out of the mini-intake into the candidate registration process
+        <br>
+        - Candidates can no longer respond "Unsure" to this question - they must answer "Yes" or "No"
+        <br>
+        - For candidates who answered "Unsure" to this question in the past, the information has been 
+        retained in and will be visible in the availability notes
+        <br>
+        - "Are you interested in international employment opportunities?" appears at the start of this series
+        of questions; with guidance notes for interviewers depending on the candidate's response
+      </div>
+    </div>
+ </div>
+
+</div>
+
+
+
+
 # Performance Improvements
 
 - Introduced Redis caching layer in AWS cloud environments to improve general system performance
