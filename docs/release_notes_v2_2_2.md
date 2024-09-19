@@ -105,24 +105,6 @@ Check out the newest features and enhancements.
     </div>
 
  </div>
-
-  <div class="card-container">
-    <a href="./v222/intake_revisions" class="card-full-width">
-      <img src="./assets/images/v222/MiniIntake.png" alt="Mini Intake Revisions" class="card-image">
-      <div class="card-body">
-        <div class="card-title">Mini Intake Process Revisions</div>
-        <div class="card-description">
-          We have made a number of enhancements led by the TBB Source team that further streamline the 
-          mini-intake process, particularly the sections on availability and interest in international 
-          recruitment, destination preferences, and exams, also adding support for multiple candidate 
-          nationalities.
-        </div>
-        <div class="card-footer">
-          Learn more
-        </div>
-      </div>
-    </a>
-  </div>
 </div>
 
 # User Guides
@@ -207,6 +189,23 @@ Bookmark these user guides for details on TC Chats and Employer Access:
     </div>
   </div>
 
+  <div class="card-container">
+    <a href="./v222/intake_revisions" class="card-full-width">
+      <img src="./assets/images/v222/MiniIntake.png" alt="Mini Intake Revisions" class="card-image">
+      <div class="card-body">
+        <div class="card-title">Mini Intake Process Revisions</div>
+        <div class="card-description">
+          We have made a number of enhancements led by the TBB Source team that further streamline the 
+          mini-intake process, particularly the sections on availability and interest in international 
+          recruitment, destination preferences, and exams, also adding support for multiple candidate 
+          nationalities.
+        </div>
+        <div class="card-footer">
+          Learn more
+        </div>
+      </div>
+    </a>
+  </div>
 </div>
 
 ## Other UI / UX Enhancements
