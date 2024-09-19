@@ -34,7 +34,7 @@ Whereas employers, like Iress, will not need to provide a Salesforce job link wh
 in the TC:
 
 <div class="card-image-container">
-  <img src="./../assets/images/v222/EmployerAccessNewJobScreenIress.png" 
+  <img src="./../assets/images/v222/EmployerAccessNewJobScreenIressLogo.png" 
         alt="Employer access New Job screen (Iress)" class="card-image">
 </div>
 

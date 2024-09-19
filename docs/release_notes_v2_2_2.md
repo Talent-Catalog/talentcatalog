@@ -13,7 +13,7 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <a href="./v222/employer_access_beta_testing" class="card-full-width">
-    <img src="./assets/images/v222/EmployerAccessNewJobScreenIress.png" alt="Employer Access New Job Screen - Iress" class="card-image">
+    <img src="./assets/images/v222/EmployerAccessNewJobScreenIressLogo.png" alt="Employer Access New Job Screen - Iress" class="card-image">
     <div class="card-body">
       <div class="card-title">Employer Access Beta Testing</div>
       <div class="card-description">
