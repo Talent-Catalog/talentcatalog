@@ -62,3 +62,13 @@ The candidate registration process now allows candidates to register multiple na
         alt="Register Multiple Nationalities" class="card-image">
 </div>
 
+
+## Language Exams
+
+The section on language exams has been moved out of the mini-intake process and into the candidate
+registration process:
+
+<div class="card-image-container">
+  <img src="./../assets/images/v222/CandidateExams.png" 
+        alt="Candidate Exams" class="card-image">
+</div>
