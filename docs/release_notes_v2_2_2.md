@@ -221,13 +221,13 @@ Bookmark these user guides for details on TC Chats and Employer Access:
     <div class="card-body">
       <div class="card-title">Availability for International Recruitment</div>
       <div class="card-description">
-        - This mini-intake panel used to be called "Interest in International Recruitment" but has ben renamed
+        - This panel used to be called "Interest in International Recruitment" but has ben renamed
         to "Availability for International Recruitment" to clarify intent
         <br>
         - If a candidate answers "No" to "Are you available for international employment opportunities now?" 
-        they will be asked an additional follow-up question: "When will you be available?"
+        they will be asked a new additional follow-up question: "When will you be available?"
         <br>
-        - If they answer "Yes", the subsequent question asking "What type of opportunities are you qualified
+        - If they answer "Yes", the subsequent question that asked "What type of opportunities are you qualified
         for?" has moved out of the mini-intake into the candidate registration process
         <br>
         - Candidates can no longer respond "Unsure" to this question - they must answer "Yes" or "No"
