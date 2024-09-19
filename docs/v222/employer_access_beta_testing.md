@@ -26,7 +26,7 @@ and all process updates - such as updating stages and next steps - happen on the
 For example, TBB user's currently must provide a Salesforce job link when creating a job in the TC:
 
 <div class="card-image-container">
-  <img src="./../assets/images/v222/TbbNewJobScreen.png" 
+  <img src="./../assets/images/v222/TbbNewJobScreenLogo.png" 
         alt="TBB New Job Screen" class="card-image">
 </div>
 
