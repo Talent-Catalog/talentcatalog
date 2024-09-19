@@ -53,3 +53,12 @@ closest relative?", have been moved to the relevant country's Visa eligibility c
 </div>
 
 
+## Register Multiple Nationalities
+
+The candidate registration process now allows candidates to register multiple nationalities:
+
+<div class="card-image-container">
+  <img src="./../assets/images/v222/RegisterMultipleNationalities.png" 
+        alt="Register Multiple Nationalities" class="card-image">
+</div>
+
