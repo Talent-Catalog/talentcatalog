@@ -52,6 +52,6 @@ occur. The fact that Iress develop software themselves is a big advantage. They 
 and the whole concept of beta testing.
 
 Once the initial testing with Iress is complete - we will engage with other employers that we have 
-a close relationship with to complete the beta testing cycle. We can then open up access for all
-employers and provide a mechanism for them to self register for the TC, just like candidates do.
-
+a close relationship with to complete the beta testing cycle. We can then open up access for other
+employers who are approved and interested, and provide a mechanism for them to express their interest 
+in direct access to the TC.
