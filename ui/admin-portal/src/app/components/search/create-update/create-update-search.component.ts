@@ -15,28 +15,12 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  ValidationErrors,
-  ValidatorFn,
-  Validators
-} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {
-  SavedSearchService,
-  SavedSearchTypeInfo,
-  SavedSearchTypeSubInfo
-} from '../../../services/saved-search.service';
-import {
-  convertToSavedSearchRequest,
-  SavedSearch,
-  SavedSearchType
-} from '../../../model/saved-search';
+import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from '../../../services/saved-search.service';
+import {convertToSavedSearchRequest, SavedSearch, SavedSearchType} from '../../../model/saved-search';
 import {SearchCandidateRequest} from '../../../model/search-candidate-request';
 import {SalesforceService} from "../../../services/salesforce.service";
-import {JobNameAndId} from "../../../model/job";
 
 @Component({
   selector: 'app-create-update-search',
@@ -231,18 +215,6 @@ export class CreateUpdateSearchComponent implements OnInit {
       if (!this.savedSearchTypeSubInfos) {
         this.form.controls["savedSearchSubtype"].patchValue(null);
       }
-    }
-  }
-
-  onJobSelection(job: JobNameAndId) {
-    //Null job translates to request to remove associated job (jobId < 0)
-    this.jobName = job ? job.name : "";
-    this.jobId = job ? job.id : -1;
-
-    //If existing name is empty, auto copy job name to it
-    if (!this.nameControl.value) {
-      this.nameControl.patchValue(this.jobName);
-      this.savedSearchTypeControl.patchValue(SavedSearchType.job);
     }
   }
 }
