@@ -103,8 +103,26 @@ Check out the newest features and enhancements.
         reach out, and we’d be happy to explore alternatives.
       </div>
     </div>
+
  </div>
 
+  <div class="card-container">
+    <a href="./v222/intake_revisions" class="card-full-width">
+      <img src="./assets/images/v222/MiniIntake.png" alt="Mini Intake Revisions" class="card-image">
+      <div class="card-body">
+        <div class="card-title">Mini Intake Process Revisions</div>
+        <div class="card-description">
+          We have made a number of enhancements led by the TBB Source team that further streamline the 
+          mini-intake process, particularly the sections on availability and interest in international 
+          recruitment, destination preferences, and exams, also adding support for multiple candidate 
+          nationalities.
+        </div>
+        <div class="card-footer">
+          Learn more
+        </div>
+      </div>
+    </a>
+  </div>
 </div>
 
 # User Guides
@@ -179,7 +197,7 @@ Bookmark these user guides for details on TC Chats and Employer Access:
   </div>
 
   <div class="card-no-border">
-    <img src="./assets/images/v222/CandidatePortalNav.png" alt="Widened Colour Palette" class="card-image">
+    <img src="./assets/images/v222/CandidatePortalNav.png" alt="Improved candidate portal navigation" class="card-image">
     <div class="card-body">
       <div class="card-title">Improved candidate portal navigation</div>
       <div class="card-description">
@@ -211,39 +229,6 @@ Bookmark these user guides for details on TC Chats and Employer Access:
 - Add custom partner logos for Map India and IRC
 - Allow all columns to be selectable in list and search browse and full screen views
 - Fixed an issue where the column select modal resulted in an error when closed with the Escape key
-
-## Mini-Intake Revisions
-
-<div class="card-container">
-
-  <div class="card-full-width">
-    <img src="./assets/images/v222/AvailabilityForInternationalRecruitment.png" alt="Availability for International Recruitment" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Availability for International Recruitment</div>
-      <div class="card-description">
-        - This panel used to be called "Interest in International Recruitment" but has ben renamed
-        to "Availability for International Recruitment" to clarify intent
-        <br>
-        - If a candidate answers "No" to "Are you available for international employment opportunities now?" 
-        they will be asked a new additional follow-up question: "When will you be available?"
-        <br>
-        - If they answer "Yes", the subsequent question that asked "What type of opportunities are you qualified
-        for?" has moved out of the mini-intake into the candidate registration process
-        <br>
-        - Candidates can no longer respond "Unsure" to this question - they must answer "Yes" or "No"
-        <br>
-        - For candidates who answered "Unsure" to this question in the past, the information has been 
-        retained in and will be visible in the availability notes
-        <br>
-        - "Are you interested in international employment opportunities?" appears at the start of this series
-        of questions; with guidance notes for interviewers depending on the candidate's response
-      </div>
-    </div>
- </div>
-
-</div>
-
-
 
 
 # Performance Improvements
