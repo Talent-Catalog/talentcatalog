@@ -126,18 +126,15 @@ Bookmark these user guides for details on TC Chats and Employer Access:
     </div>
   </a>
 
-  <a href="https://docs.google.com/document/d/1aI7dTq9wwucPmY7UMjpsjn9V5sLf1WWpYnhiA_9q43U/edit?usp=sharing" class="card">
+  <div class="card-no-border">
     <img src="./assets/images/v222/EmployerAccessUserGuide.png" alt="Employer Access User Guide" class="card-image">
     <div class="card-body">
       <div class="card-title">Employer Access User Guide</div>
       <div class="card-description">
-        User guide for employers directly accessing the TC.
-      </div>
-      <div class="card-footer">
-        Learn more
+        Coming soon - User guide for employers directly accessing the TC.
       </div>
     </div>
-  </a>
+  </div>
 
 </div>
 
