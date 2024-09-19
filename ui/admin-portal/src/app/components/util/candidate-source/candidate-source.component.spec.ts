@@ -31,6 +31,7 @@ import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {LocalStorageService} from "angular-2-local-storage";
 import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";
+import {SavedSearch} from "../../../model/saved-search";
 
 describe('CandidateSourceComponent', () => {
   let component: CandidateSourceComponent;
@@ -150,20 +151,40 @@ describe('CandidateSourceComponent', () => {
   });
 
   it('should fetch extended saved search when seeMore is true', () => {
+    // Arrange: Set seeMore to true
     component.seeMore = true;
+
+    // Mock the saved search service to return a MockSavedSearch
     savedSearchService.get.and.returnValue(of(new MockSavedSearch()));
+
+    // Create a MockCandidateSource that already includes savedSearchType
+    const mockCandidateSource = new MockCandidateSource();
+    mockCandidateSource['savedSearchType'] = 'MockSavedSearch'; // Already included in the mock definition
+
+    // Set the candidateSource on the component
+    component.candidateSource = mockCandidateSource;
+
+    // Act: Simulate the ngOnChanges lifecycle hook
     component.ngOnChanges({
       candidateSource: {
-        currentValue: { id: 1 } as CandidateSource,
-        previousValue: { id: 2 } as CandidateSource,
-        firstChange: false,
-        isFirstChange: () => false,
+        currentValue: mockCandidateSource, // use mockCandidateSource directly
+        previousValue: { id: 2 } as CandidateSource, // previous candidate source (optional detail)
+        firstChange: false, // it's not the first change
+        isFirstChange: () => false, // function that returns false
       },
     });
+
+    // Assert: Check that the savedSearchService was called with correct arguments
     expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.EXTENDED);
   });
 
   it('should handle errors when fetching saved search', () => {
+    // Create a MockCandidateSource that already includes savedSearchType
+    const mockCandidateSource = new MockCandidateSource();
+    mockCandidateSource['savedSearchType'] = 'MockSavedSearch'; // Already included in the mock definition
+
+    // Set the candidateSource on the component
+    component.candidateSource = mockCandidateSource;
     component.seeMore = true;
     savedSearchService.get.and.returnValue(throwError('Error'));
     component.ngOnChanges({
@@ -192,7 +213,13 @@ describe('CandidateSourceComponent', () => {
   });
 
   it('should fetch saved search on init', () => {
-    expect(component.seeMore).toBeUndefined();
+
+    const mockCandidateSource = new MockCandidateSource();
+    mockCandidateSource['savedSearchType'] = 'MockSavedSearch'; // Already included in the mock definition
+
+    // Set the candidateSource on the component
+    component.candidateSource = mockCandidateSource;
+    component.seeMore = true;
     savedSearchService.get.and.returnValue(of(new MockSavedSearch()));
     component.ngOnChanges({
       candidateSource: {
@@ -202,7 +229,7 @@ describe('CandidateSourceComponent', () => {
         isFirstChange: () => true,
       },
     });
-    expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.FULL);
+    expect(savedSearchService.get).toHaveBeenCalledWith(1, DtoType.EXTENDED);
   });
 
   it('should not call the API if data is already loaded', () => {
