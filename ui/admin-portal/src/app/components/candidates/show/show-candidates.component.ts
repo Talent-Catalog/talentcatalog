@@ -44,10 +44,9 @@ import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-
 import {HttpClient} from '@angular/common/http';
 import {
   ClearSelectionRequest,
-  getCandidateSourceBreadcrumb,
   getCandidateSourceExternalHref,
   getCandidateSourceNavigation,
-  getCandidateSourceStatsNavigation,
+  getCandidateSourceStatsNavigation, getCandidateSourceType,
   getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
   isSavedSearch,
@@ -76,7 +75,7 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   IHasSetOfCandidates,
-  isSavedList,
+  isSavedList, isSubmissionList,
   PublishedDocColumnConfig,
   PublishedDocImportReport,
   PublishListRequest,
@@ -154,6 +153,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   updatingStatuses: boolean;
   updatingTasks: boolean;
   savingSelection: boolean;
+  showDescription: boolean = false;
   searchForm: FormGroup;
   monitoredTask: Task;
   tasksAssignedToList: Task[];
@@ -730,9 +730,16 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       const infos = this.savedSearchService.getSavedSearchTypeInfos();
       breadcrumb = getSavedSearchBreadcrumb(this.candidateSource, infos);
     } else {
-      breadcrumb = getCandidateSourceBreadcrumb(this.candidateSource);
+      breadcrumb = this.getCandidateSourceBreadcrumb(this.candidateSource);
     }
     return breadcrumb;
+  }
+
+  getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
+    const sourceType = getCandidateSourceType(candidateSource);
+    let sourcePrefix = isSubmissionList(candidateSource) ? "Submission" : "";
+    return candidateSource != null ?
+      (sourcePrefix + ' ' + sourceType + ': ' + candidateSource.name) : sourceType;
   }
 
   onReviewStatusFilterChange() {
@@ -754,6 +761,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   isSavedList(): boolean {
     return !isSavedSearch(this.candidateSource);
+  }
+
+  isSavedSearch(): boolean {
+    return isSavedSearch(this.candidateSource);
   }
 
   isSwapSelectionSupported(): boolean {
