@@ -93,16 +93,16 @@ Check out the newest features and enhancements.
         Companies like Iress and Atlassian are examples of organisations that utilise this type of 
         job posting.
         <p></p>
-        When a job has been tagged as being evergreen, a new copy of the job is automatically created
-        when the job moves to the recruitment stage.
+        When a job has been tagged as being evergreen, a new copy of the job is automatically 
+        created when the job moves to the "Recruitment process" stage.
         <p></p>
         The copied job will have the same name except with a suffix R2 - standing for "Revision 2" - 
-        and will automatically be set to the Candidate Search stage. 
-        So now there are two copies of the job: one in the Recruitment stage and one in the 
-        Candidate search stage.
+        and will automatically be set to the "Candidate search" stage. 
+        So now there are two copies of the job: one in the "Recruitment process" stage and one in 
+        the "Candidate search" stage.
         <p></p>
-        When the R2 copy of the job gets to the Recruitment stage itself, another copy of the job 
-        is created in the Candidate Search stage - the R3 copy - and so on.
+        When the R2 copy of the job gets to the "Recruitment process" stage itself, another copy of 
+        the job is created in the "Candidate search" stage - the R3 copy - and so on.
       </div>
     </div>
  </div>
