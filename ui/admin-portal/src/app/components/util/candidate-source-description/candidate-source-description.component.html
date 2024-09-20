@@ -11,7 +11,7 @@
 
     <textarea id="description" class="md-textarea-auto form-control" rows="2"
               [readOnly]="!isEditable()"
-              placeholder="Add notes ..."
+              placeholder="Describe the purpose of this {{ isSubmissionList() ? 'submission' : ''}} {{ isSavedList() ? 'list' : 'search'}}..."
               [formControlName]="'description'"></textarea>
   </div>
 
