@@ -108,6 +108,10 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
     }).subscribe(results => {
       this.loading = false;
       this.jobIntakeData = results['job'].jobOppIntake;
+      if (!this.jobIntakeData) {
+        //If there is no JobIntakeData - create an empty one.
+        this.jobIntakeData = {};
+      }
       this.onDataLoaded(init);
     }, error => {
       this.loading = false;
