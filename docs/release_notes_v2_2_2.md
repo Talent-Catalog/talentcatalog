@@ -84,7 +84,7 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <div class="card-full-width">
-    <img src="./assets/images/v222/NewStatsButton.png" alt="Evergreen jobs" class="card-image">
+    <img src="./assets/images/v222/EvergreenJobs.png" alt="Evergreen jobs" class="card-image">
     <div class="card-body">
       <div class="card-title">Evergreen Jobs</div>
       <div class="card-description">
@@ -97,8 +97,12 @@ Check out the newest features and enhancements.
         when the job moves to the recruitment stage.
         <p></p>
         The copied job will have the same name except with a suffix R2 - standing for "Revision 2" - 
-        and will automatically be set to the Candidate Search stage. When that copy of the job
-        gets to the Recruitment stage, another copy is created, R3, and so on.
+        and will automatically be set to the Candidate Search stage. 
+        So now there are two copies of the job: one in the Recruitment stage and one in the 
+        Candidate search stage.
+        <p></p>
+        When the R2 copy of the job gets to the Recruitment stage itself, another copy of the job 
+        is created in the Candidate Search stage - the R3 copy - and so on.
       </div>
     </div>
  </div>
