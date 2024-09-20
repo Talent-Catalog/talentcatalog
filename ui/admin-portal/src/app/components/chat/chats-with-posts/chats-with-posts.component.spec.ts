@@ -1,7 +1,7 @@
 import {ChatsWithPostsComponent} from "./chats-with-posts.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {ChatService} from "../../../services/chat.service";
-import {JobChat} from "../../../model/chat";
+import {JobChat, JobChatType} from "../../../model/chat";
 import {By} from "@angular/platform-browser";
 import {ChatsComponent} from "../chats/chats.component";
 import {ViewChatPostsComponent} from "../view-chat-posts/view-chat-posts.component";
@@ -18,7 +18,7 @@ import {QuillModule} from "ngx-quill";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {MockUser} from "../../../MockData/MockUser";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
+import {TranslateModule} from "@ngx-translate/core";
 
 describe('ChatsWithPostsComponent', () => {
   let component: ChatsWithPostsComponent;
@@ -65,7 +65,7 @@ describe('ChatsWithPostsComponent', () => {
   });
 
   it('should render selected chat name when a chat is selected', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     component.selectedChat = mockChat;
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Test Chat');
@@ -83,7 +83,7 @@ describe('ChatsWithPostsComponent', () => {
   });
 
   it('should emit chatSelection event when a chat is selected', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     spyOn(component.chatSelection, 'emit');
     component.onChatSelected(mockChat);
     expect(component.selectedChat).toEqual(mockChat);
@@ -91,7 +91,7 @@ describe('ChatsWithPostsComponent', () => {
   });
 
   it('should call chatService.markChatAsRead when a chat is marked as read', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     component.selectedChat = mockChat;
     fixture.detectChanges();
     component.onMarkChatAsRead();

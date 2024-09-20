@@ -9,6 +9,7 @@ import {QuillModule} from "ngx-quill";
 import {of} from "rxjs";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {TranslateModule} from "@ngx-translate/core";
+import {JobChatType} from "../../../model/chat";
 
 describe('CreateUpdatePostComponent', () => {
   let component: CreateUpdatePostComponent;
@@ -73,7 +74,7 @@ describe('CreateUpdatePostComponent', () => {
   });
 
   it('should send a post', () => {
-    component.chat = { id: 1 }; // Mock chat object
+    component.chat = { id: 1, type: JobChatType.CandidateProspect }; // Mock chat object
     const content = 'Test content';
     const expectedBody = {
       content,
@@ -103,7 +104,7 @@ describe('CreateUpdatePostComponent', () => {
     chatPostService.uploadFile.and.returnValue(of({ url: 'file_url' }));
 
     // Initialize the chat object
-    component.chat = { id: 1 };
+    component.chat = { id: 1, type: JobChatType.CandidateProspect };
 
 
     component.uploadFile();
