@@ -84,7 +84,7 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <div class="card-full-width">
-    <img src="./assets/images/v222/NewStatsButton.png" alt="New stats button" class="card-image">
+    <img src="./assets/images/v222/NewStatsButton.png" alt="Evergreen jobs" class="card-image">
     <div class="card-body">
       <div class="card-title">Evergreen Jobs</div>
       <div class="card-description">
