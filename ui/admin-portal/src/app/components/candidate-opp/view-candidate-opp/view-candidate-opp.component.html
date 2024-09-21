@@ -194,7 +194,7 @@
       </ng-container>
 
       <!-- Chats including candidate-->
-      <ng-container ngbNavItem="CandidateChats">
+      <ng-container *ngIf="hasVisibleCandidateChats()" ngbNavItem="CandidateChats">
         <a ngbNavLink>Chats with candidate
           <app-chat-read-status
             [chats]="candidateChats"
@@ -209,7 +209,7 @@
       </ng-container>
 
       <!-- Chats not including candidate-->
-      <ng-container ngbNavItem="NonCandidateChats">
+      <ng-container *ngIf="hasVisibleNonCandidateChats()" ngbNavItem="NonCandidateChats">
         <a ngbNavLink>Chats without candidate
           <app-chat-read-status
             [chats]="nonCandidateChats"
