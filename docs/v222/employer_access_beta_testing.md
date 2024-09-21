@@ -23,14 +23,14 @@ This has driven fundamental changes to the TC code including the creation of TC 
 known as Job Chats), and changing the user interface so that TBB's Salesforce is hidden from the user, 
 and all process updates - such as updating stages and next steps - happen on the TC.
 
-For example, TBB users currently must provide a Salesforce job link when creating a job in the TC:
+For example, TBB users provide a Salesforce job link when creating a job in the TC:
 
 <div class="card-image-container">
   <img src="./../assets/images/v222/TbbNewJobScreenLogo.png" 
         alt="TBB New Job Screen" class="card-image">
 </div>
 
-Other partners, including employers like Iress, will not need to provide a Salesforce job link 
+However, employers like Iress do not need to provide a Salesforce job link 
 when creating a job in the TC:
 
 <div class="card-image-container">
