@@ -13,17 +13,17 @@ Here is a [good definition of beta testing](https://www.productplan.com/glossary
 ## Background
 
 It has been a long journey to get to this point, largely because employers will not have access to 
-products that we have traditionally used alongside the Talent Catalog - in particular our Salesforce 
-and Slack. Using those products - which we have done from the very beginning of TBB - allowed us to 
-quickly deliver useful functionality without having to write everything ourselves. TBB will continue 
-to use Salesforce and Slack - but Employers (and other third parties) need to be able to use the TC 
-without needing to share TBB's Salesforce and Slack. 
+products that have traditionally been used alongside the Talent Catalog - in particular TBB's 
+Salesforce and Slack. Using those products - which TBB has used from the very beginning - allowed 
+useful functionality to be quickly delivered without having to write everything from scratch. 
+TBB will continue to use their Salesforce and Slack - but Employers (and other third parties) need 
+to be able to use the TC without needing to share TBB's Salesforce and Slack. 
 
 This has driven fundamental changes to the TC code including the creation of TC Chats (formerly 
 known as Job Chats), and changing the user interface so that TBB's Salesforce is hidden from the user, 
 and all process updates - such as updating stages and next steps - happen on the TC.
 
-For example, TBB user's currently must provide a Salesforce job link when creating a job in the TC:
+For example, TBB users currently must provide a Salesforce job link when creating a job in the TC:
 
 <div class="card-image-container">
   <img src="./../assets/images/v222/TbbNewJobScreenLogo.png" 
