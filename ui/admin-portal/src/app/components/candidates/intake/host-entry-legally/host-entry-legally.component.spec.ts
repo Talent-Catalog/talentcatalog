@@ -56,9 +56,9 @@ describe('HostEntryLegallyComponent', () => {
   it('should initialize the form with candidate data', () => {
     const expectedLegallyOption: EnumOption[] = [
       { key: 'Yes', stringValue: 'Yes' },
-      { key: 'No', stringValue: 'No' }
+      { key: 'No', stringValue: 'No' },
+      { key: 'NoResponse', stringValue: 'NoResponse' },
     ];
-
     const expectedEnterLegally = YesNo.Yes; // Assuming default value for testing
 
     expect(component.form.get('hostEntryLegally').value).toBe(expectedEnterLegally);

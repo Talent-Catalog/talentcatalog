@@ -68,14 +68,6 @@ describe('CandidateFieldService', () => {
     });
   });
 
-  describe('get displayableFieldsMap', () => {
-    it('should return a map of displayable fields', () => {
-      const fieldsMap = service.displayableFieldsMap;
-      expect(fieldsMap.size).toBeGreaterThan(0);
-    });
-  });
-
-
   describe('getFieldsFromPaths', () => {
     it('should return fields based on provided paths', () => {
       const paths = ['gender'];

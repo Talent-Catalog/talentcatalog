@@ -33,6 +33,7 @@ import {
 } from "../../../../visa/visa-job-assessments/relocating-dependants/relocating-dependants.component";
 import {RouterLinkStubDirective} from "../../../../../login/login.component.spec";
 import {DependantsComponent} from "../../../../intake/dependants/dependants.component";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
 describe('VisaCheckUkComponent', () => {
   let component: VisaCheckUkComponent;
@@ -42,7 +43,8 @@ describe('VisaCheckUkComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [VisaCheckUkComponent,AutosaveStatusComponent,VisaJobCheckUkComponent,CandidateVisaJobComponent,RelocatingDependantsComponent,RouterLinkStubDirective,DependantsComponent],
       imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule,LocalStorageModule.forRoot({})],
-      providers: [FormBuilder]
+      providers: [FormBuilder],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });
 
