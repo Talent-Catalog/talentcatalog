@@ -98,8 +98,8 @@ Check out the newest features and enhancements.
         <p></p>
         The copied job will have the same name except with a suffix R2 - standing for "Revision 2" - 
         and will automatically be set to the "Candidate search" stage. 
-        So now there will be two copies of the job: the original continuing in the 
-        "Recruitment process" stage and another one starting back in the "Candidate search" stage.
+        So now there will be two copies of the job: the original job - continuing in the 
+        "Recruitment process" stage - and a new one starting back in the "Candidate search" stage.
         <p></p>
         When the R2 copy of the job gets to the "Recruitment process" stage itself, another copy of 
         the job is created in the "Candidate search" stage - the R3 copy - and so on.

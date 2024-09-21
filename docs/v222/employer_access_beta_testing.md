@@ -30,8 +30,8 @@ For example, TBB users currently must provide a Salesforce job link when creatin
         alt="TBB New Job Screen" class="card-image">
 </div>
 
-Whereas employers, like Iress, will not need to provide a Salesforce job link when creating a job 
-in the TC:
+Other partners, including employers like Iress, will not need to provide a Salesforce job link 
+when creating a job in the TC:
 
 <div class="card-image-container">
   <img src="./../assets/images/v222/EmployerAccessNewJobScreenIressLogo.png" 
