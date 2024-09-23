@@ -54,6 +54,7 @@
     <div class="col-sm-4">
       <app-view-job-summary
         [job]="job"
+        [editable]="isEditable()"
         [nRows]=2
         [highlight]="currentPrepItemIsSummary()"
       >
@@ -79,7 +80,7 @@
           <ng-template ngbNavContent>
             <app-job-general-tab
               [job]="job"
-              [editable]="editable"
+              [editable]="isEditable()"
               [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)"
             >
@@ -93,7 +94,7 @@
           <ng-template ngbNavContent>
             <app-job-suggested-searches-tab
               [job]="job"
-              [editable]="editable"
+              [editable]="isEditable()"
               [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)">
             </app-job-suggested-searches-tab>
@@ -102,11 +103,11 @@
 
         <!-- UPLOADS -->
         <ng-container ngbNavItem="Uploads">
-          <a ngbNavLink>Job Information</a>
+          <a ngbNavLink>Job Uploads</a>
           <ng-template ngbNavContent>
             <app-job-upload-tab
               [job]="job"
-              [editable]="editable"
+              [editable]="isEditable()"
               [highlightItem]="currentPrepItem"
               (jobUpdated)="onJobUpdated($event)"
             >
@@ -119,7 +120,9 @@
           <a ngbNavLink>Job Intake (JOI)</a>
           <ng-template ngbNavContent>
             <app-job-intake-tab
-              [job]="job">
+              [job]="job"
+              (intakeChanged)="onIntakeChanged($event)"
+            >
             </app-job-intake-tab>
           </ng-template>
         </ng-container>
@@ -134,7 +137,7 @@
           <ng-template ngbNavContent>
             <app-job-source-contacts-tab
               [job]="job"
-              [editable]="editable">
+              [editable]="isEditable()">
             </app-job-source-contacts-tab>
           </ng-template>
         </ng-container>
@@ -172,19 +175,15 @@
           <a ngbNavLink>Submission List</a>
           <ng-template ngbNavContent>
             <div *ngIf= "job.submissionList">
-              <div class="form-control-plaintext">
-              <span>Click to open submission list:
-                <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>
-              </span>
+              <div *ngIf="showBreadcrumb" class="fw-light my-3">
+                <span>Click to open submission list:
+                  <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>
+                </span>
               </div>
               <div *ngIf="!showBreadcrumb">
-                <div class="mt-4">
-                  <h6><small class="fst-italic">
-                    Candidate opportunities ("cases") going for this job </small>
-                    <a [routerLink]="['/list',job.submissionList.id]">
-                      <i class="fas fa-expand link-info" title="Open full submission list"></i>
-                    </a>
-                  </h6>
+                <div class="fw-light my-3">
+                  Candidate opportunities ("cases") going for this job:
+                  <a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>
                 </div>
                 <app-candidate-source-results
                   [candidateSource]="job.submissionList"

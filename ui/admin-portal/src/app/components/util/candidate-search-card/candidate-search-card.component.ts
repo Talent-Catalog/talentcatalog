@@ -21,6 +21,7 @@ import {
   Input,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {Candidate} from '../../../model/candidate';
@@ -48,6 +49,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   @Input() savedSearchSelectionChange: boolean;
 
   @Output() closeEvent = new EventEmitter();
+  @Output() onSearchCardRendered = new EventEmitter();
 
   showAttachments: boolean = false;
   showNotes: boolean = true;
@@ -63,15 +65,31 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   activeContextTabId: string;
   private lastContextTabKey: string = 'SelectedCandidateContextLastTab';
 
+  /**
+   * Compliments ngAfterViewChecked, which runs multiple times with each change, by ensuring the
+   * desired attendant methods are only run once per content change.
+   */
+  afterViewCheckedHasRun: boolean = false;
+
   constructor(private localStorageService: LocalStorageService,
-              private authService: AuthorizationService) { }
+              private authorizationService: AuthorizationService) { }
 
   ngOnInit() {
   }
 
   ngAfterViewChecked(): void {
-    //This is called in order for the navigation tabs, this.nav, to be set.
-    this.selectDefaultTab();
+    if (!this.afterViewCheckedHasRun) { // Don't execute if already run
+      this.afterViewCheckedHasRun = true; // Prohibit further execution
+      // This is called in order for the navigation tabs, this.nav, to be set.
+      this.selectDefaultTab();
+      // Parent component has stored previous scroll position, will restore if pixels from top > 0.
+      this.onSearchCardRendered.emit();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Ensures that AfterViewChecked methods will run after new candidate received from parent.
+    if (changes.candidate) this.afterViewCheckedHasRun = false;
   }
 
   close() {
@@ -102,6 +120,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
       }
     }
     return display;
+  }
+
+  isEditable(): boolean {
+    return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
   onTabChanged(event: NgbNavChangeEvent) {
@@ -139,7 +161,7 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   }
 
   canViewPrivateInfo() {
-    return this.authService.canViewPrivateCandidateInfo(this.candidate);
+    return this.authorizationService.canViewPrivateCandidateInfo(this.candidate);
   }
 
   /**
@@ -147,6 +169,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
    */
   getCandidateOppForJobSource(): CandidateOpportunity {
     return this.candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+  }
+
+  isAnAdmin(): boolean {
+    return this.authorizationService.isAnAdmin();
   }
 
 }

@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -153,7 +154,7 @@ class CountryAdminApiTest extends ApiTestBase {
   @DisplayName("get destination countries succeeds")
   void getDestinationCountriesSucceeds() throws Exception {
     given(countryService
-        .getTBBDestinations())
+        .getTCDestinations())
         .willReturn(countries);
 
     mockMvc.perform(get(BASE_PATH + "/" + DESTINATIONS_LIST_PATH)
@@ -174,7 +175,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[2].status", is("active")));
 
 
-    verify(countryService).getTBBDestinations();
+    verify(countryService).getTCDestinations();
   }
 
   @Test
@@ -187,6 +188,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(countryPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -245,6 +247,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(new Country("Ukraine", Status.active));
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -272,6 +275,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(new Country("Ukraine", Status.active));
 
     mockMvc.perform(put(BASE_PATH + "/" + COUNTRY_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -296,6 +300,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + COUNTRY_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 

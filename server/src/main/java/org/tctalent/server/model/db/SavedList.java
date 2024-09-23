@@ -118,6 +118,18 @@ public class SavedList extends AbstractCandidateSource {
     private String fileInterviewGuidanceLink;
 
     /**
+     * Name of signed MOU file, if one exists
+     */
+    @Nullable
+    private String fileMouName;
+
+    /**
+     * Url link to signed MOU file, if one exists
+     */
+    @Nullable
+    private String fileMouLink;
+
+    /**
      * Url link to corresponding list folder on Google Drive, if one exists.
      * <p/>
      * This is the alpha named folder beneath the folder numerically named folder taken from the
@@ -152,6 +164,8 @@ public class SavedList extends AbstractCandidateSource {
     private String tbbShortName;
 
     /**
+     * If true defines the list as the "submission list" for a job.
+     * <p/>
      * If true, this list is associated with a "registered" job. See the Angular "New Job" menu
      * item. A link to the job record on Salesforce is in {@link #getSfJobOpp()}.
      * There should only be one list registered to a particular job, as defined by its sfJobOpp.
@@ -224,6 +238,9 @@ public class SavedList extends AbstractCandidateSource {
     private List<ExportColumn> exportColumns;
 
     public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
+        if (this.exportColumns != null) {
+            this.exportColumns.clear();
+        }
         modifyColumnIndices(exportColumns);
         this.exportColumns = exportColumns;
     }

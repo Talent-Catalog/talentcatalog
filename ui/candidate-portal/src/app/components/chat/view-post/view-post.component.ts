@@ -10,8 +10,9 @@ import {
 import {isHtml} from 'src/app/util/string';
 import {ChatPost} from "../../../model/chat";
 import {UserService} from "../../../services/user.service";
-import {CreateReactionRequest, ReactionService} from "../../../services/reaction.service";
+import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
 import {Reaction} from "../../../model/reaction";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-view-post',
@@ -24,6 +25,7 @@ import {Reaction} from "../../../model/reaction";
 export class ViewPostComponent implements OnInit {
 
   public reactionPickerVisible: boolean = false;
+  public userIsPostAuthor: boolean;
 
   // Currently ngx-quill just inserts the url into an <img> tag, this is then saved as innerHTML.
   // Adding this event listener allows us to make the images clickable and open the src attribute in a new tab.
@@ -35,13 +37,17 @@ export class ViewPostComponent implements OnInit {
   }
 
   @Input() post: ChatPost;
-  @Input() currentPost: ChatPost;
+  @Input() readOnly = false;
 
   @ViewChild('thisPost') thisPost: ElementRef;
 
-  constructor(private reactionService: ReactionService) { }
+  constructor(
+    private reactionService: ReactionService,
+    private authenticationService: AuthenticationService
+  ) { }
 
   ngOnInit(): void {
+    this.setUserIsPostAuthor()
   }
 
   get isHtml() {
@@ -53,65 +59,47 @@ export class ViewPostComponent implements OnInit {
     return UserService.userToString(user, false, false);
   }
 
-  // Toggles the picker on and off — if on, focuses the scroll bar on its post
-  public onClickReactionBtn() {
-    this.reactionPickerVisible = !this.reactionPickerVisible;
-    if(this.reactionPickerVisible) {
-      setTimeout(() => {
-        this.thisPost.nativeElement.scrollIntoView({behavior: 'smooth'});
-      });
+  // Toggles the picker on and off, focuses the scroll bar on this post if reaction button clicked.
+  public toggleReactionPicker() {
+    if (!this.readOnly) {
+      this.reactionPickerVisible = !this.reactionPickerVisible;
+      // Scrolls entire post into view when picker has been toggled on by reaction button
+      if(this.reactionPickerVisible) {
+        setTimeout(() => {
+          this.thisPost.nativeElement.scrollIntoView({behavior: 'smooth'});
+        });
+      }
     }
   }
 
   // This method may also update or even delete a reaction, if the user submits an emoji already
   // associated with the post. This behaviour is managed by ReactionService on the server.
   public onSelectEmoji(event) {
-    this.reactionPickerVisible = false;
-    const request: CreateReactionRequest = {
-      emoji: `${event.emoji.native}`
+    if (!this.readOnly) {
+      this.reactionPickerVisible = false;
+      const request: AddReactionRequest = {
+        emoji: `${event.emoji.native}`
+      }
+      this.reactionService.addReaction(this.post.id, request)
+      .subscribe({
+        next: (updatedReactions) =>
+          this.post.reactions = updatedReactions
+      })
     }
-    this.reactionService.createReaction(this.post.id, request)
-                          .subscribe({
-                            next: (updatedReactions) =>
-                            this.post.reactions = updatedReactions
-                          })
   }
 
   public onSelectReaction(reaction: Reaction) {
-    this.reactionService.updateReaction(reaction.id)
+    this.reactionService.modifyReaction(reaction.id)
                           .subscribe({
                             next: (updatedReactions) =>
                             this.post.reactions = updatedReactions
                           })
   }
 
-  // These emojis don't work for some reason — this function excludes them from the picker.
-  emojisToShowFilter = (emoji: any) => {
-    return emoji.shortName !== 'relaxed' && emoji.shortName !== 'white_frowning_face'
+  // Used to check whether user should see option to block link preview in sent post.
+  private setUserIsPostAuthor() {
+    this.userIsPostAuthor =
+      this.post.createdBy.id === this.authenticationService.getLoggedInUser().id;
   }
-
-  // Below commented-out methods and class property were closing unwanted emoji pickers.
-  // Leaving them here as they're likely to be useful for future styling and functionality.
-  // Used in conjunction with @Input currentPost.
-
-  // isCurrentPost: boolean = false;
-
-  // ngOnChanges(changes: SimpleChanges) {
-  //   for (const propName in changes) {
-  //     if (changes.hasOwnProperty(propName)) {
-  //       switch (propName) {
-  //         case 'currentPost': {
-  //           this.setIsCurrentPost(
-  //             changes.currentPost.currentValue
-  //           )
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // private setIsCurrentPost(currentPost: ChatPost) {
-  //   this.isCurrentPost = currentPost === this.post;
-  // }
 
 }

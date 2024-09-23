@@ -33,6 +33,7 @@ export interface CandidateOpportunity extends Opportunity {
   candidate: ShortCandidate;
   jobOpp: ShortJob;
   stage: CandidateOpportunityStage;
+  relocatingDependantIds?: number[];
 }
 
 export enum CandidateOpportunityStage {
@@ -50,14 +51,15 @@ export enum CandidateOpportunityStage {
   twoWayReview = "11. 2 way interview review",
   offer = "12. Offer (employer is preparing written offer)",
   acceptance = "13. Acceptance (informed decision making as candidate considers offer(s))",
-  provincialVisaPreparation = "14. Provincial visa preparation (Canada only)",
-  provincialVisaProcessing = "15. Provincial visa processing (Canada only)",
-  visaPreparation = "16. Visa preparation",
-  visaProcessing = "17. Visa processing",
-  relocating = "18. Relocating",
-  relocated = "19. Relocated (candidate has arrived at employer's location)",
-  settled = "20. Settled (candidate indicates no further need for support)",
-  durableSolution = "21 Closed won. Durable solution (permanent residence, normal citizen rights)",
+  training = "14. Training",
+  provincialVisaPreparation = "15. Provincial visa preparation (Canada only)",
+  provincialVisaProcessing = "16. Provincial visa processing (Canada only)",
+  visaPreparation = "17. Visa preparation",
+  visaProcessing = "18. Visa processing",
+  relocating = "19. Relocating",
+  relocated = "20. Relocated (candidate has arrived at employer's location)",
+  settled = "21. Settled (candidate indicates no further need for support)",
+  durableSolution = "22 Closed won. Durable solution (permanent residence, normal citizen rights)",
   noJobOffer = "Closed. No job offer",
   noVisa = "Closed. No visa",
   notFitForRole = "Closed. Not fit for role",
@@ -69,7 +71,8 @@ export enum CandidateOpportunityStage {
   candidateUnreachable = "Closed. Candidate unreachable",
   candidateWithdraws = "Closed. Candidate withdraws",
   jobOfferRetracted = "Closed. Job offer retracted",
-  relocatedNoJobOfferPathway = "Closed. No job offer stream (Canadian pathway stream - based on skills not job offer)"
+  relocatedNoJobOfferPathway = "Closed. No job offer stream (Canadian pathway stream - based on skills not job offer)",
+  trainingNotCompleted = "Closed. Training not completed",
 }
 
 /**
@@ -82,6 +85,7 @@ export class SearchOpportunityRequest extends PagedSearchRequest {
   ownershipType?: OpportunityOwnershipType;
   ownedByMe?: boolean;
   ownedByMyPartner?: boolean;
+  published?: boolean;
   sfOppClosed?: boolean;
   stages?: string[];
   destinationIds?: number[];

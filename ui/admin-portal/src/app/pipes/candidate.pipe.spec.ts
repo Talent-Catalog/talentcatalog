@@ -13,12 +13,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {CandidatePipe} from './candidate.pipe';
+import {CandidatePipe} from "./candidate.pipe";
+import {Candidate} from "../model/candidate";
+import {MockCandidate} from "../MockData/MockCandidate";
 
 describe('CandidatePipe', () => {
+  let pipe: CandidatePipe;
+
+  beforeEach(() => {
+    pipe = new CandidatePipe();
+  });
+
   it('create an instance', () => {
-    const pipe = new CandidatePipe();
     expect(pipe).toBeTruthy();
   });
+
+  it('should return full name when args is "name"', () => {
+    const candidate: Candidate = new MockCandidate();
+    const args = 'name';
+
+    const result = pipe.transform(candidate, args);
+
+    expect(result).toEqual('John Doe');
+  });
+
+  it('should return default candidate name when user is undefined and args is "name"', () => {
+    const candidate: Candidate = new MockCandidate();
+    const args = 'name';
+
+    const result = pipe.transform(candidate, args);
+
+    expect(result).toEqual('John Doe');
+  });
+
+  it('should return default candidate name when args is undefined', () => {
+    const candidate: Candidate = new MockCandidate();
+
+    const result = pipe.transform(candidate);
+
+    expect(result).toEqual('John Doe');
+  });
+
 });

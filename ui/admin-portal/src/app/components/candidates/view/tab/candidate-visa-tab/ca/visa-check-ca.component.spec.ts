@@ -13,29 +13,49 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {VisaCheckCaComponent} from './visa-check-ca.component';
+import {VisaCheckCaComponent} from "./visa-check-ca.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
+import {MockCandidate} from "../../../../../../MockData/MockCandidate";
+import {
+  mockCandidateIntakeData
+} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
+import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('VisaCheckCaComponent', () => {
   let component: VisaCheckCaComponent;
   let fixture: ComponentFixture<VisaCheckCaComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ VisaCheckCaComponent ]
-    })
-    .compileComponents();
-  }));
+  const mockCandidate = new MockCandidate();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [NgbAccordionModule],
+      declarations: [VisaCheckCaComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VisaCheckCaComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+
+    component.candidate = mockCandidate;
+    component.candidateIntakeData = mockCandidateIntakeData;
+    component.visaCheckRecord = {
+      candidateVisaJobChecks: [
+        { id: 1, occupation: { id: 1, name: 'Job 1' } } as CandidateVisaJobCheck,
+        { id: 2, occupation: { id: 2, name: 'Job 2' } } as CandidateVisaJobCheck
+      ]
+    } as CandidateVisa;
+
+    fixture.detectChanges(); // trigger data binding
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should select the first job by default', () => {
+    expect(component.selectedJob).toEqual(component.visaCheckRecord.candidateVisaJobChecks[0]);
   });
 });

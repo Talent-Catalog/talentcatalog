@@ -45,9 +45,12 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   saving: boolean;
   candidateChat: JobChat;
   candidateRecruitingChat: JobChat;
+  jobCreatorSourcePartnerChat: JobChat;
   candidateProspectTabVisible: boolean;
   candidateRecruitingTabVisible: boolean;
   candidateRecruitingTabTitle: string = 'CandidateRecruiting'
+  jobCreatorSourcePartnerTabVisible: boolean;
+  jobCreatorSourcePartnerTabTitle: string = 'JobCreatorSourcePartner'
 
   constructor(
     private authorizationService: AuthorizationService,
@@ -83,17 +86,24 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       candidateId: this.opp?.candidate?.id,
       jobId: this.opp?.jobOpp?.id
     }
+    const jobCreatorSourcePartnerChatRequest: CreateChatRequest = {
+      type: JobChatType.JobCreatorSourcePartner,
+      sourcePartnerId: this.opp?.candidate?.user?.partner?.id,
+      jobId: this.opp?.jobOpp?.id
+    }
 
     this.loading = true;
     this.error = null;
     forkJoin( {
       'candidateChat': this.chatService.getOrCreate(candidateProspectChatRequest),
       'candidateRecruitingChat': this.chatService.getOrCreate(candidateRecruitingChatRequest),
+      'jobCreatorSourcePartnerChat': this.chatService.getOrCreate(jobCreatorSourcePartnerChatRequest),
     }).subscribe(
       results => {
         this.loading = false;
         this.candidateChat = results['candidateChat'];
         this.candidateRecruitingChat = results['candidateRecruitingChat'];
+        this.jobCreatorSourcePartnerChat = results['jobCreatorSourcePartnerChat'];
       },
       (error) => {
         this.error = error;
@@ -189,11 +199,20 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
 
     this.candidateRecruitingTabVisible = userIsCandidatePartner || userIsJobCreator;
 
+    this.jobCreatorSourcePartnerTabVisible = userIsCandidatePartner || userIsJobCreator;
+
     //Label on candidateRecruiting chat depends on who the logged in user is.
     if (userIsCandidatePartner) {
       this.candidateRecruitingTabTitle = 'Chat with candidate & recruiter'
     } else if (userIsJobCreator) {
       this.candidateRecruitingTabTitle = 'Chat with candidate & source partner'
+    }
+
+    //Label on jobCreatorSourcePartner chat depends on who the logged in user is.
+    if (userIsCandidatePartner) {
+      this.jobCreatorSourcePartnerTabTitle = 'Chat with recruiter'
+    } else if (userIsJobCreator) {
+      this.jobCreatorSourcePartnerTabTitle = 'Chat with source partner'
     }
   }
   uploadOffer() {
@@ -251,5 +270,9 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
    */
   cvReviewStageOrMore() {
     return isOppStageGreaterThanOrEqualTo(this.opp?.stage, 'cvReview')
+  }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
   }
 }

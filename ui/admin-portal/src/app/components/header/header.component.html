@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav class="navbar navbar-expand-md navbar-dark fixed-top" [ngClass]="{'navbar-staging': isStagingEnv()}">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top">
   <div class="container-fluid">
 
     <!-- LOGO -->
@@ -44,7 +44,7 @@
           <a title="Lists of Talent Catalog candidates"
              class="nav-link" [routerLink]="'/lists'" [routerLinkActive]="'active'">Lists</a>
         </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
+        <li class="nav-item" [routerLinkActive]="'active'" *ngIf="!isEmployerPartner()">
           <a title="Statistics about the Talent Catalog"
              class="nav-link" [routerLink]="'/infographics'" [routerLinkActive]="'active'">Stats</a>
         </li>

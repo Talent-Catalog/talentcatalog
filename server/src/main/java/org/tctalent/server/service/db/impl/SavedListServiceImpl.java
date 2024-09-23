@@ -35,9 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,6 +51,7 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.ExportColumn;
@@ -106,6 +106,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
  * @author John Cameron
  */
 @Service
+@Slf4j
 public class SavedListServiceImpl implements SavedListService {
 
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
@@ -124,7 +125,6 @@ public class SavedListServiceImpl implements SavedListService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
     private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
 
     @Autowired
@@ -167,6 +167,7 @@ public class SavedListServiceImpl implements SavedListService {
             csl.setContextNote(contextNote);
         }
 
+        //If destination list does not already contain the candidate...
         if (!destinationList.getCandidateSavedLists().contains(csl)) {
             //Add candidate to the collection of candidates in this list
             destinationList.getCandidateSavedLists().add(csl);
@@ -176,9 +177,10 @@ public class SavedListServiceImpl implements SavedListService {
 
             assignListTasksToCandidate(destinationList, candidate);
 
-            //If a job list, automatically create a candidate opp if needed
+            //If a submission list, automatically create a candidate opp if needed
+            final Boolean isSubmissionList = destinationList.getRegisteredJob();
             final SalesforceJobOpp jobOpp = destinationList.getSfJobOpp();
-            if (jobOpp != null) {
+            if (isSubmissionList && jobOpp != null ) {
                 //With no params specified will not change any existing opp associated with this job,
                 //but will create a new opp if needed, with stage defaulting to "prospect"
                 candidateOpportunityService.createUpdateCandidateOpportunities(
@@ -229,7 +231,10 @@ public class SavedListServiceImpl implements SavedListService {
 
             deactivateIncompleteCandidateListTasks(savedList, candidate);
         } catch (Exception ex) {
-            log.warn("Could not delete candidate saved list " + csl.getId(), ex);
+            LogBuilder.builder(log)
+                .action("RemoveCandidateFromList")
+                .message("Could not delete candidate saved list " + csl.getId())
+                .logWarn(ex);
         }
     }
 
@@ -448,9 +453,9 @@ public class SavedListServiceImpl implements SavedListService {
 
         SalesforceJobOpp sfJobOpp = request.getSfJobOpp();
         if (sfJobOpp == null) {
-            final String sfJoblink = request.getSfJoblink();
-            if (sfJoblink != null) {
-                sfJobOpp = salesforceJobOppService.getOrCreateJobOppFromLink(sfJoblink);
+            final Long jobId = request.getJobId();
+            if (jobId != null) {
+                sfJobOpp = salesforceJobOppService.getJobOpp(jobId);
             }
         }
 
@@ -558,7 +563,7 @@ public class SavedListServiceImpl implements SavedListService {
             while ((tokens = reader.readNext()) != null) {
                 //tokens[] is an array of values from the line
                 //Ignore empty tokens
-                if (tokens.length > 0 && tokens[0].length() > 0) {
+                if (tokens.length > 0 && !tokens[0].isEmpty()) {
                     //A bit of logic to skip any header. Only checks once.
                     boolean skip = possibleHeader && !StringUtils.isNumeric(tokens[0]);
                     possibleHeader = false;
@@ -648,7 +653,12 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = get(savedListId);
         request.populateFromRequest(savedList);
 
-        savedList.setSfJobOpp(salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+        final Long jobId = request.getJobId();
+        if (jobId != null) {
+            final SalesforceJobOpp jobOpp =
+                jobId < 0 ? null : salesforceJobOppService.getJobOpp(jobId);
+            savedList.setSfJobOpp(jobOpp);
+        }
 
         return saveIt(savedList);
     }

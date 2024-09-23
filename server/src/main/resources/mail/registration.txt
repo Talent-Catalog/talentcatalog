@@ -1,3 +1,5 @@
+This is a no-reply email. Please do not respond to this message.
+
 Dear [(${displayName})],
 
 Thank you for registering on the Talent Catalog

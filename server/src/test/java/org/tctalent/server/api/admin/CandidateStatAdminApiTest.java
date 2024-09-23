@@ -22,8 +22,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -50,6 +52,7 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrStatusStats
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.Set;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,6 +68,7 @@ import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CandidateStatsService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 
@@ -82,17 +86,24 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   private static final String ALL_STATS_PATH = "/all";
 
   @MockBean CandidateService candidateService;
+  @MockBean CandidateStatsService candidateStatsService;
   @MockBean CountryRepository countryRepository;
   @MockBean SavedListService savedListService;
   @MockBean SavedSearchService savedSearchService;
   @MockBean AuthService authService;
+  @MockBean EntityManager entityManager;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
   @Autowired CandidateStatAdminApi candidateStatAdminApi;
 
+  private CandidateStatsRequest request = new CandidateStatsRequest();
+
   @BeforeEach
   void setUp() {
+    request = new CandidateStatsRequest();
+    request.setRunOldStats(true);
+
     configureAuthentication();
 
     user.setSourceCountries(Set.of(
@@ -114,13 +125,13 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @Test
   @DisplayName("get all stats - gender report succeeds")
   void getAllStatsGenderReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeGenderStats(any(), any(), any()))
         .willReturn(getGenderStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -144,20 +155,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[0].rows[2].label", is("female")))
         .andExpect(jsonPath("$[0].rows[2].value", is(2588)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeGenderStats(any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - registration report succeeds")
   void getAllStatsRegistrationReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeRegistrationStats(any(), any(), any()))
         .willReturn(getRegistrationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -181,20 +192,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[1].rows[2].label", is("2016-06-14")))
         .andExpect(jsonPath("$[1].rows[2].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeRegistrationStats(any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - registration by occupation report succeeds")
   void getAllStatsRegistrationByOccupationReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeRegistrationOccupationStats(any(), any(), any()))
         .willReturn(getRegistrationByOccupationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -218,20 +229,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[2].rows[2].label", is("Teacher")))
         .andExpect(jsonPath("$[2].rows[2].value", is(777)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeRegistrationOccupationStats(any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - birth year report succeeds")
   void getAllStatsBirthYearReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeBirthYearStats(any(), any(), any(), any()))
         .willReturn(getBirthYearStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -255,20 +266,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[3].rows[2].label", is("1951")))
         .andExpect(jsonPath("$[3].rows[2].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeBirthYearStats(any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - linked in links report succeeds")
   void getAllStatsLinkedInLinksReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeLinkedInExistsStats(any(), any(), any()))
         .willReturn(getLinkedInExistsStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -290,20 +301,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[6].rows[1].label", is("Has link")))
         .andExpect(jsonPath("$[6].rows[1].value", is(10)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeLinkedInExistsStats(any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - linked in links by registration date report succeeds")
   void getAllStatsLinkedInLinksByRegistrationDateReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeLinkedInStats(any(), any(), any()))
         .willReturn(getLinkedInByRegistrationDateStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -327,20 +338,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[7].rows[2].label", is("2016-06-14")))
         .andExpect(jsonPath("$[7].rows[2].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeLinkedInStats(any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - Unhcr registration date report succeeds")
   void getAllStatsUnhcrRegistrationReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeUnhcrRegisteredStats(any(), any(), any()))
         .willReturn(getUnhcrRegistrationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -364,20 +375,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[8].rows[2].label", is("No")))
         .andExpect(jsonPath("$[8].rows[2].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeUnhcrRegisteredStats(any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - Unhcr status report succeeds")
   void getAllStatsUnhcrStatusReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeUnhcrStatusStats(any(), any(), any()))
         .willReturn(getUnhcrStatusStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -403,20 +414,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[9].rows[3].label", is("RegisteredStatusUnknown")))
         .andExpect(jsonPath("$[9].rows[3].value", is(1)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService).computeUnhcrStatusStats(any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - nationalities report succeeds")
   void getAllStatsNationalityReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeNationalityStats(any(), any(), any(), any(), any()))
         .willReturn(getNationalityStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -438,20 +449,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[10].rows[1].label", is("Syria")))
         .andExpect(jsonPath("$[10].rows[1].value", is(14852)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(5)).computeNationalityStats(any(), any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - source countries report succeeds")
   void getAllStatsSourceCountryReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeSourceCountryStats(any(), any(), any(), any()))
         .willReturn(getSourceCountryStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -473,20 +484,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[15].rows[1].label", is("Jordan")))
         .andExpect(jsonPath("$[15].rows[1].value", is(4396)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeSourceCountryStats(any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - status report succeeds")
   void getAllStatsStatusReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeStatusStats(any(), any(), any(), any(), any()))
         .willReturn(getStatusStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -514,20 +525,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[18].rows[4].label", is("autonomousEmployment")))
         .andExpect(jsonPath("$[18].rows[4].value", is(5000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(5)).computeStatusStats(any(), any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - occupations report succeeds")
   void getAllStatsOccupationsReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeOccupationStats(any(), any(), any(), any()))
         .willReturn(getOccupationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -551,20 +562,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[23].rows[2].label", is("Accountant")))
         .andExpect(jsonPath("$[23].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeOccupationStats(any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - most common occupations report succeeds")
   void getAllStatsMostCommonOccupationsReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeMostCommonOccupationStats(any(), any(), any(), any()))
         .willReturn(getOccupationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -588,20 +599,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[26].rows[2].label", is("Accountant")))
         .andExpect(jsonPath("$[26].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeMostCommonOccupationStats(any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - most max education level report succeeds")
   void getAllStatsMaxEducationLevelReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeMaxEducationStats(any(), any(), any(), any()))
         .willReturn(getMaxEducationStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -625,20 +636,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[29].rows[2].label", is("Doctoral Degree")))
         .andExpect(jsonPath("$[29].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeMaxEducationStats(any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - languages report succeeds")
   void getAllStatsLanguagesReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeLanguageStats(any(), any(), any(), any()))
         .willReturn(getLanguageStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -662,20 +673,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[32].rows[2].label", is("French")))
         .andExpect(jsonPath("$[32].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeLanguageStats(any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - referrers report succeeds")
   void getAllStatsReferrersReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeReferrerStats(any(), any(), any(), any(), any()))
         .willReturn(getReferrerStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -697,20 +708,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[35].rows[1].label", is("uncle fred")))
         .andExpect(jsonPath("$[35].rows[1].value", is(2000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(3)).computeReferrerStats(any(), any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - survey report succeeds")
   void getAllStatsSurveyReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeSurveyStats(any(), any(), any(), any(), any()))
         .willReturn(getSurveyStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -734,20 +745,20 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[38].rows[2].label", is("NGO")))
         .andExpect(jsonPath("$[38].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(5)).computeSurveyStats(any(), any(), any(), any(), any());
   }
 
   @Test
   @DisplayName("get all stats - spoken language report succeeds")
   void getAllStatsSpokenLanguageReportSucceeds() throws Exception {
-    CandidateStatsRequest request = new CandidateStatsRequest();
 
     given(candidateService
         .computeSpokenLanguageLevelStats(any(), any(), any(), any(), any()))
         .willReturn(getSpokenLanguageLevelStats());
 
     mockMvc.perform(post(BASE_PATH + ALL_STATS_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -771,7 +782,7 @@ class CandidateStatAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$[43].rows[2].label", is("Elementary Proficiency")))
         .andExpect(jsonPath("$[43].rows[2].value", is(3000)));
 
-    verify(authService).getLoggedInUser();
+    verify(authService, atLeastOnce()).getLoggedInUser();
     verify(candidateService, times(6)).computeSpokenLanguageLevelStats(any(), any(), any(), any(), any());
   }
 

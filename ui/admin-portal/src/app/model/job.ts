@@ -29,9 +29,12 @@ export function isJob(opp: Opportunity): opp is Job {
   return !isCandidateOpportunity(opp);
 }
 
-export interface ShortJob {
+export interface JobNameAndId {
   id: number,
   name: string;
+}
+
+export interface ShortJob extends JobNameAndId {
   country?: Country;
   submissionList?: ShortSavedList;
   jobCreator?: ShortPartner;
@@ -43,6 +46,7 @@ export interface Job extends Opportunity {
   contactUser: User;
   country: Country;
   employerEntity: Employer;
+  evergreen: boolean;
   exclusionList: SavedList;
   jobSummary: string;
   publishedBy: User;
@@ -61,7 +65,7 @@ export function getJobExternalHref(router: Router, location: Location, job: Job)
   return getExternalHref(router, location, ['job', job.id]);
 }
 
-export type JobDocType = "jd" | "joi" | "interview";
+export type JobDocType = "jd" | "joi" | "interview" | "mou";
 
 /**
  * Note that the string values of this enum MUST match the actual stage names for job
@@ -73,16 +77,18 @@ export enum JobOpportunityStage {
   prospect = "0. Prospect",
   briefing = "1. Briefing",
   pitching = "2. Pitching",
-  identifyingRoles = "3. Identifying roles",
-  candidateSearch = "4. Candidate search",
-  visaEligibility = "5. Visa eligibility",
-  cvPreparation = "6. CV preparation",
-  cvReview = "7. CV review",
-  recruitmentProcess = "8. Recruitment process",
-  jobOffer = "9. Job offer",
-  visaPreparation = "10. Visa preparation",
-  postHireEngagement = "11. Post hire engagement",
-  hiringCompleted = "12 Closed won. Hiring completed",
+  mou = "3. MOU",
+  identifyingRoles = "4. Identifying roles",
+  candidateSearch = "5. Candidate search",
+  visaEligibility = "6. Visa eligibility",
+  cvPreparation = "7. CV preparation",
+  cvReview = "8. CV review",
+  recruitmentProcess = "9. Recruitment process",
+  jobOffer = "10. Job offer",
+  training = "11. Training",
+  visaPreparation = "12. Visa preparation",
+  postHireEngagement = "13. Post hire engagement",
+  hiringCompleted = "14. Closed won. Hiring completed",
   ineligibleEmployer = "Closed. Ineligible employer",
   ineligibleOccupation = "Closed. Ineligible occupation",
   ineligibleRegion = "Closed. Ineligible region",
@@ -93,22 +99,25 @@ export enum JobOpportunityStage {
   noVisa = "Closed. No visa",
   tooExpensive = "Closed. Too expensive",
   tooHighWage = "Closed. Too high wage",
-  tooLong = "Closed. Too long"
+  tooLong = "Closed. Too long",
+  mouIssue = "Closed. MOU issue",
+  trainingNotCompleted = "Closed. Training not completed",
 }
 
 /**
  * Adds extra job opportunity specific fields to standard SearchOpportunityRequest
  */
 export class SearchJobRequest extends SearchOpportunityRequest {
-  published?: boolean;
   starred?: boolean;
+  jobNameAndIdOnly?: boolean;
 }
 
 export interface UpdateJobRequest extends OpportunityProgressParams {
   contactUserId?: number;
+  evergreen?: boolean;
   roleName?: string;
   sfId?: string;
   sfJoblink?: string;
   submissionDueDate?: Date;
+  jobToCopyId?: number;
 }
-

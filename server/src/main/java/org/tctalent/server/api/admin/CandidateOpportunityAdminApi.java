@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,14 +31,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.JobChatUserInfo;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
@@ -50,10 +53,10 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
                                                                CandidateOpportunityParams> {
 
     private final CandidateOpportunityService candidateOpportunityService;
+    private final SalesforceService salesforceService;
 
     @Override
-    @GetMapping("{id}")
-    public @NotNull Map<String, Object> get(@PathVariable long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         CandidateOpportunity opp = candidateOpportunityService.getCandidateOpportunity(id);
         return candidateOpportunityDto().build(opp);
     }
@@ -91,6 +94,21 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
         return candidateOpportunityDto().build(opp);
     }
 
+    @PutMapping("{id}/update-sf-case-relocation-info")
+    public void updateSfCaseRelocationInfo(@PathVariable("id") long id)
+        throws NoSuchObjectException, SalesforceException, WebClientException {
+        CandidateOpportunity candidateOpportunity = candidateOpportunityService.getCandidateOpportunity(id);
+        salesforceService.updateSfCaseRelocationInfo(candidateOpportunity);
+    }
+
+    @PutMapping("{id}/relocating-dependants")
+    public void updateRelocatingDependants(@PathVariable("id") long id, 
+        @RequestBody UpdateRelocatingDependantIds request)
+        throws NoSuchObjectException, SalesforceException, WebClientException {
+        CandidateOpportunity candidateOpportunity = 
+            candidateOpportunityService.updateRelocatingDependants(id, request);
+    }
+
     private DtoBuilder candidateOpportunityDto() {
         return new DtoBuilder()
             .add("id")
@@ -112,6 +130,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
             .add("updatedDate")
             .add("fileOfferLink")
             .add("fileOfferName")
+            .add("relocatingDependantIds")
             ;
     }
 

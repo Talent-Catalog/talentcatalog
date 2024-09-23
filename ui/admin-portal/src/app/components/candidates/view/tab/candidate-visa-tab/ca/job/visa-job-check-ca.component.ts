@@ -4,10 +4,10 @@ import {
   CandidateIntakeData,
   CandidateVisa,
   CandidateVisaJobCheck,
+  describeFamilyInDestination,
   getDestinationPathwayInfoLink,
   IeltsStatus
 } from "../../../../../../../model/candidate";
-import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {
   CandidateOccupationService
@@ -15,7 +15,7 @@ import {
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateVisaJobService} from "../../../../../../../services/candidate-visa-job.service";
+import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-visa-job-check-ca',
@@ -36,13 +36,13 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   familyInCanada: string;
   partnerIeltsString: string;
   pathwaysInfoLink: string;
+  candidateOpportunity: CandidateOpportunity;
 
   error: string;
   loading: boolean;
 
   constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService,
-              private candidateVisaJobService: CandidateVisaJobService) {}
+              private candidateOccupationService: CandidateOccupationService) {}
 
   ngOnInit(): void {
     // Get the candidate occupations
@@ -63,7 +63,7 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
     )
 
     // Process & fetch values that need to be displayed.
-    this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
+    this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord);
     if (this.candidateIntakeData?.partnerIelts) {
       this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts] +
         (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
@@ -71,24 +71,14 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
       this.partnerIeltsString = null;
     }
     this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
+    this.candidateOpportunity = this.candidate.candidateOpportunities
+      .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
   }
 
   ngAfterViewInit() {
-    this.visaJobCanada.expandAll();
-  }
-
-  requestSfCaseRelocationInfoUpdate() {
-    this.error = null;
-    this.loading = true;
-    this.candidateVisaJobService.updateSfCaseRelocationInfo(
-        this.selectedJobCheck.id).subscribe(
-        boolean => {
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
+    if(this.visaJobCanada){
+      this.visaJobCanada.expandAll();
+    }
   }
 }
 

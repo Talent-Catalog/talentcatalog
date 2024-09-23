@@ -18,7 +18,6 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,8 +30,8 @@ import org.tctalent.server.model.db.Status;
  * <p/>
  * See {@link #findSourcePartnerByAutoassignableCountry(Country)} - noting join with sourceCountries attribute
  */
-public interface PartnerRepository extends JpaRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
 
+public interface PartnerRepository extends CacheEvictingRepository<PartnerImpl, Long>, JpaSpecificationExecutor<PartnerImpl> {
 
     @Query("select p from Partner p where p.defaultSourcePartner = :defaultSourcePartner")
     Optional<PartnerImpl> findByDefaultSourcePartner(@Param("defaultSourcePartner") boolean defaultSourcePartner);

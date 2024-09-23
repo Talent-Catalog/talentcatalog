@@ -21,6 +21,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,7 +79,7 @@ public class ChatAdminApi implements
         final Long candidateId = request.getCandidateId();
         Candidate candidate = candidateId == null ? null : candidateService.getCandidate(candidateId);
 
-        JobChat chat = chatService.createJobChat(request.getType(),
+        JobChat chat = chatService.getOrCreateJobChat(request.getType(),
             jobOpp, sourcePartner, candidate);
         return chatService.getJobChatDtoBuilder().build(chat);
     }
@@ -90,6 +91,12 @@ public class ChatAdminApi implements
         return chatService.getJobChatDtoBuilder().buildList(chats);
     }
 
+    @Nullable
+    @GetMapping("{candidateId}/get-cp-chat")
+    public Map<String, Object> getCandidateProspectChat(@PathVariable("candidateId") long candidateId) {
+        JobChat jobChat = chatService.getCandidateProspectChat(candidateId);
+        return jobChat == null ? null : chatService.getJobChatDtoBuilder().build(jobChat);
+    }
 
     @NonNull
     @PostMapping("get-or-create")

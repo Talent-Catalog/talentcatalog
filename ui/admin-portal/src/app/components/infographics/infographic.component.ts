@@ -78,7 +78,9 @@ export class InfographicComponent implements OnInit {
 
   private loadListsAndSearches() {
     /*load all our visible lists and searches */
-     this.loading = true;
+    this.loading = true;
+    this.error = null;
+
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
@@ -118,7 +120,7 @@ export class InfographicComponent implements OnInit {
           this.savedSearchService.get(id).subscribe(
             (savedSearch) => {
               this.statsFilter.controls['savedSearch'].patchValue(savedSearch);
-              this.submitStatsRequest();
+              this.submitStatsRequest(true);
             }, error => {
               this.error = error;
             });
@@ -127,7 +129,7 @@ export class InfographicComponent implements OnInit {
           this.savedListService.get(id).subscribe(
             (savedList) => {
               this.statsFilter.controls['savedList'].patchValue(savedList);
-              this.submitStatsRequest();
+              this.submitStatsRequest(true);
             }, error => {
               this.error = error;
           });
@@ -136,10 +138,12 @@ export class InfographicComponent implements OnInit {
     });
   }
 
-  submitStatsRequest(){
+  submitStatsRequest(runOldStats: boolean){
     this.loading = true;
+    this.error = null;
 
     const request: CandidateStatsRequest = {
+      runOldStats: runOldStats,
       listId: this.savedList == null ? null : this.savedList.id,
       searchId: this.savedSearch == null ? null : this.savedSearch.id,
       dateFrom: this.dateFrom,

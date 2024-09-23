@@ -41,7 +41,7 @@ export class CandidateVisaTabComponent implements OnInit {
   @Input() candidate: Candidate;
   candidateIntakeData: CandidateIntakeData;
   visaChecks: CandidateVisa[];
-  tbbDestinations: Country[];
+  tcDestinations: Country[];
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
@@ -70,12 +70,12 @@ export class CandidateVisaTabComponent implements OnInit {
 
     })
     // FETCH TBB DESTINATIONS
-    this.countryService.listTBBDestinations().subscribe((results) => {
+    this.countryService.listTCDestinations().subscribe((results) => {
       /**
        * todo: Remove/alter this filter once no longer needed or find other solution.
-       * It is a temporary filter to only display the TBB destinations (Australia & Canada) that have functioning visa checks.
+       * It is a temporary filter to only display the TBB destinations (Australia, Canada & UK) that have functioning visa checks.
        */
-      this.tbbDestinations = results.filter(c => c.id == 6191 || c.id == 6216);
+      this.tcDestinations = results.filter(c => c.id == 6191 || c.id == 6216 || c.id == 6179);
     })
 
     this.reloadAndSelectVisaCheck(0)
@@ -89,14 +89,14 @@ export class CandidateVisaTabComponent implements OnInit {
    * Filters out destinations already used in existingRecords
    */
   private get filteredDestinations(): Country[] {
-    if (!this.tbbDestinations) {
+    if (!this.tcDestinations) {
       return [];
     } else if (this.visaChecks?.length <= 0) {
-      return this.tbbDestinations;
+      return this.tcDestinations;
     } else {
       //Extract currently used ids
       const existingIds: number[] = this.visaChecks?.map(record => record.country?.id);
-      return this.tbbDestinations.filter(
+      return this.tcDestinations.filter(
         //Exclude already used ids
         record => !existingIds.includes(record.id)
       );

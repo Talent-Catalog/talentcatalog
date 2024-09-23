@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -121,12 +122,13 @@ class ChatAdminApiTest extends ApiTestBase {
     void create() throws Exception {
         CreateChatRequest request = new CreateChatRequest();
 
-        given(chatService.createJobChat(
+        given(chatService.getOrCreateJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
             nullable(Candidate.class)))
             .willReturn(chat);
 
         mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -138,7 +140,7 @@ class ChatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.id", is(chat.getId().intValue())));
 
-        verify(chatService).createJobChat(
+        verify(chatService).getOrCreateJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
             nullable(Candidate.class)
         );
@@ -176,6 +178,7 @@ class ChatAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(post(BASE_PATH + GET_OR_CREATE_PATH)
                 .header("Authorization", "Bearer " + "jwt-token")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .accept(MediaType.APPLICATION_JSON))
@@ -211,6 +214,7 @@ class ChatAdminApiTest extends ApiTestBase {
         //For moment just testing that post id is passed as zero - meaning read whole post
         mockMvc.perform(put(BASE_PATH + "/" + chat.getId() + POST + "/0" + READ)
                 .header("Authorization", "Bearer " + "jwt-token")
+                .with(csrf())
                 )
 
             .andDo(print())

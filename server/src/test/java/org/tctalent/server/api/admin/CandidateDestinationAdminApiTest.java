@@ -17,6 +17,21 @@
 package org.tctalent.server.api.admin;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,20 +45,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
 import org.tctalent.server.service.db.CandidateDestinationService;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Unit tests for Candidate Destination Admin Api endpoints.
@@ -84,6 +85,7 @@ class CandidateDestinationAdminApiTest extends ApiTestBase {
                 .willReturn(candidateDestination);
 
         mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -95,9 +97,7 @@ class CandidateDestinationAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.country.name", is("USA")))
                 .andExpect(jsonPath("$.country.status", is("active")))
-                .andExpect(jsonPath("$.location", is("New York")))
                 .andExpect(jsonPath("$.interest", is("Yes")))
-                .andExpect(jsonPath("$.family", is("Cousin")))
                 .andExpect(jsonPath("$.notes", is("Some destination notes")));
 
         verify(candidateDestinationService).createDestination(anyLong(), any(CreateCandidateDestinationRequest.class));
@@ -107,6 +107,7 @@ class CandidateDestinationAdminApiTest extends ApiTestBase {
     @DisplayName("delete candidate destination succeeds")
     void deleteDestinationByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andDo(print())

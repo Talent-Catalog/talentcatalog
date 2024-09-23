@@ -18,8 +18,9 @@ package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.tctalent.server.model.db.ExportColumn;
+import org.tctalent.server.model.db.SavedList;
 
 public interface ExportColumnRepository
         extends JpaRepository<ExportColumn, Long> {
-
+  void deleteBySavedList(SavedList savedList);
 }

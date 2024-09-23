@@ -37,6 +37,7 @@ public enum CandidateOpportunityStage {
         twoWayReview ("2 way review"),
         offer ("Offer"),
         acceptance ("Acceptance"),
+        training("Training", false, true, false),
         provincialVisaPreparation ("Provincial visa preparation", false, true, false),
         provincialVisaProcessing ("Provincial visa processing", false, true, false),
         visaPreparation ("Visa preparation", false, true, false),
@@ -56,7 +57,8 @@ public enum CandidateOpportunityStage {
         candidateUnreachable ("Candidate unreachable", true, false, false),
         candidateWithdraws ("Candidate withdraws", true, false, false),
         jobOfferRetracted ("Job offer retracted", true, false, false),
-        relocatedNoJobOfferPathway("Relocated no job offer pathway", true, false, false)
+        relocatedNoJobOfferPathway("Relocated no job offer pathway", true, false, false),
+        trainingNotCompleted("Training not completed", true, false, false)
         ;
 
         private final String salesforceStageName;

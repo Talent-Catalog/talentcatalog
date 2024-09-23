@@ -33,19 +33,24 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+import org.tctalent.server.logging.LogBuilder;
 
 @Entity
 @Table(name = "saved_search")
 @SequenceGenerator(name = "seq_gen", sequenceName = "saved_search_id_seq", allocationSize = 1)
+@Slf4j
 public class SavedSearch extends AbstractCandidateSource {
-    private static final Logger log = LoggerFactory.getLogger(SavedSearch.class);
 
     private String type;
 
+    /**
+     * Every user has one default search. It is opened every time they use the 'New Search' tab
+     * and overwritten with any different new search they initiate. In effect, this means a user
+     * opening the 'New Search' tab will always see their most recently initiated new search.
+     */
     private Boolean defaultSearch = false;
 
     private String simpleQueryString;
@@ -95,11 +100,13 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private Integer minEducationLevel;
     private String educationMajorIds;
-    
+
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
 
     private String regoReferrerParam;
+
+    private String unhcrStatuses;
 
     /**
      * If specified, requests display of candidates who have any candidate opportunities
@@ -131,6 +138,10 @@ public class SavedSearch extends AbstractCandidateSource {
      */
     private Boolean reviewable = false;
 
+    //TODO JC There is only ever one "SearchJoin" per search - this is legacy code where each search
+    //could be based on a boolean expression of base searches. Too complex and was dropped ages ago.
+    //Should be replace with a single base search - and no further need for the SearchJoin class or
+    // entity
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
 
@@ -584,7 +595,10 @@ public class SavedSearch extends AbstractCandidateSource {
                     setSavedSearchSubtype(savedSearchSubtype);
                 }
             } catch (IllegalArgumentException ex) {
-                log.error("Bad type '" + type + "' of saved search " + getId(), ex);
+                LogBuilder.builder(log)
+                    .action("SavedSearchType")
+                    .message("Bad type '" + type + "' of saved search " + getId())
+                    .logError(ex);
             }
         }
     }
@@ -609,6 +623,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public Set<User> getUsers() {
         return users;
+    }
+
+    public String getUnhcrStatuses() {
+        return unhcrStatuses;
+    }
+
+    public void setUnhcrStatuses(String unhcrStatuses) {
+        this.unhcrStatuses = unhcrStatuses;
     }
 
     @Override

@@ -24,6 +24,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -43,19 +45,22 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -77,8 +82,10 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateCitizenship;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateExam;
@@ -127,10 +134,12 @@ import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
+import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
+import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CreateCandidateRequest;
@@ -149,6 +158,8 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
@@ -169,6 +180,7 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -197,12 +209,11 @@ import org.tctalent.server.util.html.TextExtracter;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CandidateServiceImpl implements CandidateService {
 
     private static final int afghanistanCountryId = 6180;
     private static final int ukraineCountryId = 6406;
-
-    private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private static final Map<CandidateSubfolderType, String> candidateSubfolderNames;
     private static final String NOT_AUTHORIZED = "Hidden";
@@ -256,14 +267,21 @@ public class CandidateServiceImpl implements CandidateService {
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
+    private final ElasticsearchService elasticsearchService;
+    private final EntityManager entityManager;
 
     @Transactional
     @Override
     public int populateElasticCandidates(
             Pageable pageable, boolean logTotal, boolean createElastic) {
+        entityManager.clear();
         Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
         if (logTotal) {
-            log.info(candidates.getTotalElements() + " candidates to be processed.");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Populate Elastic Candidates")
+                .message(candidates.getTotalElements() + " candidates to be processed.")
+                .logInfo();
         }
 
         int count = 0;
@@ -286,7 +304,11 @@ public class CandidateServiceImpl implements CandidateService {
 
                 count++;
             } catch (Exception ex) {
-                log.warn("Could not load candidate " + candidate.getId(), ex);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Populate Elastic Candidates")
+                    .message("Could not load candidate " + candidate.getId())
+                    .logError(ex);
             }
         }
 
@@ -312,19 +334,38 @@ public class CandidateServiceImpl implements CandidateService {
                             candidate.setUnhcrRegistered(YesNoUnsure.No);
                             candidate.setUnhcrStatus(twin.getUnhcrStatus());
                             save(candidate, false);
-                            log.warn("Updated candidate " + candidate.getId() + " with Not Registered status to Not Registered and UnhcrRegistered is No!");
+
+                            LogBuilder.builder(log)
+                                .user(authService.getLoggedInUser())
+                                .action("Populate Candidates From Elastic")
+                                .message("Updated candidate " + candidate.getId() + " with Not Registered status to Not Registered and UnhcrRegistered is No!")
+                                .logWarn();
+
                         } else if (twin.getUnhcrStatus() == UnhcrStatus.RegisteredAsylum) {
                             candidate.setUnhcrRegistered(YesNoUnsure.Yes);
                             save(candidate, false);
-                            log.warn("Updated candidate " + candidate.getId() + " with Registered Asylum status to UnhcrRegistered is Yes!");
+
+                            LogBuilder.builder(log)
+                                .user(authService.getLoggedInUser())
+                                .action("Populate Candidates From Elastic")
+                                .message("Updated candidate " + candidate.getId() + " with Registered Asylum status to UnhcrRegistered is Yes!")
+                                .logWarn();
                         }
                     } else {
-                        log.warn("Could not find twin in database");
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("Populate Candidates From Elastic")
+                            .message("Could not find twin in database")
+                            .logWarn();
                     }
                 }
                 count++;
             } catch (Exception ex) {
-                log.warn("Could not load candidate " + candidate.getId(), ex);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Populate Candidates From Elastic")
+                    .message("Could not load candidate " + candidate.getId())
+                    .logWarn(ex);
             }
         }
 
@@ -336,7 +377,14 @@ public class CandidateServiceImpl implements CandidateService {
 
         Page<Candidate> candidatesPage = candidateRepository.findAll(
                 new GetSavedListCandidatesQuery(savedList, request), request.getPageRequestWithoutSort());
-        log.info("Found " + candidatesPage.getTotalElements() + " candidates in list");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .listId(savedList.getId())
+            .action("Get Saved List Candidates")
+            .message("Found " + candidatesPage.getTotalElements() + " candidates in list")
+            .logInfo();
+
         return candidatesPage;
     }
 
@@ -345,7 +393,14 @@ public class CandidateServiceImpl implements CandidateService {
         SavedListGetRequest request) {
         List<Candidate> candidates = candidateRepository.findAll(
             new GetSavedListCandidatesQuery(savedList, request));
-        log.info("Found " + candidates.size() + " candidates in list");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .listId(savedList.getId())
+            .action("Get Saved List Candidates")
+            .message("Found " + candidates.size() + " candidates in list")
+            .logInfo();
+
         return candidates;
     }
 
@@ -370,7 +425,12 @@ public class CandidateServiceImpl implements CandidateService {
             candidates = candidateRepository.searchCandidateEmail(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
-            log.info("Found " + candidates.getTotalElements() + " candidates in search");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Search Candidates")
+                .message("Found " + candidates.getTotalElements() + " candidates in search")
+                .logInfo();
+
             return candidates;
         } else {
             return null;
@@ -383,27 +443,16 @@ public class CandidateServiceImpl implements CandidateService {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
-        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates = candidateRepository.searchCandidateEmailOrPhone(
-                '%' + s + '%', sourceCountries,
-                        request.getPageRequestWithoutSort());
+        // Get candidate ids from Elasticsearch then fetch and return from the database
+        Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmailWithLimit(s);
+        Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
-//        if (searchForNumber) {
-//            candidates = candidateRepository.searchCandidateNumber(
-//                    s +'%', sourceCountries,
-//                    request.getPageRequestWithoutSort());
-//        } else {
-//            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.partneradmin) {
-//                candidates = candidateRepository.searchCandidateName(
-//                        '%' + s + '%', sourceCountries,
-//                        request.getPageRequestWithoutSort());
-//            } else {
-//                return null;
-//            }
-//        }
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Search Candidates")
+            .message("Found " + candidates.getTotalElements() + " candidates in search")
+            .logInfo();
 
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
 
@@ -415,23 +464,30 @@ public class CandidateServiceImpl implements CandidateService {
 
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+
         Page<Candidate> candidates;
 
+        // Get candidate ids from Elasticsearch
+        Set<Long> candidateIds;
         if (searchForNumber) {
             candidates = candidateRepository.searchCandidateNumber(
-                        s +'%', sourceCountries,
-                    request.getPageRequestWithoutSort());
+                s +'%', sourceCountries,
+                request.getPageRequestWithoutSort());
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                candidates = candidateRepository.searchCandidateName(
-                        '%' + s + '%', sourceCountries,
-                        request.getPageRequestWithoutSort());
+                candidateIds = elasticsearchService.findByNameWithLimit(s);
+                candidates = fetchCandidates(request, candidateIds);
             } else {
                 return null;
             }
         }
 
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Search Candidates")
+            .message("Found " + candidates.getTotalElements() + " candidates in search")
+            .logInfo();
+
         return candidates;
     }
 
@@ -442,17 +498,45 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-            Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-            Page<Candidate> candidates;
+            // Get candidate ids from Elasticsearch then fetch and return from the database
+            Set<Long> candidateIds = elasticsearchService.findByExternalIdWithLimit(s);
+            Page<Candidate> candidates = fetchCandidates(request, candidateIds);
 
-            candidates = candidateRepository.searchCandidateExternalId(
-                    s +'%', sourceCountries, request.getPageRequestWithoutSort());
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Search Candidates")
+                .message("Found " + candidates.getTotalElements() + " candidates in search")
+                .logInfo();
 
-            log.info("Found " + candidates.getTotalElements() + " candidates in search");
             return candidates;
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Set<Long> searchCandidatesUsingSql(String sql) {
+        Query query = entityManager.createNativeQuery(sql);
+        final List resultList = query.getResultList();
+        Set<Long> result = new HashSet<>();
+        for (Object obj : resultList) {
+            if (obj instanceof BigInteger) {
+                result.add(((BigInteger) obj).longValue());
+            }
+        }
+        return result;
+    }
+
+    @NotNull
+    private Page<Candidate> fetchCandidates(PagedSearchRequest request, Set<Long> candidateIds) {
+
+        List<Candidate> unsorted = findByIds(candidateIds);
+
+        return new PageImpl<>(
+            unsorted,
+            request.getPageRequestWithoutSort(),
+            candidateIds.size()
+        );
     }
 
     @Override
@@ -465,10 +549,10 @@ public class CandidateServiceImpl implements CandidateService {
             candidateDestinationCountryIds.add(destination.getCountry().getId());
         }
 
-        //Check that all TBB destinations are present for candidate, adding
+        //Check that all TC destinations are present for candidate, adding
         //missing ones if necessary
         boolean addedDestinations = false;
-        for (Country country : countryService.getTBBDestinations()) {
+        for (Country country : countryService.getTCDestinations()) {
             //Does candidate have this destination preference?
             if (!candidateDestinationCountryIds.contains(country.getId())) {
                 //If not, add in a new one
@@ -648,9 +732,9 @@ public class CandidateServiceImpl implements CandidateService {
         //set some fields to unknown on create as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
         //point to an "Unknown" value.
-        candidate.setCountry(countryRepository.getOne(0L));
-        candidate.setNationality(countryRepository.getOne(0L));
-        candidate.setMaxEducationLevel(educationLevelRepository.getOne(0L));
+        candidate.setCountry(countryRepository.getReferenceById(0L));
+        candidate.setNationality(countryRepository.getReferenceById(0L));
+        candidate.setMaxEducationLevel(educationLevelRepository.getReferenceById(0L));
 
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
@@ -686,7 +770,11 @@ public class CandidateServiceImpl implements CandidateService {
             Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElse(null);
             if (candidate == null) {
-                log.error("updateCandidateStatus: No candidate exists for id " + id);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Update Candidate Status")
+                    .message("No candidate exists for id " + id)
+                    .logError();
             } else {
                 updateCandidateStatus(candidate, info);
             }
@@ -717,12 +805,22 @@ public class CandidateServiceImpl implements CandidateService {
             if (originalStatus.equals(CandidateStatus.draft) && !info.getStatus()
                     .equals(CandidateStatus.deleted)) {
                 emailHelper.sendRegistrationEmail(candidate.getUser());
-                log.info("Registration email sent to " + candidate.getUser().getEmail());
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Update Candidate Status")
+                    .message("Registration email sent to " + candidate.getUser().getEmail())
+                    .logInfo();
             }
             if (info.getStatus().equals(CandidateStatus.incomplete)) {
                 emailHelper.sendIncompleteApplication(candidate.getUser(),
                         info.getCandidateMessage());
-                log.info("Incomplete email sent to " + candidate.getUser().getEmail());
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Update Candidate Status")
+                    .message("Incomplete email sent to " + candidate.getUser().getEmail())
+                    .logInfo();
             }
         }
 
@@ -960,7 +1058,11 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
         if (partnerAbbreviation != null) {
-            log.info("Registration with partner abbreviation: " + partnerAbbreviation);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Register Candidate")
+                .message("Registration with partner abbreviation: " + partnerAbbreviation)
+                .logInfo();
         }
 
         //Pick up query parameters from request if they are passed in
@@ -1064,6 +1166,17 @@ public class CandidateServiceImpl implements CandidateService {
         Country nationality = countryRepository.findById(request.getNationalityId())
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationalityId()));
 
+        //Construct all nationalities from primary nationality, plus any others.
+        List<Country> nationalities = new ArrayList<>();
+        nationalities.add(nationality);
+
+        Long[] otherNationalityIds = request.getOtherNationalityIds();
+        for (Long otherNationalityId : otherNationalityIds) {
+            Country otherNationality = countryRepository.findById(otherNationalityId)
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, otherNationalityId));
+            nationalities.add(otherNationality);
+        }
+
         User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
@@ -1092,6 +1205,8 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setUnhcrConsent(request.getUnhcrConsent());
 
             candidate.setAuditFields(user);
+
+            updateCitizenships(candidate, nationalities);
         }
 
         candidate = save(candidate, true);
@@ -1112,14 +1227,61 @@ public class CandidateServiceImpl implements CandidateService {
         return candidate;
     }
 
+    /**
+     * A candidate's citizenships should match their nationalities.
+     * This does the required adjustments.
+     * @param candidate Candidate in question
+     * @param nationalities Nationalities associated with the candidate.
+     */
+    private void updateCitizenships(Candidate candidate, List<Country> nationalities) {
+        //Remove any citizenships that don't appear in the nationalities
+        List<CandidateCitizenship> removed = new ArrayList<>();
+        List<CandidateCitizenship> citizenships = candidate.getCandidateCitizenships();
+        for (CandidateCitizenship citizenship : citizenships) {
+            if (!nationalities.contains(citizenship.getNationality())) {
+                //Remove the citizenship
+                candidateCitizenshipService.deleteCitizenship(citizenship.getId());
+                removed.add(citizenship);
+            }
+        }
+        for (CandidateCitizenship dead : removed) {
+            citizenships.remove(dead);
+        }
+
+        //Add any new citizenships from the nationalities
+        for (Country nat : nationalities) {
+            long natId = nat.getId();
+            final Optional<CandidateCitizenship> first = citizenships.stream()
+                .filter(c -> c.getNationality() != null)
+                .filter(c -> c.getNationality().getId() == natId).findFirst();
+            if (first.isEmpty()) {
+                //Need to add new citizenship
+                CreateCandidateCitizenshipRequest req = new CreateCandidateCitizenshipRequest();
+                req.setNationalityId(nat.getId());
+                candidateCitizenshipService.createCitizenship(candidate.getId(), req);
+            }
+        }
+    }
+
     private void checkForChangedPartner(Candidate candidate, Country country) {
         //Do we have an auto assignable partner in this country
-        Partner partner = partnerService.getAutoAssignablePartnerByCountry(country);
-        User user = candidate.getUser();
-        if (partner != null && !partner.equals(user.getPartner())) {
-            //Partner of candidate needs to change
-            user.setPartner((PartnerImpl) partner);
-            userRepository.save(user);
+        Partner autoAssignedCountryPartner = partnerService.getAutoAssignablePartnerByCountry(country);
+
+        //Is there a country assigned partner?
+        if (autoAssignedCountryPartner != null) {
+
+            //Get current user partner.
+            User user = candidate.getUser();
+            final PartnerImpl currentUserPartner = user.getPartner();
+
+            //The country assigned partner only overrides the default source partner.
+            if (currentUserPartner.isDefaultSourcePartner()) {
+                if (!autoAssignedCountryPartner.equals(currentUserPartner)) {
+                    //Partner of candidate needs to change
+                    user.setPartner((PartnerImpl) autoAssignedCountryPartner);
+                    userRepository.save(user);
+                }
+            }
         }
     }
 
@@ -1371,6 +1533,18 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Optional<Candidate> getLoggedInCandidateLoadCandidateExams() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                .findByIdLoadCandidateExams(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
+    }
+
+    @Override
     public Optional<Candidate> getLoggedInCandidateLoadCertifications() {
         Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
@@ -1378,6 +1552,18 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             Candidate candidate = candidateRepository
                     .findByIdLoadCertifications(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
+    }
+
+    @Override
+    public Optional<Candidate> getLoggedInCandidateLoadDestinations() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadDestinations(candidateId);
             return candidate == null ? Optional.empty() : Optional.of(candidate);
         }
     }
@@ -1977,10 +2163,14 @@ public class CandidateServiceImpl implements CandidateService {
                 twin.copy(candidate, textExtracter);
 
                 //Shouldn't really happen (except during a complete reload)
-                // so log warning
-                log.warn("Candidate " + candidate.getId() +
+                //so log warning
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Update Elastic Proxy")
+                    .message("Candidate " + candidate.getId() +
                         " refers to non existent Elasticsearch id "
-                        + textSearchId + ". Creating new twin.");
+                        + textSearchId + ". Creating new twin.")
+                    .logWarn();
             } else {
                 //Update twin from candidate
                 twin.copy(candidate, textExtracter);
@@ -2097,8 +2287,11 @@ public class CandidateServiceImpl implements CandidateService {
                 }
             }
         } catch (IOException ex) {
-            log.error(
-                "Problem creating sub folders for candidate " + candidate.getCandidateNumber(), ex);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Create Candidate Folder")
+                .message("Problem creating sub folders for candidate " + candidate.getCandidateNumber())
+                .logError(ex);
         }
 
         save(candidate, false);
@@ -2208,20 +2401,33 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate completeIntake(long id, boolean full) throws NoSuchObjectException {
+    public Candidate completeIntake(long id, CandidateIntakeAuditRequest request) throws NoSuchObjectException {
         Candidate candidate = getCandidate(id);
         User loggedInUser = authService.getLoggedInUser().orElse(null);
-        if (full) {
-            // set full intake fields
-            candidate.setFullIntakeCompletedBy(loggedInUser);
-            candidate.setFullIntakeCompletedDate(OffsetDateTime.now());
+
+        LocalDate externalIntakeDate = request.getCompletedDate();
+        // Check if this is an external intake, if so we just set the intake date as provided.
+        if (externalIntakeDate != null) {
+            if (request.isFullIntake()) {
+                candidate.setFullIntakeCompletedDate(OffsetDateTime.of(externalIntakeDate, LocalTime.NOON, ZoneOffset.UTC));
+            } else {
+                candidate.setMiniIntakeCompletedDate(OffsetDateTime.of(externalIntakeDate, LocalTime.NOON, ZoneOffset.UTC));
+            }
         } else {
-            // set mini intake fields
-            candidate.setMiniIntakeCompletedBy(loggedInUser);
-            candidate.setMiniIntakeCompletedDate(OffsetDateTime.now());
+        // Not an external intake, so set fields using current audit data.
+            if (request.isFullIntake()) {
+                // set full intake fields
+                candidate.setFullIntakeCompletedBy(loggedInUser);
+                candidate.setFullIntakeCompletedDate(OffsetDateTime.now());
+            } else {
+                // set mini intake fields
+                candidate.setMiniIntakeCompletedBy(loggedInUser);
+                candidate.setMiniIntakeCompletedDate(OffsetDateTime.now());
+            }
         }
-        save(candidate, false);
+        save(candidate, true);
         return candidate;
+
     }
 
     /**
@@ -2296,6 +2502,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
         if (data.getAsylumYear() != null) {
             candidate.setAsylumYear(data.getAsylumYear());
+        }
+        if (data.getAvailDate() != null) {
+            candidate.setAvailDate(data.getAvailDate());
         }
         if (data.getAvailImmediate() != null) {
             candidate.setAvailImmediate(data.getAvailImmediate());
@@ -2607,10 +2816,7 @@ public class CandidateServiceImpl implements CandidateService {
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, requestCandidateId));
         } else {
             // Coming from Candidate Portal
-            candidate = authService.getLoggedInCandidate();
-            if (candidate == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
+           candidate = getLoggedInCandidate().orElseThrow(() -> new InvalidSessionException("Not logged in"));
         }
         return candidate;
     }
@@ -2700,7 +2906,11 @@ public class CandidateServiceImpl implements CandidateService {
             Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                     .orElse(null);
             if (candidate == null) {
-                log.error("updateCandidateStatus: No candidate exists for id " + id);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Resolve Outstanding Task Assignments")
+                    .message("updateCandidateStatus: No candidate exists for id " + id)
+                    .logError();
             } else {
                 resolveOutstandingRequiredTaskAssignments(candidate);
             }
@@ -2723,41 +2933,112 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Override
+    @Transactional
     @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT12H",
-                    lockAtMostFor = "PT12H")
-    public void syncCandidatesToSf()
-        throws SalesforceException, WebClientException {
-        // We only want to run this in prod due to SF sandbox object limit of 10,000
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfProdCandidateSync() {
+        // We only want to run the full sync in prod, due to SF sandbox object limit of 10,000.
+        // We're passing a very high noOfPagesRequested, so that totalPages is used instead.
         if (environment.equalsIgnoreCase(Environment.prod.name())) {
-
-            log.info("Initiating TC-SF candidate sync");
-
-            // Batches of 200 == SF REST API request limit
-            Pageable pageable = PageRequest.of(0, 200, Sort.unsorted());
-
-            // Candidates with an 'active' status or already uploaded to SF
-            List<CandidateStatus> statuses = new ArrayList<>(
-                EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
-                    CandidateStatus.incomplete));
-
-            Page<Candidate> candidatePage = candidateRepository
-                .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
-
-            log.info(candidatePage.getTotalElements() + " candidates meet the criteria");
-
-            // Iterate through batches, upserting to SF
-            while(candidatePage.hasNext()) {
-                candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
-                    statuses, candidatePage.nextPageable());
-                List<Candidate> candidateList = candidatePage.getContent();
-                upsertCandidatesToSf(candidateList);
-
-                log.info("Upserted batch " + candidatePage.getNumber() + " of " +
-                    candidatePage.getTotalPages());
-            }
+            syncCandidatesToSf(200, 0, 100000);
         }
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfSandboxCandidateSync() {
+        // Scaled-down replica of prod for testing purposes (4,000 candidates)
+        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+            syncCandidatesToSf(200, 0, 20);
+        }
+    }
+
+    @Override
+    public void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPagesRequested)
+        throws SalesforceException, WebClientException {
+
+        Instant startOverall = Instant.now();
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Sync Candidates to Salesforce")
+            .message("Initiating TC-SF candidate sync")
+            .logInfo();
+
+        Pageable pageable = PageRequest.of(
+            firstPageIndex,
+            pageSize,
+            Sort.by("id").ascending()
+        );
+
+        // Candidates with an 'active' status or already uploaded to SF
+        List<CandidateStatus> statuses = new ArrayList<>(
+            EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
+                CandidateStatus.incomplete));
+
+        Page<Candidate> candidatePage = candidateRepository
+            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Sync Candidates to Salesforce")
+            .message(candidatePage.getTotalElements() + " candidates meet the criteria")
+            .logInfo();
+
+        int totalPages = candidatePage.getTotalPages();
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Sync Candidates to Salesforce")
+            .message("With a page size of " + pageSize + " this amounts to a total of " +
+                totalPages + " pages.")
+            .logInfo();
+
+        int noOfPagesToProcess = Math.min(totalPages - firstPageIndex, noOfPagesRequested);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Sync Candidates to Salesforce")
+            .message("This request will process pages " + (firstPageIndex + 1) + " to " +
+                (firstPageIndex + noOfPagesToProcess))
+            .logInfo();
+
+        int pagesProcessed = 0;
+
+        // Iterate through batches, upserting to SF
+        while(pagesProcessed < noOfPagesToProcess) {
+            Instant start = Instant.now();
+            List<Candidate> candidateList = candidatePage.getContent();
+            upsertCandidatesToSf(candidateList);
+            // Clears the persistence context of managed entities that would otherwise pile up.
+            entityManager.clear();
+            candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
+                statuses, candidatePage.nextPageable());
+            pagesProcessed++;
+
+            Instant end = Instant.now();
+            Duration timeElapsed = Duration.between(start, end);
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Sync Candidates to Salesforce")
+                .message("Processed page " + pagesProcessed + " of " + noOfPagesToProcess +
+                    " in " + timeElapsed.toSeconds() + " seconds.")
+                .logInfo();
+        }
+
+        Instant endOverall = Instant.now();
+        Duration timeElapsedOverall = Duration.between(startOverall, endOverall);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Sync Candidates to Salesforce")
+            .message("With these parameters it took " + timeElapsedOverall.toMinutes() +
+                " minutes to process " + (noOfPagesToProcess * pageSize) + " candidates.")
+            .logInfo();
     }
 
     @Override
@@ -2778,4 +3059,98 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
+
+    @Override
+    public List<Long> findUnreadChatsInCandidates() {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        List<Long> unreadChatIds =
+            candidateRepository.findUnreadChatsInCandidates(
+                loggedInUser.getPartner().getId(),
+                loggedInUser.getId()
+            );
+
+        return unreadChatIds;
+    }
+
+    @Override
+    public Page<Candidate> fetchCandidatesWithChat(
+        FetchCandidatesWithChatRequest request
+    ) {
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        // If the keyword is empty or contains non-numeric characters, we want matches for first and
+        // last names that match the string in any part - e.g. 'sam' would match 'samuel' - but if
+        // the keyword contains only numbers, we assume a candidate number is sought and return
+        // only full matches - e.g. '00' will not match '60011'.
+        String keyword = request.getKeyword();
+        if (keyword.isEmpty() || !StringUtils.isNumeric(keyword)) {
+            keyword = StringUtils.lowerCase("%" + request.getKeyword() + "%");
+        }
+
+        if (request.isUnreadOnly()) {
+            List<Long> candidateIds =
+                candidateRepository.findIdsOfCandidatesWithActiveAndUnreadChat(
+                    loggedInUser.getPartner().getId(),
+                    loggedInUser.getId(),
+                    keyword
+                );
+            return candidateRepository.findByIdIn(candidateIds, request.getPageRequest());
+        } else {
+            return candidateRepository.findCandidatesWithActiveChat(
+                loggedInUser.getPartner().getId(), keyword, request.getPageRequest()
+            );
+        }
+    }
+
+    @Override
+    public void reassignSavedListCandidates(SavedList savedList, int partnerId) {
+        Partner newPartner = partnerService.getPartner(partnerId);
+
+        SavedListGetRequest request = new SavedListGetRequest();
+
+        Page<Candidate> candidatePage = getSavedListCandidates(savedList, request);
+
+        int totalPagesToProcess = candidatePage.getTotalPages();
+        int pagesProcessed = 0;
+
+        while (pagesProcessed < totalPagesToProcess) {
+            request.setPageNumber(pagesProcessed);
+            candidatePage = getSavedListCandidates(savedList, request);
+            List<Candidate> candidates = candidatePage.getContent();
+            processCandidateReassignment(candidates, newPartner);
+            entityManager.clear(); // Keeps candidates from piling up in persistence context
+            pagesProcessed++;
+        }
+    }
+
+    /**
+     * For each candidate on given list, sets partnerId on associated user object, saves to DB and
+     * updates the corresponding elasticsearch index entry.
+     * @param candidateList list of candidates
+     * @param newPartner the new partner to which they will be assigned
+     */
+    private void processCandidateReassignment(
+        List<Candidate> candidateList, Partner newPartner
+    ) {
+        if (newPartner instanceof PartnerImpl) {
+            for (Candidate candidate : candidateList) {
+                User candidateUser = candidate.getUser();
+                candidateUser.setPartner((PartnerImpl) newPartner);
+                save(candidate, true);
+            }
+        } else {
+            LogBuilder.builder(log)
+                .action("Process candidate reassignment")
+                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation of Partner.")
+                .logError();
+        }
+    }
+
 }

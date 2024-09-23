@@ -16,13 +16,11 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
+
 import io.jsonwebtoken.lang.Collections;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -53,6 +51,7 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.SearchType;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 
@@ -220,10 +219,10 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getNationalityIds())) {
                 if (request.getNationalitySearchType() == null || SearchType.or.equals(request.getNationalitySearchType())) {
                     conjunction.getExpressions().add(
-                            builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
+                            builder.isTrue(candidate.get("nationality").get("id").in(request.getNationalityIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("nationality").in(request.getNationalityIds()).not()
+                    conjunction.getExpressions().add(candidate.get("nationality").get("id").in(request.getNationalityIds()).not()
                     );
                 }
             }
@@ -234,10 +233,10 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getCountryIds())) {
                 if (request.getCountrySearchType() == null || SearchType.or.equals(request.getCountrySearchType())) {
                     conjunction.getExpressions().add(
-                        builder.isTrue(candidate.get("country").in(request.getCountryIds()))
+                        builder.isTrue(candidate.get("country").get("id").in(request.getCountryIds()))
                     );
                 } else {
-                    conjunction.getExpressions().add(candidate.get("country").in(request.getCountryIds()).not());
+                    conjunction.getExpressions().add(candidate.get("country").get("id").in(request.getCountryIds()).not());
                 }
             // If request ids IS EMPTY only show source countries
             } else if (loggedInUser != null &&
@@ -250,7 +249,7 @@ public class CandidateSpecification {
             // PARTNER SEARCH
             if (!Collections.isEmpty(request.getPartnerIds())) {
                 conjunction.getExpressions().add(
-                    builder.isTrue(user.get("partner").in(request.getPartnerIds()))
+                    builder.isTrue(user.get("partner").get("id").in(request.getPartnerIds()))
                 );
             }
 
@@ -305,11 +304,15 @@ public class CandidateSpecification {
 
             //Modified From
             if (request.getLastModifiedFrom() != null) {
-                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedFrom(), LocalTime.MIN, request.getTimezone())));
+                conjunction.getExpressions().add(
+                    builder.greaterThanOrEqualTo(candidate.get("updatedDate"),getOffsetDateTime(
+                            request.getLastModifiedFrom(), LocalTime.MIN, request.getTimezone())));
             }
 
             if (request.getLastModifiedTo() != null) {
-                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone())));
+                conjunction.getExpressions().add(
+                    builder.lessThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(
+                        request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone())));
             }
 
             //Min / Max Age
@@ -324,6 +327,14 @@ public class CandidateSpecification {
                 conjunction.getExpressions().add(builder.or(builder.greaterThan(candidate.get("dob"), maxDob), builder.isNull(candidate.get("dob"))));
             }
 
+            // UNHCR STATUSES
+            if (!Collections.isEmpty(request.getUnhcrStatuses())) {
+                List<UnhcrStatus> statuses = request.getUnhcrStatuses();
+                conjunction.getExpressions().add(
+                    builder.isTrue(candidate.get("unhcrStatus").in(statuses))
+                );
+            }
+
             // EDUCATION LEVEL SEARCH
             if (request.getMinEducationLevel() != null) {
                 Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel", JoinType.LEFT);
@@ -331,12 +342,12 @@ public class CandidateSpecification {
                         builder.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
                 );
             }
-            
+
             // MINI INTAKE COMPLETE
             if (request.getMiniIntakeCompleted() != null) {
                 if(request.getMiniIntakeCompleted()) {
                     conjunction.getExpressions().add(
-                        builder.isNotNull(candidate.get("miniIntakeCompletedDate"))); 
+                        builder.isNotNull(candidate.get("miniIntakeCompletedDate")));
                 } else {
                     conjunction.getExpressions().add(
                         builder.isNull(candidate.get("miniIntakeCompletedDate")));
@@ -402,6 +413,7 @@ public class CandidateSpecification {
             }
 
             //CANDIDATE OPPORTUNITIES
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
             final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
             if (candidateFilterByOpps != null) {
                Boolean anyOpps = candidateFilterByOpps.getAnyOpps();
@@ -465,10 +477,6 @@ public class CandidateSpecification {
 
             return conjunction;
         };
-    }
-
-    private static OffsetDateTime getOffsetDateTime(LocalDate localDate, LocalTime time, String timezone) {
-        return OffsetDateTime.of(localDate, time, !StringUtils.isBlank(timezone) ? ZoneId.of(timezone).getRules().getOffset(Instant.now()) : ZoneOffset.UTC);
     }
 
 }

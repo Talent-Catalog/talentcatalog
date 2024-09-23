@@ -18,7 +18,6 @@ import {JobService} from "../../../../services/job.service";
 import {SlackService} from "../../../../services/slack.service";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
-import {isStarredByMe} from "../../../../model/base";
 import {
   JobPrepDueDate,
   JobPrepItem,
@@ -39,6 +38,7 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../../model/chat";
 import {ChatService} from "../../../../services/chat.service";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
+import {JobOppIntake} from "../../../../model/job-opp-intake";
 
 /**
  * Display details of a job object passed in as an @Input.
@@ -125,8 +125,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     }
   }
 
-  get editable(): boolean {
-    return this.loggedInUser && !this.loggedInUser.readOnly
+  /**
+   * Job is editable only by the user who created it or the contact user.
+   * Also by a non read only user working for the default job creator.
+   */
+  isEditable(): boolean {
+    return this.authorizationService.isJobMine(this.job) ||
+      (this.authorizationService.isDefaultJobCreator() && !this.authorizationService.isReadOnly());
   }
 
   private fetchGroupChats() {
@@ -292,8 +297,12 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
       centered: true, backdrop: 'static'});
     showReport.componentInstance.title = "Published job: " + this.job.name;
     showReport.componentInstance.showCancel = false;
-    let mess = "Job has been updated to 'Candidate Search' if it wasn't already at that stage or " +
-      "later. Also posted to Slack.";
+    let mess =
+      "Job has been updated to 'Candidate Search' if it wasn't already at that stage or later.";
+
+    if (this.authorizationService.isDefaultJobCreator()) {
+      mess += " Also posted to Slack."
+    }
 
     showReport.componentInstance.message = mess;
   }
@@ -308,7 +317,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.job?.starringUsers, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.job?.starringUsers);
   }
 
   onPrepItemSelected(item: JobPrepItem) {
@@ -328,5 +337,14 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
 
   onChatReadStatusCreated(chatReadStatus$: Observable<boolean>) {
     this.chatReadStatus$ = chatReadStatus$;
+  }
+
+  /**
+   * If intake has changed, update the job with the updated intake.
+   * This will trigger the logic to run which checks whether the intake is complete (JobPrepJOI).
+   * @param joi Updated intake
+   */
+  onIntakeChanged(joi: JobOppIntake) {
+    this.job.jobOppIntake = joi;
   }
 }

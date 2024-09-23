@@ -42,8 +42,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,12 +61,13 @@ import org.tctalent.server.configuration.SalesforceTbbAccountsConfig;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
-import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -85,7 +85,7 @@ import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
-import org.tctalent.server.service.db.CandidateVisaJobCheckService;
+import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
@@ -124,9 +124,8 @@ import reactor.core.publisher.Mono;
  * https://trailhead.salesforce.com/content/learn/modules/api_basics/api_basics_overview
  */
 @Service
+@Slf4j
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
-
-    private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
     private static final String apiVersion = "v58.0";
 
     /*
@@ -192,7 +191,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final SalesforceConfig salesforceConfig;
     private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
     private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
-    private final CandidateVisaJobCheckService candidateVisaJobCheckService;
+    private final CandidateDependantService candidateDependantService;
 
     private PrivateKey privateKey;
 
@@ -211,12 +210,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Autowired
     public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
         SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
-        CandidateVisaJobCheckService candidateVisaJobCheckService) {
+        CandidateDependantService candidateDependantService) {
         this.emailHelper = emailHelper;
         this.salesforceConfig = salesforceConfig;
         this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
         this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
-        this.candidateVisaJobCheckService = candidateVisaJobCheckService;
+        this.candidateDependantService = candidateDependantService;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
@@ -316,9 +315,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             if (result.isSuccess()) {
                 contact.setId(result.getId());
             } else {
-                log.error("Update failed for candidate "
-                    + candidate.getCandidateNumber()
-                    + ": " + result.getErrorMessage());
+                LogBuilder.builder(log)
+                    .action("CreateOrUpdateContacts")
+                    .message("Update failed for candidate "
+                        + candidate.getCandidateNumber()
+                        + ": " + result.getErrorMessage())
+                    .logError();
             }
             contacts.add(contact);
         }
@@ -357,7 +359,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         SalesforceJobOpp jobOpportunity)
         throws WebClientException, SalesforceException {
 
-        log.info("Looking for opps for " + candidates.size() +" candidates");
+        LogBuilder.builder(log)
+            .action("CreateOrUpdateCandidateOpportunities")
+            .message("Looking for opps for " + candidates.size() +" candidates")
+            .logInfo();
 
         //Find out which candidates already have opportunities (so just need to be updated)
         //and which need opportunities to be created.
@@ -366,7 +371,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Hibernate proxies of entities do not equal the actual entities.
         List<String> candidateNumbersWithNoOpp = selectCandidatesWithNoOpp(candidates, jobOpportunity);
 
-        log.info("Need to create opps for " + candidateNumbersWithNoOpp.size() +" candidates");
+        LogBuilder.builder(log)
+            .action("CreateOrUpdateCandidateOpportunities")
+            .message("Need to create opps for " + candidateNumbersWithNoOpp.size() + " candidates")
+            .logInfo();
 
         String recordType = getCandidateOpportunityRecordType(jobOpportunity);
 
@@ -375,7 +383,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         for (Candidate candidate : candidates) {
             boolean create = candidateNumbersWithNoOpp.contains(candidate.getCandidateNumber());
 
-            log.info( (create ? "Create" : "Update") + " opp for " + candidate.getCandidateNumber());
+            LogBuilder.builder(log)
+                .action("CreateOrUpdateCandidateOpportunities")
+                .message((create ? "Create" : "Update") + " opp for " + candidate.getCandidateNumber())
+                .logInfo();
 
             //Build candidate opportunity request (create or update as needed)
             CandidateOpportunityRecordComposite opportunityRequest =
@@ -400,6 +411,25 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 closingCommentsForCandidate = candidateOppParams.getClosingCommentsForCandidate();
                 employerFeedback = candidateOppParams.getEmployerFeedback();
                 relocationInfo = candidateOppParams.getRelocationInfo();
+
+                // If relocationInfo not already included in params and new stage is 'Relocated',
+                // update the SF case relocation info - just to assist with monitoring & evaluation,
+                // a failsafe in case admin users haven't clicked the 'Update case stats' button
+                // when updating relocating dependant info, which can be set on a visa job check
+                // or directly on the Candidate Opp via the 'Upload' tab.
+                // Typically, would use CandidateOpportunityService here, but that would create a
+                // dependency cycle between beans — so instead querying the SalesforceJobOpp to get
+                // the CandidateOpportunity required for processSfCaseRelocationInfo()
+                if (relocationInfo == null && stage == CandidateOpportunityStage.relocated) {
+                    Optional<CandidateOpportunity> candidateOpp =
+                        jobOpportunity.getCandidateOpportunities()
+                            .stream()
+                            .filter(opp -> opp.getCandidate().getId().equals(candidate.getId()))
+                            .findFirst();
+                    if (candidateOpp.isPresent()) {
+                        relocationInfo = processSfCaseRelocationInfo(candidateOpp.get(), candidate);
+                    }
+                }
             }
 
             //Always need to specify a stage name when creating a new opp
@@ -449,7 +479,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Now find the ids we actually have for candidate opportunities for this job.
         List<Opportunity> opps = findCandidateOpportunitiesByJobOpps(jobOpportunity.getSfId());
 
-        log.info("Found " + opps.size() + " candidate opps on SF for job " + jobOpportunity.getId());
+        LogBuilder.builder(log)
+            .action("SelectCandidatesWithNoOpp")
+            .message("Found " + opps.size() + " candidate opps on SF for job " + jobOpportunity.getId())
+            .logInfo();
 
         //Remove these from map, leaving just those that need to be created
         for (Opportunity opp : opps) {
@@ -489,7 +522,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                         //TBB candidate. There should only be one.
                         final String msg = "Candidate number " + candidateNumber +
                             " has more than one Contact record on Salesforce";
-                        log.warn(msg);
+
+                        LogBuilder.builder(log)
+                            .action("FindContact")
+                            .message(msg)
+                            .logWarn();
+
                         if (!alertedDuplicateSFRecord) {
                             emailHelper.sendAlert(msg);
                             alertedDuplicateSFRecord = true;
@@ -513,7 +551,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         final List<Opportunity> opportunities = findCandidateOpportunities(
             candidateOpportunitySFFieldName + "='" + externalId + "'");
         if (opportunities.size() > 1) {
-            log.error("Multiple SF candidate opportunities for externalId " + externalId);
+            LogBuilder.builder(log)
+                .action("FindCandidateOpportunity")
+                .message("Multiple SF candidate opportunities for externalId " + externalId)
+                .logError();
         }
         return opportunities.size() == 0 ? null : opportunities.get(0);
     }
@@ -806,13 +847,22 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         //Log any failures
         int count = 0;
+        List<String> errors = new ArrayList<>();
         for (CandidateOpportunityRecordComposite request : requests) {
             UpsertResult result = results[count++];
             if (!result.isSuccess()) {
-                log.error("Update failed for opportunity "
-                    + request.getName()
-                    + ": " + result.getErrorMessage());
+                LogBuilder.builder(log)
+                    .action("ExecuteCandidateOpportunityRequests")
+                    .message("Update failed for opportunity "
+                        + request.getName()
+                        + ": " + result.getErrorMessage())
+                    .logError();
+                // Create list of errors to return to admin portal
+                errors.add(request.getName() + ": " + result.getErrorMessage());
             }
+        }
+        if (!errors.isEmpty()) {
+            throw new SalesforceException("The following update/s failed: " + String.join(",", errors) + ")");
         }
     }
 
@@ -1114,21 +1164,34 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             clientResponse = spec.exchange().block();
         } catch (Exception ex) {
             //Do one automatic retry after a wait.
-            log.warn("Problem with Salesforce connection" + ex);
+            LogBuilder.builder(log)
+                .action("ExecuteWithRetry")
+                .message("Problem with Salesforce connection")
+                .logWarn(ex);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                log.warn("Interrupted wait for Salesforce retry", ex);
+                LogBuilder.builder(log)
+                    .action("ExecuteWithRetry")
+                    .message("Interrupted wait for Salesforce retry")
+                    .logWarn(e);
             }
             clientResponse = spec.exchange().block();
         }
         if (clientResponse == null || clientResponse.statusCode() == HttpStatus.UNAUTHORIZED) {
-            log.info("Getting new token from Salesforce");
+            LogBuilder.builder(log)
+                .action("ExecuteWithRetry")
+                .message("Getting new token from Salesforce")
+                .logInfo();
+
             //Get new token and try again
             accessToken = requestAccessToken();
             spec.headers(headers -> headers.put("Authorization",
                 Collections.singletonList("Bearer " + accessToken)));
-            log.info("Connecting to Salesforce with new token");
+            LogBuilder.builder(log)
+                .action("ExecuteWithRetry")
+                .message("Connecting to Salesforce with new token")
+                .logInfo();
             clientResponse = spec.exchange().block();
         }
 
@@ -1393,8 +1456,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             final String country = candidate.getCountry().getName();
             setMailingCountry(country);
 
-            final String countryOfNationality = candidate.getNationality().getName();
-            setNationality(countryOfNationality);
+            final Country countryOfNationality = candidate.getNationality();
+            if (countryOfNationality != null) {
+                setNationality(countryOfNationality.getName());
+            }
 
             //Set account id based on candidate's country
             switch (country) {
@@ -1491,8 +1556,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .findAny()
                 .orElse(null);
             if (languageToCheck != null) {
-                String languageSpeakingLevel = String.valueOf(languageToCheck.getSpokenLevel().getName());
-                return languageSpeakingLevel;
+                return languageToCheck.getSpokenLevel() == null ? null :
+                    String.valueOf(languageToCheck.getSpokenLevel().getName());
             } else {
                 return null;
             }
@@ -1906,7 +1971,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             Partner partner = jobOpp.getJobCreator();
 
-            //Update candidate partner Salesforce account id
+            //Update job creator partner Salesforce account id
             if (partner != null) {
                 String partnerSfAccountId = partner.getSfId();
                 if (partnerSfAccountId != null) {
@@ -2078,12 +2143,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         int checkSize();
     }
 
-    private Map<String, Integer> processSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck,
+    private Map<String, Integer> processSfCaseRelocationInfo(CandidateOpportunity candidateOpportunity,
         Candidate relocatingCandidate) throws NoSuchObjectException {
 
         // Get the dependants if any (can return null and processing will continue, which we want)
-        List<CandidateDependant> relocatingDependants =
-            candidateVisaJobCheckService.getRelocatingDependants(visaJobCheck);
+        List<CandidateDependant> relocatingDependants = getRelocatingDependants(candidateOpportunity);
 
         // Initiate values to populate SF candidate opp relocation info fields
         int relocatingBoys = 0;
@@ -2153,23 +2217,41 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return relocationInfo;
     }
 
+    /**
+     * Gets relocating dependants listed on a given candidate opportunity. Methods sits here as it causes a
+     * circular dependency if it sits on the candidate opportunity service
+     * @param candidateOpportunity instance of {@link CandidateOpportunity}
+     * @return list of candidate dependant objects or null if there aren't any for that assessment
+     * @throws NoSuchObjectException if there's no candidate dependant with a given id
+     */
+    private List<CandidateDependant> getRelocatingDependants(CandidateOpportunity candidateOpportunity)
+        throws NoSuchObjectException {
+        List<Long> relocatingDependantIds = candidateOpportunity.getRelocatingDependantIds();
+    
+        return relocatingDependantIds != null ?
+            relocatingDependantIds
+                .stream()
+                .map(candidateDependantService::getDependant)
+                .collect(Collectors.toList()) : null;
+    }
+
     @Override
-    public void updateSfCaseRelocationInfo(CandidateVisaJobCheck visaJobCheck)
+    public void updateSfCaseRelocationInfo(CandidateOpportunity candidateOpportunity)
         throws NoSuchObjectException, SalesforceException, WebClientException {
 
         // Get the relocating candidate and add to list
-        Candidate relocatingCandidate = visaJobCheck.getCandidate();
+        Candidate relocatingCandidate = candidateOpportunity.getCandidate();
         List<Candidate> candidateList = Collections.singletonList(relocatingCandidate);
 
         // Process the relocation info and add to candidate opportunity params
         Map<String, Integer> relocationInfo = processSfCaseRelocationInfo(
-            visaJobCheck, relocatingCandidate);
+            candidateOpportunity, relocatingCandidate);
 
         CandidateOpportunityParams candidateOppParams = new CandidateOpportunityParams();
         candidateOppParams.setRelocationInfo(relocationInfo);
 
         // Get the SF job opp that this visa assessment and candidate opp relate to
-        SalesforceJobOpp sfJobOpp = visaJobCheck.getJobOpp();
+        SalesforceJobOpp sfJobOpp = candidateOpportunity.getJobOpp();
 
         // Update the candidate opp
         createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);

@@ -1,0 +1,21 @@
+// ::ng-deep is used here since the NgbTooltip directive is outside this component's encapsulation
+// scope.
+//Without ng-deep it is not possible to use this styling to format the display of the tool tip
+//displayed contents.
+::ng-deep .help-tips .tooltip-inner {
+  text-align: left;
+  font-size: small;
+  max-width: 100%;
+  background-color: white;
+  padding: 1em
+}
+
+// Making the tip icon a button enables it to be keyboard-focusable,
+// per Bootstrap doc advice https://getbootstrap.com/docs/5.0/components/tooltips/#markup -
+// overriding the native button style fixes the visual aspect
+.help-tip-button {
+  border: none;
+  background-color: inherit;
+  margin-left: 5px;
+  padding: 0;
+}

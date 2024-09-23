@@ -1,35 +1,44 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {
+  calculateAge,
   Candidate,
   CandidateIntakeData,
   CandidateVisa,
   CandidateVisaJobCheck,
+  describeFamilyInDestination,
   getIeltsScoreTypeString
 } from "../../../../../../../model/candidate";
 import {OccupationService} from "../../../../../../../services/occupation.service";
-import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
+import {
+  CandidateOccupationService
+} from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
-import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {Occupation} from "../../../../../../../model/occupation";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-visa-job-check-au',
   templateUrl: './visa-job-check-au.component.html',
   styleUrls: ['./visa-job-check-au.component.scss']
 })
-export class VisaJobCheckAuComponent implements OnInit {
+export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
+
+  @ViewChild('visaJobAus') visaJobAus: NgbAccordion;
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
   occupations: Occupation[];
   yrsExp: CandidateOccupation;
   familyInAus: string;
+  candidateAge: number;
+  candidateOpportunity: CandidateOpportunity;
 
   error: string;
 
@@ -62,28 +71,16 @@ export class VisaJobCheckAuComponent implements OnInit {
       }
     )
 
-    this.familyInAus = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
+    this.familyInAus = describeFamilyInDestination(this.visaCheckRecord);
+    const dobDate = new Date(this.candidate.dob);
+    this.candidateAge = calculateAge(dobDate);
+    this.candidateOpportunity = this.candidate.candidateOpportunities
+      .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
   }
 
-  get currentYear(): string {
-    return new Date().getFullYear().toString();
-  }
-
-  get birthYear(): string {
-    return this.candidate?.dob.toString().slice(0, 4);
-  }
-
-  get selectedOccupations(): CandidateOccupation {
-    if (this.candOccupations) {
-      this.yrsExp = this.candOccupations?.find(occ => occ.occupation.id === this.selectedJobCheck?.occupation?.id);
-      return this.yrsExp;
-    }
-  }
-
-  get candidateAge(): string {
-    if (this.candidate?.dob) {
-      const timeDiff = Math.abs(Date.now() - new Date(this.candidate?.dob).getTime());
-      return Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25).toString(2);
+  ngAfterViewInit() {
+    if(this.visaJobAus){
+      this.visaJobAus.expandAll();
     }
   }
 

@@ -88,6 +88,9 @@
           <a [routerLink]="['/candidate',candidate.candidateNumber]">
             <i class="fas fa-user" title="Candidate"></i>
           </a>
+          <a *ngIf="isShowStage()" [routerLink]="getCandidateOpportunityLink(candidate)">
+            <i class="fas fa-address-book" title="Case (candidate opportunity)"></i>
+          </a>
           <span *ngIf="showSourceDetails">
             <a target="_blank" [href]="candidate.user.partner.websiteUrl">
               <i class="fas fa-hands-helping" [title]="'Partner: ' + candidate.user.partner.name"></i>

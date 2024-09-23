@@ -1,0 +1,50 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Edit Language</h4>
+
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
+
+</div>
+
+<div class="modal-body">
+
+  <div *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <form [formGroup]="form">
+
+      <div class="mb-3">
+        <label class="form-label" for="interest">
+          Interest: <sup>*</sup>
+        </label>
+        <ng-select id="interest" [formControlName]="'interest'"
+                   [items]="destInterestOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="notes">Notes: </label>
+        <textarea class="md-textarea-auto form-control"
+                  rows="3"
+                  id="notes"
+                  [formControlName]="'notes'"
+                  placeholder="" ></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSave()"
+                [disabled]="form.invalid || loading || saving">
+          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+          Save
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

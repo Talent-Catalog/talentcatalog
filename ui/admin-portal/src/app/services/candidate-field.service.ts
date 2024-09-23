@@ -46,12 +46,19 @@ export class CandidateFieldService {
   private intakeTypeFormatter = (value) => {
     return this.getIntakesCompleted(value);
   }
+
   private intakeDateFormatter = (value) => {
     return this.getLatestIntakeDates(value);
   }
-  private getIeltsScoreType = (value) => {
+
+  private ieltsScoreFormatter = (value) => {
     return this.getIeltsScore(value);
   }
+
+  private nclcScoreFormatter = (value) => {
+    return this.getNclcScore(value);
+  }
+
   private getOverallTasksStatus = (value) => {
     return this.getTasksStatus(value);
   }
@@ -74,7 +81,7 @@ export class CandidateFieldService {
     "user.lastName",
     "status",
     "latestIntake",
-    "updatedDate",
+    "ieltsScore",
     "nationality.name",
     "country.name",
     "user.partner.abbreviation",
@@ -118,8 +125,12 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Partner", "user.partner.abbreviation", null,
         null, null, true),
       new CandidateFieldInfo("Phone", "phone", null,
-        null, null, true),
-      new CandidateFieldInfo("Referrer", "regoReferrerParam", null,
+        null, this.isCandidateContactViewable, true),
+      new CandidateFieldInfo("Whatsapp", "whatsapp", null,
+        null, this.isCandidateContactViewable, true),
+      new CandidateFieldInfo("Email", "user.email", null,
+        null, this.isCandidateContactViewable, true),
+    new CandidateFieldInfo("Referrer", "regoReferrerParam", null,
         null, null, true),
       new CandidateFieldInfo("Status", "status", null,
         this.titleCaseFormatter, null, true),
@@ -132,8 +143,10 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level", null,
         this.levelGetNameFormatter, null, true),
       new CandidateFieldInfo("IELTS Score", "ieltsScore", null,
-        this.getIeltsScoreType, null, true),
-      new CandidateFieldInfo("Legal status", "residenceStatus", null,
+        this.ieltsScoreFormatter, null, true),
+      new CandidateFieldInfo("NCLC Score", "frenchAssessmentScoreNclc", null,
+        this.nclcScoreFormatter, null, true),
+    new CandidateFieldInfo("Legal status", "residenceStatus", null,
         this.residenceStatusFormatter, null, true),
       new CandidateFieldInfo("Dependants", "numberDependants", null,
         null, null, true),
@@ -142,7 +155,11 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Latest Intake", "latestIntake", this.intakeDatesTooltip,
       this.intakeTypeFormatter, null, false),
       new CandidateFieldInfo("Latest Intake Date", "latestIntakeDate", null,
-      this.intakeDateFormatter, null, false)
+      this.intakeDateFormatter, null, false),
+      new CandidateFieldInfo("Survey Type", "surveyType.name", null,
+        null, null, true),
+      new CandidateFieldInfo("Survey Comment", "surveyComment", null,
+        null, null, true)
       // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
       // new CandidateFieldInfo("Tasks Status", "taskAssignments", null,
       //   this.getOverallTasksStatus, null),
@@ -236,6 +253,13 @@ export class CandidateFieldService {
     return this.authService.canViewCandidateCountry()
   }
 
+  /**
+   * Regarding funny syntax, see above comments for isCandidateNameViewable
+   */
+  isCandidateContactViewable = (): boolean => {
+    return this.authService.canViewCandidateContact()
+  }
+
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
   }
@@ -265,7 +289,7 @@ export class CandidateFieldService {
 
   getIeltsScore(candidate: Candidate): string {
     let score: string = null;
-    if (candidate?.ieltsScore) {
+    if (candidate?.ieltsScore != null) {
       const type = checkIeltsScoreType(candidate)
       if (type === "IELTSGen") {
         score = candidate?.ieltsScore + ' (Gen)';
@@ -274,6 +298,15 @@ export class CandidateFieldService {
       } else {
         score = candidate?.ieltsScore + ' (Est)'
       }
+    }
+    return score;
+  }
+
+  getNclcScore(candidate: Candidate): string {
+    let score: string = null;
+    if (candidate?.frenchAssessmentScoreNclc != null) {
+      // todo - add check for type of score (e.g. TEF, TCF, etc.) when available - see #768
+      score = candidate?.frenchAssessmentScoreNclc + ' (Est)'
     }
     return score;
   }

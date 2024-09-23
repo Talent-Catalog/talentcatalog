@@ -16,12 +16,14 @@
 
 package org.tctalent.server.api.admin;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -40,10 +42,13 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
+import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
@@ -60,6 +65,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableDocsRequest
 import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -72,6 +78,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
+@Slf4j
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
@@ -110,28 +117,40 @@ public class CandidateAdminApi {
     @PostMapping("findbyemail")
     public Map<String, Object> findByCandidateEmail(@RequestBody CandidateEmailSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyemailorphone")
     public Map<String, Object> findByCandidateEmailOrPhone(@RequestBody CandidateEmailOrPhoneSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbynumberorname")
     public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateNumberOrNameSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyexternalid")
     public Map<String, Object> findByCandidateExternalId(@RequestBody CandidateExternalIdSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 
@@ -250,6 +269,12 @@ public class CandidateAdminApi {
     public void downloadCandidateCVPdf(@RequestBody DownloadCvRequest request, HttpServletResponse response)
             throws IOException {
 
+        LogBuilder.builder(log)
+            .candidateId(request.getCandidateId())
+            .action("downloadCandidateCVPdf")
+            .message("Downloading CV for candidate")
+            .logInfo();
+
         Candidate candidate = candidateService.getCandidate(request.getCandidateId());
         String name = candidate.getUser().getDisplayName()+"-"+ "CV";
         response.setContentType("application/pdf");
@@ -320,8 +345,8 @@ public class CandidateAdminApi {
 
     @PostMapping("{id}/intake")
     public Map<String, Object> completeIntake(
-            @PathVariable("id") long id, @Valid @RequestBody boolean full) {
-        Candidate candidate = candidateService.completeIntake(id, full);
+            @PathVariable("id") long id, @Valid @RequestBody CandidateIntakeAuditRequest request) {
+        Candidate candidate = candidateService.completeIntake(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -338,6 +363,37 @@ public class CandidateAdminApi {
          CvClaims cvClaims = new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupationIds);
          String token = candidateTokenProvider.generateCvToken(cvClaims, 365L);
          return token;
+    }
+
+    /**
+     * Returns {@link JobChatUserInfo} used for processing unread status of Job Chats of type
+     * 'CandidateProspect' for candidates managed by the logged-in user's partner organisation, if
+     * they contain posts unread by same user.
+     * @return {@link JobChatUserInfo}
+     */
+    @PostMapping("check-unread-chats")
+    public @NotNull JobChatUserInfo checkUnreadChats() {
+        List<Long> chatIds = candidateService.findUnreadChatsInCandidates();
+        JobChatUserInfo info = new JobChatUserInfo();
+        info.setNumberUnreadChats(chatIds.size());
+        return info;
+    }
+
+    /**
+     * If unreadOnly boolean contained in request is true, returns paged search results of
+     * candidates managed by the logged-in user's partner organisation, if they have a Job Chat of
+     * type 'CandidateProspect' containing at least one post that is unread by the logged-in user.
+     * If unreadOnly is false, the candidates' chat only has to contain one post, read or unread.
+     * @param request {@link FetchCandidatesWithChatRequest}
+     * @return Map<String, Object> representing paged search results of candidates matching criteria
+     */
+    @PostMapping("fetch-candidates-with-chat")
+    public Map<String, Object> fetchCandidatesWithChat(
+        @Valid @RequestBody FetchCandidatesWithChatRequest request
+    ) {
+        Page<Candidate> candidates = candidateService.fetchCandidatesWithChat(request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.buildPage(candidates);
     }
 
 }

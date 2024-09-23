@@ -1,1 +1,3 @@
-<span *ngIf="unreadIndicator">{{unreadIndicator}}</span>
+<span *ngIf="unreadIndicator" [ngClass]="{'notification-dot':unreadIndicator == '*'}">
+  <span *ngIf="unreadIndicator == '?'">{{unreadIndicator}}</span>
+</span>

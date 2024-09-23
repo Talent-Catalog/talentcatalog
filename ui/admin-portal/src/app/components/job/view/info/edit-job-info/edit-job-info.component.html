@@ -35,6 +35,13 @@
 
     <form [formGroup]="jobForm">
 
+      <div class="form-check">
+        <input [title]="evergreenTip" type="checkbox"
+               formControlName="evergreen" id="evergreen" class="form-check-input">
+        <label class="form-check-label" [title]="evergreenTip"
+               for="evergreen">Evergreen job?</label>
+      </div>
+
       <!-- SUBMISSION DUE DATE -->
       <div class="mb-3">
         <label class="form-label" for="submissionDueDate">Submission Due Date</label>

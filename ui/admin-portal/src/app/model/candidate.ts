@@ -127,7 +127,8 @@ export interface CandidateProperty {
 
 export interface CandidateIntakeData {
   asylumYear?: string;
-  availImmediate?: YesNoUnsure;
+  availDate?: string;
+  availImmediate?: YesNo;
   availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
@@ -302,8 +303,6 @@ export interface CandidateDestination {
   id?: number;
   country?: Country;
   interest?: YesNoUnsure;
-  family?: FamilyRelations;
-  location?: string;
   notes?: string;
 }
 
@@ -330,9 +329,10 @@ export interface CandidateVisa {
   createdDate?: number;
   updatedBy?: User;
   updatedDate?: number;
-  visaEligibilityAssessment?: YesNo;
   pathwayAssessment?: YesNoUnsure;
   pathwayAssessmentNotes?: string;
+  destinationFamily?: FamilyRelations;
+  destinationFamilyLocation?: String;
   candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }
@@ -340,8 +340,6 @@ export interface CandidateVisa {
 export interface CandidateVisaJobCheck {
   jobOpp?: Job;
   id?: number;
-  name?: string;
-  sfJobLink?: string;
   occupation?: Occupation;
   occupationNotes?: string;
   qualification?: YesNo;
@@ -370,7 +368,6 @@ export interface CandidateVisaJobCheck {
   languagesRequired?: string;
   languagesThresholdMet?: YesNo;
   languagesThresholdNotes?: string;
-  relocatingDependantIds?: number[];
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)
@@ -401,21 +398,6 @@ export enum CandidateStatus {
   pending = "pending",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
-}
-
-export enum CandidateFilterByOpps {
-  someOpps = "Some cases",
-
-  noOpps = "No cases",
-
-  openOpps = "Some open cases",
-
-  closedOpps = "Some closed cases",
-
-  preRelocationOpps = "Some cases not yet at relocated stage - ie 'live' cases",
-
-  postRelocationOpps = "Some cases at the relocated or later stage"
-
 }
 
 export interface CandidateOpportunityParams extends OpportunityProgressParams {
@@ -540,12 +522,12 @@ export enum IntRecruitReason {
 }
 
 export enum UnhcrStatus {
-  NoResponse= "No response received from candidate",
+  NoResponse = "No response",
+  RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
+  NotRegistered = "Not registered with UNHCR",
   MandateRefugee = "Assessed by UNHCR as a mandate refugee (RSD)",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
-  RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
-  NotRegistered = "Not registered with UNHCR",
   Unsure = "Candidate was unsure",
   NA = "Not applicable"
 }
@@ -574,12 +556,14 @@ export enum YesNoUnemployedOther {
 export enum YesNo {
   Yes = "Yes",
   No = "No",
+  NoResponse = "NoResponse"
 }
 
 export enum YesNoUnsure {
   Yes = "Yes",
   No = "No",
-  Unsure = "Unsure"
+  Unsure = "Unsure",
+  NoResponse = "NoResponse"
 }
 
 export enum IeltsStatus {
@@ -731,8 +715,7 @@ export function getIeltsScoreTypeString(candidate: Candidate): string {
  * Returns the immigration pathway link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationPathwayInfoLink(countryId: number): string {
   switch (countryId) {
@@ -750,8 +733,7 @@ export function getDestinationPathwayInfoLink(countryId: number): string {
  * Returns the occupation category help link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationOccupationCatLink(countryId: number): string {
   switch (countryId) {
@@ -769,8 +751,7 @@ export function getDestinationOccupationCatLink(countryId: number): string {
  * Returns the occupation sub category help link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationOccupationSubcatLink(countryId: number): string {
   switch (countryId) {
@@ -784,6 +765,37 @@ export function getDestinationOccupationSubcatLink(countryId: number): string {
   }
 }
 
+export function calculateAge(dob: Date): number {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const currentDay = currentDate.getDate();
+
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth();
+  const birthDay = dob.getDate();
+
+  let age = currentYear - birthYear;
+  if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+    age--;
+  }
+
+  return age;
+}
+
 export class SendResetPasswordEmailRequest {
   email: string;
+}
+
+export function describeFamilyInDestination(visaCheck: CandidateVisa): string {
+  let family: string = 'No family entered'
+  if (visaCheck?.destinationFamily) {
+    if (visaCheck?.destinationFamilyLocation) {
+      family = visaCheck?.destinationFamily + ' in ' + visaCheck?.destinationFamilyLocation;
+    } else {
+      family = visaCheck?.destinationFamily;
+    }
+    return family;
+  }
+  return family;
 }

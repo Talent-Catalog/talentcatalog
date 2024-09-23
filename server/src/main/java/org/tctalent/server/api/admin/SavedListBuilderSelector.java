@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import javax.validation.constraints.NotNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -30,7 +31,25 @@ public class SavedListBuilderSelector {
         = new ExportColumnsBuilderSelector();
 
     public @NotNull DtoBuilder selectBuilder() {
-        return savedListDto();
+        return selectBuilder(null);
+    }
+
+    public @NotNull DtoBuilder selectBuilder(@Nullable DtoType dtoType) {
+        DtoBuilder dtoBuilder;
+        if (dtoType == DtoType.MINIMAL) {
+            dtoBuilder = minimalSavedListDto();
+        } else {
+            dtoBuilder = savedListDto();
+        }
+        return dtoBuilder;
+    }
+
+    private DtoBuilder minimalSavedListDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("sfJobOpp", jobOppIdsDto())
+            ;
     }
 
     private DtoBuilder savedListDto() {
@@ -52,6 +71,8 @@ public class SavedListBuilderSelector {
                 .add("fileJoiName")
                 .add("fileInterviewGuidanceLink")
                 .add("fileInterviewGuidanceName")
+                .add("fileMouLink")
+                .add("fileMouName")
                 .add("folderlink")
                 .add("folderjdlink")
                 .add("publishedDocLink")

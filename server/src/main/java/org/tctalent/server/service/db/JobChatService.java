@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
@@ -32,22 +31,6 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface JobChatService {
-
-    /**
-     * Creates a new job chat.
-     * <p/>
-     * Parameters which are not needed for job type may be null.
-     *
-     * @param type          Type of Job Chat
-     * @param job           Job associated with chat
-     * @param sourcePartner Source partner associated with chat
-     * @param candidate     Candidate associated with chat
-     * @return Created job chat
-     * @throws EntityExistsException if there is already a job chat matching the given request.
-     */
-    @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
-        @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate)
-            throws EntityExistsException;
 
     /**
      * Return a DtoBuilder for JobChats
@@ -150,4 +133,13 @@ public interface JobChatService {
      */
     @NonNull
     List<JobChat> listJobChats();
+
+    /**
+     * Gets the {@link JobChatType#CandidateProspect} type {@link JobChat} for candidate with given ID,
+     * if there is one.
+     * @param candidateId
+     * @return null if there is no chat yet, or {@link JobChat} if there is
+     */
+    @Nullable
+    JobChat getCandidateProspectChat(long candidateId);
 }

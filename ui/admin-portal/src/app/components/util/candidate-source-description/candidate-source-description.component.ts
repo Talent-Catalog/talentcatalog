@@ -5,6 +5,8 @@ import {Observable} from "rxjs";
 import {CandidateSource, UpdateCandidateSourceDescriptionRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
+import {AuthorizationService} from "../../../services/authorization.service";
+import {isSavedList, isSubmissionList} from "../../../model/saved-list";
 
 @Component({
   selector: 'app-candidate-source-description',
@@ -16,7 +18,9 @@ export class CandidateSourceDescriptionComponent extends AutoSaveComponentBase
 
   @Input() candidateSource: CandidateSource;
 
-  constructor(private fb: FormBuilder, private candidateSourceService: CandidateSourceService,
+  constructor(private fb: FormBuilder,
+              private authorizationService: AuthorizationService,
+              private candidateSourceService: CandidateSourceService,
               candidateService: CandidateService) {
     super(candidateService);
   }
@@ -45,8 +49,19 @@ export class CandidateSourceDescriptionComponent extends AutoSaveComponentBase
     return this.candidateSourceService.updateDescription(this.candidateSource, request);
   }
 
+  isEditable(): boolean {
+    return this.authorizationService.canEditCandidateSource(this.candidateSource);
+  }
+
   onSuccessfulSave(): void {
     this.candidateSource.description = this.description;
   }
 
+  isSavedList(): boolean {
+    return isSavedList(this.candidateSource);
+  }
+
+  isSubmissionList(): boolean {
+    return isSubmissionList(this.candidateSource);
+  }
 }

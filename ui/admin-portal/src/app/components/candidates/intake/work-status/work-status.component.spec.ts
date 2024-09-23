@@ -14,28 +14,62 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {WorkStatusComponent} from "./work-status.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {ReactiveFormsModule} from "@angular/forms";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {CandidateService} from "../../../../services/candidate.service";
+import {YesNoUnemployedOther} from "../../../../model/candidate";
 
-import {WorkStatusComponent} from './work-status.component';
-
-describe('WorkDesiredComponent', () => {
+describe('WorkStatusComponent', () => {
   let component: WorkStatusComponent;
   let fixture: ComponentFixture<WorkStatusComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ WorkStatusComponent ]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ WorkStatusComponent, AutosaveStatusComponent ],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, NgSelectModule ],
+      providers: [
+        { provide: CandidateService }
+      ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkStatusComponent);
     component = fixture.componentInstance;
+    component.candidateIntakeData = {
+      workDesired: YesNoUnemployedOther.Yes,
+      workDesiredNotes: 'Sample notes'
+    };
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should initialize the form controls with the correct default values', () => {
+    expect(component.form.get('workDesired').value).toBe(YesNoUnemployedOther.Yes);
+    expect(component.form.get('workDesiredNotes').value).toBe('Sample notes');
+  });
+
+  it('should update the form controls when candidateIntakeData changes', () => {
+    component.candidateIntakeData = {
+      workDesired: YesNoUnemployedOther.No,
+      workDesiredNotes: 'Updated notes'
+    };
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(component.form.get('workDesired').value).toBe(YesNoUnemployedOther.No);
+    expect(component.form.get('workDesiredNotes').value).toBe('Updated notes');
+  });
+
+  it('should initialize the form controls correctly when candidateIntakeData is null', () => {
+    component.candidateIntakeData = null;
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(component.form.get('workDesired').value).toBeUndefined();
+    expect(component.form.get('workDesiredNotes').value).toBeUndefined();
   });
 });
+

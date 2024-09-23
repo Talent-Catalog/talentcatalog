@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,9 +38,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
@@ -56,10 +57,13 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Employer;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -69,6 +73,7 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.repository.db.JobSpecification;
@@ -86,6 +91,7 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
@@ -105,6 +111,8 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class JobServiceImpl implements JobService {
 
     /**
@@ -112,8 +120,8 @@ public class JobServiceImpl implements JobService {
      * drives selecting the appropriate candidate opp closing stage to be selected when the
      * associated job opp is closed with the given stage.
      */
-    private final EnumMap<JobOpportunityStage, EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>>
-        closingStageLogic = new EnumMap<>(JobOpportunityStage.class);
+    private EnumMap<JobOpportunityStage,
+        EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>> closingStageLogic;
 
     private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
 
@@ -128,6 +136,7 @@ public class JobServiceImpl implements JobService {
     private final GoogleDriveConfig googleDriveConfig;
 
     private final JobChatService jobChatService;
+    private final JobServiceHelper jobServiceHelper;
     private final PartnerService partnerService;
     private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceConfig salesforceConfig;
@@ -137,38 +146,7 @@ public class JobServiceImpl implements JobService {
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final JobOppIntakeService jobOppIntakeService;
-
-    private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
-
-    public JobServiceImpl(
-            AuthService authService, CandidateOpportunityService candidateOpportunityService,
-            CandidateSavedListService candidateSavedListService, EmailHelper emailHelper,
-        EmployerService employerService,
-        UserService userService, FileSystemService fileSystemService, GoogleDriveConfig googleDriveConfig,
-        JobChatService jobChatService, PartnerService partnerService, SalesforceBridgeService salesforceBridgeService, SalesforceConfig salesforceConfig, SalesforceService salesforceService,
-            SalesforceJobOppRepository salesforceJobOppRepository, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
-            SavedSearchService savedSearchService, JobOppIntakeService jobOppIntakeService) {
-        this.authService = authService;
-        this.candidateOpportunityService = candidateOpportunityService;
-        this.candidateSavedListService = candidateSavedListService;
-        this.emailHelper = emailHelper;
-        this.employerService = employerService;
-        this.userService = userService;
-        this.fileSystemService = fileSystemService;
-        this.googleDriveConfig = googleDriveConfig;
-        this.jobChatService = jobChatService;
-        this.partnerService = partnerService;
-        this.salesforceBridgeService = salesforceBridgeService;
-        this.salesforceConfig = salesforceConfig;
-        this.salesforceService = salesforceService;
-        this.salesforceJobOppRepository = salesforceJobOppRepository;
-        this.salesforceJobOppService = salesforceJobOppService;
-        this.savedListService = savedListService;
-        this.savedSearchService = savedSearchService;
-        this.jobOppIntakeService = jobOppIntakeService;
-
-        initialiseClosingCandidateStageLogic();
-    }
+    private final ChatPostService chatPostService;
 
     /**
      * Updates the closing logic to say tha when a job is closed in the given stage, then any
@@ -196,6 +174,7 @@ public class JobServiceImpl implements JobService {
      * Constructs the closing logic in {@link #closingStageLogic}.
      */
     private void initialiseClosingCandidateStageLogic() {
+        closingStageLogic = new EnumMap<>(JobOpportunityStage.class);
 
         //Candidates who have not got to an employed stage before job is closed for any reason
         //are closed with notFitForRole
@@ -209,6 +188,17 @@ public class JobServiceImpl implements JobService {
                     addClosingLogic(JobOpportunityStage.noJobOffer,
                         s, CandidateOpportunityStage.notFitForRole);
                     addClosingLogic(JobOpportunityStage.noVisa,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.hiringCompleted,
+                        s, CandidateOpportunityStage.notFitForRole);
+
+                    //It is unlikely that there will be any candidate opps if the job stage
+                    //closes in the following stages - but if there are mark them as notFitForRole
+                    addClosingLogic(JobOpportunityStage.tooExpensive,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.tooHighWage,
+                        s, CandidateOpportunityStage.notFitForRole);
+                    addClosingLogic(JobOpportunityStage.tooLong,
                         s, CandidateOpportunityStage.notFitForRole);
                 });
 
@@ -311,10 +301,7 @@ public class JobServiceImpl implements JobService {
         }
 
         //Create submission list
-        UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
-        savedListInfoRequest.setRegisteredJob(true);
-        savedListInfoRequest.setSfJobOpp(job);
-        SavedList submissionList = savedListService.createSavedList(savedListInfoRequest);
+        final SavedList submissionList = createSubmissionListForJob(job);
         job.setSubmissionList(submissionList);
 
         String exclusionListName = submissionList.getName() + EXCLUSION_LIST_SUFFIX;
@@ -325,16 +312,32 @@ public class JobServiceImpl implements JobService {
            exclusionList =
                salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
         } catch (Exception ex) {
-            log.error("CreateJob: Could not create exclusion list", ex);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("CreateJob")
+                .message("Could not create exclusion list: " + ex.getMessage())
+                .logError(ex);
+
             UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
             req.setName(exclusionListName);
             exclusionList = savedListService.createSavedList(req);
         }
         job.setExclusionList(exclusionList);
 
+        //If copying an existing job, copy across those fields.
+        if (request.getJobToCopyId() != null) {
+            copyJobFields(request.getJobToCopyId(), job);
+        }
+
         job = salesforceJobOppRepository.save(job);
 
         //Create the chats associated with this job
+        createJobChats(job);
+
+        return job;
+    }
+
+    private void createJobChats(SalesforceJobOpp job) {
         jobChatService.createJobCreatorChat(JobChatType.AllJobCandidates, job);
         jobChatService.createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, job);
 
@@ -343,8 +346,14 @@ public class JobServiceImpl implements JobService {
         for (PartnerImpl sourcePartner : sourcePartners) {
             jobChatService.createJobCreatorSourcePartnerChat(job, sourcePartner);
         }
+    }
 
-        return job;
+    private SavedList createSubmissionListForJob(SalesforceJobOpp job) {
+        UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
+        savedListInfoRequest.setRegisteredJob(true);
+        savedListInfoRequest.setSfJobOpp(job);
+        SavedList submissionList = savedListService.createSavedList(savedListInfoRequest);
+        return submissionList;
     }
 
     @Override
@@ -360,7 +369,7 @@ public class JobServiceImpl implements JobService {
 
         //Check if we already have a job for this Salesforce job opp.
         String sfId = request.getSfId();
-        SalesforceJobOpp job = salesforceJobOppService.getJobOppById(sfId);
+        SalesforceJobOpp job = sfId == null ? null : salesforceJobOppService.getJobOppById(sfId);
         boolean create = job == null;
         if (create) {
             //No job exists, create one
@@ -385,7 +394,12 @@ public class JobServiceImpl implements JobService {
         job = salesforceJobOppRepository.save(job);
 
         //Update SF - set sfId.
-        sfId = salesforceService.createOrUpdateJobOpportunity(job);
+        return updateJobOnSalesforce(job);
+    }
+
+    private SalesforceJobOpp updateJobOnSalesforce(SalesforceJobOpp job) {
+        //Update SF - set sfId.
+        String sfId = salesforceService.createOrUpdateJobOpportunity(job);
         job.setSfId(sfId);
 
         return salesforceJobOppRepository.save(job);
@@ -440,7 +454,11 @@ public class JobServiceImpl implements JobService {
             try {
                 checkEmployerEntity(job);
             } catch (NoSuchObjectException ex) {
-                log.error("Could not create employer for job " + job.getId(), ex);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("CheckEmployerEntities")
+                    .message("Could not create employer for job " + job.getId())
+                    .logError(ex);
             }
         }
     }
@@ -465,7 +483,7 @@ public class JobServiceImpl implements JobService {
         UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
         request.setSavedSearchType(SavedSearchType.job);
         request.setName(job.getName() + "*-" + suffix);
-        request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId(), salesforceConfig.getBaseLightningUrl()));
+        request.setJobId(id);
         SavedList exclusionList = job.getExclusionList();
         if (exclusionList != null) {
             //Add job exclusion list to suggested search
@@ -521,7 +539,11 @@ public class JobServiceImpl implements JobService {
     @Override
     public void loadJobOppsAndCandidateOpps() {
 
-        log.info("Loading candidate opportunities from Salesforce");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("LoadJobOppsAndCandidateOpps")
+            .message("Loading candidate opportunities from Salesforce")
+            .logInfo();
 
         final int limit = 100;
 
@@ -530,19 +552,34 @@ public class JobServiceImpl implements JobService {
         int nOpps = -1;
         while (nOpps != 0) {
 
-            log.info("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId));
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadJobOppsAndCandidateOpps")
+                .message("Attempting to load up to " + limit + " opps from " + (lastId == null ? "start" : lastId))
+                .logInfo();
+
             List<Opportunity> ops = salesforceService.findCandidateOpportunities(
                 lastId == null ? null : "Id > '" + lastId + "'", limit);
             nOpps = ops.size();
             totalOpps += nOpps;
-            log.info("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps);
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadJobOppsAndCandidateOpps")
+                .message("Loaded " + nOpps + " candidate opportunities from Salesforce. Total " + totalOpps)
+                .logInfo();
+
             if (nOpps > 0) {
                 lastId = ops.get(nOpps - 1).getId();
 
                 for (Opportunity op : ops) {
                     String jobOppId = op.getParentOpportunityId();
                     if (jobOppId == null) {
-                        log.warn("Candidate opportunity without parent job opp: " + op.getName());
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("LoadJobOppsAndCandidateOpps")
+                            .message("Candidate opportunity without parent job opp: " + op.getName())
+                            .logWarn();
                     } else {
                         CandidateOpportunity candidateOpp =
                             candidateOpportunityService.loadCandidateOpportunity(op);
@@ -586,14 +623,40 @@ public class JobServiceImpl implements JobService {
             CopySourceContentsRequest request = new CopySourceContentsRequest();
             request.setSavedListId(0L);
             request.setNewListName(submissionList.getName() + "-suggest");
-            request.setSfJoblink(SalesforceHelper.sfOppIdToLink(job.getSfId(), salesforceConfig.getBaseLightningUrl()));
+            request.setJobId(id);
             //Copy to the target list.
             SavedList suggestedList = candidateSavedListService.copy(submissionList, request);
             job.setSuggestedList(suggestedList);
         }
+        // Send a message to the job chat
+        sendMessageToJobChat(JobChatType.JobCreatorAllSourcePartners, job, "💼 <b>A new job has been published!</b>");
 
         return salesforceJobOppRepository.save(job);
     }
+
+    //TODO JC This should be reused - see code in changeJobStage
+    private void sendMessageToJobChat(JobChatType chatType, SalesforceJobOpp job, String messageContent) {
+        // Get or create the job chat based on the provided chat type
+        JobChat jobChat = jobChatService.getOrCreateJobChat(chatType, job, null, null);
+
+        // Create the message post
+        String jobInfo = "<b>Job Name:</b> </br>" + job.getName() + "</br>"
+            + "<b> Job Creator: </b> </br>" + job.getJobCreator() + "</br>"
+            + "<b> Job Country: </b> </br>" + job.getCountry().getName() + "</br>"
+            // Add more job information fields as needed
+            + "</br>"; // Add a newline for readability
+        String fullMessageContent = messageContent + "</br>" + jobInfo; // Combine message content and job info
+
+        Post messagePost = new Post();
+        messagePost.setContent(fullMessageContent);
+
+        // Create the chat post
+        ChatPost chatPost = chatPostService.createPost(messagePost, jobChat, userService.getSystemAdminUser());
+
+        // Publish the chat post
+        chatPostService.publishChatPost(chatPost);
+    }
+
 
     @NonNull
     @Override
@@ -703,6 +766,23 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @NonNull
+    public SalesforceJobOpp updateMouLink(long id, UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException {
+        User loggedInUser = getLoggedInUser("update interview guidance file");
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        setJobMouLink(job, updateLinkRequest.getName(), updateLinkRequest.getUrl());
+
+        job.setAuditFields(loggedInUser);
+
+        return salesforceJobOppRepository.save(job);
+    }
+
+    @Override
     public void updateIntakeData(long id, JobIntakeData data) throws NoSuchObjectException {
         SalesforceJobOpp job = getJob(id);
          JobOppIntake intake = job.getJobOppIntake();
@@ -716,14 +796,9 @@ public class JobServiceImpl implements JobService {
     }
 
     private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
-        final JobOpportunityStage stage = request.getStage();
-        if (stage != null) {
-            job.setStage(stage);
-
-            //Do automation logic
-            if (stage.isClosed()) {
-                closeUnclosedCandidateOppsForJob(job, stage);
-            }
+        final Boolean evergreen = request.getEvergreen();
+        if (evergreen != null) {
+            job.setEvergreen(evergreen);
         }
 
         final String nextStep = request.getNextStep();
@@ -736,6 +811,59 @@ public class JobServiceImpl implements JobService {
 
             String processedNextStep = auditStampNextStep(
                 loggedInUser.getUsername(), LocalDate.now(), job.getNextStep(), nextStep);
+
+            // If next step details changing, send automated post to JobCreatorAllSourcePartners chat.
+            if (request.getNextStep() != null) {
+                // To compare previous next step to new one, need to ensure neither is null.
+                // Job opps are auto-populated with a value for next step when created, but this has
+                // not always been the case.
+                String currentNextStep = job.getNextStep() == null ? "" : job.getNextStep();
+
+                // If only the due date has changed, we still want to send a message.
+                // As above, there are some old cases with null values that need to be dealt with.
+                LocalDate currentDueDate =
+                    job.getNextStepDueDate() == null ?
+                        LocalDate.of(1970, 1, 1) : job.getNextStepDueDate();
+
+                // If the request due date is null (user deletes the existing value in the form but
+                // doesn't set a new one, then submits) it will not be used (see below) — so, for
+                // purpose of comparison we give it the same value as the current due date (no
+                // message will be sent because they're the same).
+                // TODO: next step due date should be a required value in the form
+                LocalDate requestDueDate =
+                    request.getNextStepDueDate() == null ?
+                        currentDueDate : request.getNextStepDueDate();
+
+                if (!processedNextStep.equals(currentNextStep) || !requestDueDate.equals(
+                    currentDueDate)) {
+                    // Find the relevant job chat
+                    JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                        JobChatType.JobCreatorAllSourcePartners,
+                        job,
+                        null,
+                        null
+                    );
+
+                    // Set the chat post content
+                    Post autoPostNextStepChange = new Post();
+                    autoPostNextStepChange.setContent(
+                        "💼 <b>" + job.getName()
+                            + "</b> 🪜<br> The next step details for this job opportunity have changed:"
+                            + "<br><b>Next step:</b> " + processedNextStep
+                            + "<br><b>Due date:</b> "
+                            + (request.getNextStepDueDate() == null ?
+                            job.getNextStepDueDate() : request.getNextStepDueDate())
+                    );
+
+                    // Create the chat post
+                    ChatPost nextStepChangeChatPost = chatPostService.createPost(
+                        autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
+
+                    // Publish the chat post
+                    chatPostService.publishChatPost(nextStepChangeChatPost);
+                }
+            }
+
             job.setNextStep(processedNextStep);
         }
 
@@ -754,6 +882,151 @@ public class JobServiceImpl implements JobService {
         if (submissionDueDate != null) {
             job.setSubmissionDueDate(submissionDueDate);
         }
+
+        //Do stage change last - changing stage may spawn a new evergreen opp - and we
+        //want to copy other updated changed fields.
+        final JobOpportunityStage stage = request.getStage();
+        if (stage != null) {
+            changeJobStage(job, stage);
+        }
+    }
+
+    /**
+     * All changes to a job stage should go through here.
+     * <p/>
+     * This allows us to kick off automated actions that are triggered by a stage change.
+     * @param job Job who stage is changing
+     * @param stage New stage
+     */
+    private void changeJobStage(SalesforceJobOpp job, JobOpportunityStage stage) {
+        //Do automation logic
+        // If stage changing, send automate post to JobCreatorAllSourcePartners chat
+        if (!stage.equals(job.getStage())) {
+
+            // Find the relevant job chat
+            JobChat jcaspChat = jobChatService.getOrCreateJobChat(
+                JobChatType.JobCreatorAllSourcePartners,
+                job,
+                null,
+                null
+            );
+
+            // Set the chat post content
+            Post autoPostJobOppStageChange = new Post();
+            autoPostJobOppStageChange.setContent(
+                "💼 <b>" + job.getName()
+                    + "</b> 🪜<br> This job opportunity has changed stage from '" + job.getStage()
+                    + "' to '" + stage + "'."
+            );
+
+            // Create the chat post
+            ChatPost jobOppStageChangeChatPost = chatPostService.createPost(
+                autoPostJobOppStageChange, jcaspChat, userService.getSystemAdminUser());
+
+            // Publish the chat post
+            chatPostService.publishChatPost(jobOppStageChangeChatPost);
+        }
+
+        job.setStage(stage);
+
+        //Do automation logic
+        if (stage.isClosed()) {
+            closeUnclosedCandidateOppsForJob(job, stage);
+        }
+
+        if (job.isEvergreen()) {
+            //Once an evergreen job enters the Recruitment stage, it spawns another copy of the
+            //job in CandidateSearch.
+            if (job.getEvergreenChild() == null) {
+                if (stage.compareTo(JobOpportunityStage.recruitmentProcess) >= 0) {
+                    SalesforceJobOpp evergreenChild = spawnEvergreenChildOpp(job);
+                    job.setEvergreenChild(evergreenChild);
+                }
+            }
+        }
+
+        if (stage.isClosed()) {
+            closeUnclosedCandidateOppsForJob(job, stage);
+        }
+    }
+
+    private SalesforceJobOpp spawnEvergreenChildOpp(SalesforceJobOpp job) {
+        SalesforceJobOpp child = new SalesforceJobOpp();
+
+        //Set audit fields using creating user
+        child.setAuditFields(job.getCreatedBy());
+
+        child.setAccountId(job.getAccountId());
+
+        //Do not copy candidate opportunities
+
+        child.setContactUser(job.getContactUser());
+        child.setCountry(job.getCountry());
+        child.setDescription(job.getDescription());
+        child.setEmployer(job.getEmployer());
+        child.setEmployerEntity(job.getEmployerEntity());
+        child.setEvergreen(job.isEvergreen());
+
+        //Do not copy evergreenChild
+
+        child.setExclusionList(job.getExclusionList());
+        child.setJobSummary(job.getJobSummary());
+
+        //Generate new name from original name
+        child.setName(generateChildName(job.getName()));
+
+        child.setOwnerId(job.getOwnerId());
+        child.setPublishedBy(job.getPublishedBy());
+        child.setPublishedDate(job.getPublishedDate());
+        child.setJobCreator(job.getJobCreator());
+
+        //Do not copy stage. Child starts in candidateSearch
+        child.setStage(JobOpportunityStage.candidateSearch);
+
+        //Do not copy starring users
+        //Do not copy submissionDueDate - typically not used for evergreen jobs
+
+        //Do not use suggested list
+
+        //Copy across suggested searches
+        child.setSuggestedSearches(new HashSet<>(job.getSuggestedSearches()));
+
+        //Need to duplicate jobOppIntake - 1-1 can't be shared, may change
+        child.setJobOppIntake(jobOppIntakeService.create(job.getJobOppIntake()));
+
+        child.setHiringCommitment(job.getHiringCommitment());
+        child.setEmployerWebsite(job.getEmployerWebsite());
+        child.setEmployerHiredInternationally(job.getEmployerHiredInternationally());
+        child.setOpportunityScore(job.getOpportunityScore());
+        child.setEmployerDescription(job.getEmployerDescription());
+
+        //Save child job before setting submission list on it
+        child = salesforceJobOppRepository.save(child);
+
+        //Child has its own new submission list
+        final SavedList childSubmissionList = createSubmissionListForJob(child);
+
+        //Copy Job Description and interview guidance fields across from existing submission list
+        SavedList jobSubmissionList = job.getSubmissionList();
+        if (jobSubmissionList != null) {
+            childSubmissionList.setFileJdLink(jobSubmissionList.getFileJdLink());
+            childSubmissionList.setFileJdName(jobSubmissionList.getFileJdName());
+            childSubmissionList.setFileInterviewGuidanceLink(
+                jobSubmissionList.getFileInterviewGuidanceLink());
+            childSubmissionList.setFileInterviewGuidanceName(
+                jobSubmissionList.getFileInterviewGuidanceName());
+        }
+        child.setSubmissionList(childSubmissionList);
+
+        child = updateJobOnSalesforce(child);
+
+        createJobChats(child);
+
+        return child;
+    }
+
+    String generateChildName(String parentJobName) {
+        return jobServiceHelper.generateNextEvergreenJobName(parentJobName);
     }
 
     @NonNull
@@ -785,6 +1058,10 @@ public class JobServiceImpl implements JobService {
         Map<CandidateOpportunityStage, List<Candidate>> closingStageCandidatesMap = new HashMap<>();
 
         if (!activeOpps.isEmpty()) {
+            if (closingStageLogic == null) {
+                initialiseClosingCandidateStageLogic();
+            }
+
             final EnumMap<CandidateOpportunityStage, CandidateOpportunityStage>
                 currentToClosingStageMap = closingStageLogic.get(jobCloseStage);
 
@@ -792,7 +1069,13 @@ public class JobServiceImpl implements JobService {
                 //Log no closing logic
                 String errorMessage = "No closing logic for job stage " + jobCloseStage +
                     " of opportunity " + job.getName() + " (" + job.getId() + ")";
-                log.error(errorMessage);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("CloseUnclosedCandidateOppsForJob")
+                    .message(errorMessage)
+                    .logError();
+
                 emailHelper.sendAlert(errorMessage);
             } else {
                 for (CandidateOpportunity activeOpp : activeOpps) {
@@ -800,9 +1083,13 @@ public class JobServiceImpl implements JobService {
                         activeOpp.getStage());
                     if (closingStage == null) {
                         //Missing logic
-                        log.warn(
-                            "Closing logic missing case for job closing stage " + jobCloseStage +
-                                " and candidate in stage " + activeOpp.getStage());
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("CloseUnclosedCandidateOppsForJob")
+                            .message("Closing logic missing case for job closing stage " + jobCloseStage +
+                                " and candidate in stage " + activeOpp.getStage())
+                            .logWarn();
+
                         //Default to closing candidate opp as notFitForRole
                         closingStage = CandidateOpportunityStage.notFitForRole;
                     }
@@ -824,10 +1111,13 @@ public class JobServiceImpl implements JobService {
                         stageListEntry.getValue(), job, params);
                 }
 
-                log.info("Closed opps for candidates going for job  " + job.getId() + ": "
-                    + activeOpps.stream().map(opp -> opp.getCandidate().getCandidateNumber())
-                    .collect(Collectors.joining(",")));
-
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("CloseUnclosedCandidateOppsForJob")
+                    .message("Closed opps for candidates going for job  " + job.getId() + ": "
+                        + activeOpps.stream().map(opp -> opp.getCandidate().getCandidateNumber())
+                        .collect(Collectors.joining(",")))
+                    .logInfo();
             }
         }
     }
@@ -863,7 +1153,11 @@ public class JobServiceImpl implements JobService {
             //Now update them from Salesforce
             salesforceJobOppService.updateJobs(sfIds);
         } catch (Exception e) {
-            log.error("JobService.updateOpenJobs failed", e);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("JobService.updateOpenJobs")
+                .message("Failed to update open jobs")
+                .logError(e);
         }
     }
 
@@ -901,6 +1195,13 @@ public class JobServiceImpl implements JobService {
         savedListService.saveIt(submissionList);
     }
 
+    private void setJobMouLink(SalesforceJobOpp job, String name, String url) {
+        SavedList submissionList = job.getSubmissionList();
+        submissionList.setFileMouLink(url);
+        submissionList.setFileMouName(name);
+        savedListService.saveIt(submissionList);
+    }
+
     private GoogleFileSystemFile uploadFile(String folderLink, String fileName,
         MultipartFile file) throws IOException {
 
@@ -925,7 +1226,11 @@ public class JobServiceImpl implements JobService {
 
         //Delete tempfile
         if (!tempFile.delete()) {
-            log.error("Failed to delete temporary file " + tempFile);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("UploadFile")
+                .message("Failed to delete temporary file " + tempFile)
+                .logError();
         }
 
         return uploadedFile;
@@ -982,5 +1287,58 @@ public class JobServiceImpl implements JobService {
         GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
         setJobInterviewGuidanceLink(job, uploadedFile.getName(), uploadedFile.getUrl());
         return job;
+    }
+
+    @Override
+    public SalesforceJobOpp uploadMou(long id, MultipartFile file)
+            throws InvalidRequestException, NoSuchObjectException, IOException {
+
+        SalesforceJobOpp job = getJob(id);
+        if (job.getSubmissionList() == null) {
+            throw new InvalidRequestException("Job " + id + " does not have submission list");
+        }
+        GoogleFileSystemFile uploadedFile = uploadJobFile(job, file);
+        setJobMouLink(job, uploadedFile.getName(), uploadedFile.getUrl());
+        return job;
+    }
+
+    /**
+     * When creating a job, a user can select to copy from existing job.
+     * This will create a new job but also copy the
+     * following from the job to copy:
+     * - Job uploads
+     * - Job summary
+     * - JOI fields
+     * @param jobToCopyId id of selected job to copy from.
+     * @param job job that is being created and fields are being copied across to.
+     */
+    private void copyJobFields(long jobToCopyId, SalesforceJobOpp job) {
+        SalesforceJobOpp jobToCopy = salesforceJobOppService.getJobOpp(jobToCopyId);
+
+        // Copy job summary
+        job.setJobSummary(jobToCopy.getJobSummary());
+
+        // Copy JOI data
+        if (jobToCopy.getJobOppIntake() != null) {
+            JobOppIntake copiedIntake = jobOppIntakeService.create(jobToCopy.getJobOppIntake());
+            job.setJobOppIntake(copiedIntake);
+        }
+
+        // Copy all associated job uploads
+        SavedList submissionListToCopy = jobToCopy.getSubmissionList();
+        SavedList submissionList = job.getSubmissionList();
+
+        // Copy JD file
+        submissionList.setFileJdLink(submissionListToCopy.getFileJdLink());
+        submissionList.setFileJdName(submissionListToCopy.getFileJdName());
+        // Copy JOI file
+        submissionList.setFileJoiLink(submissionListToCopy.getFileJoiLink());
+        submissionList.setFileJoiName(submissionListToCopy.getFileJoiName());
+        // Copy MOU file
+        submissionList.setFileMouLink(submissionListToCopy.getFileMouLink());
+        submissionList.setFileMouName(submissionListToCopy.getFileMouName());
+        // Copy Interview Guidance file
+        submissionList.setFileInterviewGuidanceLink(submissionListToCopy.getFileInterviewGuidanceLink());
+        submissionList.setFileInterviewGuidanceName(submissionListToCopy.getFileInterviewGuidanceName());
     }
 }

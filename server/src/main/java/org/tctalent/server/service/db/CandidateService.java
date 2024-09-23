@@ -23,7 +23,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +52,7 @@ import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
+import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.RegisterCandidateRequest;
@@ -67,6 +70,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
@@ -129,6 +133,16 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
 
+    /**
+     * Returns a set of the ids of all candidates resulting from the given SQL query.
+     *
+     * @param sql SQL query
+     * @throws PersistenceException if the SQL is invalid
+     * @return Candidate ids (NOT candidateNumbers) of candidates matching query
+     */
+    @NotNull
+    Set<Long> searchCandidatesUsingSql(String sql) throws PersistenceException;
+
     Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request);
 
     List<Candidate> getSavedListCandidatesUnpaged(SavedList savedList, SavedListGetRequest request);
@@ -163,6 +177,38 @@ public interface CandidateService {
      * Registers a new candidate by creating a new candidate and user.
      * It returns a login request for the generated candidate so that they are processed as
      * a normal login.
+     * <p/>
+     * Logic for assigning a candidate to a partner.
+     * <p/>
+     * A source partner is assigned to a candidate when the candidate registers with the TC.
+     * This is the process:
+     * <ul>
+     *     <li>
+     * Candidate follows a url link which directs them to TC registration
+     *     </li>
+     *     <li>
+     * If they have a p=, then the branding of the TC registration is set to that of the partner
+     *     </li>
+     *     <li>
+     * Initially (step 0) they provide email and accept our conditions - then click Register
+     *     </li>
+     *     <li>
+     * They then proceed to step 1 (contact )where the email can be changed and they also can 
+     * supply phone and whatsapp.
+     * When they click Next, the user is actually created using p= branding, or defaulting to TBB 
+     * - in this method.
+     *     </li>
+     *     <li>
+     * Arriving at step 2 (tell us about yourself - registration personal) they say where they are 
+     * located.
+     * When they click Next, the user is updated with the supplied info 
+     * (in private method CandidateServiceImpl.checkForChangedPartner). 
+     * The partner can be changed here if the currently defined partner is the DefaultSourcePartner
+     * and there is a partner set up as auto-assignable from the country where the candidate is 
+     * located. 
+     *     </li>
+     * </ul>
+     *
      * @param request Registration request
      * @param httpRequest HTTP request for registration
      * @return A login request generated for the newly created candidate.
@@ -204,6 +250,26 @@ public interface CandidateService {
      * Returned as Optional - can be empty if nobody is logged in.
      */
     Optional<Candidate> getLoggedInCandidateLoadCertifications();
+
+    /**
+     * Returns the currently logged in candidate entity preloaded with
+     * candidate exams.
+     * <p/>
+     * See doc for {@link #getLoggedInCandidate()}
+     * @return candidate entity preloaded with candidate exams.
+     * Returned as Optional - can be empty if nobody is logged in.
+     */
+    Optional<Candidate> getLoggedInCandidateLoadCandidateExams();
+
+    /**
+     * Returns the currently logged in candidate entity preloaded with
+     * candidate destinations.
+     * <p/>
+     * See doc for {@link #getLoggedInCandidate()}
+     * @return candidate entity preloaded with candidate destinations.
+     * Returned as Optional - can be empty if nobody is logged in.
+     */
+    Optional<Candidate> getLoggedInCandidateLoadDestinations();
 
     /**
      * Returns the currently logged in candidate entity preloaded with
@@ -439,10 +505,10 @@ public interface CandidateService {
     /**
      * Updates the intake data associated with the given candidate.
      * @param id ID of candidate
-     * @param full Boolean if full = true, it is a full intake. If false, it is a mini intake.
+     * @param request Request object containing the audit data, only provided if the intake is an externally input intake.
      * @throws NoSuchObjectException if no candidate is found with that id
      */
-    Candidate completeIntake(long id, boolean full)
+    Candidate completeIntake(long id, CandidateIntakeAuditRequest request)
             throws NoSuchObjectException;
 
     /**
@@ -519,14 +585,14 @@ public interface CandidateService {
 
     /**
      * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
-     * Scheduled for 1800 GMT every Sunday as it's quite time-consuming.
-     * Shedlock is used to avoid duplicate method call.
-     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates(), which can be called from 12 hours
-     * past the original scheduled call (to give it plenty of time to complete).
+     * @param pageSize no. of results per page
+     * @param firstPageIndex index of first page (begins from 0)
+     * @param noOfPages no. of pages to process
+     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates()
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
-    void syncCandidatesToSf();
+    void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPages);
 
     /**
      * Upserts candidates to SF contacts and updates their TC profile SF links
@@ -536,5 +602,31 @@ public interface CandidateService {
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
 
+    /**
+     * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in
+     * user's partner organisation, if they contain posts unread by same user.
+     * @return list of IDs of Job Chats matching the criteria
+     */
+    List<Long> findUnreadChatsInCandidates();
+
+    /**
+     * If unreadOnly boolean contained in request is true, returns paged search results of
+     * candidates managed by the logged-in user's partner organisation, if they have a Job Chat of
+     * type 'CandidateProspect' containing at least one post that is unread by the logged-in user.
+     * If unreadOnly is false, the candidates' chat only has to contain one post, read or unread.
+     * @param request {@link FetchCandidatesWithChatRequest}
+     * @return paged search results of candidates matching the criteria
+     */
+    Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
+
+    /**
+     * Reassigns all candidates on given saved list to partner organisation with given ID.
+     * Previously done by direct DB edit which necessitated additional manual steps of flushing the
+     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
+     * ES index update proceed as usual with this in-code implementation.
+     * @param savedList saved list containing all the candidates to be reassigned
+     * @param partnerId id of the partner org to which the candidates will be reassigned
+     */
+    void reassignSavedListCandidates(SavedList savedList, int partnerId);
 
 }

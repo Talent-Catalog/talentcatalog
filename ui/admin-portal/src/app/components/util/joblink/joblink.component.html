@@ -13,25 +13,26 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-<!--
-MODEL - use of subclassing FormComponentBase to inherit common standard form functionality
-
-- shows how to check for invalid control values using inherited isInvalid method.
-- use of "pending" control attribute when waiting on async validation
--->
-
-<form [formGroup]="form">
-
-  <div>
-    <label class="form-label">Link to Salesforce Job Opportunity</label>
-    <input type="text" class="form-control" formControlName="sfJoblink">
+<div>
+  <div *ngIf="currentJobName">
+    Associated with {{currentJobName}}
   </div>
-  <div *ngIf="isInvalid(form.controls.sfJoblink)" class="alert alert-danger">
-    Doesn't look like a Salesforce Job opportunity link to me!
-    <br/>
-    Copy and paste from Salesforce.
+  <div *ngIf="currentJobName" class="form-check mb-3">
+    <label class="form-label" for="remove-job">Remove job association?</label>
+    <input (change)="removeJob($event)" class="form-check-input" id="remove-job"
+           type="checkbox">
   </div>
-  <div *ngIf="form.controls.sfJoblink.pending">
-    <i class="fas fa-spinner fa-spin"></i>Waiting validation from Salesforce...
+  <div *ngIf="!removeJobRequest">
+    {{searchHeading}}
+    <span *ngIf="searching">
+      <i class="fas fa-spinner fa-spin"></i> Searching...
+    </span>
+    <input (selectItem)="selectSearchResult($event)"
+           [editable]="false" [inputFormatter]="renderJobRow" [ngbTypeahead]="doJobSearch"
+           [resultFormatter]="renderJobRow"
+           class="form-control"
+           id="jobSearch"
+           placeholder="Search job name..."
+           type="text"/>
   </div>
-</form>
+</div>

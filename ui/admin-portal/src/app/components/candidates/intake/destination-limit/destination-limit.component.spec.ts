@@ -13,29 +13,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DestinationLimitComponent} from './destination-limit.component';
+import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CandidateService} from '../../../../services/candidate.service';
+import {YesNo} from "../../../../model/candidate";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('DestinationLimitComponent', () => {
   let component: DestinationLimitComponent;
   let fixture: ComponentFixture<DestinationLimitComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DestinationLimitComponent ]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [DestinationLimitComponent,AutosaveStatusComponent],
+      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      providers: [FormBuilder, CandidateService]
     })
     .compileComponents();
-  }));
-
+  });
   beforeEach(() => {
     fixture = TestBed.createComponent(DestinationLimitComponent);
     component = fixture.componentInstance;
+    component.candidateIntakeData = {
+      destLimit: YesNo.Yes, // Set any required fields
+      destLimitNotes: 'Test notes' // Set any required fields
+    };
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize with provided candidate intake data', () => {
+    expect(component.form.value.destLimit).toBe(YesNo.Yes);
+    expect(component.form.value.destLimitNotes).toBe('Test notes');
   });
 });

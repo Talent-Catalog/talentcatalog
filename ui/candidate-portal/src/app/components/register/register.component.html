@@ -35,11 +35,10 @@
   </div>
 
   <div class="step-progress">
-
-    <div class="step-progress-bar" *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8, 9];let i = index;"
+    <div class="step-progress-bar" *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; let i = index;"
          [class.selected]="registrationService?.currentStep?.section === i + 1"></div>
-
   </div>
+
 
 </div>
 
@@ -51,7 +50,8 @@
   <app-registration-contact *ngSwitchCase="'contact'">
   </app-registration-contact>
 
-  <app-registration-personal *ngSwitchCase="'personal'">
+  <app-registration-personal *ngSwitchCase="'personal'"
+                             (onPartnerAssignment)="setPartnerName()">
   </app-registration-personal>
 
   <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
@@ -59,15 +59,17 @@
 
   <app-registration-work-experience *ngSwitchCase="'experience'">
   </app-registration-work-experience>
-
   <app-registration-education *ngSwitchCase="'education'">
   </app-registration-education>
-
   <app-registration-language *ngSwitchCase="'language'">
   </app-registration-language>
+  <app-registration-candidate-exam  *ngSwitchCase="'exam'"></app-registration-candidate-exam>
 
   <app-registration-certifications *ngSwitchCase="'certifications'">
   </app-registration-certifications>
+
+  <app-registration-destinations *ngSwitchCase="'destinations'">
+  </app-registration-destinations>
 
   <app-registration-additional-info *ngSwitchCase="'additional'">
   </app-registration-additional-info>
@@ -79,9 +81,7 @@
 
     <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
 
-    <p>
-      {{ 'REGISTRATION.COMPLETE.PARA1' | translate}}
-    </p>
+    <p>{{ 'REGISTRATION.COMPLETE.PARA1' | translate:{partner: getPartnerName()} }}</p>
 
     <div class="text-center my-4">
       <a class="btn btn-primary" [routerLink]="'/profile'">

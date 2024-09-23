@@ -42,6 +42,7 @@ import {TailoredCvComponent} from 'src/app/components/candidates/view/tailored-c
 import {AuthenticationService} from "../../../services/authentication.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
+import {DtoType} from "../../../model/base";
 
 
 @Component({
@@ -55,6 +56,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
   activeTabId: string;
   loading: boolean;
+  loadingButton: boolean;
   savingList: boolean;
   loadingError: boolean;
   error;
@@ -77,19 +79,18 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
               private router: Router,
               private modalService: NgbModal,
               private titleService: Title,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService) {
     super(2, 4);
   }
 
   ngOnInit() {
-    this.refreshCandidateInfo();
+    this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
-    this.checkVisibility();
   }
-  private checkVisibility() {
-    const candidatePartner = this.candidate?.user?.partner;
+  private setChatAccess() {
+    const candidatePartner = this.candidate.user?.partner;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
 
     //User is source partner responsible for candidate or default source partner
@@ -97,9 +98,16 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
       loggedInPartner.defaultSourcePartner || loggedInPartner.id == candidatePartner?.id;
 
     this.candidateProspectTabVisible = userIsCandidatePartner;
+
+    // May return null, in which case 'Create Chat' button displayed instead of chat
+    if (this.candidateProspectTabVisible) {
+      this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
+        this.candidateChat = result;
+      })
+    }
   }
 
-  refreshCandidateInfo() {
+  refreshCandidateProfile() {
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
@@ -115,6 +123,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
           this.setCandidate(candidate);
           this.loadLists();
           this.generateToken();
+          this.setChatAccess();
         }
       }, error => {
         this.loadingError = true;
@@ -129,9 +138,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   private loadLists() {
-    /*load all our non fixed lists */
+    /*load all our non-fixed lists */
     this.loading = true;
     const request: SearchSavedListRequest = {
+      dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
       owned: true,
       shared: true,
       global: true,
@@ -202,29 +212,28 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     } else {
       this.titleService.setTitle(this.candidate.candidateNumber);
     }
-
-    this.fetchChat();
   }
 
-  fetchChat() {
-    if (this.candidate) {
-      this.loading = true;
-      this.error = null;
+  createChat() {
+    this.loadingButton = true;
+    this.error = null;
 
-      const candidateProspectChatRequest: CreateChatRequest = {
-        type: JobChatType.CandidateProspect,
-        candidateId: this.candidate.id,
-      }
-      this.chatService.getOrCreate(candidateProspectChatRequest).subscribe(
-        {
-          next: (chat) => {this.candidateChat = chat; this.loading = false},
-          error: (error) => {this.error = error; this.loading = false}
-        }
-      )
+    const candidateProspectChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateProspect,
+      candidateId: this.candidate.id,
     }
+    this.chatService.create(candidateProspectChatRequest).subscribe({
+        next: (chat) => {this.candidateChat = chat; this.loadingButton = false},
+        error: (error) => {this.error = error; this.loadingButton = false}
+      }
+    )
   }
 
-  downloadCV() {
+  /**
+   * Very similar to {@link ShowCandidatesComponent.downloadGeneratedCV}.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   */
+  downloadGeneratedCV() {
     // Modal
     const downloadCVModal = this.modalService.open(DownloadCvComponent, {
       centered: true,
@@ -266,11 +275,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   isCVViewable(): boolean {
-    return this.authService.canViewCandidateCV();
+    return this.authorizationService.canViewCandidateCV();
   }
 
   isAnAdmin(): boolean {
-    return this.authService.isAnAdmin();
+    return this.authorizationService.isAnAdmin();
   }
 
   onMarkCandidateChatAsRead() {
@@ -388,15 +397,15 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   isEditable(): boolean {
-    return this.authService.isEditableCandidate(this.candidate);
+    return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
   canViewPrivateInfo() {
-    return this.authService.canViewPrivateCandidateInfo(this.candidate);
+    return this.authorizationService.canViewPrivateCandidateInfo(this.candidate);
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
   }
 
   createTailoredCv() {
@@ -408,5 +417,9 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     createTailoredCvModal.componentInstance.candidateId = this.candidate?.id;
     createTailoredCvModal.componentInstance.candidateNumber = this.candidate?.candidateNumber;
 
+  }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
   }
 }

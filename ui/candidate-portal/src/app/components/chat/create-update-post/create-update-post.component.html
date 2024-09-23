@@ -25,38 +25,41 @@
     <quill-editor id="content"
                   placeholder="Write your message..."
                   [formControlName]="'content'"
-                  (onEditorCreated)="editorCreated($event)">
+                  (onEditorCreated)="editorCreated($event)"
+                  (onContentChanged)="contentChanged($event)"
+                  (onSelectionChanged)="editorSelectionChanged($event)"
+    >
       <div quill-editor-toolbar id="quillToolbar">
         <button class="ql-list" value="ordered" title="Ordered list"></button>
         <button class="ql-list" value="bullet" title="Bullet list"></button>
         <button class="ql-bold" title="Bold text"></button>
         <button class="ql-italic" title="Italic text"></button>
         <button class="ql-underline" title="Underline text"></button>
-        <button class="ql-link" title="Add link"></button>
         <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
           <fa-icon *ngIf="!saving" icon="file-upload" size="xs"></fa-icon>
           <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
         </button>
 
+        <button [ngClass]="!this.linkBtnSelected ? 'custom-link-btn' : 'custom-link-btn-selected'"
+                title="{{ 'CHAT.ADD-LINK' | translate }}"
+                (click)="onLinkBtnClickOrKeyShortcut()">
+          <fa-icon icon="link" size="xs"></fa-icon>
+        </button>
+
         <button
           id="emojiBtn"
           [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
-          (click)="onClickEmojiBtn()">
+          (click)="toggleEmojiPicker()">
           <fa-icon icon="face-smile" size="xs"></fa-icon>
         </button>
 
-        <span #editorPickerSpan>
-          <emoji-mart
-            id="editorPicker"
-            *ngIf="emojiPickerVisible"
-            (emojiClick)="onSelectEmoji($event)"
-            emoji="point_up"
-            title="Add emoji..."
-            [autoFocus]="true"
-            [perLine]="8"
-            [emojisToShowFilter]="emojisToShowFilter"
-          ></emoji-mart>
-        </span>
+        <app-link-tooltip *ngIf="this.linkTooltipVisible"
+                          [leftOffset]="linkTooltipLeftOffset"
+                          [bottomOffset]="linkTooltipBottomOffset"
+                          [url]="editorSelection.linkUrl"
+                          (editClicked)="onEditLinkTooltipClick()"
+                          (removeClicked)="onRemoveLinkTooltipClick()"
+        ></app-link-tooltip>
       </div>
     </quill-editor>
   </div>
@@ -67,4 +70,25 @@
       {{'CHAT.POST-SEND' | translate}} <i class="fa-solid fa-paper-plane"></i>
     </button>
   </div>
+
+  <div>
+    <div *ngFor="let linkPreview of linkPreviews">
+      <app-preview-link [linkPreview]="linkPreview"
+                        [userIsPostAuthor]="true"
+      ></app-preview-link>
+    </div>
+  </div>
+
 </form>
+
+<emoji-mart
+  id="editorPicker"
+  *ngIf="emojiPickerVisible"
+  (emojiClick)="onSelectEmoji($event)"
+  emoji="point_up"
+  title="Add emoji..."
+  [autoFocus]="true"
+  [perLine]="8"
+></emoji-mart>
+
+<div *ngIf="emojiPickerVisible" class="overlay" (click)="toggleEmojiPicker()"></div>

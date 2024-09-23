@@ -1,0 +1,22 @@
+<span>
+  <ng-template #helpTipContent>
+    <div *ngIf="loading">
+      Loading...
+    </div>
+    <div *ngIf="error">
+      {{error}}
+    </div>
+    <div *ngIf="helpLinks">
+      <div *ngFor="let helpLink of helpLinks">
+        <a target="_blank" [href]="helpLink.link">{{displayHelpLink(helpLink)}}</a>
+      </div>
+    </div>
+  </ng-template>
+
+  <button class="help-tip-button" [ngbTooltip]="helpTipContent"
+          (click)="fetchHelp()" placement="auto"
+          triggers="click" tooltipClass="help-tips">
+    <i class="fa-regular fa-circle-question fa-xs"></i>
+  </button>
+
+</span>

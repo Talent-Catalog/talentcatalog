@@ -19,8 +19,8 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
-import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
+import {JobNameAndId} from "../../../model/job";
 
 
 export interface TargetListSelection {
@@ -34,7 +34,7 @@ export interface TargetListSelection {
   //contents are added (merged).
   replace: boolean;
 
-  sfJoblink?: string;
+  jobId?: number;
 
   /**
    * If present, the statuses of all candidates in list are set according to this.
@@ -54,9 +54,11 @@ export class SelectListComponent implements OnInit {
   excludeList: SavedList;
   form: FormGroup;
   jobName: string;
+  jobId: number;
   loading: boolean;
+  canChangeStatuses: boolean = true;
+  myListsOnly: boolean = false;
   saving: boolean;
-  sfJoblink: string;
   action: string = "Save";
   title: string = "Select List";
 
@@ -97,8 +99,8 @@ export class SelectListComponent implements OnInit {
     this.loading = true;
     const request: SearchSavedListRequest = {
       owned: true,
-      shared: true,
-      global: true,
+      shared: !this.myListsOnly,
+      global: !this.myListsOnly,
       fixed: false
     };
 
@@ -123,7 +125,7 @@ export class SelectListComponent implements OnInit {
       savedListId: this.savedList === null ? 0 : this.savedList.id,
       newListName: this.newList ? this.newListName : null,
       replace: this.replace,
-      sfJoblink: this.sfJoblink ? this.sfJoblink : null
+      jobId: this.jobId
     }
 
     if (this.changeStatuses) {
@@ -142,18 +144,13 @@ export class SelectListComponent implements OnInit {
   }
 
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
-    if (jobOpportunity.valid) {
-      this.sfJoblink = jobOpportunity.sfJoblink;
-      this.jobName = jobOpportunity.jobname;
+  onJobSelection(job: JobNameAndId) {
+    this.jobName = job?.name;
+    this.jobId = job?.id;
 
-      //If existing name is empty, auto copy into them
-      if (!this.newListNameControl.value) {
-        this.newListNameControl.patchValue(this.jobName);
-      }
-    } else {
-      this.sfJoblink = null;
-      this.jobName = null;
+    //If existing name is empty, auto copy into them
+    if (!this.newListNameControl.value) {
+      this.newListNameControl.patchValue(this.jobName);
     }
   }
 
@@ -168,6 +165,11 @@ export class SelectListComponent implements OnInit {
         const newListName: string = group.controls['newListName'].value;
         if (!newListName) {
           return { invalidName: "Name can't be blank" }
+        }
+      } else {
+        const existingList: string = group.controls['savedList'].value;
+        if (!existingList){
+          return { invalidName: "List can't be blank"}
         }
       }
       return {}

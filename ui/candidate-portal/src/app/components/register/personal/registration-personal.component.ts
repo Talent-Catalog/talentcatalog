@@ -16,7 +16,6 @@
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {CountryService} from "../../../services/country.service";
@@ -38,6 +37,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   @Output() onSave = new EventEmitter();
 
+  @Output() onPartnerAssignment = new EventEmitter();
+
   static afghanistanId = 6180;
   static ukraineId = 6406;
   static usaId = 6178;
@@ -54,14 +55,12 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   candidate: Candidate;
   countries: Country[];
-  nationalities: Country[];
   states: string[] = null;
   years: number[];
   subscription;
   lang: string;
 
   constructor(private fb: FormBuilder,
-              private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,
               public translateService: TranslateService,
@@ -84,6 +83,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       yearOfArrival: [''],
       /* NATIONALITY */
       nationalityId: [null, Validators.required],
+      otherNationality: ['No', Validators.required],
+      otherNationalityIds: [[]],
       externalId: [null],
       externalIdSource: ['US Afghan Parolee Id'],
       unhcrRegistered: [null, Validators.required],
@@ -101,6 +102,10 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
     this.candidateService.getCandidatePersonal().subscribe(
       (response) => {
+        let otherNationalityIds = response.candidateCitizenships
+            .map(c => c.nationality?.id)
+            .filter(id =>  id != null && id != response.nationality.id);
+
         this.form.patchValue({
           /* PERSONAL */
           firstName: response.user ? response.user.firstName : null,
@@ -114,6 +119,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
           nationalityId: response.nationality.id > 0 ? response.nationality.id : null,
+          otherNationalityIds: otherNationalityIds,
+          otherNationality: otherNationalityIds.length > 0 ? 'Yes' : 'No',
           /* IDS */
           externalId: response.externalId ? response.externalId : null,
           // externalIdSource: response.externalIdSource ? response.externalIdSource : null,
@@ -175,6 +182,10 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
     ].includes(country);
   }
 
+  get hasOtherNationality(): boolean {
+    return this.form.value.otherNationality === 'Yes';
+  }
+
   get nationality() {
     return this.form.value.nationalityId;
   }
@@ -183,7 +194,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
     return this.form.value.countryId;
   }
 
-  get hasUnhcr() {
+  get registeredWithUnhcr() {
    return this.form.value.unhcrRegistered === 'Yes';
   }
 
@@ -226,6 +237,11 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
         this.saving = false;
         if (dir === 'next') {
           this.onSave.emit();
+          // Now that we have the candidate's location, their managing partner will be accurately
+          // assigned, so our parent component is notified to get and set its partnerName property,
+          // which it uses for subsequent registration steps.
+          // (partnerId is set on the candidate's User, so we can't simply pass it to the parent.)
+          this.onPartnerAssignment.emit();
           this.registrationService.next();
         } else {
           this.registrationService.back();

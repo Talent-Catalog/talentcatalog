@@ -14,13 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit} from '@angular/core';
+import {Directive, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
 import {Job} from "../../../model/job";
 import {JobOppIntake} from "../../../model/job-opp-intake";
 import {JobService} from "../../../services/job.service";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 /**
  * Base class for all job intake tab components.
@@ -39,6 +40,9 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
    * This is the job whose intake data we are entering
    */
   @Input() job: Job;
+
+  @Output() intakeChanged = new EventEmitter<JobOppIntake>();
+
 
   /**
    * This is the existing job intake data (if any) which is used to
@@ -71,6 +75,7 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
 
   public constructor(
     protected authenticationService: AuthenticationService,
+    protected authorizationService: AuthorizationService,
     protected jobService: JobService,
   ) {
     this.loggedInUser = this.authenticationService.getLoggedInUser();
@@ -78,6 +83,11 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
 
   ngOnInit(): void {
     this.refreshIntakeDataInternal(true);
+  }
+
+  canViewEmployerDetails() {
+    //Employer partners do not need to see details about themselves.
+    return !this.authorizationService.isEmployerPartner();
   }
 
   /**

@@ -33,7 +33,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/task")
 public class TaskAdminApi implements
         ITableApi<SearchTaskRequest, UpdateTaskRequest, UpdateTaskRequest> {
@@ -59,7 +59,7 @@ public class TaskAdminApi implements
     }
 
     @Override
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         TaskImpl task = this.taskService.get(id);
         return TaskDtoHelper.getTaskDto().build(task);
     }

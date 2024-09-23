@@ -55,6 +55,7 @@ import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.HasPassport;
+import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.model.db.Industry;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatUserInfo;
@@ -183,8 +184,6 @@ public class AdminApiTestUtil {
         destination.setCandidate(getCandidate());
         destination.setCountry(new Country("USA", Status.active));
         destination.setInterest(YesNoUnsure.Yes);
-        destination.setFamily(FamilyRelations.Cousin);
-        destination.setLocation("New York");
         destination.setNotes("Some destination notes");
         return destination;
     }
@@ -282,7 +281,19 @@ public class AdminApiTestUtil {
         opportunity.setEmployerFeedback("Some employer feedback");
         opportunity.setStage(CandidateOpportunityStage.offer);
         opportunity.setJobOpp(getSalesforceJobOpp());
+        opportunity.setRelocatingDependantIds(List.of(1L, 2L));
         return opportunity;
+    }
+
+    static HelpLink getHelpLink() {
+        HelpLink helpLink = new HelpLink();
+        helpLink.setId(99L);
+        helpLink.setCountry(new Country("Jordan", Status.active));
+        helpLink.setCaseStage(CandidateOpportunityStage.cvReview);
+        helpLink.setJobStage(JobOpportunityStage.jobOffer);
+        helpLink.setLabel("Test label");
+        helpLink.setLink("https://www.talentbeyondboundaries.org/");
+        return helpLink;
     }
 
     static SalesforceJobOpp getSalesforceJobOpp() {
@@ -329,6 +340,8 @@ public class AdminApiTestUtil {
             candidateVisaCheck.setValidTravelDocsNotes( "These are some travel docs notes.");
             candidateVisaCheck.setPathwayAssessment(YesNoUnsure.No);
             candidateVisaCheck.setPathwayAssessmentNotes( "These are some pathway assessment notes.");
+            candidateVisaCheck.setDestinationFamily(FamilyRelations.Cousin);
+            candidateVisaCheck.setDestinationFamilyLocation("New York");
         }
         return candidateVisaCheck;
     }
@@ -450,6 +463,8 @@ public class AdminApiTestUtil {
         savedList.setFileJoiName("JoiFileName");
         savedList.setFileInterviewGuidanceLink("http://file.interview.guidance.link");
         savedList.setFileInterviewGuidanceName("InterviewGuidanceFileName");
+        savedList.setFileMouLink("http://file.mou.link");
+        savedList.setFileMouName("MouFileName");
         savedList.setFolderlink("http://folder.link");
         savedList.setFolderjdlink("http://folder.jd.link");
         savedList.setPublishedDocLink("http://published.doc.link");

@@ -1,6 +1,6 @@
 <div class="modal-header">
 
-  <h4 class="modal-title">Update Opportunity Progress</h4>
+  <h4 class="modal-title">Update {{oppType}} Opportunity Progress</h4>
 
   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
 
@@ -10,14 +10,24 @@
   <form [formGroup]="salesforceStageForm">
 
     <div class="mb-3">
-      <label class="form-label" for="stage">{{oppType}} Stage - order is just a guide, most stages are optional.</label>
+      <label class="form-label" for="stage">{{oppType}} Stage - order is just a guide, most stages are optional.
+        <app-help [request]="stageHelpRequest"></app-help>
+      </label>
       <ng-select id="stage" [formControlName]="'stage'" [items]="opportunityStageOptions"
+                 (change)="onStageSelectionChange($event)"
                  placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
+      <p *ngIf="isEvergreenJob()">
+        This is an evergreen job. When the stage of an evergreen job reaches "Recruitment" a new
+        copy of the job opportunity is automatically created set to the "Candidate search" stage.
+        That allows new potential candidates to be added to that new opportunity
+        while candidates for the original opportunity are going through the recruitment process.
+      </p>
     </div>
 
     <div class="mb-3">
-      <label class="form-label" for="nextStep">Next step - please start with date: eg 9Nov21-...</label>
+      <label class="form-label" for="nextStep">Next step</label>
       <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
+      <div class="form-text">Note: when a new next step is saved, the date and user will be appended to the next step automatically for audit purposes.</div>
     </div>
 
     <div class="mb-3">

@@ -16,13 +16,12 @@
 
 package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
-
 import javax.persistence.Entity;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 
 @Getter
 @Setter
@@ -80,6 +79,12 @@ public class CandidateVisaCheck extends CandidateVisaCheckBase {
         }
         if (data.getVisaPathwayAssessmentNotes() != null) {
             setPathwayAssessmentNotes(data.getVisaPathwayAssessmentNotes());
+        }
+        if (data.getVisaDestinationFamily() != null) {
+            setDestinationFamily(data.getVisaDestinationFamily());
+        }
+        if (data.getVisaDestinationFamilyLocation() != null) {
+            setDestinationFamilyLocation(data.getVisaDestinationFamilyLocation());
         }
     }
 

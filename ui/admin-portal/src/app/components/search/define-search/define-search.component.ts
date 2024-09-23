@@ -15,6 +15,7 @@
  */
 
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   Input,
@@ -24,7 +25,7 @@ import {
   ViewChild
 } from '@angular/core';
 
-import {Candidate, CandidateFilterByOpps, CandidateStatus, Gender} from '../../../model/candidate';
+import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -67,7 +68,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {canEditSource, SearchPartnerRequest} from '../../../model/base';
+import {SearchPartnerRequest} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -80,14 +81,15 @@ import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {SearchQueryService} from "../../../services/search-query.service";
+import {first} from "rxjs/operators";
 
 @Component({
   selector: 'app-define-search',
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges {
-
+export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -125,11 +127,11 @@ export class DefineSearchComponent implements OnInit, OnChanges {
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
   genderOptions: EnumOption[] = enumOptions(Gender);
-  candidateFilterByOppsOptions: EnumOption[] = enumOptions(CandidateFilterByOpps);
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
   loggedInUser: User;
+  unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
 
   selectedBaseJoin;
   storedBaseJoin;
@@ -150,8 +152,9 @@ export class DefineSearchComponent implements OnInit, OnChanges {
               private route: ActivatedRoute,
               private router: Router,
               private savedListService: SavedListService,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
+              private searchQueryService: SearchQueryService
               ) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -186,6 +189,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       miniIntakeCompleted: [null],
       fullIntakeCompleted: [null],
       searchJoinRequests: this.fb.array([]),
+      unhcrStatuses: [[]],
       //for display purposes
       occupations: [[]],
       countries: [[]],
@@ -195,8 +199,8 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       regoReferrerParam: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
-      candidateFilterByOpps: [null],
       exclusionListId: [null],
+      unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
@@ -209,6 +213,12 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     }
     this.loading = true;
     this.error = null;
+
+    this.searchForm.get('simpleQueryString').valueChanges.pipe(
+        first()
+    ).subscribe(initialValue => {
+      this.searchQueryService.changeSearchQuery(initialValue || '');
+    });
 
     const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
     const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
@@ -253,6 +263,18 @@ export class DefineSearchComponent implements OnInit, OnChanges {
       this.loading = false;
       this.error = error;
     });
+  }
+
+  // Stops Keyword Search tooltip from opening on keydown.enter in inputs
+  ngAfterViewInit() {
+    const inputs: NodeList = document.querySelectorAll('input')
+    inputs.forEach(input => {
+      input.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+      })
+    })
   }
 
   get simpleQueryString(): string {
@@ -319,6 +341,8 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     //See the html of this component, for which <app-show-candidates takes
     //searchRequest as an input.
     this.searchRequest = request;
+
+    this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
   }
 
   getIdsMultiSelect(request): SearchCandidateRequestPaged {
@@ -356,6 +380,12 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     if (request.surveyTypes != null) {
       request.surveyTypeIds = request.surveyTypes.map(s => s.id);
       delete request.surveyTypes;
+    }
+
+    if (request.unhcrStatusesDisplay != null) {
+      //Pick up key values from EnumOptions
+      request.unhcrStatuses = request.unhcrStatusesDisplay.map(s => s.key);
+      delete request.unhcrStatusesDisplay;
     }
 
     return request;
@@ -573,6 +603,13 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     }
     this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
 
+    /* UNHCR STATUSES */
+    let unhcrStatuses: EnumOption[] = [];
+    if (request.unhcrStatuses) {
+      unhcrStatuses = enumKeysToEnumOptions(request.unhcrStatuses, UnhcrStatus);
+    }
+    this.searchForm.controls['unhcrStatusesDisplay'].patchValue(unhcrStatuses);
+
     /* JOINED SEARCHES */
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
@@ -668,7 +705,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
   }
 
   canChangeSearchRequest(): boolean {
-    return canEditSource(this.savedSearch, this.authenticationService)
+    return this.authorizationService.canEditCandidateSource(this.savedSearch);
   }
 
   public onSelectAll(options: any, formControl: any) {
@@ -698,7 +735,7 @@ export class DefineSearchComponent implements OnInit, OnChanges {
     let s: string;
 
     //Source partners default to seeing only their candidates (unless they are the default partner)
-    if (this.authService.isSourcePartner() && !this.authService.isDefaultPartner()) {
+    if (this.authorizationService.isSourcePartner() && !this.authorizationService.isDefaultPartner()) {
       s = "If nothing is specified here, the default is just to show candidates belonging to your partner.";
     } else {
       s = "If nothing is specified here, the default is to show candidates managed by any partner.";

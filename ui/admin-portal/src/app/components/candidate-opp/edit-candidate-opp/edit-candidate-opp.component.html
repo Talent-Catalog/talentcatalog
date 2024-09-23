@@ -10,14 +10,18 @@
   <form [formGroup]="salesforceStageForm">
 
     <div *ngIf="showProgressParams" class="mb-3">
-      <label class="form-label" for="stage">Candidate Opportunity Stage - order is just a guide, most stages are optional.</label>
+      <label class="form-label" for="stage">Candidate Opportunity Stage - order is just a guide, most stages are optional.
+        <app-help [request]="stageHelpRequest"></app-help>
+      </label>
       <ng-select id="stage" [formControlName]="'stage'" [items]="candidateOpportunityStageOptions"
+                 (change)="onStageSelectionChange($event)"
                  placeholder="Select" bindLabel="stringValue" bindValue="key" ></ng-select>
     </div>
 
     <div *ngIf="showProgressParams" class="mb-3">
-      <label class="form-label" for="nextStep">Next step - please start with date: eg 9Nov21-...</label>
+      <label class="form-label" for="nextStep">Next step</label>
       <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
+      <div class="form-text">Note: when a new next step is saved, the date and user will be appended to the next step automatically for audit purposes.</div>
     </div>
 
     <div *ngIf="showProgressParams" class="mb-3">

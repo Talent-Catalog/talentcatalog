@@ -60,8 +60,10 @@ import org.tctalent.server.util.html.TextExtracter;
  */
 @Getter
 @Setter
-@Document(indexName = "candidates")
+@Document(indexName = "candidates", createIndex = false)
 public class CandidateEs {
+
+    public static final String INDEX_NAME = "candidates";
 
     private static final String[] sortingFields = {
             "masterId",
@@ -89,6 +91,8 @@ public class CandidateEs {
 
     @Id
     private String id;
+    private String externalId;
+    private String candidateNumber;
 
     @Field(type = FieldType.Text)
     private String additionalInfo;
@@ -129,11 +133,19 @@ public class CandidateEs {
     private Gender gender;
 
     private String firstName;
+    private String lastName;
+
+    /**
+     * Populated automatically from the {@code firstName} and {@code lastName} fields, in the
+     * format: "firstName lastName". Allows for simpler querying where full name searches are
+     * required.
+     */
+    private String fullName;
+
+    private String email;
 
     @Field(type = FieldType.Text)
     private List<String> jobExperiences;
-
-    private String lastName;
 
     private Integer minEnglishSpokenLevel;
 
@@ -181,7 +193,17 @@ public class CandidateEs {
 
     private String partner;
 
-    private List<String> occupations;
+    @Field(type = FieldType.Nested)
+    private List<Occupation> occupations;
+
+    @Getter
+    @Setter
+    static class Occupation {
+        private String name;
+
+        @Field(type = FieldType.Long)
+        private Long yearsExperience;
+    }
 
     @Field(type = FieldType.Text)
     private String migrationOccupation;
@@ -203,21 +225,54 @@ public class CandidateEs {
     @Field(type = FieldType.Long)
     private Long numberDependants;
 
+    private Long fullIntakeCompletedDate;
+
+    private Long miniIntakeCompletedDate;
+
+    private Long surveyType;
+
     public CandidateEs() {
+    }
+
+    public void setFullName() {
+        this.fullName = this.firstName + " " + this.lastName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+        setFullName();  // Update fullName whenever firstName changes
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+        setFullName();  // Update fullName whenever lastName changes
     }
 
     public void copy(Candidate candidate, TextExtracter textExtracter) {
 
         this.additionalInfo = candidate.getAdditionalInfo();
         this.firstName = candidate.getUser() == null ? null
-                : candidate.getUser().getFirstName();
+            : candidate.getUser().getFirstName();
+        this.lastName = candidate.getUser() == null ? null
+            : candidate.getUser().getLastName();
+        this.setFullName();
+        this.email = candidate.getUser() == null ? null
+            : candidate.getUser().getEmail();
+        this.externalId = candidate.getExternalId();
+        this.candidateNumber = candidate.getCandidateNumber();
+
+        this.miniIntakeCompletedDate = candidate.getMiniIntakeCompletedDate() == null ?
+            null : candidate.getMiniIntakeCompletedDate().toInstant().toEpochMilli();
+        this.fullIntakeCompletedDate = candidate.getFullIntakeCompletedDate() == null ?
+            null : candidate.getFullIntakeCompletedDate().toInstant().toEpochMilli();
+        this.surveyType = candidate.getSurveyType() == null ?
+            null : candidate.getSurveyType().getId();
+
         this.gender = candidate.getGender();
         this.country = candidate.getCountry() == null ? null
                 : candidate.getCountry().getName();
         this.state = candidate.getState();
         this.city = candidate.getCity();
-        this.lastName = candidate.getUser() == null ? null
-                : candidate.getUser().getLastName();
         this.masterId = candidate.getId();
         this.updated = candidate.getUpdatedDate().toInstant().toEpochMilli();
         this.nationality = candidate.getNationality() == null ? null
@@ -235,6 +290,7 @@ public class CandidateEs {
         this.residenceStatus = candidate.getResidenceStatus();
         this.ieltsScore = candidate.getIeltsScore();
         this.numberDependants = candidate.getNumberDependants();
+
 
         this.maxEducationLevel = null;
         if (candidate.getMaxEducationLevel() != null) {
@@ -345,16 +401,23 @@ public class CandidateEs {
 
         this.occupations = new ArrayList<>();
         this.migrationOccupation = null;
-        List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
-        if (occupations != null) {
-            for (CandidateOccupation occupation : occupations) {
-                if (occupation != null && occupation.getOccupation() != null) {
-                    String text = occupation.getOccupation().getName();
-                    if (text != null) {
-                        this.occupations.add(text);
+        List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
+        if (candidateOccupations != null) {
+            for (CandidateOccupation candidateOccupation : candidateOccupations) {
+                if (candidateOccupation != null && candidateOccupation.getOccupation() != null) {
+                    Occupation occupation = new Occupation();
+                    String name = candidateOccupation.getOccupation().getName();
+                    Long yearsExperience = candidateOccupation.getYearsExperience();
+                    if (name != null) {
+                        occupation.setName(name);
+                        if (yearsExperience != null) {
+                            occupation.setYearsExperience(yearsExperience);
+                        }
+                        occupations.add(occupation);
                     }
-                    if (occupation.getMigrationOccupation() != null) {
-                        this.migrationOccupation = occupation.getMigrationOccupation();
+
+                    if (candidateOccupation.getMigrationOccupation() != null) {
+                        this.migrationOccupation = candidateOccupation.getMigrationOccupation();
                     }
                 }
             }

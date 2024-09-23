@@ -32,13 +32,15 @@
           <ng-template ngbNavContent>
             <app-candidate-context-note
               [candidate]="candidate"
-              [candidateSource]="candidateSource">
+              [candidateSource]="candidateSource"
+              [editable]="isEditable()"
+            >
             </app-candidate-context-note>
           </ng-template>
         </ng-container>
 
         <!-- SHAREABLE DOCS -->
-        <ng-container ngbNavItem="docs">
+        <ng-container *ngIf="canViewPrivateInfo()" ngbNavItem="docs">
           <a ngbNavLink>{{isList ? "List Specific " : null}}Shareable Docs</a>
           <ng-template ngbNavContent>
             <app-shareable-docs
@@ -49,7 +51,7 @@
         </ng-container>
 
         <!-- PREVIEW CV -->
-        <ng-container ngbNavItem="cv">
+        <ng-container *ngIf="canViewPrivateInfo()" ngbNavItem="cv">
           <a ngbNavLink>Preview CV</a>
           <ng-template ngbNavContent>
             <app-cv-preview
@@ -95,7 +97,9 @@
     <!-- AUTO UPDATING SHAREABLE NOTES -->
     <ng-container *ngIf="showNotes">
       <app-candidate-shareable-notes
-        [candidate]="candidate">
+        [candidate]="candidate"
+        [editable] = "isEditable()"
+      >
       </app-candidate-shareable-notes>
     </ng-container>
 
@@ -108,7 +112,8 @@
         <ng-template ngbNavContent>
           <app-candidate-general-tab
             [candidate]="candidate"
-            [editable]="false">
+            [editable]="false"
+            [adminUser]="isAnAdmin()">>
           </app-candidate-general-tab>
         </ng-template>
       </ng-container>
@@ -119,7 +124,8 @@
         <ng-template ngbNavContent>
           <app-candidate-experience-tab
             [candidate]="candidate"
-            [editable]="false">
+            [editable]="false"
+            [adminUser]="isAnAdmin()">
           </app-candidate-experience-tab>
         </ng-template>
       </ng-container>
@@ -130,7 +136,8 @@
         <ng-template ngbNavContent>
           <app-candidate-education-tab
             [candidate]="candidate"
-            [editable]="false">
+            [editable]="false"
+            [adminUser]="isAnAdmin()">
           </app-candidate-education-tab>
         </ng-template>
       </ng-container>
@@ -148,7 +155,7 @@
       </ng-container>
 
       <!-- TASKS -->
-      <ng-container ngbNavItem="tasks">
+      <ng-container ngbNavItem="tasks" *ngIf="canViewPrivateInfo()">
         <a ngbNavLink>Tasks</a>
         <ng-template ngbNavContent>
           <app-candidate-task-tab
@@ -159,7 +166,7 @@
       </ng-container>
 
       <!-- NOTES -->
-      <ng-container ngbNavItem="notes">
+      <ng-container ngbNavItem="notes" *ngIf="canViewPrivateInfo()">
         <a ngbNavLink>Notes</a>
         <ng-template ngbNavContent>
           <app-candidate-history-tab

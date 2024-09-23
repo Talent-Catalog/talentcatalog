@@ -19,6 +19,7 @@ package org.tctalent.server.model.db;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.tctalent.server.api.admin.DtoType;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.UploadTask;
@@ -59,6 +60,10 @@ public class TaskDtoHelper {
     };
 
     public static DtoBuilder getTaskAssignmentDto() {
+        return getTaskAssignmentDto(DtoType.FULL);
+    }
+
+    public static DtoBuilder getTaskAssignmentDto(DtoType dtoType) {
         return new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("abandonedDate")
@@ -66,13 +71,17 @@ public class TaskDtoHelper {
             .add("completedDate")
             .add("dueDate")
             .add("status")
-            .add("task", getTaskDto())
+            .add("task", getTaskDto(dtoType))
             .add("answer")
             ;
     }
 
     public static DtoBuilder getTaskDto() {
-        return new DtoBuilder(new TaskDtoPropertyFilter())
+        return getTaskDto(DtoType.FULL);
+    }
+
+    public static DtoBuilder getTaskDto(DtoType dtoType) {
+        final DtoBuilder builder = new DtoBuilder(new TaskDtoPropertyFilter())
             .add("id")
             .add("name")
             .add("daysToComplete")
@@ -85,10 +94,16 @@ public class TaskDtoHelper {
             .add("uploadSubfolderName")
             .add("uploadableFileTypes")
             .add("candidateAnswerField")
-            .add("allowedAnswers", getAllowedQuestionTaskAnswerDto())
-            .add("createdBy", getUserDto())
             .add("createdDate")
             ;
+
+        if (!DtoType.PREVIEW.equals(dtoType)) {
+            builder
+                .add("allowedAnswers", getAllowedQuestionTaskAnswerDto())
+                .add("createdBy", getUserDto())
+            ;
+        }
+        return builder;
     }
 
     private static DtoBuilder getAllowedQuestionTaskAnswerDto() {

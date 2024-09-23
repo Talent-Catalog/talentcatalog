@@ -16,12 +16,18 @@
 
 package org.tctalent.server.request.candidate.visa;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tctalent.server.model.db.*;
-
-import java.util.List;
+import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.FamilyRelations;
+import org.tctalent.server.model.db.OtherVisas;
+import org.tctalent.server.model.db.RiskLevel;
+import org.tctalent.server.model.db.TBBEligibilityAssessment;
+import org.tctalent.server.model.db.VisaEligibility;
+import org.tctalent.server.model.db.YesNo;
+import org.tctalent.server.model.db.YesNoUnsure;
 
 /**
  * This is the data sent from the visa check intake, it contains visa check and visa job check data.
@@ -51,6 +57,8 @@ public class CandidateVisaCheckData {
     private String visaCreatedById;
     private YesNoUnsure visaPathwayAssessment;
     private String visaPathwayAssessmentNotes;
+    private FamilyRelations visaDestinationFamily;
+    private String visaDestinationFamilyLocation;
 
     //Corresponds to CandidateVisaJobCheck fields
     private Long visaJobId;
@@ -84,5 +92,4 @@ public class CandidateVisaCheckData {
     private List<Long> visaJobLanguagesRequired;
     private YesNo visaJobLanguagesThresholdMet;
     private String visaJobLanguagesThresholdNotes;
-    private List<Long> visaJobRelocatingDependantIds;
 }

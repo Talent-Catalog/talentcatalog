@@ -10,7 +10,8 @@
     </label>
 
     <textarea id="description" class="md-textarea-auto form-control" rows="2"
-              placeholder="Add notes ..."
+              [readOnly]="!isEditable()"
+              placeholder="Describe the purpose of this {{ isSubmissionList() ? 'submission' : ''}} {{ isSavedList() ? 'list' : 'search'}}..."
               [formControlName]="'description'"></textarea>
   </div>
 

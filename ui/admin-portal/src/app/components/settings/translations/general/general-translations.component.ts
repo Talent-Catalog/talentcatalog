@@ -187,6 +187,64 @@ const ALL_FIELDS = {
         "SELECT": null,
       }
     },
+    "JOI": {
+      "BENEFITS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "COST_COMMITMENT": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "EDUCATION_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "EMPLOYMENT_EXPERIENCE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LANGUAGE_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LOCATION": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "LOCATION_DETAILS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "MIN_SALARY": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "OCCUPATION_CODE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "RECRUITMENT_PROCESS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "SALARY_RANGE": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "SKILL_REQUIREMENTS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+      "VISA_PATHWAYS": {
+        "LABEL": null,
+        "TOOLTIP": null
+      },
+    },
+    "STAFF_INSTRUCTION": {
+       "CANDIDATE_NO_INTEREST": null,
+       "CANDIDATE_UNSURE_INTEREST": null
+     },
     "LOADING": null,
     "LOGIN": {
       "TITLE": null,
@@ -285,6 +343,7 @@ const ALL_FIELDS = {
           "EDUCATION/UNIVERSITY": null,
           "EDUCATION/SCHOOL": null,
           "LANGUAGE": null,
+          "EXAM": null,
           "CERTIFICATIONS": null,
           "ADDITIONAL": null,
           "UPLOAD": null,
@@ -327,12 +386,15 @@ const ALL_FIELDS = {
           "STATE": null,
           "YEAROFARRIVAL": null,
           "NATIONALITY": null,
+          "OTHER_NATIONALITY": null,
+          "OTHER_NATIONALITIES": null,
           "EXTERNALID": null,
           "REGISTEREDWITHUN": null,
           "REGISTRATIONID": null,
           "UNHCRCONSENT": null
         },
         "NOTE": {
+          "STATELESS": null,
           "UNHCRREGISTERED": null,
           "UNHCRCONSENT": null
         }
@@ -377,6 +439,30 @@ const ALL_FIELDS = {
         "BUTTON": {
           "ADD": null
         }
+      },
+      "EXAM": {
+        "LABEL": {
+          "EXAM": null,
+          "SCORE": null,
+          "YEAR": null,
+          "NOTES": null,
+          "OTHEREXAM":null
+        },
+        "BUTTON": {
+          "ADD": null
+        },
+        "DELETE": {
+          "TITLE": null,
+          "CONFIRMATION": null,
+          "YES": null,
+          "NO": null
+        }
+      },
+      "DESTINATIONS": {
+        "LABEL": {
+          "INTEREST": null,
+          "NOTES": null,
+        },
       },
       "CERTIFICATIONS": {
         "LABEL": {
@@ -462,10 +548,16 @@ const ALL_FIELDS = {
       "EDUCATION": {
         "TITLE": null
       },
+      "EXAMS": {
+        "TITLE": null
+      },
       "CERTIFICATIONS": {
         "TITLE": null
       },
       "LANGUAGES": {
+        "TITLE": null
+      },
+      "DESTINATIONS": {
         "TITLE": null
       },
       "OTHER": {
@@ -493,6 +585,7 @@ const ALL_FIELDS = {
         "EXPERIENCE": null,
         "EDUCATION": null,
         "LANGUAGES": null,
+        "EXAMS": null,
         "CERTIFICATIONS": null,
         "ADDITIONAL": null,
         "UPLOAD": null
@@ -508,7 +601,8 @@ const ALL_FIELDS = {
       },
       "PLACEHOLDER" : {
         "SELECT": null,
-        "SELECTORTYPE": null
+        "SELECTORTYPE": null,
+        "SELECTOREXAM": null
       },
       "ERROR": {
         "REQUIRED": null,
@@ -708,8 +802,19 @@ const ALL_FIELDS = {
     },
   },
   "CHAT": {
+      "HEADER": null,
       "POST-HEADER": null,
       "POST-SEND": null,
+      "MARK-AS-READ": null,
       "NO-POSTS": null,
+      "ADD-LINK": null,
+      "LINK-PLACEHOLDER": null,
+      "LINK-URL": null,
+      "URL-PREFIX": null,
+      "URL-PREFIX-ERROR": null,
+      "LINK-EDIT-BTN": null,
+      "LINK-REMOVE-BTN": null,
+      "LINK-SAVE-BTN": null,
+      "LINK-CANCEL-BTN": null
   }
 }

@@ -47,6 +47,8 @@ export interface SavedList extends CandidateSource {
   fileJoiName?: string;
   fileInterviewGuidanceLink?: string;
   fileInterviewGuidanceName?: string;
+  fileMouLink?: string;
+  fileMouName?: string;
   folderlink?: string;
   folderjdlink?: string;
   publishedDocLink?: string;
@@ -54,6 +56,7 @@ export interface SavedList extends CandidateSource {
   sfJobCountry?: string;
   sfJobStage?: string;
   tasks?: Task[];
+  registeredJob?: boolean;
 }
 
 export interface ShortSavedList {
@@ -69,11 +72,15 @@ export function isSavedList(source: CandidateSource): source is SavedList {
   return source == null ? false : !isSavedSearch(source);
 }
 
+export function isSubmissionList(source: CandidateSource): source is SavedList {
+  return isSavedList(source) && source.registeredJob && source.sfJobOpp != null;
+}
+
 export interface UpdateSavedListInfoRequest {
   name?: string;
   fixed?: boolean;
   registeredJob?: boolean;
-  sfJoblink?: string;
+  jobId?: number;
 }
 
 export interface UpdateSavedListContentsRequest extends UpdateSavedListInfoRequest {

@@ -1,4 +1,4 @@
-import {Component, Inject, LOCALE_ID} from '@angular/core';
+import {Component, ElementRef, Inject, LOCALE_ID, ViewChild} from '@angular/core';
 import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {FormBuilder} from "@angular/forms";
@@ -25,7 +25,9 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
   //Override text to replace "opps" text with "jobs"
   myOppsOnlyLabel = "My jobs only";
-  myOppsOnlyTip = "Only show jobs that I manage";
+  myOppsOnlyTip = "Only show jobs that I created or am the contact for";
+  showUnpublishedLabel = "Show unpublished jobs";
+  showUnpublishedTip = "Show jobs that have not yet been published";
   showClosedOppsLabel = "Show closed jobs";
   showClosedOppsTip = "Show jobs that have been closed";
   showInactiveOppsLabel = "Show inactive jobs";
@@ -33,10 +35,13 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
   withUnreadMessagesLabel = "Jobs with unread chats only";
   withUnreadMessagesTip = "Only show jobs which have unread chats";
 
+  @ViewChild("searchFilter")
+  searchFilter: ElementRef;
+
   constructor(
     chatService: ChatService,
     fb: FormBuilder,
-    authService: AuthorizationService,
+    authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: JobService,
     salesforceService: SalesforceService,
@@ -44,7 +49,7 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+    super(chatService, fb, authorizationService, localStorageService, oppService, salesforceService,
       countryService, partnerService, locale, "Jobs")
   }
 
@@ -57,9 +62,6 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
         //Don't want to see closed jobs
         req.sfOppClosed = false;
 
-        //Jobs must have been published
-        req.published = true;
-
         //Only want jobs which are accepting candidates. This is equivalent to checking that the
         //job's stage is between candidate search and prior to job offer/acceptance.
         //This request is ignored if certain stages have been requested (because that will clash
@@ -69,6 +71,9 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
       case SearchOppsBy.starredByMe:
         req.starred = true;
+
+        //If it is starred I want to see it even if it is closed
+        req.sfOppClosed = true;
         break;
     }
 
@@ -141,5 +146,10 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
       })
     }
     return chatRequests;
+  }
+
+  needsFilterByDestination() {
+    //Employers with direct access know that all jobs are coming to their destination.
+    return !this.authorizationService.isEmployerPartner();
   }
 }

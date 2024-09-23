@@ -52,6 +52,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -117,6 +118,7 @@ class OccupationAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(multipart(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
                         .file("file", file.getBytes())
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON))
 
@@ -170,6 +172,7 @@ class OccupationAdminApiTest extends ApiTestBase {
                 .willReturn(occupationPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -226,6 +229,7 @@ class OccupationAdminApiTest extends ApiTestBase {
                 .willReturn(occupation);
 
         mockMvc.perform(post(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -254,6 +258,7 @@ class OccupationAdminApiTest extends ApiTestBase {
                 .willReturn(occupation);
 
         mockMvc.perform(put(BASE_PATH + "/" + OCCUPATION_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -274,6 +279,7 @@ class OccupationAdminApiTest extends ApiTestBase {
     @DisplayName("delete occupation by id succeeds")
     void deleteOccupationByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + OCCUPATION_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk());

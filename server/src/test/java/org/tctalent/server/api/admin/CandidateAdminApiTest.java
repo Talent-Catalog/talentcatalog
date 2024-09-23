@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -433,6 +434,7 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .willReturn(true);
 
         mockMvc.perform(delete(BASE_PATH + "/" + id)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk())
@@ -452,6 +454,7 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .willReturn(false);
 
         mockMvc.perform(delete(BASE_PATH + "/" + id)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk())
@@ -596,6 +599,7 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private void postSearchRequestAndVerifyResponse(String path, String body) throws Exception {
         mockMvc.perform(post(BASE_PATH + path)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body)
@@ -615,6 +619,7 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private void postApiRequest(String path, String body) throws Exception {
         mockMvc.perform(post(BASE_PATH + path)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -664,6 +669,7 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private void updateCandidate(String path, String body) throws Exception {
         mockMvc.perform(put(BASE_PATH + path)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -674,6 +680,7 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private void updateCandidateAndVerifyResponse(String path, String body) throws Exception {
         mockMvc.perform(put(BASE_PATH + path)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body)

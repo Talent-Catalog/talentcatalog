@@ -108,12 +108,6 @@ export function isSavedSearch(source: CandidateSource): source is SavedSearch {
   return source ? 'savedSearchType' in source : false;
 }
 
-export function getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
-  const sourceType = getCandidateSourceType(candidateSource);
-  return candidateSource != null ?
-    (sourceType + ': ' + candidateSource.name + ' (' + candidateSource.id + ')') : sourceType;
-}
-
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
   let breadcrumb: string = "";
   if (savedSearch) {
@@ -135,7 +129,7 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
         }
       }
 
-      breadcrumb += savedSearch.name + " (" + savedSearch.id + ")";
+      breadcrumb += savedSearch.name;
     }
   }
   return breadcrumb;
@@ -161,7 +155,7 @@ export interface SavedSearchRequest {
   name?: string;
   fixed?: boolean;
   reviewable?: boolean;
-  sfJoblink?: string;
+  jobId?: number;
   savedSearchType?: SavedSearchType;
   savedSearchSubtype?: SavedSearchSubtype;
 
@@ -186,17 +180,17 @@ export interface SelectCandidateInSearchRequest {
 /**
  * Create a SavedSearchRequest from a SavedSearch an optional Salesforce job link, and a search request.
  * @param savedSearch Saved search
- * @param sfJoblink Link to a Salesforce job - can be null
+ * @param jobId ID of job - can be null
  * @param searchCandidateRequest Search request
  */
 export function convertToSavedSearchRequest
-(savedSearch: SavedSearch, sfJoblink: string, searchCandidateRequest: SearchCandidateRequest):
+(savedSearch: SavedSearch, jobId: number, searchCandidateRequest: SearchCandidateRequest):
   SavedSearchRequest {
   const savedSearchRequest: SavedSearchRequest = {};
   savedSearchRequest.id = savedSearch.id;
   savedSearchRequest.name = savedSearch.name;
   savedSearchRequest.fixed = savedSearch.fixed;
-  savedSearchRequest.sfJoblink = sfJoblink;
+  savedSearchRequest.jobId = jobId;
   savedSearchRequest.reviewable = savedSearch.reviewable;
   savedSearchRequest.savedSearchType = savedSearch.savedSearchType;
   savedSearchRequest.savedSearchSubtype = savedSearch.savedSearchSubtype;

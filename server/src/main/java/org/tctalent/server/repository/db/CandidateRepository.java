@@ -17,16 +17,18 @@
 package org.tctalent.server.repository.db;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -36,7 +38,39 @@ import org.tctalent.server.model.db.ReviewStatus;
 /**
  * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
  */
-public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
+public interface CandidateRepository extends CacheEvictingRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
+
+    /**
+     * This method overrides the default save behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the saved candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to save; must not be null
+     */
+    @NonNull
+    @Override
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
+    <S extends Candidate> S save(@NonNull S candidate);
+
+    /**
+     * This method overrides the default saveAndFlush behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the saved candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to save; must not be null
+     */
+    @NonNull
+    @Override
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
+    <S extends Candidate> S saveAndFlush(@NonNull S candidate);
+
+    /**
+     * This method overrides the default delete behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the deleted candidate's username will be removed from the cache.
+     *
+     * @param candidate the candidate entity to delete; must not be null
+     */
+    @Override
+    @CacheEvict(value = "users", key = "#p0?.user?.username")
+    void delete(@NonNull Candidate candidate);
 
     /**
      * CANDIDATE PORTAL METHODS: Used to display candidate in registration/profile.
@@ -75,9 +109,19 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Candidate findByIdLoadCandidateOccupations(@Param("id") Long id);
 
     @Query(" select c from Candidate c "
+        + " left join fetch c.candidateExams p "
+        + " where c.id = :id ")
+    Candidate findByIdLoadCandidateExams(@Param("id") Long id);
+
+    @Query(" select c from Candidate c "
             + " left join fetch c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
+    
+    @Query(" select c from Candidate c "
+            + " left join fetch c.candidateDestinations dest "
+            + " where c.id = :id ")
+    Candidate findByIdLoadDestinations(@Param("id") Long id);
 
     @Query(" select c from Candidate c "
             + " left join fetch c.candidateLanguages lang "
@@ -133,6 +177,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Transactional
     @Modifying
     @Query("update Candidate c set c.textSearchId = null")
+    @CacheEvict(value = "users", allEntries = true)
     void clearAllCandidateTextSearchIds();
 
     /**
@@ -152,8 +197,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                         Pageable pageable);
 
+                                         Pageable pageable);
     /**
      * Note that we need to pass in a CandidateStatus.deleted constant in the
      * "exclude" parameter because I haven't been able to just put
@@ -166,36 +211,12 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * - JC
      */
     @Query(" select distinct c from Candidate c "
-            + " where lower(c.candidateNumber) like lower(:candidateNumber) "
-            + excludeDeleted
-            + sourceCountryRestriction)
+        + " where c.candidateNumber like :candidateNumber "
+        + excludeDeleted
+        + sourceCountryRestriction)
     Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
-                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                          Pageable pageable);
-
-    @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(u.email) like lower(:emailOrPhone) "
-            + " or lower(c.phone) like lower(:emailOrPhone) "
-            + excludeDeleted
-            + sourceCountryRestriction)
-    Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
-                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                          Pageable pageable);
-
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.externalId) like lower(:externalId) "
-            + sourceCountryRestriction)
-    Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
-                                              @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                              Pageable pageable);
-
-    @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"
-            + excludeDeleted
-            + sourceCountryRestriction)
-    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
-                                        @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                        Pageable pageable);
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
 
     @Query(" select c from Candidate c "
             + " join c.user u "
@@ -731,4 +752,175 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                              @Param("dateFrom") LocalDate dateFrom,
                                              @Param("dateTo") LocalDate dateTo,
                                              @Param("candidateIds") Set<Long> candidateIds);
+
+    /**
+     * CANDIDATE CHAT
+     * These methods are used to find candidates and check read statuses for the
+     * [Partner] Candidate Chats tab.
+     */
+
+    /**
+     * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in
+     * user's partner organisation, if they contain posts unread by same user.
+     * @param partnerId logged-in user's partner org's ID
+     * @param userId logged in user's ID
+     * @return list of IDs of Job Chats matching the criteria
+     */
+    @Query(
+        value =
+        """
+        SELECT chats.id
+        FROM (
+            SELECT job_chat.id
+            FROM candidate
+            JOIN job_chat ON candidate.id = job_chat.candidate_id
+                AND job_chat.type = 'CandidateProspect'
+            WHERE candidate.id IN (
+                SELECT candidate.id
+                FROM candidate
+                JOIN users ON candidate.user_id = users.id
+                WHERE users.partner_id = :partnerId
+            )
+        ) AS chats
+        WHERE (
+            (SELECT last_read_post_id
+             FROM job_chat_user
+             WHERE job_chat_id = chats.id
+               AND user_id = :userId
+            ) < (
+                SELECT MAX(id)
+                FROM chat_post
+                WHERE job_chat_id = chats.id
+            )
+        )
+        OR (
+            (SELECT last_read_post_id
+             FROM job_chat_user
+             WHERE job_chat_id = chats.id
+               AND user_id = :userId
+            ) IS NULL
+            AND (
+                SELECT COUNT(*)
+                FROM chat_post
+                WHERE job_chat_id = chats.id
+            ) > 0
+        )
+        """, nativeQuery = true
+    )
+    List<Long> findUnreadChatsInCandidates(
+        @Param("partnerId") long partnerId,
+        @Param("userId") long userId
+    );
+
+    /**
+     * Paged search finding candidates managed by the logged-in user's partner organisation, if
+     * they have a Job Chat of type 'CandidateProspect' containing at least one post.
+     * @param partnerId logged-in user's partner org's ID
+     * @param keyword pre-processed keyword entered in search filter, may represent candidate
+     *                number, first name or last name of candidate
+     * @param pageable details of requested pagination
+     * @return paged search results of matching candidates
+     */
+    @Query(
+        value =
+            """
+            SELECT c
+            FROM Candidate c
+            WHERE c.id IN (
+                SELECT c1.id
+                FROM Candidate c1
+                JOIN c1.user u
+                WHERE u.partner.id = :partnerId
+                AND (
+                    LOWER(u.firstName) LIKE :keyword
+                    OR LOWER(u.lastName) LIKE :keyword
+                    OR c.candidateNumber LIKE :keyword
+                )
+            )
+            AND c.id IN (
+                SELECT c2.id
+                FROM Candidate c2
+                JOIN JobChat jc ON c2.id = jc.candidate.id
+                WHERE jc.type = 'CandidateProspect'
+                AND jc.id IN (
+                    SELECT jc2.id
+                    FROM JobChat jc2
+                    JOIN ChatPost cp ON jc2.id = cp.jobChat.id
+                )
+            )
+            """
+    )
+    Page<Candidate> findCandidatesWithActiveChat(
+        @Param("partnerId") long partnerId,
+        @Param("keyword") String keyword,
+        Pageable pageable
+    );
+
+    /**
+     * Search finding IDs of candidates managed by the logged-in user's partner organisation, if they
+     * have a Job Chat of type 'CandidateProspect' containing at least one post that is unread by
+     * the logged-in user.
+     * Being a complex query, this was not suitable for JPQL so is instead written in regular SQL,
+     * requiring return of IDs rather than the whole candidate object.
+     * @param partnerId logged-in user's partner org's ID
+     * @param userId logged-in user's ID
+     * @param keyword pre-processed keyword entered in search filter, may represent candidate
+     *                number, first name or last name of candidate
+     * @return list of IDs of candidates who match the criteria
+     */
+    @Query(
+        value =
+            """
+            SELECT candidate.id
+            FROM candidate
+                     JOIN users ON candidate.user_id = users.id
+            WHERE candidate.id IN (
+                SELECT job_chat.candidate_id
+                FROM (
+                         SELECT job_chat.id
+                         FROM candidate
+                                  JOIN job_chat ON candidate.id = job_chat.candidate_id
+                         WHERE type = 'CandidateProspect'
+                     ) AS chats
+                         JOIN job_chat ON job_chat.id = chats.id
+                WHERE
+                    (SELECT last_read_post_id
+                     FROM job_chat_user
+                     WHERE job_chat_id = chats.id AND user_id = :userId) <
+                    (SELECT max(id)
+                     FROM chat_post
+                     WHERE job_chat_id = chats.id)
+                   OR (
+                    (SELECT last_read_post_id
+                     FROM job_chat_user
+                     WHERE job_chat_id = chats.id AND user_id = :userId) IS NULL
+                        AND
+                    (SELECT count(*)
+                     FROM chat_post
+                     WHERE job_chat_id = chats.id) > 0
+                    )
+            )
+              AND users.partner_id = :partnerId
+              AND (
+                LOWER(users.first_name) LIKE :keyword
+                OR LOWER(users.last_name) LIKE :keyword
+                OR candidate.candidate_number LIKE :keyword
+                )
+            """, nativeQuery = true
+    )
+    List<Long> findIdsOfCandidatesWithActiveAndUnreadChat(
+        @Param("partnerId") long partnerId,
+        @Param("userId") long userId,
+        @Param("keyword") String keyword
+    );
+
+    /**
+     * Takes a collection of candidate IDs and returns their corresponding candidates. Used here to
+     * get around SQL limitations.
+     * @param candidateIds any Collection of candidate IDs
+     * @param pageable details of requested pagination
+     * @return paged search result of candidates who match the criteria
+     */
+    Page<Candidate> findByIdIn(Collection<Long> candidateIds, Pageable pageable);
+
 }

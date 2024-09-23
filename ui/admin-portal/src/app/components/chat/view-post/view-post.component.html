@@ -5,17 +5,25 @@
   </p>
   <p class="content" *ngIf="post?.content" [ngClass]="{'html':isHtml(post.content), 'text':!isHtml(post.content)}" [innerHtml]="post.content"></p>
 
+  <div>
+    <div *ngFor="let linkPreview of post.linkPreviews">
+      <app-preview-link [linkPreview]="linkPreview"
+                        [userIsPostAuthor]="userIsPostAuthor"
+      ></app-preview-link>
+    </div>
+  </div>
+
   <div class="d-flex flex-row-reverse flex-wrap">
-    <button
+    <button *ngIf="!readOnly"
     id="reactionBtn"
     [ngClass]="!this.reactionPickerVisible ?
     'reaction-btn' : 'reaction-btn-selected'"
-    (click)="onClickReactionBtn()">
+    (click)="onClickReactionBtn($event)">
       <i id="reactionBtnSmiley" class="fa-regular fa-face-smile fa-xs">
       <i id="reactionBtnPlus" class="fa-solid fa-plus fa-2xs"></i></i>
     </button>
     <button
-    class="update-reaction-btn"
+    class="modify-reaction-btn"
     *ngFor="let reaction of post.reactions"
     (click)="onSelectReaction(reaction)">
       <span [ngbTooltip]="reactionToolTip">
@@ -31,16 +39,15 @@
       </ng-template>
     </button>
   </div>
+
 </div>
 
 <emoji-mart
   id="reactionPicker"
+  [ngStyle]="{'left': reactionPickerXPos + 'px', 'top': reactionPickerYPos + 'px'}"
   *ngIf="reactionPickerVisible"
   (emojiClick)="onSelectEmoji($event)"
   emoji="point_up"
   title="Add emoji..."
   [autoFocus]="true"
-  [emojisToShowFilter]="emojisToShowFilter"
 ></emoji-mart>
-
-<div *ngIf="reactionPickerVisible" class="overlay"></div>

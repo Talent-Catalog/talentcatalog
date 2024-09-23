@@ -25,6 +25,8 @@ $navbar-height: 80px;
 .navbar {
   width: 100%;
   min-height: $navbar-height;
+  background-color: #f2f2f2;
+  box-shadow: 1px 1px 1px #dddddd;
 
   .logo {
     max-height: calc(#{$navbar-height} - 20px);
@@ -68,6 +70,7 @@ $navbar-height: 80px;
 
 .translation-toggle {
   color: #0eb1e3 !important;
+  cursor: pointer;
 }
 
 body > .dropdown > .dropdown-menu {

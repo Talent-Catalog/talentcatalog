@@ -57,11 +57,19 @@
                              [edit]="true"
                              (onSave)="handleSave()">
   </app-registration-language>
-
+  <app-registration-candidate-exam *ngSwitchCase="'exams'"
+                                   [edit]="true"
+                                   (onSave)="handleSave()">
+  </app-registration-candidate-exam>
   <app-registration-certifications *ngSwitchCase="'certifications'"
                                    [edit]="true"
                                    (onSave)="handleSave()">
   </app-registration-certifications>
+
+  <app-registration-destinations *ngSwitchCase="'destinations'"
+                                   [edit]="true"
+                                   (onSave)="handleSave()">
+  </app-registration-destinations>
 
   <app-registration-additional-info *ngSwitchCase="'additional'"
                                    [edit]="true"

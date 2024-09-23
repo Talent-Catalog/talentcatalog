@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {
@@ -31,11 +31,12 @@ import {map} from "rxjs/operators";
 import {CopySourceContentsRequest, SavedList} from "../model/saved-list";
 import {UpdateCandidateStatusInfo} from "../model/candidate";
 import {SearchCandidateRequest} from "../model/search-candidate-request";
+import {DtoType} from "../model/base";
 
 export interface CreateFromDefaultSavedSearchRequest {
   savedListId: number;
   name: string;
-  sfJoblink?: string;
+  jobId?: number;
 }
 
 export interface SavedSearchTypeInfo {
@@ -131,8 +132,11 @@ export class SavedSearchService {
     return this.http.get<SearchCandidateRequest>(`${this.apiUrl}/${id}/load`);
   }
 
-  get(id: number): Observable<SavedSearch> {
-    return this.http.get<SavedSearch>(`${this.apiUrl}/${id}`)
+  get(id: number): Observable<SavedSearch>;
+  get(id: number, dtoType: DtoType): Observable<SavedSearch>;
+  get(id: number, dtoType?: DtoType): Observable<SavedSearch> {
+    const params = dtoType ? new HttpParams().set('dtoType', dtoType) : new HttpParams();
+    return this.http.get<SavedSearch>(`${this.apiUrl}/${id}`, { params })
       .pipe(
         map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
       );

@@ -260,6 +260,32 @@ export class LoginRequest {
   totpToken: string;
 }
 
+// Regex breakdown (rules and test cases from https://en.wikipedia.org/wiki/Email_address):
+// - negative lookahead to ensure no consecutive '.' and no '.' at the end of the prefix
+// - prefix begins with upper or lowercase Latin letter, digits 0-9 or printable character
+// (!#$%&'*+-/=?^_`{|}~)
+// - prefix continues with any of above or '.'
+// - domain preceded by '@' consists of upper or lowercase Latin letter(s), digits 0-9 or hyphen
+// (which must not be at start or end)
+// 0 or more subdomains and/or a TLD preceded by '.', otherwise with same rules as domain
+//
+// These rules enable subaddressing (e.g. sam+test@tbb.org) and some other aspects that aren't
+// always allowed by mainstream email services. They do not allow for different rules applied within
+// quotation marks or the use of IP address literals, which sometimes are.
+//
+// NB: This regex is replicated in ui/candidate-portal/src/app/model/base.ts — any changes needed
+// here will also need to be replicated there!
+
+export const EMAIL_REGEX: string =
+  '(?!.*[@.]{2})[a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~]+[a-zA-Z0-9.!#$%&\'*+-/=?^_`{|}~]*@(?!-)[a-zA-Z0-9-]+(?<!-)(\\.(?!-)[a-zA-Z0-9-]+(?<!-))*$';
+
+/**
+ * URL validation, also accepting 'mailto:' links, from
+ * <a href="https://regex101.com/library/4hNOPu">regex101</a>
+ */
+export const URL_REGEX: string =
+  '(mailto:[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)|(((?:https?)|(?:ftp)):\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})'
+
 export function isMine(source: CandidateSource, authenticationService: AuthenticationService) {
   let mine: boolean = false;
   const me: User = authenticationService.getLoggedInUser();
@@ -301,4 +327,48 @@ export enum Status {
   deleted = "deleted"
 }
 
+/**
+ * Interface for sharing link-formatted text properties.
+ * See {@link CreateUpdatePostComponent}
+ */
+export interface Link {
+  /**
+   * Display text
+   */
+  placeholder: string,
+  /**
+   * Navigate to
+   */
+  url: string
+}
 
+/**
+ * Interface for sharing text editor selection properties.
+ * See {@link CreateUpdatePostComponent}
+ */
+export interface EditorSelection {
+  /**
+   * Index position of user selection
+   */
+  userSelectionIndex: number,
+  /**
+   * No. of characters included after index in user selection
+   */
+  userSelectionLength: number,
+  /**
+   * Placeholder for link (user selection if new link, current placeholder if existing link)
+   */
+  placeholder?: string,
+  /**
+   * Index position of beginning of link
+   */
+  linkIndex?: number,
+  /**
+   * No. of characters from link index in entire link-formatted text
+   */
+  linkLength?: number,
+  /**
+   * URL if selection is a link
+   */
+  linkUrl?: string
+}

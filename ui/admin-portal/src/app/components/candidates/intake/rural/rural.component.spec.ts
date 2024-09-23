@@ -13,29 +13,47 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {RuralComponent} from './rural.component';
+import {RuralComponent} from "./rural.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {ReactiveFormsModule} from "@angular/forms";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {CandidateService} from "../../../../services/candidate.service";
+import {YesNoUnsure} from "../../../../model/candidate";
 
 describe('RuralComponent', () => {
   let component: RuralComponent;
   let fixture: ComponentFixture<RuralComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ RuralComponent ]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ RuralComponent,AutosaveStatusComponent ],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, NgSelectModule ],
+      providers: [
+        { provide: CandidateService }
+      ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RuralComponent);
     component = fixture.componentInstance;
+    component.candidateIntakeData = {
+      intRecruitRural: YesNoUnsure.Yes,
+      intRecruitRuralNotes: 'I am open to rural areas if there is good internet connectivity.'
+    };
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should initialize the form controls with the correct default values', () => {
+    expect(component.form.get('intRecruitRural').value).toBe(YesNoUnsure.Yes);
+    expect(component.form.get('intRecruitRuralNotes').value).toBe('I am open to rural areas if there is good internet connectivity.');
+  });
+
+  it('should display the intRecruitRuralNotes textarea', () => {
+    const intRecruitRuralNotesTextarea = fixture.nativeElement.querySelector('#intRecruitRuralNotes');
+    expect(intRecruitRuralNotesTextarea).toBeTruthy();
   });
 });

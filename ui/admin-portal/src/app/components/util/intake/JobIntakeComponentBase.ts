@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit} from '@angular/core';
+import {Directive, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {Job} from "../../../model/job";
@@ -44,6 +44,17 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
   @Input() editable: boolean = true;
 
   /**
+   * This provides the base translation key for the component which is used to construct both the
+   * displayed label and the tooltip for the component.
+   * See {@link componentLabelKey} and {@link componentTooltipKey}
+   */
+  @Input() componentKey: string;
+
+  @Output() intakeChanged = new EventEmitter<JobOppIntake>();
+
+  protected tooltip = "";
+
+  /**
    * Inject in a FormBuilder to create the form and an IntakeService to perform the saves.
    * @param fb FormBuilder
    * @param jobService JobService which saves the intake data
@@ -59,6 +70,14 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
    */
   get job(): Job {
     return <Job>this.entity;
+  }
+
+  get componentLabelKey(): string {
+    return this.componentKey + ".LABEL"
+  }
+
+  get componentTooltipKey(): string {
+    return this.componentKey + ".TOOLTIP"
   }
 
   /**

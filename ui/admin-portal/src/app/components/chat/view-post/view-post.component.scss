@@ -30,7 +30,7 @@ button.reaction-btn-selected {
   color: #0066cc;
 }
 
-button.update-reaction-btn {
+button.modify-reaction-btn {
   background-color: #a8c4d6;
   border: 0.1em solid #444;
   margin: 0.2em;
@@ -41,29 +41,18 @@ button.update-reaction-btn {
   font-size: small;
 }
 
-button.update-reaction-btn:hover {
+button.modify-reaction-btn:hover {
   border-color: #0066cc;
   color: #0066cc;
 }
 
 emoji-mart#reactionPicker {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
+  left: 0;
+  top: 0;
+  z-index: 1050;
 }
 
 div#reactionTooltipEmoji {
   font-size: xx-large;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 2;
 }

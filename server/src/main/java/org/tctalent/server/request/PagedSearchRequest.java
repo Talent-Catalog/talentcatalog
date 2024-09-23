@@ -23,15 +23,23 @@ import lombok.ToString;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.api.admin.DtoType;
 
 /**
- * Request that includes paging and sorting fields.
+ * Request that may include paging and sorting fields.
  */
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 public class PagedSearchRequest {
+
+    /**
+     * If non-null Specifies the type of DTO data to be returned for each search result.
+     */
+    @Nullable
+    private DtoType dtoType;
     private Integer pageSize;
     private Integer pageNumber;
     private Sort.Direction sortDirection;
@@ -64,4 +72,12 @@ public class PagedSearchRequest {
         return sort;
     }
 
+    /**
+     * If dtoType is null, this method will default to returning {@link DtoType#FULL},.
+     */
+    public DtoType getDtoType() {
+        return dtoType == null
+            ? DtoType.FULL
+            : dtoType;
+    }
 }

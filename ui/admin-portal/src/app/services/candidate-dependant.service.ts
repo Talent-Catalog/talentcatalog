@@ -45,6 +45,10 @@ export class CandidateDependantService {
       `${this.apiUrl}/${candidateId}`, request);
   }
 
+  list(candidateId: number): Observable<CandidateDependant[]> {
+    return this.http.get<CandidateDependant[]>(`${this.apiUrl}/${candidateId}/list`);
+  }
+
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }

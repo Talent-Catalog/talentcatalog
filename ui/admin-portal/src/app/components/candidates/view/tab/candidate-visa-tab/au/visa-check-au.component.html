@@ -15,225 +15,210 @@
   -->
 
 <div id="VisaAustralia">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5>Visa Australia</h5>
-  </div>
+  <div class="row my-4">
+    <div class="col-6">
+      <h5>Section 1: Visa Assessment - Australia</h5>
+    </div>
 
-  <div class="card">
-    <div class="card-header">
-      Confirmation Details
-    </div>
-    <div class="card-body intake-data">
-      <app-confirm-contact
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-confirm-contact>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Assessing TC Eligibility
-    </div>
-    <div class="card-body intake-data">
-      <app-left-home-reason
-        [entity]="visaCheckRecord"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-left-home-reason>
-      <app-return-home-safe
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-return-home-safe>
-      <app-host-challenges
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-host-challenges>
-    </div>
-    <div class="card-body">
-      <app-int-protection
-        [entity]="visaCheckRecord">
-      </app-int-protection>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      English Threshold
-    </div>
-    <div class="card-body intake-data">
-      <div class="card-title">Language exams</div>
-      <div *ngIf="candidateIntakeData.candidateExams.length == 0">
-        <p>No exams entered</p>
-      </div>
-      <ul>
-        <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
-          <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
-          </p>
-        </li>
-      </ul>
-      <div class="card-title">Estimated IELTS Score: <span>{{candidateIntakeData.englishAssessmentScoreIelts}}</span></div>
-      <div class="card-title">Partner IELTS Score: <span>{{candidateIntakeData.partnerIeltsScore}}</span></div>
-    </div>
-    <div class="card-body">
-      <app-english-threshold
-        [entity]="visaCheckRecord">
-      </app-english-threshold>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Health Assessment
-    </div>
-    <div class="card-body intake-data">
-      <app-health-issues
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-health-issues>
-      <div>
-        <label class="form-label mb-1">Do any dependants have health concerns?</label>
-        <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
-          <p>No dependants entered</p>
+    <div class="col-6">
+      <div class="row">
+        <div class="col text-end">
+          <button (click)="visaAus.collapseAll()" class="btn btn-outline-primary btn-sm me-2">Close All Tabs</button>
+          <button (click)="visaAus.expandAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
-        <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
-          <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}
-            <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>
-        </ul>
       </div>
     </div>
-    <div class="card-body">
-      <app-health-assessment
-        [entity]="visaCheckRecord">
-      </app-health-assessment>
+  </div>
+
+<!-- ACCORDION VERSION OF FORM  -->
+  <ngb-accordion #visaAus="ngbAccordion" [destroyOnHide]="false">
+
+    <ngb-panel id="visa-aus-confirm" title="Confirmation Details">
+      <ng-template ngbPanelContent>
+        <div class="card card-body intake-data">
+          <app-confirm-contact
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData">
+          </app-confirm-contact>
+        </div>
+      </ng-template>
+    </ngb-panel>
+
+    <ngb-panel id="visa-aus-destination" title="Destination">
+      <ng-template ngbPanelContent>
+        <app-destination-family
+          [entity]="visaCheckRecord">
+        </app-destination-family>
+      </ng-template>
+    </ngb-panel>
+
+    <ngb-panel id="visa-aus-tbb" title="Assessing TC Eligibility">
+      <ng-template ngbPanelContent>
+        <div class="card card-body intake-data">
+          <app-left-home-reason
+            [entity]="visaCheckRecord"
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="false">
+          </app-left-home-reason>
+          <app-return-home-safe
+            [entity]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="false">
+          </app-return-home-safe>
+          <app-host-challenges
+            [entity]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="false">
+          </app-host-challenges>
+        </div>
+        <hr>
+        <app-int-protection
+          [entity]="visaCheckRecord">
+        </app-int-protection>
+      </ng-template>
+    </ngb-panel>
+
+    <ngb-panel id="visa-aus-english" title="English Threshold">
+      <ng-template ngbPanelContent>
+        <div class="card card-body intake-data">
+          <div class="card-title">Language exams</div>
+          <div *ngIf="candidateIntakeData.candidateExams.length == 0">
+            <p>No exams entered</p>
+          </div>
+          <ul>
+            <li *ngFor="let ce of candidateIntakeData.candidateExams; let i = index;">
+              <p class="mb-0">{{ce?.exam}}<span *ngIf="ce.otherExam">, </span>{{ce.otherExam}}: {{ce?.score}}<span *ngIf="ce.year"> ({{ce?.year}})</span>
+              </p>
+            </li>
+          </ul>
+          <div class="card-title">Estimated IELTS Score: <span>{{candidateIntakeData.englishAssessmentScoreIelts}}</span></div>
+          <div class="card-title">Partner IELTS Score: <span>{{candidateIntakeData.partnerIeltsScore}}</span></div>
+        </div>
+        <hr>
+        <app-english-threshold
+          [entity]="visaCheckRecord">
+        </app-english-threshold>
+      </ng-template>
+    </ngb-panel>
+
+    <ngb-panel id="visa-aus-health" title="Health Assessment">
+      <ng-template ngbPanelContent>
+        <div class="card card-body intake-data">
+          <app-health-issues
+            [entity]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="false">
+          </app-health-issues>
+          <div>
+            <label class="form-label mb-1">Do any dependants have health concerns?</label>
+            <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
+              <p>No dependants entered</p>
+            </div>
+            <ul *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
+              <li *ngIf="dependant?.relation"><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}
+                <span *ngIf="dependant.healthNotes">,</span>{{dependant.healthNotes}}</p></li>
+            </ul>
+          </div>
+        </div>
+        <hr>
+        <app-health-assessment
+          [entity]="visaCheckRecord">
+        </app-health-assessment>
+      </ng-template>
+    </ngb-panel>
+
+    <ngb-panel id="visa-aus-character" title="Character Assessment">
+      <ng-template ngbPanelContent>
+        <div class="card card-body intake-data">
+          <app-crime
+            [entity]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="false">
+          </app-crime>
+        </div>
+        <hr>
+        <app-character-assessment
+          [entity]="visaCheckRecord">
+        </app-character-assessment>
+      </ng-template>
+    </ngb-panel>
+
+    <ngb-panel id="visa-aus-secruity" title="Security Assessment">
+      <ng-template ngbPanelContent>
+        <div class="card card-body intake-data">
+          <app-military-service
+            [entity]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="false">
+          </app-military-service>
+          <app-visa-reject
+            [entity]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="false">
+          </app-visa-reject>
+          <app-visa-issues
+            [entity]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [editable]="false">
+          </app-visa-issues>
+        </div>
+        <hr>
+        <app-security-risk
+          [entity]="visaCheckRecord">
+        </app-security-risk>
+      </ng-template>
+    </ngb-panel>
+
+    <ngb-panel id="visa-aus-risk" title="Overall Risk Assessment">
+      <ng-template ngbPanelContent>
+        <app-risk-assessment
+          [entity]="visaCheckRecord">
+        </app-risk-assessment>
+      </ng-template>
+    </ngb-panel>
+
+    <ngb-panel id="visa-aus-travel" title="Travel Document">
+      <ng-template ngbPanelContent>
+        <div class="card card-body intake-data">
+          <ul *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;">
+            <li *ngIf="citizenship?.nationality">
+              {{citizenship?.nationality.name}}:
+              <span>{{citizenship?.hasPassport}}</span>
+              <span *ngIf="citizenship.passportExp">, expiry {{citizenship.passportExp}}</span>.
+              <span *ngIf="citizenship.notes">Notes: {{citizenship.notes}}.</span>
+            </li>
+          </ul>
+        </div>
+        <hr>
+        <app-travel-document
+          [entity]="visaCheckRecord">
+        </app-travel-document>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+
+  <div class="row my-4">
+    <div class="col-6">
+      <h5>Section 2: Job Specific Assessment</h5>
     </div>
   </div>
 
-  <hr/>
+  <app-candidate-visa-job
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [visaCheckRecord]="visaCheckRecord"
+    [(selectedJob)]="selectedJob">
+  </app-candidate-visa-job>
 
-  <div class="card">
-    <div class="card-header">
-      Character Assessment
-    </div>
-    <div class="card-body intake-data">
-      <app-crime
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-crime>
-    </div>
-    <div class="card-body">
-      <app-character-assessment
-        [entity]="visaCheckRecord">
-      </app-character-assessment>
-    </div>
+  <hr *ngIf="visaCheckRecord.candidateVisaJobChecks.length > 0"/>
+
+  <!--  Generate all job entries - but only one is enabled at a time-->
+  <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
+    <app-visa-job-check-au *ngIf="job.id == selectedJob.id"
+                           [selectedJobCheck]="job"
+                           [candidate]="candidate"
+                           [candidateIntakeData]="candidateIntakeData"
+                           [visaCheckRecord]="visaCheckRecord"
+    ></app-visa-job-check-au>
   </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Security Assessment
-    </div>
-    <div class="card-body intake-data">
-      <app-military-service
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-military-service>
-      <app-visa-reject
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-visa-reject>
-      <app-visa-issues
-        [entity]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-visa-issues>
-    </div>
-    <div class="card-body">
-      <app-security-risk
-        [entity]="visaCheckRecord">
-      </app-security-risk>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Overall Risk Assessment
-    </div>
-    <div class="card-body">
-      <app-risk-assessment
-        [entity]="visaCheckRecord">
-      </app-risk-assessment>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Travel Document
-    </div>
-    <div class="card-body intake-data">
-      <ul *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;">
-        <li *ngIf="citizenship?.nationality">
-          {{citizenship?.nationality.name}}:
-          <span>{{citizenship?.hasPassport}}</span>
-          <span *ngIf="citizenship.passportExp">, expiry {{citizenship.passportExp}}</span>.
-          <span *ngIf="citizenship.notes">Notes: {{citizenship.notes}}.</span>
-        </li>
-      </ul>
-    </div>
-    <div class="card-body">
-      <app-travel-document
-        [entity]="visaCheckRecord">
-      </app-travel-document>
-    </div>
-  </div>
-
-  <hr style="border-top: 5px solid #13b1dd; margin-top: 3em; margin-bottom: 3em;"/>
-
-  <div class="card">
-    <div class="card-header">
-      Job Specific Assessment
-    </div>
-    <div class="card-body">
-      <app-candidate-visa-job
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [visaCheckRecord]="visaCheckRecord"
-        [(selectedJob)]="selectedJob">
-      </app-candidate-visa-job>
-
-      <hr/>
-
-      <!--  Generate all job entries - but only one is enabled at a time-->
-      <div *ngFor="let job of visaCheckRecord.candidateVisaJobChecks; let i = index;">
-        <app-visa-job-check-au *ngIf="job.id == selectedJob.id"
-                               [id]="i"
-                               [selectedJobCheck]="job"
-                               [candidate]="candidate"
-                               [candidateIntakeData]="candidateIntakeData"
-                               [visaCheckRecord]="visaCheckRecord"
-        ></app-visa-job-check-au>
-      </div>
-
-
-    </div>
-  </div>
-
-
 </div>

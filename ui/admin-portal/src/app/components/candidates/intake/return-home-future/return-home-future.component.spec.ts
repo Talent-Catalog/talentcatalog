@@ -13,29 +13,56 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {ReturnHomeFutureComponent} from './return-home-future.component';
+import {ReturnHomeFutureComponent} from "./return-home-future.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {CandidateService} from "../../../../services/candidate.service";
+import {NgSelectModule} from "@ng-select/ng-select";
+import {ReactiveFormsModule} from "@angular/forms";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {YesNoUnsure} from "../../../../model/candidate";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('ReturnHomeFutureComponent', () => {
   let component: ReturnHomeFutureComponent;
   let fixture: ComponentFixture<ReturnHomeFutureComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ReturnHomeFutureComponent ]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ ReturnHomeFutureComponent, AutosaveStatusComponent ],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, NgSelectModule ],
+      providers: [
+        { provide: CandidateService }
+      ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ReturnHomeFutureComponent);
     component = fixture.componentInstance;
+    component.candidateIntakeData = {
+      returnHomeFuture: YesNoUnsure.Yes,
+      returnHomeWhen: '2023-12-01'
+    };
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should initialize the form controls with the correct default values', () => {
+    expect(component.form.get('returnHomeFuture').value).toBe(YesNoUnsure.Yes);
+    expect(component.form.get('returnHomeWhen').value).toBe('2023-12-01');
+  });
+
+  it('should display the return home date input field when returnHomeFuture is Yes', () => {
+    component.form.patchValue({ returnHomeFuture: 'Yes' });
+    fixture.detectChanges();
+    const returnHomeWhenInput = fixture.nativeElement.querySelector('#returnHomeWhen');
+    expect(returnHomeWhenInput).toBeTruthy();
+  });
+
+  it('should not display the return home date input field when returnHomeFuture is not Yes', () => {
+    component.form.patchValue({ returnHomeFuture: 'No' });
+    fixture.detectChanges();
+    const returnHomeWhenInput = fixture.nativeElement.querySelector('#returnHomeWhen');
+    expect(returnHomeWhenInput).toBeFalsy();
   });
 });
