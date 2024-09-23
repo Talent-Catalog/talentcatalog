@@ -22,7 +22,7 @@
       </app-view-post>
     </div>
   </div>
-  <ng-template #noPosts>
+  <ng-template *ngIf="!readOnly" #noPosts>
     <p class="py-lg-5 text-muted py-3 fw-light text-center fs-6">{{'CHAT.NO-POSTS' | translate}}</p>
   </ng-template>
   <div>
