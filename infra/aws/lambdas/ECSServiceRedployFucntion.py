@@ -33,15 +33,13 @@ def lambda_handler(event, context):
     )
 
     # Helper function to convert datetime objects into ISO format strings
-    # This allows any datetime values in the ECS response to be serializable
-    # into JSON
+    # Allows datetime values in the ECS response to be serializable into JSON
     def convert_datetime(obj):
         if isinstance(obj, datetime):
             return obj.isoformat()
         raise TypeError("Type not serializable")
 
     # Return the ECS service update response in a JSON-serializable format
-    # This also sets the HTTP status code to 200 indicating success
     return {
         'statusCode': 200,
         'body': json.loads(json.dumps(response, default=convert_datetime))
