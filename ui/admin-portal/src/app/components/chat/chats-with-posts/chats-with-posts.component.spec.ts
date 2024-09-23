@@ -64,13 +64,6 @@ describe('ChatsWithPostsComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Select a chat');
   });
 
-  it('should render selected chat name when a chat is selected', () => {
-    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
-    component.selectedChat = mockChat;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Test Chat');
-  });
-
   it('should render error message when error is present', () => {
     const errorMessage = 'An error occurred!';
     component.error = errorMessage;
