@@ -5,8 +5,6 @@
   {{error}}
 </div>
 
-<!--Note: using use tr to pick scss style-->
-
 <ul class="list-group">
   <li *ngFor="let chat of chats" (click)="selectCurrent(chat)" [ngClass]="{'bg-active-custom': currentChat?.id == chat.id}"
      class="list-group-item list-group-item-action">
