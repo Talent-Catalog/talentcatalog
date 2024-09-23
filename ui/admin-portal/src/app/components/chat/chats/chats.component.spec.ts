@@ -64,7 +64,7 @@ describe('ChatsComponent', () => {
     const mockChats: JobChat[] = [mockJobChat];
     component.chats = mockChats;
     fixture.detectChanges();
-    const chatRows = fixture.debugElement.queryAll(By.css('tr'));
+    const chatRows = fixture.debugElement.queryAll(By.css('li'));
     expect(chatRows.length).toBe(mockChats.length);
   });
 
