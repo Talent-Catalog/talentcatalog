@@ -266,10 +266,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     return isOppStageGreaterThanOrEqualTo(this.opp?.stage, 'cvReview')
   }
 
-  isReadOnlyUser() {
-    return this.authorizationService.isReadOnly();
-  }
-
   hasVisibleCandidateChats(): boolean {
     return this.candidateChats && this.candidateChats.length > 0;
   }
