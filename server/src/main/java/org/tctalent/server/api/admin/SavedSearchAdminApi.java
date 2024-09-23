@@ -384,6 +384,8 @@ public class SavedSearchAdminApi implements
             .add("savedSearchSubtype")
             .add("displayedFieldsLong")
             .add("displayedFieldsShort")
+            .add("users", userDto())
+            .add("watcherUserIds")
             ;
     }
 
