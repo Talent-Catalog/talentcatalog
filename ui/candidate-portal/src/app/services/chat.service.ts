@@ -2,7 +2,7 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, combineLatest, Observable, Subject} from "rxjs";
-import {ChatPost, CreateChatRequest, JobChat, JobChatUserInfo} from "../model/chat";
+import {ChatPost, CreateChatRequest, JobChat, JobChatType, JobChatUserInfo} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
 import {map, share, shareReplay, takeUntil, tap} from "rxjs/operators";
@@ -77,6 +77,58 @@ export class ChatService implements OnDestroy {
   }
 
   /**
+   * Returns the translation key suffix corresponding to the given chat type.
+   * <p/>
+   * These keys match the key suffixes of CHAT_INFO in GeneralTranslationsComponent.
+   * @param type Chat type
+   */
+  private getChatTypeKey(type: JobChatType): string {
+    let key: string;
+    switch (type) {
+      case JobChatType.CandidateProspect:
+        key = "CANDIDATE_PROSPECT";
+        break;
+
+      case JobChatType.AllJobCandidates:
+        key = "ALL_JOB_CANDIDATES";
+        break;
+
+      case JobChatType.JobCreatorSourcePartner:
+        key = "JOB_CREATOR_SOURCE_PARTNER";
+        break;
+
+      case JobChatType.CandidateRecruiting:
+        key = "CANDIDATE_RECRUITING";
+        break;
+
+      case JobChatType.JobCreatorAllSourcePartners:
+        key = "JOB_CREATOR_ALL_SOURCE_PARTNERS";
+        break;
+    }
+    return key;
+  }
+
+  /**
+   * Translation key for info about the participants of the given chat type
+   * <p/>
+   * This key appears in GeneralTranslationsComponent.
+   * @param type Chat type
+   */
+  getChatInfoParticipantsKey(type: JobChatType): string {
+    return "CHAT_INFO.PARTICIPANTS." + this.getChatTypeKey(type);
+  }
+
+  /**
+   * Translation key for info about the purpose of the given chat type
+   * <p/>
+   * This key appears in GeneralTranslationsComponent.
+   * @param type Chat type
+   */
+  getChatInfoPurposeKey(type: JobChatType): string {
+    return "CHAT_INFO.PURPOSE." + this.getChatTypeKey(type);
+  }
+
+  /**
    * Creates a single chat read status from a group of chats indicating whether all chats are read
    * or some are unread.
    * @param chats Chats to be monitored
@@ -98,6 +150,11 @@ export class ChatService implements OnDestroy {
     return this.http.post<JobChat>(`${this.apiUrl}`, request);
   }
 
+  // Returns null if there isn't one already
+  getCandidateProspectChat(candidateId: number): Observable<JobChat> {
+    return this.http.get<JobChat>(`${this.apiUrl}/${candidateId}/get-cp-chat`);
+  }
+
   getOrCreate(request: CreateChatRequest): Observable<JobChat> {
 
     //Typescript Maps hash on object reference (!), so can't use actual request object as key to map
@@ -113,10 +170,6 @@ export class ChatService implements OnDestroy {
       this.chatByRequest$.set(requestKey, chat$);
     }
     return chat$;
-  }
-
-  getCandidateProspectChat(candidateId: number): Observable<JobChat> {
-    return this.http.get<JobChat>(`${this.apiUrl}/${candidateId}/get-cp-chat`);
   }
 
   getChatPosts$(chat:JobChat): Observable<ChatPost> {
@@ -344,4 +397,5 @@ export class ChatService implements OnDestroy {
     }
     return Array.from(filterMap.values());
   }
+
 }
