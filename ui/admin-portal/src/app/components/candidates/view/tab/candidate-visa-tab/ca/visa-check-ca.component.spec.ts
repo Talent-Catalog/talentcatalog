@@ -15,7 +15,7 @@
  */
 import {VisaCheckCaComponent} from "./visa-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {
   mockCandidateIntakeData
@@ -31,7 +31,7 @@ describe('VisaCheckCaComponent', () => {
     await TestBed.configureTestingModule({
       imports: [NgbAccordionModule],
       declarations: [VisaCheckCaComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });
 

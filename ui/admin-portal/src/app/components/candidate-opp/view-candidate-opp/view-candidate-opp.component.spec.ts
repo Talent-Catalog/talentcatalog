@@ -16,7 +16,7 @@ import {
 } from "../../util/opportunity-stage-next-step/opportunity-stage-next-step.component";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {ChatReadStatusComponent} from "../../chat/chat-read-status/chat-read-status.component";
-
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 describe('ViewCandidateOppComponent', () => {
   let component: ViewCandidateOppComponent;
   let fixture: ComponentFixture<ViewCandidateOppComponent>;
@@ -40,7 +40,8 @@ describe('ViewCandidateOppComponent', () => {
         { provide: CandidateOpportunityService, useValue: mockCandidateOpportunityService },
         { provide: AuthenticationService, useValue: mockAuthService },
         { provide: ChatService, useValue: chatService }
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     mockAuthService.getLoggedInUser.and.returnValue({ partner: new MockPartner()});
     chatService.getOrCreate.and.returnValue(of(new MockJobChat()));

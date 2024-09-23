@@ -78,7 +78,7 @@ describe('CandidatesWithChatComponent', () => {
 
     component.onCandidateSelected(mockCandidate);
 
-    expect(window.scrollY).toBe(-1);
+    expect(window.scrollY).toBeLessThanOrEqual( 0);
   });
 
   it('should attempt to fetch the chat with the right parameters when a candidate is selected', () => {

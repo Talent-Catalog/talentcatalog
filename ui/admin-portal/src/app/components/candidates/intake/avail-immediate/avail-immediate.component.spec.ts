@@ -23,6 +23,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AvailImmediateReason, YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {MockCandidate} from "../../../../MockData/MockCandidate";
 
 describe('AvailImmediateComponent', () => {
   let component: AvailImmediateComponent;
@@ -45,6 +46,7 @@ describe('AvailImmediateComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AvailImmediateComponent);
     component = fixture.componentInstance;
+    component.entity= new MockCandidate();
     component.candidateIntakeData = {
       availImmediate: YesNo.Yes,
       availImmediateJobOps: 'Software Development',
@@ -61,7 +63,7 @@ describe('AvailImmediateComponent', () => {
     const availImmediateReasonControl = component.form.get('availImmediateReason');
     const availImmediateNotesControl = component.form.get('availImmediateNotes');
 
-    expect(availImmediateControl.value).toBe('Yes');
+    expect(availImmediateControl.value).toBe(YesNo.Yes);
     expect(availImmediateJobOpsControl.value).toBe('Software Development');
     expect(availImmediateReasonControl.value).toBe(AvailImmediateReason.Health);
     expect(availImmediateNotesControl.value).toBe('Some additional notes');

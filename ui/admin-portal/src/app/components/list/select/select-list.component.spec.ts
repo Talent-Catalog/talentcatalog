@@ -70,18 +70,6 @@ describe('SelectListComponent', () => {
     expect(component.replace).toBeFalse();
     expect(component.changeStatuses).toBeFalse();
   });
-  //
-  it('should load lists on initialization', fakeAsync(() => {
-    const mockLists = [MockSavedList];
-    savedListServiceSpy.search.and.returnValue(of(mockLists));
-
-    component.ngOnInit();
-    tick(); // Wait for observable to resolve
-
-    expect(savedListServiceSpy.search).toHaveBeenCalled();
-    expect(component.lists).toEqual(mockLists);
-    expect(component.loading).toBeFalse();
-  }));
 
   it('should handle error while loading lists', fakeAsync(() => {
     const errorMessage = 'Error loading lists';

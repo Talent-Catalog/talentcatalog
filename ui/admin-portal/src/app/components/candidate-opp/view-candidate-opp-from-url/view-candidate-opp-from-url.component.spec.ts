@@ -14,6 +14,7 @@ import {
   OpportunityStageNextStepComponent
 } from "../../util/opportunity-stage-next-step/opportunity-stage-next-step.component";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
 describe('ViewCandidateOppFromUrlComponent', () => {
   let component: ViewCandidateOppFromUrlComponent;
@@ -36,7 +37,8 @@ describe('ViewCandidateOppFromUrlComponent', () => {
         { provide: CandidateOpportunityService, useValue: spyOpportunityService },
         { provide: AuthenticationService, useValue: mockAuthService },
 
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
 

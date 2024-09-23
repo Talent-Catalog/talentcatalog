@@ -48,6 +48,7 @@ import {Candidate} from "../../../model/candidate";
 import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {MockPartner} from "../../../MockData/MockPartner";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
 describe('ViewCandidateComponent', () => {
   let component: ViewCandidateComponent;
@@ -79,7 +80,8 @@ describe('ViewCandidateComponent', () => {
         },        { provide: NgbModal, useValue: mockModalService },
         { provide: LocalStorageService, useValue: mockLocalStorageService },
         { provide: AuthenticationService, useValue: mockAuthenticationService }
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     mockActivatedRoute = TestBed.inject(ActivatedRoute);
   }));
