@@ -1,11 +1,14 @@
-<div *ngIf="chat">
-  <p>
-    <app-chat-read-status
-      [chats]="[chat]"
-    ></app-chat-read-status>
-    {{chatParticipantsKey | translate}}
-  </p>
-  <p>
-    {{chatPurposeKey | translate}}
-  </p>
+<div *ngIf="chat" class="d-flex align-items-center">
+  <div class="me-2">
+    <p><span>{{"CHAT_INFO.LABEL.PARTICIPANTS" | translate}}:</span>
+      {{chatParticipantsKey | translate}}
+    </p>
+    <p><span>{{"CHAT_INFO.LABEL.PURPOSE" | translate}}:</span>
+      {{chatPurposeKey | translate}}
+    </p>
+  </div>
+  <app-chat-read-status
+    [chats]="[chat]"
+  ></app-chat-read-status>
 </div>
+

@@ -818,6 +818,10 @@ const ALL_FIELDS = {
       "LINK-CANCEL-BTN": null
   },
   "CHAT_INFO": {
+      "LABEL": {
+        "PARTICIPANTS": null,
+        "PURPOSE": null,
+      },
       "PARTICIPANTS": {
         "CANDIDATE_PROSPECT": null,
         "ALL_JOB_CANDIDATES": null,
