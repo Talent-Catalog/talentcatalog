@@ -2,13 +2,14 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core'
 import {Job} from "../../../../../model/job";
 import {AbstractControl, FormBuilder, FormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
+import {AutoSaveComponentBase} from "../../../../util/autosave/AutoSaveComponentBase";
 
 @Component({
   selector: 'app-view-job-summary',
   templateUrl: './view-job-summary.component.html',
   styleUrls: ['./view-job-summary.component.scss']
 })
-export class ViewJobSummaryComponent implements OnInit, OnChanges {
+export class ViewJobSummaryComponent extends AutoSaveComponentBase implements OnInit, OnChanges {
   @Input() job: Job;
   @Input() editable: boolean;
   @Input() nRows: number = 3;
@@ -17,7 +18,9 @@ export class ViewJobSummaryComponent implements OnInit, OnChanges {
   error: any;
   saving: boolean;
 
-  constructor(private fb: FormBuilder, private jobService: JobService) { }
+  constructor(private fb: FormBuilder,
+              private jobService: JobService) {
+    super (null) }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -45,7 +48,7 @@ export class ViewJobSummaryComponent implements OnInit, OnChanges {
     this.jobSummaryControl.markAsPristine();
   }
 
-  saveChanges() {
+  doSave(formValue: any) {
     this.error = null;
     this.saving = true;
 
@@ -53,14 +56,11 @@ export class ViewJobSummaryComponent implements OnInit, OnChanges {
     //Update the local job object.
     this.job.jobSummary = summary;
     //And save the change on the server as well.
-    this.jobService.updateSummary(this.job.id, summary).subscribe(
-      (job) => {
-        this.jobSummaryControl.markAsPristine();
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      });
+    return this.jobService.updateSummary(this.job.id, summary);
+  }
+
+  onSuccessfulSave() {
+    this.jobSummaryControl.markAsPristine();
+    this.saving = false;
   }
 }
