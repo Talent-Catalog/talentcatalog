@@ -14,7 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {
-  getCandidateSourceBreadcrumb,
   getCandidateSourceNavigation,
   getCandidateSourceStatsNavigation, getCandidateSourceType, getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
@@ -101,11 +100,6 @@ describe('SavedSearch Utilities', () => {
     it('should return correct source type for getCandidateSourceType', () => {
       const type = getCandidateSourceType(savedSearch);
       expect(type).toBe('Search');
-    });
-
-    it('should generate correct breadcrumb for getCandidateSourceBreadcrumb', () => {
-      const breadcrumb = getCandidateSourceBreadcrumb(savedSearch);
-      expect(breadcrumb).toBe('Search: Test Search (1)');
     });
 
     it('should generate correct breadcrumb for getSavedSearchBreadcrumb', () => {
