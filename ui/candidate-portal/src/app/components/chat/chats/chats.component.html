@@ -5,20 +5,11 @@
   {{error}}
 </div>
 
-<!--Note: using use tr to pick scss style-->
-<div class="table-responsive">
-  <table class="table table-hover">
-
-    <tbody>
-    <tr *ngFor="let chat of chats" (click)="selectCurrent(chat)"
-        [ngClass]="{'current': currentChat?.id == chat.id}">
-      <td>
-        <app-view-chat
-          [chat]="chat"
-        >
-        </app-view-chat>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-</div>
+<ul class="list-group">
+  <li *ngFor="let chat of chats" (click)="selectCurrent(chat)" [ngClass]="{'bg-active-custom': currentChat?.id == chat.id}"
+     class="list-group-item list-group-item-action">
+    <app-view-chat
+      [chat]="chat">
+    </app-view-chat>
+  </li>
+</ul>

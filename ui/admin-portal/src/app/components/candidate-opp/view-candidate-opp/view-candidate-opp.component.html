@@ -193,56 +193,33 @@
         </ng-template>
       </ng-container>
 
-      <!-- Chat between source partner candidate-->
-      <ng-container ngbNavItem="CandidateProspect" *ngIf="candidateProspectTabVisible">
-        <a ngbNavLink [title]="'Chat ' + candidateChat?.id">Chat with candidate
-          <app-chat-read-status *ngIf="candidateChat"
-            [chats]="[candidateChat]"
+      <!-- Chats including candidate-->
+      <ng-container *ngIf="hasVisibleCandidateChats()" ngbNavItem="CandidateChats">
+        <a ngbNavLink>Chats with candidate
+          <app-chat-read-status
+            [chats]="candidateChats"
             >
           </app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
-          <app-view-chat-posts
-            [readOnly] = "isReadOnlyUser()"
-            [chat]="candidateChat"
-          >
-          </app-view-chat-posts>
+          <app-chats-with-posts
+            [chats]="candidateChats">
+          </app-chats-with-posts>
         </ng-template>
       </ng-container>
 
-      <!-- Chat including source partner or job creator (whichever you are not), and candidate-->
-      <ng-container ngbNavItem="CandidateRecruiting"
-                    *ngIf="candidateRecruitingTabVisible && cvReviewStageOrMore()">
-        <a ngbNavLink [title]="'Chat ' + candidateRecruitingChat?.id">{{candidateRecruitingTabTitle}}
-          <app-chat-read-status *ngIf="candidateRecruitingChat"
-            [chats]="[candidateRecruitingChat]"
-          >
+      <!-- Chats not including candidate-->
+      <ng-container *ngIf="hasVisibleNonCandidateChats()" ngbNavItem="NonCandidateChats">
+        <a ngbNavLink>Chats without candidate
+          <app-chat-read-status
+            [chats]="nonCandidateChats"
+            >
           </app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
-          <app-view-chat-posts
-            [readOnly] = "isReadOnlyUser()"
-            [chat] = "candidateRecruitingChat"
-          >
-          </app-view-chat-posts>
-        </ng-template>
-      </ng-container>
-
-      <!-- Chat with source partner or job creator (whichever you are not)-->
-      <ng-container ngbNavItem="JobCreatorSourcePartner"
-                    *ngIf="jobCreatorSourcePartnerTabVisible">
-        <a ngbNavLink [title]="'Chat ' + jobCreatorSourcePartnerChat?.id">{{jobCreatorSourcePartnerTabTitle}}
-          <app-chat-read-status *ngIf="jobCreatorSourcePartnerChat"
-            [chats]="[jobCreatorSourcePartnerChat]"
-          >
-          </app-chat-read-status>
-        </a>
-        <ng-template ngbNavContent>
-          <app-view-chat-posts
-            [readOnly] = "isReadOnlyUser()"
-            [chat]="jobCreatorSourcePartnerChat"
-          >
-          </app-view-chat-posts>
+          <app-chats-with-posts
+            [chats]="nonCandidateChats">
+          </app-chats-with-posts>
         </ng-template>
       </ng-container>
 

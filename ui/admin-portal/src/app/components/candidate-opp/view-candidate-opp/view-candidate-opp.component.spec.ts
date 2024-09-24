@@ -1,10 +1,6 @@
 import {ViewCandidateOppComponent} from "./view-candidate-opp.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {
-  NgbModal,
-  NgbNavChangeEvent,
-  NgbNavModule
-} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbNavChangeEvent, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -25,14 +21,15 @@ describe('ViewCandidateOppComponent', () => {
   let component: ViewCandidateOppComponent;
   let fixture: ComponentFixture<ViewCandidateOppComponent>;
   let mockModalService: any;
-  let mockCandidateOpportunityService: jasmine.SpyObj<CandidateOpportunityService>;;
+  let mockCandidateOpportunityService: jasmine.SpyObj<CandidateOpportunityService>;
   let mockAuthService: any;
   let chatService: jasmine.SpyObj<ChatService>;
   beforeEach(async () => {
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockCandidateOpportunityService = jasmine.createSpyObj('CandidateOpportunityService', ['uploadOffer']);
     mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    chatService = jasmine.createSpyObj('ChatService', ['getOrCreate','getChatIsRead$']);
+    chatService = jasmine.createSpyObj('ChatService',
+      ['combineChatReadStatuses','getOrCreate','getChatIsRead$']);
     chatService.getOrCreate.and.callThrough();
     mockCandidateOpportunityService.uploadOffer.and.callThrough();
 
@@ -93,8 +90,8 @@ describe('ViewCandidateOppComponent', () => {
     tick();
     // Expectations
     expect(component.error).toBe(null);
-    expect(component.candidateChat).toEqual(new MockJobChat());
-    expect(component.candidateRecruitingChat).toEqual(new MockJobChat());
+    expect(component.candidateChats.length).toEqual(3);
+    expect(component.nonCandidateChats.length).toEqual(2);
   }));
 
   it('should upload job offer successfully', fakeAsync(() => {

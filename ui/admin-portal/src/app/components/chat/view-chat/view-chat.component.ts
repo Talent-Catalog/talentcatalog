@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {JobChat} from "../../../model/chat";
+import {ChatService} from "../../../services/chat.service";
 
 @Component({
   selector: 'app-view-chat',
@@ -10,13 +11,16 @@ export class ViewChatComponent implements OnInit {
 
   @Input() chat: JobChat
 
-  constructor() { }
+  constructor(private chatService: ChatService) { }
 
   ngOnInit(): void {
   }
 
-  get displayName(): any {
-    return this.chat.name ? this.chat.name : this.chat.id;
+  get chatParticipantsKey(): string {
+    return this.chatService.getChatInfoParticipantsKey(this.chat.type);
   }
 
+  get chatPurposeKey(): string {
+    return this.chatService.getChatInfoPurposeKey(this.chat.type);
+  }
 }

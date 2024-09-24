@@ -43,7 +43,7 @@ import {MockUser} from "../../../MockData/MockUser";
 import {SavedSearchType} from "../../../model/saved-search";
 import {of, throwError} from "rxjs";
 
-describe('CandidateShowComponent', () => {
+describe('ShowCandidatesComponent', () => {
   let component: ShowCandidatesComponent;
   let fixture: ComponentFixture<ShowCandidatesComponent>;
   let formBuilder: FormBuilder;

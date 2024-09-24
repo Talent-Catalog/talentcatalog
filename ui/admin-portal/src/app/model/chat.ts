@@ -25,6 +25,7 @@ export interface Post extends Auditable {
 
 export interface JobChat {
   id: number;
+  type: JobChatType;
   name?: string;
 }
 
@@ -47,11 +48,11 @@ export interface ChatPost {
 }
 
 export enum JobChatType {
-  JobCreatorSourcePartner,
-  JobCreatorAllSourcePartners,
-  CandidateProspect,
-  CandidateRecruiting,
-  AllJobCandidates
+  JobCreatorSourcePartner="JobCreatorSourcePartner",
+  JobCreatorAllSourcePartners="JobCreatorAllSourcePartners",
+  CandidateProspect="CandidateProspect",
+  CandidateRecruiting="CandidateRecruiting",
+  AllJobCandidates="AllJobCandidates"
 }
 
 export interface CreateChatRequest {

@@ -43,14 +43,14 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   loading: boolean;
   updating: boolean;
   saving: boolean;
-  candidateChat: JobChat;
-  candidateRecruitingChat: JobChat;
-  jobCreatorSourcePartnerChat: JobChat;
-  candidateProspectTabVisible: boolean;
-  candidateRecruitingTabVisible: boolean;
-  candidateRecruitingTabTitle: string = 'CandidateRecruiting'
-  jobCreatorSourcePartnerTabVisible: boolean;
-  jobCreatorSourcePartnerTabTitle: string = 'JobCreatorSourcePartner'
+  candidateChats: JobChat[];
+  nonCandidateChats: JobChat[];
+
+  private candidateChat: JobChat;
+  private candidateRecruitingChat: JobChat;
+  private jobCreatorSourcePartnerChat: JobChat;
+  private jobCreatorAllSourcePartnersChat: JobChat;
+  private allJobCandidatesChat: JobChat;
 
   constructor(
     private authorizationService: AuthorizationService,
@@ -65,8 +65,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.selectDefaultTab();
-    this.checkVisibility();
-
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -74,7 +72,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       this.fetchChats();
     }
   }
-
 
   private fetchChats() {
     const candidateProspectChatRequest: CreateChatRequest = {
@@ -91,6 +88,14 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       sourcePartnerId: this.opp?.candidate?.user?.partner?.id,
       jobId: this.opp?.jobOpp?.id
     }
+    const jobCreatorAllSourcePartnersChatRequest: CreateChatRequest = {
+      type: JobChatType.JobCreatorAllSourcePartners,
+      jobId: this.opp?.jobOpp?.id
+    }
+    const allJobCandidatesChatRequest: CreateChatRequest = {
+      type: JobChatType.AllJobCandidates,
+      jobId: this.opp?.jobOpp?.id
+    }
 
     this.loading = true;
     this.error = null;
@@ -98,12 +103,18 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
       'candidateChat': this.chatService.getOrCreate(candidateProspectChatRequest),
       'candidateRecruitingChat': this.chatService.getOrCreate(candidateRecruitingChatRequest),
       'jobCreatorSourcePartnerChat': this.chatService.getOrCreate(jobCreatorSourcePartnerChatRequest),
+      'jobCreatorAllSourcePartnersChat': this.chatService.getOrCreate(jobCreatorAllSourcePartnersChatRequest),
+      'allJobCandidatesChat': this.chatService.getOrCreate(allJobCandidatesChatRequest),
     }).subscribe(
       results => {
         this.loading = false;
+
         this.candidateChat = results['candidateChat'];
         this.candidateRecruitingChat = results['candidateRecruitingChat'];
         this.jobCreatorSourcePartnerChat = results['jobCreatorSourcePartnerChat'];
+        this.jobCreatorAllSourcePartnersChat = results['jobCreatorAllSourcePartnersChat'];
+        this.allJobCandidatesChat = results['allJobCandidatesChat'];
+        this.checkVisibility();
       },
       (error) => {
         this.error = error;
@@ -163,6 +174,7 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
 
   onOppProgressUpdated(opp: Opportunity) {
     if (isCandidateOpportunity(opp)) {
+      this.checkVisibility();
       this.candidateOppUpdated.emit(opp);
     }
   }
@@ -182,7 +194,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
   }
 
   private checkVisibility() {
-    const candidateStage = this.opp?.stage;
     const candidatePartner = this.opp?.candidate?.user?.partner;
     const jobCreator = this.opp?.jobOpp.jobCreator;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
@@ -195,24 +206,19 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     const userIsCandidatePartner =
       loggedInPartner.defaultSourcePartner || loggedInPartner.id == candidatePartner?.id;
 
-    this.candidateProspectTabVisible = userIsCandidatePartner;
+    this.candidateChats = [];
+    this.nonCandidateChats = [];
 
-    this.candidateRecruitingTabVisible = userIsCandidatePartner || userIsJobCreator;
-
-    this.jobCreatorSourcePartnerTabVisible = userIsCandidatePartner || userIsJobCreator;
-
-    //Label on candidateRecruiting chat depends on who the logged in user is.
     if (userIsCandidatePartner) {
-      this.candidateRecruitingTabTitle = 'Chat with candidate & recruiter'
+      this.candidateChats = [this.candidateChat, this.candidateRecruitingChat, this.allJobCandidatesChat];
+      this.nonCandidateChats = [this.jobCreatorSourcePartnerChat, this.jobCreatorAllSourcePartnersChat];
     } else if (userIsJobCreator) {
-      this.candidateRecruitingTabTitle = 'Chat with candidate & source partner'
-    }
-
-    //Label on jobCreatorSourcePartner chat depends on who the logged in user is.
-    if (userIsCandidatePartner) {
-      this.jobCreatorSourcePartnerTabTitle = 'Chat with recruiter'
-    } else if (userIsJobCreator) {
-      this.jobCreatorSourcePartnerTabTitle = 'Chat with source partner'
+      this.nonCandidateChats = [this.jobCreatorSourcePartnerChat, this.jobCreatorAllSourcePartnersChat];
+      if (this.cvReviewStageOrMore()) {
+        this.candidateChats = [this.candidateRecruitingChat, this.allJobCandidatesChat];
+      } else {
+        this.candidateChats = [];
+      }
     }
   }
   uploadOffer() {
@@ -253,18 +259,6 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     );
   }
 
-  onMarkCandidateChatAsRead() {
-    if (this.candidateChat) {
-      this.chatService.markChatAsRead(this.candidateChat);
-    }
-  }
-
-  onMarkCandidateRecruitingChatAsRead() {
-    if (this.candidateRecruitingChat) {
-      this.chatService.markChatAsRead(this.candidateRecruitingChat);
-    }
-  }
-
   /**
    *  Recruiters only see candidates past the CV Review stage.
    */
@@ -272,7 +266,11 @@ export class ViewCandidateOppComponent implements OnInit, OnChanges {
     return isOppStageGreaterThanOrEqualTo(this.opp?.stage, 'cvReview')
   }
 
-  isReadOnlyUser() {
-    return this.authorizationService.isReadOnly();
+  hasVisibleCandidateChats(): boolean {
+    return this.candidateChats && this.candidateChats.length > 0;
+  }
+
+  hasVisibleNonCandidateChats() {
+    return this.nonCandidateChats && this.nonCandidateChats.length > 0;
   }
 }

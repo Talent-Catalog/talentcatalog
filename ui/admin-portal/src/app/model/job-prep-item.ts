@@ -54,6 +54,17 @@ export abstract class JobPrepItem {
   get tabId(): string {
     return this._tabId;
   }
+
+  /**
+   * Checks that given text is not null and is not empty string or all blank (spaces).
+   * @param text Text to check
+   */
+  isBlank(text: string): boolean {
+    return text == null ||
+    //Replace non-breaking spaces with normal spaces so that trim works.
+    //(Rich text (html) data entry can encode spaces as &nbsp;)
+    text.replace(/&nbsp;/g, ' ').trim().length == 0
+  }
 }
 
 export class JobPrepDueDate extends JobPrepItem {
@@ -73,7 +84,7 @@ export class JobPrepJD extends JobPrepItem {
 
   isCompleted(): boolean {
     const fileJdLink = this.job?.submissionList?.fileJdLink;
-    return fileJdLink != null && fileJdLink.trim().length > 0;
+    return !this.isBlank(fileJdLink);
   }
 }
 
@@ -84,7 +95,7 @@ export class JobPrepJobSummary extends JobPrepItem {
 
   isCompleted(): boolean {
     const jobSummary = this.job?.jobSummary;
-    return jobSummary != null && jobSummary.trim().length > 0;
+    return !this.isBlank(jobSummary);
   }
 }
 
@@ -97,7 +108,7 @@ export class JobPrepJOI extends JobPrepItem {
     const joi = this.job?.jobOppIntake;
     let completed = false;
     if (joi != null) {
-      completed = joi.employerCostCommitment != null && joi.employerCostCommitment.trim().length > 0;
+      completed = !this.isBlank(joi.employerCostCommitment);
     }
     return completed;
   }

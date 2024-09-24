@@ -2,7 +2,7 @@ import {By} from '@angular/platform-browser';
 import {ChatReadStatusComponent} from "./chat-read-status.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {ChatService} from "../../../services/chat.service";
-import {JobChat} from "../../../model/chat";
+import {JobChat, JobChatType} from "../../../model/chat";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {of, throwError} from "rxjs";
 import {DebugElement, SimpleChange} from "@angular/core";
@@ -44,7 +44,7 @@ describe('ChatReadStatusComponent', () => {
   });
 
   it('should set unreadIndicator to blank if all chats are read', () => {
-    const chats: JobChat[] = [{ id: 1 }, { id: 2 }];
+    const chats: JobChat[] = [{ id: 1, type: JobChatType.CandidateProspect }, { id: 2, type: JobChatType.CandidateProspect }];
     const combinedStatus = of(true);
     chatService.combineChatReadStatuses.and.returnValue(combinedStatus);
 
@@ -56,7 +56,7 @@ describe('ChatReadStatusComponent', () => {
   });
 
   it('should set unreadIndicator to ? if chat status is unknown', () => {
-    const chats: JobChat[] = [{ id: 1 }, { id: 2 }];
+    const chats: JobChat[] = [{ id: 1, type: JobChatType.CandidateProspect }, { id: 2, type: JobChatType.CandidateProspect }];
     const error = throwError('Error');
     chatService.combineChatReadStatuses.and.returnValue(error);
 
