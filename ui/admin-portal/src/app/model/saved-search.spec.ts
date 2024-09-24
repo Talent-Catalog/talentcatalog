@@ -77,7 +77,7 @@ describe('SavedSearch Utilities', () => {
     beforeEach(() => {
       savedSearch = {
         id: 1,
-        name: 'Test Search',
+        name: 'Test Search (1)',
         defaultSearch: false,
         reviewable: true,
         savedSearchType: SavedSearchType.profession,
