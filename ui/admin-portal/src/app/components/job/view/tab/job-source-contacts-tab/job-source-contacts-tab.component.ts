@@ -8,7 +8,6 @@ import {Job} from "../../../../../model/job";
 })
 export class JobSourceContactsTabComponent implements OnInit {
   @Input() job: Job;
-  @Input() editable: boolean;
 
   constructor() { }
 

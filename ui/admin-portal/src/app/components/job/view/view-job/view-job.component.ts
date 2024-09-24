@@ -198,7 +198,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   get visible(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     let visible = false;
-    if (this.authorizationService.isJobCreator()) {
+    if (this.authorizationService.isJobCreatorPartner()) {
       //Only the actual job creator (and the default job creator) see this chat
       visible = this.authorizationService.isDefaultJobCreator() ? true :
                 this.job.jobCreator.id == loggedInUser.partner.id;
