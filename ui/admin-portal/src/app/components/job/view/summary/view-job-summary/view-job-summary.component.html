@@ -7,15 +7,10 @@
     <label class="form-label" for="jobSummary">
     <span class="me-2 font-weight-normal" [ngClass]="{'alert alert-danger': highlight}">
       Job Summary
-      <span *ngIf="saving">
-         <i class="fas fa-spinner fa-spin"></i>
-      </span>
-      <span *ngIf="jobSummaryControl.dirty">
-        <button class="btn btn-sm btn-secondary" (click)="saveChanges()">
-          <i class="far fa-save"></i>
-        </button>
-        <button class="btn btn-sm btn-secondary" (click)="cancelChanges()">x</button>
-      </span>
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
     </span>
     </label>
 
