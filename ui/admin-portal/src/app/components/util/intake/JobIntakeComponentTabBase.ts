@@ -14,7 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {User} from '../../../model/user';
 import {Job} from "../../../model/job";
@@ -35,7 +43,7 @@ import {AuthorizationService} from "../../../services/authorization.service";
  * @author John Cameron
  */
 @Directive()
-export abstract class JobIntakeComponentTabBase implements OnInit {
+export abstract class JobIntakeComponentTabBase implements OnInit, OnChanges {
   /**
    * This is the job whose intake data we are entering
    */
@@ -82,6 +90,9 @@ export abstract class JobIntakeComponentTabBase implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
     this.refreshIntakeDataInternal(true);
   }
 
