@@ -1,9 +1,4 @@
-import {
-  Component,
-  HostListener,
-  Input,
-  OnInit
-} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -12,12 +7,10 @@ import {ChatPostService} from "../../../services/chat-post.service";
 import Quill from 'quill';
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {LinkPreview} from "../../../model/link-preview";
-import {
-  BuildLinkPreviewRequest,
-  LinkPreviewService
-} from "../../../services/link-preview.service";
+import {BuildLinkPreviewRequest, LinkPreviewService} from "../../../services/link-preview.service";
 import {BuildLinkComponent} from "../../../util/build-link/build-link.component";
 import {EditorSelection} from "../../../model/base";
+import {ChatService} from "../../../services/chat.service";
 
 @Component({
   selector: 'app-create-update-post',
@@ -55,7 +48,8 @@ export class CreateUpdatePostComponent implements OnInit {
     private rxStompService: RxStompService,
     private modalService: NgbModal,
     private chatPostService: ChatPostService,
-    private linkPreviewService: LinkPreviewService
+    private linkPreviewService: LinkPreviewService,
+    private chatService: ChatService
   ) {}
 
   ngOnInit() {
@@ -103,6 +97,10 @@ export class CreateUpdatePostComponent implements OnInit {
       const body = JSON.stringify(post);
       //todo See retryIfDisconnected in publish doc
       this.rxStompService.publish({ destination: '/app/chat/' + this.chat.id, body: body });
+
+      //Mark chat as read after sending post. Default sets new published posts as unread (see ChatService.watchChat
+      // where change chat read status is set to false) but for my own posts I want to mark as read.
+      this.chatService.markChatAsRead(this.chat);
 
       //Clear content.
       this.contentControl.patchValue(null);
