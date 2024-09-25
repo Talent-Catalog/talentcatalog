@@ -24,7 +24,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
@@ -65,8 +64,7 @@ public class ChatPublishApi {
     @SendTo(ChatPostService.CHAT_PUBLISH_ROOT + "/{chatId}")
     public Map<String, Object> sendPost(Post post, @DestinationVariable Long chatId) {
         JobChat jobChat = jobChatService.getJobChat(chatId);
-        User loggedInUser = userService.getLoggedInUser();
-        ChatPost chatPost = chatPostService.createPost(post, jobChat, loggedInUser);
+        ChatPost chatPost = chatPostService.createPost(post, jobChat, userService.getLoggedInUser());
         return chatPostService.getChatPostDtoBuilder().build(chatPost);
     }
 
