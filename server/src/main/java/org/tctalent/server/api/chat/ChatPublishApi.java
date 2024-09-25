@@ -28,7 +28,6 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
-import org.tctalent.server.service.db.JobChatUserService;
 import org.tctalent.server.service.db.UserService;
 
 /**
@@ -53,7 +52,6 @@ public class ChatPublishApi {
     private final ChatPostService chatPostService;
     private final JobChatService jobChatService;
     private final UserService userService;
-    private final JobChatUserService jobChatUserService;
 
     /**
      * Receives a post on the given chat from the currently logged in user,
@@ -69,9 +67,6 @@ public class ChatPublishApi {
         JobChat jobChat = jobChatService.getJobChat(chatId);
         User loggedInUser = userService.getLoggedInUser();
         ChatPost chatPost = chatPostService.createPost(post, jobChat, loggedInUser);
-        if (loggedInUser != null) {
-            jobChatUserService.markChatAsRead(jobChat, loggedInUser, chatPost);
-        }
         return chatPostService.getChatPostDtoBuilder().build(chatPost);
     }
 
