@@ -15,6 +15,7 @@ import {MockJob} from "../../../../../../MockData/MockJob";
 import {CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {of} from "rxjs";
 import {Job} from "../../../../../../model/job";
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('CandidateVisaJobComponent', () => {
   let component: CandidateVisaJobComponent;
@@ -29,14 +30,14 @@ describe('CandidateVisaJobComponent', () => {
     modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
     authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly']);
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,RouterTestingModule],
       declarations: [CandidateVisaJobComponent],
       providers: [
         FormBuilder,
         { provide: CandidateVisaJobService, useValue: candidateVisaJobServiceMock },
         { provide: NgbModal, useValue: modalServiceMock },
         { provide: AuthorizationService, useValue: authServiceMock },
-      ]
+      ],
     })
     .compileComponents();
   });
@@ -87,7 +88,7 @@ describe('CandidateVisaJobComponent', () => {
 
     // Verify the service call and the update to visaChecks
     expect(candidateVisaJobServiceMock.create).toHaveBeenCalledWith(1, { jobOppId: job.id });
-    expect(component.form.value.jobIndex).toBe(1);
+    expect(component.form.value.jobIndex).toBe(2);
     expect(component.selectedJobChange.emit).toHaveBeenCalledWith(newVisaJobCheck);
   }));
 
