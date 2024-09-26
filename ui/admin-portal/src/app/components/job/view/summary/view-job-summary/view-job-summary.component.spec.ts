@@ -1,9 +1,9 @@
-import {ComponentFixture,TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
-import {of,throwError} from 'rxjs';
+import {of, throwError} from 'rxjs';
 import {ViewJobSummaryComponent} from './view-job-summary.component';
-import {JobService } from '../../../../../services/job.service';
+import {JobService} from '../../../../../services/job.service';
 import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
 
@@ -40,8 +40,7 @@ describe('ViewJobSummaryComponent', () => {
     component.form.get('jobSummary').setValue(newSummary);
     jobServiceSpy.updateSummary.and.returnValue(of(MockJob));
 
-
-    component.saveChanges();
+    component.doSave(component.form.get('jobSummary'));
 
     expect(jobServiceSpy.updateSummary).toHaveBeenCalledWith(component.job.id, newSummary);
     expect(component.error).toBeNull();
@@ -55,7 +54,7 @@ describe('ViewJobSummaryComponent', () => {
     component.form.get('jobSummary').setValue('Updated summary');
     jobServiceSpy.updateSummary.and.returnValue(throwError(errorMessage));
 
-    component.saveChanges();
+    component.doSave(component.form.get('jobSummary'));
 
     expect(jobServiceSpy.updateSummary).toHaveBeenCalled();
     expect(component.error).toEqual(errorMessage);

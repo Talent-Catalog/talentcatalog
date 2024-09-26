@@ -1,9 +1,4 @@
-import {
-  Component,
-  HostListener,
-  Input,
-  OnInit
-} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -12,10 +7,7 @@ import {ChatPostService} from "../../../services/chat-post.service";
 import Quill from 'quill';
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {LinkPreview} from "../../../model/link-preview";
-import {
-  BuildLinkPreviewRequest,
-  LinkPreviewService
-} from "../../../services/link-preview.service";
+import {BuildLinkPreviewRequest, LinkPreviewService} from "../../../services/link-preview.service";
 import {BuildLinkComponent} from "../../../util/build-link/build-link.component";
 import {EditorSelection} from "../../../model/base";
 
