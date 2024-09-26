@@ -231,7 +231,7 @@ export class ChatService implements OnDestroy {
         takeUntil(this.destroyStompSubscriptions$),
         tap( message => console.log('Post received from server for chat ' + chat.id
         + ': ' + JSON.stringify(message.body))),
-        tap(() => this.changeChatReadStatus(chat,false))
+        tap(message => this.updateReadStatusBasedOnIncomingPost(chat, message))
       );
 
       if (this.chatPosts$.has(chat.id)) {
@@ -242,6 +242,29 @@ export class ChatService implements OnDestroy {
     }
 
     return observable;
+  }
+
+  //todo Replicate on candidate-portal
+  //todo Updated server side = use similarly named service method.
+  /**
+   * Processes the given incoming message to the given chat, checking how it should affect my
+   * read status for the chat.
+   * @param chat Chat
+   * @param message Raw message received to chat
+   */
+  private updateReadStatusBasedOnIncomingPost(chat: JobChat, message: Message) {
+    //Extract Post and check if mine
+    const post: ChatPost = JSON.parse(message.body);
+    if (post) {
+      const me = this.authenticationService.getLoggedInUser();
+      //Only change read status if this is not my post.
+      //My posts do not affect read status (see server code as well - my posts to not change
+      //my read status of chats)
+      if (post.createdBy?.id != me?.id) {
+        //New posts mark the chat as unread
+        this.changeChatReadStatus(chat,false);
+      }
+    }
   }
 
   disconnect() {
@@ -397,5 +420,4 @@ export class ChatService implements OnDestroy {
     }
     return Array.from(filterMap.values());
   }
-
 }
