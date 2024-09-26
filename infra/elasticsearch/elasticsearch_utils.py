@@ -48,21 +48,25 @@ def load_es_config(config_path):
                 cloud_id=cloud_id,
             )
             if not es.ping():
-                print("Failed to connect, requesting credentials...")
+                print("Enter credentials for Elastic Cloud ID: ", cloud_id)
                 username, password = get_credentials()
                 es = Elasticsearch(
                     cloud_id=cloud_id,
                     http_auth=(username, password)
                 )
             if es.ping():
+                print("Connected to Elasticsearch: ", es)
                 return es
             else:
                 print("Failed to connect to Elasticsearch. Exiting.")
                 exit(1)
         else:
-            return Elasticsearch([f"http://localhost:9200"])
+            # Default to localhost if cloud_id is not provided
+            print("Connecting to Elasticsearch at localhost")
+            return Elasticsearch(["http://localhost:9200"])
     else:
         # Default to localhost if configuration file does not exist
+        print("Connecting to Elasticsearch at localhost")
         return Elasticsearch(["http://localhost:9200"])
 
 
