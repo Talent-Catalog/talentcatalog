@@ -244,8 +244,6 @@ export class ChatService implements OnDestroy {
     return observable;
   }
 
-  //todo Replicate on candidate-portal
-  //todo Updated server side = use similarly named service method.
   /**
    * Processes the given incoming message to the given chat, checking how it should affect my
    * read status for the chat.
@@ -261,7 +259,7 @@ export class ChatService implements OnDestroy {
       //My posts do not affect read status (see server code as well - my posts to not change
       //my read status of chats)
       if (post.createdBy?.id != me?.id) {
-        //New posts mark the chat as unread
+        //New posts (by others) mark the chat as unread
         this.changeChatReadStatus(chat,false);
       }
     }
