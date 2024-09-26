@@ -52,14 +52,14 @@ describe('ShowCandidatesComponent', () => {
   // Create mock service instances using jasmine.createSpyObj
   const mockCandidateService = jasmine.createSpyObj('CandidateService', ['someMethod']);
   const mockCandidateSourceService = jasmine.createSpyObj('CandidateSourceService', ['someMethod']);
-  const mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['clearSelection', 'doSearch','isSavedSearch']);
+  const mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['clearSelection', 'doSearch', 'isSavedSearch']);
   const mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
   const mockNgbModal = jasmine.createSpyObj('NgbModal', ['open']);
   const mockNgbOffcanvas = jasmine.createSpyObj('NgbOffcanvas', ['open', 'dismiss']);
   const mockAuthorizationService = jasmine.createSpyObj('AuthorizationService',
-    ['canAssignTask','canAccessSalesforce','canEditCandidateSource','canPublishList',
-      'canImportToList','canResolveTasks','canUpdateCandidateStatus','canUpdateSalesforce',
-      'canManageCandidateTasks','isCandidateSourceMine','isEmployerPartner','isReadOnly',
+    ['canAssignTask', 'canAccessSalesforce', 'canEditCandidateSource', 'canPublishList',
+      'canImportToList', 'canResolveTasks', 'canUpdateCandidateStatus', 'canUpdateSalesforce',
+      'canManageCandidateTasks', 'isCandidateSourceMine', 'isEmployerPartner', 'isReadOnly',
       'isStarredByMe']);
   const mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
   const mockSalesforceService = jasmine.createSpyObj('SalesforceService', ['joblink']);
@@ -67,7 +67,7 @@ describe('ShowCandidatesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ShowCandidatesComponent, SortedByComponent, AutosaveStatusComponent,CandidateSourceDescriptionComponent],
+      declarations: [ShowCandidatesComponent, SortedByComponent, AutosaveStatusComponent, CandidateSourceDescriptionComponent],
       imports: [
         HttpClientTestingModule,
         RouterTestingModule,
@@ -80,16 +80,16 @@ describe('ShowCandidatesComponent', () => {
         FormBuilder,
         DatePipe,
         TitleCasePipe,
-        { provide: CandidateService, useValue: mockCandidateService },
-        { provide: CandidateSourceService, useValue: mockCandidateSourceService },
-        { provide: SavedSearchService, useValue: mockSavedSearchService },
-        { provide: LocalStorageService, useValue: mockLocalStorageService },
-        { provide: NgbModal, useValue: mockNgbModal },
-        { provide: NgbOffcanvas, useValue: mockNgbOffcanvas },
-        { provide: AuthorizationService, useValue: mockAuthorizationService },
-        { provide: AuthenticationService, useValue: mockAuthenticationService },
-        { provide: SalesforceService, useValue: mockSalesforceService },
-        { provide: Location, useValue: mockLocation }
+        {provide: CandidateService, useValue: mockCandidateService},
+        {provide: CandidateSourceService, useValue: mockCandidateSourceService},
+        {provide: SavedSearchService, useValue: mockSavedSearchService},
+        {provide: LocalStorageService, useValue: mockLocalStorageService},
+        {provide: NgbModal, useValue: mockNgbModal},
+        {provide: NgbOffcanvas, useValue: mockNgbOffcanvas},
+        {provide: AuthorizationService, useValue: mockAuthorizationService},
+        {provide: AuthenticationService, useValue: mockAuthenticationService},
+        {provide: SalesforceService, useValue: mockSalesforceService},
+        {provide: Location, useValue: mockLocation}
       ]
     })
     .compileComponents();
@@ -99,18 +99,20 @@ describe('ShowCandidatesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ShowCandidatesComponent);
     component = fixture.componentInstance;
-    // Inject the FormBuilder
-    formBuilder = TestBed.inject(FormBuilder);
 
-    // Initialize the formGroup
+    // Inject the FormBuilder and create the form group
+    formBuilder = TestBed.inject(FormBuilder);
+    component.candidateSource = new MockCandidateSource();
     component.searchForm = formBuilder.group({
       keyword: [''],
-      showClosedOpps: [false],
+      showClosedOpps: [false], // Ensure this matches the formControlName used in the template
       statusesDisplay: [[]]
     });
-    component.candidateSource =  new MockCandidateSource();
-    fixture.detectChanges();
+    setTimeout(() => {
+      fixture.detectChanges(); // Detect changes to apply the formGroup to the template
+    }, 500)
   });
+
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -125,7 +127,7 @@ describe('ShowCandidatesComponent', () => {
     spyOn(component, 'doSearch');
     component.clearSelection();
 
-    expect(mockSavedSearchService.clearSelection).toHaveBeenCalledWith(1, { userId: 1 });
+    expect(mockSavedSearchService.clearSelection).toHaveBeenCalledWith(1, {userId: 1});
     expect(component.doSearch).toHaveBeenCalledWith(true);
   });
   it('should handle error when clearing selection for saved search', () => {
@@ -135,7 +137,7 @@ describe('ShowCandidatesComponent', () => {
     (mockCandidateSource as any).savedSearchType = SavedSearchType.other; // Add savedSearchType property dynamically
     component.candidateSource = mockCandidateSource;
     component.clearSelection();
-    expect(mockSavedSearchService.clearSelection).toHaveBeenCalledWith(1, { userId: 1 });
+    expect(mockSavedSearchService.clearSelection).toHaveBeenCalledWith(1, {userId: 1});
     expect(component.error).toBe('error');
   });
 });
