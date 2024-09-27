@@ -58,6 +58,23 @@ public class JobChatUserServiceImpl implements JobChatUserService {
     }
 
     @Override
+    public boolean isChatReadByUser(@NonNull JobChat chat, @NonNull User user) {
+        boolean isReadByUser;
+        JobChatUserInfo info = getJobChatUserInfo(chat, user);
+        if (info.getLastPostId() == null) {
+            //No posts in chat. Consider as read;
+            isReadByUser = true;
+        } else if (info.getLastReadPostId() == null) {
+            //User has not read post at all
+            isReadByUser = false;
+        } else {
+            //Read if user has read up to last post
+            isReadByUser = info.getLastReadPostId() >= info.getLastPostId();
+        }
+        return isReadByUser;
+    }
+
+    @Override
     public void markChatAsRead(@NonNull JobChat chat, @NonNull User user, @Nullable ChatPost post) {
 
         JobChatUserKey key = new JobChatUserKey(chat.getId(), user.getId());

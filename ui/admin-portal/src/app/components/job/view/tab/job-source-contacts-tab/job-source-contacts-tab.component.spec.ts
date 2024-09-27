@@ -1,12 +1,10 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import { Job } from '../../../../../model/job';
-import { By } from '@angular/platform-browser';
-import { JobSourceContactsTabComponent } from './job-source-contacts-tab.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {JobSourceContactsTabComponent} from './job-source-contacts-tab.component';
 import {MockJob} from "../../../../../MockData/MockJob";
 import {
   JobSourceContactsWithChatsComponent
 } from "../../source-contacts/job-source-contacts-with-chats/job-source-contacts-with-chats.component";
-import {HttpClientModule} from "@angular/common/http";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {
@@ -38,7 +36,6 @@ describe('JobSourceContactsTabComponent', () => {
 
   it('should render job source contacts with chats', () => {
     component.job = MockJob;
-    component.editable = true;
 
     fixture.detectChanges();
 
