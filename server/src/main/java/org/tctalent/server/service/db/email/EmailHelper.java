@@ -167,6 +167,9 @@ public class EmailHelper {
             final Context ctx = new Context();
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
+
+            //TODO JC Currently not using the chats passed in. Could pull out job if any, otherwise
+            //the source partner
             ctx.setVariable("chats", chats);
             ctx.setVariable("loginUrl", portalUrl);
             ctx.setVariable("username", user.getUsername());
