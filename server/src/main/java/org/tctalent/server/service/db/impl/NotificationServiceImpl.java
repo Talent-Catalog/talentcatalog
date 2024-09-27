@@ -32,13 +32,16 @@ import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.JobChatUserService;
 import org.tctalent.server.service.db.NotificationService;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
@@ -50,6 +53,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final CandidateOpportunityService candidateOpportunityService;
     private final EmailHelper emailHelper;
     private final JobChatService jobChatService;
+    private final JobChatUserService jobChatUserService;
+    private final PartnerService partnerService;
     private final UserService userService;
 
     @Override
@@ -105,20 +110,39 @@ public class NotificationServiceImpl implements NotificationService {
                         notifyDestinationPartner(chat, userNotifications);
                     }
                 }
-                //TODO JC Other types
+                case JobCreatorSourcePartner -> {
+                    Partner sourcePartner = chat.getSourcePartner();
+                    notifySourcePartner(sourcePartner, chat, userNotifications);
+                    notifyDestinationPartner(chat, userNotifications);
+                }
+                case JobCreatorAllSourcePartners -> {
+                    notifyDestinationPartner(chat, userNotifications);
+
+                    //Notify all source partners
+                    final List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    for (PartnerImpl sourcePartner : sourcePartners) {
+                        notifySourcePartner(sourcePartner, chat, userNotifications);
+                    }
+                }
             }
         }
 
         //Construct and send emails
         for (Long userId : userNotifications.keySet()) {
-            final Set<JobChat> userChats = userNotifications.get(userId);
+            final Set<JobChat> userChatsWithNewPosts = userNotifications.get(userId);
 
             User user = userService.getUser(userId);
             if (user != null) {
 
-                //TODO JC Could filter out chats that the user has marked as read
+                //TODO JC For now - only candidate users and employer access users.
+                //TODO JC Or maybe leave in for all.
 
-                String s = userChats.stream()
+                //Filter out chats that the user has marked as read
+                Set<JobChat> unreadChats = userChatsWithNewPosts.stream()
+                    .filter(chat -> !jobChatUserService.isChatReadByUser(chat, user))
+                    .collect(Collectors.toSet());
+
+                String s = unreadChats.stream()
                     .map(c -> c.getId().toString())
                     .collect(Collectors.joining(","));
 
@@ -128,7 +152,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .message("Notifying user " + userId + " about posts to chats " + s)
                     .logInfo();
 
-                emailHelper.sendNewChatPostsForCandidateUserEmail(user, userChats);
+                emailHelper.sendNewChatPostsForCandidateUserEmail(user, unreadChats);
             }
         }
     }
@@ -158,7 +182,16 @@ public class NotificationServiceImpl implements NotificationService {
     private void notifySourcePartner(
         Candidate candidate, JobChat chat, Map<Long, Set<JobChat>> userNotifications) {
         Partner sourcePartner = candidate.getUser().getPartner();
+        notifySourcePartner(sourcePartner, chat, userNotifications);
+    }
+
+    private void notifySourcePartner(
+        Partner sourcePartner, JobChat chat, Map<Long, Set<JobChat>> userNotifications) {
         if (sourcePartner != null) {
+            final SalesforceJobOpp jobOpp = chat.getJobOpp();
+            if (jobOpp != null) {
+                sourcePartner.setContextJobId(jobOpp.getId());
+            }
             User sourceUser = sourcePartner.getJobContact() != null ?
                 sourcePartner.getJobContact() : sourcePartner.getDefaultContact();
             if (sourceUser != null) {

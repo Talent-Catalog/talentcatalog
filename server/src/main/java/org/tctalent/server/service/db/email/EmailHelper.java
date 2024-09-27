@@ -168,13 +168,15 @@ public class EmailHelper {
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
 
-            //TODO JC Currently not using the chats passed in. Could pull out job if any, otherwise
-            //the source partner
+            //TODO JC Currently not using the chats passed in. Could pull out job if any,
+            // otherwise the source partner
             ctx.setVariable("chats", chats);
             ctx.setVariable("loginUrl", portalUrl);
             ctx.setVariable("username", user.getUsername());
 
             subject = "Talent Catalog - New chat posts";
+
+            //todo jc - also change template to say chats that you have not marked as read
             bodyText = textTemplateEngine.process("candidate-chat-notification", ctx);
             bodyHtml = htmlTemplateEngine.process("candidate-chat-notification", ctx);
 
