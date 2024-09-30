@@ -43,13 +43,17 @@
         <a target="_blank" [routerLink]="['./']" class="link-primary">
           <i class="fas fa-external-link-alt is-link" title="Show candidate in new tab"></i>
         </a>
+        <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doToggleStarred()" class="link-info">
+          <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
+          <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
+        </a>
+        <a target="_blank" *ngIf="isSavedSearch()&& !isDefaultSavedSearch" (click)="doToggleWatch()" class="link-info">
+          <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
+          <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
+        </a>
         -
         <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()" class="link-info">
           <i class="fas fa-link" title="Copy shareable link"></i>
-        </a>
-        <a target="_blank" (click)="doToggleStarred()" class="link-info">
-          <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
-          <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
         </a>
         <a target="_blank" *ngIf="isSavedList()" (click)="doCopySource()" class="link-info">
           <i class="fas fa-clone" title="Copy"></i>

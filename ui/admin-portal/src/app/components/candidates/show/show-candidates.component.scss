@@ -47,6 +47,18 @@ label {
   color: $warning;
 }
 
+.notstarred {
+  color: grey;
+}
+
+.watched {
+  color: $success;
+}
+
+.notwatched {
+  color: grey;
+}
+
 
 .filter-form {
   //background-color: #efefef;
