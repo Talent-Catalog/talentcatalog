@@ -346,36 +346,39 @@
         </div>
       </div>
 
-      <!-- Third Group of Inputs (Right-aligned) -->
-      <div *ngIf="isSavedList()" class="col-auto d-flex justify-content-end">
-        <div *ngIf="isJobList()" class="form-check-reverse form-check-inline align-items-center me-2">
-          <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
-          <label class="form-check-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
-        </div>
-        <div *ngIf="isContentModifiable()" class="w-50 ms-3">
-          <input id="quickNumberOrNameSearch"
-                 type="text" class="form-control" #input
-                 [ngbTypeahead]="doNumberOrNameSearch"
-                 [resultTemplate]="rt"
-                 [inputFormatter]="renderCandidateRow"
-                 [editable]="false"
-                 (selectItem)="selectCandidateToAdd($event, input)"
-                 placeholder="Add (name or #)..."/>
-          <ng-template #rt let-r="result" let-t="term">
-            <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
-          </ng-template>
-          <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
-        </div>
-        <div *ngIf="isSavedList()" class="w-50 ms-3">
-          <form [formGroup]="searchForm">
-            <div class="mb-3 mb-0 flex-fill">
+    </div>
+
+    <!-- Third Group of Inputs (Right-aligned) -->
+    <div *ngIf="isSavedList()" class="row row-cols-auto justify-content-end my-2">
+      <div *ngIf="isContentModifiable()" class="col">
+        <input id="quickNumberOrNameSearch"
+               type="text" class="form-control" #input
+               [ngbTypeahead]="doNumberOrNameSearch"
+               [resultTemplate]="rt"
+               [inputFormatter]="renderCandidateRow"
+               [editable]="false"
+               (selectItem)="selectCandidateToAdd($event, input)"
+               placeholder="Add (name or #)..."/>
+        <ng-template #rt let-r="result" let-t="term">
+          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+        </ng-template>
+        <div *ngIf=adding class="small text-info text-center mt-1">Adding candidate to list <i class="fas fa-spinner fa-spin" ></i></div>
+      </div>
+      <div *ngIf="isSavedList()" class="col">
+        <form [formGroup]="searchForm">
+          <div class="d-flex align-items-center">
+            <div>
               <input type="text" class="form-control" placeholder="Search (name or #)..." aria-label="Search (name/number)..." formControlName="keyword"
                      id="keyword" autofocus>
             </div>
-          </form>
-        </div>
-      </div>
+            <div *ngIf="isJobList()" class="ms-2 form-check-reverse form-check-inline align-items-center me-2">
+              <input [title]="showClosedOppsTip" type="checkbox" formControlName="showClosedOpps" id="showClosedOpps" class="form-check-input">
+              <label class="form-check-label" [title]="showClosedOppsTip" for="showClosedOpps">Show closed cases</label>
+            </div>
+          </div>
 
+        </form>
+      </div>
     </div>
 
 <!--    Table of list contents - plus candidate details of selected candidate-->
