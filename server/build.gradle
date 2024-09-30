@@ -128,8 +128,9 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.apache.commons:commons-lang3")
     implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
-    implementation("com.sun.mail:jakarta.mail:2.0.1")
-    implementation("jakarta.activation:jakarta.activation-api:latest.release")
+    implementation("com.sun.mail:jakarta.mail")
+    // https://mvnrepository.com/artifact/com.sun.activation/jakarta.activation
+    implementation 'com.sun.activation:jakarta.activation'
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
     implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
