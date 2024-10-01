@@ -84,6 +84,34 @@ Check out the newest features and enhancements.
 <div class="card-container">
 
   <div class="card-full-width">
+    <img src="./assets/images/v222/EvergreenJobs.png" alt="Evergreen jobs" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Evergreen Jobs</div>
+      <div class="card-description">
+        Evergreen Jobs are positions that are continuously open because they are regularly needed by 
+        the company. 
+        Companies like Iress and Atlassian are examples of organisations that utilise this type of 
+        job posting.
+        <p></p>
+        When a job has been tagged as being evergreen, a new copy of the job is automatically 
+        created when the job moves to the "Recruitment process" stage.
+        <p></p>
+        The copied job will have the same name except with a suffix R2 - standing for "Revision 2" - 
+        and will automatically be set to the "Candidate search" stage. 
+        So now there will be two copies of the job: the original job - continuing in the 
+        "Recruitment process" stage - and a new one starting back in the "Candidate search" stage.
+        <p></p>
+        When the R2 copy of the job gets to the "Recruitment process" stage itself, another copy of 
+        the job is created in the "Candidate search" stage - the R3 copy - and so on.
+      </div>
+    </div>
+ </div>
+
+</div>
+
+<div class="card-container">
+
+  <div class="card-full-width">
     <img src="./assets/images/v222/DistinctClarifiedSubmissionLists.png" alt="Distinct clarified submission lists" class="card-image">
     <div class="card-body">
       <div class="card-title">Distinguished Submission Lists from General Lists</div>
