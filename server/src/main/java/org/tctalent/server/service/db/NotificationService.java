@@ -17,7 +17,7 @@
 package org.tctalent.server.service.db;
 
 /**
- * TODO JC Doc
+ * Notify users of significant events.
  *
  * @author John Cameron
  */
