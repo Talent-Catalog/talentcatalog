@@ -98,7 +98,7 @@ def reindex_data(es, old_index_name, new_index_name):
         "dest": {"index": new_index_name}
     }
     print(f"Re-indexing from '{old_index_name}' to '{new_index_name}'...")
-    es.reindex(body=reindex_body, wait_for_completion=True)
+    es.reindex(body=reindex_body, wait_for_completion=False)
     print(f"Data re-indexed from '{old_index_name}' to '{new_index_name}'.")
 
 
@@ -116,7 +116,7 @@ def reindex_data_with_full_names(es, old_index_name, new_index_name):
         }
     }
     print(f"Re-indexing from '{old_index_name}' to '{new_index_name}'...")
-    es.reindex(body=reindex_body, wait_for_completion=True)
+    es.reindex(body=reindex_body, wait_for_completion=False)
     print(f"Data re-indexed from '{old_index_name}' to '{new_index_name}'.")
 
 
