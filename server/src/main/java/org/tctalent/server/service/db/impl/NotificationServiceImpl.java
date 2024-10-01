@@ -25,11 +25,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -38,6 +42,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobChatUserService;
 import org.tctalent.server.service.db.NotificationService;
@@ -51,11 +56,20 @@ import org.tctalent.server.service.db.email.EmailHelper;
 public class NotificationServiceImpl implements NotificationService {
     private final AuthService authService;
     private final CandidateOpportunityService candidateOpportunityService;
+    private final ChatPostService chatPostService;
     private final EmailHelper emailHelper;
     private final JobChatService jobChatService;
     private final JobChatUserService jobChatUserService;
     private final PartnerService partnerService;
     private final UserService userService;
+
+    //One minute past Midnight GMT
+    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+    @SchedulerLock(name = "NotificationService_scheduledNotifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+    @Transactional
+    public void scheduledNotifyOfChatsWithNewPosts() {
+        notifyUsersOfChatsWithNewPosts();
+    }
 
     @Override
     public void notifyUsersOfChatsWithNewPosts() {
@@ -68,7 +82,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         List<JobChat> chats = jobChatService.findByIds(chatsWithNewPosts);
 
-        //Note that this is Candidate user notification only.
         //Extract all users who need to be notified of chats with new posts
         for (JobChat chat : chats) {
             JobChatType chatType = chat.getType();
@@ -79,6 +92,7 @@ public class NotificationServiceImpl implements NotificationService {
                     if (candidate != null) {
                         notifyCandidate(candidate, chat, userNotifications);
                         notifySourcePartner(candidate, chat, userNotifications);
+                        notifyParticipants(chat, userNotifications);
                     }
                 }
                 case CandidateRecruiting -> {
@@ -89,9 +103,10 @@ public class NotificationServiceImpl implements NotificationService {
                             if (aCase.getStage().isWon() || !aCase.getStage().isClosed()
                                 && CandidateOpportunityStage.cvReview.compareTo(aCase.getStage()) <= 0) {
                                 notifyCandidate(candidate, chat, userNotifications);
-                                notifySourcePartner(candidate, chat, userNotifications);
-                                notifyDestinationPartner(chat, userNotifications);
                             }
+                            notifySourcePartner(candidate, chat, userNotifications);
+                            notifyDestinationPartner(chat, userNotifications);
+                            notifyParticipants(chat, userNotifications);
                         }
                     }
                 }
@@ -99,21 +114,23 @@ public class NotificationServiceImpl implements NotificationService {
                     if (job != null) {
                         Set<CandidateOpportunity> cases = job.getCandidateOpportunities();
                         for (CandidateOpportunity aCase : cases) {
+                            candidate = aCase.getCandidate();
                             //Candidates only see this chat if they have accepted the job offer
                             if (aCase.getStage().isWon() || !aCase.getStage().isClosed()
                                 && CandidateOpportunityStage.acceptance.compareTo(aCase.getStage()) <= 0) {
-                                candidate = aCase.getCandidate();
                                 notifyCandidate(candidate, chat, userNotifications);
-                                notifySourcePartner(candidate, chat, userNotifications);
                             }
+                            notifySourcePartner(candidate, chat, userNotifications);
                         }
                         notifyDestinationPartner(chat, userNotifications);
+                        notifyParticipants(chat, userNotifications);
                     }
                 }
                 case JobCreatorSourcePartner -> {
                     Partner sourcePartner = chat.getSourcePartner();
                     notifySourcePartner(sourcePartner, chat, userNotifications);
                     notifyDestinationPartner(chat, userNotifications);
+                    notifyParticipants(chat, userNotifications);
                 }
                 case JobCreatorAllSourcePartners -> {
                     notifyDestinationPartner(chat, userNotifications);
@@ -123,6 +140,7 @@ public class NotificationServiceImpl implements NotificationService {
                     for (PartnerImpl sourcePartner : sourcePartners) {
                         notifySourcePartner(sourcePartner, chat, userNotifications);
                     }
+                    notifyParticipants(chat, userNotifications);
                 }
             }
         }
@@ -133,9 +151,6 @@ public class NotificationServiceImpl implements NotificationService {
 
             User user = userService.getUser(userId);
             if (user != null) {
-
-                //TODO JC For now - only candidate users and employer access users.
-                //TODO JC Or maybe leave in for all.
 
                 //Filter out chats that the user has marked as read
                 Set<JobChat> unreadChats = userChatsWithNewPosts.stream()
@@ -176,6 +191,31 @@ public class NotificationServiceImpl implements NotificationService {
                     destinationUser.getId(), k -> new HashSet<>());
                 chats.add(chat);
             }
+        }
+    }
+
+    private void notifyParticipants(
+        JobChat chat, Map<Long, Set<JobChat>> userNotifications) {
+        //Get posts for chat. Extract all users who have posted
+        // (excluding auto posts from Talent Catalog) and notify them
+        final List<ChatPost> chatPosts = chatPostService.listChatPosts(chat.getId());
+
+        long systemAdminUserId = userService.getSystemAdminUser().getId();
+
+        //Get users who have posted to chat
+        final Set<User> usersInChat = new HashSet<>();
+        for (ChatPost chatPost : chatPosts) {
+            final User user = chatPost.getCreatedBy();
+            //Ignore system admin user posts
+            if (user.getId() != systemAdminUserId) {
+                usersInChat.add(user);
+            }
+        }
+        //Add those users to the notifications.
+        for (User user : usersInChat) {
+            Set<JobChat> chats = userNotifications.computeIfAbsent(
+                user.getId(), k -> new HashSet<>());
+            chats.add(chat);
         }
     }
 

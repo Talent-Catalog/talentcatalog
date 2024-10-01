@@ -160,6 +160,8 @@ public class EmailHelper {
         Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
+        //TODO JC Check whether user is candidate - two different templates candidates/non candidates
+
         String subject;
         String bodyText;
         String bodyHtml;
@@ -176,7 +178,6 @@ public class EmailHelper {
 
             subject = "Talent Catalog - New chat posts";
 
-            //todo jc - also change template to say chats that you have not marked as read
             bodyText = textTemplateEngine.process("candidate-chat-notification", ctx);
             bodyHtml = htmlTemplateEngine.process("candidate-chat-notification", ctx);
 
