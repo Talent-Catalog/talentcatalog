@@ -4,7 +4,7 @@ sass:
   style: compressed
 ---
 
-## Version 2.1.0 (September 29, 2023)
+## Release Notes
 
 Check out the newest features and enhancements.
 
