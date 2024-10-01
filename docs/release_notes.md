@@ -4,7 +4,7 @@ sass:
   style: compressed
 ---
 
-## Release Notes
+# Release Notes
 
 Check out the newest features and enhancements.
 
