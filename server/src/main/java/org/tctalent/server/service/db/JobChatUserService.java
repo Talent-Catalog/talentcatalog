@@ -38,6 +38,14 @@ public interface JobChatUserService {
     JobChatUserInfo getJobChatUserInfo(@NonNull JobChat chat, @NonNull User user);
 
     /**
+     * Determines whether the given chat has been marked as read by the given user.
+     * @param chat Chat in question
+     * @param user User in question
+     * @return True if chat is marker as read by the user, otherwise false.
+     */
+    boolean isChatReadByUser(@NonNull JobChat chat, @NonNull User user);
+
+    /**
      * Records which post the given user has read up to in the given chat
      * @param chat Chat in question
      * @param user User in question

@@ -16,6 +16,7 @@ import {
 import {AuthenticationService} from "../../../../../services/authentication.service";
 import {CreateChatRequest, JobChatType} from "../../../../../model/chat";
 import {ChatService} from "../../../../../services/chat.service";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 /*
 MODEL: Modal popups.
@@ -27,7 +28,6 @@ MODEL: Modal popups.
 })
 export class ViewJobSourceContactsComponent implements OnInit {
   @Input() job: Job;
-  @Input() editable: boolean;
   @Input() selectable: boolean;
   @Output() sourcePartnerSelection = new EventEmitter();
 
@@ -39,6 +39,7 @@ export class ViewJobSourceContactsComponent implements OnInit {
 
   constructor(
     private authenticationService: AuthenticationService,
+    private authorizationService: AuthorizationService,
     private chatService: ChatService,
     private modalService: NgbModal,
     private partnerService: PartnerService,
@@ -128,7 +129,9 @@ export class ViewJobSourceContactsComponent implements OnInit {
   }
 
   isEditable(partner: Partner): boolean {
-    let canEdit: boolean = this.editable;
+    //Can only edit if not read only, and viewing as source.
+    let canEdit: boolean = !this.authorizationService.isReadOnly()
+      && this.authorizationService.isViewingAsSource();
     if (canEdit) {
       canEdit = this.loggedInUserPartnerId === partner.id;
     }

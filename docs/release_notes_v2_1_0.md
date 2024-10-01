@@ -45,7 +45,7 @@ Check out the newest features and enhancements.
   user testing environment.
 - Submission lists are now published to Google Sheets, ensuring that closed cases are automatically excluded.
 
-  
+
 # UI / UX Enhancements
 
 <div class="card-container">
@@ -74,7 +74,7 @@ Check out the newest features and enhancements.
 
 </div>
 
-## Other UI / UX Enhancements 
+## Other UI / UX Enhancements
 
 - The candidate work experience sections now support rich text formatting, providing a more dynamic and expressive
 way to document professional background and accomplishments.

@@ -34,6 +34,7 @@ describe('Job Chat and Post interface', () => {
   it('should create a JobChat instance', () => {
     const jobChat: JobChat = {
       id: 1,
+      type: JobChatType.CandidateProspect,
       name: 'Sample Job Chat'
     };
 
@@ -58,7 +59,7 @@ describe('Job Chat and Post interface', () => {
   it('should create a ChatPost instance', () => {
     const createdBy: User = { id: 1, username: 'user1' } as User;
     const updatedBy: User = { id: 2, username: 'user2' } as User;
-    const jobChat: JobChat = { id: 1, name: 'Sample Job Chat' };
+    const jobChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Sample Job Chat' };
 
     const chatPost: ChatPost = {
       id: 1,

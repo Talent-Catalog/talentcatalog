@@ -49,7 +49,7 @@ describe('ViewChatPostsComponent', () => {
   });
 
   it('should handle chat input changes and call onNewChat', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     const mockChats: JobChat[] = [mockChat];
     chatService.list.and.returnValue(of(mockChats));
 
@@ -84,7 +84,7 @@ describe('ViewChatPostsComponent', () => {
 
 
   it('should call markChatAsRead on chatService when onMarkChatAsRead is called', () => {
-    const mockChat: JobChat = { id: 1, name: 'Test Chat' };
+    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
     component.chat = mockChat;
 
     component.onMarkChatAsRead();

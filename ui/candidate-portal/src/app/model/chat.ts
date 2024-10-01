@@ -25,6 +25,7 @@ export interface Post extends Auditable {
 
 export interface JobChat {
   id: number;
+  type: JobChatType;
   name?: string;
 }
 

@@ -14,9 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {
-  getCandidateSourceBreadcrumb,
   getCandidateSourceNavigation,
-  getCandidateSourceStatsNavigation, getCandidateSourceType, getSavedSearchBreadcrumb,
+  getCandidateSourceStatsNavigation,
+  getCandidateSourceType,
+  getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
   isSavedSearch,
   SavedSearch,
@@ -24,7 +25,6 @@ import {
   SavedSearchType
 } from "./saved-search";
 import {CandidateSource, HasId, indexOfHasId} from "./base";
-import {SearchCandidateRequest} from "./search-candidate-request";
 
 describe('SavedSearch Utilities', () => {
   let location: Location;
@@ -78,7 +78,7 @@ describe('SavedSearch Utilities', () => {
     beforeEach(() => {
       savedSearch = {
         id: 1,
-        name: 'Test Search',
+        name: 'Test Search (1)',
         defaultSearch: false,
         reviewable: true,
         savedSearchType: SavedSearchType.profession,
@@ -101,11 +101,6 @@ describe('SavedSearch Utilities', () => {
     it('should return correct source type for getCandidateSourceType', () => {
       const type = getCandidateSourceType(savedSearch);
       expect(type).toBe('Search');
-    });
-
-    it('should generate correct breadcrumb for getCandidateSourceBreadcrumb', () => {
-      const breadcrumb = getCandidateSourceBreadcrumb(savedSearch);
-      expect(breadcrumb).toBe('Search: Test Search (1)');
     });
 
     it('should generate correct breadcrumb for getSavedSearchBreadcrumb', () => {

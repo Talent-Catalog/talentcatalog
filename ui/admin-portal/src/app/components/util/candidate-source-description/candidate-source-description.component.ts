@@ -6,6 +6,7 @@ import {CandidateSource, UpdateCandidateSourceDescriptionRequest} from "../../..
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {AuthorizationService} from "../../../services/authorization.service";
+import {isSavedList, isSubmissionList} from "../../../model/saved-list";
 
 @Component({
   selector: 'app-candidate-source-description',
@@ -56,4 +57,11 @@ export class CandidateSourceDescriptionComponent extends AutoSaveComponentBase
     this.candidateSource.description = this.description;
   }
 
+  isSavedList(): boolean {
+    return isSavedList(this.candidateSource);
+  }
+
+  isSubmissionList(): boolean {
+    return isSubmissionList(this.candidateSource);
+  }
 }

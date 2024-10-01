@@ -81,7 +81,7 @@ export class AuthorizationService {
   canViewCandidateCV(): boolean {
     let result: boolean = false;
 
-    if (this.isJobCreator() || this.isSourcePartner()) {
+    if (this.isJobCreatorPartner() || this.isSourcePartner()) {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
@@ -97,7 +97,7 @@ export class AuthorizationService {
    */
   canViewCandidateName(): boolean {
     let result: boolean = false;
-    if (this.isSourcePartner() || this.isJobCreator()) {
+    if (this.isSourcePartner() || this.isJobCreatorPartner()) {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
@@ -113,7 +113,7 @@ export class AuthorizationService {
    */
   canViewCandidateContact(): boolean {
     let result: boolean = false;
-    if (this.isSourcePartner() || this.isJobCreator()) {
+    if (this.isSourcePartner() || this.isJobCreatorPartner()) {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
         case Role.admin:
@@ -204,7 +204,7 @@ export class AuthorizationService {
     //Must be logged in
     if (loggedInUser) {
 
-      if (this.isJobCreator() || this.isSourcePartner()) {
+      if (this.isJobCreatorPartner() || this.isSourcePartner()) {
 
         //Must have some kind of admin role
         const role = this.getLoggedInRole();
@@ -237,7 +237,7 @@ export class AuthorizationService {
         //Default source partners can
         ok = true;
       } else {
-        if (this.isSourcePartner() || this.isJobCreator()) {
+        if (this.isSourcePartner() || this.isJobCreatorPartner()) {
             ok = true;
         }
       }
@@ -334,7 +334,12 @@ export class AuthorizationService {
     return loggedInUser == null ? Role.limited : Role[loggedInUser.role];
   }
 
-  isJobCreator(): boolean {
+  isJobCreatorUser(): boolean {
+    const loggedInUser = this.authenticationService.getLoggedInUser();
+    return loggedInUser == null ? false : loggedInUser.jobCreator;
+  }
+
+  isJobCreatorPartner(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? false : loggedInUser.partner?.jobCreator;
   }
@@ -348,6 +353,17 @@ export class AuthorizationService {
   isSourcePartner(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? false : loggedInUser.partner?.sourcePartner;
+  }
+
+  /**
+   * Return true if currently logged-in user is viewing the TC as a source person.
+   * <p/>
+   * This is more complicated that just asking whether the user works for a source partner because
+   * of TBB special status where it is both a source partner and a destination partner.
+   */
+  isViewingAsSource(): boolean {
+    //View as source partner as long as user is not a job creator.
+    return this.isSourcePartner() && !this.isJobCreatorUser();
   }
 
   /**
@@ -418,7 +434,7 @@ export class AuthorizationService {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     if (loggedInUser) {
       result = this.isDefaultSourcePartner() || this.isSourcePartner() ||
-      this.isDefaultJobCreator() || this.isJobCreator();
+      this.isDefaultJobCreator() || this.isJobCreatorPartner();
     }
 
     return result;

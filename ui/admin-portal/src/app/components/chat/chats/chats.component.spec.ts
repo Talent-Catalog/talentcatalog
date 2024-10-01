@@ -8,6 +8,7 @@ import {ChatReadStatusComponent} from "../chat-read-status/chat-read-status.comp
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {ChatService} from "../../../services/chat.service";
+import {TranslateModule} from "@ngx-translate/core";
 
 describe('ChatsComponent', () => {
   let component: ChatsComponent;
@@ -15,11 +16,14 @@ describe('ChatsComponent', () => {
   let chatService: jasmine.SpyObj<ChatService>;
   const mockJobChat = new MockJobChat();
   beforeEach(async () => {
-    const chatServiceSpy = jasmine.createSpyObj('ChatService', ['getJobChatUserInfo','getChatIsRead$']);
+    const chatServiceSpy = jasmine.createSpyObj('ChatService',
+      ['getChatInfoParticipantsKey','getChatInfoPurposeKey','getJobChatUserInfo',
+        'getChatIsRead$']);
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsComponent,ViewChatComponent,ChatReadStatusComponent ],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}),
+        TranslateModule.forRoot({})],
       providers:[
         { provide: ChatService, useValue: chatServiceSpy }
       ]
@@ -60,7 +64,7 @@ describe('ChatsComponent', () => {
     const mockChats: JobChat[] = [mockJobChat];
     component.chats = mockChats;
     fixture.detectChanges();
-    const chatRows = fixture.debugElement.queryAll(By.css('tr'));
+    const chatRows = fixture.debugElement.queryAll(By.css('li'));
     expect(chatRows.length).toBe(mockChats.length);
   });
 

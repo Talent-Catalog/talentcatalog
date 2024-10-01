@@ -24,6 +24,7 @@ import {ViewCandidateEducationComponent} from "../../education/view-candidate-ed
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
 describe('CandidateEducationTabComponent', () => {
   let component: CandidateEducationTabComponent;
@@ -32,7 +33,8 @@ describe('CandidateEducationTabComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
-      declarations: [CandidateEducationTabComponent,ViewCandidateCertificationComponent,ViewCandidateEducationComponent]
+      declarations: [CandidateEducationTabComponent,ViewCandidateCertificationComponent,ViewCandidateEducationComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
   });

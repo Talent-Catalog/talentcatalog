@@ -20,7 +20,7 @@ val postgresVersion: String = "42.6.0"
 val gatlingVersion: String = "0.10.3"
 val highchartsVersion: String = "3.9.5"
 val javaTargetVersion = JavaVersion.VERSION_17
-val scalaCompileOpts: String = "-release:21"
+val scalaCompileOpts: String = "-release:17"
 val testName: String = "gatlingTest"
 
 plugins {

@@ -4,7 +4,9 @@ sass:
   style: compressed
 ---
 
-# Release Notes
+## Version 2.1.0 (September 29, 2023)
+
+Check out the newest features and enhancements.
 
 - [Version 2.2.2](release_notes_v2_2_2.md)
 - [Version 2.2.1](release_notes_v2_2_1.md)

@@ -5,17 +5,10 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {CountryService} from "../../../services/country.service";
-import {PartnerService} from "../../../services/partner.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {LOCALE_ID, SimpleChange} from "@angular/core";
-import {of} from "rxjs";
-import {MockJob} from "../../../MockData/MockJob";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {QuillModule} from "ngx-quill";
-import {TranslateModule} from "@ngx-translate/core";
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {CommonModule} from "@angular/common";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 

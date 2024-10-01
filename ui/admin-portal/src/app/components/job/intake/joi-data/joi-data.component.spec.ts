@@ -6,7 +6,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TranslateModule} from "@ngx-translate/core";
 import {JoiDataComponent} from "./joi-data.component";
 
-fdescribe('JoiDataComponent', () => {
+describe('JoiDataComponent', () => {
   let component: JoiDataComponent;
   let fixture: ComponentFixture<JoiDataComponent>;
   let testFieldName: string;

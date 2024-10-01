@@ -816,5 +816,25 @@ const ALL_FIELDS = {
       "LINK-REMOVE-BTN": null,
       "LINK-SAVE-BTN": null,
       "LINK-CANCEL-BTN": null
+  },
+  "CHAT_INFO": {
+      "LABEL": {
+        "PARTICIPANTS": null,
+        "PURPOSE": null,
+      },
+      "PARTICIPANTS": {
+        "CANDIDATE_PROSPECT": null,
+        "ALL_JOB_CANDIDATES": null,
+        "JOB_CREATOR_SOURCE_PARTNER": null,
+        "CANDIDATE_RECRUITING": null,
+        "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
+      },
+      "PURPOSE": {
+        "CANDIDATE_PROSPECT": null,
+        "ALL_JOB_CANDIDATES": null,
+        "JOB_CREATOR_SOURCE_PARTNER": null,
+        "CANDIDATE_RECRUITING": null,
+        "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
+      }
   }
 }

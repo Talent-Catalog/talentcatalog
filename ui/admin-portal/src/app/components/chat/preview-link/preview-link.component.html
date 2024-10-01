@@ -1,4 +1,4 @@
-<a href="{{linkPreview.url}}" target="_blank" class="link-wrapper">
+<a *ngIf="linkPreview" href="{{linkPreview.url}}" target="_blank" class="link-wrapper">
   <div *ngIf="!linkPreview.blocked" class="link-preview">
     <i *ngIf="userIsPostAuthor"
       class="fa-solid fa-xmark fa-xs block-button"
