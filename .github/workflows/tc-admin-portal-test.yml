@@ -23,20 +23,25 @@ jobs:
         with:
           node-version: '16'
 
-      # Step 3: Install project dependencies
+      # Step 3: Change directory to the Angular project
+      - name: Change to admin-portal directory
+        run: cd TalentCatalog/ui/admin-portal
+
+      # Step 4: Install project dependencies
       - name: Install dependencies
         run: npm install
+        working-directory: TalentCatalog/ui/admin-portal
 
-      # Step 4: Run Angular tests using Karma
+      # Step 5: Run Angular tests using Karma
       - name: Run Angular tests
         run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: TalentCatalog/ui/admin-portal
         env:
           CI: true
 
-      # Step 5: Reporting test results
+      # Step 6: Archive test results (Optional)
       - name: Archive test results
-        if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: dist/test-results
+          path: TalentCatalog/ui/admin-portal/dist/test-results
