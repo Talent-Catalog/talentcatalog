@@ -21,27 +21,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '16.x' 
 
-      # Step 3: Change directory to the Angular project
-      - name: Change to admin-portal directory
-        run: cd TalentCatalog/ui/admin-portal
-
-      # Step 4: Install project dependencies
+      # Step 3: Install project dependencies
       - name: Install dependencies
         run: npm install
-        working-directory: TalentCatalog/ui/admin-portal
+        working-directory: ui/admin-portal
 
-      # Step 5: Run Angular tests using Karma
+      # Step 4: Run Angular tests using Karma
       - name: Run Angular tests
         run: npm run test -- --watch=false --browsers=ChromeHeadless
-        working-directory: TalentCatalog/ui/admin-portal
+        working-directory: ui/admin-portal
         env:
           CI: true
 
-      # Step 6: Archive test results (Optional)
+      # Step 5: Archive test results
       - name: Archive test results
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: TalentCatalog/ui/admin-portal/dist/test-results
+          path: ui/admin-portal/dist/test-results
