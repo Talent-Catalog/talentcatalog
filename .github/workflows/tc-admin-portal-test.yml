@@ -1,0 +1,42 @@
+name: Run Angular Tests
+
+on:
+  push:
+    branches:
+      - 1332-implement-cicd-pipeline-for-running-unit-tests-on-staging-branch
+  pull_request:
+    branches:
+      - 1332-implement-cicd-pipeline-for-running-unit-tests-on-staging-branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Node.js for Angular
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '13.3.11'
+
+      # Step 3: Install project dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Run Angular tests using Karma
+      - name: Run Angular tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        env:
+          CI: true
+
+      # Step 5: Reporting test results
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: dist/test-results
