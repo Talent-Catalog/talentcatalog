@@ -167,6 +167,15 @@ public class NotificationServiceImpl implements NotificationService {
                     .message("Notifying user " + userId + " about posts to chats " + s)
                     .logInfo();
 
+                final boolean isCandidate = userService.isCandidate(user);
+                //TODO JC Construct list of topics (chat focus?) - which are either a job opp,
+                // a candidate opp or a source partner / candidate (for CandidateProspect chats with no job).
+                //For html can generate links (eg to job opps, candidate opps, candidates): source partner is always name
+                //For text just names of opps (or candidate name or source partner name)
+
+                //todo jc When adding these focuses - add to sets, removing duplicates.
+
+                //TODO JC Compute list of chat focuses and pass in replacing unreadChats
                 emailHelper.sendNewChatPostsForCandidateUserEmail(user, unreadChats);
             }
         }

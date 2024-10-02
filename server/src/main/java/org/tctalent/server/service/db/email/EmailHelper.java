@@ -30,6 +30,7 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.service.db.UserService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -41,6 +42,7 @@ public class EmailHelper {
     private final EmailSender emailSender;
     private final TemplateEngine textTemplateEngine;
     private final TemplateEngine htmlTemplateEngine;
+    private final UserService userService;
 
     @Value("${web.portal}")
     private String portalUrl;
@@ -154,13 +156,15 @@ public class EmailHelper {
         }
     }
 
+    //TODO JC More generic name
     public void sendNewChatPostsForCandidateUserEmail(User user, Set<JobChat> chats) {
 
         String email = user.getEmail();
         Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
-        //TODO JC Check whether user is candidate - two different templates candidates/non candidates
+        String emailTemplate = userService.isCandidate(user) ?
+            "candidate-chat-notification" : "admin-chat-notification";
 
         String subject;
         String bodyText;
@@ -178,8 +182,8 @@ public class EmailHelper {
 
             subject = "Talent Catalog - New chat posts";
 
-            bodyText = textTemplateEngine.process("candidate-chat-notification", ctx);
-            bodyHtml = htmlTemplateEngine.process("candidate-chat-notification", ctx);
+            bodyText = textTemplateEngine.process(emailTemplate, ctx);
+            bodyHtml = htmlTemplateEngine.process(emailTemplate, ctx);
 
             LogBuilder.builder(log)
                 .action("ChatPostsEmail")
@@ -205,7 +209,7 @@ public class EmailHelper {
         } catch (Exception e) {
             LogBuilder.builder(log)
                 .action("ChatPostsEmail")
-                .message("error sending candidate chat notification email to " + email)
+                .message("error sending chat notification email to " + email)
                 .logError();
 
             throw new EmailSendFailedException(e);
