@@ -459,7 +459,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         //Run the saved list or saved search as stored on the server.
         this.performSearch(
           this.pageSize,
-          DtoType.PREVIEW,
+          DtoType.FULL,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
             // Restore the selection prior to the search
