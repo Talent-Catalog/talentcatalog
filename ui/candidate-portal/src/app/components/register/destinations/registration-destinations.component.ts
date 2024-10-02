@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Candidate, CandidateDestination} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
@@ -80,7 +72,7 @@ export class RegistrationDestinationsComponent implements OnInit {
   save(dir: string) {
     this.saving = true;
 
-    if (this.destinationForms.length > 0) {
+    if (this.destinationForms && this.destinationForms.length > 0) {
       let destinations$: Observable<CandidateDestination>[] = [];
       for (const dest of this.destinationForms) {
         if (dest.id != null) {
