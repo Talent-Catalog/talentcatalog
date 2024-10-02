@@ -219,6 +219,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       candidateSourceCandidateService,
       candidateFieldService,
       modalService);
+
+    this.longFormat = true;
   }
 
   ngOnInit() {
@@ -226,7 +228,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.setCurrentCandidate(null);
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectedCandidates = [];
-    this.longFormat = true;
 
     this.statuses = [
       ReviewStatus[ReviewStatus.rejected],
