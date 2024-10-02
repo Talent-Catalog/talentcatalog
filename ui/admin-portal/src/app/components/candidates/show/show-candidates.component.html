@@ -38,18 +38,22 @@
       {{getBreadcrumb()}} <!-- Todo : Rename this? We simply want the list name or search name -->
 
       <span class="small text-muted">
-        {{candidateSource.id}}
+        <span *ngIf="!isDefaultSavedSearch()">{{candidateSource.id}} </span>
         <!-- Icons -->
-        <a target="_blank" [routerLink]="['./']" class="link-primary">
+        <a target="_blank" *ngIf="!isDefaultSavedSearch()" [routerLink]="['./']" class="link-primary">
           <i class="fas fa-external-link-alt is-link" title="Show candidate in new tab"></i>
+        </a>
+        <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doToggleStarred()" class="link-info">
+          <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
+          <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
+        </a>
+        <a target="_blank" *ngIf="isSavedSearch() && !isDefaultSavedSearch()" (click)="doToggleWatch()" class="link-info">
+          <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
+          <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
         </a>
         -
         <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()" class="link-info">
           <i class="fas fa-link" title="Copy shareable link"></i>
-        </a>
-        <a target="_blank" (click)="doToggleStarred()" class="link-info">
-          <i *ngIf="isStarred()" class="fas fa-star starred" title="Unstar"></i>
-          <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
         </a>
         <a target="_blank" *ngIf="isSavedList()" (click)="doCopySource()" class="link-info">
           <i class="fas fa-clone" title="Copy"></i>
@@ -63,7 +67,7 @@
         <a target="_blank" *ngIf="isEditable()" (click)="onSelectColumns()" class="link-info">
           <i class="fas fa-columns" title="Select columns to display"></i>
         </a>
-        <a target="_blank" *ngIf="canAssignTasks()" (click)="assignTasks()" class="link-info">
+        <a target="_blank" *ngIf="canAssignTasks() && !isDefaultSavedSearch()" (click)="assignTasks()" class="link-info">
           <i class="fas fa-tasks" title="Assign/show tasks"></i>
         </a>
         <a target="_blank" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()" class="link-info">

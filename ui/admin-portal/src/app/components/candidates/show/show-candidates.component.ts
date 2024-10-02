@@ -35,10 +35,7 @@ import {
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
-import {
-  CreateFromDefaultSavedSearchRequest,
-  SavedSearchService
-} from '../../../services/saved-search.service';
+import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -46,7 +43,8 @@ import {
   ClearSelectionRequest,
   getCandidateSourceExternalHref,
   getCandidateSourceNavigation,
-  getCandidateSourceStatsNavigation, getCandidateSourceType,
+  getCandidateSourceStatsNavigation,
+  getCandidateSourceType,
   getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
   isSavedSearch,
@@ -64,9 +62,7 @@ import {
   ReviewStatus,
   Status
 } from '../../../model/base';
-import {
-  CandidateSourceResultsCacheService
-} from '../../../services/candidate-source-results-cache.service';
+import {CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -75,7 +71,8 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   IHasSetOfCandidates,
-  isSavedList, isSubmissionList,
+  isSavedList,
+  isSubmissionList,
   PublishedDocColumnConfig,
   PublishedDocImportReport,
   PublishListRequest,
@@ -83,9 +80,7 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {
-  CandidateSourceCandidateService
-} from '../../../services/candidate-source-candidate.service';
+import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {
   EditCandidateReviewStatusItemComponent
@@ -100,9 +95,7 @@ import {SavedListService} from '../../../services/saved-list.service';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {
-  EditCandidateOppComponent
-} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
+import {EditCandidateOppComponent} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -226,6 +219,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       candidateSourceCandidateService,
       candidateFieldService,
       modalService);
+
+    this.longFormat = true;
   }
 
   ngOnInit() {
@@ -233,7 +228,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.setCurrentCandidate(null);
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectedCandidates = [];
-    this.longFormat = true;
 
     this.statuses = [
       ReviewStatus[ReviewStatus.rejected],
@@ -466,7 +460,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         //Run the saved list or saved search as stored on the server.
         this.performSearch(
           this.pageSize,
-          DtoType.PREVIEW,
+          DtoType.FULL,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
             // Restore the selection prior to the search
@@ -1654,6 +1648,38 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     if (isSavedList(this.candidateSource)) {
       this.tasksAssignedToList = this.candidateSource.tasks;
       return this.candidateSource.tasks.length > 0;
+    }
+  }
+
+  isWatching(): boolean {
+    return this.candidateSource.watcherUserIds === undefined ? false :
+      this.candidateSource.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+  }
+
+  doToggleWatch() {
+    this.loading = true;
+    if (this.isWatching()) {
+      this.savedSearchService
+        .removeWatcher(this.candidateSource.id, {userId: this.loggedInUser.id})
+        .subscribe(result => {
+          //Update local copy
+          this.candidateSource = result;
+          this.loading = false;
+        }, err => {
+          this.loading = false;
+          this.error = err;
+        })
+    } else {
+      this.savedSearchService
+        .addWatcher(this.candidateSource.id, {userId: this.loggedInUser.id})
+        .subscribe(result => {
+          //Update local copy
+          this.candidateSource = result;
+          this.loading = false;
+        }, err => {
+          this.loading = false;
+          this.error = err;
+        })
     }
   }
 

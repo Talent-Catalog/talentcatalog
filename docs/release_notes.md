@@ -6,6 +6,9 @@ sass:
 
 # Release Notes
 
+Check out the newest features and enhancements.
+
+- [Version 2.2.2](release_notes_v2_2_2.md)
 - [Version 2.2.1](release_notes_v2_2_1.md)
 - [Version 2.2.0](release_notes_v2_2_0.md)
 - [Version 2.1.0](release_notes_v2_1_0.md)

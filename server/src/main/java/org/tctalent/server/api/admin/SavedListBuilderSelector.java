@@ -49,6 +49,8 @@ public class SavedListBuilderSelector {
             .add("id")
             .add("name")
             .add("sfJobOpp", jobOppIdsDto())
+            .add("displayedFieldsLong")
+            .add("displayedFieldsShort")
             ;
     }
 
