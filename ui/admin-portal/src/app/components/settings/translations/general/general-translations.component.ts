@@ -345,6 +345,7 @@ const ALL_FIELDS = {
           "LANGUAGE": null,
           "EXAM": null,
           "CERTIFICATIONS": null,
+          "DESTINATIONS": null,
           "ADDITIONAL": null,
           "UPLOAD": null,
           "SUBMIT": null
@@ -587,6 +588,7 @@ const ALL_FIELDS = {
         "LANGUAGES": null,
         "EXAMS": null,
         "CERTIFICATIONS": null,
+        "DESTINATIONS": null,
         "ADDITIONAL": null,
         "UPLOAD": null
       }
