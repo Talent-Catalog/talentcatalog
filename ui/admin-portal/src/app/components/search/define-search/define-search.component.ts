@@ -14,16 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
 import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -53,9 +44,7 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {
-  DateRangePickerComponent
-} from '../../util/form/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -63,6 +52,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {
+  ClearSelectionRequest,
   getCandidateSourceNavigation,
   getSavedSearchBreadcrumb,
   SavedSearch,
@@ -405,6 +395,43 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
     this.otherLanguagePicker.form.reset();
+  }
+
+  clearSearch() {
+    this.confirmClearSelectionModal();
+  }
+
+  confirmClearSelectionModal() {
+    const clearSelectionModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    clearSelectionModal.componentInstance.message = "Clearing the search will also clear any candidate's selected. " +
+      "If you want to keep the selections, save selections to a list before clearing search."
+
+    clearSelectionModal.result
+      .then((confirmation) => {
+        if (confirmation == true) {
+          this.clearForm();
+          this.clearSelection();
+        }
+      })
+      .catch(() => { /* Isn't possible */
+      });
+  }
+
+  clearSelection() {
+    const request: ClearSelectionRequest = {
+      userId: this.loggedInUser.id,
+    };
+    this.savedSearchService.clearSelection(this.savedSearch.id, request).subscribe(
+      () => {
+        this.apply();
+      },
+      err => {
+        this.error = err;
+      });
   }
 
   getBreadcrumb() {
