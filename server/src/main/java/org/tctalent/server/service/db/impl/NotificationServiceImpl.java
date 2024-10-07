@@ -23,9 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,8 +42,8 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobChatUserService;
@@ -55,7 +57,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
 @Slf4j
 public class NotificationServiceImpl implements NotificationService {
     private final AuthService authService;
-    private final CandidateOpportunityService candidateOpportunityService;
+    private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final ChatPostService chatPostService;
     private final EmailHelper emailHelper;
     private final JobChatService jobChatService;
@@ -73,7 +75,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void notifyUsersOfChatsWithNewPosts() {
+        Map<Long, Set<JobChat>> userNotifications = computeUserNotifications();
 
+        sendEmailsFromNotifications(userNotifications);
+    }
+
+    /**
+     * Exposed for unit testing
+     */
+    protected @NotNull Map<Long, Set<JobChat>> computeUserNotifications() {
         //Map of user id to set of chats with new posts
         Map<Long, Set<JobChat>> userNotifications = new HashMap<>();
 
@@ -96,18 +106,15 @@ public class NotificationServiceImpl implements NotificationService {
                     }
                 }
                 case CandidateRecruiting -> {
-                    if (candidate != null && job != null) {
-                        CandidateOpportunity aCase = candidateOpportunityService.findOpp(candidate, job);
-                        if (aCase != null) {
-                            //Candidates only see this chat if they are at or past the review stage
-                            if (aCase.getStage().isWon() || !aCase.getStage().isClosed()
-                                && CandidateOpportunityStage.cvReview.compareTo(aCase.getStage()) <= 0) {
-                                notifyCandidate(candidate, chat, userNotifications);
-                            }
-                            notifySourcePartner(candidate, chat, userNotifications);
-                            notifyDestinationPartner(chat, userNotifications);
-                            notifyParticipants(chat, userNotifications);
+                    if (candidate != null) {
+                        //This chat is only visible to the candidate if the corresponding case is
+                        //at or past the review stage
+                        if (isChatCaseAtOrPastReviewStage(chat)) {
+                            notifyCandidate(candidate, chat, userNotifications);
                         }
+                        notifySourcePartner(candidate, chat, userNotifications);
+                        notifyDestinationPartner(chat, userNotifications);
+                        notifyParticipants(chat, userNotifications);
                     }
                 }
                 case AllJobCandidates -> {
@@ -144,48 +151,15 @@ public class NotificationServiceImpl implements NotificationService {
                 }
             }
         }
-
-        //Construct and send emails
-        for (Long userId : userNotifications.keySet()) {
-            final Set<JobChat> userChatsWithNewPosts = userNotifications.get(userId);
-
-            User user = userService.getUser(userId);
-            if (user != null) {
-
-                //Filter out chats that the user has marked as read
-                Set<JobChat> unreadChats = userChatsWithNewPosts.stream()
-                    .filter(chat -> !jobChatUserService.isChatReadByUser(chat, user))
-                    .collect(Collectors.toSet());
-
-                String s = unreadChats.stream()
-                    .map(c -> c.getId().toString())
-                    .collect(Collectors.joining(","));
-
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("notifyOfChatsWithNewPosts")
-                    .message("Notifying user " + userId + " about posts to chats " + s)
-                    .logInfo();
-
-                final boolean isCandidate = userService.isCandidate(user);
-                //TODO JC Construct list of topics (chat focus?) - which are either a job opp,
-                // a candidate opp or a source partner / candidate (for CandidateProspect chats with no job).
-                //For html can generate links (eg to job opps, candidate opps, candidates): source partner is always name
-                //For text just names of opps (or candidate name or source partner name)
-
-                //todo jc When adding these focuses - add to sets, removing duplicates.
-
-                //TODO JC Compute list of chat focuses and pass in replacing unreadChats
-                emailHelper.sendNewChatPostsForCandidateUserEmail(user, unreadChats);
-            }
-        }
+        return userNotifications;
     }
+
 
     private void notifyCandidate(
         Candidate candidate, JobChat chat, Map<Long, Set<JobChat>> userNotifications) {
         User candidateUser = candidate.getUser();
         Set<JobChat> chats = userNotifications.computeIfAbsent(
-                candidateUser.getId(), k -> new HashSet<>());
+            candidateUser.getId(), k -> new HashSet<>());
         chats.add(chat);
     }
 
@@ -247,6 +221,60 @@ public class NotificationServiceImpl implements NotificationService {
                 Set<JobChat> chats = userNotifications.computeIfAbsent(
                     sourceUser.getId(), k -> new HashSet<>());
                 chats.add(chat);
+            }
+        }
+    }
+
+
+    private boolean isChatCaseAtOrPastReviewStage(@NonNull JobChat chat) {
+        boolean result = false;
+        Candidate candidate = chat.getCandidate();
+        SalesforceJobOpp job = chat.getJobOpp();
+        if (candidate != null && job != null) {
+            CandidateOpportunity aCase = candidateOpportunityRepository
+                .findByCandidateIdAndJobId(candidate.getId(), job.getId());
+            if (aCase != null) {
+                result = (aCase.getStage().isWon() || !aCase.getStage().isClosed()
+                    && CandidateOpportunityStage.cvReview.compareTo(aCase.getStage()) <= 0);
+            }
+        }
+        return result;
+    }
+
+    private void sendEmailsFromNotifications(Map<Long, Set<JobChat>> userNotifications) {
+        //Construct and send emails
+        for (Long userId : userNotifications.keySet()) {
+            final Set<JobChat> userChatsWithNewPosts = userNotifications.get(userId);
+
+            User user = userService.getUser(userId);
+            if (user != null) {
+
+                //Filter out chats that the user has marked as read
+                Set<JobChat> unreadChats = userChatsWithNewPosts.stream()
+                    .filter(chat -> !jobChatUserService.isChatReadByUser(chat, user))
+                    .collect(Collectors.toSet());
+
+                String s = unreadChats.stream()
+                    .map(c -> c.getId().toString())
+                    .collect(Collectors.joining(","));
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("notifyOfChatsWithNewPosts")
+                    .message("Notifying user " + userId + " about posts to chats " + s)
+                    .logInfo();
+
+                final boolean isCandidate = userService.isCandidate(user);
+                //TODO JC Construct list of topics (chat focus?) - which are either a job opp,
+                // a candidate opp or a source partner / candidate (for CandidateProspect chats with no job).
+                //For html can generate links (eg to job opps, candidate opps, candidates): source partner is always name
+                //For text just names of opps (or candidate name or source partner name)
+
+                //todo jc When adding these focuses - add to sets, removing duplicates.
+
+                //TODO JC Compute list of chat focuses and pass in replacing unreadChats
+                emailHelper.sendNewChatPostsForCandidateUserEmail(
+                    user, userService.isCandidate(user), unreadChats);
             }
         }
     }

@@ -30,7 +30,6 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.service.db.UserService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -42,7 +41,6 @@ public class EmailHelper {
     private final EmailSender emailSender;
     private final TemplateEngine textTemplateEngine;
     private final TemplateEngine htmlTemplateEngine;
-    private final UserService userService;
 
     @Value("${web.portal}")
     private String portalUrl;
@@ -157,13 +155,14 @@ public class EmailHelper {
     }
 
     //TODO JC More generic name
-    public void sendNewChatPostsForCandidateUserEmail(User user, Set<JobChat> chats) {
+    public void sendNewChatPostsForCandidateUserEmail(
+        User user, boolean isCandidateUser, Set<JobChat> chats) {
 
         String email = user.getEmail();
         Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
-        String emailTemplate = userService.isCandidate(user) ?
+        String emailTemplate = isCandidateUser ?
             "candidate-chat-notification" : "admin-chat-notification";
 
         String subject;
