@@ -65,10 +65,10 @@ import org.tctalent.server.service.db.UserService;
 public class ElasticsearchServiceImpl implements ElasticsearchService {
 
   private static final String CANDIDATE_NUMBER_FIELD = "candidateNumber";
-  private static final String EMAIL_FIELD = "email";
-  private static final String EXTERNAL_ID_FIELD = "externalId";
+  private static final String EMAIL_FIELD = "email.keyword";
+  private static final String EXTERNAL_ID_FIELD = "externalId.keyword";
   private static final String FULL_NAME_FIELD = "fullName";
-  private static final String PHONE_NUMBER_FIELD = "phone";
+  private static final String PHONE_NUMBER_FIELD = "phone.keyword";
 
   private static final String COUNTRY_KEYWORD = "country.keyword";
   private static final String STATUS_KEYWORD = "status.keyword";
