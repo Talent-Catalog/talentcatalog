@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -37,6 +38,7 @@ import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
@@ -60,7 +62,11 @@ class NotificationServiceImplTest {
     UserService userService;
 
     NotificationServiceImpl notificationService;
-
+    
+    //System admin user
+    User systemAdminUser;
+    final static long SYSTEM_ADMIN_USER_ID = 999;
+    
     @BeforeEach
     void setUp() {
         notificationService =
@@ -70,51 +76,173 @@ class NotificationServiceImplTest {
                 null, userService);
 
         //Set up a system admin user
-        User systemAdminUser = createNonCandidateUser(999, Role.systemadmin);
+        systemAdminUser = createNonCandidateUser(SYSTEM_ADMIN_USER_ID, Role.systemadmin);
         given(userService.getSystemAdminUser()).willReturn(systemAdminUser);
-
-        //This means that all candidate opportunities will look like are past the review stage
-        CandidateOpportunity candidateOpportunity = new CandidateOpportunity();
-        candidateOpportunity.setStage(CandidateOpportunityStage.cvReview);
-        given(candidateOpportunityRepository
-            .findByCandidateIdAndJobId(any(), any())).willReturn(candidateOpportunity);
-
+        
     }
 
     @Test
-    void computeUserNotifications() {
+    void computeCandidateProspectUserNotifications() {
 
         //These are the chats that the jobChatService will return
         List<JobChat> chats = new ArrayList<>();
         given(jobChatService.findByIds(any())).willReturn(chats);
 
         //Test chat for candidate
-        Candidate candidateAssociatedWithChat = createCandidate(1);
+        PartnerImpl partner = createSourcePartner(10, createNonCandidateUser(4, Role.partneradmin));
+        Candidate candidateAssociatedWithChat = createCandidate(1, partner);
         SalesforceJobOpp job = new SalesforceJobOpp();
         JobChat candidateProspectChat = createChat(
-            1, JobChatType.CandidateProspect, candidateAssociatedWithChat, job);
+            100, JobChatType.CandidateProspect, candidateAssociatedWithChat, job);
         chats.add(candidateProspectChat);
 
-        //Create chat post on chat and make chatPostService return it
+        //Create chat posts on chat and make chatPostService return it
         List<ChatPost> chatPosts = new ArrayList<>();
+        
+        //Random poster
         ChatPost chatPost = createChatPost(candidateProspectChat,
             createNonCandidateUser(3, Role.partneradmin) );
         chatPosts.add(chatPost);
+
+        //Auto post (by system admin)
+        ChatPost chatAutoPost = createChatPost(candidateProspectChat, systemAdminUser); 
+        chatPosts.add(chatAutoPost);
         given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
 
-        //The notifications for the chats should be user 1, the candidate chat owner and user 3
-        //who posted.
+        //All cases are in review stage
+        mockAllCasesToStage(CandidateOpportunityStage.cvReview);
         Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
+        
+        //The notifications for the chats should be user 1 (the candidate chat owner) and user 3
+        //(the poster) and user 4 (the source partner contact) 
+        assertNotNull(notifications);
+        assertEquals(3, notifications.size());
+
+        //Notify candidate associated with chat (past review stage)
+        //User 1 has one chat - chat 100
+        Set<JobChat> user1Chats = notifications.get(1L);
+        assertEquals(1, user1Chats.size());
+        assertEquals(100, user1Chats.toArray(new JobChat[1])[0].getId());
+
+        //Notify random poster
+        //User 3 has one chat - chat 100
+        Set<JobChat> user3Chats = notifications.get(3L);
+        assertEquals(1, user3Chats.size());
+        assertEquals(100, user3Chats.toArray(new JobChat[1])[0].getId());
+
+        //Notify candidate's source partner's contact
+        //User 4 has one chat - chat 100
+        Set<JobChat> user4Chats = notifications.get(4L);
+        assertEquals(1, user4Chats.size());
+        assertEquals(100, user4Chats.toArray(new JobChat[1])[0].getId());
+
+        //Notify candidate's source partner's contact
+        //User 4 has one chat - chat 100
+        Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
+        assertNull(systemAdminUserChats);
+    }
+    
+    @Test
+    void computeCandidateRecruitingUserNotifications() {
+
+        //These are the chats that the jobChatService will return
+        List<JobChat> chats = new ArrayList<>();
+        given(jobChatService.findByIds(any())).willReturn(chats);
+
+        //Test chat for candidate
+        PartnerImpl partner = createSourcePartner(10, createNonCandidateUser(4, Role.partneradmin));
+        Candidate candidateAssociatedWithChat = createCandidate(1, partner);
+        SalesforceJobOpp job = new SalesforceJobOpp();
+        JobChat candidateProspectChat = createChat(
+            100, JobChatType.CandidateRecruiting, candidateAssociatedWithChat, job);
+        chats.add(candidateProspectChat);
+
+        //Create chat posts on chat and make chatPostService return it
+        List<ChatPost> chatPosts = new ArrayList<>();
+        
+        //Random poster
+        ChatPost chatPost = createChatPost(candidateProspectChat,
+            createNonCandidateUser(3, Role.partneradmin) );
+        chatPosts.add(chatPost);
+
+        //Auto post (by system admin)
+        ChatPost chatAutoPost = createChatPost(candidateProspectChat, systemAdminUser); 
+        chatPosts.add(chatAutoPost);
+        given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
+
+        //All cases are in review stage
+        mockAllCasesToStage(CandidateOpportunityStage.cvReview);
+        Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
+        
+        //The notifications for the chats should be user 1 (the candidate chat owner) and user 3
+        //(the poster) and user 4 (the source partner contact) 
+        assertNotNull(notifications);
+        assertEquals(3, notifications.size());
+
+        //Notify candidate associated with chat (past review stage)
+        //User 1 has one chat - chat 100
+        Set<JobChat> user1Chats = notifications.get(1L);
+        assertEquals(1, user1Chats.size());
+        assertEquals(100, user1Chats.toArray(new JobChat[1])[0].getId());
+
+        //Notify random poster
+        //User 3 has one chat - chat 100
+        Set<JobChat> user3Chats = notifications.get(3L);
+        assertEquals(1, user3Chats.size());
+        assertEquals(100, user3Chats.toArray(new JobChat[1])[0].getId());
+
+        //Notify candidate's source partner's contact
+        //User 4 has one chat - chat 100
+        Set<JobChat> user4Chats = notifications.get(4L);
+        assertEquals(1, user4Chats.size());
+        assertEquals(100, user4Chats.toArray(new JobChat[1])[0].getId());
+
+        //Notify candidate's source partner's contact
+        //User 4 has one chat - chat 100
+        Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
+        assertNull(systemAdminUserChats);
+
+        
+        //All cases are in prospect stage
+        mockAllCasesToStage(CandidateOpportunityStage.prospect);
+        notifications = notificationService.computeUserNotifications();
+        
         assertNotNull(notifications);
         assertEquals(2, notifications.size());
 
-        //User 1 has one chat
-        final Set<JobChat> user1Chats = notifications.get(1L);
+        //Do NOT notify candidate associated with chat because case is not at review stage
+        //User 1 has one chat - chat 100
+        user1Chats = notifications.get(1L);
+        assertNull(user1Chats);
 
-        //User 3 has one chat
-        final Set<JobChat> user3Chats = notifications.get(3L);
+        //Notify random poster
+        //User 3 has one chat - chat 100
+        user3Chats = notifications.get(3L);
+        assertEquals(1, user3Chats.size());
+        assertEquals(100, user3Chats.toArray(new JobChat[1])[0].getId());
 
-        //TODO JC What about candidate's partner?
+        //Notify candidate's source partner's contact
+        //User 4 has one chat - chat 100
+        user4Chats = notifications.get(4L);
+        assertEquals(1, user4Chats.size());
+        assertEquals(100, user4Chats.toArray(new JobChat[1])[0].getId());
+
+        //Notify candidate's source partner's contact
+        //User 4 has one chat - chat 100
+        systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
+        assertNull(systemAdminUserChats);
+    }
+
+    private void mockAllCasesToStage(CandidateOpportunityStage stage) {
+        given(candidateOpportunityRepository.findByCandidateIdAndJobId(any(), any()))
+            .willReturn(createCase(stage));
+    }
+
+    private PartnerImpl createSourcePartner(long id, User nonCandidateUser) {
+        PartnerImpl partner = new PartnerImpl();
+        partner.setId(id);
+        partner.setDefaultContact(nonCandidateUser);
+        return partner;
     }
 
     private ChatPost createChatPost(JobChat chat, User postingUser) {
@@ -134,13 +262,20 @@ class NotificationServiceImplTest {
         return  chat;
     }
 
-    private Candidate createCandidate(long userId) {
+    private Candidate createCandidate(long userId, PartnerImpl sourcePartner) {
         User user = new User();
         user.setRole(Role.user);
+        user.setPartner(sourcePartner);
         user.setId(userId);
         Candidate candidate = new Candidate();
         candidate.setUser(user);
         return candidate;
+    }
+
+    private CandidateOpportunity createCase(CandidateOpportunityStage stage) {
+        CandidateOpportunity opp = new CandidateOpportunity();
+        opp.setStage(stage);
+        return opp;
     }
 
     private User createNonCandidateUser(long userId, Role role) {
