@@ -325,6 +325,9 @@ class NotificationServiceImplTest {
         assertNull(systemAdminUserChats);
     }
 
+    //TODO JC JobCreatorSourcePartner
+    //TODO JC JobCreatorAllSourcePartners
+    
     private void setJobCasesStage(SalesforceJobOpp job, CandidateOpportunityStage stage) {
         for (CandidateOpportunity opp : job.getCandidateOpportunities()) {
             opp.setStage(stage);
