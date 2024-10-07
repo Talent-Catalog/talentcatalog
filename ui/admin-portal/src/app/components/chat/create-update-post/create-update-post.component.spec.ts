@@ -121,12 +121,14 @@ describe('CreateUpdatePostComponent', () => {
 
 
   it('should handle emoji selection', () => {
-    const quillEditorRefSpy = jasmine.createSpyObj('Quill', ['insertText', 'setSelection'],['savedRange']);
+    const quillEditorRefSpy = jasmine.createSpyObj('Quill', ['insertText', 'setSelection', 'getLength'],['savedRange']);
     quillEditorRefSpy.selection = {
       savedRange: {
         index: 0
       }
     };
+
+    quillEditorRefSpy.getLength.and.returnValue(2);
 
     component.quillEditorRef = quillEditorRefSpy;
 
