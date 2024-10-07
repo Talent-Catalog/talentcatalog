@@ -3,10 +3,9 @@ name: Run Angular Tests
 on:
   push:
     branches:
-      - 1332-implement-cicd-pipeline-for-running-unit-tests-on-staging-branch
-  pull_request:
-    branches:
-      - 1332-implement-cicd-pipeline-for-running-unit-tests-on-staging-branch
+      - '*'
+      - '!staging'
+      - '!master'
 
 jobs:
   test:
