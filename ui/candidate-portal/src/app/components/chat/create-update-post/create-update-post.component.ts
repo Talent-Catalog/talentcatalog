@@ -23,10 +23,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {LinkPreview} from "../../../model/link-preview";
-import {
-  BuildLinkPreviewRequest,
-  LinkPreviewService
-} from "../../../services/link-preview.service";
+import {BuildLinkPreviewRequest, LinkPreviewService} from "../../../services/link-preview.service";
 import {BuildLinkComponent} from "../../../util/build-link/build-link.component";
 import {EditorSelection} from "../../../model/base";
 
@@ -149,7 +146,7 @@ export class CreateUpdatePostComponent implements OnInit {
     this.emojiPickerVisible = false;
     const index: number = this.quillEditorRef.selection.savedRange.index;
     this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
-    this.quillEditorRef.setSelection(index + 2, 0);
+    this.quillEditorRef.setSelection(this.quillEditorRef.getLength(), 0);
   }
 
   // Toggles the emoji picker on or off and focuses the caret.
