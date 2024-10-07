@@ -16,8 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.Role;
@@ -65,41 +68,70 @@ class NotificationServiceImplTest {
                 null, candidateOpportunityRepository, chatPostService,
                 null, jobChatService, null,
                 null, userService);
+
+        //Set up a system admin user
+        User systemAdminUser = createNonCandidateUser(999, Role.systemadmin);
+        given(userService.getSystemAdminUser()).willReturn(systemAdminUser);
+
+        //This means that all candidate opportunities will look like are past the review stage
+        CandidateOpportunity candidateOpportunity = new CandidateOpportunity();
+        candidateOpportunity.setStage(CandidateOpportunityStage.cvReview);
+        given(candidateOpportunityRepository
+            .findByCandidateIdAndJobId(any(), any())).willReturn(candidateOpportunity);
+
     }
 
     @Test
     void computeUserNotifications() {
+
+        //These are the chats that the jobChatService will return
         List<JobChat> chats = new ArrayList<>();
-
-        User user;
-        Candidate candidate;
-        JobChat chat;
-        SalesforceJobOpp job;
-
-        User systemAdminUser = createNonCandidateUser(2, Role.systemadmin);
-
-        candidate = createCandidate(1);
-        job = new SalesforceJobOpp();
-
-        chat = new JobChat();
-        chat.setId(1L);
-        chat.setCandidate(candidate);
-        chat.setJobOpp(job);
-        chat.setType(JobChatType.CandidateProspect);
-
-        chats.add(chat);
-
-
-        CandidateOpportunity candidateOpportunity = new CandidateOpportunity();
-        candidateOpportunity.setStage(CandidateOpportunityStage.cvReview);
-
         given(jobChatService.findByIds(any())).willReturn(chats);
-        given(userService.getSystemAdminUser()).willReturn(systemAdminUser);
-        given(candidateOpportunityRepository
-            .findByCandidateIdAndJobId(any(), any())).willReturn(candidateOpportunity);
 
+        //Test chat for candidate
+        Candidate candidateAssociatedWithChat = createCandidate(1);
+        SalesforceJobOpp job = new SalesforceJobOpp();
+        JobChat candidateProspectChat = createChat(
+            1, JobChatType.CandidateProspect, candidateAssociatedWithChat, job);
+        chats.add(candidateProspectChat);
+
+        //Create chat post on chat and make chatPostService return it
+        List<ChatPost> chatPosts = new ArrayList<>();
+        ChatPost chatPost = createChatPost(candidateProspectChat,
+            createNonCandidateUser(3, Role.partneradmin) );
+        chatPosts.add(chatPost);
+        given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
+
+        //The notifications for the chats should be user 1, the candidate chat owner and user 3
+        //who posted.
         Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
         assertNotNull(notifications);
+        assertEquals(2, notifications.size());
+
+        //User 1 has one chat
+        final Set<JobChat> user1Chats = notifications.get(1L);
+
+        //User 3 has one chat
+        final Set<JobChat> user3Chats = notifications.get(3L);
+
+        //TODO JC What about candidate's partner?
+    }
+
+    private ChatPost createChatPost(JobChat chat, User postingUser) {
+        ChatPost chatPost = new ChatPost();
+        chatPost.setJobChat(chat);
+        chatPost.setCreatedBy(postingUser);
+        return chatPost;
+    }
+
+    private JobChat createChat(
+        long id, JobChatType jobChatType, Candidate candidate, SalesforceJobOpp job) {
+        JobChat chat = new JobChat();
+        chat.setId(id);
+        chat.setCandidate(candidate);
+        chat.setJobOpp(job);
+        chat.setType(jobChatType);
+        return  chat;
     }
 
     private Candidate createCandidate(long userId) {

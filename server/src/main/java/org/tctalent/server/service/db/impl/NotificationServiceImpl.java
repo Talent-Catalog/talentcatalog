@@ -180,7 +180,7 @@ public class NotificationServiceImpl implements NotificationService {
     private void notifyParticipants(
         JobChat chat, Map<Long, Set<JobChat>> userNotifications) {
         //Get posts for chat. Extract all users who have posted
-        // (excluding auto posts from Talent Catalog) and notify them
+        // (excluding auto posts from Talent Catalog - ie from SystemAdminUser) and notify them
         final List<ChatPost> chatPosts = chatPostService.listChatPosts(chat.getId());
 
         long systemAdminUserId = userService.getSystemAdminUser().getId();
