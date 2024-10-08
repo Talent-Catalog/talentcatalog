@@ -54,7 +54,8 @@
       </div>
 
       <div class="alert alert-success" *ngIf="attachments?.length">
-        Successfully uploaded {{attachments.length}} attachments
+        Successfully uploaded {{attachments.length}}
+        <span *ngIf="form.value.cv">CV</span> attachment<span *ngIf="attachments.length > 1">s</span>
       </div>
 
       <div class="mb-3" *ngIf="!attachments?.length && !uploading">
