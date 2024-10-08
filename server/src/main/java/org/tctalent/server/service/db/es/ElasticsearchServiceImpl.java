@@ -29,6 +29,7 @@ import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.WildcardQueryBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.jetbrains.annotations.NotNull;
@@ -191,13 +192,16 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
   @NotNull
   private BoolQueryBuilder computeFindByPhoneOrEmailQuery(String input) {
-    // Create prefix query for phone number
-    PrefixQueryBuilder phoneQuery = QueryBuilders
-        .prefixQuery(PHONE_NUMBER_FIELD, input);
+    // Add wildcard characters to the input for full wildcard matching
+    String wildcardInput = "*" + input + "*";
 
-    // Create prefix query for email
-    PrefixQueryBuilder emailQuery = QueryBuilders
-        .prefixQuery(EMAIL_FIELD, input);
+    // Create wildcard query for phone number
+    WildcardQueryBuilder phoneQuery = QueryBuilders
+        .wildcardQuery(PHONE_NUMBER_FIELD, wildcardInput);
+
+    // Create wildcard query for email
+    WildcardQueryBuilder emailQuery = QueryBuilders
+        .wildcardQuery(EMAIL_FIELD, wildcardInput);
 
     // Construct the boolean query with should clause
     BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
