@@ -271,10 +271,26 @@ public class NotificationServiceImpl implements NotificationService {
                 //For text just names of opps (or candidate name or source partner name)
 
                 //todo jc When adding these focuses - add to sets, removing duplicates.
+                
+                //todo Loop through unreadChats and based on chat type and isCandidate populate
+                //todo the data to be populated for each use chat notification
+                for (JobChat chat : unreadChats) {
+                    String s =  switch (chat.getType()) {
+                        case JobCreatorSourcePartner, JobCreatorAllSourcePartners -> 
+                        { 
+                            yield null; 
+                        } 
+                        case CandidateProspect -> null;
+                        case CandidateRecruiting -> null;
+                        case AllJobCandidates -> null;
+                        default -> null;
+                            
+                    }
+                    
+                }
 
                 //TODO JC Compute list of chat focuses and pass in replacing unreadChats
-                emailHelper.sendNewChatPostsForCandidateUserEmail(
-                    user, userService.isCandidate(user), unreadChats);
+                emailHelper.sendNewChatPostsForCandidateUserEmail(user, isCandidate, unreadChats);
             }
         }
     }
