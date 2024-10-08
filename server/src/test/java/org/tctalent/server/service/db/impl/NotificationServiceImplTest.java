@@ -46,6 +46,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 
 @ExtendWith(SpringExtension.class)
@@ -58,6 +59,9 @@ class NotificationServiceImplTest {
 
     @Mock
     JobChatService jobChatService;
+
+    @Mock
+    PartnerService partnerService;
 
     @Mock
     UserService userService;
@@ -74,7 +78,7 @@ class NotificationServiceImplTest {
             new NotificationServiceImpl(
                 null, candidateOpportunityRepository, chatPostService,
                 null, jobChatService, null,
-                null, userService);
+                partnerService, userService);
 
         //Set up a system admin user
         systemAdminUser = createNonCandidateUser(SYSTEM_ADMIN_USER_ID, Role.systemadmin);
@@ -371,10 +375,70 @@ class NotificationServiceImplTest {
         //System Admin is never notified
         Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
-
     }
 
-    //TODO JC JobCreatorAllSourcePartners
+
+    @Test
+    void computeJobCreatorAllSourcePartnersUserNotifications() {
+
+        //These are the chats that the jobChatService will return
+        List<JobChat> chats = new ArrayList<>();
+        given(jobChatService.findByIds(any())).willReturn(chats);
+
+        //Mock source partners returned by partnerService 
+        List<PartnerImpl> sourcePartners = new ArrayList<>();
+        given(partnerService.listSourcePartners()).willReturn(sourcePartners);
+        sourcePartners.add(createPartner(10, createNonCandidateUser(4, Role.partneradmin)));
+        sourcePartners.add(createPartner(20, createNonCandidateUser(8, Role.partneradmin)));
+
+        //Create chat to test
+        PartnerImpl destinationPartner = createPartner(1000, createNonCandidateUser(50, Role.partneradmin));
+        SalesforceJobOpp job = createJob(destinationPartner);
+        JobChat chat = createChat(
+            100, JobChatType.JobCreatorAllSourcePartners, null, job, null);
+        chats.add(chat);
+
+        //Create chat posts on chat and make chatPostService return it
+        List<ChatPost> chatPosts = new ArrayList<>();
+
+        //Random poster
+        ChatPost chatPost = createChatPost(chat,
+            createNonCandidateUser(3, Role.partneradmin) );
+        chatPosts.add(chatPost);
+
+        //Auto post (by system admin)
+        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser);
+        chatPosts.add(chatAutoPost);
+        given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
+
+        Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
+
+        //The notifications for the chats should be to the contacts for the two source 
+        // partners (4,8), destination partner contact (50), the poster (3). 
+        assertNotNull(notifications);
+        assertEquals(4, notifications.size());
+
+        Set<JobChat> userChatsA = notifications.get(4L);
+        assertEquals(1, userChatsA.size());
+        assertEquals(100, userChatsA.toArray(new JobChat[1])[0].getId());
+
+        Set<JobChat> userChatsA2 = notifications.get(8L);
+        assertEquals(1, userChatsA2.size());
+        assertEquals(100, userChatsA2.toArray(new JobChat[1])[0].getId());
+
+        Set<JobChat> userChatsB = notifications.get(50L);
+        assertEquals(1, userChatsB.size());
+        assertEquals(100, userChatsB.toArray(new JobChat[1])[0].getId());
+
+        Set<JobChat> userChatsC = notifications.get(3L);
+        assertEquals(1, userChatsC.size());
+        assertEquals(100, userChatsC.toArray(new JobChat[1])[0].getId());
+
+        //System Admin is never notified
+        Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
+        assertNull(systemAdminUserChats);
+
+    }
     
     private void setJobCasesStage(SalesforceJobOpp job, CandidateOpportunityStage stage) {
         for (CandidateOpportunity opp : job.getCandidateOpportunities()) {
