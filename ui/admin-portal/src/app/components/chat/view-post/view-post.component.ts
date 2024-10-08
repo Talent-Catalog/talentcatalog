@@ -61,7 +61,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
       if (changes.hasOwnProperty(propName)) {
         switch (propName) {
           case 'currentPost': {
-            this.setIsCurrentPostClosePickerIfFalse(
+            this.closePickerIfCurrentPostChanged(
               changes.currentPost.currentValue
             )
           }
@@ -124,7 +124,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
     }
   }
 
-  private setIsCurrentPostClosePickerIfFalse(currentPost: ChatPost) {
+  private closePickerIfCurrentPostChanged(currentPost: ChatPost) {
     this.isCurrentPost = currentPost === this.post;
     if (!this.isCurrentPost) {
       this.reactionPickerVisible = false;
