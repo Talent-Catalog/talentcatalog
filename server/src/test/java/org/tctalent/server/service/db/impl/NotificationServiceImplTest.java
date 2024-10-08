@@ -89,24 +89,24 @@ class NotificationServiceImplTest {
         List<JobChat> chats = new ArrayList<>();
         given(jobChatService.findByIds(any())).willReturn(chats);
 
-        //Test chat for candidate
-        PartnerImpl partner = createSourcePartner(10, createNonCandidateUser(4, Role.partneradmin));
-        Candidate candidateAssociatedWithChat = createCandidate(1, partner);
+        //Create chat to test
+        PartnerImpl sourcePartner = createPartner(10, createNonCandidateUser(4, Role.partneradmin));
+        Candidate candidateAssociatedWithChat = createCandidate(1, sourcePartner);
         SalesforceJobOpp job = createJob(candidateAssociatedWithChat);
-        JobChat candidateProspectChat = createChat(
-            100, JobChatType.CandidateProspect, candidateAssociatedWithChat, job);
-        chats.add(candidateProspectChat);
+        JobChat chat = createChat(
+            100, JobChatType.CandidateProspect, candidateAssociatedWithChat, job, null);
+        chats.add(chat);
 
         //Create chat posts on chat and make chatPostService return it
         List<ChatPost> chatPosts = new ArrayList<>();
         
         //Random poster
-        ChatPost chatPost = createChatPost(candidateProspectChat,
+        ChatPost chatPost = createChatPost(chat,
             createNonCandidateUser(3, Role.partneradmin) );
         chatPosts.add(chatPost);
 
         //Auto post (by system admin)
-        ChatPost chatAutoPost = createChatPost(candidateProspectChat, systemAdminUser); 
+        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser); 
         chatPosts.add(chatAutoPost);
         given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
 
@@ -137,8 +137,7 @@ class NotificationServiceImplTest {
         assertEquals(1, user4Chats.size());
         assertEquals(100, user4Chats.toArray(new JobChat[1])[0].getId());
 
-        //Notify candidate's source partner's contact
-        //User 4 has one chat - chat 100
+        //System Admin is never notified
         Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
     }
@@ -150,24 +149,24 @@ class NotificationServiceImplTest {
         List<JobChat> chats = new ArrayList<>();
         given(jobChatService.findByIds(any())).willReturn(chats);
 
-        //Test chat for candidate
-        PartnerImpl partner = createSourcePartner(10, createNonCandidateUser(4, Role.partneradmin));
-        Candidate candidateAssociatedWithChat = createCandidate(1, partner);
+        //Create chat to test
+        PartnerImpl sourcePartner = createPartner(10, createNonCandidateUser(4, Role.partneradmin));
+        Candidate candidateAssociatedWithChat = createCandidate(1, sourcePartner);
         SalesforceJobOpp job = createJob(candidateAssociatedWithChat);
-        JobChat candidateProspectChat = createChat(
-            100, JobChatType.CandidateRecruiting, candidateAssociatedWithChat, job);
-        chats.add(candidateProspectChat);
+        JobChat chat = createChat(
+            100, JobChatType.CandidateRecruiting, candidateAssociatedWithChat, job, null);
+        chats.add(chat);
 
         //Create chat posts on chat and make chatPostService return it
         List<ChatPost> chatPosts = new ArrayList<>();
         
         //Random poster
-        ChatPost chatPost = createChatPost(candidateProspectChat,
+        ChatPost chatPost = createChatPost(chat,
             createNonCandidateUser(3, Role.partneradmin) );
         chatPosts.add(chatPost);
 
         //Auto post (by system admin)
-        ChatPost chatAutoPost = createChatPost(candidateProspectChat, systemAdminUser); 
+        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser); 
         chatPosts.add(chatAutoPost);
         given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
 
@@ -198,8 +197,7 @@ class NotificationServiceImplTest {
         assertEquals(1, user4Chats.size());
         assertEquals(100, user4Chats.toArray(new JobChat[1])[0].getId());
 
-        //Notify candidate's source partner's contact
-        //User 4 has one chat - chat 100
+        //System Admin is never notified
         Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
 
@@ -228,8 +226,7 @@ class NotificationServiceImplTest {
         assertEquals(1, user4Chats.size());
         assertEquals(100, user4Chats.toArray(new JobChat[1])[0].getId());
 
-        //Notify candidate's source partner's contact
-        //User 4 has one chat - chat 100
+        //System Admin is never notified
         systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
     }
@@ -241,24 +238,24 @@ class NotificationServiceImplTest {
         List<JobChat> chats = new ArrayList<>();
         given(jobChatService.findByIds(any())).willReturn(chats);
 
-        //Test chat for candidate
-        PartnerImpl partner = createSourcePartner(10, createNonCandidateUser(4, Role.partneradmin));
-        Candidate candidateAssociatedWithChat = createCandidate(1, partner);
+        //Create chat to test
+        PartnerImpl sourcePartner = createPartner(10, createNonCandidateUser(4, Role.partneradmin));
+        Candidate candidateAssociatedWithChat = createCandidate(1, sourcePartner);
         SalesforceJobOpp job = createJob(candidateAssociatedWithChat);
-        JobChat candidateProspectChat = createChat(
-            100, JobChatType.AllJobCandidates, candidateAssociatedWithChat, job);
-        chats.add(candidateProspectChat);
+        JobChat chat = createChat(
+            100, JobChatType.AllJobCandidates, candidateAssociatedWithChat, job, null);
+        chats.add(chat);
 
         //Create chat posts on chat and make chatPostService return it
         List<ChatPost> chatPosts = new ArrayList<>();
         
         //Random poster
-        ChatPost chatPost = createChatPost(candidateProspectChat,
+        ChatPost chatPost = createChatPost(chat,
             createNonCandidateUser(3, Role.partneradmin) );
         chatPosts.add(chatPost);
 
         //Auto post (by system admin)
-        ChatPost chatAutoPost = createChatPost(candidateProspectChat, systemAdminUser); 
+        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser); 
         chatPosts.add(chatAutoPost);
         given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
 
@@ -289,8 +286,7 @@ class NotificationServiceImplTest {
         assertEquals(1, user4Chats.size());
         assertEquals(100, user4Chats.toArray(new JobChat[1])[0].getId());
 
-        //Notify candidate's source partner's contact
-        //User 4 has one chat - chat 100
+        //System Admin is never notified
         Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
 
@@ -319,19 +315,78 @@ class NotificationServiceImplTest {
         assertEquals(1, user4Chats.size());
         assertEquals(100, user4Chats.toArray(new JobChat[1])[0].getId());
 
-        //Notify candidate's source partner's contact
-        //User 4 has one chat - chat 100
+        //System Admin is never notified
         systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
     }
 
-    //TODO JC JobCreatorSourcePartner
+
+    @Test
+    void computeJobCreatorSourcePartnerUserNotifications() {
+
+        //These are the chats that the jobChatService will return
+        List<JobChat> chats = new ArrayList<>();
+        given(jobChatService.findByIds(any())).willReturn(chats);
+
+        //Create chat to test
+        PartnerImpl sourcePartner = createPartner(10, createNonCandidateUser(4, Role.partneradmin));
+        PartnerImpl destinationPartner = createPartner(1000, createNonCandidateUser(50, Role.partneradmin));
+        SalesforceJobOpp job = createJob(destinationPartner);
+        JobChat chat = createChat(
+            100, JobChatType.JobCreatorSourcePartner, null, job, sourcePartner);
+        chats.add(chat);
+
+        //Create chat posts on chat and make chatPostService return it
+        List<ChatPost> chatPosts = new ArrayList<>();
+
+        //Random poster
+        ChatPost chatPost = createChatPost(chat,
+            createNonCandidateUser(3, Role.partneradmin) );
+        chatPosts.add(chatPost);
+
+        //Auto post (by system admin)
+        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser);
+        chatPosts.add(chatAutoPost);
+        given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
+
+        Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
+
+        //The notifications for the chats should be source partner contact (4), 
+        // destination partner contact (50), the poster (3). 
+        assertNotNull(notifications);
+        assertEquals(3, notifications.size());
+
+        Set<JobChat> userChatsA = notifications.get(4L);
+        assertEquals(1, userChatsA.size());
+        assertEquals(100, userChatsA.toArray(new JobChat[1])[0].getId());
+
+        Set<JobChat> userChatsB = notifications.get(50L);
+        assertEquals(1, userChatsB.size());
+        assertEquals(100, userChatsB.toArray(new JobChat[1])[0].getId());
+
+        Set<JobChat> userChatsC = notifications.get(3L);
+        assertEquals(1, userChatsC.size());
+        assertEquals(100, userChatsC.toArray(new JobChat[1])[0].getId());
+        
+        //System Admin is never notified
+        Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
+        assertNull(systemAdminUserChats);
+
+    }
+
     //TODO JC JobCreatorAllSourcePartners
     
     private void setJobCasesStage(SalesforceJobOpp job, CandidateOpportunityStage stage) {
         for (CandidateOpportunity opp : job.getCandidateOpportunities()) {
             opp.setStage(stage);
         }
+    }
+
+    private SalesforceJobOpp createJob(PartnerImpl destinationPartner) {
+        SalesforceJobOpp job = new SalesforceJobOpp();
+        job.setJobCreator(destinationPartner);
+        job.setContactUser(destinationPartner.getDefaultContact());
+        return job;
     }
 
     private SalesforceJobOpp createJob(Candidate candidate) {
@@ -348,7 +403,7 @@ class NotificationServiceImplTest {
             .willReturn(createCase(stage));
     }
 
-    private PartnerImpl createSourcePartner(long id, User nonCandidateUser) {
+    private PartnerImpl createPartner(long id, User nonCandidateUser) {
         PartnerImpl partner = new PartnerImpl();
         partner.setId(id);
         partner.setDefaultContact(nonCandidateUser);
@@ -363,11 +418,12 @@ class NotificationServiceImplTest {
     }
 
     private JobChat createChat(
-        long id, JobChatType jobChatType, Candidate candidate, SalesforceJobOpp job) {
+        long id, JobChatType jobChatType, Candidate candidate, SalesforceJobOpp job, PartnerImpl sourcePartner) {
         JobChat chat = new JobChat();
         chat.setId(id);
         chat.setCandidate(candidate);
         chat.setJobOpp(job);
+        chat.setSourcePartner(sourcePartner);
         chat.setType(jobChatType);
         return  chat;
     }
