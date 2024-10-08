@@ -57,13 +57,13 @@
         Successfully uploaded {{attachments.length}} attachments
       </div>
 
-      <div class="mb-3">
+      <div class="mb-3" *ngIf="!attachments?.length && !uploading">
           <label class="form-label" for="cv">Is this file a CV?</label>
           <input id="cv" [formControlName]="'cv'" [value]="'cv'" type="checkbox">
           <div class="form-text">If it is a CV its text will be checked in keyword searches.</div>
       </div>
 
-      <app-file-upload *ngIf="!uploading"
+      <app-file-upload *ngIf="!attachments?.length && !uploading"
                        (error)="onError($event)"
                        (newFiles)="startServerUpload($event)"></app-file-upload>
 
