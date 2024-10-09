@@ -86,6 +86,9 @@ public class ReactionPublishApi
   /**
    * Modifies an existing user reaction, adding or removing a user (depending on whether they were
    * already associated with it) or calling delete if they were the last associated user.
+   * <p/>
+   * Multicasts the updated reactions to all clients subscribed to the post.
+   *
    * @param reactionId of the reaction to be modified
    * @param postId the ID of the chat post where the reaction was modified
    * @return modified reactions list for the parent chat post
