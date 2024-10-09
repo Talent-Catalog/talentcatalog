@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, OnChanges, SimpleChanges} from '@angular/core';
 import {CandidateLanguage} from "../../../model/candidate-language";
 import {Language} from "../../../model/language";
 import {LanguageLevel} from "../../../model/language-level";
@@ -24,7 +24,7 @@ import {LanguageLevel} from "../../../model/language-level";
   templateUrl: './candidate-language-card.component.html',
   styleUrls: ['./candidate-language-card.component.scss']
 })
-export class CandidateLanguageCardComponent {
+export class CandidateLanguageCardComponent implements OnChanges{
 
   @Input() language: CandidateLanguage;
   @Output() languageChange = new EventEmitter<CandidateLanguage>();
@@ -35,21 +35,29 @@ export class CandidateLanguageCardComponent {
   @Input() languageLevels: LanguageLevel[];
 
   @Output() onDelete = new EventEmitter();
+  translatedLanguageName: string = '';
 
   constructor() { }
-
   delete() {
     this.onDelete.emit();
   }
-
-  getLanguageName(language) {
-    const l = this.language;
-    if (language?.language?.id) {
-      return this.languages?.find(lang => lang.id === l.language?.id)?.name;
-    } else if (language?.languageId) {
-      return this.languages?.find(lang => lang.id === language.languageId)?.name;
+  // Watch for changes in the inputs and update the language name accordingly
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.language || changes.languages) {
+      this.getLanguageName();
     }
-    return '';
+  }
+
+  // Compute the language name once, when inputs change
+  getLanguageName() {
+    const l = this.language;
+    if (l?.language?.id) {
+      this.translatedLanguageName = this.languages?.find(lang => lang.id === l.language?.id)?.name || '';
+    } else if (l?.languageId) {
+      this.translatedLanguageName = this.languages?.find(lang => lang.id === l.languageId)?.name || '';
+    } else {
+      this.translatedLanguageName = '';
+    }
   }
 
   getLangLevel(level: LanguageLevel) {
