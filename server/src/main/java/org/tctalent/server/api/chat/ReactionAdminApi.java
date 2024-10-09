@@ -21,22 +21,38 @@ package org.tctalent.server.api.chat;
  import javax.validation.Valid;
  import javax.validation.constraints.NotNull;
  import lombok.RequiredArgsConstructor;
- import org.springframework.web.bind.annotation.PathVariable;
- import org.springframework.web.bind.annotation.PostMapping;
- import org.springframework.web.bind.annotation.PutMapping;
- import org.springframework.web.bind.annotation.RequestBody;
+ import org.springframework.messaging.handler.annotation.DestinationVariable;
+ import org.springframework.messaging.handler.annotation.MessageMapping;
+ import org.springframework.messaging.handler.annotation.SendTo;
+ import org.springframework.stereotype.Controller;
  import org.springframework.web.bind.annotation.RequestMapping;
- import org.springframework.web.bind.annotation.RestController;
  import org.tctalent.server.api.admin.IJoinedTableApi;
  import org.tctalent.server.exception.EntityExistsException;
  import org.tctalent.server.exception.InvalidRequestException;
  import org.tctalent.server.exception.NoSuchObjectException;
  import org.tctalent.server.model.db.Reaction;
  import org.tctalent.server.request.chat.reaction.AddReactionRequest;
+ import org.tctalent.server.service.db.ChatPostService;
  import org.tctalent.server.service.db.ReactionService;
  import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+ /**
+  * This controller handles websocket connections.
+  * <p/>
+  * Websocket urls with the /app prefix are directed to websocket controllers such as this one.
+  * This is configured in {@link org.tctalent.server.configuration.WebSocketConfig}.
+  * <p/>
+  * So, for example, {@link #addReaction} below would be executed in response to the url ending in
+  * /app/reaction/{chatPostId}/add-reaction/.
+  * <p/>
+  * This code is modelled on {@link org.tctalent.server.api.chat.ChatPublishApi} from the same package,
+  * which is in turn modelled on
+  * <a href="https://spring.io/guides/gs/messaging-stomp-websocket/">this example from Spring.io</a>
+  * and <a href="https://stackoverflow.com/questions/27047310/path-variables-in-spring-websockets-sendto-mapping/27055764#27055764">
+  *     this Stackoverflow post</a>
+  *
+  */
+@Controller
 @RequestMapping("/api/admin/reaction")
 @RequiredArgsConstructor
 public class ReactionAdminApi
@@ -48,33 +64,40 @@ public class ReactionAdminApi
      * Adds a reaction record from the data in the given request or modifies an existing one if that
      * emoji is already associated with a reaction on same post. Modify may even delete, if user was
      * the last remaining user associated with the existing reaction.
+     * <p/>
+     * Multicasts the updated reactions to all clients subscribed to the post.
+     *
      * @param request Request containing emoji
-     * @return updated reactions list for the parent chat post
+     * @param postId the ID of the chat post where the reaction was made
+     * @return updated reactions list for the parent chat post, sent to all subscribers
      * @throws EntityExistsException if reaction already exists
      * @throws NoSuchObjectException if post or reaction (if update called) not found
      * @throws InvalidRequestException if not authorised to delete (if delete method called)
      */
-    @PostMapping("{id}/add-reaction")
+    @MessageMapping("/reaction/{postId}/add")
+    @SendTo(ChatPostService.REACTION_PUBLISH_ROOT + "/{postId}")
     public @NotNull List<Map<String, Object>> addReaction(
-          @PathVariable("id") long chatPostId, @Valid @RequestBody AddReactionRequest request)
+        @DestinationVariable Long postId, @Valid AddReactionRequest request)
             throws NoSuchObjectException, InvalidRequestException, EntityExistsException {
-        List<Reaction> reactions = this.reactionService.addReaction(chatPostId, request);
+        List<Reaction> reactions = this.reactionService.addReaction(postId, request);
         return reactionDto().buildList(reactions);
     }
 
   /**
    * Modifies an existing user reaction, adding or removing a user (depending on whether they were
    * already associated with it) or calling delete if they were the last associated user.
-   * @param id of the reaction to be modified
+   * @param reactionId of the reaction to be modified
+   * @param postId the ID of the chat post where the reaction was modified
    * @return modified reactions list for the parent chat post
    * @throws NoSuchObjectException if the there is no Reaction record with the given ID
    * @throws InvalidRequestException if not authorised to delete (if delete method called)
    */
-    @PutMapping("{id}/modify-reaction")
+    @MessageMapping("/reaction/{postId}/modify/{reactionId}")
+    @SendTo(ChatPostService.REACTION_PUBLISH_ROOT + "/{postId}")
     public @NotNull List<Map<String, Object>> modifyReaction(
-        @PathVariable("id") long id)
+        @DestinationVariable Long postId, @DestinationVariable Long reactionId)
             throws NoSuchObjectException, InvalidRequestException {
-        List<Reaction> reactions = reactionService.modifyReaction(id);
+        List<Reaction> reactions = reactionService.modifyReaction(reactionId);
         return reactionDto().buildList(reactions);
     }
 
