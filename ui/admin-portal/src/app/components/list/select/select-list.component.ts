@@ -179,8 +179,13 @@ export class SelectListComponent implements OnInit {
   private removeReplaceSubmissionList(): ValidatorFn {
     return (group: FormGroup): ValidationErrors | null => {
       // If a submission list is selected from the list, disable the ability to replace
-      return group.controls['savedList'].value != null && group.controls['savedList'].value.sfJobOpp != null ?
-        { 'replaceSubmissionListDisabled': true } : null;
+      const savedList: SavedList = group.controls['savedList'].value;
+      if (savedList && savedList.sfJobOpp) {
+        // todo need to patch value to false, but doesn't seem to allow me to do this in a validator fn
+        //this.form.controls['replace'].patchValue(false);
+        return { 'replaceSubmissionListDisabled': true };
+      }
+       return {};
     }
   }
 }
