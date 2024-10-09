@@ -17,15 +17,16 @@
 package org.tctalent.server.service.db.email;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
@@ -154,30 +155,31 @@ public class EmailHelper {
         }
     }
 
-    //TODO JC More generic name
-    public void sendNewChatPostsForCandidateUserEmail(
-        User user, boolean isCandidateUser, Set<JobChat> chats) {
+    public void sendNewChatPostsForUserEmail(
+        User user, boolean isCandidateUser, @NonNull List<EmailNotificationLink> links) {
 
         String email = user.getEmail();
         Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
 
-        String emailTemplate = isCandidateUser ?
-            "candidate-chat-notification" : "admin-chat-notification";
-
+        String emailTemplate;
         String subject;
         String bodyText;
         String bodyHtml;
         try {
             final Context ctx = new Context();
-            ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
+            ctx.setVariable("links", links);
 
-            //TODO JC Currently not using the chats passed in. Could pull out job if any,
-            // otherwise the source partner
-            ctx.setVariable("chats", chats);
-            ctx.setVariable("loginUrl", portalUrl);
-            ctx.setVariable("username", user.getUsername());
+            if (isCandidateUser) {
+                emailTemplate = "candidate-chat-notification";
+                ctx.setVariable("loginUrl", portalUrl);
+                ctx.setVariable("username", user.getUsername());
+                ctx.setVariable("partner", partner);
+            } else {
+                emailTemplate = "admin-chat-notification";
+                ctx.setVariable("loginUrl", adminUrl);
+            }
 
             subject = "Talent Catalog - New chat posts";
 

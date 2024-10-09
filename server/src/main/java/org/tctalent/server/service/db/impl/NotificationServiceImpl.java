@@ -16,7 +16,11 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.net.URI;
+import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +31,9 @@ import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +57,7 @@ import org.tctalent.server.service.db.NotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.email.EmailNotificationLink;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +71,11 @@ public class NotificationServiceImpl implements NotificationService {
     private final JobChatUserService jobChatUserService;
     private final PartnerService partnerService;
     private final UserService userService;
+
+    @Value("${web.portal}")
+    private String portalUrl;
+    @Value("${web.admin}")
+    private String adminUrl;
 
     //One minute past Midnight GMT
     @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
@@ -230,15 +242,21 @@ public class NotificationServiceImpl implements NotificationService {
         boolean result = false;
         Candidate candidate = chat.getCandidate();
         SalesforceJobOpp job = chat.getJobOpp();
-        if (candidate != null && job != null) {
-            CandidateOpportunity aCase = candidateOpportunityRepository
-                .findByCandidateIdAndJobId(candidate.getId(), job.getId());
-            if (aCase != null) {
-                result = (aCase.getStage().isWon() || !aCase.getStage().isClosed()
-                    && CandidateOpportunityStage.cvReview.compareTo(aCase.getStage()) <= 0);
-            }
+        CandidateOpportunity aCase = caseOpp(job, candidate);
+        if (aCase != null) {
+            result = (aCase.getStage().isWon() || !aCase.getStage().isClosed()
+                && CandidateOpportunityStage.cvReview.compareTo(aCase.getStage()) <= 0);
         }
         return result;
+    }
+
+    private CandidateOpportunity caseOpp(SalesforceJobOpp job, Candidate candidate) {
+        CandidateOpportunity opp = null;
+        if (job != null && candidate != null) {
+            opp = candidateOpportunityRepository
+                .findByCandidateIdAndJobId(candidate.getId(), job.getId());
+        }
+        return opp;
     }
 
     private void sendEmailsFromNotifications(Map<Long, Set<JobChat>> userNotifications) {
@@ -248,6 +266,10 @@ public class NotificationServiceImpl implements NotificationService {
 
             User user = userService.getUser(userId);
             if (user != null) {
+
+                final boolean isCandidate = userService.isCandidate(user);
+
+                String baseUrl = isCandidate ? portalUrl : adminUrl;
 
                 //Filter out chats that the user has marked as read
                 Set<JobChat> unreadChats = userChatsWithNewPosts.stream()
@@ -264,34 +286,123 @@ public class NotificationServiceImpl implements NotificationService {
                     .message("Notifying user " + userId + " about posts to chats " + s)
                     .logInfo();
 
-                final boolean isCandidate = userService.isCandidate(user);
-                //TODO JC Construct list of topics (chat focus?) - which are either a job opp,
-                // a candidate opp or a source partner / candidate (for CandidateProspect chats with no job).
-                //For html can generate links (eg to job opps, candidate opps, candidates): source partner is always name
-                //For text just names of opps (or candidate name or source partner name)
+                List<EmailNotificationLink> links = computeEmailNotificationLinks(
+                    isCandidate, unreadChats, baseUrl);
 
-                //todo jc When adding these focuses - add to sets, removing duplicates.
-                
-                //todo Loop through unreadChats and based on chat type and isCandidate populate
-                //todo the data to be populated for each use chat notification
-                for (JobChat chat : unreadChats) {
-                    String s =  switch (chat.getType()) {
-                        case JobCreatorSourcePartner, JobCreatorAllSourcePartners -> 
-                        { 
-                            yield null; 
-                        } 
-                        case CandidateProspect -> null;
-                        case CandidateRecruiting -> null;
-                        case AllJobCandidates -> null;
-                        default -> null;
-                            
-                    }
-                    
-                }
-
-                //TODO JC Compute list of chat focuses and pass in replacing unreadChats
-                emailHelper.sendNewChatPostsForCandidateUserEmail(user, isCandidate, unreadChats);
+                //TODO JC Change watch notifications to use links
+                //TODO JC Test notification templates: html and text
+                emailHelper.sendNewChatPostsForUserEmail(user, isCandidate, links);
             }
         }
+    }
+
+    /*
+     * Exposed for unit testing
+     */
+    protected @NonNull List<EmailNotificationLink> computeEmailNotificationLinks(
+        boolean isCandidate, Collection<JobChat> unreadChats, String baseUrl) {
+        List<EmailNotificationLink> links = new ArrayList<>();
+
+        //For non candidates (ie admins) we generate link information relevant to each chat.
+        //Candidates don't get any special chat related links. They just get a general
+        //notification that there been chat posts and are prompted to log in a take look.
+        if (!isCandidate) {
+            //Loop through unreadChats and based on chat type and populate links to
+            //guide the user to the relevant chats.
+            for (JobChat chat : unreadChats) {
+                SalesforceJobOpp job = chat.getJobOpp();
+                Candidate candidate = chat.getCandidate();
+                CandidateOpportunity theCase = caseOpp(job, candidate);
+                EmailNotificationLink link =
+                    switch (chat.getType()) {
+                        case JobCreatorSourcePartner, JobCreatorAllSourcePartners, AllJobCandidates ->
+                            new EmailNotificationLink(chat.getId(), computeJobUrl(baseUrl, job), job.getName());
+
+                        case CandidateProspect ->
+                            theCase == null ?
+                                new EmailNotificationLink(chat.getId(), computeCandidateUrl(baseUrl, candidate),
+                                    computeCandidatePublicName(candidate)) :
+                                new EmailNotificationLink(chat.getId(), computeCaseUrl(baseUrl, theCase),
+                                    theCase.getName());
+
+                        case CandidateRecruiting ->
+                            new EmailNotificationLink(chat.getId(), computeCaseUrl(baseUrl, theCase),
+                                theCase.getName());
+
+                        default -> null;
+
+                    };
+                if (link != null) {
+                    links.add(link);
+                }
+            }
+        }
+        return links;
+    }
+
+    private String computeCandidatePublicName(@Nullable Candidate candidate) {
+        String s = "Candidate ";
+        if (candidate == null) {
+            s += "null";
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("computeCandidatePublicName")
+                .message("Passed null candidate")
+                .logError();
+        } else {
+            s += candidate.getCandidateNumber();
+        }
+        return s;
+    }
+
+    private URL computeCandidateUrl(String baseUrl, @Nullable Candidate candidate) {
+        URL url = null;
+        if (candidate != null) {
+            String urlStr = baseUrl + "/candidate/" + candidate.getCandidateNumber();
+            try {
+                url = new URI(urlStr).toURL();
+            } catch (Exception e) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("computeCandidateUrl")
+                    .message("Bad url created from candidate " +
+                        candidate.getCandidateNumber() + ": '" + urlStr + "'")
+                    .logError(e);
+            }
+        }
+        return url;
+    }
+
+    private URL computeCaseUrl(String baseUrl, @Nullable CandidateOpportunity theCase) {
+        URL url = null;
+        if (theCase != null) {
+            String urlStr = baseUrl + "/opp/" + theCase.getId();
+            try {
+                url = new URI(urlStr).toURL();
+            } catch (Exception e) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("computeCaseUrl")
+                    .message("Bad url created from case " +
+                        theCase.getId() + ": '" + urlStr + "'")
+                    .logError(e);
+            }
+        }
+        return url;
+    }
+
+    private URL computeJobUrl(String baseUrl, SalesforceJobOpp job) {
+        String urlStr = baseUrl + "/job/" + job.getId();
+        URL url = null;
+        try {
+            url = new URI(urlStr).toURL();
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("computeJobUrl")
+                .message("Bad url created from job " + job.getId() + ": '" + urlStr + "'")
+                .logError(e);
+        }
+        return url;
     }
 }

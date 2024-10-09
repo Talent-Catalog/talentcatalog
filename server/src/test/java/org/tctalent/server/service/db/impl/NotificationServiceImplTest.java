@@ -48,6 +48,7 @@ import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.email.EmailNotificationLink;
 
 @ExtendWith(SpringExtension.class)
 class NotificationServiceImplTest {
@@ -67,11 +68,11 @@ class NotificationServiceImplTest {
     UserService userService;
 
     NotificationServiceImpl notificationService;
-    
+
     //System admin user
     User systemAdminUser;
     final static long SYSTEM_ADMIN_USER_ID = 999;
-    
+
     @BeforeEach
     void setUp() {
         notificationService =
@@ -83,7 +84,7 @@ class NotificationServiceImplTest {
         //Set up a system admin user
         systemAdminUser = createNonCandidateUser(SYSTEM_ADMIN_USER_ID, Role.systemadmin);
         given(userService.getSystemAdminUser()).willReturn(systemAdminUser);
-        
+
     }
 
     @Test
@@ -103,23 +104,23 @@ class NotificationServiceImplTest {
 
         //Create chat posts on chat and make chatPostService return it
         List<ChatPost> chatPosts = new ArrayList<>();
-        
+
         //Random poster
         ChatPost chatPost = createChatPost(chat,
             createNonCandidateUser(3, Role.partneradmin) );
         chatPosts.add(chatPost);
 
         //Auto post (by system admin)
-        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser); 
+        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser);
         chatPosts.add(chatAutoPost);
         given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
 
         //All cases are in review stage
-        mockAllCasesToStage(CandidateOpportunityStage.cvReview);
+        mockAllCasesToThisCase(555,"Mock case", CandidateOpportunityStage.cvReview);
         Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
-        
+
         //The notifications for the chats should be user 1 (the candidate chat owner) and user 3
-        //(the poster) and user 4 (the source partner contact) 
+        //(the poster) and user 4 (the source partner contact)
         assertNotNull(notifications);
         assertEquals(3, notifications.size());
 
@@ -145,7 +146,7 @@ class NotificationServiceImplTest {
         Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
     }
-    
+
     @Test
     void computeCandidateRecruitingUserNotifications() {
 
@@ -163,23 +164,23 @@ class NotificationServiceImplTest {
 
         //Create chat posts on chat and make chatPostService return it
         List<ChatPost> chatPosts = new ArrayList<>();
-        
+
         //Random poster
         ChatPost chatPost = createChatPost(chat,
             createNonCandidateUser(3, Role.partneradmin) );
         chatPosts.add(chatPost);
 
         //Auto post (by system admin)
-        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser); 
+        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser);
         chatPosts.add(chatAutoPost);
         given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
 
         //All cases are in review stage
-        mockAllCasesToStage(CandidateOpportunityStage.cvReview);
+        mockAllCasesToThisCase(555,"Mock case",CandidateOpportunityStage.cvReview);
         Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
-        
+
         //The notifications for the chats should be user 1 (the candidate chat owner) and user 3
-        //(the poster) and user 4 (the source partner contact) 
+        //(the poster) and user 4 (the source partner contact)
         assertNotNull(notifications);
         assertEquals(3, notifications.size());
 
@@ -205,11 +206,11 @@ class NotificationServiceImplTest {
         Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
 
-        
+
         //All cases are in prospect stage
-        mockAllCasesToStage(CandidateOpportunityStage.prospect);
+        mockAllCasesToThisCase(555,"Mock case",CandidateOpportunityStage.prospect);
         notifications = notificationService.computeUserNotifications();
-        
+
         assertNotNull(notifications);
         assertEquals(2, notifications.size());
 
@@ -234,7 +235,7 @@ class NotificationServiceImplTest {
         systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
     }
-    
+
     @Test
     void computeAllJobCandidatesUserNotifications() {
 
@@ -252,27 +253,27 @@ class NotificationServiceImplTest {
 
         //Create chat posts on chat and make chatPostService return it
         List<ChatPost> chatPosts = new ArrayList<>();
-        
+
         //Random poster
         ChatPost chatPost = createChatPost(chat,
             createNonCandidateUser(3, Role.partneradmin) );
         chatPosts.add(chatPost);
 
         //Auto post (by system admin)
-        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser); 
+        ChatPost chatAutoPost = createChatPost(chat, systemAdminUser);
         chatPosts.add(chatAutoPost);
         given(chatPostService.listChatPosts(anyLong())).willReturn(chatPosts);
 
         //All cases are in visa preparation stage
         setJobCasesStage(job, CandidateOpportunityStage.visaPreparation);
         Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
-        
+
         //The notifications for the chats should be user 1 (the candidate chat owner) and user 3
-        //(the poster) and user 4 (the source partner contact) 
+        //(the poster) and user 4 (the source partner contact)
         assertNotNull(notifications);
         assertEquals(3, notifications.size());
 
-        //Notify candidate associated with chat 
+        //Notify candidate associated with chat
         //User 1 has one chat - chat 100
         Set<JobChat> user1Chats = notifications.get(1L);
         assertEquals(1, user1Chats.size());
@@ -294,11 +295,11 @@ class NotificationServiceImplTest {
         Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
 
-        
+
         //All cases are in prospect stage
         setJobCasesStage(job, CandidateOpportunityStage.prospect);
         notifications = notificationService.computeUserNotifications();
-        
+
         assertNotNull(notifications);
         assertEquals(2, notifications.size());
 
@@ -355,8 +356,8 @@ class NotificationServiceImplTest {
 
         Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
 
-        //The notifications for the chats should be source partner contact (4), 
-        // destination partner contact (50), the poster (3). 
+        //The notifications for the chats should be source partner contact (4),
+        // destination partner contact (50), the poster (3).
         assertNotNull(notifications);
         assertEquals(3, notifications.size());
 
@@ -371,7 +372,7 @@ class NotificationServiceImplTest {
         Set<JobChat> userChatsC = notifications.get(3L);
         assertEquals(1, userChatsC.size());
         assertEquals(100, userChatsC.toArray(new JobChat[1])[0].getId());
-        
+
         //System Admin is never notified
         Set<JobChat> systemAdminUserChats = notifications.get(SYSTEM_ADMIN_USER_ID);
         assertNull(systemAdminUserChats);
@@ -385,7 +386,7 @@ class NotificationServiceImplTest {
         List<JobChat> chats = new ArrayList<>();
         given(jobChatService.findByIds(any())).willReturn(chats);
 
-        //Mock source partners returned by partnerService 
+        //Mock source partners returned by partnerService
         List<PartnerImpl> sourcePartners = new ArrayList<>();
         given(partnerService.listSourcePartners()).willReturn(sourcePartners);
         sourcePartners.add(createPartner(10, createNonCandidateUser(4, Role.partneradmin)));
@@ -413,8 +414,8 @@ class NotificationServiceImplTest {
 
         Map<Long, Set<JobChat>> notifications = notificationService.computeUserNotifications();
 
-        //The notifications for the chats should be to the contacts for the two source 
-        // partners (4,8), destination partner contact (50), the poster (3). 
+        //The notifications for the chats should be to the contacts for the two source
+        // partners (4,8), destination partner contact (50), the poster (3).
         assertNotNull(notifications);
         assertEquals(4, notifications.size());
 
@@ -439,7 +440,54 @@ class NotificationServiceImplTest {
         assertNull(systemAdminUserChats);
 
     }
-    
+
+    @Test
+    void computeEmailNotificationLinks() {
+        String baseUrl = "http://localhost:8080";
+        boolean isCandidate = false;
+        mockAllCasesToThisCase(555,"Mock case",CandidateOpportunityStage.prospect);
+
+        List<JobChat> chats = new ArrayList<>();
+
+        PartnerImpl sourcePartner = createPartner(
+            10, createNonCandidateUser(4, Role.partneradmin));
+        Candidate candidateAssociatedWithChat = createCandidate(1, sourcePartner);
+        PartnerImpl destinationPartner = createPartner(1000, createNonCandidateUser(50, Role.partneradmin));
+        SalesforceJobOpp job = createJob(destinationPartner);
+
+        JobChat chat;
+        List<EmailNotificationLink> links;
+        EmailNotificationLink link;
+
+        //Candidate prospect chat with no job associated
+        chats.clear();
+        chat = createChat(
+            100, JobChatType.CandidateProspect, candidateAssociatedWithChat, null, null);
+        chats.add(chat);
+
+        links = notificationService.computeEmailNotificationLinks(isCandidate, chats, baseUrl);
+        assertNotNull(links);
+        assertEquals(1, links.size());
+        link = links.get(0);
+        assertEquals(100, link.id());
+        assertEquals(baseUrl + "/candidate/1", link.link().toString());
+        assertEquals("Candidate 1", link.name());
+
+        //Candidate prospect chat with job associated
+        chats.clear();
+        chat = createChat(
+            100, JobChatType.CandidateProspect, candidateAssociatedWithChat, job, null);
+        chats.add(chat);
+
+        links = notificationService.computeEmailNotificationLinks(isCandidate, chats, baseUrl);
+        assertNotNull(links);
+        assertEquals(1, links.size());
+        link = links.get(0);
+        assertEquals(100, link.id());
+        assertEquals(baseUrl + "/opp/555", link.link().toString());
+        assertEquals("Mock case", link.name());
+    }
+
     private void setJobCasesStage(SalesforceJobOpp job, CandidateOpportunityStage stage) {
         for (CandidateOpportunity opp : job.getCandidateOpportunities()) {
             opp.setStage(stage);
@@ -448,6 +496,7 @@ class NotificationServiceImplTest {
 
     private SalesforceJobOpp createJob(PartnerImpl destinationPartner) {
         SalesforceJobOpp job = new SalesforceJobOpp();
+        job.setId(10000L);
         job.setJobCreator(destinationPartner);
         job.setContactUser(destinationPartner.getDefaultContact());
         return job;
@@ -455,6 +504,7 @@ class NotificationServiceImplTest {
 
     private SalesforceJobOpp createJob(Candidate candidate) {
         SalesforceJobOpp job = new SalesforceJobOpp();
+        job.setId(10000L);
         CandidateOpportunity caseOpp = new CandidateOpportunity();
         caseOpp.setJobOpp(job);
         caseOpp.setCandidate(candidate);
@@ -462,9 +512,9 @@ class NotificationServiceImplTest {
         return job;
     }
 
-    private void mockAllCasesToStage(CandidateOpportunityStage stage) {
+    private void mockAllCasesToThisCase(long caseId, String name, CandidateOpportunityStage stage) {
         given(candidateOpportunityRepository.findByCandidateIdAndJobId(any(), any()))
-            .willReturn(createCase(stage));
+            .willReturn(createCase(caseId, name, stage));
     }
 
     private PartnerImpl createPartner(long id, User nonCandidateUser) {
@@ -499,11 +549,15 @@ class NotificationServiceImplTest {
         user.setId(userId);
         Candidate candidate = new Candidate();
         candidate.setUser(user);
+        candidate.setId(userId*2);
+        candidate.setCandidateNumber(Long.toString(userId));
         return candidate;
     }
 
-    private CandidateOpportunity createCase(CandidateOpportunityStage stage) {
+    private CandidateOpportunity createCase(long caseId, String name, CandidateOpportunityStage stage) {
         CandidateOpportunity opp = new CandidateOpportunity();
+        opp.setId(caseId);
+        opp.setName(name);
         opp.setStage(stage);
         return opp;
     }
