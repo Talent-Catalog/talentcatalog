@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.api.chat;
 
  import java.util.List;
  import java.util.Map;
@@ -27,6 +27,7 @@ package org.tctalent.server.api.admin;
  import org.springframework.web.bind.annotation.RequestBody;
  import org.springframework.web.bind.annotation.RequestMapping;
  import org.springframework.web.bind.annotation.RestController;
+ import org.tctalent.server.api.admin.IJoinedTableApi;
  import org.tctalent.server.exception.EntityExistsException;
  import org.tctalent.server.exception.InvalidRequestException;
  import org.tctalent.server.exception.NoSuchObjectException;
