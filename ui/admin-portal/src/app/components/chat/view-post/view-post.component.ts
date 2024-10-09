@@ -15,7 +15,7 @@ import {UserService} from "../../../services/user.service";
 import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
 import {Reaction} from "../../../model/reaction";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {Subject} from "rxjs/index";
+import {Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 
 @Component({
