@@ -1,10 +1,9 @@
 import {ViewPostComponent} from "./view-post.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
-import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {ChatPost} from "../../../model/chat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
-import {of} from "rxjs";
+import {of, throwError} from "rxjs";
 import {Reaction} from "../../../model/reaction";
 import {MOCK_REACTIONS} from "../../../MockData/MockReactions";
 import {By} from "@angular/platform-browser";
@@ -21,7 +20,7 @@ describe('ViewPostComponent', () => {
   let authenticationService: jasmine.SpyObj<AuthenticationService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('ReactionService', ['addReaction', 'modifyReaction']);
+    const spy = jasmine.createSpyObj('ReactionService', ['addReaction', 'modifyReaction','subscribeToReactions']);
     const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
 
     await TestBed.configureTestingModule({
@@ -45,6 +44,7 @@ describe('ViewPostComponent', () => {
     component = fixture.componentInstance;
     component.post = new MockChatPost();
     authenticationService.getLoggedInUser.and.returnValue((new MockUser()));
+    reactionServiceSpy.subscribeToReactions.and.returnValue(of(MOCK_REACTIONS));
     fixture.detectChanges();
   });
 
@@ -77,29 +77,39 @@ describe('ViewPostComponent', () => {
   });
 
 
-  it('should handle emoji selection and update reactions', () => {
+  it('should handle emoji selection and call addReaction', () => {
     const event = { emoji: { native: '😊' } };
-
-
-    reactionServiceSpy.addReaction.and.returnValue(of(MOCK_REACTIONS));
 
     component.onSelectEmoji(event);
 
     expect(component.reactionPickerVisible).toBeFalse();
     expect(reactionServiceSpy.addReaction).toHaveBeenCalledWith(component.post.id, { emoji: '😊' } as AddReactionRequest);
-    expect(component.post.reactions.length).toBe(3);
-    expect(component.post.reactions[0].emoji).toBe('😊');
   });
 
-  it('should update reaction when a reaction button is clicked', () => {
+  it('should handle reaction selection and call modifyReaction', () => {
     const reaction: Reaction = MOCK_REACTIONS[0];
-    reactionServiceSpy.modifyReaction.and.returnValue(of(MOCK_REACTIONS));
 
     component.onSelectReaction(reaction);
 
-    expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(reaction.id);
+    expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(component.post.id, reaction.id);
+  });
+
+  it('should subscribe to reaction updates and update reactions on new data', () => {
+    component.ngOnInit();
+
+    expect(reactionServiceSpy.subscribeToReactions).toHaveBeenCalledWith(component.post.id);
     expect(component.post.reactions.length).toBe(3);
     expect(component.post.reactions[0].users.length).toBe(2);
+  });
+
+  it('should handle error when subscribing to reaction updates', () => {
+    const error = new Error('WebSocket error');
+    reactionServiceSpy.subscribeToReactions.and.returnValue(throwError((error)));
+    spyOn(console, 'error');
+
+    component.ngOnInit();
+
+    expect(console.error).toHaveBeenCalledWith('Error receiving reaction updates:', error);
   });
 
   it('should close reaction picker when current post changes', () => {
