@@ -3,7 +3,7 @@ import {
   ElementRef,
   HostListener,
   Input,
-  OnChanges,
+  OnChanges, OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild,
@@ -15,6 +15,8 @@ import {UserService} from "../../../services/user.service";
 import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
 import {Reaction} from "../../../model/reaction";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {Subject} from "rxjs/index";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-view-post',
@@ -24,13 +26,15 @@ import {AuthenticationService} from "../../../services/authentication.service";
   // See here: https://stackoverflow.com/a/44215795
   encapsulation: ViewEncapsulation.None
 })
-export class ViewPostComponent implements OnInit, OnChanges {
+export class ViewPostComponent implements OnInit, OnChanges, OnDestroy {
 
   public reactionPickerVisible: boolean = false;
   isCurrentPost: boolean = false;
   public reactionPickerXPos: number;
   public reactionPickerYPos: number;
   public userIsPostAuthor: boolean;
+
+  private destroyReactionSubscriptions$ = new Subject<void>();
 
   // Currently ngx-quill just inserts the url into an <img> tag, this is then saved as innerHTML.
   // Adding this event listener allows us to make the images clickable and open the src attribute in a new tab.
@@ -53,7 +57,10 @@ export class ViewPostComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.setUserIsPostAuthor()
+    this.setUserIsPostAuthor();
+
+    // Subscribe to reaction updates for this post
+    this.subscribeToReactionUpdates();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -67,6 +74,27 @@ export class ViewPostComponent implements OnInit, OnChanges {
           }
         }
       }
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Emit a value to signal that subscriptions should complete
+    this.destroyReactionSubscriptions$.next();
+    this.destroyReactionSubscriptions$.complete(); // Complete the subject
+  }
+
+  private subscribeToReactionUpdates() {
+    if (this.post && this.post.id) {
+      this.reactionService.subscribeToReactions(this.post.id)
+      .pipe(takeUntil(this.destroyReactionSubscriptions$)) // Automatically unsubscribe when destroyReactionSubscriptions$ emits
+      .subscribe({
+        next: (updatedReactions) => {
+          this.post.reactions = updatedReactions;
+        },
+        error: (error) => {
+          console.error('Error receiving reaction updates:', error);
+        }
+      });
     }
   }
 
@@ -107,20 +135,12 @@ export class ViewPostComponent implements OnInit, OnChanges {
     const request: AddReactionRequest = {
       emoji: `${event.emoji.native}`
     }
-    this.reactionService.addReaction(this.post.id, request)
-                          .subscribe({
-                            next: (updatedReactions) =>
-                            this.post.reactions = updatedReactions
-                          })
+    this.reactionService.addReaction(this.post.id, request);
   }
 
   public onSelectReaction(reaction: Reaction) {
     if (!this.readOnly) {
-      this.reactionService.modifyReaction(reaction.id)
-      .subscribe({
-        next: (updatedReactions) =>
-          this.post.reactions = updatedReactions
-      })
+      this.reactionService.modifyReaction(this.post.id, reaction.id);
     }
   }
 
