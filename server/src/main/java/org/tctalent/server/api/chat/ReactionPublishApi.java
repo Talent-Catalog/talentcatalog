@@ -55,7 +55,7 @@ package org.tctalent.server.api.chat;
 @Controller
 @RequestMapping("/api/admin/reaction")
 @RequiredArgsConstructor
-public class ReactionAdminApi
+public class ReactionPublishApi
     implements IJoinedTableApi<AddReactionRequest, AddReactionRequest, AddReactionRequest> {
 
     private final ReactionService reactionService;
