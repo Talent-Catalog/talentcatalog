@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
@@ -79,7 +79,7 @@ export class SelectListComponent implements OnInit {
       replace: [false],
       changeStatuses: [false],
     },
-      {validator: this.nonBlankListName()}
+      {validators: [this.nonBlankListName(), this.removeReplaceSubmissionList()]}
     );
     this.loadLists();
   }
@@ -173,6 +173,14 @@ export class SelectListComponent implements OnInit {
         }
       }
       return {}
+    }
+  }
+
+  private removeReplaceSubmissionList(): ValidatorFn {
+    return (group: FormGroup): ValidationErrors | null => {
+      // If a submission list is selected from the list, disable the ability to replace
+      return group.controls['savedList'].value != null && group.controls['savedList'].value.sfJobOpp != null ?
+        { 'replaceSubmissionListDisabled': true } : null;
     }
   }
 }
