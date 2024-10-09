@@ -121,22 +121,22 @@ describe('CreateUpdatePostComponent', () => {
 
 
   it('should handle emoji selection', () => {
-    const quillEditorRefSpy = jasmine.createSpyObj('Quill', ['insertText', 'setSelection', 'getLength'],['savedRange']);
+    const quillEditorRefSpy = jasmine.createSpyObj('Quill', ['insertText', 'setSelection'],['savedRange']);
     quillEditorRefSpy.selection = {
       savedRange: {
         index: 0
       }
     };
 
-    quillEditorRefSpy.getLength.and.returnValue(2);
-
     component.quillEditorRef = quillEditorRefSpy;
 
     const event = { emoji: { native: '😊' } };
+    const index: number = component.quillEditorRef.selection.savedRange.index;
+    const emojiLength = 2;
     component.onSelectEmoji(event);
     expect(component.emojiPickerVisible).toBe(false); // Emoji picker should be closed after selection
     expect(quillEditorRefSpy.insertText).toHaveBeenCalledWith(jasmine.any(Number), '😊', 'user');
-    expect(quillEditorRefSpy.setSelection).toHaveBeenCalledWith(2, 0); // Concrete values here
+    expect(quillEditorRefSpy.setSelection).toHaveBeenCalledWith(index + emojiLength, 0); // Concrete values here
   });
 
   it('should toggle emoji picker', () => {
