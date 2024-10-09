@@ -16,8 +16,8 @@
 
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
-import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {isSubmissionList, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {JobNameAndId} from "../../../model/job";
@@ -79,7 +79,7 @@ export class SelectListComponent implements OnInit {
       replace: [false],
       changeStatuses: [false],
     },
-      {validators: [this.nonBlankListName(), this.removeReplaceSubmissionList()]}
+      {validator: this.nonBlankListName()}
     );
     this.loadLists();
   }
@@ -131,6 +131,10 @@ export class SelectListComponent implements OnInit {
     if (this.changeStatuses) {
       selection.statusUpdateInfo = this.statusUpdateInfo;
     }
+    // for submission lists we need to set replace to false
+    if (this.selectedSubmissionList()) {
+      selection.replace = false;
+    }
     this.activeModal.close(selection);
   }
 
@@ -176,16 +180,7 @@ export class SelectListComponent implements OnInit {
     }
   }
 
-  private removeReplaceSubmissionList(): ValidatorFn {
-    return (group: FormGroup): ValidationErrors | null => {
-      // If a submission list is selected from the list, disable the ability to replace
-      const savedList: SavedList = group.controls['savedList'].value;
-      if (savedList && savedList.sfJobOpp) {
-        // todo need to patch value to false, but doesn't seem to allow me to do this in a validator fn
-        //this.form.controls['replace'].patchValue(false);
-        return { 'replaceSubmissionListDisabled': true };
-      }
-       return {};
-    }
+  selectedSubmissionList(): boolean {
+    return isSubmissionList(this.savedList);
   }
 }
