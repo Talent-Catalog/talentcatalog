@@ -19,6 +19,7 @@ package org.tctalent.server.model.db;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -44,8 +45,11 @@ public class Reaction extends AbstractDomainObject<Long> {
 
     /**
      * Associated user(s)
+     * <p>
+     * Eagerly fetched because, in a WebSocket context, the Hibernate session may be closed before
+     * the users collection is accessed for dto construction.
      */
-    @ManyToMany(cascade = {CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
         name = "reaction_user",
         joinColumns = @JoinColumn(name = "reaction_id"),
