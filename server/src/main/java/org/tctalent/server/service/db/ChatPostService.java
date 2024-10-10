@@ -73,7 +73,14 @@ public interface ChatPostService {
     @Nullable
     ChatPost getLastChatPost(long chatId);
 
-    List<ChatPost> listChatPosts(long chatId);
+    /**
+     * Returns all posts associated with the given chat.
+     * @param chatId Chat whose posts we want
+     * @return posts (can be empty)
+     * @throws NoSuchObjectException if there is no chat with that id.
+     */
+    @NonNull
+    List<ChatPost> listChatPosts(long chatId) throws NoSuchObjectException;
 
     /**
      * Sends the given post out on a websocket with the chat's topic as a destination.

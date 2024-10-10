@@ -108,10 +108,6 @@ public interface JobChatService {
 
     /**
      * Find chats which have posts where the date of the last post is greater than a given date.
-     * <p/>
-     * Note that this is in this service rather than ChatPostService to avoid circular dependency.
-     * Implementing this method requires a lot of candidate opportunity processing to determine
-     * which chats are associated with logged in user.
      *
      * @param dateTime We want chats with posts after this date
      * @return Chats since the given date
@@ -137,7 +133,7 @@ public interface JobChatService {
     /**
      * Gets the {@link JobChatType#CandidateProspect} type {@link JobChat} for candidate with given ID,
      * if there is one.
-     * @param candidateId
+     * @param candidateId ID of candidate
      * @return null if there is no chat yet, or {@link JobChat} if there is
      */
     @Nullable

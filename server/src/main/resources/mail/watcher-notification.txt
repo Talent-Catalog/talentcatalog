@@ -2,8 +2,8 @@ Dear [(${displayName})],
 
 In the last 24 hours the Talent Catalog has detected that new candidates have registered who match the saved searches below.
 
-Copy paste links to your browser address bar to see details.
+Copy and paste links to your browser address bar to see details.
 
-[# th:each="search : ${searches}"]
-  - [(${search.getName()})] : https://tctalent.org/admin-portal/candidates/search/[(${search.getId()})]
+[# th:each="link : ${links}"]
+  - [(${link.name()})] : [(${link.link()})] [(${'(Search ' + link.id() + ')'})]
 [/]

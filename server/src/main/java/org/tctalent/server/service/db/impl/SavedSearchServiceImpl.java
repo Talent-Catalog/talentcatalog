@@ -22,6 +22,8 @@ import com.opencsv.CSVWriter;
 import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -54,6 +56,7 @@ import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.elasticsearch.xcontent.XContentBuilder;
 import org.elasticsearch.xcontent.XContentFactory;
 import org.elasticsearch.xcontent.XContentType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -142,11 +145,14 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.email.EmailNotificationLink;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class SavedSearchServiceImpl implements SavedSearchService {
+    @Value("${web.admin}")
+    private String adminUrl;
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
@@ -1575,7 +1581,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
                     emailHelper.sendAlert(mess);
                 } else {
-                    emailHelper.sendWatcherEmail(user, savedSearches);
+                    //Compute email notification links from SavedSearches
+                    List<EmailNotificationLink> links = new ArrayList<>();
+                    for (SavedSearch savedSearch : savedSearches) {
+                        links.add(new EmailNotificationLink(
+                            savedSearch.getId(), computeSearchUrl(savedSearch), savedSearch.getName()));
+                    }
+                    emailHelper.sendWatcherEmail(user, links);
                 }
             }
         } catch (Exception ex) {
@@ -1588,6 +1600,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
             emailHelper.sendAlert(mess, ex);
         }
+    }
+
+    private URL computeSearchUrl(SavedSearch savedSearch) {
+        URL url = null;
+        if (savedSearch != null) {
+            String urlStr = adminUrl + "/search/" + savedSearch.getId();
+            try {
+                url = new URI(urlStr).toURL();
+            } catch (Exception e) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("computeSearchUrl")
+                    .message("Bad url created from search " +
+                        savedSearch.getId() + ": '" + urlStr + "'")
+                    .logError(e);
+            }
+        }
+        return url;
     }
 
     private void populateSearchAttributes(

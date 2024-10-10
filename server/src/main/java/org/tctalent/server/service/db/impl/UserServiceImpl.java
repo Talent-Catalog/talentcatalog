@@ -415,6 +415,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public boolean isCandidate(@Nullable User user) {
+        return user != null && user.getRole().equals(Role.user);
+    }
 
     @Override
     public JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException {
