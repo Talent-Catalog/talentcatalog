@@ -15,10 +15,10 @@
  */
 
 import {Injectable} from "@angular/core";
-import {environment} from "../../environments/environment";
-import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Reaction} from "../model/reaction";
+import {RxStompService} from "./rx-stomp.service";
+import {map} from "rxjs/operators";
 
 export interface AddReactionRequest {
     emoji: string;
@@ -28,16 +28,38 @@ export interface AddReactionRequest {
     providedIn: 'root'
 })
 export class ReactionService {
-    private apiUrl: string = environment.chatApiUrl + '/reaction';
 
-    constructor(private http: HttpClient) { }
+  constructor(private rxStompService: RxStompService) { }
 
-    addReaction(chatPostId: number, request: AddReactionRequest): Observable<Reaction[]> {
-        return this.http.post<Reaction[]>(`${this.apiUrl}/${chatPostId}/add-reaction`, request);
-    }
+  /**
+   * Subscribe to reaction updates for a given post
+   */
+  subscribeToReactions(postId: number): Observable<Reaction[]> {
+    const topic = `/topic/reaction/${postId}`;
+    return this.rxStompService.watch(topic).pipe(
+      map((message) => JSON.parse(message.body) as Reaction[])
+    );
+  }
 
-    modifyReaction(id: number): Observable<Reaction[]> {
-        return this.http.put<Reaction[]>(`${this.apiUrl}/${id}/modify-reaction`, null);
-    }
+  /**
+   * Add a new reaction to a post via WebSocket
+   */
+  addReaction(postId: number, request: AddReactionRequest): void {
+    const destination = `/app/reaction/${postId}/add`;
+    this.rxStompService.publish({
+      destination: destination,
+      body: JSON.stringify(request)
+    });
+  }
+
+  /**
+   * Modify an existing reaction via WebSocket
+   */
+  modifyReaction(postId: number, reactionId: number): void {
+    const destination = `/app/reaction/${postId}/modify/${reactionId}`;
+    this.rxStompService.publish({
+      destination: destination
+    });
+  }
 
 }

@@ -42,6 +42,12 @@ public interface ChatPostService {
     String CHAT_PUBLISH_ROOT = TOPIC_PREFIX + "/chat";
 
     /**
+     * This is the root of all reaction websocket destinations
+     * Reactions are scoped to individual chat posts
+     */
+    String REACTION_PUBLISH_ROOT = TOPIC_PREFIX + "/reaction";
+
+    /**
      * Creates a new post on the given chat
      * @param post Content of post
      * @param jobChat Chat where posted

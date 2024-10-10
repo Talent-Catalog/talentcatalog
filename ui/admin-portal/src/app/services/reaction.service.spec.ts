@@ -15,75 +15,96 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ReactionService, AddReactionRequest} from './reaction.service';
-import {Reaction} from '../model/reaction';
-import {environment} from '../../environments/environment';
+import {RxStompService} from "./rx-stomp.service";
+import {of} from "rxjs";
 
 describe('ReactionService', () => {
   let service: ReactionService;
-  let httpMock: HttpTestingController;
+  let rxStompServiceSpy: jasmine.SpyObj<RxStompService>;
+
   const displayUser = {
     id:1,
     displayName: 'Test User'
   };
 
   beforeEach(() => {
+    const spy = jasmine.createSpyObj('RxStompService', ['watch', 'publish']);
+
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [ReactionService]
+      providers: [
+        ReactionService,
+        { provide: RxStompService, useValue: spy }
+      ]
     });
     service = TestBed.inject(ReactionService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
+    rxStompServiceSpy = TestBed.inject(RxStompService) as jasmine.SpyObj<RxStompService>;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-
   describe('addReaction', () => {
-    it('should make a POST request and return an array of reactions', () => {
-      const mockReactions: Reaction[] = [
-        { id: 1, emoji: '👍', users : [displayUser] },
-        { id: 2, emoji: '😊', users : [displayUser] },
-      ];
-
-      const requestPayload: AddReactionRequest = { emoji: '👍' };
+    it('should publish a new reaction via WebSocket', () => {
       const chatPostId = 1;
+      const requestPayload: AddReactionRequest = { emoji: '👍' };
+      const expectedDestination = `/app/reaction/${chatPostId}/add`;
 
-      service.addReaction(chatPostId, requestPayload).subscribe(reactions => {
-        expect(reactions).toEqual(mockReactions);
+      service.addReaction(chatPostId, requestPayload);
+
+      expect(rxStompServiceSpy.publish).toHaveBeenCalledWith({
+        destination: expectedDestination,
+        body: JSON.stringify(requestPayload)
       });
+    });
 
-      const req = httpMock.expectOne(`${environment.chatApiUrl}/reaction/${chatPostId}/add-reaction`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(requestPayload);
-      req.flush(mockReactions);
+  });
+
+  describe('modifyReaction', () => {
+    it('should publish a modification of a reaction via WebSocket', () => {
+      const chatPostId = 1;
+      const reactionId = 1;
+      const expectedDestination = `/app/reaction/${chatPostId}/modify/${reactionId}`;
+
+      service.modifyReaction(chatPostId, reactionId);
+
+      expect(rxStompServiceSpy.publish).toHaveBeenCalledWith({
+        destination: expectedDestination
+      });
     });
   });
 
+  describe('subscribeToReactions', () => {
+    it('should subscribe to the correct WebSocket topic for reaction updates', () => {
+      const chatPostId = 1;
+      const expectedTopic = `/topic/reaction/${chatPostId}`;
+      const mockReactionMessage = JSON.stringify([
+        { id: 1, emoji: '👍', users: [displayUser] },
+        { id: 2, emoji: '😊', users: [displayUser] }
+      ]);
 
-  describe('modifyReaction', () => {
-    it('should make a PUT request and return an array of reactions', () => {
-      const mockReactions: Reaction[] = [
-        { id: 1, emoji: '👍', users : [displayUser] },
-        { id: 2, emoji: '😊', users : [displayUser] },
-      ];
-      const reactionId = 1;
+      // Create a mock stomp message
+      const mockMessage = {
+        body: mockReactionMessage,
+        ack: () => {},
+        nack: () => {},
+        command: '',
+        headers: {},
+        binaryBody: new Uint8Array(),
+        isBinaryBody: false
+      };
 
-      service.modifyReaction(reactionId).subscribe(reactions => {
-        expect(reactions).toEqual(mockReactions);
+      // Simulate an observable returned by the watch method
+      rxStompServiceSpy.watch.and.returnValue(of(mockMessage));
+
+      service.subscribeToReactions(chatPostId).subscribe((reactions) => {
+        expect(reactions.length).toBe(2);
+        expect(reactions[0].emoji).toBe('👍');
+        expect(reactions[1].emoji).toBe('😊');
       });
 
-      const req = httpMock.expectOne(`${environment.chatApiUrl}/reaction/${reactionId}/modify-reaction`);
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toBeNull();
-      req.flush(mockReactions);
+      expect(rxStompServiceSpy.watch).toHaveBeenCalledWith(expectedTopic);
     });
   });
 
