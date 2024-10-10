@@ -34,9 +34,10 @@ jobs:
         env:
           CI: true
 
+      # I think we don't need to archive the test result now. So, I will disable it for now.
       # Step 5: Archive test results
-      - name: Archive test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: ui/admin-portal/dist/test-results
+      # - name: Archive test results
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #   name: test-results
+      #   path: ui/admin-portal/dist/test-results
