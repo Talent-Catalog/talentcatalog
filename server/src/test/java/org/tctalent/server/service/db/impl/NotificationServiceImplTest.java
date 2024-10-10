@@ -97,7 +97,7 @@ class NotificationServiceImplTest {
         //Create chat to test
         PartnerImpl sourcePartner = createPartner(10, createNonCandidateUser(4, Role.partneradmin));
         Candidate candidateAssociatedWithChat = createCandidate(1, sourcePartner);
-        SalesforceJobOpp job = createJob(candidateAssociatedWithChat);
+        SalesforceJobOpp job = createJob(10000L, "Test job", candidateAssociatedWithChat);
         JobChat chat = createChat(
             100, JobChatType.CandidateProspect, candidateAssociatedWithChat, job, null);
         chats.add(chat);
@@ -157,7 +157,7 @@ class NotificationServiceImplTest {
         //Create chat to test
         PartnerImpl sourcePartner = createPartner(10, createNonCandidateUser(4, Role.partneradmin));
         Candidate candidateAssociatedWithChat = createCandidate(1, sourcePartner);
-        SalesforceJobOpp job = createJob(candidateAssociatedWithChat);
+        SalesforceJobOpp job = createJob(10000L, "Test job", candidateAssociatedWithChat);
         JobChat chat = createChat(
             100, JobChatType.CandidateRecruiting, candidateAssociatedWithChat, job, null);
         chats.add(chat);
@@ -246,7 +246,7 @@ class NotificationServiceImplTest {
         //Create chat to test
         PartnerImpl sourcePartner = createPartner(10, createNonCandidateUser(4, Role.partneradmin));
         Candidate candidateAssociatedWithChat = createCandidate(1, sourcePartner);
-        SalesforceJobOpp job = createJob(candidateAssociatedWithChat);
+        SalesforceJobOpp job = createJob(10000L, "Test job", candidateAssociatedWithChat);
         JobChat chat = createChat(
             100, JobChatType.AllJobCandidates, candidateAssociatedWithChat, job, null);
         chats.add(chat);
@@ -336,7 +336,7 @@ class NotificationServiceImplTest {
         //Create chat to test
         PartnerImpl sourcePartner = createPartner(10, createNonCandidateUser(4, Role.partneradmin));
         PartnerImpl destinationPartner = createPartner(1000, createNonCandidateUser(50, Role.partneradmin));
-        SalesforceJobOpp job = createJob(destinationPartner);
+        SalesforceJobOpp job = createJob(10000L, "Test job", destinationPartner);
         JobChat chat = createChat(
             100, JobChatType.JobCreatorSourcePartner, null, job, sourcePartner);
         chats.add(chat);
@@ -394,7 +394,7 @@ class NotificationServiceImplTest {
 
         //Create chat to test
         PartnerImpl destinationPartner = createPartner(1000, createNonCandidateUser(50, Role.partneradmin));
-        SalesforceJobOpp job = createJob(destinationPartner);
+        SalesforceJobOpp job = createJob(10000L, "Test job", destinationPartner);
         JobChat chat = createChat(
             100, JobChatType.JobCreatorAllSourcePartners, null, job, null);
         chats.add(chat);
@@ -453,7 +453,7 @@ class NotificationServiceImplTest {
             10, createNonCandidateUser(4, Role.partneradmin));
         Candidate candidateAssociatedWithChat = createCandidate(1, sourcePartner);
         PartnerImpl destinationPartner = createPartner(1000, createNonCandidateUser(50, Role.partneradmin));
-        SalesforceJobOpp job = createJob(destinationPartner);
+        SalesforceJobOpp job = createJob(10000L, "Test job", destinationPartner);
 
         JobChat chat;
         List<EmailNotificationLink> links;
@@ -486,6 +486,36 @@ class NotificationServiceImplTest {
         assertEquals(100, link.id());
         assertEquals(baseUrl + "/opp/555", link.link().toString());
         assertEquals("Mock case", link.name());
+
+
+        //JobCreatorSourcePartner, JobCreatorAllSourcePartners, AllJobCandidates chats
+        chats.clear();
+        chat = createChat(
+            100, JobChatType.JobCreatorSourcePartner, candidateAssociatedWithChat, job, null);
+        chats.add(chat);
+
+        links = notificationService.computeEmailNotificationLinks(isCandidate, chats, baseUrl);
+        assertNotNull(links);
+        assertEquals(1, links.size());
+        link = links.get(0);
+        assertEquals(100, link.id());
+        assertEquals(baseUrl + "/job/10000", link.link().toString());
+        assertEquals("Test job", link.name());
+
+
+        //CandidateRecruiting chats
+        chats.clear();
+        chat = createChat(
+            100, JobChatType.CandidateRecruiting, candidateAssociatedWithChat, job, null);
+        chats.add(chat);
+
+        links = notificationService.computeEmailNotificationLinks(isCandidate, chats, baseUrl);
+        assertNotNull(links);
+        assertEquals(1, links.size());
+        link = links.get(0);
+        assertEquals(100, link.id());
+        assertEquals(baseUrl + "/opp/555", link.link().toString());
+        assertEquals("Mock case", link.name());
     }
 
     private void setJobCasesStage(SalesforceJobOpp job, CandidateOpportunityStage stage) {
@@ -494,17 +524,19 @@ class NotificationServiceImplTest {
         }
     }
 
-    private SalesforceJobOpp createJob(PartnerImpl destinationPartner) {
+    private SalesforceJobOpp createJob(long id, String name, PartnerImpl destinationPartner) {
         SalesforceJobOpp job = new SalesforceJobOpp();
-        job.setId(10000L);
+        job.setId(id);
+        job.setName(name);
         job.setJobCreator(destinationPartner);
         job.setContactUser(destinationPartner.getDefaultContact());
         return job;
     }
 
-    private SalesforceJobOpp createJob(Candidate candidate) {
+    private SalesforceJobOpp createJob(long id, String name, Candidate candidate) {
         SalesforceJobOpp job = new SalesforceJobOpp();
-        job.setId(10000L);
+        job.setId(id);
+        job.setName(name);
         CandidateOpportunity caseOpp = new CandidateOpportunity();
         caseOpp.setJobOpp(job);
         caseOpp.setCandidate(candidate);
