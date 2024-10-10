@@ -51,11 +51,12 @@
           bindLabel="name"
           formControlName="savedList">
         </ng-select>
-        <div *ngIf="selectedSubmissionList()" class="form-text"><span class="fw-bold">Note: </span>Adding candidate(s) to a
-          submission list will create candidate opportunities. <br>
-          Once added they cannot be removed
-          from the submission list - however candidate opportunities can be closed. <br> Submission list
-          contents can't be replaced.</div>
+        <div *ngIf="selectedSubmissionList()" class="form-text"><span class="fw-bold">Note: </span>
+          Adding candidate(s) to a submission list will create candidate opportunities. <br>
+          Once added they cannot be removed from the submission list, however candidate
+          opportunities can be closed. <br>
+          Closed candidate opportunities are hidden unless checkbox 'view closed cases' is checked.
+          <br> Submission list contents can't be replaced.</div>
       </div>
       <div *ngIf="!selectedSubmissionList()" class="mb-3">
         <div class="form-check form-check-reverse form-check-inline">
