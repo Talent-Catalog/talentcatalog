@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
@@ -35,6 +36,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
+@Setter
 @RequiredArgsConstructor
 @Slf4j
 public class EmailHelper {
@@ -169,12 +171,12 @@ public class EmailHelper {
         try {
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
+            ctx.setVariable("username", user.getUsername());
             ctx.setVariable("links", links);
 
             if (isCandidateUser) {
                 emailTemplate = "candidate-chat-notification";
                 ctx.setVariable("loginUrl", portalUrl);
-                ctx.setVariable("username", user.getUsername());
                 ctx.setVariable("partner", partner);
             } else {
                 emailTemplate = "admin-chat-notification";

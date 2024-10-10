@@ -289,8 +289,6 @@ public class NotificationServiceImpl implements NotificationService {
                 List<EmailNotificationLink> links = computeEmailNotificationLinks(
                     isCandidate, unreadChats, baseUrl);
 
-                //TODO JC Change watch notifications to use links
-                //TODO JC Test notification templates: html and text
                 emailHelper.sendNewChatPostsForUserEmail(user, isCandidate, links);
             }
         }
@@ -328,13 +326,8 @@ public class NotificationServiceImpl implements NotificationService {
                         case CandidateRecruiting ->
                             new EmailNotificationLink(chat.getId(), computeCaseUrl(baseUrl, theCase),
                                 theCase.getName());
-
-                        default -> null;
-
                     };
-                if (link != null) {
-                    links.add(link);
-                }
+                links.add(link);
             }
         }
         return links;

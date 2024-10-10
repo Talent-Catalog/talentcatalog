@@ -18,9 +18,9 @@
 
     <ul>
         <li th:each="link : ${links}">
-            <span th:text="Chat ${link.id()}"></span>
-            <a th:href="link.url()"
+            <a th:href="${link.link()}"
                th:text="${link.name()}">Link name</a>
+            <span th:text="'(Chat ' + ${link.id()} + ')'"></span>
         </li>
     </ul>
 </div>
