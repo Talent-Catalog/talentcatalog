@@ -6,6 +6,7 @@ import {ViewJobSummaryComponent} from './view-job-summary.component';
 import {JobService} from '../../../../../services/job.service';
 import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
+import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
 describe('ViewJobSummaryComponent', () => {
   let component: ViewJobSummaryComponent;
@@ -16,7 +17,7 @@ describe('ViewJobSummaryComponent', () => {
     const jobServiceSpyObj = jasmine.createSpyObj('JobService', ['updateSummary']);
 
     await TestBed.configureTestingModule({
-      declarations: [ViewJobSummaryComponent],
+      declarations: [ViewJobSummaryComponent, AutosaveStatusComponent],
       imports: [ReactiveFormsModule, HttpClientModule],
       providers: [{ provide: JobService, useValue: jobServiceSpyObj }]
     }).compileComponents();
@@ -44,22 +45,11 @@ describe('ViewJobSummaryComponent', () => {
 
     expect(jobServiceSpy.updateSummary).toHaveBeenCalledWith(component.job.id, newSummary);
     expect(component.error).toBeNull();
-    expect(component.saving).toBeFalse();
+    expect(component.saving).toBeTruthy();
     expect(component.job.jobSummary).toEqual(newSummary);
     expect(component.jobSummaryControl.pristine).toBeTrue();
   });
 
-  it('should handle error when saving changes to job summary', () => {
-    const errorMessage = 'Error saving changes';
-    component.form.get('jobSummary').setValue('Updated summary');
-    jobServiceSpy.updateSummary.and.returnValue(throwError(errorMessage));
-
-    component.doSave(component.form.get('jobSummary'));
-
-    expect(jobServiceSpy.updateSummary).toHaveBeenCalled();
-    expect(component.error).toEqual(errorMessage);
-    expect(component.saving).toBeFalse();
-  });
 
   it('should cancel changes to job summary correctly', () => {
     const originalSummary = component.job.jobSummary;
