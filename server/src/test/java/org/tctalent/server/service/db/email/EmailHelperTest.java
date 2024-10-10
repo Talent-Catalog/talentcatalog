@@ -67,4 +67,15 @@ class EmailHelperTest {
 
         emailHelper.sendNewChatPostsForUserEmail(testUser, false, links);
     }
+
+    @Test
+    void testSendWatcherEmail() throws Exception {
+        List<EmailNotificationLink> links = new ArrayList<>();
+        links.add( new EmailNotificationLink(
+            54, new URI("https://tctalent.org/admin-portal/search/54").toURL(), "Search 54's name"));
+        links.add( new EmailNotificationLink(
+            123, new URI("https://tctalent.org/admin-portal/search/123").toURL(), "Search 123's name"));
+
+        emailHelper.sendWatcherEmail(testUser, links);
+    }
 }

@@ -18,7 +18,6 @@ package org.tctalent.server.service.db.email;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Role;
-import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.thymeleaf.TemplateEngine;
@@ -219,7 +217,7 @@ public class EmailHelper {
         }
     }
 
-    public void sendWatcherEmail(User user, Set<SavedSearch> savedSearches) {
+    public void sendWatcherEmail(User user, List<EmailNotificationLink> links) {
 
         String email = user.getEmail();
         Partner partner = user.getPartner();
@@ -232,13 +230,34 @@ public class EmailHelper {
             final Context ctx = new Context();
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
-            ctx.setVariable("searches", savedSearches);
+            ctx.setVariable("links", links);
 
             subject = "Talent Catalog - New candidates matching your watched searches";
             bodyText = textTemplateEngine.process("watcher-notification", ctx);
             bodyHtml = htmlTemplateEngine.process("watcher-notification", ctx);
 
+            LogBuilder.builder(log)
+                .action("WatcherEmail")
+                .message("Sending email to " + email)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("WatcherEmail")
+                .message("Subject: " + subject)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("WatcherEmail")
+                .message("Text\n" + bodyText)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("WatcherEmail")
+                .message("Html\n" + bodyHtml)
+                .logInfo();
+
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+
         } catch (Exception e) {
             LogBuilder.builder(log)
                 .action("WatcherEmail")
