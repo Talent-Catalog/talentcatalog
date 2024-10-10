@@ -26,6 +26,10 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.email.EmailSender.EmailType;
 import org.thymeleaf.TemplateEngine;
 
+/**
+ * Not true unit tests. It just forces generated emails to log the sent emails for visual
+ * checking.
+ */
 class EmailHelperTest {
 
     EmailHelper emailHelper;
