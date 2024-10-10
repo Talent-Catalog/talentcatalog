@@ -48,6 +48,6 @@ describe('toDateOnly', () => {
     const dateObj = new Date('2023-07-09T23:59:59Z');
     const result = toDateOnly(dateObj);
     const expectedDate = new Date(Date.UTC(2023, 6, 10));
-    expect(result).toEqual(expectedDate);
+    expect(result.toISOString()).toEqual(expectedDate.toISOString());
   });
 });
