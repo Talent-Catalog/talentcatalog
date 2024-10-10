@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
+import {isSubmissionList, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {JobNameAndId} from "../../../model/job";
@@ -131,6 +131,10 @@ export class SelectListComponent implements OnInit {
     if (this.changeStatuses) {
       selection.statusUpdateInfo = this.statusUpdateInfo;
     }
+    // for submission lists we need to set replace to false
+    if (this.selectedSubmissionList()) {
+      selection.replace = false;
+    }
     this.activeModal.close(selection);
   }
 
@@ -174,5 +178,9 @@ export class SelectListComponent implements OnInit {
       }
       return {}
     }
+  }
+
+  selectedSubmissionList(): boolean {
+    return isSubmissionList(this.savedList);
   }
 }

@@ -24,6 +24,8 @@ import {of, throwError} from "rxjs";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {JobNameAndId} from "../../../model/job";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {MockJob} from "../../../MockData/MockJob";
+import {SavedList} from "../../../model/saved-list";
 
 describe('SelectListComponent', () => {
   let component: SelectListComponent;
@@ -125,6 +127,19 @@ describe('SelectListComponent', () => {
     component.enableNew();
     expect(component.form.get('newList').enabled).toBeTrue();
     expect(component.form.get('savedList').value).toBeNull();
+  });
+
+  it('should set replace to false if existing list is a submission list', () => {
+    let selectedSubmissionList = {
+      id: 2,
+      name: 'Submission List',
+      sfJobOpp: MockJob,
+      fixed: true,
+      global: true
+    } as SavedList;
+    component.form.controls['savedList'].patchValue(selectedSubmissionList);
+    component.select();
+    expect(component.form.get('replace').value).toBeFalse();
   });
 
 });
