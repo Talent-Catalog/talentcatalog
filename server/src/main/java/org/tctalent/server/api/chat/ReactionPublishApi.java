@@ -25,7 +25,6 @@ package org.tctalent.server.api.chat;
  import org.springframework.messaging.handler.annotation.MessageMapping;
  import org.springframework.messaging.handler.annotation.SendTo;
  import org.springframework.stereotype.Controller;
- import org.springframework.web.bind.annotation.RequestMapping;
  import org.tctalent.server.api.admin.IJoinedTableApi;
  import org.tctalent.server.exception.EntityExistsException;
  import org.tctalent.server.exception.InvalidRequestException;
@@ -53,7 +52,6 @@ package org.tctalent.server.api.chat;
   *
   */
 @Controller
-@RequestMapping("/api/admin/reaction")
 @RequiredArgsConstructor
 public class ReactionPublishApi
     implements IJoinedTableApi<AddReactionRequest, AddReactionRequest, AddReactionRequest> {
@@ -79,7 +77,7 @@ public class ReactionPublishApi
     public @NotNull List<Map<String, Object>> addReaction(
         @DestinationVariable Long postId, @Valid AddReactionRequest request)
             throws NoSuchObjectException, InvalidRequestException, EntityExistsException {
-        List<Reaction> reactions = this.reactionService.addReaction(postId, request);
+        List<Reaction> reactions = reactionService.addReaction(postId, request);
         return reactionDto().buildList(reactions);
     }
 
