@@ -31,6 +31,7 @@ import {MockSavedList} from "../../MockData/MockSavedList";
 import {MockSavedSearch} from "../../MockData/MockSavedSearch";
 import {StatReport} from "../../model/stat-report";
 import {ChartType} from "chart.js"
+
 describe('InfographicComponent', () => {
   let component: InfographicComponent;
   let fixture: ComponentFixture<InfographicComponent>;
@@ -141,7 +142,7 @@ describe('InfographicComponent', () => {
     mockCandidateStatService.getAllStats.and.returnValue(of(mockStatReports));
 
     // Call the method
-    component.submitStatsRequest(true);
+    component.submitStatsRequest(false);
 
     // Simulate asynchronous observables
     tick();
@@ -164,7 +165,7 @@ describe('InfographicComponent', () => {
     mockCandidateStatService.getAllStats.and.returnValue(throwError(mockError));
 
     // Call the method
-    component.submitStatsRequest(true);
+    component.submitStatsRequest(false);
 
     // Simulate asynchronous observables
     tick();

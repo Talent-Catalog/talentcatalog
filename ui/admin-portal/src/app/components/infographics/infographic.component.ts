@@ -120,7 +120,7 @@ export class InfographicComponent implements OnInit {
           this.savedSearchService.get(id).subscribe(
             (savedSearch) => {
               this.statsFilter.controls['savedSearch'].patchValue(savedSearch);
-              this.submitStatsRequest(true);
+              this.submitStatsRequest(false);
             }, error => {
               this.error = error;
             });
@@ -129,7 +129,7 @@ export class InfographicComponent implements OnInit {
           this.savedListService.get(id).subscribe(
             (savedList) => {
               this.statsFilter.controls['savedList'].patchValue(savedList);
-              this.submitStatsRequest(true);
+              this.submitStatsRequest(false);
             }, error => {
               this.error = error;
           });
