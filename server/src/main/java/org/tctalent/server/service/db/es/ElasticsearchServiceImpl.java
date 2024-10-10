@@ -29,6 +29,7 @@ import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.WildcardQueryBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.jetbrains.annotations.NotNull;
@@ -65,10 +66,10 @@ import org.tctalent.server.service.db.UserService;
 public class ElasticsearchServiceImpl implements ElasticsearchService {
 
   private static final String CANDIDATE_NUMBER_FIELD = "candidateNumber";
-  private static final String EMAIL_FIELD = "email";
-  private static final String EXTERNAL_ID_FIELD = "externalId";
+  private static final String EMAIL_FIELD = "email.keyword";
+  private static final String EXTERNAL_ID_FIELD = "externalId.keyword";
   private static final String FULL_NAME_FIELD = "fullName";
-  private static final String PHONE_NUMBER_FIELD = "phone";
+  private static final String PHONE_NUMBER_FIELD = "phone.keyword";
 
   private static final String COUNTRY_KEYWORD = "country.keyword";
   private static final String STATUS_KEYWORD = "status.keyword";
@@ -191,13 +192,16 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
   @NotNull
   private BoolQueryBuilder computeFindByPhoneOrEmailQuery(String input) {
-    // Create prefix query for phone number
-    PrefixQueryBuilder phoneQuery = QueryBuilders
-        .prefixQuery(PHONE_NUMBER_FIELD, input);
+    // Add wildcard characters to the input for full wildcard matching
+    String wildcardInput = "*" + input + "*";
 
-    // Create prefix query for email
-    PrefixQueryBuilder emailQuery = QueryBuilders
-        .prefixQuery(EMAIL_FIELD, input);
+    // Create wildcard query for phone number
+    WildcardQueryBuilder phoneQuery = QueryBuilders
+        .wildcardQuery(PHONE_NUMBER_FIELD, wildcardInput);
+
+    // Create wildcard query for email
+    WildcardQueryBuilder emailQuery = QueryBuilders
+        .wildcardQuery(EMAIL_FIELD, wildcardInput);
 
     // Construct the boolean query with should clause
     BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
