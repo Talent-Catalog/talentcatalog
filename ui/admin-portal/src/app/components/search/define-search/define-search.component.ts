@@ -196,6 +196,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],
+      // todo Maybe this needs to be SavedList objects - or as well as, like countries
+      listAnyIds: [[]],
+      listAnySearchType: ['or'],
+      listAllIds: [[]],
+      listAllSearchType: ['and'],
       unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
@@ -712,7 +717,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  handleSearchTypeChange(control: string, value: 'or' | 'not') {
+  handleSearchTypeChange(control: string, value: 'and' | 'or' | 'not') {
     this.searchForm.controls[control].patchValue(value);
   }
 
