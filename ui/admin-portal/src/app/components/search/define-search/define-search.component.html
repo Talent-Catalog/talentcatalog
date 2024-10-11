@@ -136,6 +136,8 @@
                   </div>
                 </ng-template>
 
+<!--                todo For using the clear See https://stackoverflow.com/questions/53753811/clear-icon-x-missing-when-using-ng-template-for-ng-select-->
+<!--                todo For possibly removing all the duplication see https://stackoverflow.com/questions/51086407/how-to-reuse-template-html-block-in-angular-->
                 <!--This improves display of selections -->
                 <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                   <!-- Allow individual selections to be removed by clicking on x next to name -->
@@ -559,6 +561,7 @@
             </div>
 
 
+<!--            todo This makes no sense-->
             <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
               <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
             </div>

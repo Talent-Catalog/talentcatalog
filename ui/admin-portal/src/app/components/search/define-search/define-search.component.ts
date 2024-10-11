@@ -14,10 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
-import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
 import {Language} from '../../../model/language';
@@ -44,13 +52,13 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
-import {ActivatedRoute, Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {LocalStorageService} from 'angular-2-local-storage';
+import {Router} from '@angular/router';
 import {
   ClearSelectionRequest,
   getCandidateSourceNavigation,
@@ -126,8 +134,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   selectedBaseJoin;
   storedBaseJoin;
 
-  constructor(private http: HttpClient, private fb: FormBuilder,
-              private candidateService: CandidateService,
+  constructor(private fb: FormBuilder,
               private countryService: CountryService,
               private languageService: LanguageService,
               private partnerService: PartnerService,
@@ -138,8 +145,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private surveyTypeService: SurveyTypeService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
-              private localStorageService: LocalStorageService,
-              private route: ActivatedRoute,
               private router: Router,
               private savedListService: SavedListService,
               private authorizationService: AuthorizationService,
@@ -147,6 +152,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private searchQueryService: SearchQueryService
               ) {
     /* SET UP FORM */
+    //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
       savedSearchId: [null],
       simpleQueryString: [null],
