@@ -794,6 +794,7 @@ import {
   EditCandidateExamComponent
 } from "./components/candidates/view/exam/edit/edit-candidate-exam.component";
 import {JoiDataComponent} from './components/job/intake/joi-data/joi-data.component';
+import {FindListComponent} from './components/list/find-list/find-list.component';
 
 @NgModule({
   declarations: [
@@ -1113,7 +1114,8 @@ import {JoiDataComponent} from './components/job/intake/joi-data/joi-data.compon
     ViewCandidateExamComponent,
     CreateCandidateExamComponent,
     EditCandidateExamComponent,
-    JoiDataComponent
+    JoiDataComponent,
+    FindListComponent
   ],
   imports: [
     BrowserModule,

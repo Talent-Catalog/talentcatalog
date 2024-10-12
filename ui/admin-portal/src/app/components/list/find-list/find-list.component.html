@@ -1,0 +1,10 @@
+<input (selectItem)="selectResult($event)"
+         [editable]="false" [inputFormatter]="renderJobRow" [ngbTypeahead]="doFind"
+         [resultFormatter]="renderResult"
+         class="form-control"
+         id="jobSearch"
+         placeholder="Search job name..."
+         type="text"/>
+<span *ngIf="searching">
+      <i class="fas fa-spinner fa-spin"></i> Searching...
+</span>
