@@ -346,6 +346,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
   }
 
+  /**
+   * Replaces arrays of objects with their corresponding ids.
+   * @param request Form data
+   */
   getIdsMultiSelect(request): SearchCandidateRequestPaged {
     if (request.countries != null) {
       request.countryIds = request.countries.map(c => c.id);
