@@ -66,7 +66,6 @@ import {enumKeysToEnumOptions, EnumOption, enumOptions, isEnumOption} from "../.
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
-import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
@@ -210,7 +209,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
 
     const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
-    const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
@@ -458,8 +456,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   selectExclusionList(list: CandidateSource) {
-    this.exclusionListIdControl.patchValue(list.id);
+    this.exclusionListIdControl.patchValue(list?.id);
   }
+
   showSavedSearches() {
     const showSavedSearchesModal = this.modalService.open(SearchSavedSearchesComponent, {
       centered: true,
@@ -652,6 +651,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();
+  }
+
+  get exclusionListId(): number {
+    return this.exclusionListIdControl?.value;
   }
 
   get exclusionListIdControl(): AbstractControl {

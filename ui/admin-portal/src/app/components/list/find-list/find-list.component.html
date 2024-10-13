@@ -1,10 +1,15 @@
-<input (selectItem)="selectResult($event)"
-         [editable]="false" [inputFormatter]="renderSource" [ngbTypeahead]="doFind"
-         [resultFormatter]="renderSource"
-         class="form-control"
-         id="findSource"
-         placeholder="Find by name..."
-         type="text"/>
-<span *ngIf="searching">
-      <i class="fas fa-spinner fa-spin"></i> Searching...
-</span>
+<div class="input-group">
+  <input (selectItem)="selectResult($event)"
+           [editable]="false" [inputFormatter]="renderSource" [ngbTypeahead]="doFind"
+           [resultFormatter]="renderSource"
+           [value]="currentSelection?.name"
+           class="form-control"
+           id="findSource"
+           placeholder="Find by name..."
+           type="text"/>
+  <button class="btn btn-accent-1 hover-color-red calendar" (click)="clearSelection()">
+    <span class="fas fa-times"></span>
+  </button>
+  <span *ngIf="searching"><i class="fas fa-spinner fa-spin"></i> Searching...
+  </span>
+</div>
