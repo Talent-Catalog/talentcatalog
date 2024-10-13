@@ -63,33 +63,35 @@ export class FindListComponent implements OnInit, OnChanges {
           this.searching = true;
         }),
         switchMap(text => {
-            if (this.sourceType == null) {
-              return of([]);
-            } else {
-              let request: SearchCandidateSourcesRequest = {
-                keyword: text,
-                pageSize: 10,
-                fixed: this.fixed,
-                global: this.global,
-                owned: this.owned,
-                shared: this.shared
-              }
-              return this.candidateSourceService.searchPaged(this.sourceType, request).pipe(
-                map(results => results.content),
-                catchError(() => {
-                  return of([]);
-                }))
-            }
+            return this.doSearch(text);
           }
         ),
         tap(() => this.searching = false)
       );
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  private doSearch(text: string): Observable<CandidateSource[]> {
+    if (this.sourceType == null) {
+      return of([]);
+    } else {
+      let request: SearchCandidateSourcesRequest = {
+        keyword: text,
+        pageSize: 10,
+        fixed: this.fixed,
+        global: this.global,
+        owned: this.owned,
+        shared: this.shared
+      }
+      return this.candidateSourceService.searchPaged(this.sourceType, request).pipe(
+        map(results => results.content),
+        catchError(() => {
+          return of([]);
+        }))
+    }
+  }
 
-    //If there is already a source associated, get its name and construct the default
-    //job request (ie to retain existing job)
+  ngOnChanges(changes: SimpleChanges): void {
+    //If there is already a source associated set the selection to it, otherwise clear selection.
     if (this.id) {
       this.candidateSourceService.get(this.sourceType, this.id).subscribe({
         next: source => this.setCurrentSelection(source)
