@@ -493,20 +493,13 @@
                       placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
-              <app-find-list
+              <app-find-list id="exclusion"
+                [id] = "exclusionListId"
+                [global] = true
+                [owned] = true
+                [shared] = true
                 (selectionMade)="selectExclusionList($event)"
               ></app-find-list>
-<!--              <ng-select-->
-<!--                id="exclusion"-->
-<!--                [items]="lists"-->
-<!--                [closeOnSelect]="true"-->
-<!--                [clearable]="true"-->
-<!--                [searchable]="true"-->
-<!--                placeholder="Select or type..."-->
-<!--                bindLabel="name"-->
-<!--                bindValue="id"-->
-<!--                formControlName="exclusionListId">-->
-<!--              </ng-select>-->
             </div>
 
             <!-- PARTNERS  -->

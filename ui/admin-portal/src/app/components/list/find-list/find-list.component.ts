@@ -1,4 +1,12 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Observable, of} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
@@ -21,8 +29,13 @@ import {
   templateUrl: './find-list.component.html',
   styleUrls: ['./find-list.component.scss']
 })
-export class FindListComponent implements OnInit {
+export class FindListComponent implements OnInit, OnChanges {
 
+  @Input() id: number;
+  @Input() fixed: boolean;
+  @Input() global: boolean;
+  @Input() owned: boolean;
+  @Input() shared: boolean;
   @Output() selectionMade =  new EventEmitter<CandidateSource>();
 
   currentSelection: CandidateSource;
@@ -33,6 +46,8 @@ export class FindListComponent implements OnInit {
   doFind;
 
   searching: boolean;
+
+  //todo Currently hard coded for lists but should also work for searches
   private sourceType:CandidateSourceType = CandidateSourceType.SavedList;
 
   constructor(private candidateSourceService: CandidateSourceService) {
@@ -53,7 +68,11 @@ export class FindListComponent implements OnInit {
             } else {
               let request: SearchCandidateSourcesRequest = {
                 keyword: text,
-                pageSize: 10
+                pageSize: 10,
+                fixed: this.fixed,
+                global: this.global,
+                owned: this.owned,
+                shared: this.shared
               }
               return this.candidateSourceService.searchPaged(this.sourceType, request).pipe(
                 map(results => results.content),
@@ -67,12 +86,33 @@ export class FindListComponent implements OnInit {
       );
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+
+    //If there is already a source associated, get its name and construct the default
+    //job request (ie to retain existing job)
+    if (this.id) {
+      this.candidateSourceService.get(this.sourceType, this.id).subscribe({
+        next: source => this.setCurrentSelection(source)
+      });
+    } else {
+      this.clearSelection()
+    }
+  }
+
   renderSource(source: CandidateSource) {
     return source.name;
   }
 
+  clearSelection() {
+    this.setCurrentSelection(null);
+  }
+
   selectResult($event: NgbTypeaheadSelectItemEvent<any>) {
-    this.currentSelection = $event.item;
+    this.setCurrentSelection($event.item);
+  }
+
+  private setCurrentSelection(source: CandidateSource) {
+    this.currentSelection = source;
     this.emitCurrentSelection();
   }
 
