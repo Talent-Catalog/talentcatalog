@@ -1,9 +1,9 @@
 <input (selectItem)="selectResult($event)"
-         [editable]="false" [inputFormatter]="renderJobRow" [ngbTypeahead]="doFind"
-         [resultFormatter]="renderResult"
+         [editable]="false" [inputFormatter]="renderSource" [ngbTypeahead]="doFind"
+         [resultFormatter]="renderSource"
          class="form-control"
-         id="jobSearch"
-         placeholder="Search job name..."
+         id="findSource"
+         placeholder="Find by name..."
          type="text"/>
 <span *ngIf="searching">
       <i class="fas fa-spinner fa-spin"></i> Searching...
