@@ -45,3 +45,12 @@
     color: white;
   }
 }
+
+.navbar-nav .nav-link {
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: underline;
+    color: #15c7ff;
+  }
+}
