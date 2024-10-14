@@ -493,13 +493,13 @@
                       placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
-              <app-find-list id="exclusion"
+              <app-find-candidate-source id="exclusion"
                 [id] = "exclusionListId"
                 [global] = true
                 [owned] = true
                 [shared] = true
                 (selectionMade)="selectExclusionList($event)"
-              ></app-find-list>
+              ></app-find-candidate-source>
             </div>
 
             <!-- PARTNERS  -->

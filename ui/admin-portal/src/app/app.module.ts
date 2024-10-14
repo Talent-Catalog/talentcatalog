@@ -794,7 +794,7 @@ import {
   EditCandidateExamComponent
 } from "./components/candidates/view/exam/edit/edit-candidate-exam.component";
 import {JoiDataComponent} from './components/job/intake/joi-data/joi-data.component';
-import {FindListComponent} from './components/list/find-list/find-list.component';
+import {FindCandidateSourceComponent} from './components/candidates/find-candidate-source/find-candidate-source.component';
 
 @NgModule({
   declarations: [
@@ -1115,7 +1115,7 @@ import {FindListComponent} from './components/list/find-list/find-list.component
     CreateCandidateExamComponent,
     EditCandidateExamComponent,
     JoiDataComponent,
-    FindListComponent
+    FindCandidateSourceComponent
   ],
   imports: [
     BrowserModule,

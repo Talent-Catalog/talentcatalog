@@ -23,13 +23,12 @@ import {
  * Based on https://ng-bootstrap.github.io/#/components/typeahead/examples
  */
 
-//todo Needs to be renamed to FindSourceComponent
 @Component({
-  selector: 'app-find-list',
-  templateUrl: './find-list.component.html',
-  styleUrls: ['./find-list.component.scss']
+  selector: 'app-find-candidate-source',
+  templateUrl: './find-candidate-source.component.html',
+  styleUrls: ['./find-candidate-source.component.scss']
 })
-export class FindListComponent implements OnInit, OnChanges {
+export class FindCandidateSourceComponent implements OnInit, OnChanges {
 
   @Input() id: number;
   @Input() fixed: boolean;

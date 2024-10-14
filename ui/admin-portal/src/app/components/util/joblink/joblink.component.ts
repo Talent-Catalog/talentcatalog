@@ -29,7 +29,7 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 import {JobService} from "../../../services/job.service";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
-// todo Change this to app-find-job to match app-find-list.
+// todo Change this to app-find-job to match app-find-candidate-source.
 
 @Component({
   selector: 'app-joblink',
