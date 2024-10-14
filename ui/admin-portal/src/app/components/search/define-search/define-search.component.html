@@ -494,6 +494,7 @@
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <app-find-candidate-source id="exclusion"
+                [sourceType]="CandidateSourceType.SavedList"
                 [id] = "exclusionListId"
                 [global] = true
                 [owned] = true

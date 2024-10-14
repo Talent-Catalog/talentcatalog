@@ -58,7 +58,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {CandidateSource, SearchPartnerRequest} from '../../../model/base';
+import {CandidateSource, CandidateSourceType, SearchPartnerRequest} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -777,4 +777,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     return s;
   }
+
+  protected readonly CandidateSourceType = CandidateSourceType;
 }
