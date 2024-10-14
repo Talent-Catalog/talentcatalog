@@ -455,7 +455,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       });
   }
 
-  selectExclusionList(list: CandidateSource) {
+  selectExclusionList(sources: CandidateSource[]) {
+    let list = null;
+    if (sources && sources.length > 0) {
+      list = sources[0];
+    }
     this.exclusionListIdControl.patchValue(list?.id);
   }
 
