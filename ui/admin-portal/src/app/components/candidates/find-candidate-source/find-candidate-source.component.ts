@@ -36,6 +36,7 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
   @Input() global: boolean;
   @Input() owned: boolean;
   @Input() shared: boolean;
+  @Input() maxSelections: number;
   @Output() selectionMade =  new EventEmitter<CandidateSource[]>();
 
   sources$: Observable<CandidateSource[]>;
@@ -106,11 +107,6 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
 
   private setCurrentSelection(sources: CandidateSource[]) {
     this.currentSelection = sources;
-    this.emitCurrentSelection();
-  }
-
-  private emitCurrentSelection() {
-    this.selectionMade.emit(this.currentSelection);
   }
 
   onChangedSelection($event: any) {
