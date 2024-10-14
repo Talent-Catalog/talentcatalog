@@ -43,12 +43,15 @@ describe('FindListComponent', () => {
   it('should initialize correctly', () => {
     component.id = 1;
     component.ngOnChanges({});
-    expect(component.currentSelection).toBe(mockCandidateSource);
+
+    expect(component.currentSelection.length).toEqual(1);
+    expect(component.currentSelection[0]).toEqual(mockCandidateSource);
   });
 
   it('should emit job selection correctly', (done) => {
-    component.selectionMade.subscribe(selectedSource => {
-      expect(selectedSource).toEqual(mockCandidateSource);
+    component.selectionMade.subscribe(selectedSources => {
+      expect(selectedSources.length).toEqual(1);
+      expect(selectedSources[0]).toEqual(mockCandidateSource);
       done();
     });
 
