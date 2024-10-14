@@ -17,7 +17,7 @@ import {Directive, EventEmitter, Input, OnDestroy, Output} from "@angular/core";
 import {ChatService} from "../../../services/chat.service";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {Subscription} from "rxjs";
-import {ChatPost, CreateChatRequest, JobChat} from "../../../model/chat";
+import {ChatPost, CreateChatRequest, JobChat, GroupedMessages} from "../../../model/chat";
 
 /**
  * This provides underlying common support for components which display chat posts.
@@ -40,6 +40,7 @@ export abstract class PostsComponentBase implements OnDestroy{
   currentPost: ChatPost;
 
   posts: ChatPost[];
+  groupedMessages: GroupedMessages[] = [];
 
   loading: boolean;
   error;
@@ -81,8 +82,15 @@ export abstract class PostsComponentBase implements OnDestroy{
     if (this.chat) {
       console.log('Subscribing for posts on chat ' + chat.id)
       //Subscribe for updates on new chat
+
       this.chatSubscription = this.chatService.getChatPosts$(this.chat).subscribe({
-          next: (post) => this.addNewPost(post)
+
+        // this.posts.push(post);
+          next: (post) => {
+            post.createdDate = new Date('2023-10-02T10:00:00Z');
+            this.addNewPost(post)
+          }
+
         }
       );
 
@@ -104,6 +112,7 @@ export abstract class PostsComponentBase implements OnDestroy{
       this.chatPostService.listPosts(this.chat.id).subscribe(
         posts => {
           this.updatePosts(posts);
+          console.log(this.groupedMessages);
           this.loading = false;
         },
         error => {
@@ -116,6 +125,8 @@ export abstract class PostsComponentBase implements OnDestroy{
 
   private addNewPost(post: ChatPost) {
     this.posts.push(post);
+    this.groupedMessages = this.groupMessagesByDate(this.posts);
+    console.log("add new chat",this.groupedMessages);
   }
 
   private updatePosts(posts: ChatPost[]) {
@@ -129,11 +140,35 @@ export abstract class PostsComponentBase implements OnDestroy{
         }
       }
     }
+    this.groupedMessages = this.groupMessagesByDate(posts);
+    console.log("this.groupedMessages",this.groupedMessages);
     this.posts = posts;
   }
 
   selectCurrent(post: ChatPost) {
     this.currentPost = post;
+  }
+
+  private groupMessagesByDate(messages: any[]): GroupedMessages[] {
+    const grouped = messages.reduce((acc, message) => {
+      const date = new Date(message.createdDate).toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(message);
+      return acc;
+    }, {} as { [key: string]: any[] });
+
+    // Transform the object into an array for easier rendering
+    return Object.keys(grouped).map(date => ({
+      date,
+      messages: grouped[date]
+    }));
   }
 
   private unsubscribe() {
