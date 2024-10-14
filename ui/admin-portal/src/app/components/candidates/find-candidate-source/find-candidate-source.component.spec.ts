@@ -1,14 +1,14 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FindListComponent} from './find-list.component';
+import {FindCandidateSourceComponent} from './find-candidate-source.component';
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {of} from "rxjs";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 
 describe('FindListComponent', () => {
-  let component: FindListComponent;
-  let fixture: ComponentFixture<FindListComponent>;
+  let component: FindCandidateSourceComponent;
+  let fixture: ComponentFixture<FindCandidateSourceComponent>;
   let candidateSourceService: jasmine.SpyObj<CandidateSourceService>;
   let mockCandidateSource: MockCandidateSource = new MockCandidateSource();
 
@@ -16,7 +16,7 @@ describe('FindListComponent', () => {
     const candidateSourceServiceSpy = jasmine.createSpyObj('CandidateSourceService', ['searchPaged', 'get']);
 
     await TestBed.configureTestingModule({
-      declarations: [ FindListComponent ],
+      declarations: [ FindCandidateSourceComponent ],
       providers: [
         { provide: CandidateSourceService, useValue: candidateSourceServiceSpy }
       ]
@@ -28,7 +28,7 @@ describe('FindListComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FindListComponent);
+    fixture = TestBed.createComponent(FindCandidateSourceComponent);
     component = fixture.componentInstance;
     candidateSourceService.get.and.returnValue(of(mockCandidateSource));
 
