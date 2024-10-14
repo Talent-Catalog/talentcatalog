@@ -30,6 +30,7 @@ import {
 })
 export class FindCandidateSourceComponent implements OnInit, OnChanges {
 
+  @Input() sourceType: CandidateSourceType;
   @Input() id: number;
   @Input() fixed: boolean;
   @Input() global: boolean;
@@ -45,9 +46,6 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
   doFind;
 
   searching: boolean;
-
-  //todo Currently hard coded for lists but should also work for searches
-  private sourceType:CandidateSourceType = CandidateSourceType.SavedList;
 
   constructor(private candidateSourceService: CandidateSourceService) {
   }
