@@ -7,7 +7,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {Observable, of} from "rxjs";
+import {Observable, of, Subject} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
@@ -20,7 +20,7 @@ import {
 /**
  * Finds a source by name by searching the server based on what is typed into an input field.
  * <p/>
- * Based on https://ng-bootstrap.github.io/#/components/typeahead/examples
+ * Based on https://ng-select.github.io/ng-select#/search
  */
 
 @Component({
@@ -36,14 +36,11 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
   @Input() global: boolean;
   @Input() owned: boolean;
   @Input() shared: boolean;
-  @Output() selectionMade =  new EventEmitter<CandidateSource>();
+  @Output() selectionMade =  new EventEmitter<CandidateSource[]>();
 
-  currentSelection: CandidateSource;
-
-  //This is set in ngOnInit to the function called from the html input ngbTypeahead.
-  //(Note that calling a method does not work because "this" is undefined - instead of referring
-  //to this component instance - meaning that you can't access properties of this component - JC)
-  doFind;
+  sources$: Observable<CandidateSource[]>;
+  sourceNameInput$ = new Subject<string>();
+  currentSelection: CandidateSource[] = [];
 
   searching: boolean;
 
@@ -51,20 +48,17 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    //See https://ng-bootstrap.github.io/#/components/typeahead/examples
-    this.doFind = (text$: Observable<string>) =>
-      text$.pipe(
+    this.loadSources();
+  }
+
+  private loadSources() {
+    this.sources$ = this.sourceNameInput$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        tap(() => {
-          this.searching = true;
-        }),
-        switchMap(text => {
-            return this.doSearch(text);
-          }
-        ),
+        tap(() => this.searching = true),
+        switchMap((term) => this.doSearch(term)),
         tap(() => this.searching = false)
-      );
+    );
   }
 
   private doSearch(text: string): Observable<CandidateSource[]> {
@@ -91,31 +85,35 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
     //If there is already a source associated set the selection to it, otherwise clear selection.
     if (this.id) {
       this.candidateSourceService.get(this.sourceType, this.id).subscribe({
-        next: source => this.setCurrentSelection(source)
+        next: source => this.setCurrentSelection([source])
       });
     } else {
       this.clearSelection()
     }
   }
 
-  renderSource(source: CandidateSource) {
-    return source.name;
+  trackByFn(source: CandidateSource) {
+    return source.id;
   }
 
   clearSelection() {
-    this.setCurrentSelection(null);
+    this.setCurrentSelection([]);
   }
 
   selectResult($event: NgbTypeaheadSelectItemEvent<any>) {
     this.setCurrentSelection($event.item);
   }
 
-  private setCurrentSelection(source: CandidateSource) {
-    this.currentSelection = source;
+  private setCurrentSelection(sources: CandidateSource[]) {
+    this.currentSelection = sources;
     this.emitCurrentSelection();
   }
 
   private emitCurrentSelection() {
     this.selectionMade.emit(this.currentSelection);
+  }
+
+  onChangedSelection($event: any) {
+    this.selectionMade.emit($event);
   }
 }

@@ -1,15 +1,18 @@
 <div class="input-group">
-  <input (selectItem)="selectResult($event)"
-           [editable]="false" [inputFormatter]="renderSource" [ngbTypeahead]="doFind"
-           [resultFormatter]="renderSource"
-           [value]="currentSelection?.name"
-           class="form-control"
-           id="findSource"
-           placeholder="Find by name..."
-           type="text"/>
-  <button class="btn btn-accent-1 hover-color-red calendar" (click)="clearSelection()">
-    <span class="fas fa-times"></span>
-  </button>
+  <ng-select
+    [items]="sources$ | async"
+    bindLabel="name"
+    [addTag]="true"
+    [multiple]="true"
+    [hideSelected]="true"
+    [trackByFn]="trackByFn"
+    [minTermLength]="2"
+    [loading]="searching"
+    typeToSearchText="Please enter 2 or more characters"
+    [typeahead]="sourceNameInput$"
+    (change)="onChangedSelection($event)"
+    [(ngModel)]="currentSelection">
+  </ng-select>
   <span *ngIf="searching"><i class="fas fa-spinner fa-spin"></i> Searching...
   </span>
 </div>
