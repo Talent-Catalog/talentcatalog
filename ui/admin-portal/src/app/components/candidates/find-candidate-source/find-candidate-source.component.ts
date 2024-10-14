@@ -92,11 +92,12 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     //If there is already a source associated set the selection to it, otherwise clear selection.
-    //todo This needs to allow more multiple initial values
-    if (this.id) {
+    if (this.single && this.id) {
       this.candidateSourceService.get(this.sourceType, this.id).subscribe({
         next: source => this.setCurrentSelection([source])
       });
+    } else if (!this.single && this.ids) {
+      //todo This needs to allow multiple initial values
     } else {
       this.clearSelection()
     }
