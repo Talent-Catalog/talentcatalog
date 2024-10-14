@@ -1,19 +1,15 @@
-<div class="input-group">
-  <ng-select
-    [items]="sources$ | async"
-    bindLabel="name"
-    [addTag]="true"
-    [multiple]="true"
-    [maxSelectedItems]="maxSelections"
-    [hideSelected]="true"
-    [trackByFn]="trackByFn"
-    [minTermLength]="2"
-    [loading]="searching"
-    typeToSearchText="Please enter 2 or more characters"
-    [typeahead]="sourceNameInput$"
-    (change)="onChangedSelection($event)"
-    [(ngModel)]="currentSelection">
-  </ng-select>
-  <span *ngIf="searching"><i class="fas fa-spinner fa-spin"></i> Searching...
-  </span>
-</div>
+<ng-select
+  [items]="sources$ | async"
+  bindLabel="name"
+  [addTag]="true"
+  [multiple]="!single"
+  [hideSelected]="true"
+  [minTermLength]="2"
+  [loading]="searching"
+  typeToSearchText="Please enter 2 or more characters"
+  [typeahead]="sourceNameInput$"
+  (change)="onChangedSelection($event)"
+  [(ngModel)]="single ? currentSelection : currentSelections">
+</ng-select>
+<span *ngIf="searching"><i class="fas fa-spinner fa-spin"></i> Searching...
+</span>

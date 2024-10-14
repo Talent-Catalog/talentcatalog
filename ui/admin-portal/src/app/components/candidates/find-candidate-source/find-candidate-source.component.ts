@@ -29,19 +29,27 @@ import {
   styleUrls: ['./find-candidate-source.component.scss']
 })
 export class FindCandidateSourceComponent implements OnInit, OnChanges {
-
+  //Whether single selection only - default is multiple selection allowed
+  @Input() single: boolean = false;
   @Input() sourceType: CandidateSourceType;
   @Input() id: number;
+  @Input() ids: number[];
   @Input() fixed: boolean;
   @Input() global: boolean;
   @Input() owned: boolean;
   @Input() shared: boolean;
-  @Input() maxSelections: number;
-  @Output() selectionMade =  new EventEmitter<CandidateSource[]>();
+
+  @Output() selectionMade =  new EventEmitter<CandidateSource>();
+  @Output() selectionsMade =  new EventEmitter<CandidateSource[]>();
 
   sources$: Observable<CandidateSource[]>;
   sourceNameInput$ = new Subject<string>();
-  currentSelection: CandidateSource[] = [];
+
+  //Used for single selection
+  currentSelection: CandidateSource;
+
+  //Used for multiple selection
+  currentSelections: CandidateSource[] = [];
 
   searching: boolean;
 
@@ -84,6 +92,7 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     //If there is already a source associated set the selection to it, otherwise clear selection.
+    //todo This needs to allow more multiple initial values
     if (this.id) {
       this.candidateSourceService.get(this.sourceType, this.id).subscribe({
         next: source => this.setCurrentSelection([source])
@@ -91,10 +100,6 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
     } else {
       this.clearSelection()
     }
-  }
-
-  trackByFn(source: CandidateSource) {
-    return source.id;
   }
 
   clearSelection() {
@@ -106,10 +111,15 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
   }
 
   private setCurrentSelection(sources: CandidateSource[]) {
-    this.currentSelection = sources;
+    this.currentSelections = sources;
+    this.currentSelection = sources  && sources.length > 0 ? sources[0] : null;
   }
 
   onChangedSelection($event: any) {
-    this.selectionMade.emit($event);
+    if (this.single) {
+      this.selectionMade.emit($event);
+    } else {
+      this.selectionsMade.emit($event);
+    }
   }
 }
