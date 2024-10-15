@@ -62,6 +62,15 @@ export class FindCandidateSourceComponent implements OnInit {
       });
     } else if (!this.single && this.ids) {
       //todo This needs to allow multiple initial values  - need getShortInfos IdsRequest
+      // const idsRequest = {
+      //   ids: this.ids
+      // }
+      // this.candidateSourceService.getShortInfos(this.sourceType, idsRequest).subscribe({
+      //   next: (sources: CandidateSource[])  => {
+      //     this.setCurrentSelection(sources);
+      //     this.loadSources();
+      //   }
+      // });
     } else {
       this.clearSelection()
       this.loadSources();
