@@ -98,6 +98,7 @@ import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
+import org.tctalent.server.service.db.NotificationService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -128,6 +129,7 @@ public class SystemAdminApi {
     private final FileSystemService fileSystemService;
     private final JobService jobService;
     private final LanguageService languageService;
+    private final NotificationService notificationService;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
     private final SalesforceConfig salesforceConfig;
@@ -181,6 +183,7 @@ public class SystemAdminApi {
             CountryService countryService,
             FileSystemService fileSystemService,
             JobService jobService, LanguageService languageService,
+        NotificationService notificationService,
             PopulateElasticsearchService populateElasticsearchService,
             SalesforceService salesforceService,
             SalesforceConfig salesforceConfig, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
@@ -200,6 +203,7 @@ public class SystemAdminApi {
         this.fileSystemService = fileSystemService;
         this.jobService = jobService;
         this.languageService = languageService;
+        this.notificationService = notificationService;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.salesforceConfig = salesforceConfig;
@@ -253,7 +257,7 @@ public class SystemAdminApi {
 
     @GetMapping("notifyOfChatsWithNewPosts")
     public void notifyOfNewChatPosts() {
-        candidateOpportunityService.notifyOfChatsWithNewPosts();
+        notificationService.notifyUsersOfChatsWithNewPosts();
     }
 
     /**

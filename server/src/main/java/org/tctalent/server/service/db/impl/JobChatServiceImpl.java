@@ -178,7 +178,7 @@ public class JobChatServiceImpl implements JobChatService {
 
     @Override
     public List<Long> findChatsWithPostsSinceDate(OffsetDateTime dateTime) {
-        return jobChatRepository.myFindChatsWithPostsSinceDate(dateTime);
+        return jobChatRepository.findChatsWithPostsSinceDate(dateTime);
     }
 
     @Override

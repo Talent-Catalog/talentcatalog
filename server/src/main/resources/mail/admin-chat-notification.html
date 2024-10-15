@@ -13,18 +13,15 @@
         chats that you are subscribed to and have not marked as read.
     </p>
     <p>
-        Log in to the Talent Catalog to see the new posts.
+        Click on any link to see the details.
     </p>
-    <p>
-        You can log in by clicking <a th:href="${loginUrl}">here</a>
-        or by going to <span th:text="${loginUrl}"></span> in your browser.
-    </p>
-    <p>
-        Your Talent Catalog username is <span th:text="${username}"></span>.
-    </p>
-    <p>
-        If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
-    </p>
+
+    <ul>
+        <li th:each="link : ${links}">
+            <a th:href="${link.link()}" th:text="${link.name()}"></a>
+            <span th:text="'(Chat ' + ${link.id()} + ')'"></span>
+        </li>
+    </ul>
 </div>
 </body>
 </html>
