@@ -2933,7 +2933,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Transactional
     @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
@@ -2945,7 +2944,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Transactional
     @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
