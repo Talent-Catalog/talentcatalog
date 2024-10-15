@@ -1,6 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FindCandidateSourceComponent} from './find-candidate-source.component';
-import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {of} from "rxjs";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
@@ -53,11 +52,15 @@ describe('FindListComponent', () => {
   });
 
   it('should emit selection correctly', (done) => {
-    component.selectionMade.subscribe(selectedSources => {
-      expect(selectedSources).toEqual(mockCandidateSource);
-      done();
+    component.single = true;
+
+    component.selectionMade.subscribe({
+      next: selectedSource => {
+        expect(selectedSource).toEqual(mockCandidateSource);
+        done();
+      }
     });
 
-    component.onChangedSelection({ item: mockCandidateSource } as NgbTypeaheadSelectItemEvent);
+    component.onChangedSelection(mockCandidateSource);
   });
 });
