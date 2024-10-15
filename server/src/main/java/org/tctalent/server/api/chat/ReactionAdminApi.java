@@ -14,12 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.api.admin;
+package org.tctalent.server.api.chat;
 
- import java.util.List;
- import java.util.Map;
  import javax.validation.Valid;
- import javax.validation.constraints.NotNull;
  import lombok.RequiredArgsConstructor;
  import org.springframework.web.bind.annotation.PathVariable;
  import org.springframework.web.bind.annotation.PostMapping;
@@ -27,69 +24,64 @@ package org.tctalent.server.api.admin;
  import org.springframework.web.bind.annotation.RequestBody;
  import org.springframework.web.bind.annotation.RequestMapping;
  import org.springframework.web.bind.annotation.RestController;
+ import org.tctalent.server.api.admin.IJoinedTableApi;
  import org.tctalent.server.exception.EntityExistsException;
  import org.tctalent.server.exception.InvalidRequestException;
  import org.tctalent.server.exception.NoSuchObjectException;
- import org.tctalent.server.model.db.Reaction;
+ import org.tctalent.server.model.db.ChatPost;
  import org.tctalent.server.request.chat.reaction.AddReactionRequest;
+ import org.tctalent.server.service.db.ChatPostService;
  import org.tctalent.server.service.db.ReactionService;
- import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/reaction")
 @RequiredArgsConstructor
 public class ReactionAdminApi
     implements IJoinedTableApi<AddReactionRequest, AddReactionRequest, AddReactionRequest> {
 
     private final ReactionService reactionService;
+    private final ChatPostService chatPostService;
 
     /**
      * Adds a reaction record from the data in the given request or modifies an existing one if that
      * emoji is already associated with a reaction on same post. Modify may even delete, if user was
      * the last remaining user associated with the existing reaction.
+     * <p/>
+     * The updated post is published to all subscribers via {@link ChatPostService}
+     *
      * @param request Request containing emoji
-     * @return updated reactions list for the parent chat post
+     * @param chatPostId ID of the post to add the reaction to
      * @throws EntityExistsException if reaction already exists
      * @throws NoSuchObjectException if post or reaction (if update called) not found
      * @throws InvalidRequestException if not authorised to delete (if delete method called)
      */
-    @PostMapping("{id}/add-reaction")
-    public @NotNull List<Map<String, Object>> addReaction(
-          @PathVariable("id") long chatPostId, @Valid @RequestBody AddReactionRequest request)
+    @PostMapping("{chatPostId}/add-reaction")
+    public void addReaction(
+          @PathVariable("chatPostId") long chatPostId, @Valid @RequestBody AddReactionRequest request)
             throws NoSuchObjectException, InvalidRequestException, EntityExistsException {
-        List<Reaction> reactions = this.reactionService.addReaction(chatPostId, request);
-        return reactionDto().buildList(reactions);
+      reactionService.addReaction(chatPostId, request);
+      ChatPost post = chatPostService.getChatPost(chatPostId);
+      chatPostService.publishChatPost(post);
     }
 
   /**
    * Modifies an existing user reaction, adding or removing a user (depending on whether they were
    * already associated with it) or calling delete if they were the last associated user.
-   * @param id of the reaction to be modified
-   * @return modified reactions list for the parent chat post
+   * <p/>
+   * The updated post is published to all subscribers via {@link ChatPostService}
+   *
+   * @param reactionId id of the reaction to be modified
+   * @param chatPostId ID of the post to modify the reaction on
    * @throws NoSuchObjectException if the there is no Reaction record with the given ID
    * @throws InvalidRequestException if not authorised to delete (if delete method called)
    */
-    @PutMapping("{id}/modify-reaction")
-    public @NotNull List<Map<String, Object>> modifyReaction(
-        @PathVariable("id") long id)
+    @PutMapping("{chatPostId}/modify-reaction/{reactionId}")
+    public void modifyReaction(
+        @PathVariable("chatPostId") long chatPostId, @PathVariable("reactionId") long reactionId)
             throws NoSuchObjectException, InvalidRequestException {
-        List<Reaction> reactions = reactionService.modifyReaction(id);
-        return reactionDto().buildList(reactions);
-    }
-
-    private DtoBuilder reactionDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("emoji")
-                .add("users", userDto())
-                ;
-    }
-
-    private DtoBuilder userDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("displayName")
-            ;
+        reactionService.modifyReaction(reactionId);
+        ChatPost post = chatPostService.getChatPost(chatPostId);
+        chatPostService.publishChatPost(post);
     }
 
 }
