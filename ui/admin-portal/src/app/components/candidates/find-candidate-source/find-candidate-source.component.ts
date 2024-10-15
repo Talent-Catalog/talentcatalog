@@ -24,7 +24,9 @@ export class FindCandidateSourceComponent implements OnInit {
   @Input() single: boolean = false;
   @Input() sourceType: CandidateSourceType;
   @Input() id: number;
-  @Input() ids: number[];
+
+  //todo could live with single ids Input - rather than having two alternate inputs.
+  @Input() ids: number[] | number;
   @Input() fixed: boolean;
   @Input() global: boolean;
   @Input() owned: boolean;
