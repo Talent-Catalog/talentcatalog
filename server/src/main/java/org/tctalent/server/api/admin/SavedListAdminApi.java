@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,7 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
@@ -124,6 +126,13 @@ public class SavedListAdminApi implements
     @Override
     public @NotNull List<Map<String, Object>> search(
             @Valid SearchSavedListRequest request) {
+        List<SavedList> savedLists = savedListService.listSavedLists(request);
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
+        return builder.buildList(savedLists);
+    }
+
+    @PostMapping("search-ids")
+    @NotNull List<Map<String, Object>> searchByIds(@Valid @RequestBody IdsRequest request) {
         List<SavedList> savedLists = savedListService.listSavedLists(request);
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildList(savedLists);

@@ -69,6 +69,7 @@ import org.tctalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tctalent.server.repository.db.GetSavedListsQuery;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.PublishListRequest;
@@ -618,6 +619,11 @@ public class SavedListServiceImpl implements SavedListService {
         //But set standard sort to ascending by name.
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         return savedListRepository.findAll(getSavedListsQuery, sort);
+    }
+
+    @Override
+    public List<SavedList> listSavedLists(IdsRequest request) {
+        return savedListRepository.findByIds(request.getIds());
     }
 
     @Override
