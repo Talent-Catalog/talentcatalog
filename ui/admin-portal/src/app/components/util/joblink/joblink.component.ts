@@ -29,6 +29,8 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 import {JobService} from "../../../services/job.service";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
+// todo Change this to app-find-job to match app-find-candidate-source.
+
 @Component({
   selector: 'app-joblink',
   templateUrl: './joblink.component.html',
@@ -36,6 +38,7 @@ import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 })
 export class JoblinkComponent implements OnInit, OnChanges {
 
+  // todo This is not used anywhere now
   @Input() jobId: number;
   @Output() jobSelection =  new EventEmitter<JobNameAndId>();
 

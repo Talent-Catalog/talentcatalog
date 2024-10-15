@@ -57,6 +57,13 @@ export class CandidateSourceService {
     return this.http.delete<boolean>(`${apiUrl}/${source.id}`);
   }
 
+  get(sourceType: CandidateSourceType, id: number): Observable<CandidateSource> {
+    const apiUrl = sourceType === CandidateSourceType.SavedSearch ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.get<CandidateSource>(`${apiUrl}/${id}`);
+  }
+
   starSourceForUser(source: CandidateSource, request: { userId: number }):
     Observable<CandidateSource> {
 
