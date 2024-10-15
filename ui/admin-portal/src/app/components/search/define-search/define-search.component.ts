@@ -14,7 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -44,7 +53,9 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -455,7 +466,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       });
   }
 
-  selectExclusionList(list: CandidateSource) {
+  onExclusionListSelected(list: CandidateSource) {
     this.exclusionListIdControl.patchValue(list?.id);
   }
 
