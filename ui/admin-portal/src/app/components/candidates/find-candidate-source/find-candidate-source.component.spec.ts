@@ -1,10 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {FindCandidateSourceComponent} from './find-candidate-source.component';
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {of} from "rxjs";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
+import {FormsModule} from "@angular/forms";
+import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('FindListComponent', () => {
   let component: FindCandidateSourceComponent;
@@ -17,10 +18,13 @@ describe('FindListComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ FindCandidateSourceComponent ],
+      imports: [
+        FormsModule,
+        NgSelectModule
+      ],
       providers: [
         { provide: CandidateSourceService, useValue: candidateSourceServiceSpy }
       ]
-
     })
     .compileComponents();
 
@@ -41,20 +45,19 @@ describe('FindListComponent', () => {
 
 
   it('should initialize correctly', () => {
+    component.single = true;
     component.id = 1;
-    component.ngOnChanges({});
+    component.ngOnInit();
 
-    expect(component.currentSelection.length).toEqual(1);
-    expect(component.currentSelection[0]).toEqual(mockCandidateSource);
+    expect(component.currentSelection).toEqual(mockCandidateSource);
   });
 
-  it('should emit job selection correctly', (done) => {
+  it('should emit selection correctly', (done) => {
     component.selectionMade.subscribe(selectedSources => {
-      expect(selectedSources.length).toEqual(1);
-      expect(selectedSources[0]).toEqual(mockCandidateSource);
+      expect(selectedSources).toEqual(mockCandidateSource);
       done();
     });
 
-    component.selectResult({ item: mockCandidateSource } as NgbTypeaheadSelectItemEvent);
+    component.onChangedSelection({ item: mockCandidateSource } as NgbTypeaheadSelectItemEvent);
   });
 });

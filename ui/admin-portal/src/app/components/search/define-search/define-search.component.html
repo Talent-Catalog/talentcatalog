@@ -485,7 +485,9 @@
             </ng-template>
 
             <!-- EXCLUSION LIST -->
-            <div class="col-md-4">
+            <!-- Don't display component until loading has completed - including any existing
+                 value of exclusionListId -->
+            <div *ngIf="!loading" class="col-md-4">
               <label class="form-label" for="exclusion">Exclusion list</label>
               <button class="tool-tip-button"
                       ngbTooltip="Select from lists you created, global lists (e.g. job lists) or
@@ -500,7 +502,7 @@
                 [global] = true
                 [owned] = true
                 [shared] = true
-                (selectionMade)="selectExclusionList($event)"
+                (selectionMade)="onExclusionListSelected($event)"
               ></app-find-candidate-source>
             </div>
 
