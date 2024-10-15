@@ -97,7 +97,7 @@ export class FindCandidateSourceComponent implements OnInit, OnChanges {
         next: source => this.setCurrentSelection([source])
       });
     } else if (!this.single && this.ids) {
-      //todo This needs to allow multiple initial values
+      //todo This needs to allow multiple initial values  - need getShortInfos IdsRequest
     } else {
       this.clearSelection()
     }

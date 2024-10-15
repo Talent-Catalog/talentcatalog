@@ -6,10 +6,11 @@
   [hideSelected]="true"
   [minTermLength]="2"
   [loading]="searching"
-  typeToSearchText="Please enter 2 or more characters"
+  typeToSearchText="Type 2 or more characters of the name"
   [typeahead]="sourceNameInput$"
   (change)="onChangedSelection($event)"
-  [(ngModel)]="single ? currentSelection : currentSelections">
+  [ngModel]="single ? currentSelection : currentSelections"
+>
 </ng-select>
 <span *ngIf="searching"><i class="fas fa-spinner fa-spin"></i> Searching...
 </span>
