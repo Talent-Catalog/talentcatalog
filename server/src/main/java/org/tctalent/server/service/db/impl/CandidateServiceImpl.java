@@ -3123,6 +3123,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidatePage = getSavedListCandidates(savedList, request);
             List<Candidate> candidates = candidatePage.getContent();
             processCandidateReassignment(candidates, newPartner);
+            entityManager.flush(); // Flush changes to DB before clearing in-memory persistence context
             entityManager.clear(); // Keeps candidates from piling up in persistence context
             pagesProcessed++;
         }
