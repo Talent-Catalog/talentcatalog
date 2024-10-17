@@ -72,8 +72,12 @@ export class CandidateProfileComponent implements OnInit {
               private route: ActivatedRoute) { }
 
   ngOnInit() {
-
-    this.loadDropDownData();
+    const lang = this.route.snapshot.queryParams['lang'];
+    //Need to delay changing language otherwise you get ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(
+      () => this.languageService.changeLanguage(lang), 1000
+    )
+    // this.loadDropDownData();
     // listen for change of language and save
     this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadDropDownData();
