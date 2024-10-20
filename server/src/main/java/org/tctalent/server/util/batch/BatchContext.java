@@ -25,6 +25,4 @@ package org.tctalent.server.util.batch;
  * @author John Cameron
  */
 public interface BatchContext {
-  Object getContext();
-  void setContext(Object context);
 }

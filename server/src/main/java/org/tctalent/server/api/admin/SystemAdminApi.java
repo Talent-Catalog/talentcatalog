@@ -243,11 +243,12 @@ public class SystemAdminApi {
         BatchProcessor batchProcessor = new BatchProcessor() {
             @Override
             public boolean process(BatchContext context) {
-                Long page = (Long) context.getContext();
+                PagingBatchContext ctx = (PagingBatchContext) context;
+                Long page = ctx.getPage();
                 System.out.println("Processing page " + page);
                 page++;
-                context.setContext(page);
-                return page >= 10;
+                ctx.setPage(page);
+                return page >= 5;
             }
         };
 

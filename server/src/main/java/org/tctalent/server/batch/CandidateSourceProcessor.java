@@ -14,22 +14,34 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.batch;
+package org.tctalent.server.batch;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.stereotype.Component;
+import org.tctalent.server.util.batch.BatchContext;
+import org.tctalent.server.util.batch.BatchProcessor;
 
 /**
- * Page number as a context. The next "page" of data that needs to be processed.
+ * TODO JC Doc
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-public class PagingBatchContext implements BatchContext {
-    private Long page;
+@Component
+public class CandidateSourceProcessor implements BatchProcessor {
 
-    public PagingBatchContext(Long page) {
-        this.page = page;
+    @Override
+    public boolean process(BatchContext context) {
+        boolean completed;
+        if (context instanceof CandidateSourceProcessorContext) {
+            completed = process((CandidateSourceProcessorContext) context);
+        } else {
+            //todo log error
+            completed = true;
+        }
+        return completed;
+    }
+
+    public boolean process(CandidateSourceProcessorContext context) {
+       //todo
+       return true;
     }
 }

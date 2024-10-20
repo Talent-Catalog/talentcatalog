@@ -14,22 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.batch;
+package org.tctalent.server.batch;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.tctalent.server.util.batch.PagingBatchContext;
 
 /**
- * Page number as a context. The next "page" of data that needs to be processed.
+ * TODO JC Doc
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-public class PagingBatchContext implements BatchContext {
-    private Long page;
-
-    public PagingBatchContext(Long page) {
-        this.page = page;
+public class CandidateSourceProcessorContext extends PagingBatchContext {
+    public CandidateSourceProcessorContext(Long page) {
+        super(page);
     }
 }

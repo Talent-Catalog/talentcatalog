@@ -42,10 +42,11 @@ class BatchRunnerTest {
         batchProcessor = new BatchProcessor() {
             @Override
             public boolean process(BatchContext context) {
-                Long page = (Long) context.getContext();
+                PagingBatchContext ctx = (PagingBatchContext) context;
+                Long page = ctx.getPage();
                 System.out.println("Processing page " + page);
                 page++;
-                context.setContext(page);
+                ctx.setPage(page);
                 return page >= 5;
             }
         };
