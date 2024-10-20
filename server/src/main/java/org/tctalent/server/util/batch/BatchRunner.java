@@ -41,6 +41,8 @@ import org.springframework.stereotype.Component;
  *
  * @author John Cameron
  */
+//todo May be better not to make BatchRunner a component. Then can user <T> logic.
+//Then need to inject Task Scheduler.
 @Component
 @Scope("prototype")
 @RequiredArgsConstructor
