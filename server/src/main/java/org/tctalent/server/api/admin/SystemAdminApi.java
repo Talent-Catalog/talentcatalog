@@ -33,6 +33,7 @@ import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -52,8 +53,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -104,6 +107,10 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.util.batch.BatchContext;
+import org.tctalent.server.util.batch.BatchProcessor;
+import org.tctalent.server.util.batch.BatchRunner;
+import org.tctalent.server.util.batch.PagingBatchContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -113,9 +120,10 @@ import org.tctalent.server.util.textExtract.TextExtractHelper;
 @RequestMapping("/api/admin/system")
 @Slf4j
 public class SystemAdminApi {
-
-    private final AuthService authService;
     final static String DATE_FORMAT = "dd-MM-yyyy";
+
+    private final ApplicationContext applicationContext;
+    private final AuthService authService;
 
     private final DataSharingService dataSharingService;
 
@@ -148,6 +156,7 @@ public class SystemAdminApi {
     private final Map<Integer, Integer> countryForGeneralCountry;
 
     private final GoogleDriveConfig googleDriveConfig;
+    private final TaskScheduler taskScheduler;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -173,7 +182,7 @@ public class SystemAdminApi {
     private EntityManager entityManager;
     @Autowired
     public SystemAdminApi(
-            DataSharingService dataSharingService,
+        ApplicationContext applicationContext, DataSharingService dataSharingService,
             AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
             CandidateNoteRepository candidateNoteRepository,
@@ -190,7 +199,9 @@ public class SystemAdminApi {
             SavedListRepository savedListRepository,
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig, CacheService cacheService) {
+            GoogleDriveConfig googleDriveConfig, CacheService cacheService,
+        TaskScheduler taskScheduler) {
+        this.applicationContext = applicationContext;
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -217,7 +228,30 @@ public class SystemAdminApi {
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
+        this.taskScheduler = taskScheduler;
         countryForGeneralCountry = getExtraCountryMappings();
+    }
+
+    /**
+     * todo The intention is that this can be used to implement an export search which does not
+     * max out the TC's CPU.
+     * @see BatchRunner
+     */
+    @GetMapping("export_search/{id}")
+    public void exportSearch() {
+        BatchRunner batchRunner = applicationContext.getBean(BatchRunner.class);
+        BatchProcessor batchProcessor = new BatchProcessor() {
+            @Override
+            public boolean process(BatchContext context) {
+                Long page = (Long) context.getContext();
+                System.out.println("Processing page " + page);
+                page++;
+                context.setContext(page);
+                return page >= 10;
+            }
+        };
+
+        batchRunner.start(batchProcessor, new PagingBatchContext(0L), Duration.ofSeconds(3));
     }
 
     @GetMapping("fix_null_case_sfids")
