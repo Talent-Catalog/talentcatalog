@@ -118,6 +118,7 @@ import org.tctalent.server.repository.db.SavedSearchSpecification;
 import org.tctalent.server.repository.db.SearchJoinRepository;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.SearchJoinRequest;
@@ -191,6 +192,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             CandidateStatus.ineligible,
             CandidateStatus.withdrawn
         )));
+
+    @Override
+    public List<SavedSearch> search(IdsRequest request) {
+        return savedSearchRepository.findByIds(request.getIds());
+    }
 
     @Override
     public List<SavedSearch> search(SearchSavedSearchRequest request) {

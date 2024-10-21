@@ -609,6 +609,11 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public List<SavedList> search(IdsRequest request) {
+        return savedListRepository.findByIds(request.getIds());
+    }
+
+    @Override
     public List<SavedList> search(SearchSavedListRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
         GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
@@ -619,11 +624,6 @@ public class SavedListServiceImpl implements SavedListService {
         //But set standard sort to ascending by name.
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         return savedListRepository.findAll(getSavedListsQuery, sort);
-    }
-
-    @Override
-    public List<SavedList> search(IdsRequest request) {
-        return savedListRepository.findByIds(request.getIds());
     }
 
     @Override
