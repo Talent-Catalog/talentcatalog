@@ -627,7 +627,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
+    public Page<SavedList> searchPaged(SearchSavedListRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
         GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 

@@ -248,7 +248,7 @@ public interface SavedListService {
     /**
      * Return all SavedList's that match the given request, ordered by name.
      * <p/>
-     * See also {@link #searchSavedLists} which does the same except
+     * See also {@link #searchPaged} which does the same except
      * returns just one page of results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
@@ -258,7 +258,7 @@ public interface SavedListService {
     /**
      * Return all SavedList's that match the given request, ordered by name.
      * <p/>
-     * See also {@link #searchSavedLists} which does the same except
+     * See also {@link #searchPaged} which does the same except
      * returns just one page of results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
@@ -298,7 +298,7 @@ public interface SavedListService {
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    Page<SavedList> searchSavedLists(SearchSavedListRequest request);
+    Page<SavedList> searchPaged(SearchSavedListRequest request);
 
     /**
      * Mark the given Candidate objects with the given list context.

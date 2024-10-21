@@ -149,7 +149,7 @@ public class SavedListAdminApi implements
     @Override
     public @NotNull Map<String, Object> searchPaged(
             @Valid SearchSavedListRequest request) {
-        Page<SavedList> savedLists = savedListService.searchSavedLists(request);
+        Page<SavedList> savedLists = savedListService.searchPaged(request);
 
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(savedLists);

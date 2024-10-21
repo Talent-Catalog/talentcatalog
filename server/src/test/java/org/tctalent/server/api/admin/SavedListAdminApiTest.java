@@ -259,7 +259,7 @@ class SavedListAdminApiTest extends ApiTestBase {
         SearchSavedListRequest request = new SearchSavedListRequest();
 
         given(savedListService
-            .searchSavedLists(any(SearchSavedListRequest.class)))
+            .searchPaged(any(SearchSavedListRequest.class)))
             .willReturn(savedListPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
@@ -280,7 +280,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.content", notNullValue()))
             .andExpect(jsonPath("$.content.[0].id", is(1)));
 
-        verify(savedListService).searchSavedLists(any(SearchSavedListRequest.class));
+        verify(savedListService).searchPaged(any(SearchSavedListRequest.class));
     }
 
     @Test
