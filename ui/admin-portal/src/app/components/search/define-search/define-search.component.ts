@@ -478,13 +478,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   onListAnySelected(lists: CandidateSource[]) {
-    //todo update value
-    console.info(lists)
+    //Update form value
+    let ids: number[] = lists.map(s => s.id);
+    this.listAnyIdsControl.patchValue(ids);
   }
 
   onListAllSelected(lists: CandidateSource[]) {
-    //todo update value
-    console.info(lists)
+    //Update form value
+    let ids: number[] = lists.map(s => s.id);
+    this.listAllIdsControl.patchValue(ids);
   }
 
   showSavedSearches() {
@@ -687,6 +689,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   get exclusionListIdControl(): AbstractControl {
     return this.searchForm.get('exclusionListId');
+  }
+
+  get listAllIdsControl(): AbstractControl {
+    return this.searchForm.get('listAllIds');
+  }
+
+  get listAnyIdsControl(): AbstractControl {
+    return this.searchForm.get('listAnyIds');
   }
 
   get searchJoinArray() {
