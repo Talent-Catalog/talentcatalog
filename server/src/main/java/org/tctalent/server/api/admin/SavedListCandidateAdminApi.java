@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
@@ -50,6 +51,7 @@ import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
+import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -80,6 +82,7 @@ public class SavedListCandidateAdminApi implements
     private final CandidateService candidateService;
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
+    private final SavedSearchService savedSearchService;
     private final CandidateBuilderSelector candidateBuilderSelector;
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
     @Autowired
@@ -87,10 +90,12 @@ public class SavedListCandidateAdminApi implements
         CandidateService candidateService, CandidateOpportunityService candidateOpportunityService,
         CandidateSavedListService candidateSavedListService,
         SavedListService savedListService,
+        SavedSearchService savedSearchService,
         UserService userService) {
         this.candidateService = candidateService;
         this.candidateSavedListService = candidateSavedListService;
         this.savedListService = savedListService;
+        this.savedSearchService = savedSearchService;
         candidateBuilderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
     }
 
@@ -255,5 +260,22 @@ public class SavedListCandidateAdminApi implements
             ucsr.setInfo(statusUpdateInfo);
             candidateService.updateCandidateStatus(ucsr);
         }
+    }
+
+    /**
+     * Returns the number of candidates in the logged in user's selection for the
+     * given saved search.
+     *
+     * @param id ID of saved search
+     * @return List of candidates selected by logged in user
+     * @throws NoSuchObjectException   if there is no such saved search.
+     * @throws InvalidSessionException if there is no logged in user.
+     */
+    @GetMapping("/get-selection-list-candidates/{id}")
+    public List<Map<String, Object>> getSelectionListCandidates(@PathVariable("id") long id)
+            throws NoSuchObjectException, InvalidSessionException {
+        SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(DtoType.MINIMAL);
+        return builder.buildList(selectionList.getCandidates());
     }
 }
