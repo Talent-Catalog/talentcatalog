@@ -59,6 +59,12 @@ export class ViewPostComponent implements OnInit {
     return UserService.userToString(user, false, false);
   }
 
+  // Returns the abbreviation of the user who created the post, if it exists.
+  getUserAbbreviation(input: string): string | null {
+    const match = input.match(/\(([^)]+)\)/);
+    return match ? match[1] : null;
+  }
+
   // Toggles the picker on and off, focuses the scroll bar on this post if reaction button clicked.
   public toggleReactionPicker() {
     if (!this.readOnly) {
