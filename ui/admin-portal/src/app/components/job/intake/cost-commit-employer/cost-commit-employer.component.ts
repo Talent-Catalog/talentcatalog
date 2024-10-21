@@ -1,12 +1,30 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
-import {JoiDataComponent} from "../joi-data/joi-data.component";
+import {
+  JoiDataComponent
+} from "../joi-data/joi-data.component";
+import {BUTTONS, NgxWigToolbarService} from "ngx-wig";
+import {CUSTOM_CLEAR_FORMAT_BUTTON} from "../../../../util/clear-format";
 
 @Component({
   selector: 'app-cost-commit-employer',
   templateUrl: './cost-commit-employer.component.html',
-  styleUrls: ['./cost-commit-employer.component.scss']
+  styleUrls: ['./cost-commit-employer.component.scss'],
+  providers: [
+    {
+      provide: BUTTONS,
+      multi: true,
+      useFactory: (toolbar: NgxWigToolbarService) => {
+        // Get the default buttons
+        const defaultButtons = toolbar.getToolbarButtons(); // Use the service to get existing buttons
+        // Merge the custom button with the default ones
+        return { ...defaultButtons, ...CUSTOM_CLEAR_FORMAT_BUTTON };
+      },
+      deps: [NgxWigToolbarService],
+    },
+  ]
+
 })
 export class CostCommitEmployerComponent extends JoiDataComponent implements OnInit {
 
