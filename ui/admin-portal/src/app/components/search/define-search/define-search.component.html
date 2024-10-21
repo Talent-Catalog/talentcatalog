@@ -579,7 +579,8 @@
                 </button>
               </div>
               <button class="tool-tip-button"
-                      ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips">
+                      [ngbTooltip]="helpListAny"
+                      placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
 <!--              todo Not exclusionListId-->
@@ -608,7 +609,8 @@
                 </button>
               </div>
               <button class="tool-tip-button"
-                      ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips">
+                      [ngbTooltip]="helpListAll"
+                      placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <!--              todo Not exclusionListId-->
