@@ -227,7 +227,18 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
     this.setCurrentCandidate(null);
     this.loggedInUser = this.authenticationService.getLoggedInUser();
-    this.selectedCandidates = [];
+    if (this.isSavedSearch()) {
+       this.savedListCandidateService.getSelectionListCandidates(this.candidateSource.id).subscribe(
+        (result) => {
+          this.selectedCandidates = result;
+        },
+        (error) => {
+          this.error = error;
+        }
+      )
+    } else {
+      this.selectedCandidates = [];
+    }
 
     this.statuses = [
       ReviewStatus[ReviewStatus.rejected],
@@ -290,6 +301,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   get ReviewStatus() {
     return ReviewStatus;
+  }
+
+  get numberSelections() {
+    return this.selectedCandidates.length;
   }
 
   subscribeToFilterChanges(): void {
@@ -369,15 +384,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
    * True if any candidates are currently selected.
    */
   isSelection(): boolean {
-    let isSelection: boolean;
-    if (isSavedSearch(this.candidateSource)) {
-      //Saved searches handle selections differently - they need a server request to check
-      //selections - so we need to manage that a bit more efficiently.
-      isSelection = true;
-    } else {
-      isSelection = this.selectedCandidates != null && this.selectedCandidates.length > 0;
-    }
-    return isSelection;
+    return this.selectedCandidates != null && this.selectedCandidates.length > 0;
   }
 
   ngOnDestroy(): void {
@@ -813,13 +820,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         this.savedSearchSelectionChange = selected;
         this.doSavedSearchSelection(candidate, selected);
       }
+    }
+    //Maintain local candidate selections
+    if (selected) {
+      this.selectedCandidates.push(candidate);
     } else {
-      //For lists maintain local candidate selections
-      if (selected) {
-        this.selectedCandidates.push(candidate);
-      } else {
-        this.selectedCandidates = this.selectedCandidates.filter(c => c.id !== candidate.id);
-      }
+      this.selectedCandidates = this.selectedCandidates.filter(c => c.id !== candidate.id);
     }
   }
 
