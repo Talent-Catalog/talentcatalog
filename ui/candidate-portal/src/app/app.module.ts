@@ -222,6 +222,8 @@ import {
 import {
   DestinationComponent
 } from "./components/register/destinations/destination/destination.component";
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -335,7 +337,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgSelectModule,
     NgxWigModule,
     QuillModule.forRoot(),
-    PickerModule
+    PickerModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [
     {provide: RedirectGuard},
