@@ -86,6 +86,7 @@ export const CUSTOM_CLEAR_FORMAT_BUTTON = {
         alert("Please select some text to clear formatting."); // Handle case where no text is selected
       }
     },
+    styleClass: 'nw-button',
     icon: 'fas fa-remove-format', // Optional: Add an icon
   }
 };
