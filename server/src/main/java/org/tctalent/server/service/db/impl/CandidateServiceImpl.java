@@ -1335,7 +1335,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
         if (request.getLinkedInLink() != null && !request.getLinkedInLink().isEmpty()) {
-            String linkedInRegex = "^http[s]?:/\\/www\\.linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
+            String linkedInRegex = "^http[s]?:/\\/(www\\.)?linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
             Pattern p = Pattern.compile(linkedInRegex);
             Matcher m = p.matcher(request.getLinkedInLink());
             if (m.find()) {
@@ -2933,7 +2933,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Transactional
     @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
@@ -2945,7 +2944,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Transactional
     @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
@@ -3125,6 +3123,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidatePage = getSavedListCandidates(savedList, request);
             List<Candidate> candidates = candidatePage.getContent();
             processCandidateReassignment(candidates, newPartner);
+            entityManager.flush(); // Flush changes to DB before clearing in-memory persistence context
             entityManager.clear(); // Keeps candidates from piling up in persistence context
             pagesProcessed++;
         }
