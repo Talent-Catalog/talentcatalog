@@ -366,12 +366,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
             // If searching a default search, update the default search with every search (aka Autosave).
             // Else it is a saved search and those are updated upon 'Update Search' button only.
-            if (savedSearch.isDefaultSearch()) {
+            if (savedSearch.getDefaultSearch()) {
                 UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
                 updateRequest.setSearchCandidateRequest(request);
                 //Set other fields - no changes there
                 updateRequest.setName(savedSearch.getName());
-                updateRequest.setDefaultSearch(savedSearch.isDefaultSearch());
+                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
                 updateRequest.setFixed(savedSearch.getFixed());
                 updateRequest.setReviewable(savedSearch.getReviewable());
                 updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());

@@ -183,7 +183,7 @@ public class SavedSearch extends AbstractCandidateSource {
         this.exportColumns = exportColumns;
     }
 
-    public Boolean isDefaultSearch() {
+    public Boolean getDefaultSearch() {
         return defaultSearch;
     }
 
