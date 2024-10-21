@@ -24,6 +24,7 @@ import {RegistrationService} from "../../../services/registration.service";
 import {generateYearArray} from "../../../util/year-helper";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 import {LanguageService} from "../../../services/language.service";
+import {ExternalLinkService} from "../../../services/external-link.service";
 
 @Component({
   selector: 'app-registration-personal',
@@ -65,7 +66,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
               private countryService: CountryService,
               public translateService: TranslateService,
               public languageService: LanguageService,
-              public registrationService: RegistrationService) { }
+              public registrationService: RegistrationService,
+              public externalLinkService: ExternalLinkService) { }
 
   ngOnInit() {
     this.saving = false;
@@ -291,4 +293,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  getEligibilityLink(): string {
+    return this.externalLinkService.getLink('eligibility', this.lang);
+  }
+
 }

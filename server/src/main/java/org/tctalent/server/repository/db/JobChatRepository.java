@@ -76,5 +76,5 @@ public interface JobChatRepository extends JpaRepository<JobChat, Long>,
         (select created_date from chat_post
         where chat_post.id = (select max(chat_post.id) from chat_post where chat_post.job_chat_id = c.id)) > :date
         """, nativeQuery = true)
-    List<Long> myFindChatsWithPostsSinceDate(@Param("date") OffsetDateTime dateTime);
+    List<Long> findChatsWithPostsSinceDate(@Param("date") OffsetDateTime dateTime);
 }

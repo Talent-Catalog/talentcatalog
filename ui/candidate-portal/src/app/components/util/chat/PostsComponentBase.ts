@@ -82,7 +82,7 @@ export abstract class PostsComponentBase implements OnDestroy{
       console.log('Subscribing for posts on chat ' + chat.id)
       //Subscribe for updates on new chat
       this.chatSubscription = this.chatService.getChatPosts$(this.chat).subscribe({
-          next: (post) => this.addNewPost(post)
+        next: (post) => this.handleIncomingPost(post) // Handle new posts and post updates
         }
       );
 
@@ -114,8 +114,19 @@ export abstract class PostsComponentBase implements OnDestroy{
     }
   }
 
-  private addNewPost(post: ChatPost) {
-    this.posts.push(post);
+  /**
+   * Handle both new posts and post updates. Determines whether the incoming post is new or an
+   * update to an existing post, and updates the posts array accordingly.
+   */
+  private handleIncomingPost(incomingPost: ChatPost) {
+    const existingPostIndex = this.posts.findIndex(p => p.id === incomingPost.id);
+    if (existingPostIndex !== -1) {
+      // If the post already exists, update it
+      this.posts[existingPostIndex] = incomingPost;
+    } else {
+      // If it's a new post, add it to the posts array
+      this.posts.push(incomingPost);
+    }
   }
 
   private updatePosts(posts: ChatPost[]) {
@@ -124,10 +135,16 @@ export abstract class PostsComponentBase implements OnDestroy{
       //The new posts may or may not be in the posts we have just received.
       //Go through newPosts adding any that are not already present (by checking the post unique id's)
       for (const newPost of this.posts) {
-        if (!posts.find(p => p.id = newPost.id)) {
+        const existingPostIndex = posts.findIndex(p => p.id === newPost.id);
+
+        if (existingPostIndex !== -1) {
+          // If the post already exists, replace it with the updated post
+          console.log('Replacing post ' + newPost.id);
+          posts[existingPostIndex] = newPost;
+        } else {
+          // If the post is new, add it to the list
           posts.push(newPost);
-        }
-      }
+        }      }
     }
     this.posts = posts;
   }

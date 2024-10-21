@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {EnvService} from "../../../../../services/env.service";
@@ -43,6 +43,7 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
               private envService: EnvService) { }
 
   ngOnInit() {
+    const linkedInRegex = /^http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/
     this.loading = true;
 
     this.candidateService.get(this.candidateId).subscribe(candidate => {
@@ -50,7 +51,7 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
         sflink: [candidate.sflink],
         folderlink: [candidate.folderlink],
         videolink: [candidate.videolink],
-        linkedInLink: [candidate.linkedInLink],
+        linkedInLink: [candidate.linkedInLink, Validators.pattern(linkedInRegex)],
       });
       this.loading = false;
     });

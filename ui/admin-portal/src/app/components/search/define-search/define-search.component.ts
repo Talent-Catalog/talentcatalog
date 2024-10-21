@@ -803,5 +803,5 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return s;
   }
 
-  protected readonly CandidateSourceType = CandidateSourceType;
+  public readonly CandidateSourceType = CandidateSourceType;
 }
