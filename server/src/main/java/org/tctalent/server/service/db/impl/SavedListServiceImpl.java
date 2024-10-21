@@ -609,7 +609,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public List<SavedList> listSavedLists(SearchSavedListRequest request) {
+    public List<SavedList> search(SearchSavedListRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
         GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
@@ -622,7 +622,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public List<SavedList> listSavedLists(IdsRequest request) {
+    public List<SavedList> search(IdsRequest request) {
         return savedListRepository.findByIds(request.getIds());
     }
 

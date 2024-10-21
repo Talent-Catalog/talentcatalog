@@ -233,7 +233,7 @@ class SavedListAdminApiTest extends ApiTestBase {
     void searchSavedListsSucceeds() throws Exception {
         SearchSavedListRequest request = new SearchSavedListRequest();
         given(savedListService
-            .listSavedLists(any(SearchSavedListRequest.class)))
+            .search(any(SearchSavedListRequest.class)))
             .willReturn(savedLists);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
@@ -250,7 +250,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$", hasSize(1)));
 
-        verify(savedListService).listSavedLists(any(SearchSavedListRequest.class));
+        verify(savedListService).search(any(SearchSavedListRequest.class));
     }
 
     @Test

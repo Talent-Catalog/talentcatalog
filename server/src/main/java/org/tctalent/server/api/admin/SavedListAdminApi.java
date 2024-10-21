@@ -126,14 +126,14 @@ public class SavedListAdminApi implements
     @Override
     public @NotNull List<Map<String, Object>> search(
             @Valid SearchSavedListRequest request) {
-        List<SavedList> savedLists = savedListService.listSavedLists(request);
+        List<SavedList> savedLists = savedListService.search(request);
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildList(savedLists);
     }
 
     @PostMapping("search-ids")
     @NotNull List<Map<String, Object>> searchByIds(@Valid @RequestBody IdsRequest request) {
-        List<SavedList> savedLists = savedListService.listSavedLists(request);
+        List<SavedList> savedLists = savedListService.search(request);
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildList(savedLists);
     }

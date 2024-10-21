@@ -236,7 +236,7 @@ public interface SavedListService {
      * Return all SavedList's associated with the given candidate that match
      * the given request, ordered by name.
      * <p/>
-     * See also {@link #listSavedLists} which does the same except for
+     * See also {@link #search} which does the same except for
      * any candidate.
      *
      * @param candidateId Candidate whose lists we are searching
@@ -253,7 +253,7 @@ public interface SavedListService {
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    List<SavedList> listSavedLists(SearchSavedListRequest request);
+    List<SavedList> search(SearchSavedListRequest request);
 
     /**
      * Return all SavedList's that match the given request, ordered by name.
@@ -263,7 +263,7 @@ public interface SavedListService {
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    List<SavedList> listSavedLists(IdsRequest request);
+    List<SavedList> search(IdsRequest request);
 
     /**
      * This is how candidates are added to a list.
@@ -293,7 +293,7 @@ public interface SavedListService {
      * Return a page of SavedList's that match the given request, ordered by
      * name.
      * <p/>
-     * See also {@link #listSavedLists} which does the same except it
+     * See also {@link #search} which does the same except it
      * returns all matching results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
