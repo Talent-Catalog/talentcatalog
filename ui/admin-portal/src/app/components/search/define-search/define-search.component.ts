@@ -83,13 +83,15 @@ import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {first} from "rxjs/operators";
+import {Subject} from "rxjs/index";
+import {HasUnsavedChanges} from "../../../services/unsaved-changes.guard";
 
 @Component({
   selector: 'app-define-search',
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
+export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, HasUnsavedChanges {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -99,6 +101,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() savedSearch: SavedSearch;
   @Input() pageNumber: number;
   @Input() pageSize: number;
+
+  hasChanges$ = new Subject<boolean>();
 
   error: any;
   loading: boolean;
@@ -258,6 +262,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }, error => {
       this.loading = false;
       this.error = error;
+    });
+    this.searchForm.valueChanges.subscribe(() => {
+      this.hasChanges$.next(this.searchForm.dirty);
     });
   }
 
@@ -794,4 +801,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public readonly CandidateSourceType = CandidateSourceType;
+
+  hasUnsavedChanges(): boolean {
+    let condition = this.searchForm.dirty;
+    console.log(this.searchForm.dirty);
+    return condition;
+  }
 }
