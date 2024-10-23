@@ -384,7 +384,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             candidates = doSearchCandidates(request);
 
             //Add in any selections
-            // todo do we want to remove a selection when it get's removed from a search?
             markUserSelectedCandidates(savedSearch.getId(), candidates);
         }
 

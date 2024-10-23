@@ -389,6 +389,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   clearForm() {
     this.searchForm.reset();
+    // We need to add back the saved search id because we are always working with a saved search object,
+    // either it's a default saved search or saved search.
+    this.searchForm.controls['savedSearchId'].patchValue(this.savedSearchId);
+
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
 
