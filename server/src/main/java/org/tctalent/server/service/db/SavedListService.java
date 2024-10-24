@@ -263,16 +263,6 @@ public interface SavedListService {
     List<SavedList> search(SearchSavedListRequest request);
 
     /**
-     * Return all SavedList's that match the given request, ordered by name.
-     * <p/>
-     * See also {@link #searchSavedLists} which does the same except
-     * returns just one page of results.
-     * @param request Defines which SavedList's to return
-     * @return Matching SavedList's
-     */
-    List<SavedList> listSavedLists(IdsRequest request);
-
-    /**
      * This is how candidates are added to a list.
      * <p/>
      * Merge the contents of the SavedList with the given id with the

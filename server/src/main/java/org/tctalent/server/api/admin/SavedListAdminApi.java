@@ -138,13 +138,6 @@ public class SavedListAdminApi implements
         return builder.buildList(savedLists);
     }
 
-    @PostMapping("search-ids")
-    @NotNull List<Map<String, Object>> searchByIds(@Valid @RequestBody IdsRequest request) {
-        List<SavedList> savedLists = savedListService.listSavedLists(request);
-        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
-        return builder.buildList(savedLists);
-    }
-
     /**
      * Returns the requested page of saved lists matching the request.
      * <p/>
