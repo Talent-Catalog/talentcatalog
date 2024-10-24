@@ -18,9 +18,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
@@ -83,15 +85,13 @@ import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {first} from "rxjs/operators";
-import {Subject} from "rxjs/index";
-import {HasUnsavedChanges} from "../../../services/unsaved-changes.guard";
 
 @Component({
   selector: 'app-define-search',
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, HasUnsavedChanges {
+export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -102,7 +102,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   @Input() pageNumber: number;
   @Input() pageSize: number;
 
-  hasChanges$ = new Subject<boolean>();
+  @Output() onFormChange = new EventEmitter<boolean>();
 
   error: any;
   loading: boolean;
@@ -264,7 +264,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
       this.error = error;
     });
     this.searchForm.valueChanges.subscribe(() => {
-      this.hasChanges$.next(this.searchForm.dirty);
+      this.onFormChange.emit(this.searchForm.dirty);
     });
   }
 
@@ -801,10 +801,4 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   public readonly CandidateSourceType = CandidateSourceType;
-
-  hasUnsavedChanges(): boolean {
-    let condition = this.searchForm.dirty;
-    console.log(this.searchForm.dirty);
-    return condition;
-  }
 }
