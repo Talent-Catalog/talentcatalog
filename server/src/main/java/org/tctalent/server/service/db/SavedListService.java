@@ -34,6 +34,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
@@ -235,7 +236,7 @@ public interface SavedListService {
      * Return all SavedList's associated with the given candidate that match
      * the given request, ordered by name.
      * <p/>
-     * See also {@link #listSavedLists} which does the same except for
+     * See also {@link #search} which does the same except for
      * any candidate.
      *
      * @param candidateId Candidate whose lists we are searching
@@ -245,14 +246,21 @@ public interface SavedListService {
     List<SavedList> search(long candidateId, SearchSavedListRequest request);
 
     /**
+     * Return all SavedList's that match the given ids, ordered by name.
+     * @param request Defines the ids of the SavedList's to return
+     * @return Requested SavedList's
+     */
+    List<SavedList> search(IdsRequest request);
+
+    /**
      * Return all SavedList's that match the given request, ordered by name.
      * <p/>
-     * See also {@link #searchSavedLists} which does the same except
+     * See also {@link #searchPaged} which does the same except
      * returns just one page of results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    List<SavedList> listSavedLists(SearchSavedListRequest request);
+    List<SavedList> search(SearchSavedListRequest request);
 
     /**
      * This is how candidates are added to a list.
@@ -282,12 +290,12 @@ public interface SavedListService {
      * Return a page of SavedList's that match the given request, ordered by
      * name.
      * <p/>
-     * See also {@link #listSavedLists} which does the same except it
+     * See also {@link #search} which does the same except it
      * returns all matching results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    Page<SavedList> searchSavedLists(SearchSavedListRequest request);
+    Page<SavedList> searchPaged(SearchSavedListRequest request);
 
     /**
      * Mark the given Candidate objects with the given list context.

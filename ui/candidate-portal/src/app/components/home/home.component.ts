@@ -21,6 +21,7 @@ import {User} from "../../model/user";
 import {LanguageService} from "../../services/language.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../model/survey-type";
 import {BrandingService} from "../../services/branding.service";
+import {ExternalLinkService} from "../../services/external-link.service";
 
 @Component({
   selector: 'app-home',
@@ -39,7 +40,8 @@ export class HomeComponent implements OnInit {
 
   constructor(private candidateService: CandidateService,
               private languageService: LanguageService,
-              private brandingService: BrandingService) {
+              private brandingService: BrandingService,
+              private externalLinkService: ExternalLinkService) {
   }
 
   ngOnInit() {
@@ -95,5 +97,10 @@ export class HomeComponent implements OnInit {
   getPartnerName(): string {
     return this.partnerName;
   }
+
+  getEligibilityLink(): string {
+    return this.externalLinkService.getLink('eligibility', this.lang);
+  }
+
 }
 

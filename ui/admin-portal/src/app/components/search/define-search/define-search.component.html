@@ -557,16 +557,8 @@
                   </ng-select>
                 </div>
               </div>
-
-            </div>
-
-
-<!--            todo This makes no sense-->
-            <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
-              <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
             </div>
           </div>
-
         </div>
 
         <hr class="w-100">
@@ -587,7 +579,8 @@
                 </button>
               </div>
               <button class="tool-tip-button"
-                      ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips">
+                      [ngbTooltip]="helpListAny"
+                      placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <ng-select
@@ -637,7 +630,8 @@
                 </button>
               </div>
               <button class="tool-tip-button"
-                      ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips">
+                      [ngbTooltip]="helpListAll"
+                      placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <ng-select

@@ -132,6 +132,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   selectedBaseJoin;
   storedBaseJoin;
 
+  helpListAll = ""; //todo help list all
+  helpListAny = ""; //todo help list any
+
   constructor(private fb: FormBuilder,
               private countryService: CountryService,
               private languageService: LanguageService,
@@ -474,6 +477,18 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.exclusionListIdControl.patchValue(list?.id);
   }
 
+  onListAnySelected(lists: CandidateSource[]) {
+    //Update form value
+    let ids: number[] = lists.map(s => s.id);
+    this.listAnyIdsControl.patchValue(ids);
+  }
+
+  onListAllSelected(lists: CandidateSource[]) {
+    //Update form value
+    let ids: number[] = lists.map(s => s.id);
+    this.listAllIdsControl.patchValue(ids);
+  }
+
   showSavedSearches() {
     const showSavedSearchesModal = this.modalService.open(SearchSavedSearchesComponent, {
       centered: true,
@@ -676,6 +691,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return this.searchForm.get('exclusionListId');
   }
 
+  get listAllIdsControl(): AbstractControl {
+    return this.searchForm.get('listAllIds');
+  }
+
+  get listAnyIdsControl(): AbstractControl {
+    return this.searchForm.get('listAnyIds');
+  }
+
   get searchJoinArray() {
     return this.searchForm.get('searchJoinRequests') as FormArray;
   }
@@ -793,5 +816,5 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return s;
   }
 
-  protected readonly CandidateSourceType = CandidateSourceType;
+  public readonly CandidateSourceType = CandidateSourceType;
 }

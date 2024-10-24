@@ -69,6 +69,7 @@ import org.tctalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tctalent.server.repository.db.GetSavedListsQuery;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.PublishListRequest;
@@ -608,7 +609,12 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public List<SavedList> listSavedLists(SearchSavedListRequest request) {
+    public List<SavedList> search(IdsRequest request) {
+        return savedListRepository.findByIds(request.getIds());
+    }
+
+    @Override
+    public List<SavedList> search(SearchSavedListRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
         GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
@@ -621,7 +627,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
+    public Page<SavedList> searchPaged(SearchSavedListRequest request) {
         final User loggedInUser = userService.getLoggedInUser();
         GetSavedListsQuery getSavedListsQuery = new GetSavedListsQuery(request, loggedInUser);
 
