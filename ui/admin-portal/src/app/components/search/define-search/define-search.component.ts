@@ -398,6 +398,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm.reset();
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
+    this.searchForm.controls['listAllSearchType'].patchValue('or');
+    this.searchForm.controls['listAnySearchType'].patchValue('and');
 
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
