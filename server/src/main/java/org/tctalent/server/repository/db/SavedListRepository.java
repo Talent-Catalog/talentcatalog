@@ -65,8 +65,4 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
 
     @Query(" select s from SavedList s where s.sfJobOpp is not null and s.status != 'deleted'")
     List<SavedList> findListsWithJobs();
-
-    @Query(" select s from SavedList s where s.id in (:ids) order by s.name")
-    List<SavedList> findByIds(@Param("ids") Iterable<Long> ids);
-
 }

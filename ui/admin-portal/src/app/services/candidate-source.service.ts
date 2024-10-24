@@ -22,7 +22,6 @@ import {SearchResults} from "../model/search-results";
 import {
   CandidateSource,
   CandidateSourceType,
-  IdsRequest,
   SearchCandidateSourcesRequest,
   UpdateCandidateContextNoteRequest,
   UpdateCandidateSourceDescriptionRequest,
@@ -89,13 +88,6 @@ export class CandidateSourceService {
       .pipe(
         map(result => this.processPostResult(result))
       );
-  }
-
-  searchByIds(sourceType: CandidateSourceType, request: IdsRequest): Observable<CandidateSource[]> {
-    const apiUrl = sourceType === CandidateSourceType.SavedSearch ?
-      this.savedSearchApiUrl : this.savedListApiUrl;
-
-    return this.http.post<CandidateSource[]>(`${apiUrl}/search-ids`, request);
   }
 
   searchPaged(sourceType: CandidateSourceType, request: SearchCandidateSourcesRequest):

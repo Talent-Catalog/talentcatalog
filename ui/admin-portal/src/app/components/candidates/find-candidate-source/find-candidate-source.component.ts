@@ -5,8 +5,6 @@ import {CandidateSourceService} from "../../../services/candidate-source.service
 import {
   CandidateSource,
   CandidateSourceType,
-  DtoType,
-  IdsRequest,
   SearchCandidateSourcesRequest
 } from "../../../model/base";
 
@@ -25,6 +23,9 @@ export class FindCandidateSourceComponent implements OnInit {
   //Whether single selection only - default is multiple selection allowed
   @Input() single: boolean = false;
   @Input() sourceType: CandidateSourceType;
+  @Input() id: number;
+
+  //todo could live with single ids Input - rather than having two alternate inputs.
   @Input() ids: number[] | number;
   @Input() fixed: boolean;
   @Input() global: boolean;
@@ -54,15 +55,24 @@ export class FindCandidateSourceComponent implements OnInit {
 
   private loadExistingSelection() {
     //If there is already a source associated set the selection to it, otherwise clear selection.
-    if (this.ids) {
-      let idsRequest: IdsRequest = Array.isArray(this.ids) ? {ids: this.ids} : {ids: [this.ids]};
-      idsRequest.dtoType = DtoType.MINIMAL;
-      this.candidateSourceService.searchByIds(this.sourceType, idsRequest).subscribe({
-        next: (sources: CandidateSource[])  => {
-          this.setCurrentSelection(sources);
+    if (this.single && this.id) {
+      this.candidateSourceService.get(this.sourceType, this.id).subscribe({
+        next: source => {
+          this.setCurrentSelection([source]);
           this.loadSources();
         }
       });
+    } else if (!this.single && this.ids) {
+      //todo This needs to allow multiple initial values  - need getShortInfos IdsRequest
+      // const idsRequest = {
+      //   ids: this.ids
+      // }
+      // this.candidateSourceService.getShortInfos(this.sourceType, idsRequest).subscribe({
+      //   next: (sources: CandidateSource[])  => {
+      //     this.setCurrentSelection(sources);
+      //     this.loadSources();
+      //   }
+      // });
     } else {
       this.clearSelection()
       this.loadSources();
@@ -97,7 +107,6 @@ export class FindCandidateSourceComponent implements OnInit {
       return of([]);
     } else {
       let request: SearchCandidateSourcesRequest = {
-        dtoType: DtoType.MINIMAL,
         keyword: text,
         pageSize: 10,
         fixed: this.fixed,

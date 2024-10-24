@@ -500,7 +500,7 @@
               <app-find-candidate-source id="exclusion"
                 [single] = true
                 [sourceType]="CandidateSourceType.SavedList"
-                [ids] = "exclusionListId"
+                [id] = "exclusionListId"
                 [global] = true
                 [owned] = true
                 [shared] = true
@@ -574,7 +574,7 @@
           <div class="row">
 
             <!-- LIST ANY -->
-            <div *ngIf="!loading" class="mb-6 col-md-6">
+            <div class="mb-6 col-md-6">
               <label class="form-label">List </label>
               <div class="operator">
                 <button class="btn btn-link" type="button"
@@ -590,16 +590,37 @@
                       ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
-<!--              todo Not exclusionListId-->
-              <app-find-candidate-source id="list-any"
-                                         [single] = false
-                                         [sourceType]="CandidateSourceType.SavedList"
-                                         [ids] = "exclusionListId"
-                                         [global] = true
-                                         [owned] = true
-                                         [shared] = true
-                                         (selectionsMade)="onListAnySelected($event)"
-              ></app-find-candidate-source>
+              <ng-select
+                id="list-any"
+                [items]="lists"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [clearSearchOnAdd]="true"
+                placeholder="Select or type..."
+                bindLabel="name"
+                formControlName="listAnyIds">
+                <ng-template ng-header-tmp>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateStatusOptions, 'listAnyIds'); $event.preventDefault()">Select All</button>
+                    <button class="btn btn-sm btn-link" (click)="onClearAll('listAnyIds'); $event.preventDefault()">Clear All</button>
+                  </div>
+                </ng-template>
+
+                <!--This improves display of selections -->
+                <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                  <!-- Allow individual selections to be removed by clicking on x next to name -->
+                  <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                    <span class="ng-value-label">{{item.name}}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  </div>
+                  <!-- Display "more..." if more than 3 selections and add a tooltip displaying
+                  all selections when hovering over the "more..." text -->
+                  <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('listAnyIds')" popoverTitle="Lists"
+                       triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+              </ng-select>
             </div>
 
             <!-- LIST ALL -->
@@ -619,17 +640,39 @@
                       ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
-              <!--              todo Not exclusionListId-->
-              <app-find-candidate-source id="list-all"
-                                         [single] = false
-                                         [sourceType]="CandidateSourceType.SavedList"
-                                         [ids] = "exclusionListId"
-                                         [global] = true
-                                         [owned] = true
-                                         [shared] = true
-                                         (selectionsMade)="onListAllSelected($event)"
-              ></app-find-candidate-source>
+              <ng-select
+                id="list-all"
+                [items]="lists"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [clearSearchOnAdd]="true"
+                placeholder="Select or type..."
+                bindLabel="stringValue"
+                formControlName="listAllIds">
+                <ng-template ng-header-tmp>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateStatusOptions, 'listAllIds'); $event.preventDefault()">Select All</button>
+                    <button class="btn btn-sm btn-link" (click)="onClearAll('listAllIds'); $event.preventDefault()">Clear All</button>
+                  </div>
+                </ng-template>
+
+                <!--This improves display of selections -->
+                <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                  <!-- Allow individual selections to be removed by clicking on x next to name -->
+                  <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                    <span class="ng-value-label">{{item.name}}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  </div>
+                  <!-- Display "more..." if more than 3 selections and add a tooltip displaying
+                  all selections when hovering over the "more..." text -->
+                  <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('listAllIds')" popoverTitle="Lists"
+                       triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+              </ng-select>
             </div>
+
           </div>
         </div>
 

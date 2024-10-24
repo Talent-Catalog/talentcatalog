@@ -474,16 +474,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.exclusionListIdControl.patchValue(list?.id);
   }
 
-  onListAnySelected(lists: CandidateSource[]) {
-    //todo update value
-    console.info(lists)
-  }
-
-  onListAllSelected(lists: CandidateSource[]) {
-    //todo update value
-    console.info(lists)
-  }
-
   showSavedSearches() {
     const showSavedSearchesModal = this.modalService.open(SearchSavedSearchesComponent, {
       centered: true,

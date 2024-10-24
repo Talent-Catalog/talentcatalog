@@ -208,11 +208,6 @@ export enum DtoType {
   EXTENDED = 'EXTENDED'
 }
 
-export class IdsRequest {
-  dtoType?: DtoType;
-  ids: number[];
-}
-
 export class PagedSearchRequest {
   dtoType?: DtoType;
   pageSize?: number;
