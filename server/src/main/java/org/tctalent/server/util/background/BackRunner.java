@@ -95,6 +95,17 @@ public class BackRunner<CONTEXT> implements Runnable {
         return start(taskScheduler, backProcessor, batchContext, trigger);
     }
 
+    /**
+     * Starts batch processing using the given processor, initialised with the given context,
+     * and configured to adjust the delay between processing calls to work within a given maximum
+     * CPU usage.
+     * <p/>
+     * @param backProcessor Processor called to do the processing
+     * @param batchContext Context object used to keep track of processing - initialized to its
+     *                     beginning value - ie indicating where processing should start.
+     * @param percentageCPU Desired maximum CPU load
+     * @return ScheduledFuture which can be used to query the state of the scheduling.
+     */
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
         BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, int percentageCPU) {
         this.trigger = new VariableTrigger(percentageCPU);
