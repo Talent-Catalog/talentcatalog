@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Defines the id that we are up to - ie the last processed.
- * Page numbe
+ * Context based on an id which identifies the last item processed.
+ * The context also specifies how many items to process in a call.
  *
  * @author John Cameron
  */
