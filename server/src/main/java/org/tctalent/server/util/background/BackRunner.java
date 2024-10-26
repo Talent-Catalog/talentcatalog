@@ -14,23 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.batch;
+package org.tctalent.server.util.background;
 
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
  * It does this by using Spring's scheduling to do a bit of work on a task, then wait a while,
  * then do more work, until the task is complete.
  * <p/>
- * Tasks to be completed must implement {@link BatchProcessor} - which just needs to implement a
- * single method called "process" which takes a single parameter {@link BatchContext}.
- * BatchContext is used by the task to keep track of where it is upto in its processing.
+ * Tasks to be completed must implement {@link BackProcessor} - which just needs to implement a
+ * single method called "process" which takes a single parameter defining the CONTEXT.
+ * CONTEXT is used by the task to keep track of where it is upto in its processing.
  * The task does some processing, then updates the context object recording where it got up to.
  * The next time the process method is called it can continue where it left off.
  * <p/>
@@ -39,23 +38,29 @@ import org.springframework.stereotype.Component;
  * When the task has finished all processing, it can return true from the process method. That
  * will cancel the scheduling so that process is not called again.
  *
+ *
  * @author John Cameron
  */
-//todo May be better not to make BatchRunner a component. Then can user <T> logic.
-//Then need to inject Task Scheduler.
-@Component
-@Scope("prototype")
-@RequiredArgsConstructor
-public class BatchRunner implements Runnable {
-    private final TaskScheduler taskScheduler;
-    private BatchProcessor batchProcessor;
-    private BatchContext batchContext;
+@Getter
+@Setter
+public class BackRunner<CONTEXT> implements Runnable {
+    private TaskScheduler taskScheduler;
+    private BackProcessor<CONTEXT> backProcessor;
+
+    /**
+     * This defines the "context" for keeping track of where a {@link BackProcessor}
+     * is up to in its processing as managed by a {@link BackRunner}.
+     * <p/>
+     * For example the context object might just contain a Long representing the page number of
+     * candidates from a search, that we are processing a page at a time.
+     */
+    private CONTEXT batchContext;
 
     private ScheduledFuture<?> scheduledFuture;
 
     @Override
     public void run() {
-        boolean complete = batchProcessor.process(batchContext);
+        boolean complete = backProcessor.process(batchContext);
         if (complete) {
             //todo The runner could be configured to notify by email once processing is complete.
             scheduledFuture.cancel(true);
@@ -68,16 +73,16 @@ public class BatchRunner implements Runnable {
      * <p/>
      * The demand on the TC can be managed by configuring the batch processor to process small
      * amounts at a time, and also by configuring a decent delay between processing calls.
-     * @param batchProcessor Processor called to do the processing
+     * @param backProcessor Processor called to do the processing
      * @param batchContext Context object used to keep track of processing - initialized to its
      *                     beginning value - ie indicating where processing should start.
      * @param delay Delay between each processing call
      * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
-    public ScheduledFuture<?> start(
-        BatchProcessor batchProcessor, BatchContext batchContext, Duration delay) {
+    public ScheduledFuture<?> start(TaskScheduler taskScheduler,
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Duration delay) {
         this.batchContext = batchContext;
-        this.batchProcessor = batchProcessor;
+        this.backProcessor = backProcessor;
         scheduledFuture = taskScheduler.scheduleWithFixedDelay(this, delay);
         return scheduledFuture;
     }

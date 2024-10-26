@@ -14,15 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.batch;
+package org.tctalent.server.util.background;
 
 /**
  * This defines the interface that processors should implement in order to process large
- * amounts of work in chunks - as scheduled by a {@link BatchRunner}.
+ * amounts of work in chunks - as scheduled by a {@link BackRunner}.
  *
  * @author John Cameron
  */
-public interface BatchProcessor {
+public interface BackProcessor<CONTEXT> {
 
     /**
      * This method is called repeatedly - with gaps in between - to complete long tasks.
@@ -33,5 +33,5 @@ public interface BatchProcessor {
      * @return True if all processing is completed. In that case this method will not be called
      * again.
      */
-    boolean process(BatchContext context);
+    boolean process(CONTEXT context);
 }

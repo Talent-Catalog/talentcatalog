@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
@@ -107,10 +108,9 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
-import org.tctalent.server.util.batch.BatchContext;
-import org.tctalent.server.util.batch.BatchProcessor;
-import org.tctalent.server.util.batch.BatchRunner;
-import org.tctalent.server.util.batch.PagingBatchContext;
+import org.tctalent.server.util.background.BackProcessor;
+import org.tctalent.server.util.background.BackRunner;
+import org.tctalent.server.util.background.IdContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -233,26 +233,27 @@ public class SystemAdminApi {
     }
 
     /**
-     * todo The intention is that this can be used to implement an export search which does not
+     * todo The intention is that this can be used to implement an operations which do not
      * max out the TC's CPU.
-     * @see BatchRunner
+     * @see BackRunner
      */
     @GetMapping("export_search/{id}")
     public void exportSearch() {
-        BatchRunner batchRunner = applicationContext.getBean(BatchRunner.class);
-        BatchProcessor batchProcessor = new BatchProcessor() {
+        BackRunner<IdContext> backRunner = new BackRunner<>();
+        BackProcessor<IdContext> backProcessor = new BackProcessor<>() {
             @Override
-            public boolean process(BatchContext context) {
-                PagingBatchContext ctx = (PagingBatchContext) context;
-                Long page = ctx.getPage();
-                System.out.println("Processing page " + page);
-                page++;
-                ctx.setPage(page);
-                return page >= 5;
+            public boolean process(IdContext ctx) {
+                long startId = ctx.getLastProcessedId() == null ? 0 : ctx.getLastProcessedId()+1;
+                System.out.println("Processing " + ctx.getNumToProcess() + " ids starting from "
+                    + (startId == 0 ? "beginning " : startId) );
+                long lastProcessed = startId + ctx.getNumToProcess() - 1;
+                ctx.setLastProcessedId(lastProcessed);
+                return lastProcessed+1 >= 50;
             }
         };
-
-        batchRunner.start(batchProcessor, new PagingBatchContext(0L), Duration.ofSeconds(3));
+        ScheduledFuture<?> scheduledFuture =
+            backRunner.start(taskScheduler, backProcessor, new IdContext(0L, 10),
+                Duration.ofSeconds(1));
     }
 
     @GetMapping("fix_null_case_sfids")

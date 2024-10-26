@@ -14,22 +14,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.batch;
+package org.tctalent.server.util.background;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Page number as a context. The next "page" of data that needs to be processed.
+ * Defines the id that we are up to - ie the last processed.
+ * Page numbe
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-public class PagingBatchContext implements BatchContext {
-    private Long page;
+@AllArgsConstructor
+public class IdContext {
 
-    public PagingBatchContext(Long page) {
-        this.page = page;
-    }
+    /**
+     * The last processed id. null if none processed yet
+     */
+    private Long lastProcessedId;
+
+    /**
+     * The number of ids to process during each processing call.
+     */
+    private long numToProcess;
 }

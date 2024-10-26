@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.batch;
+package org.tctalent.server.util.background;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,33 +30,35 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  *
  * @author John Cameron
  */
-class BatchRunnerTest {
+class BackRunnerTest {
 
-    private BatchRunner batchRunner;
-    private BatchProcessor batchProcessor;
+    private BackRunner<IdContext> backRunner;
+    private BackProcessor<IdContext> backProcessor;
+    ThreadPoolTaskScheduler taskScheduler;
 
     @BeforeEach
     void setUp() {
-        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.initialize();
-        batchProcessor = new BatchProcessor() {
+        backRunner = new BackRunner<>();
+        backProcessor = new BackProcessor<>() {
             @Override
-            public boolean process(BatchContext context) {
-                PagingBatchContext ctx = (PagingBatchContext) context;
-                Long page = ctx.getPage();
-                System.out.println("Processing page " + page);
-                page++;
-                ctx.setPage(page);
-                return page >= 5;
+            public boolean process(IdContext ctx) {
+                long startId = ctx.getLastProcessedId() == null ? 0 : ctx.getLastProcessedId()+1;
+                System.out.println("Processing " + ctx.getNumToProcess() + " ids starting from "
+                    + (startId == 0 ? "beginning " : startId) );
+                long lastProcessed = startId + ctx.getNumToProcess() - 1;
+                ctx.setLastProcessedId(lastProcessed);
+                return lastProcessed+1 >= 50;
             }
         };
-        batchRunner = new BatchRunner( taskScheduler );
     }
 
     @Test
     void testBatchExport() throws InterruptedException {
         ScheduledFuture<?> scheduledFuture =
-            batchRunner.start(batchProcessor, new PagingBatchContext(0L), Duration.ofSeconds(1));
+            backRunner.start(taskScheduler, backProcessor, new IdContext(null, 10),
+                Duration.ofSeconds(1));
         assertFalse(scheduledFuture.isDone());
         Thread.sleep(5000);
         assertTrue(scheduledFuture.isDone());
