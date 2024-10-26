@@ -16,8 +16,6 @@
 
 package org.tctalent.server.util.background;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
@@ -65,11 +63,7 @@ public class BackRunner<CONTEXT> implements Runnable {
 
     @Override
     public void run() {
-        Instant start = Instant.now();
         boolean complete = backProcessor.process(batchContext);
-        Instant end = Instant.now();
-        Duration timeElapsed = Duration.between(start, end);
-
         if (complete) {
             //todo The runner could be configured to notify by email once processing is complete.
             scheduledFuture.cancel(true);
@@ -104,7 +98,7 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @param batchContext Context object used to keep track of processing - initialized to its
      *                     beginning value - ie indicating where processing should start.
      * @param percentageCPU Desired maximum CPU load
-     * @return ScheduledFuture which can be used to query the state of the scheduling.
+     * @return ScheduledFuture which can be usd to query the state of the scheduling.
      */
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
         BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, int percentageCPU) {
