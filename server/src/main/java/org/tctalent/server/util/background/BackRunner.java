@@ -98,7 +98,7 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @param batchContext Context object used to keep track of processing - initialized to its
      *                     beginning value - ie indicating where processing should start.
      * @param percentageCPU Desired maximum CPU load
-     * @return ScheduledFuture which can be usd to query the state of the scheduling.
+     * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
         BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, int percentageCPU) {
