@@ -35,8 +35,8 @@ import org.springframework.scheduling.support.PeriodicTrigger;
  * The task does some processing, then updates the context object recording where it got up to.
  * The next time the process method is called it can continue where it left off.
  * <p/>
- * process returns false if there is still processing to do, in which case it will be called again
- * by the scheduler after a certain delay.
+ * The "process" returns false if there is still processing to do, in which case it will be called
+ * again by the scheduler after a certain delay.
  * When the task has finished all processing, it can return true from the process method. That
  * will cancel the scheduling so that process is not called again.
  *

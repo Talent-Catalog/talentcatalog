@@ -24,7 +24,7 @@ import org.springframework.scheduling.TriggerContext;
 import org.springframework.util.Assert;
 
 /**
- * Spring scheduling Trigger that schedules delays based on previous processing times.
+ * Spring scheduling {@link Trigger} that schedules delays based on previous processing times.
  *
  * @author John Cameron
  */
