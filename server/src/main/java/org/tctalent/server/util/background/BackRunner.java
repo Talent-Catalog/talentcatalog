@@ -17,10 +17,14 @@
 package org.tctalent.server.util.background;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.support.PeriodicTrigger;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
@@ -46,6 +50,7 @@ import org.springframework.scheduling.TaskScheduler;
 public class BackRunner<CONTEXT> implements Runnable {
     private TaskScheduler taskScheduler;
     private BackProcessor<CONTEXT> backProcessor;
+    private Trigger trigger;
 
     /**
      * This defines the "context" for keeping track of where a {@link BackProcessor}
@@ -60,7 +65,11 @@ public class BackRunner<CONTEXT> implements Runnable {
 
     @Override
     public void run() {
+        Instant start = Instant.now();
         boolean complete = backProcessor.process(batchContext);
+        Instant end = Instant.now();
+        Duration timeElapsed = Duration.between(start, end);
+
         if (complete) {
             //todo The runner could be configured to notify by email once processing is complete.
             scheduledFuture.cancel(true);
@@ -76,14 +85,27 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @param backProcessor Processor called to do the processing
      * @param batchContext Context object used to keep track of processing - initialized to its
      *                     beginning value - ie indicating where processing should start.
-     * @param delay Delay between each processing call
+     * @param period Delay between each processing call
+     * @param timeUnit Seconds etc
      * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Duration delay) {
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, long period, TimeUnit timeUnit) {
+        this.trigger = new PeriodicTrigger(period, timeUnit);
+        return start(taskScheduler, backProcessor, batchContext, trigger);
+    }
+
+    public ScheduledFuture<?> start(TaskScheduler taskScheduler,
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, int percentageCPU) {
+        this.trigger = new VariableTrigger(percentageCPU);
+        return start(taskScheduler, backProcessor, batchContext, trigger);
+    }
+
+    private ScheduledFuture<?> start(TaskScheduler taskScheduler,
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Trigger trigger) {
         this.batchContext = batchContext;
         this.backProcessor = backProcessor;
-        scheduledFuture = taskScheduler.scheduleWithFixedDelay(this, delay);
+        scheduledFuture = taskScheduler.schedule(this, trigger);
         return scheduledFuture;
     }
 }

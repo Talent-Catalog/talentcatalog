@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
@@ -253,7 +254,7 @@ public class SystemAdminApi {
         };
         ScheduledFuture<?> scheduledFuture =
             backRunner.start(taskScheduler, backProcessor, new IdContext(0L, 10),
-                Duration.ofSeconds(1));
+                20);
     }
 
     @GetMapping("fix_null_case_sfids")
