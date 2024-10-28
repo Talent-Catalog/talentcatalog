@@ -583,11 +583,10 @@
                       placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
-<!--              todo Not exclusionListId-->
               <app-find-candidate-source id="list-any"
                                          [single] = false
                                          [sourceType]="CandidateSourceType.SavedList"
-                                         [ids] = "exclusionListId"
+                                         [ids] = "listAnyIds"
                                          [global] = true
                                          [owned] = true
                                          [shared] = true
@@ -596,7 +595,7 @@
             </div>
 
             <!-- LIST ALL -->
-            <div class="mb-6 col-md-6">
+            <div *ngIf="!loading" class="mb-6 col-md-6">
               <label class="form-label">List </label>
               <div class="operator">
                 <button class="btn btn-link" type="button"
@@ -613,11 +612,10 @@
                       placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
-              <!--              todo Not exclusionListId-->
               <app-find-candidate-source id="list-all"
                                          [single] = false
                                          [sourceType]="CandidateSourceType.SavedList"
-                                         [ids] = "exclusionListId"
+                                         [ids] = "listAllIds"
                                          [global] = true
                                          [owned] = true
                                          [shared] = true

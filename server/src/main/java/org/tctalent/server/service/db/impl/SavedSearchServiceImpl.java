@@ -1639,8 +1639,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMaxYrs(request.getMaxYrs());
             savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
             savedSearch.setPartnerIds(getListAsString(request.getPartnerIds()));
-            savedSearch.setNationalityIds(
-                    getListAsString(request.getNationalityIds()));
+            savedSearch.setListAllIds(getListAsString(request.getListAllIds()));
+            savedSearch.setListAllSearchType(request.getListAllSearchType());
+            savedSearch.setListAnyIds(getListAsString(request.getListAnyIds()));
+            savedSearch.setListAnySearchType(request.getListAnySearchType());
+            savedSearch.setNationalityIds(getListAsString(request.getNationalityIds()));
             savedSearch.setNationalitySearchType(request.getNationalitySearchType());
             savedSearch.setCountryIds(getListAsString(request.getCountryIds()));
             savedSearch.setCountrySearchType(request.getCountrySearchType());
@@ -1706,10 +1709,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxYrs(search.getMaxYrs());
         searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());
         searchCandidateRequest.setPartnerIds(getIdsFromString(search.getPartnerIds()));
+        searchCandidateRequest.setListAllIds(getIdsFromString(search.getListAllIds()));
+        searchCandidateRequest.setListAllSearchType(search.getListAllSearchType());
+        searchCandidateRequest.setListAnyIds(getIdsFromString(search.getListAnyIds()));
+        searchCandidateRequest.setListAnySearchType(search.getListAnySearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
-        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
         searchCandidateRequest.setNationalitySearchType(search.getNationalitySearchType());
-        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(search.getCountryIds());
@@ -1730,6 +1736,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 //            }
         }
         searchCandidateRequest.setCountryIds(requestCountries);
+        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
 
         searchCandidateRequest.setEnglishMinSpokenLevel(search.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(search.getEnglishMinWrittenLevel());

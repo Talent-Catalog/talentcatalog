@@ -693,8 +693,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return this.searchForm.get('exclusionListId');
   }
 
+  get listAllIds(): number[] {
+    return this.listAllIdsControl?.value;
+  }
+
   get listAllIdsControl(): AbstractControl {
     return this.searchForm.get('listAllIds');
+  }
+
+  get listAnyIds(): number[] {
+    return this.listAnyIdsControl?.value;
   }
 
   get listAnyIdsControl(): AbstractControl {
