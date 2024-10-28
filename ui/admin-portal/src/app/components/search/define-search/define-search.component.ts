@@ -329,6 +329,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   apply() {
+    // Need to reset the form so we can trigger change detection even if the form values are the same.
+    this.searchForm.reset(this.searchForm.value);
+
     //Initialize a search request from the modified formData
     const request: SearchCandidateRequestPaged =
       this.getIdsMultiSelect(this.searchForm.value)

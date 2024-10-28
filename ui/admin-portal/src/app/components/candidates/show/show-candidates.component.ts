@@ -364,7 +364,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     if (changes.searchRequest) {
       if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
         if (this.searchRequest) {
-          this.updatedSearch();
+          this.confirmClearSelectionDoSearch();
         }
       }
     }
@@ -390,6 +390,29 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+  }
+
+  private confirmClearSelectionDoSearch() {
+    if (this.numberSelections > 0) {
+      const confirmationModal = this.modalService.open(ConfirmationComponent, {
+        centered: true,
+        backdrop: 'static'
+      })
+
+      confirmationModal.componentInstance.message = "There are candidates selected in this search which will " +
+        "be cleared, to keep save selections to a list. Do you wish to proceed and clear selections?";
+
+      confirmationModal.result
+        .then(
+          (result) => {
+            this.clearSelectionAndDoSearch()
+          },
+          (reason) => {
+          })
+        .catch(() => { /* Isn't possible */ });
+    } else {
+      this.clearSelectionAndDoSearch()
     }
   }
 
@@ -1144,7 +1167,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       })
   }
 
-  clearSelection() {
+  clearSelectionAndDoSearch() {
     if (isSavedSearch(this.candidateSource)) {
       const request: ClearSelectionRequest = {
         userId: this.loggedInUser.id,
