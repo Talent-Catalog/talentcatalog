@@ -90,7 +90,6 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
   }
 
   unsavedChangesCheck() {
-    let proceed: boolean = false;
     const unsavedChangesModal = this.modalService.open(ConfirmationComponent, {
       centered: true,
       backdrop: 'static'
