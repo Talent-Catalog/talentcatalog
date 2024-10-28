@@ -570,6 +570,32 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchForm.controls[name].patchValue(request[name]);
     });
 
+    /* DEFAULTS */
+    let searchType = request.countrySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['countrySearchType'].patchValue(searchType);
+
+    searchType = request.nationalitySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
+
+    searchType = request.listAllSearchType;
+    if (searchType == null) {
+      searchType = 'and';
+    }
+    this.searchForm.controls['listAllSearchType'].patchValue(searchType);
+
+    searchType = request.listAnySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['listAnySearchType'].patchValue(searchType);
+
+
     // For the multiselects we have to set the corresponding id/name object by searching for the
     // values in the given search request in the complete set of drop down options for that field.
 
@@ -643,11 +669,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       countries = this.countries.filter(c => request.countryIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['countries'].patchValue(countries);
-    let countrySearchType = request.countrySearchType;
-    if (countrySearchType == null) {
-      countrySearchType = 'or';
-    }
-    this.searchForm.controls['countrySearchType'].patchValue(countrySearchType);
 
     /* NATIONALITIES */
     let nationalities = [];
@@ -655,11 +676,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
-    let searchType = request.nationalitySearchType;
-    if (searchType == null) {
-      searchType = 'or';
-    }
-    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
 
     /* UNHCR STATUSES */
     let unhcrStatuses: EnumOption[] = [];
