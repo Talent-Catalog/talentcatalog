@@ -55,9 +55,7 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {
-  DateRangePickerComponent
-} from '../../util/form/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -263,6 +261,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.loading = false;
       this.error = error;
     });
+    // Listen to form changes (unsaved changes to the search) and emit to candidate search component where the unsaved
+    // changes guard is implemented. It will throw confirmation modal if navigating away with unsaved search fields.
     this.searchForm.valueChanges.subscribe(() => {
       this.onFormChange.emit(this.searchForm.dirty);
     });
@@ -523,6 +523,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
           const urlCommands = getCandidateSourceNavigation(savedSearch);
           this.router.navigate(urlCommands);
         }
+        // After updating we want to reset the form so it's no longer dirty, this will allow users to bypass the
+        // unsaved changes guard.
+        this.searchForm.reset(this.searchForm.value)
       })
       .catch(() => {
       });
