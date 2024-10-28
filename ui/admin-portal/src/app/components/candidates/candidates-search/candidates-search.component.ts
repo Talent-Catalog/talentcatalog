@@ -96,8 +96,7 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
     });
 
     unsavedChangesModal.componentInstance.message =
-      'Are you sure you want to leave you have unsaved changes?';
-
+      'You have unsaved changes to the search filters, update search to save them. Do you want to proceed without saving?'
     return unsavedChangesModal.result.then(
       () => {
         return true;
