@@ -33,7 +33,6 @@ import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -46,7 +45,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
@@ -55,7 +53,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -123,7 +120,6 @@ import org.tctalent.server.util.textExtract.TextExtractHelper;
 public class SystemAdminApi {
     final static String DATE_FORMAT = "dd-MM-yyyy";
 
-    private final ApplicationContext applicationContext;
     private final AuthService authService;
 
     private final DataSharingService dataSharingService;
@@ -183,7 +179,7 @@ public class SystemAdminApi {
     private EntityManager entityManager;
     @Autowired
     public SystemAdminApi(
-        ApplicationContext applicationContext, DataSharingService dataSharingService,
+            DataSharingService dataSharingService,
             AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
             CandidateNoteRepository candidateNoteRepository,
@@ -202,7 +198,6 @@ public class SystemAdminApi {
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler) {
-        this.applicationContext = applicationContext;
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -234,7 +229,7 @@ public class SystemAdminApi {
     }
 
     /**
-     * todo The intention is that this can be used to implement an operations which do not
+     * todo The intention is that this can be used to implement a operations which do not
      * max out the TC's CPU.
      * @see BackRunner
      */
