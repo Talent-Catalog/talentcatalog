@@ -23,6 +23,9 @@ import lombok.Setter;
 /**
  * Context based on an id which identifies the last item processed.
  * The context also specifies how many items to process in a call.
+ * <p/>
+ * This is an example of CONTEXT that can be used to configure a {@link BackRunner} and
+ * {@link BackProcessor}.
  *
  * @author John Cameron
  */

@@ -31,7 +31,7 @@ import org.springframework.scheduling.support.PeriodicTrigger;
  * <p/>
  * Tasks to be completed must implement {@link BackProcessor} - which just needs to implement a
  * single method called "process" which takes a single parameter defining the CONTEXT.
- * CONTEXT is used by the task to keep track of where it is upto in its processing.
+ * CONTEXT is used by the task to keep track of where it is up to in its processing.
  * The task does some processing, then updates the context object recording where it got up to.
  * The next time the process method is called it can continue where it left off.
  * <p/>
