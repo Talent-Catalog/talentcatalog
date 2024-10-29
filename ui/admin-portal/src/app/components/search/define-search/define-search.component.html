@@ -500,7 +500,7 @@
               <app-find-candidate-source id="exclusion"
                 [single] = true
                 [sourceType]="CandidateSourceType.SavedList"
-                [ids] = "exclusionListId"
+                [selectedIds] = "exclusionListId"
                 [global] = true
                 [owned] = true
                 [shared] = true
@@ -570,7 +570,7 @@
               <label class="form-label">List </label>
               <div class="operator">
                 <button class="btn btn-link" type="button"
-                        [class.active]="searchForm.value.listAnySearchType === 'or'"
+                        [class.active]="searchForm.value.listAnySearchType !== 'not'"
                         (click)="handleSearchTypeChange('listAnySearchType', 'or')">any
                 </button>
                 <button class="btn btn-link" type="button"
@@ -586,7 +586,7 @@
               <app-find-candidate-source id="list-any"
                                          [single] = false
                                          [sourceType]="CandidateSourceType.SavedList"
-                                         [ids] = "listAnyIds"
+                                         [selectedIds] = "listAnyIds"
                                          [global] = true
                                          [owned] = true
                                          [shared] = true
@@ -599,7 +599,7 @@
               <label class="form-label">List </label>
               <div class="operator">
                 <button class="btn btn-link" type="button"
-                        [class.active]="searchForm.value.listAllSearchType === 'and'"
+                        [class.active]="searchForm.value.listAllSearchType !== 'not'"
                         (click)="handleSearchTypeChange('listAllSearchType', 'and')">all
                 </button>
                 <button class="btn btn-link" type="button"
@@ -615,7 +615,7 @@
               <app-find-candidate-source id="list-all"
                                          [single] = false
                                          [sourceType]="CandidateSourceType.SavedList"
-                                         [ids] = "listAllIds"
+                                         [selectedIds] = "listAllIds"
                                          [global] = true
                                          [owned] = true
                                          [shared] = true

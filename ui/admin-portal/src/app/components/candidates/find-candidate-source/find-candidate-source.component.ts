@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnInit, Output,} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {Observable, of, Subject} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
@@ -21,11 +29,11 @@ import {
   templateUrl: './find-candidate-source.component.html',
   styleUrls: ['./find-candidate-source.component.scss']
 })
-export class FindCandidateSourceComponent implements OnInit {
+export class FindCandidateSourceComponent implements OnInit, OnChanges {
   //Whether single selection only - default is multiple selection allowed
   @Input() single: boolean = false;
   @Input() sourceType: CandidateSourceType;
-  @Input() ids: number[] | number;
+  @Input() selectedIds: number[] | number;
   @Input() fixed: boolean;
   @Input() global: boolean;
   @Input() owned: boolean;
@@ -49,23 +57,25 @@ export class FindCandidateSourceComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadExistingSelection();
+    this.loadSources();
   }
 
-  private loadExistingSelection() {
+  ngOnChanges(changes: SimpleChanges): void {
+    this.changeSelection();
+  }
+
+  private changeSelection() {
     //If there is already a source associated set the selection to it, otherwise clear selection.
-    if (this.ids) {
-      let idsRequest: IdsRequest = Array.isArray(this.ids) ? {ids: this.ids} : {ids: [this.ids]};
+    if (this.selectedIds) {
+      let idsRequest: IdsRequest = Array.isArray(this.selectedIds) ? {ids: this.selectedIds} : {ids: [this.selectedIds]};
       idsRequest.dtoType = DtoType.MINIMAL;
       this.candidateSourceService.searchByIds(this.sourceType, idsRequest).subscribe({
         next: (sources: CandidateSource[])  => {
           this.setCurrentSelection(sources);
-          this.loadSources();
         }
       });
     } else {
       this.clearSelection()
-      this.loadSources();
     }
   }
 
