@@ -52,14 +52,14 @@ describe('ShowCandidatesComponent', () => {
   // Create mock service instances using jasmine.createSpyObj
   const mockCandidateService = jasmine.createSpyObj('CandidateService', ['someMethod']);
   const mockCandidateSourceService = jasmine.createSpyObj('CandidateSourceService', ['someMethod']);
-  const mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['clearSelection', 'doSearch', 'isSavedSearch']);
+  const mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['clearSelection', 'doSearch', 'isSavedSearch','getSavedSearchTypeInfos']);
   const mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
   const mockNgbModal = jasmine.createSpyObj('NgbModal', ['open']);
   const mockNgbOffcanvas = jasmine.createSpyObj('NgbOffcanvas', ['open', 'dismiss']);
   const mockAuthorizationService = jasmine.createSpyObj('AuthorizationService',
     ['canAssignTask', 'canAccessSalesforce', 'canEditCandidateSource', 'canPublishList',
       'canImportToList', 'canResolveTasks', 'canUpdateCandidateStatus', 'canUpdateSalesforce',
-      'canManageCandidateTasks', 'isCandidateSourceMine', 'isEmployerPartner', 'isReadOnly',
+      'canManageCandidateTasks', 'isCandidateSourceMine', 'isEmployerPartner', 'canExportFromSource', 'isReadOnly',
       'isStarredByMe']);
   const mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
   const mockSalesforceService = jasmine.createSpyObj('SalesforceService', ['joblink']);

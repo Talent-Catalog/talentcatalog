@@ -116,8 +116,14 @@ describe('AssignTasksListComponent', () => {
     const estDate = new Date();
     estDate.setDate(estDate.getDate() + task.daysToComplete);
 
-    expect(component.estimatedDueDate).toEqual(estDate);
+    const dueDate = component.estimatedDueDate;
+
+    // Compare only the year, month, and date to avoid time comparison issues
+    expect(dueDate.getFullYear()).toEqual(estDate.getFullYear());
+    expect(dueDate.getMonth()).toEqual(estDate.getMonth());
+    expect(dueDate.getDate()).toEqual(estDate.getDate());
   });
+
 
   it('should save task association', fakeAsync(() => {
     const task = mockTasks[0];

@@ -1,7 +1,6 @@
 import {ViewPostComponent} from "./view-post.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
-import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {ChatPost} from "../../../model/chat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 import {of} from "rxjs";
@@ -94,10 +93,11 @@ describe('ViewPostComponent', () => {
   it('should update reaction when a reaction button is clicked', () => {
     const reaction: Reaction = MOCK_REACTIONS[0];
     reactionServiceSpy.modifyReaction.and.returnValue(of(MOCK_REACTIONS));
+    component.post = { id: 2 } as ChatPost;;
 
     component.onSelectReaction(reaction);
 
-    expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(reaction.id);
+    expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(component.post.id, reaction.id);
     expect(component.post.reactions.length).toBe(3);
     expect(component.post.reactions[0].users.length).toBe(2);
   });

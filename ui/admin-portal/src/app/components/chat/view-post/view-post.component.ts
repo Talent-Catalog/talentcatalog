@@ -122,7 +122,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
 
   public onSelectReaction(reaction: Reaction) {
     if (!this.readOnly) {
-      this.reactionService.modifyReaction(reaction.id)
+      this.reactionService.modifyReaction(this.post.id, reaction.id)
       .subscribe({
         next: (updatedReactions) =>
           this.post.reactions = updatedReactions

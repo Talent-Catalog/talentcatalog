@@ -60,6 +60,8 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
             + "(select id from saved_list where name = 'TestCandidates' and global = true))";
     private static final String countingStandardFilter =
         " and users.status = 'active' and candidate.status != 'draft'" + notTestCandidateCondition;
+    private static final String countingFilterIncludeDraft =
+        " and users.status = 'active'" + notTestCandidateCondition;
     private static final String dateConditionFilter =
         " users.created_date >= :dateFrom and users.created_date <= :dateTo";
     private static final String excludeIneligible = " and candidate.status != 'ineligible'";
@@ -394,8 +396,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
                          where
             """;
 
-        selectSql += standardConstraints(
-            candidateIds, sourceCountryIds, constraint, false);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint, true);
 
         String groupBySql = " group by DATE(users.created_date) order by DATE(users.created_date) asc";
         String sql = selectSql + groupBySql;
@@ -489,7 +490,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
             where gender like :gender and lower(country.name) like :country and
             """;
 
-        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint);
+        selectSql += standardConstraints(candidateIds, sourceCountryIds, constraint, true);
 
         String groupBySql = " group by candidate.status order by PeopleCount desc";
         String sql = selectSql + groupBySql;
@@ -695,15 +696,17 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
         @Nullable String constraint) {
         return standardConstraints(
-            candidateIds, sourceCountryIds, constraint, true);
+            candidateIds, sourceCountryIds, constraint, false);
     }
 
     private static String standardConstraints(
         @Nullable Set<Long> candidateIds, @Nullable List<Long> sourceCountryIds,
-        @Nullable String constraint, boolean applyCountingFilter) {
+        @Nullable String constraint, boolean includeDraft) {
 
         String s = dateConditionFilter;
-        if (applyCountingFilter) {
+        if (includeDraft) {
+            s += countingFilterIncludeDraft;
+        } else {
             s += countingStandardFilter;
         }
         if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {

@@ -23,6 +23,10 @@
        [editable]="false"
        (selectItem)="selectSearchResult($event, input)"
        [placeholder]="placeholderText"/>
+<!--We need this ng-template to do the highlighting (using ngb-highlight).
+But not sure why we need the t.split. Just t does OK. - JC
+See https://ng-bootstrap.github.io/#/components/typeahead/examples#template
+-->
 <ng-template #rt let-r="result" let-t="term">
   <ngb-highlight [result]="renderCandidateRow(r)" [term]="t.split(' ')"></ngb-highlight>
 </ng-template>

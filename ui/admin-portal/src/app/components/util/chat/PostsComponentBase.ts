@@ -17,7 +17,7 @@ import {Directive, EventEmitter, Input, OnDestroy, Output} from "@angular/core";
 import {ChatService} from "../../../services/chat.service";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {Subscription} from "rxjs";
-import {ChatPost, CreateChatRequest, JobChat, GroupedMessages} from "../../../model/chat";
+import {ChatPost, CreateChatRequest, JobChat} from "../../../model/chat";
 
 /**
  * This provides underlying common support for components which display chat posts.
@@ -40,7 +40,6 @@ export abstract class PostsComponentBase implements OnDestroy{
   currentPost: ChatPost;
 
   posts: ChatPost[];
-  groupedMessages: GroupedMessages[] = [];
 
   loading: boolean;
   error;
@@ -83,7 +82,7 @@ export abstract class PostsComponentBase implements OnDestroy{
       // console.log('Subscribing for posts on chat ' + chat.id)
       //Subscribe for updates on new chat
       this.chatSubscription = this.chatService.getChatPosts$(this.chat).subscribe({
-          next: (post) => this.addNewPost(post)
+          next: (post) => this.handleIncomingPost(post) // Handle new posts and post updates
         }
       );
 
@@ -94,7 +93,7 @@ export abstract class PostsComponentBase implements OnDestroy{
       this.chatIsReadSubscription = this.chatService.getChatIsRead$(this.chat).subscribe({
           next: chatIsRead => this.chatIsRead = chatIsRead
         }
-      )
+      );
     }
   }
 
@@ -115,9 +114,19 @@ export abstract class PostsComponentBase implements OnDestroy{
     }
   }
 
-  private addNewPost(post: ChatPost) {
-    this.posts.push(post);
-    this.groupedMessages = this.groupMessagesByDate(this.posts);
+  /**
+   * Handle both new posts and post updates. Determines whether the incoming post is new or an
+   * update to an existing post, and updates the posts array accordingly.
+   */
+  private handleIncomingPost(incomingPost: ChatPost) {
+    const existingPostIndex = this.posts.findIndex(p => p.id === incomingPost.id);
+    if (existingPostIndex !== -1) {
+      // If the post already exists, update it
+      this.posts[existingPostIndex] = incomingPost;
+    } else {
+      // If it's a new post, add it to the posts array
+      this.posts.push(incomingPost);
+    }
   }
 
   private updatePosts(posts: ChatPost[]) {
@@ -126,12 +135,18 @@ export abstract class PostsComponentBase implements OnDestroy{
       //The new posts may or may not be in the posts we have just received.
       //Go through newPosts adding any that are not already present (by checking the post unique id's)
       for (const newPost of this.posts) {
-        if (!posts.find(p => p.id = newPost.id)) {
+        const existingPostIndex = posts.findIndex(p => p.id === newPost.id);
+
+        if (existingPostIndex !== -1) {
+          // If the post already exists, replace it with the updated post
+          console.log('Replacing post ' + newPost.id);
+          posts[existingPostIndex] = newPost;
+        } else {
+          // If the post is new, add it to the list
           posts.push(newPost);
         }
       }
     }
-    this.groupedMessages = this.groupMessagesByDate(posts);
     this.posts = posts;
   }
 
@@ -149,27 +164,4 @@ export abstract class PostsComponentBase implements OnDestroy{
       this.chatIsReadSubscription = null;
     }
   }
-
-  private groupMessagesByDate(messages: any[]): GroupedMessages[] {
-    const grouped = messages.reduce((acc, message) => {
-      const date = new Date(message.createdDate).toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(message);
-      return acc;
-    }, {} as { [key: string]: any[] });
-
-    // Transform the object into an array for easier rendering
-    return Object.keys(grouped).map(date => ({
-      date,
-      messages: grouped[date]
-    }));
-  }
 }
-

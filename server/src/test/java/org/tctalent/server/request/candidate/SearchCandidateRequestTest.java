@@ -255,7 +255,7 @@ class SearchCandidateRequestTest {
             , sql);
 
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
-        request.setTimezone("Australia/Melbourne");
+        request.setTimezone("Australia/Brisbane");
         sql = request.extractSQL(true);
         assertEquals(
             "select distinct candidate.id from candidate "

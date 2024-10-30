@@ -14,7 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -25,7 +34,7 @@ import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
@@ -44,7 +53,9 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -58,7 +69,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {SearchPartnerRequest} from '../../../model/base';
+import {CandidateSource, CandidateSourceType, SearchPartnerRequest} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -66,7 +77,6 @@ import {enumKeysToEnumOptions, EnumOption, enumOptions, isEnumOption} from "../.
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
-import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
@@ -106,7 +116,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   countries: Country[];
   partners: Partner[];
   languages: Language[];
-  lists: SavedList[] = [];
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
   candidateOccupations: Occupation[];
@@ -211,9 +220,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
 
     const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
-    const request: SearchSavedListRequest = {owned: true, shared: true, global: true};
     forkJoin({
-      'lists': this.savedListService.search(request),
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
@@ -234,7 +241,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.educationMajors = results['majors'];
       this.candidateOccupations = results['occupations'];
       this.surveyTypes = results['surveyTypes'];
-      this.lists = results['lists'];
 
       const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
       this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
@@ -460,6 +466,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       });
   }
 
+  onExclusionListSelected(list: CandidateSource) {
+    this.exclusionListIdControl.patchValue(list?.id);
+  }
+
   showSavedSearches() {
     const showSavedSearchesModal = this.modalService.open(SearchSavedSearchesComponent, {
       centered: true,
@@ -654,6 +664,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.formWrapper.nativeElement.click();
   }
 
+  get exclusionListId(): number {
+    return this.exclusionListIdControl?.value;
+  }
+
+  get exclusionListIdControl(): AbstractControl {
+    return this.searchForm.get('exclusionListId');
+  }
+
   get searchJoinArray() {
     return this.searchForm.get('searchJoinRequests') as FormArray;
   }
@@ -770,4 +788,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     return s;
   }
+
+  public readonly CandidateSourceType = CandidateSourceType;
 }

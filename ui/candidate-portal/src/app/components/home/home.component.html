@@ -95,8 +95,7 @@
 
         <div class="text-start">
           <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.INELIGIBLE.BUTTON' | translate }}</a>
-          <a class="btn btn-secondary" [href]="lang == 'en' ? 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility'
-                                     : 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility-ar'" target="_blank">
+          <a class="btn btn-secondary" [href]="getEligibilityLink()" target="_blank">
             <fa-icon icon="external-link-alt"></fa-icon> {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}</a>
         </div>
       </ng-container>

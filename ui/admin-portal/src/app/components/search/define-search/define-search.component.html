@@ -485,7 +485,9 @@
             </ng-template>
 
             <!-- EXCLUSION LIST -->
-            <div class="col-md-4">
+            <!-- Don't display component until loading has completed - including any existing
+                 value of exclusionListId -->
+            <div *ngIf="!loading" class="col-md-4">
               <label class="form-label" for="exclusion">Exclusion list</label>
               <button class="tool-tip-button"
                       ngbTooltip="Select from lists you created, global lists (e.g. job lists) or
@@ -493,17 +495,15 @@
                       placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
-              <ng-select
-                id="exclusion"
-                [items]="lists"
-                [closeOnSelect]="true"
-                [clearable]="true"
-                [searchable]="true"
-                placeholder="Select or type..."
-                bindLabel="name"
-                bindValue="id"
-                formControlName="exclusionListId">
-              </ng-select>
+              <app-find-candidate-source id="exclusion"
+                [single] = true
+                [sourceType]="CandidateSourceType.SavedList"
+                [id] = "exclusionListId"
+                [global] = true
+                [owned] = true
+                [shared] = true
+                (selectionMade)="onExclusionListSelected($event)"
+              ></app-find-candidate-source>
             </div>
 
             <!-- PARTNERS  -->
