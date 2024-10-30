@@ -575,14 +575,26 @@
                 </button>
                 <button class="btn btn-link" type="button"
                         [class.active]="searchForm.value.listAnySearchType === 'not'"
-                        (click)="handleSearchTypeChange('listAnySearchType', 'not')">not
+                        (click)="handleSearchTypeChange('listAnySearchType', 'not')">not any
                 </button>
               </div>
               <button class="tool-tip-button"
-                      [ngbTooltip]="helpListAny"
+                      [ngbTooltip]="helpListAnyTooltip"
                       placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
+              <ng-template #helpListAnyTooltip>
+                <span class="search-tips-content">
+                  <p>
+                    Only consider candidates who are in (or not in) any of the specified lists.
+                  </p>
+                  <p>
+                    In other words a candidate must be in list1 or in list2 etc -
+                    or if 'not any' is clicked, the candidate must not appear in any of the lists.
+                  </p>
+                </span>
+              </ng-template>
+
               <app-find-candidate-source id="list-any"
                                          [single] = false
                                          [sourceType]="CandidateSourceType.SavedList"
@@ -604,14 +616,26 @@
                 </button>
                 <button class="btn btn-link" type="button"
                         [class.active]="searchForm.value.listAllSearchType === 'not'"
-                        (click)="handleSearchTypeChange('listAllSearchType', 'not')">not
+                        (click)="handleSearchTypeChange('listAllSearchType', 'not')">not all
                 </button>
               </div>
               <button class="tool-tip-button"
-                      [ngbTooltip]="helpListAll"
+                      [ngbTooltip]="helpListAllTooltip"
                       placement="" triggers="click" tooltipClass="search-tips">
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
+              <ng-template #helpListAllTooltip>
+                <span class="search-tips-content">
+                  <p>
+                    Only consider candidates who are in (or not in) all of the specified lists.
+                  </p>
+                  <p>
+                    In other words a candidate must be in list1 and in list2 etc -
+                    or if 'not all' is clicked, there must be at least one of the lists that the
+                    candidates does not appear in.
+                  </p>
+                </span>
+              </ng-template>
               <app-find-candidate-source id="list-all"
                                          [single] = false
                                          [sourceType]="CandidateSourceType.SavedList"

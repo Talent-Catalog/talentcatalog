@@ -132,9 +132,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   selectedBaseJoin;
   storedBaseJoin;
 
-  helpListAll = ""; //todo help list all
-  helpListAny = ""; //todo help list any
-
   constructor(private fb: FormBuilder,
               private countryService: CountryService,
               private languageService: LanguageService,
