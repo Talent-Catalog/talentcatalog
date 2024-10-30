@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -203,8 +202,34 @@ public interface SavedListService {
      * @return Set of candidates - never null. Empty if no candidates in request.
      * @throws NoSuchObjectException if a candidate in the request does not exist
      */
-    @NotNull Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
+    @NonNull
+    Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
         throws NoSuchObjectException;
+
+    /**
+     * Fetches the ids of candidates in the given list
+     * @param listId Id of list
+     * @return Ids of candidates contained in the list
+     */
+    @NonNull
+    Set<Long> fetchCandidateIds(long listId);
+
+    /**
+     * Fetches the ids of the union of all candidates in all the given lists
+     * @param listIds Ids of lists
+     * @return Ids of candidates contained in the lists or null if ids is null
+     */
+    @Nullable
+    Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds);
+
+    /**
+     * Fetches the ids of candidates which appear in all the given lists
+     * @param listIds Ids of lists
+     * @return Ids of candidates contained in the lists or null if ids is null
+     */
+    @Nullable
+    Set<Long> fetchIntersectionCandidateIds(@Nullable List<Long> listIds);
+
 
     /**
      * Get the SavedList with the given id.
@@ -433,5 +458,4 @@ public interface SavedListService {
      */
     @Nullable
     SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
-
 }

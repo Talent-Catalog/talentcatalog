@@ -30,11 +30,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1009,7 +1009,7 @@ public class SavedListServiceImpl implements SavedListService {
         }
     }
 
-    public @NotNull Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
+    public @NonNull Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
             throws NoSuchObjectException {
 
         Set<Candidate> candidates = new HashSet<>();
@@ -1027,6 +1027,46 @@ public class SavedListServiceImpl implements SavedListService {
         }
 
         return candidates;
+    }
+
+    @NonNull
+    @Override
+    public Set<Long> fetchCandidateIds(long listId) {
+        return savedListRepository.findUnionOfCandidates(Collections.singletonList(listId));
+    }
+
+    @Nullable
+    @Override
+    public Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds) {
+        Set<Long> candidateIds;
+        if (listIds == null) {
+            candidateIds = null;
+        } else {
+            candidateIds = savedListRepository.findUnionOfCandidates(listIds);
+        }
+        return candidateIds;
+    }
+
+    @Nullable
+    @Override
+    public Set<Long> fetchIntersectionCandidateIds(@Nullable List<Long> listIds) {
+        Set<Long> candidateIds;
+        if (listIds == null) {
+            candidateIds = null;
+        } else {
+            final Iterator<Long> iterator = listIds.iterator();
+            if (iterator.hasNext()) {
+                candidateIds = fetchCandidateIds(iterator.next());
+                while (iterator.hasNext() && !candidateIds.isEmpty()) {
+                    long listId = iterator.next();
+                    candidateIds.retainAll(fetchCandidateIds(listId));
+                }
+            } else {
+                //No lists provided. Return empty set of candidate ids.
+                candidateIds = new HashSet<>();
+            }
+        }
+        return candidateIds;
     }
 
     @Nullable
