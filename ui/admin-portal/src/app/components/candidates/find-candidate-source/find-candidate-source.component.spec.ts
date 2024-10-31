@@ -13,7 +13,8 @@ describe('FindCandidateSourceComponent', () => {
   let mockCandidateSource: MockCandidateSource = new MockCandidateSource();
 
   beforeEach(async () => {
-    const candidateSourceServiceSpy = jasmine.createSpyObj('CandidateSourceService', ['searchPaged', 'get']);
+    const candidateSourceServiceSpy = jasmine.createSpyObj('CandidateSourceService',
+      ['searchPaged', 'get','searchByIds']);
 
     await TestBed.configureTestingModule({
       declarations: [ FindCandidateSourceComponent ],
@@ -34,6 +35,7 @@ describe('FindCandidateSourceComponent', () => {
     fixture = TestBed.createComponent(FindCandidateSourceComponent);
     component = fixture.componentInstance;
     candidateSourceService.get.and.returnValue(of(mockCandidateSource));
+    candidateSourceService.searchByIds.and.returnValue(of([mockCandidateSource]));
 
     fixture.detectChanges();
   });
@@ -44,9 +46,10 @@ describe('FindCandidateSourceComponent', () => {
 
 
   it('should initialize correctly', () => {
+    component.ngOnInit();
     component.single = true;
     component.selectedIds = 1;
-    component.ngOnInit();
+    component.ngOnChanges(null);
 
     expect(component.currentSelection).toEqual(mockCandidateSource);
   });
