@@ -1170,6 +1170,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       this.doSearch(true);
     }
     this.selectedCandidates = [];
+    this.selectedCandidatesChange.emit(this.selectedCandidates);
   }
 
   /**
