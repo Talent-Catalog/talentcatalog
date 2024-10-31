@@ -955,6 +955,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
     //Switch to new selection
     this.selectedCandidates = newSelectedCandidates;
+    this.selectedCandidatesChange.emit(this.selectedCandidates);
   }
 
   private requestSaveSelection() {
@@ -1159,7 +1160,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       };
       this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
         () => {
-          this.doSearch(true);
+          // No need to do the search here as it'll be handed by the ngOnChanges trigger, if it's here it'll occur twice.
+          this.selectedCandidatesChange.emit([]);
         },
         err => {
           this.error = err;
@@ -1170,7 +1172,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       this.doSearch(true);
     }
     this.selectedCandidates = [];
-    this.selectedCandidatesChange.emit(this.selectedCandidates);
   }
 
   /**
