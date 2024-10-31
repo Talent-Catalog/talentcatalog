@@ -81,10 +81,6 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
     });
   }
 
-  isFormDirty($event: boolean) {
-    this.formDirty = $event;
-  }
-
   canExit() {
     return this.formDirty ? this.unsavedChangesCheck() : true;
   }

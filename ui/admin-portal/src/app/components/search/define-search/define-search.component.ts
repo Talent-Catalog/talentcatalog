@@ -108,6 +108,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
   savedSearchId;
+  disableSearch: boolean = false;
 
   searchRequest: SearchCandidateRequestPaged;
   sortField = 'id';
@@ -329,9 +330,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   apply() {
-    // Need to reset the form so we can trigger change detection even if the form values are the same.
-    this.searchForm.reset(this.searchForm.value);
-
     //Initialize a search request from the modified formData
     const request: SearchCandidateRequestPaged =
       this.getIdsMultiSelect(this.searchForm.value)
@@ -347,6 +345,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     //See the html of this component, for which <app-show-candidates takes
     //searchRequest as an input.
     this.searchRequest = request;
+
+    //Set variable so we can tell the show-candidates component when the search btn is clicked.
+    //This allows us to trigger the search process and disables the search button to avoid spamming.
+    this.disableSearch = true;
 
     this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
   }

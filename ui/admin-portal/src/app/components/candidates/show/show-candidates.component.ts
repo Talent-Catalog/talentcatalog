@@ -132,6 +132,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
+  @Input() disableSearchBtn: boolean;
+  @Output() disableSearchBtnChange = new EventEmitter<boolean>();
 
   loading: boolean;
   searching: boolean;
@@ -361,12 +363,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         }
       }
     }
-    if (changes.searchRequest) {
-      if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
-        if (this.searchRequest) {
-          this.confirmClearSelectionDoSearch();
-        }
-      }
+    // If the search button is clicked, disable search button is set to true to avoid spamming
+    // and allows us to trigger the search.
+    if (changes.disableSearchBtn.currentValue) {
+      this.confirmClearSelectionDoSearch();
     }
   }
 
@@ -406,13 +406,15 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       confirmationModal.result
         .then(
           (result) => {
-            this.clearSelectionAndDoSearch()
+            this.clearSelectionAndDoSearch();
           },
           (reason) => {
+            // Allow user to reapply same search, they may want to clear selections and rerun the search.
+            this.disableSearchBtnChange.emit(false);
           })
         .catch(() => { /* Isn't possible */ });
     } else {
-      this.clearSelectionAndDoSearch()
+      this.clearSelectionAndDoSearch();
     }
   }
 
@@ -438,10 +440,13 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         this.results = results;
         this.cacheResults();
         this.searching = false;
+        // Undo the disabled button - the search is complete so the user can rerun search if they like.
+        this.disableSearchBtnChange.emit(false);
       },
       error => {
         this.error = error;
         this.searching = false;
+        this.disableSearchBtnChange.emit(false);
       });
   }
 
