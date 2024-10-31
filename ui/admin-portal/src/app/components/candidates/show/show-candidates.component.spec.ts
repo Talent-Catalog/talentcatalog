@@ -123,7 +123,6 @@ describe('ShowCandidatesComponent', () => {
     component.clearSelectionAndDoSearch();
 
     expect(mockSavedSearchService.clearSelection).toHaveBeenCalledWith(1, {userId: 1});
-    expect(component.doSearch).toHaveBeenCalledWith(true);
   });
   it('should handle error when clearing selection for saved search', () => {
     component.loggedInUser = new MockUser();

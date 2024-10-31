@@ -1669,7 +1669,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   isWatching(): boolean {
     return this.candidateSource.watcherUserIds === undefined ? false :
-      this.candidateSource.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+      this.candidateSource.watcherUserIds.indexOf(this.loggedInUser?.id) >= 0;
   }
 
   doToggleWatch() {
