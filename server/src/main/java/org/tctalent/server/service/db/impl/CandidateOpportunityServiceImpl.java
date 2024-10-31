@@ -940,14 +940,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 " has been removed for the job '" + opp.getJobOpp().getName() +
                 "' with the reason " + newStage.getSalesforceStageName() + ".");
 
-        // AUTO CHAT TO PROSPECT CHAT
-        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+        //Only post to candidate if they got past the prospect stage for this job
+        if (opp.getStage() != CandidateOpportunityStage.prospect) {
+            // AUTO CHAT TO PROSPECT CHAT
+            JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
                 null, candidate);
-        // Create the chat post
-        ChatPost prospectChatPostRemoved = chatPostService.createPost(
+            // Create the chat post
+            ChatPost prospectChatPostRemoved = chatPostService.createPost(
                 autoPostRemovedFromSubList, prospectChat, userService.getSystemAdminUser());
-        // Publish chat post
-        chatPostService.publishChatPost(prospectChatPostRemoved);
+            // Publish chat post
+            chatPostService.publishChatPost(prospectChatPostRemoved);
+        }
 
         // AUTO CHAT TO RECRUITING CHAT
         JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
@@ -969,7 +972,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
 
     /**
-     * Publish posts for after a Candidate Opportunity is created (e.g. Added to submission list) and the stage is now prospect.
+     * Publish posts for after a Candidate Opportunity is created (e.g. Added to submission list)
+     * and the stage is now prospect.
      * Publish to:
      * - CandidateProspect chat
      * - JobCreatorSourcePartner chat.
@@ -983,14 +987,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         autoPostAddedToSubList.setContent("The candidate " + candidateNameAndNumber +
                 " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
 
-        // AUTO CHAT TO PROSPECT CHAT
-        JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
-                null, candidate);
-        // Create the chat post
-        ChatPost prospectChatPost = chatPostService.createPost(
+        // Note that we don't post to candidates until they get past the prospect stage
+        if (opp.getStage() != CandidateOpportunityStage.prospect) {
+            // AUTO CHAT TO PROSPECT CHAT
+            JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect,
+                null,null, candidate);
+            // Create the chat post
+            ChatPost prospectChatPost = chatPostService.createPost(
                 autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
-        //publish chat post
-        chatPostService.publishChatPost(prospectChatPost);
+            //publish chat post
+            chatPostService.publishChatPost(prospectChatPost);
+        }
 
         // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
         JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
