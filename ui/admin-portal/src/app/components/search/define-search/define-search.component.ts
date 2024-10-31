@@ -108,7 +108,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
   savedSearchId;
-  disableSearch: boolean = false;
 
   searchRequest: SearchCandidateRequestPaged;
   sortField = 'id';
@@ -130,6 +129,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
   genderOptions: EnumOption[] = enumOptions(Gender);
   selectedCandidate: Candidate;
+  selectedCandidates: Candidate[];
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
   loggedInUser: User;
@@ -329,6 +329,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  checkSelectionsAndApply() {
+   // If there are candidates selected, run a check before applying search.
+    if (this.selectedCandidates.length > 0) {
+      this.confirmClearSelectionAndApply();
+    } else {
+      this.apply();
+    }
+  }
+
   apply() {
     //Initialize a search request from the modified formData
     const request: SearchCandidateRequestPaged =
@@ -345,10 +354,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     //See the html of this component, for which <app-show-candidates takes
     //searchRequest as an input.
     this.searchRequest = request;
-
-    //Set variable so we can tell the show-candidates component when the search btn is clicked.
-    //This allows us to trigger the search process and disables the search button to avoid spamming.
-    this.disableSearch = true;
 
     this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
   }
@@ -419,23 +424,18 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.otherLanguagePicker.form.reset();
   }
 
-  clearSearch() {
-    this.confirmClearSelectionModal();
-  }
-
-  confirmClearSelectionModal() {
+  confirmClearSelectionAndApply() {
     const clearSelectionModal = this.modalService.open(ConfirmationComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    clearSelectionModal.componentInstance.message = "Clearing the search will also clear any candidate's selected. " +
-      "If you want to keep the selections, save selections to a list before clearing search."
+    clearSelectionModal.componentInstance.message = "Changing the search filters will clear any candidate's selected. " +
+      "If you want to keep the selections, save selections to a list before searching again."
 
-    clearSelectionModal.result
+    return clearSelectionModal.result
       .then((confirmation) => {
         if (confirmation == true) {
-          this.clearForm();
           this.clearSelection();
         }
       })
@@ -449,6 +449,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     };
     this.savedSearchService.clearSelection(this.savedSearch.id, request).subscribe(
       () => {
+        this.selectedCandidates = [];
         this.apply();
       },
       err => {

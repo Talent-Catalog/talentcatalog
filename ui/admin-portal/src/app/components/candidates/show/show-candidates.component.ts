@@ -132,8 +132,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
-  @Input() disableSearchBtn: boolean;
-  @Output() disableSearchBtnChange = new EventEmitter<boolean>();
+  @Input() selectedCandidates: Candidate[];
+  @Output() selectedCandidatesChange = new EventEmitter<Candidate[]>();
 
   loading: boolean;
   searching: boolean;
@@ -167,7 +167,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   statuses: string[];
 
   currentCandidate: Candidate;
-  private selectedCandidates: Candidate[];
   loggedInUser: User;
   targetListName: string;
   targetListId: number;
@@ -233,6 +232,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
        this.savedListCandidateService.getSelectionListCandidates(this.candidateSource.id).subscribe(
         (result) => {
           this.selectedCandidates = result;
+          this.selectedCandidatesChange.emit(result);
         },
         (error) => {
           this.error = error;
@@ -363,10 +363,17 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         }
       }
     }
-    // If the search button is clicked, disable search button is set to true to avoid spamming
-    // and allows us to trigger the search.
-    if (changes.disableSearchBtn.currentValue) {
-      this.confirmClearSelectionDoSearch();
+    // If there is a search request associated (saved search view) and the saved search request changes, update the search.
+    if (changes.searchRequest) {
+      if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
+        if (this.searchRequest) {
+          this.updatedSearch();
+        }
+      }
+    }
+    // If the selected candidates is cleared via the parent define search component, trigger a refresh to update the selects.
+    if (changes.selectedCandidates && changes.selectedCandidates.currentValue.length == 0 && !changes.selectedCandidates.firstChange) {
+      this.doSearch(true);
     }
   }
 
@@ -393,31 +400,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
   }
 
-  private confirmClearSelectionDoSearch() {
-    if (this.numberSelections > 0) {
-      const confirmationModal = this.modalService.open(ConfirmationComponent, {
-        centered: true,
-        backdrop: 'static'
-      })
-
-      confirmationModal.componentInstance.message = "There are candidates selected in this search which will " +
-        "be cleared, to keep save selections to a list. Do you wish to proceed and clear selections?";
-
-      confirmationModal.result
-        .then(
-          (result) => {
-            this.clearSelectionAndDoSearch();
-          },
-          (reason) => {
-            // Allow user to reapply same search, they may want to clear selections and rerun the search.
-            this.disableSearchBtnChange.emit(false);
-          })
-        .catch(() => { /* Isn't possible */ });
-    } else {
-      this.clearSelectionAndDoSearch();
-    }
-  }
-
   private updatedSearch() {
     this.results = null;
     this.error = null;
@@ -440,13 +422,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         this.results = results;
         this.cacheResults();
         this.searching = false;
-        // Undo the disabled button - the search is complete so the user can rerun search if they like.
-        this.disableSearchBtnChange.emit(false);
       },
       error => {
         this.error = error;
         this.searching = false;
-        this.disableSearchBtnChange.emit(false);
       });
   }
 
@@ -855,6 +834,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     } else {
       this.selectedCandidates = this.selectedCandidates.filter(c => c.id !== candidate.id);
     }
+    this.selectedCandidatesChange.emit(this.selectedCandidates);
   }
 
   private doSavedSearchSelection(candidate: Candidate, selected: boolean) {
