@@ -6,7 +6,7 @@ import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {FormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-describe('FindListComponent', () => {
+describe('FindCandidateSourceComponent', () => {
   let component: FindCandidateSourceComponent;
   let fixture: ComponentFixture<FindCandidateSourceComponent>;
   let candidateSourceService: jasmine.SpyObj<CandidateSourceService>;
