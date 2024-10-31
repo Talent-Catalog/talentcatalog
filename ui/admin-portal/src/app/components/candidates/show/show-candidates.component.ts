@@ -663,6 +663,15 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   modifyExportColumns() {
+    const limit = 100;
+    if (this.results.totalElements > limit) {
+      const publishError: string =
+        "Published lists are currently capped at " + limit + " candidates — please " +
+        "contact a TC admin if if this limit will negatively impact your work."
+      this.error = publishError
+      throw new Error(publishError)
+    }
+
     const modal = this.modalService.open(PublishedDocColumnSelectorComponent, {size: "lg", scrollable: true});
 
     modal.componentInstance.availableColumns = this.publishedDocColumnService.getColumnConfigFromAllColumns();
