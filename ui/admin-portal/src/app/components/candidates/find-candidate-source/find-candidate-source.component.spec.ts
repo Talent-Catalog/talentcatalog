@@ -45,7 +45,7 @@ describe('FindListComponent', () => {
 
   it('should initialize correctly', () => {
     component.single = true;
-    component.id = 1;
+    component.selectedIds = 1;
     component.ngOnInit();
 
     expect(component.currentSelection).toEqual(mockCandidateSource);
