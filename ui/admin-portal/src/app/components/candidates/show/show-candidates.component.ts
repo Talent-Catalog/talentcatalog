@@ -371,7 +371,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       }
     }
     // If the selected candidates is cleared via the parent define search component, trigger a refresh to update the selects.
-    if (changes.selectedCandidates && changes.selectedCandidates.currentValue.length == 0 && !changes.selectedCandidates.firstChange) {
+    if (changes.selectedCandidates && changes.selectedCandidates.currentValue?.length == 0 && !changes.selectedCandidates.firstChange) {
       this.doSearch(true);
     }
   }
