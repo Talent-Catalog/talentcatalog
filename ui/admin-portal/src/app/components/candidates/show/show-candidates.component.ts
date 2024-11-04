@@ -35,14 +35,13 @@ import {
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
-import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
+import {SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
 import {
   ClearSelectionRequest,
   getCandidateSourceExternalHref,
-  getCandidateSourceNavigation,
   getCandidateSourceStatsNavigation,
   getCandidateSourceType,
   getSavedSearchBreadcrumb,
@@ -998,38 +997,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
       const savedSearch = this.candidateSource;
 
-      if (!savedSearch.defaultSearch) {
-
-        //If the search is already saved, just save the selection
-        this.saveSavedSearchSelection(savedSearch, targetListSelection);
-
-      } else {
-
-        //If default search, auto save the search, then save the selection
-
-        const ssCreateRequest: CreateFromDefaultSavedSearchRequest = {
-          savedListId: targetListSelection.savedListId,
-          name: targetListSelection.newListName,
-          jobId: targetListSelection.jobId
-        };
-        this.savedSearchService.createFromDefaultSearch(ssCreateRequest).subscribe(
-          (newSavedSearch) => {
-
-            this.saveSavedSearchSelection(newSavedSearch, targetListSelection);
-
-            //Navigate away from the default saved search to the newly created
-            //search.
-            const urlCommands = getCandidateSourceNavigation(newSavedSearch);
-            this.savingSelection = false;
-            this.router.navigate(urlCommands);
-          },
-          (error) => {
-            this.error = error;
-
-            //Even if auto saved search failed, we still want to save the selection
-            this.saveSavedSearchSelection(savedSearch, targetListSelection);
-          });
-      }
+      this.saveSavedSearchSelection(savedSearch, targetListSelection);
 
     } else {
       // LIST
