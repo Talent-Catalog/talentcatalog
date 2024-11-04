@@ -19,14 +19,24 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  firebase: {
+    projectId: "fortesttccatalog",
+    appId: "1:47912608172:web:a2e5df8650c429ada4da09",
+    storageBucket: "fortesttccatalog.appspot.com",
+    apiKey: "AIzaSyBEaYGOPYET2gcLWjiCTgnTCpQp3MYPr24",
+    authDomain: "fortesttccatalog.firebaseapp.com",
+    messagingSenderId: "47912608172",
+    vapidKey:
+      "BJJ8PlNzhC4ATAahI1-jNVOOrkpmhYJ4AWhXpsNTU4QA_l6sbTOamPPVgIiYPtDWvY8bHRYuxoKSqyTiB58DxyY",
+  },
   production: false,
-  host: 'localhost:8080',
-  publishUrl: 'http://localhost:8080/published',
-  chatApiUrl: 'http://localhost:8080/api/admin',
-  apiUrl: 'http://localhost:8080/api/portal',
-  systemApiUrl: 'http://localhost:8080/api/system',
-  s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org',
-  googleAnalyticsId: 'G-K9ML1Y40B4' // for testing
+  host: "localhost:8080",
+  publishUrl: "http://localhost:8080/published",
+  chatApiUrl: "http://localhost:8080/api/admin",
+  apiUrl: "http://localhost:8080/api/portal",
+  systemApiUrl: "http://localhost:8080/api/system",
+  s3BucketUrl: "https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org",
+  googleAnalyticsId: "G-K9ML1Y40B4", // for testing
 };
 
 /*

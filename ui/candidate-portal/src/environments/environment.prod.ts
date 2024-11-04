@@ -19,6 +19,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  firebase: {
+    projectId: 'fortesttccatalog',
+    appId: '1:47912608172:web:a2e5df8650c429ada4da09',
+    storageBucket: 'fortesttccatalog.appspot.com',
+    apiKey: 'AIzaSyBEaYGOPYET2gcLWjiCTgnTCpQp3MYPr24',
+    authDomain: 'fortesttccatalog.firebaseapp.com',
+    messagingSenderId: '47912608172',
+    vapidKey: 'BJJ8PlNzhC4ATAahI1-jNVOOrkpmhYJ4AWhXpsNTU4QA_l6sbTOamPPVgIiYPtDWvY8bHRYuxoKSqyTiB58DxyY'
+  },
   production: true,
   host: document.location.host,
   publishUrl: document.location.origin + '/published',
