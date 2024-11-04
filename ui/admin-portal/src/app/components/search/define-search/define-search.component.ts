@@ -424,6 +424,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.otherLanguagePicker.form.reset();
   }
 
+  newSearch() {
+    this.router.navigate(['search']);
+  }
+
   confirmClearSelectionAndApply() {
     const clearSelectionModal = this.modalService.open(ConfirmationComponent, {
       centered: true,
