@@ -464,7 +464,7 @@ public class CandidateServiceImpl implements CandidateService {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
+        boolean searchForNumber = !s.isEmpty() && Character.isDigit(s.charAt(0));
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
 
         Page<Candidate> candidates;

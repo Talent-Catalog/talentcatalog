@@ -156,7 +156,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final CandidateReviewStatusService candidateReviewStatusService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
@@ -353,7 +352,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * Added @Transactional to this method as it is calling another method (updateSavedSearch) which requires
      * the @Transactional annotation.
      * Transaction needs to wrap the database modifying operation (searchJoinRepository.deleteBySearchId(id)) or
-     * else an exception will be thrown. See: https://www.baeldung.com/jpa-transaction-required-exception
+     * else an exception will be thrown. See: <a href="https://www.baeldung.com/jpa-transaction-required-exception">
+     * https://www.baeldung.com/jpa-transaction-required-exception</a>
      */
     @Override
     @Transactional
@@ -1072,7 +1072,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         //Exclude given candidates
-        if (excludedCandidates != null && excludedCandidates.size() > 0) {
+        if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
@@ -1090,7 +1090,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final Occupation occupation = occupationService.getOccupation(id);
                 reqOccupations.add(occupation.getName());
             }
-            if (reqOccupations.size() > 0) {
+            if (!reqOccupations.isEmpty()) {
                 BoolQueryBuilder nestedQueryBuilder = new BoolQueryBuilder();
                 nestedQueryBuilder = addElasticTermFilter(
                     nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
@@ -1121,7 +1121,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         }
 
-        if (reqCountries.size() > 0) {
+        if (!reqCountries.isEmpty()) {
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
                 request.getCountrySearchType(),
                 "country.keyword", reqCountries);
@@ -1469,7 +1469,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
             if (selectionList != null) {
                 Set<Candidate> selectedCandidates = selectionList.getCandidates();
-                if (selectedCandidates.size() > 0) {
+                if (!selectedCandidates.isEmpty()) {
                     for (Candidate candidate : candidates) {
                         if (selectedCandidates.contains(candidate)) {
                             candidate.setSelected(true);
@@ -1710,7 +1710,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
-                && user.getSourceCountries().size() > 0
+                && !user.getSourceCountries().isEmpty()
                 && search.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)
