@@ -37,9 +37,12 @@
 <!--        <h3 class="m-0">Candidate Search</h3>-->
         <div class="d-flex mt-4">
           <div>
-            <button type="button" class="btn btn-warning"
+            <button [hidden]="!savedSearch?.defaultSearch" type="button" class="btn btn-warning"
                     [disabled]="loading"
                     (click)="clearForm()">Clear Search</button>
+              <button [hidden]="savedSearch?.defaultSearch" type="button" class="btn btn-success"
+                      [disabled]="loading"
+                      (click)="newSearch()">New Search</button>
           </div>
           <div>
             <button type="button" class="ms-2 btn btn-secondary"

@@ -422,6 +422,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
     this.otherLanguagePicker.form.reset();
+    this.searchForm.markAsDirty();
+  }
+
+  newSearch() {
+    this.router.navigate(['search']);
   }
 
   confirmClearSelectionAndApply() {
