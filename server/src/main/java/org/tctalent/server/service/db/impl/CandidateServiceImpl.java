@@ -2933,6 +2933,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    @Transactional
     @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
@@ -2944,6 +2945,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    @Transactional
     @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
@@ -3011,8 +3013,8 @@ public class CandidateServiceImpl implements CandidateService {
             Instant start = Instant.now();
             List<Candidate> candidateList = candidatePage.getContent();
             upsertCandidatesToSf(candidateList);
-            // Clears the persistence context of managed entities that would otherwise pile up.
-            entityManager.clear();
+            entityManager.flush(); // Flush changes to DB before clearing in-memory persistence context
+            entityManager.clear(); // Clear the persistence context of managed entities that would otherwise pile up
             candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
                 statuses, candidatePage.nextPageable());
             pagesProcessed++;
