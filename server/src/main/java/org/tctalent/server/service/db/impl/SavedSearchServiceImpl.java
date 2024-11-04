@@ -146,6 +146,7 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.email.EmailNotificationLink;
+import org.tctalent.server.util.PersistenceContextHelper;
 
 @Service
 @RequiredArgsConstructor
@@ -180,7 +181,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationMajorRepository educationMajorRepository;
     private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
-    private final EntityManager entityManager;
+    private final PersistenceContextHelper persistenceContextHelper;
     private final AuthService authService;
 
     /**
@@ -343,8 +344,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 candidateIds.add(candidate.getId());
             }
 
-            //Clear persistence context to free up memory
-            entityManager.clear();
+            //Flush and clear persistence context to free up memory
+            persistenceContextHelper.flushAndClearEntityManager();
         } while (pageOfCandidates.hasNext());
         return candidateIds;
     }
@@ -704,7 +705,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
-                entityManager.clear();
+                persistenceContextHelper.flushAndClearEntityManager();
                 Page<Candidate> result = doSearchCandidates(request);
                 setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {
