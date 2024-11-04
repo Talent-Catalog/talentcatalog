@@ -132,6 +132,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
+  @Input() selectedCandidates: Candidate[];
+  @Output() selectedCandidatesChange = new EventEmitter<Candidate[]>();
 
   loading: boolean;
   searching: boolean;
@@ -165,7 +167,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   statuses: string[];
 
   currentCandidate: Candidate;
-  private selectedCandidates: Candidate[];
   loggedInUser: User;
   targetListName: string;
   targetListId: number;
@@ -227,7 +228,19 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
     this.setCurrentCandidate(null);
     this.loggedInUser = this.authenticationService.getLoggedInUser();
-    this.selectedCandidates = [];
+    if (this.isSavedSearch()) {
+       this.savedListCandidateService.getSelectionListCandidates(this.candidateSource.id).subscribe(
+        (result) => {
+          this.selectedCandidates = result;
+          this.selectedCandidatesChange.emit(result);
+        },
+        (error) => {
+          this.error = error;
+        }
+      )
+    } else {
+      this.selectedCandidates = [];
+    }
 
     this.statuses = [
       ReviewStatus[ReviewStatus.rejected],
@@ -292,6 +305,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return ReviewStatus;
   }
 
+  get numberSelections() {
+    return this.selectedCandidates.length;
+  }
+
   subscribeToFilterChanges(): void {
     this.searchForm.valueChanges
       .pipe(
@@ -346,12 +363,17 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         }
       }
     }
+    // If there is a search request associated (saved search view) and the saved search request changes, update the search.
     if (changes.searchRequest) {
       if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
         if (this.searchRequest) {
           this.updatedSearch();
         }
       }
+    }
+    // If the selected candidates is cleared via the parent define search component, trigger a refresh to update the selects.
+    if (changes.selectedCandidates && changes.selectedCandidates.currentValue.length == 0 && !changes.selectedCandidates.firstChange) {
+      this.doSearch(true);
     }
   }
 
@@ -369,15 +391,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
    * True if any candidates are currently selected.
    */
   isSelection(): boolean {
-    let isSelection: boolean;
-    if (isSavedSearch(this.candidateSource)) {
-      //Saved searches handle selections differently - they need a server request to check
-      //selections - so we need to manage that a bit more efficiently.
-      isSelection = true;
-    } else {
-      isSelection = this.selectedCandidates != null && this.selectedCandidates.length > 0;
-    }
-    return isSelection;
+    return this.selectedCandidates != null && this.selectedCandidates.length > 0;
   }
 
   ngOnDestroy(): void {
@@ -813,14 +827,14 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         this.savedSearchSelectionChange = selected;
         this.doSavedSearchSelection(candidate, selected);
       }
-    } else {
-      //For lists maintain local candidate selections
-      if (selected) {
-        this.selectedCandidates.push(candidate);
-      } else {
-        this.selectedCandidates = this.selectedCandidates.filter(c => c.id !== candidate.id);
-      }
     }
+    //Maintain local candidate selections
+    if (selected) {
+      this.selectedCandidates.push(candidate);
+    } else {
+      this.selectedCandidates = this.selectedCandidates.filter(c => c.id !== candidate.id);
+    }
+    this.selectedCandidatesChange.emit(this.selectedCandidates);
   }
 
   private doSavedSearchSelection(candidate: Candidate, selected: boolean) {
@@ -941,6 +955,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
     //Switch to new selection
     this.selectedCandidates = newSelectedCandidates;
+    this.selectedCandidatesChange.emit(this.selectedCandidates);
   }
 
   private requestSaveSelection() {
@@ -1138,14 +1153,15 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       })
   }
 
-  clearSelection() {
+  clearSelectionAndDoSearch() {
     if (isSavedSearch(this.candidateSource)) {
       const request: ClearSelectionRequest = {
         userId: this.loggedInUser.id,
       };
       this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
         () => {
-          this.doSearch(true);
+          // No need to do the search here as it'll be handed by the ngOnChanges trigger, if it's here it'll occur twice.
+          this.selectedCandidatesChange.emit([]);
         },
         err => {
           this.error = err;
@@ -1653,7 +1669,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   isWatching(): boolean {
     return this.candidateSource.watcherUserIds === undefined ? false :
-      this.candidateSource.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+      this.candidateSource.watcherUserIds.indexOf(this.loggedInUser?.id) >= 0;
   }
 
   doToggleWatch() {

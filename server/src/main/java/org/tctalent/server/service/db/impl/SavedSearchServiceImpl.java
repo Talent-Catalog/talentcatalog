@@ -363,27 +363,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
-            //Update default search
-            SavedSearch defaultSavedSearch =
-                getDefaultSavedSearch();
-            Long savedSearchId = defaultSavedSearch.getId();
-            UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
-            updateRequest.setSearchCandidateRequest(request);
-            //Set other fields - no changes there
-            updateRequest.setName(defaultSavedSearch.getName());
-            updateRequest.setDefaultSearch(defaultSavedSearch.getDefaultSearch());
-            updateRequest.setFixed(defaultSavedSearch.getFixed());
-            updateRequest.setReviewable(defaultSavedSearch.getReviewable());
-            updateRequest.setSavedSearchType(defaultSavedSearch.getSavedSearchType());
-            updateRequest.setSavedSearchSubtype(defaultSavedSearch.getSavedSearchSubtype());
-            //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
-            updateSavedSearch(savedSearchId, updateRequest);
+            SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
+            // If searching a default search, update the default search with every search (aka Autosave).
+            // Else it is a saved search and those are updated upon 'Update Search' button only.
+            if (savedSearch.getDefaultSearch()) {
+                UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+                updateRequest.setSearchCandidateRequest(request);
+                //Set other fields - no changes there
+                updateRequest.setName(savedSearch.getName());
+                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setFixed(savedSearch.getFixed());
+                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
+                updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
+                //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
+                updateSavedSearch(savedSearch.getId(), updateRequest);
+            }
 
             //Do the search
             candidates = doSearchCandidates(request);
 
             //Add in any selections
-            markUserSelectedCandidates(savedSearchId, candidates);
+            markUserSelectedCandidates(savedSearch.getId(), candidates);
         }
 
         return candidates;

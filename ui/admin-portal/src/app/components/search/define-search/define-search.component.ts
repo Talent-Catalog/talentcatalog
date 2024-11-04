@@ -18,9 +18,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
@@ -53,9 +55,7 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {
-  DateRangePickerComponent
-} from '../../util/form/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -100,6 +100,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() pageNumber: number;
   @Input() pageSize: number;
 
+  @Output() onFormChange = new EventEmitter<boolean>();
+
   error: any;
   loading: boolean;
   searchForm: FormGroup;
@@ -127,6 +129,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
   genderOptions: EnumOption[] = enumOptions(Gender);
   selectedCandidate: Candidate;
+  selectedCandidates: Candidate[];
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
   loggedInUser: User;
@@ -259,6 +262,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.loading = false;
       this.error = error;
     });
+    // Listen to form changes (unsaved changes to the search) and emit to candidate search component where the unsaved
+    // changes guard is implemented. It will throw confirmation modal if navigating away with unsaved search fields.
+    this.searchForm.valueChanges.subscribe(() => {
+      this.onFormChange.emit(this.searchForm.dirty);
+    });
   }
 
   // Stops Keyword Search tooltip from opening on keydown.enter in inputs
@@ -318,6 +326,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       return this.searchForm.getError('error');
     } else {
       return null;
+    }
+  }
+
+  checkSelectionsAndApply() {
+   // If there are candidates selected, run a check before applying search.
+    if (this.selectedCandidates.length > 0) {
+      this.confirmClearSelectionAndApply();
+    } else {
+      this.apply();
     }
   }
 
@@ -389,6 +406,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   clearForm() {
     this.searchForm.reset();
+    // We need to add back the saved search id because we are always working with a saved search object,
+    // either it's a default saved search or saved search.
+    this.searchForm.controls['savedSearchId'].patchValue(this.savedSearchId);
+
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
 
@@ -403,23 +424,19 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.otherLanguagePicker.form.reset();
   }
 
-  clearSearch() {
-    this.confirmClearSelectionModal();
-  }
-
-  confirmClearSelectionModal() {
+  confirmClearSelectionAndApply() {
     const clearSelectionModal = this.modalService.open(ConfirmationComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    clearSelectionModal.componentInstance.message = "Clearing the search will also clear any candidate's selected. " +
-      "If you want to keep the selections, save selections to a list before clearing search."
+    clearSelectionModal.componentInstance.title = "Your selections will be cleared";
+    clearSelectionModal.componentInstance.message = "Changing the search filters will clear any candidate's selected. " +
+      "If you would like to keep your selections please save selections to a list before searching. Or to proceed without saving selections just click OK.";
 
-    clearSelectionModal.result
+    return clearSelectionModal.result
       .then((confirmation) => {
         if (confirmation == true) {
-          this.clearForm();
           this.clearSelection();
         }
       })
@@ -433,6 +450,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     };
     this.savedSearchService.clearSelection(this.savedSearch.id, request).subscribe(
       () => {
+        this.selectedCandidates = [];
         this.apply();
       },
       err => {
@@ -512,6 +530,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
           const urlCommands = getCandidateSourceNavigation(savedSearch);
           this.router.navigate(urlCommands);
         }
+        // After updating we want to reset the form so it's no longer dirty, this will allow users to bypass the
+        // unsaved changes guard.
+        this.searchForm.reset(this.searchForm.value)
       })
       .catch(() => {
       });
