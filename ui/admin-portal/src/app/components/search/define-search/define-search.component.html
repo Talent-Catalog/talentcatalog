@@ -37,9 +37,12 @@
 <!--        <h3 class="m-0">Candidate Search</h3>-->
         <div class="d-flex mt-4">
           <div>
-            <button type="button" class="btn btn-warning"
+            <button [hidden]="!savedSearch?.defaultSearch" type="button" class="btn btn-warning"
                     [disabled]="loading"
-                    (click)="clearSearch()">Clear Search</button>
+                    (click)="clearForm()">Clear Search</button>
+              <button [hidden]="savedSearch?.defaultSearch" type="button" class="btn btn-success"
+                      [disabled]="loading"
+                      (click)="newSearch()">New Search</button>
           </div>
           <div>
             <button type="button" class="ms-2 btn btn-secondary"
@@ -71,7 +74,7 @@
         {{getError()}}
       </div>
 
-      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
+      <form class="filter-form side-panel-color" [formGroup]="searchForm" (ngSubmit)="checkSelectionsAndApply()" #formWrapper>
         <ng-template #keywordSearchTip>
           <span class="search-tips-content">
             Search candidate CVs using these tips to create powerful queries:
@@ -665,7 +668,7 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col text-center">
-              <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || searchForm.invalid"><i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search</button>
+              <button type="submit" class="btn btn-success btn-lg" [disabled]="loading || searchForm.invalid || searchForm.pristine"><i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search</button>
             </div>
           </div>
         </div>
@@ -684,6 +687,7 @@
                        [manageScreenSplits]="false"
                        [showBreadcrumb]="false"
                        (candidateSelection)="selectedCandidate = $event"
+                       [(selectedCandidates)]="selectedCandidates"
                        (editSource)="updateSavedSearchModal()"
   >
     <!--Toggle search details-->

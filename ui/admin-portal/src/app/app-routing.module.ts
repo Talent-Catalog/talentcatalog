@@ -44,6 +44,7 @@ import {ResetPasswordComponent} from "./components/account/reset-password/reset-
 import {
   UserChangePasswordComponent
 } from "./components/account/user-change-password/user-change-password.component";
+import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
 
 const routes: Routes = [
   {
@@ -83,7 +84,8 @@ const routes: Routes = [
           {
             path: ':id',
             component: CandidatesSearchComponent,
-            data: {title: 'TC Search'}
+            canDeactivate: [UnsavedChangesGuard],
+            data: {title: 'TC Search'},
           },
         ]
       },

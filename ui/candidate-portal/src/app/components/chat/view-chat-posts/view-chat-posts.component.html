@@ -11,15 +11,27 @@
       {{'CHAT.MARK-AS-READ' | translate}} <i class="fa-solid fa-envelope-circle-check ms-1"></i>
     </button>
   </div>
-  <div id="posts" *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column">
-    <div *ngFor="let post of posts"
-         (click)="selectCurrent(post)"
-         [ngClass]="{'current': currentPost?.id == post.id}">
-      <app-view-post
-        [post]="post">
-      </app-view-post>
+  <div id="posts">
+  <div *ngFor="let group of groupedMessages" >
+    <div class="date-divider" >
+      <div class="divider-line"></div>
+      <span class="divider-text">{{ group.date }}</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <div *ngIf="posts?.length > 0; else noPosts" class="d-flex flex-column" >
+      <div *ngFor="let post of group.messages"
+           (click)="selectCurrent(post)"
+           [ngClass]="{'current': currentPost?.id == post.id}">
+
+        <app-view-post
+          [post]="post">
+        </app-view-post>
+      </div>
+    </div>
     </div>
   </div>
+
   <ng-template #noPosts>
     <p class="py-lg-5 text-muted py-3 fw-light text-center fs-6">{{'CHAT.NO-POSTS' | translate}}</p>
   </ng-template>
@@ -28,5 +40,4 @@
       *ngIf="!readOnly"
       [chat]="chat">
     </app-create-update-post>
-  </div>
 </div>

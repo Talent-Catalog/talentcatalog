@@ -104,6 +104,7 @@ import org.tctalent.server.request.PagedSearchRequest;
 public class SearchCandidateRequest extends PagedSearchRequest {
 
     private String simpleQueryString;
+    @NotNull
     private Long savedSearchId;
     private String keyword;
     private List<CandidateStatus> statuses;

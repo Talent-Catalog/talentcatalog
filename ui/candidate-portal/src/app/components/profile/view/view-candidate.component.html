@@ -54,7 +54,7 @@
       </ng-container>
 
       <!-- CHAT with source partner -->
-      <ng-container *ngIf="sourceChatHasPosts" ngbNavItem="Chat">
+      <ng-container *ngIf="canSeeChatTab" ngbNavItem="Chat">
         <a ngbNavLink>
           <span class="me-2 d-none d-md-inline">{{ 'CHAT.HEADER' | translate }}</span>
           <fa-icon icon="message" class="me-2"></fa-icon>

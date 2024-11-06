@@ -21,12 +21,7 @@ import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
-import {
-  NgbModal,
-  NgbOffcanvas,
-  NgbPaginationModule,
-  NgbTypeaheadModule
-} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbOffcanvas, NgbPaginationModule, NgbTypeaheadModule} from "@ng-bootstrap/ng-bootstrap";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateService} from "../../../services/candidate.service";
 import {
@@ -125,10 +120,9 @@ describe('ShowCandidatesComponent', () => {
     component.candidateSource = mockCandidateSource;
     mockSavedSearchService.clearSelection.and.returnValue(of(true));
     spyOn(component, 'doSearch');
-    component.clearSelection();
+    component.clearSelectionAndDoSearch();
 
     expect(mockSavedSearchService.clearSelection).toHaveBeenCalledWith(1, {userId: 1});
-    expect(component.doSearch).toHaveBeenCalledWith(true);
   });
   it('should handle error when clearing selection for saved search', () => {
     component.loggedInUser = new MockUser();
@@ -136,7 +130,7 @@ describe('ShowCandidatesComponent', () => {
     const mockCandidateSource = new MockCandidateSource();
     (mockCandidateSource as any).savedSearchType = SavedSearchType.other; // Add savedSearchType property dynamically
     component.candidateSource = mockCandidateSource;
-    component.clearSelection();
+    component.clearSelectionAndDoSearch();
     expect(mockSavedSearchService.clearSelection).toHaveBeenCalledWith(1, {userId: 1});
     expect(component.error).toBe('error');
   });

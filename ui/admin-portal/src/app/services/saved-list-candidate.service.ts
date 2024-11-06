@@ -18,11 +18,8 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {
-  PublishListRequest,
-  SavedList,
-  UpdateExplicitSavedListContentsRequest
-} from "../model/saved-list";
+import {SavedList, UpdateExplicitSavedListContentsRequest} from "../model/saved-list";
+import {Candidate} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -52,5 +49,9 @@ export class SavedListCandidateService {
 
   saveSelection(id: number, request: UpdateExplicitSavedListContentsRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/save-selection`, request);
+  }
+
+  getSelectionListCandidates(id: number): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(`${this.apiUrl}/get-selection-list-candidates/${id}`);
   }
 }
