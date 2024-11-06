@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
@@ -54,6 +55,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -104,6 +106,9 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.util.background.BackProcessor;
+import org.tctalent.server.util.background.BackRunner;
+import org.tctalent.server.util.background.IdContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -113,9 +118,9 @@ import org.tctalent.server.util.textExtract.TextExtractHelper;
 @RequestMapping("/api/admin/system")
 @Slf4j
 public class SystemAdminApi {
+    final static String DATE_FORMAT = "dd-MM-yyyy";
 
     private final AuthService authService;
-    final static String DATE_FORMAT = "dd-MM-yyyy";
 
     private final DataSharingService dataSharingService;
 
@@ -148,6 +153,7 @@ public class SystemAdminApi {
     private final Map<Integer, Integer> countryForGeneralCountry;
 
     private final GoogleDriveConfig googleDriveConfig;
+    private final TaskScheduler taskScheduler;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -190,7 +196,8 @@ public class SystemAdminApi {
             SavedListRepository savedListRepository,
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig, CacheService cacheService) {
+            GoogleDriveConfig googleDriveConfig, CacheService cacheService,
+        TaskScheduler taskScheduler) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -217,7 +224,32 @@ public class SystemAdminApi {
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
+        this.taskScheduler = taskScheduler;
         countryForGeneralCountry = getExtraCountryMappings();
+    }
+
+    /**
+     * todo The intention is that this can be used to implement a operations which do not
+     * max out the TC's CPU.
+     * @see BackRunner
+     */
+    @GetMapping("export_search/{id}")
+    public void exportSearch() {
+        BackRunner<IdContext> backRunner = new BackRunner<>();
+        BackProcessor<IdContext> backProcessor = new BackProcessor<>() {
+            @Override
+            public boolean process(IdContext ctx) {
+                long startId = ctx.getLastProcessedId() == null ? 0 : ctx.getLastProcessedId()+1;
+                System.out.println("Processing " + ctx.getNumToProcess() + " ids starting from "
+                    + (startId == 0 ? "beginning " : startId) );
+                long lastProcessed = startId + ctx.getNumToProcess() - 1;
+                ctx.setLastProcessedId(lastProcessed);
+                return lastProcessed+1 >= 50;
+            }
+        };
+        ScheduledFuture<?> scheduledFuture =
+            backRunner.start(taskScheduler, backProcessor, new IdContext(0L, 10),
+                20);
     }
 
     @GetMapping("fix_null_case_sfids")
