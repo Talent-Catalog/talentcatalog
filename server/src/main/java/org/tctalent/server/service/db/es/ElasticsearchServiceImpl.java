@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.es;
 
 import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -275,14 +276,14 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   }
 
   @NotNull
-  private BoolQueryBuilder addElasticTermFilter(
+  public BoolQueryBuilder addElasticTermFilter(
       BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
-      List<Object> values) {
+      Collection<Object> values) {
     final int nValues = values.size();
     if (nValues > 0) {
       QueryBuilder queryBuilder;
       if (nValues == 1) {
-        queryBuilder = QueryBuilders.termQuery(field, values.get(0));
+        queryBuilder = QueryBuilders.termQuery(field, values.iterator().next());
       } else {
         queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
       }
