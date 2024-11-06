@@ -40,7 +40,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -133,7 +132,6 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateReviewStatusService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -147,6 +145,7 @@ import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.email.EmailNotificationLink;
 import org.tctalent.server.service.db.es.ElasticsearchService;
+import org.tctalent.server.util.PersistenceContextHelper;
 
 @Service
 @RequiredArgsConstructor
@@ -157,7 +156,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final CandidateReviewStatusService candidateReviewStatusService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
@@ -182,7 +180,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationMajorRepository educationMajorRepository;
     private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
-    private final EntityManager entityManager;
+    private final PersistenceContextHelper persistenceContextHelper;
     private final AuthService authService;
 
     /**
@@ -350,8 +348,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 candidateIds.add(candidate.getId());
             }
 
-            //Clear persistence context to free up memory
-            entityManager.clear();
+            //Flush and clear persistence context to free up memory
+            persistenceContextHelper.flushAndClearEntityManager();
         } while (pageOfCandidates.hasNext());
         return candidateIds;
     }
@@ -360,7 +358,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * Added @Transactional to this method as it is calling another method (updateSavedSearch) which requires
      * the @Transactional annotation.
      * Transaction needs to wrap the database modifying operation (searchJoinRepository.deleteBySearchId(id)) or
-     * else an exception will be thrown. See: https://www.baeldung.com/jpa-transaction-required-exception
+     * else an exception will be thrown. See: <a href="https://www.baeldung.com/jpa-transaction-required-exception">
+     * https://www.baeldung.com/jpa-transaction-required-exception</a>
      */
     @Override
     @Transactional
@@ -712,7 +711,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
-                entityManager.clear();
+                persistenceContextHelper.flushAndClearEntityManager();
                 Page<Candidate> result = doSearchCandidates(request);
                 setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {
@@ -1082,7 +1081,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         //Exclude given candidates
-        if (excludedCandidates != null && excludedCandidates.size() > 0) {
+        if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
             boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
@@ -1114,7 +1113,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final Occupation occupation = occupationService.getOccupation(id);
                 reqOccupations.add(occupation.getName());
             }
-            if (reqOccupations.size() > 0) {
+            if (!reqOccupations.isEmpty()) {
                 BoolQueryBuilder nestedQueryBuilder = new BoolQueryBuilder();
                 nestedQueryBuilder = elasticsearchService.addElasticTermFilter(
                     nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
@@ -1145,7 +1144,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         }
 
-        if (reqCountries.size() > 0) {
+        if (!reqCountries.isEmpty()) {
             boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                 request.getCountrySearchType(),
                 "country.keyword", reqCountries);
@@ -1483,7 +1482,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
             if (selectionList != null) {
                 Set<Candidate> selectedCandidates = selectionList.getCandidates();
-                if (selectedCandidates.size() > 0) {
+                if (!selectedCandidates.isEmpty()) {
                     for (Candidate candidate : candidates) {
                         if (selectedCandidates.contains(candidate)) {
                             candidate.setSelected(true);
@@ -1730,7 +1729,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
-                && user.getSourceCountries().size() > 0
+                && !user.getSourceCountries().isEmpty()
                 && search.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)

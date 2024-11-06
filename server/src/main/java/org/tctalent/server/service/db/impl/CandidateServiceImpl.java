@@ -183,6 +183,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
+import org.tctalent.server.util.PersistenceContextHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
@@ -269,12 +270,13 @@ public class CandidateServiceImpl implements CandidateService {
     private final TextExtracter textExtracter;
     private final ElasticsearchService elasticsearchService;
     private final EntityManager entityManager;
+    private final PersistenceContextHelper persistenceContextHelper;
 
     @Transactional
     @Override
     public int populateElasticCandidates(
             Pageable pageable, boolean logTotal, boolean createElastic) {
-        entityManager.clear();
+        persistenceContextHelper.flushAndClearEntityManager();
         Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
         if (logTotal) {
             LogBuilder.builder(log)
@@ -462,7 +464,7 @@ public class CandidateServiceImpl implements CandidateService {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
+        boolean searchForNumber = !s.isEmpty() && Character.isDigit(s.charAt(0));
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
 
         Page<Candidate> candidates;
@@ -3012,7 +3014,7 @@ public class CandidateServiceImpl implements CandidateService {
             List<Candidate> candidateList = candidatePage.getContent();
             upsertCandidatesToSf(candidateList);
             // Clears the persistence context of managed entities that would otherwise pile up.
-            entityManager.clear();
+            persistenceContextHelper.flushAndClearEntityManager();
             candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
                 statuses, candidatePage.nextPageable());
             pagesProcessed++;
@@ -3117,8 +3119,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidatePage = getSavedListCandidates(savedList, request);
             List<Candidate> candidates = candidatePage.getContent();
             processCandidateReassignment(candidates, newPartner);
-            entityManager.flush(); // Flush changes to DB before clearing in-memory persistence context
-            entityManager.clear(); // Keeps candidates from piling up in persistence context
+            persistenceContextHelper.flushAndClearEntityManager();
             pagesProcessed++;
         }
     }
