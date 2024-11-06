@@ -44,7 +44,7 @@
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
     "ng2-charts": "^2.4.3",
-    "ng2-dragula": "^2.1.1",
+    "ng2-dragula": "^5.1.0",
     "ngx-infinite-scroll": "^8.0.2",
     "ngx-quill": "^16.2.1",
     "ngx-wig": "^16.0.0",
