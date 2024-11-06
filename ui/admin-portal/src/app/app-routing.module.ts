@@ -55,10 +55,12 @@ const routes: Routes = [
       {
         path: 'candidates/:id',
         redirectTo: 'candidate/:id',
+        data: { title: 'Redirecting to Candidate' }
       },
       {
         path: 'candidates',
         redirectTo: '',
+        data: { title: 'Redirecting to Home' }
       },
       {
         //Default to Jobs
@@ -226,7 +228,8 @@ const routes: Routes = [
     path: '**',
     component: NotFoundComponent,
     data: {
-      hideHeader: true
+      hideHeader: true,
+      title: 'Page Not Found'
     }
   }
 
