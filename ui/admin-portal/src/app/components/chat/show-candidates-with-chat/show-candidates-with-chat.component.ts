@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
-import {FetchCandidatesWithChatRequest} from "../../../model/base";
+import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -128,7 +128,8 @@ export class ShowCandidatesWithChatComponent implements OnInit {
       sortFields: [this.sortField],
       sortDirection: this.sortDirection,
       keyword: this.keyword,
-      unreadOnly: this.unreadOnly
+      unreadOnly: this.unreadOnly,
+      dtoType: DtoType.MINIMAL
     }
 
     if (refresh) {
