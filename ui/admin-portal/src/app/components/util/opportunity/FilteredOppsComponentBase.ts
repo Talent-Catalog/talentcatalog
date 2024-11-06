@@ -269,8 +269,9 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected abstract createSearchRequest(): SearchOpportunityRequest;
 
-  refresh(): void {
+  refresh(event: any): void {
     this.search();
+    event.preventDefault(); // Stops form from submitting and search being called twice on click
   }
 
   /**

@@ -179,8 +179,9 @@ export class ShowCandidatesWithChatComponent implements OnInit {
     this.candidateSelection.emit(candidate);
   }
 
-  public refresh(): void {
+  public refresh(event: any): void {
     this.fetchCandidatesWithActiveChat(true);
+    event.preventDefault();
   }
 
   public toggleSort(column) {
