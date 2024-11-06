@@ -32,9 +32,9 @@ describe('ShowCandidatesWithChatComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ShowCandidatesWithChatComponent, RouterLinkStubDirective, SortedByComponent, NgbPagination ],
+      declarations: [ ShowCandidatesWithChatComponent, RouterLinkStubDirective, SortedByComponent ],
       imports: [ HttpClientTestingModule, LocalStorageModule.forRoot({}), FormsModule,
-        ReactiveFormsModule ],
+        ReactiveFormsModule, NgbPagination ],
       providers: [
         { provide: UntypedFormBuilder },
         { provide: CandidateService, useValue: candidateService }

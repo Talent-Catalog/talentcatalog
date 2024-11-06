@@ -37,8 +37,9 @@ describe('CandidatesWithChatComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CandidatesWithChatComponent, ShowCandidatesWithChatComponent,
-        SortedByComponent, NgbPagination, ViewChatPostsComponent, MockViewPostComponent],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, LocalStorageModule.forRoot({})],
+        SortedByComponent, ViewChatPostsComponent, MockViewPostComponent],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, LocalStorageModule.forRoot({}),
+        NgbPagination],
       providers: [
         { provide: ChatService, useValue: chatService },
         { provide: AuthorizationService, useValue: authorizationService },
