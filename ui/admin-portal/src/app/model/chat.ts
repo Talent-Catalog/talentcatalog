@@ -47,6 +47,11 @@ export interface ChatPost {
   linkPreviews?: LinkPreview[];
 }
 
+export interface GroupedMessages {
+  date: string;
+  messages: ChatPost[];
+}
+
 export enum JobChatType {
   JobCreatorSourcePartner="JobCreatorSourcePartner",
   JobCreatorAllSourcePartners="JobCreatorAllSourcePartners",

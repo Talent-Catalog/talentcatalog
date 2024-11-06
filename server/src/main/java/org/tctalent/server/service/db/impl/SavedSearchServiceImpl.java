@@ -19,7 +19,6 @@ package org.tctalent.server.service.db.impl;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import com.opencsv.CSVWriter;
-import io.jsonwebtoken.lang.Collections;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -30,6 +29,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,7 +48,6 @@ import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
@@ -120,6 +119,7 @@ import org.tctalent.server.repository.db.SavedSearchSpecification;
 import org.tctalent.server.repository.db.SearchJoinRepository;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.SearchJoinRequest;
@@ -144,6 +144,7 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.email.EmailNotificationLink;
+import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.util.PersistenceContextHelper;
 
 @Service
@@ -160,6 +161,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CountryService countryService;
     private final PartnerService partnerService;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final ElasticsearchService elasticsearchService;
     private final EmailHelper emailHelper;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -195,6 +197,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             CandidateStatus.ineligible,
             CandidateStatus.withdrawn
         )));
+
+    @Override
+    public List<SavedSearch> search(IdsRequest request) {
+        return savedSearchRepository.findByIds(request.getIds());
+    }
 
     @Override
     public List<SavedSearch> search(SearchSavedSearchRequest request) {
@@ -362,27 +369,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
-            //Update default search
-            SavedSearch defaultSavedSearch =
-                getDefaultSavedSearch();
-            Long savedSearchId = defaultSavedSearch.getId();
-            UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
-            updateRequest.setSearchCandidateRequest(request);
-            //Set other fields - no changes there
-            updateRequest.setName(defaultSavedSearch.getName());
-            updateRequest.setDefaultSearch(defaultSavedSearch.getDefaultSearch());
-            updateRequest.setFixed(defaultSavedSearch.getFixed());
-            updateRequest.setReviewable(defaultSavedSearch.getReviewable());
-            updateRequest.setSavedSearchType(defaultSavedSearch.getSavedSearchType());
-            updateRequest.setSavedSearchSubtype(defaultSavedSearch.getSavedSearchSubtype());
-            //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
-            updateSavedSearch(savedSearchId, updateRequest);
+            SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
+            // If searching a default search, update the default search with every search (aka Autosave).
+            // Else it is a saved search and those are updated upon 'Update Search' button only.
+            if (savedSearch.getDefaultSearch()) {
+                UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+                updateRequest.setSearchCandidateRequest(request);
+                //Set other fields - no changes there
+                updateRequest.setName(savedSearch.getName());
+                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setFixed(savedSearch.getFixed());
+                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
+                updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
+                //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
+                updateSavedSearch(savedSearch.getId(), updateRequest);
+            }
 
             //Do the search
             candidates = doSearchCandidates(request);
 
             //Add in any selections
-            markUserSelectedCandidates(savedSearchId, candidates);
+            markUserSelectedCandidates(savedSearch.getId(), candidates);
         }
 
         return candidates;
@@ -966,7 +974,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private BoolQueryBuilder computeElasticQuery(
         SearchCandidateRequest request, @Nullable String simpleQueryString,
-        @Nullable Collection<Candidate> excludedCandidates) {
+        @Nullable Collection<Candidate> excludedCandidates,
+        @Nullable SearchType searchType1, @Nullable Collection<Long> candidateIds1,
+        @Nullable SearchType searchType2, @Nullable Collection<Long> candidateIds2) {
     /*
        Constructing a filtered simple query that looks like this:
 
@@ -1074,15 +1084,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+            boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                 SearchType.not,"masterId", candidateIds);
+        }
+
+        //List any and all candidates
+        if (searchType1 != null && candidateIds1 != null) {
+            //Cast to Collection<Object> using Collections.unmodifiableCollection
+            //See https://stackoverflow.com/a/63441108/929968
+            boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
+                searchType1,"masterId", Collections.unmodifiableCollection(candidateIds1));
+        }
+        if (searchType2 != null && candidateIds2 != null) {
+            //Cast to Collection<Object> using Collections.unmodifiableCollection
+            //See https://stackoverflow.com/a/63441108/929968
+            boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
+                searchType2,"masterId", Collections.unmodifiableCollection(candidateIds2));
         }
 
         //Occupations
         final List<Long> occupationIds = request.getOccupationIds();
         final Integer minYrs = request.getMinYrs();
         final Integer maxYrs = request.getMaxYrs();
-        if (!Collections.isEmpty(occupationIds)) {
+        if (!ObjectUtils.isEmpty(occupationIds)) {
             //Look up names from ids.
             List<Object> reqOccupations = new ArrayList<>();
             for (Long id : occupationIds) {
@@ -1091,7 +1115,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
             if (!reqOccupations.isEmpty()) {
                 BoolQueryBuilder nestedQueryBuilder = new BoolQueryBuilder();
-                nestedQueryBuilder = addElasticTermFilter(
+                nestedQueryBuilder = elasticsearchService.addElasticTermFilter(
                     nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
                 if (minYrs != null || maxYrs != null) {
                     nestedQueryBuilder = addElasticRangeFilter(
@@ -1108,20 +1132,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         List<Object> reqCountries = new ArrayList<>();
         // If countryIds is NOT EMPTY we can just accept them because the options
         // presented to the user will be limited to the allowed source countries
-        if (!Collections.isEmpty(countryIds)) {
+        if (!ObjectUtils.isEmpty(countryIds)) {
             //Look up country names from ids.
             for (Long countryId : countryIds) {
                 final Country country = countryService.getCountry(countryId);
                 reqCountries.add(country.getName());
             }
-        } else if (user != null && !Collections.isEmpty(user.getSourceCountries())){
+        } else if (user != null && !ObjectUtils.isEmpty(user.getSourceCountries())){
             for (Country country: user.getSourceCountries()) {
                 reqCountries.add(country.getName());
             }
         }
 
         if (!reqCountries.isEmpty()) {
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+            boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                 request.getCountrySearchType(),
                 "country.keyword", reqCountries);
         }
@@ -1135,7 +1159,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final Partner partner = partnerService.getPartner(id);
                 reqPartners.add(partner.getAbbreviation());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+            boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                 null,"partner.keyword", reqPartners);
         }
 
@@ -1148,7 +1172,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final Country nationality = countryService.getCountry(id);
                 reqNationalities.add(nationality.getName());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+            boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                 request.getNationalitySearchType(),
                 "nationality.keyword", reqNationalities);
         }
@@ -1162,7 +1186,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 reqStatuses.add(status.name());
             }
             boolQueryBuilder =
-                addElasticTermFilter(boolQueryBuilder,
+                elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                     null,"status.keyword", reqStatuses);
         }
 
@@ -1175,7 +1199,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 reqUnhcrStatuses.add(unhcrStatus.name());
             }
             boolQueryBuilder =
-                addElasticTermFilter(boolQueryBuilder,
+                elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                     null,"unhcrStatus.keyword", reqUnhcrStatuses);
         }
 
@@ -1211,7 +1235,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
                 reqEducations.add(educationMajor.getName());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+            boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                     null, "educationMajors.keyword", reqEducations);
         }
 
@@ -1274,7 +1298,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         final List<Long> surveyTypeIds = request.getSurveyTypeIds();
         if (surveyTypeIds != null) {
             List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+            boolQueryBuilder = elasticsearchService.addElasticTermFilter(boolQueryBuilder,
                 null,"surveyType", surveyTypeObjList);
         }
 
@@ -1335,25 +1359,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return builder;
     }
 
-    private BoolQueryBuilder addElasticTermFilter(
-        BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
-        List<Object> values) {
-        final int nValues = values.size();
-        if (nValues > 0) {
-            QueryBuilder queryBuilder;
-            if (nValues == 1) {
-                queryBuilder = QueryBuilders.termQuery(field, values.get(0));
-            } else {
-                queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
-            }
-            if (searchType == SearchType.not) {
-                builder = builder.mustNot(queryBuilder);
-            } else {
-                builder = builder.filter(queryBuilder);
-            }
-        } return builder;
-    }
-
     private BoolQueryBuilder addElasticQuery(BoolQueryBuilder boolQueryBuilder,
         SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
         // We don't want searches built on themselves - this is also guarded against in frontend
@@ -1371,9 +1376,18 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Set<Candidate> excludeCandidates =
             computeCandidatesExcludedFromSearchCandidateRequest(request);
 
+        // Add in any listAny/All collections
+        Set<Long> listAllCandidateIds =
+            savedListService.fetchIntersectionCandidateIds(request.getListAllIds());
+        final SearchType listAllSearchType = request.getListAllSearchType();
+
+        Set<Long> listAnyCandidateIds =
+            savedListService.fetchUnionCandidateIds(request.getListAnyIds());
+        final SearchType listAnySearchType = request.getListAnySearchType();
+
         // Each recursion, if any, is added to the query as an additional must clause
-        boolQueryBuilder.must(
-            computeElasticQuery(request, simpleStringQuery, excludeCandidates)
+        boolQueryBuilder.must(computeElasticQuery(request, simpleStringQuery, excludeCandidates,
+                listAllSearchType, listAllCandidateIds, listAnySearchType, listAnyCandidateIds)
         );
 
         // Like addQuery(), this method uses recursion to get every nested SearchJoinRequest
@@ -1632,8 +1646,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMaxYrs(request.getMaxYrs());
             savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
             savedSearch.setPartnerIds(getListAsString(request.getPartnerIds()));
-            savedSearch.setNationalityIds(
-                    getListAsString(request.getNationalityIds()));
+            savedSearch.setListAllIds(getListAsString(request.getListAllIds()));
+            savedSearch.setListAllSearchType(request.getListAllSearchType());
+            savedSearch.setListAnyIds(getListAsString(request.getListAnyIds()));
+            savedSearch.setListAnySearchType(request.getListAnySearchType());
+            savedSearch.setNationalityIds(getListAsString(request.getNationalityIds()));
             savedSearch.setNationalitySearchType(request.getNationalitySearchType());
             savedSearch.setCountryIds(getListAsString(request.getCountryIds()));
             savedSearch.setCountrySearchType(request.getCountrySearchType());
@@ -1699,10 +1716,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxYrs(search.getMaxYrs());
         searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());
         searchCandidateRequest.setPartnerIds(getIdsFromString(search.getPartnerIds()));
+        searchCandidateRequest.setListAllIds(getIdsFromString(search.getListAllIds()));
+        searchCandidateRequest.setListAllSearchType(search.getListAllSearchType());
+        searchCandidateRequest.setListAnyIds(getIdsFromString(search.getListAnyIds()));
+        searchCandidateRequest.setListAnySearchType(search.getListAnySearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
-        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
         searchCandidateRequest.setNationalitySearchType(search.getNationalitySearchType());
-        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(search.getCountryIds());
@@ -1723,6 +1743,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 //            }
         }
         searchCandidateRequest.setCountryIds(requestCountries);
+        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
 
         searchCandidateRequest.setEnglishMinSpokenLevel(search.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(search.getEnglishMinWrittenLevel());
@@ -1949,8 +1970,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             searchIds.add(searchRequest.getSavedSearchId());
         }
 
+        Set<Long> listAllCandidateIds =
+            savedListService.fetchIntersectionCandidateIds(searchRequest.getListAllIds());
+        final SearchType listAllSearchType = searchRequest.getListAllSearchType();
+
+        Set<Long> listAnyCandidateIds =
+            savedListService.fetchUnionCandidateIds(searchRequest.getListAnyIds());
+        final SearchType listAnySearchType = searchRequest.getListAnySearchType();
+
         BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
-            simpleQueryString, excludedCandidates);
+            simpleQueryString, excludedCandidates,
+            listAllSearchType, listAllCandidateIds, listAnySearchType, listAnyCandidateIds);
 
         // Add any joined searches to the builder
         if (!searchRequest.getSearchJoinRequests().isEmpty()) {

@@ -392,7 +392,7 @@ public class CandidateAdminApi {
         @Valid @RequestBody FetchCandidatesWithChatRequest request
     ) {
         Page<Candidate> candidates = candidateService.fetchCandidatesWithChat(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
     }
 

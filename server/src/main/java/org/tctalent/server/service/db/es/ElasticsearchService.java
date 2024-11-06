@@ -16,11 +16,29 @@
 
 package org.tctalent.server.service.db.es;
 
+import java.util.Collection;
 import java.util.Set;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.SearchType;
 
 
 public interface ElasticsearchService {
+
+  /**
+   * Adds a term filter to the query builder.
+   * @param builder Query builder
+   * @param searchType Type of search - Only 'not' is checked.
+   * @param field Field to check against
+   * @param values comparison values
+   * @return Updated builder
+   */
+  @NotNull
+  BoolQueryBuilder addElasticTermFilter(
+      BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
+      Collection<Object> values);
 
   /**
    * Retrieves the first few candidate IDs by elastic searching for a specified name.

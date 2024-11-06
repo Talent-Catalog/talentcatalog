@@ -40,6 +40,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
@@ -117,6 +118,12 @@ public class SavedSearchAdminApi implements
 
     @Override
     public @NotNull List<Map<String, Object>> search(@Valid SearchSavedSearchRequest request) {
+        List<SavedSearch> savedSearches = savedSearchService.search(request);
+        return savedSearchDto().buildList(savedSearches);
+    }
+
+    @PostMapping("search-ids")
+    @NotNull List<Map<String, Object>> searchByIds(@Valid @RequestBody IdsRequest request) {
         List<SavedSearch> savedSearches = savedSearchService.search(request);
         return savedSearchDto().buildList(savedSearches);
     }

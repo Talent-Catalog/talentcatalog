@@ -43,6 +43,7 @@ import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
+import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.EducationLevel;
@@ -410,6 +411,55 @@ public class CandidateSpecification {
                 }
 
 
+            }
+
+            //LIST ANY
+            /* where candidate in
+                (select candidate from candidateSavedList
+                    where savedList.id in (saved lists ids))
+            */
+            SearchType listAnySearchType = request.getListAnySearchType();
+            final List<Long> listAnyIds = request.getListAnyIds();
+            if (!Collections.isEmpty(listAnyIds)) {
+                Subquery<Candidate> sq = query.subquery(Candidate.class);
+                Root<CandidateSavedList> csl = sq.from(CandidateSavedList.class);
+                sq.select(csl.get("candidate")).where(
+                    builder.in(csl.get("savedList").get("id")).value(listAnyIds)
+                );
+
+                //Compute the predicate depending on whether it is negated
+                conjunction.getExpressions().add(
+                    listAnySearchType == SearchType.not
+                        ? builder.in(candidate).value(sq).not()
+                        : builder.in(candidate).value(sq)
+                );
+            }
+
+            //LIST ALL
+            /* where
+            candidate in (select candidate from candidateSavedList where savedList.id = id1)
+            and
+            candidate in (select candidate from candidateSavedList where savedList.id = id2)
+            and
+              ...
+            */
+            SearchType listAllSearchType = request.getListAllSearchType();
+            final List<Long> listAllIds = request.getListAllIds();
+            if (!Collections.isEmpty(listAllIds)) {
+                for (Long listAllId : listAllIds) {
+                    Subquery<Candidate> sq = query.subquery(Candidate.class);
+                    Root<CandidateSavedList> csl = sq.from(CandidateSavedList.class);
+                    sq.select(csl.get("candidate")).where(
+                        builder.equal(csl.get("savedList").get("id"), listAllId)
+                    );
+
+                    //Compute the predicate depending on whether it is negated
+                    conjunction.getExpressions().add(
+                        listAllSearchType == SearchType.not
+                            ? builder.in(candidate).value(sq).not()
+                            : builder.in(candidate).value(sq)
+                    );
+                }
             }
 
             //CANDIDATE OPPORTUNITIES

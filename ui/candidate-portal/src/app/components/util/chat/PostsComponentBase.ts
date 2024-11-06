@@ -17,7 +17,7 @@ import {Directive, EventEmitter, Input, OnDestroy, Output} from "@angular/core";
 import {ChatService} from "../../../services/chat.service";
 import {ChatPostService} from "../../../services/chat-post.service";
 import {Subscription} from "rxjs";
-import {ChatPost, CreateChatRequest, JobChat} from "../../../model/chat";
+import {ChatPost, CreateChatRequest, JobChat, GroupedMessages} from "../../../model/chat";
 
 /**
  * This provides underlying common support for components which display chat posts.
@@ -40,6 +40,7 @@ export abstract class PostsComponentBase implements OnDestroy{
   currentPost: ChatPost;
 
   posts: ChatPost[];
+  groupedMessages: GroupedMessages[] = [];
 
   loading: boolean;
   error;
@@ -126,6 +127,7 @@ export abstract class PostsComponentBase implements OnDestroy{
     } else {
       // If it's a new post, add it to the posts array
       this.posts.push(incomingPost);
+      this.groupedMessages = this.groupMessagesByDate(this.posts);
     }
   }
 
@@ -146,6 +148,7 @@ export abstract class PostsComponentBase implements OnDestroy{
           posts.push(newPost);
         }      }
     }
+    this.groupedMessages = this.groupMessagesByDate(posts);
     this.posts = posts;
   }
 
@@ -163,4 +166,27 @@ export abstract class PostsComponentBase implements OnDestroy{
       this.chatIsReadSubscription = null;
     }
   }
+
+  private groupMessagesByDate(messages: any[]): GroupedMessages[] {
+    const grouped = messages.reduce((acc, message) => {
+      const date = new Date(message.createdDate).toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(message);
+      return acc;
+    }, {} as { [key: string]: any[] });
+
+    // Transform the object into an array for easier rendering
+    return Object.keys(grouped).map(date => ({
+      date,
+      messages: grouped[date]
+    }));
+  }
+
 }

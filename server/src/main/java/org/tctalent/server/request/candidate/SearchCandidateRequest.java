@@ -104,6 +104,7 @@ import org.tctalent.server.request.PagedSearchRequest;
 public class SearchCandidateRequest extends PagedSearchRequest {
 
     private String simpleQueryString;
+    @NotNull
     private Long savedSearchId;
     private String keyword;
     private List<CandidateStatus> statuses;
@@ -119,6 +120,11 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private SearchType countrySearchType;
     private List<Long> surveyTypeIds;
     private Long exclusionListId;
+    private List<Long> listAllIds;
+    private SearchType listAllSearchType;
+    private List<Long> listAnyIds;
+    private SearchType listAnySearchType;
+
     private Integer englishMinWrittenLevel;
     private Integer englishMinSpokenLevel;
     private Long otherLanguageId;
@@ -137,6 +143,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Integer maxAge;
     private Integer minEducationLevel;
     private List<Long> educationMajorIds;
+
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
     private String regoReferrerParam;
