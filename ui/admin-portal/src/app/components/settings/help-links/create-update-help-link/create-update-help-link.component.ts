@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Country} from "../../../../model/country";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {enumOptions} from "../../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
@@ -18,7 +18,7 @@ export class CreateUpdateHelpLinkComponent extends FormComponentBase implements 
 
   destinationCountries: Country[];
   error = null;
-  form: FormGroup;
+  form: UntypedFormGroup;
   helpLink: HelpLink;
   caseStages = enumOptions(CandidateOpportunityStage);
   jobStages = enumOptions(JobOpportunityStage);
@@ -26,7 +26,7 @@ export class CreateUpdateHelpLinkComponent extends FormComponentBase implements 
   working: boolean;
 
 
-  constructor(fb: FormBuilder,
+  constructor(fb: UntypedFormBuilder,
               private activeModal: NgbActiveModal,
               private helpLinkService: HelpLinkService,
   ) {

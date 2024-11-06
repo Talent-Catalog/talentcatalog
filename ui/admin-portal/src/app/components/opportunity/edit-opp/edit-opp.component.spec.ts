@@ -7,7 +7,7 @@ import {
 } from "../../../services/candidate-source-candidate.service";
 import {JobService} from "../../../services/job.service";
 import {OpportunityProgressParams} from "../../../model/opportunity";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {of, throwError} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
@@ -64,7 +64,7 @@ describe('EditOppComponent', () => {
       imports: [HttpClientTestingModule,NgSelectModule,RouterTestingModule,NgbTooltipModule,NgbDatepickerModule,ReactiveFormsModule,FormsModule],
 
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: modalSpy },
         { provide: SavedListService, useValue: savedListService },
         { provide: CandidateSourceCandidateService, useValue: candidateSourceCandidateService },

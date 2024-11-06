@@ -20,7 +20,7 @@ import {PartnerService} from "../../../../services/partner.service";
 import {CountryService} from "../../../../services/country.service";
 import {UserService} from "../../../../services/user.service";
 import {NgbActiveModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockPartner} from "../../../../MockData/MockPartner";
 import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
@@ -38,7 +38,7 @@ describe('CreateUpdatePartnerComponent', () => {
   let countryServiceSpy: jasmine.SpyObj<CountryService>;
   let userServiceSpy: jasmine.SpyObj<UserService>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
   const mockCountries: Country[] = [MockJob.country];
   const mockUsers = [new MockUser()];
 
@@ -63,7 +63,7 @@ describe('CreateUpdatePartnerComponent', () => {
     countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
     userServiceSpy = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

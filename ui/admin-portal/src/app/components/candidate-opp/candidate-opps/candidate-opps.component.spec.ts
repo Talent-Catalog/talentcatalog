@@ -6,7 +6,7 @@ import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {LOCALE_ID, SimpleChange} from "@angular/core";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {CommonModule} from "@angular/common";
@@ -20,7 +20,7 @@ describe('CandidateOppsComponent', () => {
   let mockLocalStorageService: jasmine.SpyObj<LocalStorageService>;
   let mockOppService: jasmine.SpyObj<CandidateOpportunityService>;
   let mockSalesforceService: jasmine.SpyObj<SalesforceService>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
   beforeEach(async () => {
     const chatServiceSpy = jasmine.createSpyObj('ChatService', ['getOrCreate']);
@@ -32,7 +32,7 @@ describe('CandidateOppsComponent', () => {
       declarations: [CandidateOppsComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule, LocalStorageModule.forRoot({})],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: ChatService, useValue: chatServiceSpy },
         { provide: AuthorizationService, useValue: authServiceSpy },
         { provide: LocalStorageService, useValue: localStorageServiceSpy },
@@ -47,7 +47,7 @@ describe('CandidateOppsComponent', () => {
     mockLocalStorageService = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
     mockOppService = TestBed.inject(CandidateOpportunityService) as jasmine.SpyObj<CandidateOpportunityService>;
     mockSalesforceService = TestBed.inject(SalesforceService) as jasmine.SpyObj<SalesforceService>;
-    formBuilder = TestBed.inject(FormBuilder); // Inject FormBuilder
+    formBuilder = TestBed.inject(UntypedFormBuilder); // Inject FormBuilder
   });
 
   beforeEach(() => {

@@ -16,7 +16,7 @@
 
 import {ShowCandidatesComponent} from "./show-candidates.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
@@ -41,7 +41,7 @@ import {of, throwError} from "rxjs";
 describe('ShowCandidatesComponent', () => {
   let component: ShowCandidatesComponent;
   let fixture: ComponentFixture<ShowCandidatesComponent>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
 
   // Create mock service instances using jasmine.createSpyObj
@@ -72,7 +72,7 @@ describe('ShowCandidatesComponent', () => {
         ReactiveFormsModule
       ],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         DatePipe,
         TitleCasePipe,
         {provide: CandidateService, useValue: mockCandidateService},
@@ -96,7 +96,7 @@ describe('ShowCandidatesComponent', () => {
     component = fixture.componentInstance;
 
     // Inject the FormBuilder and create the form group
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
     component.candidateSource = new MockCandidateSource();
     component.searchForm = formBuilder.group({
       keyword: [''],

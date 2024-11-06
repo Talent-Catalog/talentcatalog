@@ -24,7 +24,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
   getCandidateSourceNavigation,
@@ -87,7 +87,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   @Input() savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   @Output() subtypeChange = new EventEmitter<SavedSearchTypeSubInfo>();
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   public loading: boolean;
   error: any;
   pageNumber: number;
@@ -100,7 +100,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   readonly CandidateSourceType = CandidateSourceType;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
               private authorizationService: AuthorizationService,

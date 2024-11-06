@@ -23,7 +23,7 @@ import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {ShowCandidatesComponent} from "../show/show-candidates.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {CommonModule, DatePipe, TitleCasePipe} from "@angular/common";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
@@ -57,7 +57,7 @@ describe('CandidatesListComponent', () => {
       imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}), NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
       ],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         DatePipe,
         TitleCasePipe,
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

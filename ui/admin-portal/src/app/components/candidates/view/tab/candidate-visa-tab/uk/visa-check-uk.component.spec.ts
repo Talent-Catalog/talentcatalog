@@ -22,7 +22,7 @@ import {By} from '@angular/platform-browser';
 import {VisaCheckUkComponent} from "./visa-check-uk.component";
 import {MockCandidateVisa} from "../../../../../../MockData/MockCandidateVisa";
 import {MockCandidateVisaJobCheck} from "../../../../../../MockData/MockCandidateVisaCheck";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {VisaJobCheckUkComponent} from "./job/visa-job-check-uk.component";
@@ -43,7 +43,7 @@ describe('VisaCheckUkComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [VisaCheckUkComponent,AutosaveStatusComponent,VisaJobCheckUkComponent,CandidateVisaJobComponent,RelocatingDependantsComponent,RouterLinkStubDirective,DependantsComponent],
       imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule,LocalStorageModule.forRoot({})],
-      providers: [FormBuilder],
+      providers: [UntypedFormBuilder],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });

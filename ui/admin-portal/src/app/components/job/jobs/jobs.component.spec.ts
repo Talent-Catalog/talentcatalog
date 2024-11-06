@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { JobsComponent } from './jobs.component';
-import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { UntypedFormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import { SortedByComponent } from "../../util/sort/sorted-by.component";
@@ -18,7 +18,7 @@ class TestJobsComponent extends JobsComponent {
 describe('JobsComponent', () => {
   let jobsComponent: TestJobsComponent;
   let fixture: ComponentFixture<TestJobsComponent>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
   // Setup for the test suite
   beforeEach(waitForAsync(() => {
@@ -32,10 +32,10 @@ describe('JobsComponent', () => {
         NgSelectModule
       ],
       providers: [
-          { provide: FormBuilder, useClass: FormBuilder },
+          { provide: UntypedFormBuilder, useClass: UntypedFormBuilder },
       ]
     }).compileComponents();
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
    }));
 
   beforeEach(() => {

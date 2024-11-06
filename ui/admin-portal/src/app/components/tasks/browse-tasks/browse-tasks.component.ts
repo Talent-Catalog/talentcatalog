@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {SearchTaskRequest} from "../../../model/base";
 import {User} from "../../../model/user";
@@ -19,7 +19,7 @@ export class BrowseTasksComponent implements OnInit {
   private filterKeySuffix: string = 'Filter';
   private savedStateKeyPrefix: string = 'BrowseKey';
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   public loading: boolean;
   error: any;
   pageNumber: number;
@@ -29,7 +29,7 @@ export class BrowseTasksComponent implements OnInit {
   selectedIndex = 0;
   loggedInUser: User;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
               private authenticationService: AuthenticationService,

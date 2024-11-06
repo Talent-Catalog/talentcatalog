@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ReactiveFormsModule} from '@angular/forms';
 import {NgbModal, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 import {LocalStorageModule, LocalStorageService} from 'angular-2-local-storage';
 import {Router} from '@angular/router';
@@ -44,7 +44,7 @@ describe('BrowseCandidateSourcesComponent', () => {
       providers: [
         DatePipe,
         TitleCasePipe,
-        FormBuilder,
+        UntypedFormBuilder,
         NgbModal,
         LocalStorageService,
         { provide: Router, useValue: {} },
@@ -59,9 +59,9 @@ describe('BrowseCandidateSourcesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BrowseCandidateSourcesComponent);
     component = fixture.componentInstance;
-    component.searchForm = new FormGroup({
-      keyword: new FormControl(''), // Initialize keyword FormControl
-      selectedStages: new FormControl([])
+    component.searchForm = new UntypedFormGroup({
+      keyword: new UntypedFormControl(''), // Initialize keyword FormControl
+      selectedStages: new UntypedFormControl([])
     });
     component.sourceType = CandidateSourceType.SavedSearch;
     component.searchBy = SearchBy.mine;

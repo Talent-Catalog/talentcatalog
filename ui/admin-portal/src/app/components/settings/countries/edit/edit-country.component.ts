@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Country} from "../../../../model/country";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CountryService} from "../../../../services/country.service";
@@ -28,13 +28,13 @@ import {CountryService} from "../../../../services/country.service";
 export class EditCountryComponent implements OnInit {
 
   countryId: number;
-  countryForm: FormGroup;
+  countryForm: UntypedFormGroup;
   error;
   loading: boolean;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private countryService: CountryService) {
   }
 

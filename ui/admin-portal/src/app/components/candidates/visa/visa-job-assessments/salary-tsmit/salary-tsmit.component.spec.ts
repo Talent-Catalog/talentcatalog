@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {SalaryTsmitComponent} from './salary-tsmit.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {By} from '@angular/platform-browser';
@@ -14,7 +14,7 @@ describe('SalaryTsmitComponent', () => {
   let component: SalaryTsmitComponent;
   let fixture: ComponentFixture<SalaryTsmitComponent>;
   let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
@@ -23,13 +23,13 @@ describe('SalaryTsmitComponent', () => {
       declarations: [SalaryTsmitComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
       ]
     }).compileComponents();
 
     candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

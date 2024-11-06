@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from '../../../services/saved-search.service';
 import {convertToSavedSearchRequest, SavedSearch, SavedSearchType} from '../../../model/saved-search';
@@ -31,7 +31,7 @@ import {SalesforceService} from "../../../services/salesforce.service";
 export class CreateUpdateSearchComponent implements OnInit {
 
   error = null;
-  form: FormGroup;
+  form: UntypedFormGroup;
   jobName: string;
   jobId: number;
   saving: boolean;
@@ -92,7 +92,7 @@ export class CreateUpdateSearchComponent implements OnInit {
   }
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               public salesforceService:SalesforceService,
               private savedSearchService: SavedSearchService) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();

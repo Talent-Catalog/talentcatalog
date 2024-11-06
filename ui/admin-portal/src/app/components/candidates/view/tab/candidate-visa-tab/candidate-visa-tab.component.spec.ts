@@ -24,7 +24,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {
   HasNameSelectorComponent
 } from "../../../../util/has-name-selector/has-name-selector.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -54,7 +54,7 @@ describe('CandidateVisaTabComponent', () => {
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
       declarations: [CandidateVisaTabComponent,ExportPdfComponent, HasNameSelectorComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateServiceMock },
         { provide: CountryService, useValue: countryServiceMock },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceMock },

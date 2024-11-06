@@ -3,7 +3,7 @@ import {ViewJobSubmissionListComponent } from './view-job-submission-list.compon
 import {Job} from '../../../../../model/job';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ShowCandidatesComponent} from "../../../../candidates/show/show-candidates.component";
-import {FormBuilder,FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder,FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {DatePipe,TitleCasePipe} from "@angular/common";
 import {ActivatedRoute} from "@angular/router";
@@ -38,7 +38,7 @@ describe('ViewJobSubmissionListComponent', () => {
          DatePipe,
          TitleCasePipe,
          { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
-          FormBuilder,
+          UntypedFormBuilder,
       ]
     })
     .compileComponents();

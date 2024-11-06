@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Occupation} from "../../../../model/occupation";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {OccupationService} from "../../../../services/occupation.service";
@@ -28,13 +28,13 @@ import {OccupationService} from "../../../../services/occupation.service";
 export class EditOccupationComponent implements OnInit {
 
   occupationId: number;
-  occupationForm: FormGroup;
+  occupationForm: UntypedFormGroup;
   error;
   loading: boolean;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private occupationService: OccupationService) {
   }
 

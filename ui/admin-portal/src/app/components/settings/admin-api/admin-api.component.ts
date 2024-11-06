@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {AdminService} from "../../../services/admin.service";
 
 @Component({
@@ -11,10 +11,10 @@ export class AdminApiComponent implements OnInit {
 
   ack: string;
   error: any;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private adminService: AdminService
   ) { }
 

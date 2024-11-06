@@ -1,7 +1,7 @@
 import {Component, ElementRef, Inject, LOCALE_ID, ViewChild} from '@angular/core';
 import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {Job, JobOpportunityStage, SearchJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
@@ -40,7 +40,7 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
   constructor(
     chatService: ChatService,
-    fb: FormBuilder,
+    fb: UntypedFormBuilder,
     authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: JobService,

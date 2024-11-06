@@ -1,7 +1,7 @@
 import {EditCandidateOppComponent} from "./edit-candidate-opp.component";
 import {NgbActiveModal, NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {HelpComponent} from "../../help/help.component";
@@ -24,7 +24,7 @@ describe('EditCandidateOppComponent', () => {
       declarations: [EditCandidateOppComponent,HelpComponent,DatePickerComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule, LocalStorageModule.forRoot({}),NgbDatepickerModule,NgxWigModule,NgSelectModule,NgbTooltipModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: modalSpy }
       ]
     })

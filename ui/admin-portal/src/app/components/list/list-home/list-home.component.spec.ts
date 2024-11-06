@@ -28,7 +28,7 @@ import {SavedSearchSubtype, SavedSearchType} from "../../../model/saved-search";
 import {
   BrowseCandidateSourcesComponent
 } from "../../candidates/show/browse/browse-candidate-sources.component";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {RouterTestingModule} from "@angular/router/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";
@@ -55,7 +55,7 @@ describe('ListHomeComponent', () => {
       declarations: [ListHomeComponent,BrowseCandidateSourcesComponent,RouterLinkStubDirective],
       imports: [HttpClientTestingModule,NgbNavModule,RouterTestingModule,NgbPaginationModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         DatePipe,
         TitleCasePipe,
         { provide: SavedSearchService, useValue: savedSearchServiceSpyObj },

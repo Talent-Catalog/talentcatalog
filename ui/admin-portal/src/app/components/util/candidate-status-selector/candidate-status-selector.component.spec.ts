@@ -1,6 +1,6 @@
 import {CandidateStatusSelectorComponent} from "./candidate-status-selector.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
@@ -9,7 +9,7 @@ import {EnumOption, enumOptions} from "../../../util/enum";
 describe('CandidateStatusSelectorComponent', () => {
   let component: CandidateStatusSelectorComponent;
   let fixture: ComponentFixture<CandidateStatusSelectorComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -19,14 +19,14 @@ describe('CandidateStatusSelectorComponent', () => {
         NgxWigModule
       ],
       declarations: [CandidateStatusSelectorComponent],
-      providers: [FormBuilder]
+      providers: [UntypedFormBuilder]
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CandidateStatusSelectorComponent);
     component = fixture.componentInstance;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
 
     component.candidateStatus = CandidateStatus.active; // Assume 'active' is a valid status
     fixture.detectChanges();

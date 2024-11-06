@@ -8,7 +8,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 
 @Component({
@@ -21,11 +21,11 @@ export class CandidateStatusSelectorComponent implements OnInit, OnChanges {
   @Input() candidateStatus: CandidateStatus;
   @Output() statusInfoUpdate = new EventEmitter<UpdateCandidateStatusInfo>();
 
-  candidateStatusInfoForm: FormGroup;
+  candidateStatusInfoForm: UntypedFormGroup;
 
   candidateStatusOptions: EnumOption[];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: UntypedFormBuilder) {
   }
 
   ngOnInit(): void {

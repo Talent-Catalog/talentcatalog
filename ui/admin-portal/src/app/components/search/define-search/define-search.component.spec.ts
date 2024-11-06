@@ -17,7 +17,7 @@ import {DefineSearchComponent} from "./define-search.component";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {
   NgbDatepickerModule,
@@ -53,7 +53,7 @@ describe('DefineSearchComponent', () => {
       declarations: [DefineSearchComponent,LanguageLevelFormControlComponent,JoinSavedSearchComponent,DateRangePickerComponent],
       imports: [ReactiveFormsModule,NgbTooltipModule,HttpClientTestingModule,NgbTypeaheadModule,NgbDatepickerModule,LocalStorageModule.forRoot({}),RouterTestingModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         NgbModal,
         { provide: SearchQueryService, useValue: searchQuerySpy },
         { provide: AuthenticationService, useValue: authSpy },

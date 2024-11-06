@@ -28,7 +28,7 @@ import {
 } from '@angular/core';
 import {CandidateOpportunity, SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 import {SearchResults} from "../../../model/search-results";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {EnumOption} from "../../../util/enum";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -112,7 +112,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
   protected searchFilter: ElementRef;
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
 
   //Default sort opps in descending order of nextDueDate
   sortField = 'nextStepDueDate';
@@ -136,7 +136,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected constructor(
     protected chatService: ChatService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     protected authorizationService: AuthorizationService,
     private localStorageService: LocalStorageService,
     protected oppService: OpportunityService<T>,

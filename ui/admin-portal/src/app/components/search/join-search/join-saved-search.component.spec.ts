@@ -15,7 +15,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 import {of, throwError} from 'rxjs';
 import {JoinSavedSearchComponent} from './join-saved-search.component';
@@ -48,7 +48,7 @@ describe('JoinSavedSearchComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [JoinSavedSearchComponent,UpdatedByComponent,CandidateSourceComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,NgbTypeaheadModule,LocalStorageModule.forRoot({}),RouterTestingModule],
-      providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, FormBuilder],
+      providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, UntypedFormBuilder],
     }).compileComponents();
 
     savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;

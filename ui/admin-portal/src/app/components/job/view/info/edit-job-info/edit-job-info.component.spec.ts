@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {MockJob} from "../../../../../MockData/MockJob";
@@ -11,7 +11,7 @@ describe('EditJobInfoComponent', () => {
   let fixture: ComponentFixture<EditJobInfoComponent>;
   let modalService: NgbModal;
   let ngbActiveModal: NgbActiveModal;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ EditJobInfoComponent,RouterLinkStubDirective ],
@@ -21,14 +21,14 @@ describe('EditJobInfoComponent', () => {
       providers: [
         { provide: NgbModal  },
         { provide: NgbActiveModal  },
-        { provide: FormBuilder  },
+        { provide: UntypedFormBuilder  },
       ]
     })
     .compileComponents();
 
     modalService = TestBed.inject(NgbModal);
     ngbActiveModal = TestBed.inject(NgbActiveModal);
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => { // Use this block for component creation
@@ -45,7 +45,7 @@ describe('EditJobInfoComponent', () => {
   });
 
   it('should initialize jobForm with correct values', () => {
-    component.jobForm = new FormBuilder().group(MockJob);
+    component.jobForm = new UntypedFormBuilder().group(MockJob);
     // Access the form controls
     const submissionDueDateControl = component.jobForm.get('submissionDueDate');
     const contactUserControl = component.jobForm.get('contactUser');

@@ -3,8 +3,8 @@ import {FormComponentBase} from "../form/FormComponentBase";
 import {
   AbstractControl,
   AsyncValidatorFn,
-  FormBuilder,
-  FormGroup, ValidationErrors,
+  UntypedFormBuilder,
+  UntypedFormGroup, ValidationErrors,
   Validators
 } from "@angular/forms";
 import {salesforceSandboxUrlPattern, salesforceUrlPattern} from "../../../model/base";
@@ -18,11 +18,11 @@ import {SalesforceService} from "../../../services/salesforce.service";
   styleUrls: ['./sf-joblink.component.scss']
 })
 export class SfJoblinkComponent extends FormComponentBase implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   @Output() updateError =  new EventEmitter();
   @Output() sfJoblinkValidation =  new EventEmitter();
 
-  constructor(fb: FormBuilder,
+  constructor(fb: UntypedFormBuilder,
               private salesforceService: SalesforceService) {
     super(fb);
   }

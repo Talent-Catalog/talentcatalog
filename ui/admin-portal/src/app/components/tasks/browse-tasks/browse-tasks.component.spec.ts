@@ -19,7 +19,7 @@ import {TaskService} from "../../../services/task.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {MockCandidate} from "../../../MockData/MockCandidate";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
@@ -56,7 +56,7 @@ describe('BrowseTasksComponent', () => {
       declarations: [ BrowseTasksComponent, ViewTaskDetailsComponent, UpdatedByComponent ],
       imports: [HttpClientTestingModule, RouterTestingModule,NgbPaginationModule,FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: TaskService, useValue: taskService },
         { provide: LocalStorageService, useValue: localStorageService },
         { provide: AuthenticationService, useValue: authenticationService }

@@ -62,7 +62,7 @@ import {
   Status
 } from '../../../model/base';
 import {CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
@@ -148,7 +148,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   updatingTasks: boolean;
   savingSelection: boolean;
   showDescription: boolean = false;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   monitoredTask: Task;
   tasksAssignedToList: Task[];
 
@@ -195,7 +195,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   sideProfile: NgbOffcanvasRef;
 
   constructor(private http: HttpClient,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private candidateSourceService: CandidateSourceService,
               private savedSearchService: SavedSearchService,

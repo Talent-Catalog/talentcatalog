@@ -12,7 +12,7 @@ import {MockJobChat} from "../../../MockData/MockJobChat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 import {ViewPostComponent} from "../view-post/view-post.component";
 import {CreateUpdatePostComponent} from "../create-update-post/create-update-post.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {QuillModule} from "ngx-quill";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
@@ -36,7 +36,7 @@ describe('ChatsWithPostsComponent', () => {
         TranslateModule.forRoot({})],
 
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: ChatService, useValue: chatServiceSpy },
         { provide: AuthenticationService, useValue: authSpy }
       ]

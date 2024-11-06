@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateExam, Exam} from "../../../../../model/candidate";
 import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
@@ -29,7 +29,7 @@ import {generateYearArray} from "../../../../../util/year-helper";
 })
 export class CreateCandidateExamComponent implements OnInit {
   candidateCertification: CandidateExam;
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
 
   candidateId: number;
   countries = [];
@@ -42,7 +42,7 @@ export class CreateCandidateExamComponent implements OnInit {
   examOptions: EnumOption[] = enumOptions(Exam);
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateExamService: CandidateExamService) {
   }
   ngOnInit() {

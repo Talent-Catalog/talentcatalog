@@ -16,7 +16,7 @@ import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.com
 import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.component";
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 // Mock isStarredByMe function
@@ -46,7 +46,7 @@ describe('ViewJobComponent', () => {
       imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
       declarations: [ViewJobComponent,AutosaveStatusComponent,RouterLinkStubDirective,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbModal, useValue: {} },
         { provide: AuthenticationService, useValue: mockAuthService },
         { provide: JobService, useValue: mockJobService },

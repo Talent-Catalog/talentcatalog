@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
 import {
   CandidateVisaCheckService,
@@ -42,7 +42,7 @@ export class CandidateVisaTabComponent implements OnInit {
   candidateIntakeData: CandidateIntakeData;
   visaChecks: CandidateVisa[];
   tcDestinations: Country[];
-  form: FormGroup;
+  form: UntypedFormGroup;
   selectedIndex: number;
   selectedCountry: string;
   selectedVisaCheck: CandidateVisa;
@@ -55,7 +55,7 @@ export class CandidateVisaTabComponent implements OnInit {
               private countryService: CountryService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private authService: AuthorizationService) {
   }

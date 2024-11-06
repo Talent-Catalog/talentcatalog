@@ -1,7 +1,7 @@
 import {InputLinkComponent, UpdateLinkRequest} from "./input-link.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 describe('InputLinkComponent', () => {
   let component: InputLinkComponent;
@@ -19,7 +19,7 @@ describe('InputLinkComponent', () => {
       declarations: [InputLinkComponent],
       providers: [
         { provide: NgbActiveModal, useValue: modalMock },
-        FormBuilder
+        UntypedFormBuilder
       ]
     }).compileComponents();
   });

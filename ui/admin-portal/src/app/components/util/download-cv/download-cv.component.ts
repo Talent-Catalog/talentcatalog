@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService, DownloadCVRequest} from "../../../services/candidate.service";
 
@@ -17,12 +17,12 @@ export class DownloadCvComponent implements OnInit {
   error = null;
   loading = null;
   saving = null;
-  form: FormGroup;
+  form: UntypedFormGroup;
   candidateId: number;
 
   constructor(private activeModal: NgbActiveModal,
               private candidateService: CandidateService,
-              private fb: FormBuilder) { }
+              private fb: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({

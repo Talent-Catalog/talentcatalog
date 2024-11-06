@@ -22,7 +22,7 @@ import {CandidateJobExperience} from '../../../../../model/candidate-job-experie
 import {CandidateJobExperienceService} from '../../../../../services/candidate-job-experience.service';
 import {EditCandidateJobExperienceComponent} from './edit/edit-candidate-job-experience.component';
 import {CreateCandidateJobExperienceComponent} from './create/create-candidate-job-experience.component';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {SearchResults} from '../../../../../model/search-results';
 import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupation.component';
 import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
@@ -41,7 +41,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   @Input() candidateOccupation: CandidateOccupation;
   @Output() deleteOccupation = new EventEmitter<CandidateOccupation>();
 
-  candidateJobExperienceForm: FormGroup;
+  candidateJobExperienceForm: UntypedFormGroup;
   loading: boolean;
   expanded: boolean;
   error;
@@ -51,7 +51,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   constructor(private candidateJobExperienceService: CandidateJobExperienceService,
               private modalService: NgbModal,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
   }
 
   ngOnInit() {

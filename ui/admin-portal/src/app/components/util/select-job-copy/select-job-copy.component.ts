@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Job, SearchJobRequest} from "../../../model/job";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {JobService} from "../../../services/job.service";
@@ -12,14 +12,14 @@ import {OpportunityOwnershipType} from "../../../model/opportunity";
 })
 export class SelectJobCopyComponent implements OnInit {
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   loading: boolean;
   jobsToCopy: Job[];
   error: string;
 
   constructor(
     private activeModal: NgbActiveModal,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private jobService: JobService) { }
 
   ngOnInit(): void {
