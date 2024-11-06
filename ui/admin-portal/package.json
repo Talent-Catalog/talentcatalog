@@ -23,7 +23,6 @@
     "@angular/router": "^14.3.0",
     "@ctrl/ngx-emoji-mart": "^6.2.0",
     "@fortawesome/fontawesome-free": "^6.2.0",
-    "@ng-select/ng-select": "^8.3.0",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
     "@popperjs/core": "^2.10.2",
