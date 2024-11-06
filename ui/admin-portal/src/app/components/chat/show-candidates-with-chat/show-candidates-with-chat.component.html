@@ -21,7 +21,7 @@
                id="keyword">
       </div>
       <div class="col-2">
-        <button class="btn btn-sm btn-accent-3" (click)="refresh()">
+        <button class="btn btn-sm btn-accent-3" (click)="refresh($event)">
           Refresh
           <i class="fas fa-sync" title="Refresh data"></i>
         </button>
@@ -82,15 +82,6 @@
           </a>
           <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
             <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
-          </a>
-          <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
-            <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
-          </a>
-          <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
-            <i class="fas fa-video" title="Show candidate's one way video"></i>
-          </a>
-          <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
-            <i class="fab fa-linkedin" title="Show candidate's LinkedIn page"></i>
           </a>
         </td>
         <td>

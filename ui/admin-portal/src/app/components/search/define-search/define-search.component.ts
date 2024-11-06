@@ -28,7 +28,6 @@ import {
 } from '@angular/core';
 
 import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
-import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
 import {Language} from '../../../model/language';
@@ -59,9 +58,7 @@ import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-r
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
-import {ActivatedRoute, Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {LocalStorageService} from 'angular-2-local-storage';
+import {Router} from '@angular/router';
 import {
   ClearSelectionRequest,
   getCandidateSourceNavigation,
@@ -138,8 +135,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   selectedBaseJoin;
   storedBaseJoin;
 
-  constructor(private http: HttpClient, private fb: FormBuilder,
-              private candidateService: CandidateService,
+  constructor(private fb: FormBuilder,
               private countryService: CountryService,
               private languageService: LanguageService,
               private partnerService: PartnerService,
@@ -150,8 +146,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private surveyTypeService: SurveyTypeService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
-              private localStorageService: LocalStorageService,
-              private route: ActivatedRoute,
               private router: Router,
               private savedListService: SavedListService,
               private authorizationService: AuthorizationService,
@@ -159,6 +153,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private searchQueryService: SearchQueryService
               ) {
     /* SET UP FORM */
+    //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
       savedSearchId: [null],
       simpleQueryString: [null],
@@ -202,6 +197,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],
+      // todo Maybe this needs to be SavedList objects - or as well as, like countries
+      listAnyIds: [[]],
+      listAnySearchType: ['or'],
+      listAllIds: [[]],
+      listAllSearchType: ['and'],
       unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
@@ -358,6 +358,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
   }
 
+  /**
+   * Replaces arrays of objects with their corresponding ids.
+   * @param request Form data
+   */
   getIdsMultiSelect(request): SearchCandidateRequestPaged {
     if (request.countries != null) {
       request.countryIds = request.countries.map(c => c.id);
@@ -412,6 +416,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
+    this.searchForm.controls['listAllSearchType'].patchValue('or');
+    this.searchForm.controls['listAnySearchType'].patchValue('and');
 
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
@@ -491,6 +497,18 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   onExclusionListSelected(list: CandidateSource) {
     this.exclusionListIdControl.patchValue(list?.id);
+  }
+
+  onListAnySelected(lists: CandidateSource[]) {
+    //Update form value
+    let ids: number[] = lists.map(s => s.id);
+    this.listAnyIdsControl.patchValue(ids);
+  }
+
+  onListAllSelected(lists: CandidateSource[]) {
+    //Update form value
+    let ids: number[] = lists.map(s => s.id);
+    this.listAllIdsControl.patchValue(ids);
   }
 
   showSavedSearches() {
@@ -575,6 +593,32 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchForm.controls[name].patchValue(request[name]);
     });
 
+    /* DEFAULTS */
+    let searchType = request.countrySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['countrySearchType'].patchValue(searchType);
+
+    searchType = request.nationalitySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
+
+    searchType = request.listAllSearchType;
+    if (searchType == null) {
+      searchType = 'and';
+    }
+    this.searchForm.controls['listAllSearchType'].patchValue(searchType);
+
+    searchType = request.listAnySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['listAnySearchType'].patchValue(searchType);
+
+
     // For the multiselects we have to set the corresponding id/name object by searching for the
     // values in the given search request in the complete set of drop down options for that field.
 
@@ -648,11 +692,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       countries = this.countries.filter(c => request.countryIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['countries'].patchValue(countries);
-    let countrySearchType = request.countrySearchType;
-    if (countrySearchType == null) {
-      countrySearchType = 'or';
-    }
-    this.searchForm.controls['countrySearchType'].patchValue(countrySearchType);
 
     /* NATIONALITIES */
     let nationalities = [];
@@ -660,11 +699,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
-    let searchType = request.nationalitySearchType;
-    if (searchType == null) {
-      searchType = 'or';
-    }
-    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
 
     /* UNHCR STATUSES */
     let unhcrStatuses: EnumOption[] = [];
@@ -696,6 +730,22 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   get exclusionListIdControl(): AbstractControl {
     return this.searchForm.get('exclusionListId');
+  }
+
+  get listAllIds(): number[] {
+    return this.listAllIdsControl?.value;
+  }
+
+  get listAllIdsControl(): AbstractControl {
+    return this.searchForm.get('listAllIds');
+  }
+
+  get listAnyIds(): number[] {
+    return this.listAnyIdsControl?.value;
+  }
+
+  get listAnyIdsControl(): AbstractControl {
+    return this.searchForm.get('listAnyIds');
   }
 
   get searchJoinArray() {
@@ -750,7 +800,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  handleSearchTypeChange(control: string, value: 'or' | 'not') {
+  handleSearchTypeChange(control: string, value: 'and' | 'or' | 'not') {
     this.searchForm.controls[control].patchValue(value);
   }
 
