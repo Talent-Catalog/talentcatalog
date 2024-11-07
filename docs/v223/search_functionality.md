@@ -14,7 +14,7 @@ there are unsaved filter changes made to the saved search filters and the user n
 will appear to get confirmation to proceed and allow the user to save the changes if desired.
 
 <div class="card-image-container-narrow">
-      <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
+      <img src="./../assets/images/v223/UnsavedChangesFilterOkSmall.gif" 
             alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
       <div class="card-image-caption">Changing search filters then moving page triggering pop up</div>
 </div>
@@ -29,7 +29,7 @@ It is important to have selections cleared prior before searching as it avoids s
 search but still being selected. Basically this causes ‘ghost’ selections that have been filtered out of the search 
 however will appear in a list when the selections are copied over.
 <div class="card-image-container-narrow">
-      <img src="./../assets/images/v223/SelectionsClearOKother.webm" 
+      <img src="./../assets/images/v223/UnsavedChangesFilterOkSmall.gif" 
             alt="Proceed with Clearing Selections on Search Gif" class="card-image">
       <div class="card-image-caption">Searching will prompt you to clear selections prior</div>
 </div>
