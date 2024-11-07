@@ -12,7 +12,7 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
   <div class="card-no-border">
-    <img src="./assets/images/v223/EmailNotifications.png" alt="Email Notifications" class="card-image">
+    <img src="./assets/images/v223/EmailNotifications.jpg" alt="Email Notifications" class="card-image">
     <div class="card-body">
       <div class="card-title">Email Notifications</div>
       <div class="card-description">

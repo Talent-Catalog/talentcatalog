@@ -29,7 +29,7 @@ It is important to have selections cleared prior before searching as it avoids s
 search but still being selected. Basically this causes ‘ghost’ selections that have been filtered out of the search 
 however will appear in a list when the selections are copied over.
 <div class="card-image-container-narrow">
-      <img src="./../assets/images/v223/SelectionsClearOk.gif" 
+      <img src="./../assets/images/v223/SelectionsClearOKother.webm" 
             alt="Proceed with Clearing Selections on Search Gif" class="card-image">
       <div class="card-image-caption">Searching will prompt you to clear selections prior</div>
 </div>
