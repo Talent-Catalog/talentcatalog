@@ -128,7 +128,6 @@ a:hover .card-description {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   margin-top: 12px;
-  margin-bottom: 0;
 }
 
 .card-image-container-narrow {
@@ -139,6 +138,7 @@ a:hover .card-description {
 .card-image-container-narrow .card-image {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  margin-bottom: 0;
 }
 
 @media screen and (max-width: 768px) {
