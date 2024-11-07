@@ -63,7 +63,7 @@ describe('CandidateSourceCacheService', () => {
       const cacheKey = service.cacheKey(source);
       service.cache(cacheKey, source);
 
-      expect(localStorage.setItem).toHaveBeenCalledWith(cacheKey, JSON.stringify(source));
+      expect(localStorage.setItem).toHaveBeenCalledWith('tc-admin-' + cacheKey, JSON.stringify(source));
       expect(service['cacheKeys'].has(cacheKey)).toBeTrue();
     });
   });
@@ -77,7 +77,7 @@ describe('CandidateSourceCacheService', () => {
       const result = service.getFromCache(cacheKey);
 
       expect(result).toEqual(source);
-      expect(localStorage.getItem).toHaveBeenCalledWith(cacheKey);
+      expect(localStorage.getItem).toHaveBeenCalledWith('tc-admin-' + cacheKey);
     });
 
     it('should return null if no cached results are found', () => {
@@ -87,7 +87,7 @@ describe('CandidateSourceCacheService', () => {
       const result = service.getFromCache(cacheKey);
 
       expect(result).toBeNull();
-      expect(localStorage.getItem).toHaveBeenCalledWith(cacheKey);
+      expect(localStorage.getItem).toHaveBeenCalledWith('tc-admin-' + cacheKey);
     });
   });
 
@@ -98,7 +98,7 @@ describe('CandidateSourceCacheService', () => {
 
       service.removeFromCache(cacheKey);
 
-      expect(localStorage.removeItem).toHaveBeenCalledWith(cacheKey);
+      expect(localStorage.removeItem).toHaveBeenCalledWith('tc-admin-' + cacheKey);
       expect(deleteSpy).toHaveBeenCalledWith(cacheKey);
     });
   });
@@ -112,7 +112,7 @@ describe('CandidateSourceCacheService', () => {
       service.clearAll();
 
       cacheKeys.forEach(cacheKey => {
-        expect(localStorage.removeItem).toHaveBeenCalledWith(cacheKey);
+        expect(localStorage.removeItem).toHaveBeenCalledWith('tc-admin-' + cacheKey);
       });
       expect(clearSpy).toHaveBeenCalled();
       expect(service['cacheKeys'].size).toBe(0);

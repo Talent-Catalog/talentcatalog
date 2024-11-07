@@ -115,7 +115,7 @@ describe('CandidateSourceResultsCacheService', () => {
 
       service.removeFromCache(source);
 
-      expect(localStorage.removeItem).toHaveBeenCalledWith('type1');
+      expect(localStorageService.remove).toHaveBeenCalledWith('type1');
 
       // Restore the original static method
       CandidateSourceResultsCacheService['cacheKey'] = originalCacheKey;
