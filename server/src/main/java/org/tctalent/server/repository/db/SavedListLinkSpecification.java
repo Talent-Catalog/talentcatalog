@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.SavedListLink;
 import org.tctalent.server.request.link.SearchLinkRequest;
 
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 
 public class SavedListLinkSpecification {
     public static Specification<SavedListLink> buildSearchQuery(final SearchLinkRequest request) {

@@ -28,8 +28,8 @@ import org.tctalent.server.request.task.SearchTaskRequest;
 import org.tctalent.server.request.task.UpdateTaskRequest;
 import org.tctalent.server.service.db.TaskService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 

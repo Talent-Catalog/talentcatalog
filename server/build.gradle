@@ -15,7 +15,7 @@
  */
 buildscript {
     ext {
-        springBootVersion = '2.7.13'
+        springBootVersion = '3.3.5'
         isDev = System.properties['env'] == 'dev'
         javaTargetVersion = JavaVersion.VERSION_17
         lombokVersion = "1.18.30"
@@ -128,7 +128,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.apache.commons:commons-lang3")
     implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
-    implementation("com.sun.mail:jakarta.mail")
+//todo    implementation("com.sun.mail:jakarta.mail")
     // https://mvnrepository.com/artifact/com.sun.activation/jakarta.activation
     implementation 'com.sun.activation:jakarta.activation'
     implementation('com.opencsv:opencsv:5.0')
