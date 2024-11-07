@@ -47,7 +47,7 @@ however will appear in a list when the selections are copied over.
     </div>
 </div> 
 </div>
-    <video width="320" height="240" autoplay>
+    <video width="320" height="240" autoplay loop controls>
         <source src="./../assets/images/v223/SelectionsClearOKother.webm" type="video/webm">
     </video>
 
