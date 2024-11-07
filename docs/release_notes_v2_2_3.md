@@ -26,7 +26,7 @@ Check out the newest features and enhancements.
   </div>
 
 
-  <a href="./v223/search_functionality.md" class="card">
+  <a href="./v223/search_functionality" class="card">
     <img src="./assets/images/v223/SearchFunctionality.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">Search Improvements</div>

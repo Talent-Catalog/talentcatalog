@@ -16,7 +16,7 @@ Automated Posts see the explainer documentation
 
 # Saving Filters
 
-<div class="card-image-container">
+<div class="card-image-container-narrow">
   <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
         alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
 </div>
