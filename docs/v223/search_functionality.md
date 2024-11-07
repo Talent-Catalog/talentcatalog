@@ -40,6 +40,9 @@ however will appear in a list when the selections are copied over.
                 alt="Proceed with Clearing Selections on Search Gif" class="card-image">
           <div class="card-image-caption">Searching will prompt you to clear selections prior</div>
     </div>
+    <video width="320" height="240" autoplay>
+        <source src="movie.mp4" type="video/mp4">
+    </video>
     <div class="card-image-container-narrow">
         <img src="./../assets/images/v223/SelectionsClearModal.png" 
                 alt="Proceed with Clear Selections Modal" class="card-image">
