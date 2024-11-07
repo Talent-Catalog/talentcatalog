@@ -38,9 +38,11 @@ there are unsaved filter changes made to the saved search filters and the user n
 will appear to get confirmation to proceed and allow the user to save the changes if desired.
 
 <div class="card-image-container-narrow">
-  <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
-        alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
-    <div class="card-description">Changing search filters and changing page triggering pop up</div>
+    <figure>
+      <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
+            alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
+        <figcaption>Changing search filters and changing page triggering pop up</figcaption>
+    </figure>
 </div>
 <div class="card-image-container-narrow">
     <img src="./../assets/images/v223/UnsavedChangesFilterModal.png" 
@@ -48,15 +50,9 @@ will appear to get confirmation to proceed and allow the user to save the change
 </div>
 
 # Candidate Selections
-Sent to: Prospective Candidate Chat (S C), Recruiting Candidate Chat (S J C), Source Partner Chat (S J)
-<br>
-Seen by candidates? ✅
-
-<div class="card-image-container">
-  <img src="./../assets/images/v222/AutoRemovedSubList.png" 
-        alt="Candidate Registration and Consents" class="card-image">
-</div>
-
+It is important to have selections cleared prior before searching as it avoids selected candidates disappearing from the 
+search but still being selected. Basically this causes ‘ghost’ selections that have been filtered out of the search 
+however will appear in a list when the selections are copied over.
 
 
 
