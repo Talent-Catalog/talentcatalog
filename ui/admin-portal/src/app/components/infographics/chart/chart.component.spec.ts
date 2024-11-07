@@ -59,7 +59,7 @@ describe('ChartComponent', () => {
         { data: [10, 20, 30] }
       ]
     });
-    expect(component.chartOptions).toEqual({});
+    expect(component.chartOptions).toEqual({ responsive: true });
   });
 
   it('should initialize bar chart correctly', () => {
@@ -83,24 +83,29 @@ describe('ChartComponent', () => {
       ]
     });
     expect(component.chartOptions).toEqual({
+      responsive: true,
       scales: {
         y: {
           beginAtZero: true,
-          min: 0,
-          ticks: {}
+          min: 0
         }
       }
     });
   });
 
-  it('should not initialize chart if chartData is not provided', () => {
+  it('should not initialize chart with data if chartData is not provided', () => {
     component.chartType = 'doughnut';
     component.chartLegend = true;
 
     component.ngOnInit();
 
-    expect(component.chartLabels).toBeUndefined();
-    expect(component.chartDataSet).toBeUndefined();
+    expect(component.chartLabels).toEqual([]);
+    expect(component.chartDataSet).toEqual({
+      labels: [],
+      datasets: [
+        { data: [] }
+      ]
+    });
     expect(component.chartOptions).toEqual({});
   });
 });
