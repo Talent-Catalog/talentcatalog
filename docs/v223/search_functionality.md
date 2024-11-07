@@ -14,17 +14,14 @@ Automated Posts see the explainer documentation
 [here](https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing).
 
 
-# Job published
-Sent to: All Source Partners Chat (S+ J)
-<br>
-Seen by candidates? 🚫
+# Saving Filters
 
 <div class="card-image-container">
-  <img src="./../assets/images/v222/AutoJobPublished.png" 
-        alt="Candidate Registration and Consents" class="card-image">
+  <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
+        alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
 </div>
 
-# Candidate removed from submission list
+# Candidate Selections
 Sent to: Prospective Candidate Chat (S C), Recruiting Candidate Chat (S J C), Source Partner Chat (S J)
 <br>
 Seen by candidates? ✅
