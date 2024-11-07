@@ -80,7 +80,6 @@ import {
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {
   EditCandidateReviewStatusItemComponent
 } from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
@@ -107,6 +106,7 @@ import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunit
 import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 interface CachedTargetList {
   sourceID: number;

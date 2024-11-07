@@ -61,7 +61,6 @@ import {
 } from '../../util/form/language-proficiency/language-level-form-control.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {
   ClearSelectionRequest,
   getCandidateSourceNavigation,
@@ -83,6 +82,7 @@ import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {first} from "rxjs/operators";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-define-search',

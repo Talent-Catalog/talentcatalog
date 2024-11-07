@@ -30,9 +30,9 @@ import {CandidateSource} from '../../../model/base';
 import {isSavedSearch} from "../../../model/saved-search";
 import {isSavedList} from "../../../model/saved-list";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-candidate-search-card',

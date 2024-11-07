@@ -15,7 +15,6 @@
  */
 
 import {Injectable} from '@angular/core';
-import {LocalStorageService} from "angular-2-local-storage";
 import {SearchResults} from "../model/search-results";
 import {Candidate} from "../model/candidate";
 import {CandidateSource} from "../model/base";
@@ -43,10 +42,7 @@ export interface CachedSourceResults {
 })
 export class CandidateSourceResultsCacheService {
 
-  constructor(
-    private localStorageService: LocalStorageService,
-
-  ) { }
+  constructor() { }
 
   private static cacheKey(source: CandidateSource): string {
     return getCandidateSourceType(source) + source.id;
@@ -57,9 +53,9 @@ export class CandidateSourceResultsCacheService {
    * @param source Candidate source associated with results.
    * @param cachedSearchResults Results to be stored in cache.
    */
-  cache(source: CandidateSource, cachedSearchResults: CachedSourceResults) {
+  cache(source: CandidateSource, cachedSearchResults: CachedSourceResults): void {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
-    this.localStorageService.set(cacheKey, cachedSearchResults);
+    localStorage.setItem(cacheKey, JSON.stringify(cachedSearchResults));
   }
 
   /**
@@ -75,9 +71,10 @@ export class CandidateSourceResultsCacheService {
    * @param source Candidate source whose cache is requested
    * @return Cached results or null if none found.
    */
-  getFromCache(source: CandidateSource): CachedSourceResults {
+  getFromCache(source: CandidateSource): CachedSourceResults | null {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
-    return this.localStorageService.get<CachedSourceResults>(cacheKey);
+    const cachedData = localStorage.getItem(cacheKey);
+    return cachedData ? JSON.parse(cachedData) as CachedSourceResults : null;
   }
 
   /**
@@ -87,8 +84,8 @@ export class CandidateSourceResultsCacheService {
    * not come from the cache.
    * @param source Candidate source whose cache is to be cleared.
    */
-  removeFromCache(source: CandidateSource): boolean {
+  removeFromCache(source: CandidateSource): void {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
-    return this.localStorageService.remove(cacheKey);
+    localStorage.removeItem(cacheKey);
   }
 }

@@ -31,7 +31,6 @@ import {SearchResults} from "../../../model/search-results";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {EnumOption} from "../../../util/enum";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {getOpportunityStageName, Opportunity, OpportunityOwnershipType} from "../../../model/opportunity";
@@ -45,6 +44,7 @@ import {BehaviorSubject, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
 import {Partner} from "../../../model/partner";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Directive()
 export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {

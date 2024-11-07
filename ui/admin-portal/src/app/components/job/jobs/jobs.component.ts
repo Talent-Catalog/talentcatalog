@@ -1,6 +1,5 @@
 import {Component, ElementRef, Inject, LOCALE_ID, ViewChild} from '@angular/core';
 import {AuthorizationService} from "../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {UntypedFormBuilder} from "@angular/forms";
 import {Job, JobOpportunityStage, SearchJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
@@ -15,6 +14,7 @@ import {forkJoin, Observable} from "rxjs";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-jobs',

@@ -3,12 +3,12 @@ import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {SearchTaskRequest} from "../../../model/base";
 import {User} from "../../../model/user";
-import {LocalStorageService} from "angular-2-local-storage";
 import {Router} from "@angular/router";
 import {indexOfHasId} from "../../../model/saved-search";
 import {TaskService} from "../../../services/task.service";
 import {Task} from "../../../model/task";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-browse-tasks',

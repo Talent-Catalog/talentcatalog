@@ -5,7 +5,6 @@ import {
   SearchOpportunityRequest
 } from "../../../model/candidate-opportunity";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {UntypedFormBuilder} from "@angular/forms";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthorizationService} from "../../../services/authorization.service";
@@ -17,6 +16,7 @@ import {forkJoin, Observable} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {SearchResults} from "../../../model/search-results";
 import {PartnerService} from "../../../services/partner.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-candidate-opps',

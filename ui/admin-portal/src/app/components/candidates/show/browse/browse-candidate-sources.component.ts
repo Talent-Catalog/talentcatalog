@@ -39,7 +39,6 @@ import {
   SavedSearchTypeSubInfo
 } from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
 import {
@@ -69,6 +68,7 @@ import {JobOpportunityStage} from "../../../../model/job";
 import {enumOptions} from "../../../../util/enum";
 import {SalesforceService} from "../../../../services/salesforce.service";
 import {AuthenticationService} from "../../../../services/authentication.service";
+import {LocalStorageService} from "../../../../services/local-storage.service";
 
 @Component({
   selector: 'app-browse-candidate-sources',
