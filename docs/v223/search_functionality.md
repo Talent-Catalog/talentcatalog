@@ -41,7 +41,7 @@ however will appear in a list when the selections are copied over.
           <div class="card-image-caption">Searching will prompt you to clear selections prior</div>
     </div>
     <video width="320" height="240" autoplay>
-        <source src="movie.mp4" type="video/mp4">
+        <source src="./../assets/images/v223/SelectionsClearOKother.webm" type="video/webm">
     </video>
     <div class="card-image-container-narrow">
         <img src="./../assets/images/v223/SelectionsClearModal.png" 
