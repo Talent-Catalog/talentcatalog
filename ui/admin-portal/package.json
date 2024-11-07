@@ -45,7 +45,7 @@
     "moment-timezone": "^0.5.37",
     "ng2-charts": "^2.4.3",
     "ng2-dragula": "^5.1.0",
-    "ngx-infinite-scroll": "^8.0.2",
+    "ngx-infinite-scroll": "^16.0.0",
     "ngx-quill": "^16.2.1",
     "ngx-wig": "^16.0.0",
     "protractor-http-mock": "^0.10.0",
