@@ -14,7 +14,7 @@ there are unsaved filter changes made to the saved search filters and the user n
 will appear to get confirmation to proceed and allow the user to save the changes if desired.
 
 <div class="card-image-container-narrow">
-      <img src="./../assets/images/v223/UnsavedChangesFilterOkSmall.gif" 
+      <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
             alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
       <div class="card-image-caption">Changing search filters then moving page triggering pop up</div>
 </div>
