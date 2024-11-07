@@ -7,6 +7,7 @@ sass:
 We are implementing some search safeguards in this release to help combat some problems of:
 1. Candidate's being unintentionally added to lists
 2. Search filters being overwritten
+
 Part of fixing these issues is distinguishing the subtle differences between two types of searches:
 <strong>Unsaved Search: </strong>
 This is a single search that appears when you click on the New Search tab and exists at the URL 
@@ -14,6 +15,7 @@ This is a single search that appears when you click on the New Search tab and ex
 each 'Search' click so that user's can narrow down the optimal filters for the results required. When the search filters 
 are returning the desired candidates we suggest saving the search so that it becomes a 'Saved Search'. See below for 
 why Saved Searches are different to the unsaved search.
+
 <strong>Saved Searches:</strong>
 Once an unsaved search has been saved, it becomes a Saved Search. Having a saved search has the following key 
 benefits:
@@ -34,16 +36,15 @@ For <strong>saved searches</strong>, as those filters have been specifically cho
 changes upon each 'Search'. Instead, those filter changes have to be manually saved via the 'Update Search' button. If 
 there are unsaved filter changes made to the saved search filters and the user navigates away from the search page, a pop up
 will appear to get confirmation to proceed and allow the user to save the changes if desired.
-<div class="card-container">
-    <div class="card-image-container-narrow">
-      <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
-            alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
-        <div class="card-description">Changing search filters and changing page triggering pop up</div>
-    </div>
-    <div class="card-image-container-narrow">
-        <img src="./../assets/images/v223/UnsavedChangesFilterModal.png" 
-                alt="Proceed with Unsaved Filter Changes Modal" class="card-image">
-    </div>
+
+<div class="card-image-container-narrow">
+  <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
+        alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
+    <div class="card-description">Changing search filters and changing page triggering pop up</div>
+</div>
+<div class="card-image-container-narrow">
+    <img src="./../assets/images/v223/UnsavedChangesFilterModal.png" 
+            alt="Proceed with Unsaved Filter Changes Modal" class="card-image">
 </div>
 
 # Candidate Selections
