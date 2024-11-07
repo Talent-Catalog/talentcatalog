@@ -17,7 +17,7 @@
 import {ChartComponent} from "./chart.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {DataRow} from "../../../model/data-row";
-import {ChartsModule} from "ng2-charts";
+import {NgChartsModule} from "ng2-charts";
 
 describe('ChartComponent', () => {
   let component: ChartComponent;
@@ -25,7 +25,7 @@ describe('ChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChartsModule],
+      imports: [NgChartsModule],
       declarations: [ChartComponent]
     }).compileComponents();
   });
@@ -53,7 +53,12 @@ describe('ChartComponent', () => {
 
     component.ngOnInit();
     expect(component.chartLabels).toEqual(['Label 1', 'Label 2', 'Label 3']);
-    expect(component.chartDataSet).toEqual([10, 20, 30]);
+    expect(component.chartDataSet).toEqual({
+      labels: ['Label 1', 'Label 2', 'Label 3'],
+      datasets: [
+        { data: [10, 20, 30] }
+      ]
+    });
     expect(component.chartOptions).toEqual({});
   });
 
@@ -71,16 +76,19 @@ describe('ChartComponent', () => {
     component.ngOnInit();
 
     expect(component.chartLabels).toEqual(['Label 1', 'Label 2', 'Label 3']);
-    expect(component.chartDataSet).toEqual([10, 20, 30]);
+    expect(component.chartDataSet).toEqual({
+      labels: ['Label 1', 'Label 2', 'Label 3'],
+      datasets: [
+        { data: [10, 20, 30] }
+      ]
+    });
     expect(component.chartOptions).toEqual({
       scales: {
-        yAxes: [
-          {
-            ticks: {
-              min: 0
-            }
-          }
-        ]
+        y: {
+          beginAtZero: true,
+          min: 0,
+          ticks: {}
+        }
       }
     });
   });
