@@ -20,7 +20,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class LocalStorageService {
-  private readonly prefix = 'tbb-admin-';
+  private readonly prefix = 'tc-admin-';
 
   private addPrefix(key: string): string {
     return `${this.prefix}${key}`;

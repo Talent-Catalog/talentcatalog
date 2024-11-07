@@ -18,9 +18,9 @@ import {TestBed} from '@angular/core/testing';
 import {LocalStorageService} from "./local-storage.service";
 
 
-describe('WrappedStorageService', () => {
+describe('LocalStorageService', () => {
   let service: LocalStorageService;
-  const prefix = 'tbb-admin-';
+  const prefix = 'tc-admin-';
   const testKey = 'testKey';
   const testValue = { name: 'Abdullah', role: 'admin' };
 
