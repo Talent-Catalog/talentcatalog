@@ -19,6 +19,15 @@ Automated Posts see the explainer documentation
 <div class="card-image-container-narrow">
   <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
         alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
+    <img src="./../assets/images/v223/UnsavedChangesFilterModal.png" 
+            alt="Proceed with Unsaved Filter Changes Modal" class="card-image">
+
+</div>
+<div class="card-image-container-narrow">
+  <img src="./../assets/images/v223/UnsavedChangesFilterOkSmall.gif" 
+        alt="Proceed with Unsaved Filter Changes Gif Small" class="card-image">
+    <img src="./../assets/images/v223/UnsavedChangesFilterModal.png" 
+            alt="Proceed with Unsaved Filter Changes Modal" class="card-image">
 </div>
 
 # Candidate Selections
