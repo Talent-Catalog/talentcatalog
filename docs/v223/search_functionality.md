@@ -3,7 +3,7 @@ title: Search Functionality Improvements
 sass:
   style: compressed
 ---
-We are implementing some search safeguards in this release to help combat some problems of:
+We are implementing some search safeguards in this release to combat the following:
 1. Candidate's being unintentionally added to lists
 2. Search filters being overwritten
 
