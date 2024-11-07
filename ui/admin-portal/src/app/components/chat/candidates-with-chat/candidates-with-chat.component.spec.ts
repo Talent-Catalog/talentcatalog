@@ -13,7 +13,6 @@ import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {ViewChatPostsComponent} from "../view-chat-posts/view-chat-posts.component";
 import {MockChatPost} from "../../../MockData/MockChatPost";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {Component, Input} from "@angular/core";
 import {ChatPost} from "../../../model/chat";
 
@@ -38,8 +37,7 @@ describe('CandidatesWithChatComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [CandidatesWithChatComponent, ShowCandidatesWithChatComponent,
         SortedByComponent, ViewChatPostsComponent, MockViewPostComponent],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, LocalStorageModule.forRoot({}),
-        NgbPagination],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, NgbPagination],
       providers: [
         { provide: ChatService, useValue: chatService },
         { provide: AuthorizationService, useValue: authorizationService },

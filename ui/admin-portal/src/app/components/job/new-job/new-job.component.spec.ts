@@ -3,7 +3,6 @@ import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from '@angular/for
 import {NewJobComponent} from './new-job.component';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {JobService} from '../../../services/job.service';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -60,7 +59,6 @@ describe('NewJobComponent', () => {
         HttpClientTestingModule,
         FormsModule,
         NgbPaginationModule,
-        LocalStorageModule.forRoot({}),
         NgSelectModule
       ],
       providers: [

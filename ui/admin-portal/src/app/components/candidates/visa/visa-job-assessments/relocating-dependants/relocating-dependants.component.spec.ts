@@ -14,7 +14,6 @@ import {CandidateOpportunityService} from "../../../../../services/candidate-opp
 import {CandidateDependantService} from "../../../../../services/candidate-dependant.service";
 import {CandidateOpportunity} from "../../../../../model/candidate-opportunity";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 
 describe('RelocatingDependantsComponent', () => {
@@ -42,9 +41,7 @@ describe('RelocatingDependantsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [RelocatingDependantsComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule,
-        LocalStorageModule.forRoot({}),
-      ],
+      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       providers: [
         { provide: UntypedFormBuilder  },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },

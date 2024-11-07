@@ -9,7 +9,6 @@ import {CommonModule, Location} from '@angular/common';
 import {of, throwError} from 'rxjs';
 import {Job} from '../../../../model/job';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockUser} from "../../../../MockData/MockUser";
 import {MockJob} from "../../../../MockData/MockJob";
 import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.component";
@@ -43,7 +42,7 @@ describe('ViewJobComponent', () => {
     mockLocation = jasmine.createSpyObj('Location', ['back']);
 
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
+      imports:[HttpClientTestingModule,NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
       declarations: [ViewJobComponent,AutosaveStatusComponent,RouterLinkStubDirective,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
       providers: [
         UntypedFormBuilder,

@@ -1,7 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ReactiveFormsModule} from '@angular/forms';
 import {NgbModal, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
-import {LocalStorageModule, LocalStorageService} from 'angular-2-local-storage';
 import {Router} from '@angular/router';
 import {BrowseCandidateSourcesComponent} from './browse-candidate-sources.component';
 import {AuthenticationService} from '../../../../services/authentication.service';
@@ -18,6 +17,7 @@ import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
 import {SearchBy} from "../../../../model/saved-list";
 import {SearchSavedSearchRequest} from "../../../../model/saved-search";
+import {LocalStorageService} from "../../../../services/local-storage.service";
 
 describe('BrowseCandidateSourcesComponent', () => {
   let component: BrowseCandidateSourcesComponent;
@@ -37,7 +37,6 @@ describe('BrowseCandidateSourcesComponent', () => {
       declarations: [BrowseCandidateSourcesComponent,CandidateSourceResultsComponent,CandidateSourceComponent,RouterLinkStubDirective],
       imports: [
         HttpClientTestingModule,
-        LocalStorageModule.forRoot({}),
         ReactiveFormsModule ,
         NgbPaginationModule
       ],

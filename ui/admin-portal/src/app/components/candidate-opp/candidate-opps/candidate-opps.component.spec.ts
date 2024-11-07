@@ -2,7 +2,6 @@ import {CandidateOppsComponent} from "./candidate-opps.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {ChatService} from "../../../services/chat.service";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
@@ -11,6 +10,7 @@ import {LOCALE_ID, SimpleChange} from "@angular/core";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {CommonModule} from "@angular/common";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('CandidateOppsComponent', () => {
   let component: CandidateOppsComponent;
@@ -30,7 +30,7 @@ describe('CandidateOppsComponent', () => {
     const salesforceServiceSpy = jasmine.createSpyObj('SalesforceService', ['']);
     await TestBed.configureTestingModule({
       declarations: [CandidateOppsComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule],
       providers: [
         UntypedFormBuilder,
         { provide: ChatService, useValue: chatServiceSpy },

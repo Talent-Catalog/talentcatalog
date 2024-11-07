@@ -3,7 +3,6 @@ import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 describe('EditJobInfoComponent', () => {
@@ -15,9 +14,7 @@ describe('EditJobInfoComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ EditJobInfoComponent,RouterLinkStubDirective ],
-      imports:[HttpClientTestingModule,
-        LocalStorageModule.forRoot({}),
-      ],
+      imports:[HttpClientTestingModule],
       providers: [
         { provide: NgbModal  },
         { provide: NgbActiveModal  },

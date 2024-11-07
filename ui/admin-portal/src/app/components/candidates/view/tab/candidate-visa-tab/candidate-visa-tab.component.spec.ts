@@ -25,7 +25,6 @@ import {
   HasNameSelectorComponent
 } from "../../../../util/has-name-selector/has-name-selector.component";
 import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
@@ -51,7 +50,7 @@ describe('CandidateVisaTabComponent', () => {
     authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly']);
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [CandidateVisaTabComponent,ExportPdfComponent, HasNameSelectorComponent],
       providers: [
         UntypedFormBuilder,
@@ -59,7 +58,7 @@ describe('CandidateVisaTabComponent', () => {
         { provide: CountryService, useValue: countryServiceMock },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceMock },
         { provide: NgbModal, useValue: modalServiceMock },
-        { provide: LocalStorageService, useValue: {} },
+        // { provide: LocalStorageService, useValue: {} },
         { provide: AuthorizationService, useValue: authServiceMock },
       ]
     }).compileComponents();

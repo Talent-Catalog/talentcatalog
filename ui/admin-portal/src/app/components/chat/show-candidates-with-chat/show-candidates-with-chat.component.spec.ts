@@ -3,7 +3,6 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {ShowCandidatesWithChatComponent} from './show-candidates-with-chat.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
@@ -33,8 +32,7 @@ describe('ShowCandidatesWithChatComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ ShowCandidatesWithChatComponent, RouterLinkStubDirective, SortedByComponent ],
-      imports: [ HttpClientTestingModule, LocalStorageModule.forRoot({}), FormsModule,
-        ReactiveFormsModule, NgbPagination ],
+      imports: [ HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbPagination ],
       providers: [
         { provide: UntypedFormBuilder },
         { provide: CandidateService, useValue: candidateService }

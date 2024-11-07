@@ -25,7 +25,6 @@ import {
   NgbTooltipModule,
   NgbTypeaheadModule
 } from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {RouterTestingModule} from "@angular/router/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {
@@ -51,7 +50,7 @@ describe('DefineSearchComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [DefineSearchComponent,LanguageLevelFormControlComponent,JoinSavedSearchComponent,DateRangePickerComponent],
-      imports: [ReactiveFormsModule,NgbTooltipModule,HttpClientTestingModule,NgbTypeaheadModule,NgbDatepickerModule,LocalStorageModule.forRoot({}),RouterTestingModule,NgSelectModule],
+      imports: [ReactiveFormsModule,NgbTooltipModule,HttpClientTestingModule,NgbTypeaheadModule,NgbDatepickerModule,RouterTestingModule,NgSelectModule],
       providers: [
         UntypedFormBuilder,
         NgbModal,

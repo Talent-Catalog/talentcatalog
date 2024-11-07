@@ -7,7 +7,6 @@ import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportuni
 import {ViewCandidateOppComponent} from "../view-candidate-opp/view-candidate-opp.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockPartner} from "../../../MockData/MockPartner";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {
@@ -31,7 +30,7 @@ describe('ViewCandidateOppFromUrlComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ ViewCandidateOppFromUrlComponent,OpportunityStageNextStepComponent,RouterLinkStubDirective ,ViewCandidateOppComponent ],
-      imports: [HttpClientTestingModule,NgbNavModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,NgbNavModule],
       providers: [
         { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '1' })) } },
         { provide: CandidateOpportunityService, useValue: spyOpportunityService },

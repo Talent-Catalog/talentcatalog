@@ -28,7 +28,6 @@ import {SavedSearchService} from "../../../../services/saved-search.service";
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {Router} from "@angular/router";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {ReactiveFormsModule} from "@angular/forms";
 
 
@@ -49,7 +48,6 @@ describe('CandidateSourceResultsComponent', () => {
       declarations: [CandidateSourceResultsComponent],
       imports: [
         HttpClientTestingModule,
-        LocalStorageModule.forRoot({}),
         ReactiveFormsModule ,
         NgbPaginationModule
       ],

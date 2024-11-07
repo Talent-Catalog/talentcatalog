@@ -14,7 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
@@ -42,7 +41,7 @@ describe('VisaCheckUkComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [VisaCheckUkComponent,AutosaveStatusComponent,VisaJobCheckUkComponent,CandidateVisaJobComponent,RelocatingDependantsComponent,RouterLinkStubDirective,DependantsComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule,LocalStorageModule.forRoot({})],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule],
       providers: [UntypedFormBuilder],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

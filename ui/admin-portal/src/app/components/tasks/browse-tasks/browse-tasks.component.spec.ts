@@ -16,7 +16,6 @@
 import {BrowseTasksComponent} from "./browse-tasks.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {TaskService} from "../../../services/task.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -29,6 +28,7 @@ import {RouterTestingModule} from "@angular/router/testing";
 import {ViewTaskDetailsComponent} from "../view-task-details/view-task-details.component";
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('BrowseTasksComponent', () => {
   let component: BrowseTasksComponent;

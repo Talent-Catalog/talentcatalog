@@ -5,7 +5,6 @@ import { JobService } from '../../../services/job.service';
 import {of, throwError} from 'rxjs';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {JobsWithDetailComponent} from "../jobs-with-detail/jobs-with-detail.component";
 import { Router} from "@angular/router";
@@ -32,7 +31,6 @@ describe('JobHomeComponent', () => {
       imports: [
         HttpClientTestingModule,
         ReactiveFormsModule,
-        LocalStorageModule.forRoot({}),
         NgbModule,
         NgSelectModule
       ],

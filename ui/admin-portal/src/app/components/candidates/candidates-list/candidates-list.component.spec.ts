@@ -24,7 +24,6 @@ import {MockSavedList} from "../../../MockData/MockSavedList";
 import {ShowCandidatesComponent} from "../show/show-candidates.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {CommonModule, DatePipe, TitleCasePipe} from "@angular/common";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -54,7 +53,7 @@ describe('CandidatesListComponent', () => {
     mockSavedListService.get.and.returnValue(of(MockSavedList));
     TestBed.configureTestingModule({
       declarations: [CandidatesListComponent, CandidateSourceDescriptionComponent, AutosaveStatusComponent, RouterLinkStubDirective ,ShowCandidatesComponent, SortedByComponent],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}), NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
+      imports: [HttpClientTestingModule, NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
       ],
       providers: [
         UntypedFormBuilder,

@@ -16,13 +16,13 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthenticationService} from '../../../services/authentication.service';
 import {SearchHomeComponent} from './search-home.component';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import MockSavedSearchTypeInfo from "../../../MockData/MockSavedSearchTypeInfo";
 import {MockUser} from "../../../MockData/MockUser";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('SearchHomeComponent', () => {
   let component: SearchHomeComponent;

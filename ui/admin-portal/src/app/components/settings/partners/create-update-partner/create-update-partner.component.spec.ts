@@ -29,7 +29,6 @@ import {MockJob} from "../../../../MockData/MockJob";
 import {of, throwError} from "rxjs";
 import {MockUser} from "../../../../MockData/MockUser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 
 describe('CreateUpdatePartnerComponent', () => {
   let component: CreateUpdatePartnerComponent;
@@ -50,7 +49,7 @@ describe('CreateUpdatePartnerComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateUpdatePartnerComponent],
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
         { provide: PartnerService, useValue: partnerSpy },
         { provide: CountryService, useValue: countrySpy },

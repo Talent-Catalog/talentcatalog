@@ -26,7 +26,6 @@ import {SearchResults} from "../../../model/search-results";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {CandidateSourceComponent} from "../../util/candidate-source/candidate-source.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
 
 describe('JoinSavedSearchComponent', () => {
@@ -47,7 +46,7 @@ describe('JoinSavedSearchComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [JoinSavedSearchComponent,UpdatedByComponent,CandidateSourceComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgbTypeaheadModule,LocalStorageModule.forRoot({}),RouterTestingModule],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,NgbTypeaheadModule,RouterTestingModule],
       providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, UntypedFormBuilder],
     }).compileComponents();
 

@@ -4,7 +4,6 @@ import {Job} from '../../../../../model/job';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ShowCandidatesComponent} from "../../../../candidates/show/show-candidates.component";
 import {UntypedFormBuilder,FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {DatePipe,TitleCasePipe} from "@angular/common";
 import {ActivatedRoute} from "@angular/router";
 import {of} from "rxjs";
@@ -28,7 +27,6 @@ describe('ViewJobSubmissionListComponent', () => {
         HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
-        LocalStorageModule.forRoot({}),
         NgbModule,
         NgSelectModule,
         RouterTestingModule

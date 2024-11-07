@@ -4,7 +4,6 @@ import {LoginComponent} from './login.component';
 import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from "../../services/authentication.service";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {of} from "rxjs";
 
 import {Directive, Input} from '@angular/core';
@@ -26,8 +25,7 @@ describe('LoginComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        ReactiveFormsModule,
-        LocalStorageModule.forRoot({}),
+        ReactiveFormsModule
       ],
       declarations: [
         LoginComponent,

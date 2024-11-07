@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { JobsComponent } from './jobs.component';
 import { UntypedFormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import { SortedByComponent } from "../../util/sort/sorted-by.component";
 import { NgbPaginationModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgSelectModule } from "@ng-select/ng-select";
@@ -28,7 +27,6 @@ describe('JobsComponent', () => {
         HttpClientTestingModule,
         ReactiveFormsModule,
         NgbPaginationModule,
-        LocalStorageModule.forRoot({}),
         NgSelectModule
       ],
       providers: [
