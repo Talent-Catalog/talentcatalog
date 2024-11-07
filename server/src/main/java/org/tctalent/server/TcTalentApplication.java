@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 
 /**
  * Spring start up.
@@ -41,6 +42,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @EnableAsync
+@EnableWebSocketSecurity
 public class TcTalentApplication {
 
     public static void main(String[] args) {
