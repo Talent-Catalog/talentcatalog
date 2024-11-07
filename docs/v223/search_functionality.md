@@ -15,7 +15,7 @@ will appear to get confirmation to proceed and allow the user to save the change
 <div class="card-container">
     <div class="card-image-container-narrow">
     
-      <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
+      <img src="./../assets/images/v223/UnsavedChangesFilterOkSmall.gif" 
             alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
       <div class="card-image-caption">Changing search filters then moving page triggering pop up</div>
     </div>
@@ -33,7 +33,7 @@ search but still being selected. Basically this causes ‘ghost’ selections th
 however will appear in a list when the selections are copied over.
 <div class="card-container">
     <div class="card-image-container-narrow">
-          <img src="./../assets/images/v223/UnsavedChangesFilterOkSmall.gif" 
+          <img src="./../assets/images/v223/SelectionsClearOk.gif" 
                 alt="Proceed with Clearing Selections on Search Gif" class="card-image">
           <div class="card-image-caption">Searching will prompt you to clear selections prior</div>
     </div>
