@@ -19,7 +19,7 @@ package org.tctalent.server.api.portal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
