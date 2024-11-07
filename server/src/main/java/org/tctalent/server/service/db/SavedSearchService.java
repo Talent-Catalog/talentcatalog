@@ -29,6 +29,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
@@ -44,8 +45,18 @@ import org.tctalent.server.request.search.UpdateWatchingRequest;
 public interface SavedSearchService {
 
     /**
+     * Return all SavedSearch's that match the given ids, ordered by name.
+     * @param request Defines the ids of the SavedSearch's to return
+     * @return Requested SavedSearch's
+     */
+    List<SavedSearch> search(IdsRequest request);
+
+    /**
      * Searches for saved searches whose name and other attributes match the
      * given search request.
+     * <p/>
+     * See also {@link #searchPaged} which does the same except
+     * returns just one page of results.
      * @param request Attributes to search on
      * @return Matching saved searches.
      */

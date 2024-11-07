@@ -87,7 +87,7 @@ export function enumStringValues(enumeration): string[] {
  * @param obj Object to be tested
  */
 export function isEnumOption(obj): obj is EnumOption {
-  return obj ? ("key" in obj && "stringValue" in obj) : false;
+  return obj && typeof obj === "object" ? ("key" in obj && "stringValue" in obj) : false;
 }
 
 /**

@@ -233,7 +233,7 @@ class SavedListAdminApiTest extends ApiTestBase {
     void searchSavedListsSucceeds() throws Exception {
         SearchSavedListRequest request = new SearchSavedListRequest();
         given(savedListService
-            .listSavedLists(any(SearchSavedListRequest.class)))
+            .search(any(SearchSavedListRequest.class)))
             .willReturn(savedLists);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
@@ -250,7 +250,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$", hasSize(1)));
 
-        verify(savedListService).listSavedLists(any(SearchSavedListRequest.class));
+        verify(savedListService).search(any(SearchSavedListRequest.class));
     }
 
     @Test
@@ -259,7 +259,7 @@ class SavedListAdminApiTest extends ApiTestBase {
         SearchSavedListRequest request = new SearchSavedListRequest();
 
         given(savedListService
-            .searchSavedLists(any(SearchSavedListRequest.class)))
+            .searchPaged(any(SearchSavedListRequest.class)))
             .willReturn(savedListPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
@@ -280,7 +280,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.content", notNullValue()))
             .andExpect(jsonPath("$.content.[0].id", is(1)));
 
-        verify(savedListService).searchSavedLists(any(SearchSavedListRequest.class));
+        verify(savedListService).searchPaged(any(SearchSavedListRequest.class));
     }
 
     @Test

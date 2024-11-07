@@ -37,9 +37,12 @@
 <!--        <h3 class="m-0">Candidate Search</h3>-->
         <div class="d-flex mt-4">
           <div>
-            <button type="button" class="btn btn-warning"
+            <button [hidden]="!savedSearch?.defaultSearch" type="button" class="btn btn-warning"
                     [disabled]="loading"
                     (click)="clearForm()">Clear Search</button>
+              <button [hidden]="savedSearch?.defaultSearch" type="button" class="btn btn-success"
+                      [disabled]="loading"
+                      (click)="newSearch()">New Search</button>
           </div>
           <div>
             <button type="button" class="ms-2 btn btn-secondary"
@@ -136,6 +139,8 @@
                   </div>
                 </ng-template>
 
+<!--                todo For using the clear See https://stackoverflow.com/questions/53753811/clear-icon-x-missing-when-using-ng-template-for-ng-select-->
+<!--                todo For possibly removing all the duplication see https://stackoverflow.com/questions/51086407/how-to-reuse-template-html-block-in-angular-->
                 <!--This improves display of selections -->
                 <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                   <!-- Allow individual selections to be removed by clicking on x next to name -->
@@ -498,7 +503,7 @@
               <app-find-candidate-source id="exclusion"
                 [single] = true
                 [sourceType]="CandidateSourceType.SavedList"
-                [id] = "exclusionListId"
+                [selectedIds] = "exclusionListId"
                 [global] = true
                 [owned] = true
                 [shared] = true
@@ -555,15 +560,96 @@
                   </ng-select>
                 </div>
               </div>
-
-            </div>
-
-
-            <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
-              <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
             </div>
           </div>
+        </div>
 
+        <hr class="w-100">
+        <div class="container-fluid">
+          <div class="row">
+
+            <!-- LIST ANY -->
+            <div *ngIf="!loading" class="mb-6 col-md-6">
+              <label class="form-label">List </label>
+              <div class="operator">
+                <button class="btn btn-link" type="button"
+                        [class.active]="searchForm.value.listAnySearchType !== 'not'"
+                        (click)="handleSearchTypeChange('listAnySearchType', 'or')">any
+                </button>
+                <button class="btn btn-link" type="button"
+                        [class.active]="searchForm.value.listAnySearchType === 'not'"
+                        (click)="handleSearchTypeChange('listAnySearchType', 'not')">not any
+                </button>
+              </div>
+              <button class="tool-tip-button"
+                      [ngbTooltip]="helpListAnyTooltip"
+                      placement="" triggers="click" tooltipClass="search-tips">
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </button>
+              <ng-template #helpListAnyTooltip>
+                <span class="search-tips-content">
+                  <p>
+                    Only consider candidates who are in (or not in) any of the specified lists.
+                  </p>
+                  <p>
+                    In other words a candidate must be in list1 or in list2 etc -
+                    or if 'not any' is clicked, the candidate must not appear in any of the lists.
+                  </p>
+                </span>
+              </ng-template>
+
+              <app-find-candidate-source id="list-any"
+                                         [single] = false
+                                         [sourceType]="CandidateSourceType.SavedList"
+                                         [selectedIds] = "listAnyIds"
+                                         [global] = true
+                                         [owned] = true
+                                         [shared] = true
+                                         (selectionsMade)="onListAnySelected($event)"
+              ></app-find-candidate-source>
+            </div>
+
+            <!-- LIST ALL -->
+            <div *ngIf="!loading" class="mb-6 col-md-6">
+              <label class="form-label">List </label>
+              <div class="operator">
+                <button class="btn btn-link" type="button"
+                        [class.active]="searchForm.value.listAllSearchType !== 'not'"
+                        (click)="handleSearchTypeChange('listAllSearchType', 'and')">all
+                </button>
+                <button class="btn btn-link" type="button"
+                        [class.active]="searchForm.value.listAllSearchType === 'not'"
+                        (click)="handleSearchTypeChange('listAllSearchType', 'not')">not all
+                </button>
+              </div>
+              <button class="tool-tip-button"
+                      [ngbTooltip]="helpListAllTooltip"
+                      placement="" triggers="click" tooltipClass="search-tips">
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </button>
+              <ng-template #helpListAllTooltip>
+                <span class="search-tips-content">
+                  <p>
+                    Only consider candidates who are in (or not in) all of the specified lists.
+                  </p>
+                  <p>
+                    In other words a candidate must be in list1 and in list2 etc -
+                    or if 'not all' is clicked, there must be at least one of the lists that the
+                    candidates does not appear in.
+                  </p>
+                </span>
+              </ng-template>
+              <app-find-candidate-source id="list-all"
+                                         [single] = false
+                                         [sourceType]="CandidateSourceType.SavedList"
+                                         [selectedIds] = "listAllIds"
+                                         [global] = true
+                                         [owned] = true
+                                         [shared] = true
+                                         (selectionsMade)="onListAllSelected($event)"
+              ></app-find-candidate-source>
+            </div>
+          </div>
         </div>
 
         <hr class="w-100">

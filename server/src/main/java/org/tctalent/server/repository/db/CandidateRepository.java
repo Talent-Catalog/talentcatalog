@@ -753,11 +753,9 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                                              @Param("dateTo") LocalDate dateTo,
                                              @Param("candidateIds") Set<Long> candidateIds);
 
-    /**
-     * CANDIDATE CHAT
-     * These methods are used to find candidates and check read statuses for the
-     * [Partner] Candidate Chats tab.
-     */
+    // CANDIDATE CHAT
+    // These methods are used to find candidates and check read statuses for the
+    // [Partner] Candidate Chats tab.
 
     /**
      * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in
@@ -832,9 +830,11 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                 JOIN c1.user u
                 WHERE u.partner.id = :partnerId
                 AND (
-                    LOWER(u.firstName) LIKE :keyword
-                    OR LOWER(u.lastName) LIKE :keyword
-                    OR c.candidateNumber LIKE :keyword
+                    :keyword IS NULL OR (
+                        LOWER(u.firstName) LIKE :keyword
+                        OR LOWER(u.lastName) LIKE :keyword
+                        OR c.candidateNumber LIKE :keyword
+                    )
                 )
             )
             AND c.id IN (
@@ -902,9 +902,11 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
             )
               AND users.partner_id = :partnerId
               AND (
-                LOWER(users.first_name) LIKE :keyword
-                OR LOWER(users.last_name) LIKE :keyword
-                OR candidate.candidate_number LIKE :keyword
+                    :keyword IS NULL OR (
+                        LOWER(users.first_name) LIKE :keyword
+                        OR LOWER(users.last_name) LIKE :keyword
+                        OR candidate.candidate_number LIKE :keyword
+                    )
                 )
             """, nativeQuery = true
     )

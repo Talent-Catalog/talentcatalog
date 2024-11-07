@@ -60,4 +60,8 @@ export interface SearchCandidateRequest {
   miniIntakeCompleted?: boolean;
   fullIntakeCompleted?: boolean;
   unhcrStatuses?: string[];
+  listAnyIds?: number[];
+  listAnySearchType?: string;
+  listAllIds?: number[];
+  listAllSearchType?: string;
 }

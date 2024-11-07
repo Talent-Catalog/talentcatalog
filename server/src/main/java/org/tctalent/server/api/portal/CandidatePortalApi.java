@@ -462,6 +462,8 @@ public class CandidatePortalApi {
                 .add("candidateNumber")
                 .add("phone")
                 .add("whatsapp")
+                /* STATUS */
+                .add("status")
                 /* PERSONAL */
                 .add("gender")
                 .add("dob")
