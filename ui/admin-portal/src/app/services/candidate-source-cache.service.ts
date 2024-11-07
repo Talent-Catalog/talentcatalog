@@ -17,12 +17,17 @@
 import {Injectable} from '@angular/core';
 import {CandidateSource} from "../model/base";
 import {getCandidateSourceType} from "../model/saved-search";
+import {LocalStorageService} from "./local-storage.service";
 
 @Injectable({
   providedIn: 'any' // Will provide a new instance for each component
 })
 export class CandidateSourceCacheService {
   private cacheKeys: Set<string> = new Set();
+
+  constructor(
+    private localStorageService: LocalStorageService
+  ) { }
 
   /**
    * Generates a unique cache key based on the input.
@@ -39,12 +44,8 @@ export class CandidateSourceCacheService {
    * @param source - The candidate source to cache.
    */
   cache(cacheKey: string, source: CandidateSource): void {
-    try {
-      localStorage.setItem(cacheKey, JSON.stringify(source));
-      this.cacheKeys.add(cacheKey);
-    } catch (error) {
-      console.error('Failed to store item in localStorage', error);
-    }
+    this.localStorageService.set(cacheKey, source);
+    this.cacheKeys.add(cacheKey);
   }
 
   /**
@@ -53,13 +54,7 @@ export class CandidateSourceCacheService {
    * @returns - The cached source, or null if the key doesn't exist.
    */
   getFromCache(cacheKey: string): CandidateSource | null {
-    try {
-      const item = localStorage.getItem(cacheKey);
-      return item ? (JSON.parse(item) as CandidateSource) : null;
-    } catch (error) {
-      console.error('Failed to retrieve item from localStorage', error);
-      return null;
-    }
+    return this.localStorageService.get<CandidateSource>(cacheKey);
   }
 
   /**
@@ -67,12 +62,8 @@ export class CandidateSourceCacheService {
    * @param cacheKey - The key of the object to remove.
    */
   removeFromCache(cacheKey: string): void {
-    try {
-      localStorage.removeItem(cacheKey);
-      this.cacheKeys.delete(cacheKey);
-    } catch (error) {
-      console.error('Failed to remove item from localStorage', error);
-    }
+    this.localStorageService.remove(cacheKey);
+    this.cacheKeys.delete(cacheKey);
   }
 
   /**
@@ -81,7 +72,7 @@ export class CandidateSourceCacheService {
   clearAll(): void {
     this.cacheKeys.forEach(cacheKey => {
       try {
-        localStorage.removeItem(cacheKey);
+        this.localStorageService.remove(cacheKey);
       } catch (error) {
         console.error('Failed to clear item from localStorage', error);
       }

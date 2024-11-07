@@ -19,6 +19,7 @@ import {SearchResults} from "../model/search-results";
 import {Candidate} from "../model/candidate";
 import {CandidateSource} from "../model/base";
 import {getCandidateSourceType} from "../model/saved-search";
+import {LocalStorageService} from "./local-storage.service";
 
 export interface CachedSourceResults {
   id: number;
@@ -42,7 +43,9 @@ export interface CachedSourceResults {
 })
 export class CandidateSourceResultsCacheService {
 
-  constructor() { }
+  constructor(
+    private localStorageService: LocalStorageService
+  ) { }
 
   private static cacheKey(source: CandidateSource): string {
     return getCandidateSourceType(source) + source.id;
@@ -55,7 +58,7 @@ export class CandidateSourceResultsCacheService {
    */
   cache(source: CandidateSource, cachedSearchResults: CachedSourceResults): void {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
-    localStorage.setItem(cacheKey, JSON.stringify(cachedSearchResults));
+    this.localStorageService.set(cacheKey, cachedSearchResults);
   }
 
   /**
@@ -73,8 +76,7 @@ export class CandidateSourceResultsCacheService {
    */
   getFromCache(source: CandidateSource): CachedSourceResults | null {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
-    const cachedData = localStorage.getItem(cacheKey);
-    return cachedData ? JSON.parse(cachedData) as CachedSourceResults : null;
+    return this.localStorageService.get<CachedSourceResults>(cacheKey);
   }
 
   /**
@@ -86,6 +88,6 @@ export class CandidateSourceResultsCacheService {
    */
   removeFromCache(source: CandidateSource): void {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
-    localStorage.removeItem(cacheKey);
+    this.localStorageService.remove(cacheKey);
   }
 }
