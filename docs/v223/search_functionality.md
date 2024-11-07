@@ -40,8 +40,6 @@ will appear to get confirmation to proceed and allow the user to save the change
 <div class="card-image-container-narrow">
   <img src="./../assets/images/v223/UnsavedChangesFilterOk.gif" 
         alt="Proceed with Unsaved Filter Changes Gif" class="card-image">
-</div>
-<div class="card-image-container-narrow">
     <img src="./../assets/images/v223/UnsavedChangesFilterModal.png" 
             alt="Proceed with Unsaved Filter Changes Modal" class="card-image">
 </div>
@@ -57,53 +55,6 @@ Seen by candidates? ✅
 </div>
 
 
-# Stage change - candidate opportunity
-Sent to: Source Partner Chat (S J)
-<br>
-Seen by candidates? 🚫
-
-<div class="card-image-container">
-  <img src="./../assets/images/v222/AutoCandOppStageChange.png" 
-        alt="Candidate Registration and Consents" class="card-image">
-</div>
-
-# Stage change - job opportunity
-Sent to: All Source Partners Chat (S+ J)
-<br>
-Seen by candidates? 🚫
-<div class="card-image-container">
-  <img src="./../assets/images/v222/AutoJobOppStageChange.png" 
-        alt="Candidate Registration and Consents" class="card-image">
-</div>
-
-# Step change - candidate opportunity
-Sent to: Source Partner Chat (S J)
-<br>
-Seen by candidates? 🚫
-<div class="card-image-container">
-  <img src="./../assets/images/v222/AutoCandOppStepChange.png" 
-        alt="Candidate Registration and Consents" class="card-image">
-</div>
-
-# Step change - job opportunity
-Sent to: All Source Partners Chat (S+ J)
-<br>
-Seen by candidates? 🚫
-
-<div class="card-image-container">
-  <img src="./../assets/images/v222/AutoJobOppStepChange.png" 
-        alt="Candidate Registration and Consents" class="card-image">
-</div>
-
-# Job offer accepted
-Sent to: Prospective Candidate Chat (S C), Recruiting Candidate Chat (S J C), Source Partner Chat (S J)
-<br>
-Seen by candidates? ✅
-
-<div class="card-image-container">
-  <img src="./../assets/images/v222/AutoAcceptedJob.png" 
-        alt="Candidate Registration and Consents" class="card-image">
-</div>
 
 
 
