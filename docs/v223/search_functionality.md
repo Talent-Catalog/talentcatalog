@@ -3,6 +3,9 @@ title: Search Functionality Improvements
 sass:
   style: compressed
 ---
+We are implementing some search safeguards in this release to help combat some problems of:
+1. Candidate's being unintentionally added to lists
+2. Search filters being overwritten
 
 # Saving Filters
 For <strong>unsaved searches</strong>, the filter changes are autosaved upon each 'Search' click. This allows for a search 'playground' 
