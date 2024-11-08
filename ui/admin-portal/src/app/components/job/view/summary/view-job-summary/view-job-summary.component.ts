@@ -14,9 +14,6 @@ export class ViewJobSummaryComponent extends AutoSaveComponentBase implements On
   @Input() editable: boolean;
   @Input() nRows: number = 3;
   @Input() highlight: boolean;
-  form: UntypedFormGroup;
-  error: any;
-  saving: boolean;
 
   constructor(private fb: UntypedFormBuilder,
               private jobService: JobService) {
