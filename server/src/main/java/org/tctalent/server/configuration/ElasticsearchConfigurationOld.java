@@ -42,7 +42,7 @@ import org.tctalent.server.logging.LogBuilder;
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "org.tctalent.server.repository.es")
 @Slf4j
-public class ElasticsearchConfiguration extends AbstractElasticsearchConfiguration {
+public class ElasticsearchConfigurationOld extends AbstractElasticsearchConfiguration {
 
     @Value("${spring.elasticsearch.uris}")
     private List<String> uris;
