@@ -50,6 +50,7 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,16 +60,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -182,8 +188,13 @@ public class SystemAdminApi {
 
     @Value("${google.drive.listFoldersRootId}")
     private String listFoldersRootId;
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Value("${environment}")
+    private String environment;
+
     @Autowired
     public SystemAdminApi(
             DataSharingService dataSharingService,
@@ -2764,14 +2775,46 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
+    /**
+     * Stub for manual trigger of SF candidate sync
+     * @param noOfPagesRequested total no of pages (containing up to 200 candidates max) to be
+     *                           synced. NB: passing <code>0</code> will sync full search results.
+     */
     @GetMapping("sf-update-candidates/{noOfPagesRequested}")
-    public void sfUpdateCandidates(
+    public ResponseEntity<?> sfUpdateCandidates(
         @PathVariable("noOfPagesRequested") long noOfPagesRequested
     ) {
-        initiateSfCandidateSync(noOfPagesRequested);
+        try {
+            // 0 syncs all results
+            if (noOfPagesRequested == 0) {
+                initiateSfCandidateSync(null);
+            } else {
+                initiateSfCandidateSync(noOfPagesRequested);
+            }
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("sfUpdateCandidates")
+                .message("TC-SF candidate sync failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
     }
 
-    private void initiateSfCandidateSync(Long noOfPagesRequested) {
+    /**
+     * Sets up search parameters and background processing for SF candidate sync. Actual page
+     * processing is handled by {@link BackgroundProcessingService}, which provides the necessary
+     * separation to use the @Transactional annotation to maintain a user session that enables JPA.
+     * @param noOfPagesRequested no of pages requested to be synced - if null, all results will sync
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    private void initiateSfCandidateSync(@Nullable Long noOfPagesRequested)
+        throws SalesforceException, WebClientException {
 
         LogBuilder.builder(log)
             .action("Sync Candidates to Salesforce")
@@ -2796,16 +2839,17 @@ public class SystemAdminApi {
             .message(candidatePage.getTotalElements() + " candidates meet the criteria")
             .logInfo();
 
-        // Set total page count for process
-        long noOfPagesToProcess =
+        // Set total page count - if requested amount is null, defers to total pages in results
+        long totalNoOfPages =
             Optional.ofNullable(noOfPagesRequested).orElse((long) candidatePage.getTotalPages());
 
         LogBuilder.builder(log)
             .action("Sync Candidates to Salesforce")
-            .message("This request will process " + noOfPagesToProcess +
+            .message("This request will process " + totalNoOfPages +
                 " pages of up to 200 candidates each.")
             .logInfo();
 
+        // Set up the background processing
         BackRunner<PageContext> backRunner = new BackRunner<>();
         BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
             @Override
@@ -2813,23 +2857,47 @@ public class SystemAdminApi {
                 long startPage =
                     ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
+                // Delegate page processing to the service, which will open a transaction
+                backgroundProcessingService.processSfCandidateSyncPage(startPage, statuses);
+
                 // Set last processed page
                 long lastProcessed = startPage + ctx.getNumToProcess() - 1;
                 ctx.setLastProcessedPage(lastProcessed);
 
-                // Delegate to the service method to ensure a new transaction is created each time
-                return backgroundProcessingService.processSfCandidateSyncPage(
-                    startPage, noOfPagesToProcess, statuses
-                );
+                // Log if complete
+                if (startPage + ctx.getNumToProcess() >= totalNoOfPages) {
+                    LogBuilder.builder(log)
+                        .action("Sync Candidates to Salesforce")
+                        .message("SF candidate sync complete!")
+                        .logInfo();
+                }
+
+                // Return true if complete - ends processing
+                return startPage + ctx.getNumToProcess() >= totalNoOfPages;
             }
         };
 
-        ScheduledFuture<?> scheduledFuture = backRunner.start(
-            taskScheduler,
-            backProcessor,
-            new PageContext(null, 1),
-            20
-        );
+        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
+            new PageContext(null, 1), 20);
+    }
+
+    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfProdCandidateSync() {
+        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+            initiateSfCandidateSync(null);
+        }
+    }
+
+    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfSandboxCandidateSync() {
+        // Scaled-down replica of prod for testing purposes (4,000 candidates)
+        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+            initiateSfCandidateSync(20L);
+        }
     }
 
     @GetMapping("delete-job/{jobId}")

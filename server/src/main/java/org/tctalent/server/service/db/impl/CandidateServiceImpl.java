@@ -32,7 +32,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -49,24 +47,19 @@ import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -83,7 +76,6 @@ import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCitizenship;
 import org.tctalent.server.model.db.CandidateDestination;
@@ -184,9 +176,6 @@ import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.PersistenceContextHelper;
-import org.tctalent.server.util.background.BackProcessor;
-import org.tctalent.server.util.background.BackRunner;
-import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
@@ -221,9 +210,6 @@ public class CandidateServiceImpl implements CandidateService {
 
     private static final Map<CandidateSubfolderType, String> candidateSubfolderNames;
     private static final String NOT_AUTHORIZED = "Hidden";
-
-    @Value("${environment}")
-    private String environment;
 
     static {
         candidateSubfolderNames = new HashMap<>();
@@ -274,7 +260,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final ElasticsearchService elasticsearchService;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
-    private final TaskScheduler taskScheduler;
 
     @Transactional
     @Override
@@ -2938,25 +2923,6 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
-
-//    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
-//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-//        lockAtMostFor = "PT23H")
-//    public void scheduledSfProdCandidateSync() {
-//        if (environment.equalsIgnoreCase(Environment.prod.name())) {
-//            initiateSfCandidateSync(null);
-//        }
-//    }
-//
-//    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
-//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-//        lockAtMostFor = "PT23H")
-//    public void scheduledSfSandboxCandidateSync() {
-//        // Scaled-down replica of prod for testing purposes (4,000 candidates)
-//        if (environment.equalsIgnoreCase(Environment.staging.name())) {
-//            initiateSfCandidateSync(20);
-//        }
-//    }
 
     @Override
     public void upsertCandidatesToSf(List<Candidate> orderedCandidates)

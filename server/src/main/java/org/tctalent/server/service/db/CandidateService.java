@@ -582,15 +582,6 @@ public interface CandidateService {
      */
     void resolveOutstandingTaskAssignments(ResolveTaskAssignmentsRequest request);
 
-//    /**
-//     * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
-//     * @param noOfPages no. of pages to process
-//     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates()
-//     * @throws WebClientException if there is a problem connecting to Salesforce
-//     * @throws SalesforceException if Salesforce had a problem with the data
-//     */
-//    void initiateSfCandidateSync(Integer noOfPages);
-
     /**
      * Upserts candidates to SF contacts and updates their TC profile SF links
      * @param orderedCandidates - candidates must be ordered for final step of updating SF links to work

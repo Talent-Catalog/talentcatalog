@@ -30,12 +30,12 @@ import lombok.Setter;
 public class PageContext {
 
     /**
-     * The last processed page — null if none processed yet
+     * The last processed page — set to null if none processed yet
      */
     private Long lastProcessedPage;
 
     /**
-     * The number of pages to process during each processing call.
+     * The number of pages to process during each processing call
      */
     private long numToProcess;
 }

@@ -17,35 +17,25 @@
 package org.tctalent.server.service.db.impl;
 
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.BrandingInfo;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
-import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.service.db.BackgroundProcessingService;
-import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.PartnerService;
-import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.util.background.BackProcessor;
-import org.tctalent.server.util.background.BackRunner;
-import org.tctalent.server.util.background.PageContext;
 
 /**
- * TODO
+ * Provides separation for background processing methods when desired. Particularly useful when
+ * processing requires Spring's @Transactional annotation, which doesn't work when annotated method
+ * is called by another in its class.
  */
 @Service
 @RequiredArgsConstructor
@@ -55,9 +45,9 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     @Transactional
     @Override
-    public boolean processSfCandidateSyncPage(
-        long startPage, long totalNoOfPages, List<CandidateStatus> statuses
-    ) {
+    public void processSfCandidateSyncPage(
+        long startPage, List<CandidateStatus> statuses
+    ) throws SalesforceException, WebClientException {
       // Obtain and process new page
       Pageable newPageable =
           PageRequest.of((int) startPage, 200, Sort.by("id").ascending());
@@ -65,8 +55,5 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
           .findByStatusesOrSfLinkIsNotNull(statuses, newPageable);
       List<Candidate> candidateList = newCandidatePage.getContent();
       candidateService.upsertCandidatesToSf(candidateList);
-
-      // Notify whether pages remaining and processing should continue (true means stop)
-      return startPage + 1 >= totalNoOfPages;
     }
 }

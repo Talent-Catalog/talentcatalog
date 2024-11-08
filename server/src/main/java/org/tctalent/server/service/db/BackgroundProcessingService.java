@@ -17,15 +17,26 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateStatus;
 
 /**
- * TODO
+ * Provides separation for background processing methods when desired. Particularly useful when
+ * processing requires Spring's @Transactional annotation, which doesn't work when annotated method
+ * is called by another in its class.
  */
 public interface BackgroundProcessingService {
 
-  boolean processSfCandidateSyncPage(
-      long startPage, long totalNoOfPages, List<CandidateStatus> statuses
-  );
+  /**
+   * Processes a single page for the TC-SF candidate sync.
+   * @param startPage page to process (zero-based index)
+   * @param statuses types of {@link CandidateStatus} to filter for in search
+   * @throws WebClientException if there is a problem connecting to Salesforce
+   * @throws SalesforceException if Salesforce had a problem with the data
+   */
+  void processSfCandidateSyncPage(
+      long startPage, List<CandidateStatus> statuses
+  ) throws SalesforceException, WebClientException;
 
 }
