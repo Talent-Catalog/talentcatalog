@@ -22,6 +22,7 @@ plugins {
 
 group = 'org.tctalent'
 version = '0.0.1-SNAPSHOT'
+isDev = System.properties['env'] == 'dev'
 
 java {
     toolchain {
@@ -90,13 +91,6 @@ dependencies {
     implementation("org.jdom:jdom2")
 // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
-
-
-    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
-    implementation 'org.springframework.security:spring-security-web'
-
-    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-messaging
-    implementation 'org.springframework.security:spring-security-messaging'
 
     //See https://github.com/samdjstevens/java-totp/tree/master/totp-spring-boot-starter
     implementation 'dev.samstevens.totp:totp-spring-boot-starter:1.7.1'
