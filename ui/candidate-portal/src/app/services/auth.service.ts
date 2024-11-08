@@ -21,10 +21,10 @@ import {catchError, map} from "rxjs/operators";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
-import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
 import {LoginRequest} from "../model/base";
 import {RegisterCandidateRequest} from "../model/candidate";
+import {LocalStorageService} from "./local-storage.service";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;

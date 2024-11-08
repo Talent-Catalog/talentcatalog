@@ -61,7 +61,6 @@ import {
 import {
   RegistrationAdditionalInfoComponent
 } from './components/register/additional-info/registration-additional-info.component';
-import {LocalStorageModule} from 'angular-2-local-storage';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {LanguageInterceptor} from './services/language.interceptor';
 import {LoginComponent} from './components/account/login/login.component';
@@ -309,10 +308,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
-    LocalStorageModule.forRoot({
-      prefix: 'tbb-candidate-portal',
-      storageType: 'localStorage'
-    }),
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
