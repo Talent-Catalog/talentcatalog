@@ -126,8 +126,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
-  @Input() pageNumber: number;
-  @Input() pageSize: number;
+  @Input() declare pageNumber: number;
+  @Input() declare pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
@@ -135,7 +135,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Output() selectedCandidatesChange = new EventEmitter<Candidate[]>();
 
   loading: boolean;
-  searching: boolean;
   closing: boolean;
   adding: boolean;
   exporting: boolean;
@@ -152,7 +151,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   monitoredTask: Task;
   tasksAssignedToList: Task[];
 
-  results: SearchResults<Candidate>;
   subscription: Subscription;
   sortField = 'id';
   sortDirection = 'DESC';
@@ -171,7 +169,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   targetListId: number;
   targetListReplace: boolean;
   savedSelection: boolean;
-  timestamp: number;
   savedSearchSelectionChange: boolean;
 
   /**
