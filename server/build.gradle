@@ -22,7 +22,9 @@ plugins {
 
 group = 'org.tctalent'
 version = '0.0.1-SNAPSHOT'
-isDev = System.properties['env'] == 'dev'
+ext {
+    isDev = System.properties['env'] == 'dev'
+}
 
 java {
     toolchain {
