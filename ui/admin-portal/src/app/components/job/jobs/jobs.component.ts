@@ -36,7 +36,7 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
   withUnreadMessagesTip = "Only show jobs which have unread chats";
 
   @ViewChild("searchFilter")
-  searchFilter: ElementRef;
+  declare searchFilter: ElementRef;
 
   constructor(
     chatService: ChatService,

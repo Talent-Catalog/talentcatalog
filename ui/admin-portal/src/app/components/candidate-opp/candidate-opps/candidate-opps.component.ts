@@ -58,7 +58,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   withUnreadMessagesTip = "Only show cases which have unread chat messages";
 
   @ViewChild("searchFilter")
-  searchFilter: ElementRef;
+  declare searchFilter: ElementRef;
 
   constructor(
     chatService: ChatService,
