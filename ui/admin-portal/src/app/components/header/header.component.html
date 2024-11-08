@@ -60,7 +60,7 @@
                (selectItem)="selectSearchResult($event, input)"
                placeholder="External ID..."/>
         <ng-template #rt let-r="result">
-          <ngb-highlight [result]="renderCandidateRow(r)"></ngb-highlight>
+          <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
         </ng-template>
       </div>
 
@@ -74,7 +74,7 @@
                (selectItem)="selectSearchResult($event, input)"
                placeholder="Email or phone..."/>
         <ng-template #rt let-r="result">
-          <ngb-highlight [result]="renderCandidateRow(r)"></ngb-highlight>
+          <ngb-highlight [result]="renderCandidateRow(r)" [term]=""></ngb-highlight>
         </ng-template>
       </div>
 
