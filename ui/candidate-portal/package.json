@@ -31,7 +31,6 @@
     "@ngx-translate/http-loader": "^6.0.0",
     "@popperjs/core": "^2.10.2",
     "@stomp/rx-stomp": "^1.1.4",
-    "angular-2-local-storage": "^3.0.2",
     "bootstrap": "^5.0.2",
     "core-js": "^3.25.3",
     "jquery": "^3.6.1",
