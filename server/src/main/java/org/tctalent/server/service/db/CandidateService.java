@@ -32,7 +32,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.ExportFailedException;
@@ -583,16 +582,14 @@ public interface CandidateService {
      */
     void resolveOutstandingTaskAssignments(ResolveTaskAssignmentsRequest request);
 
-    /**
-     * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
-     * @param pageSize no. of results per page
-     * @param firstPageIndex index of first page (begins from 0)
-     * @param noOfPages no. of pages to process
-     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates()
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPages);
+//    /**
+//     * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
+//     * @param noOfPages no. of pages to process
+//     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates()
+//     * @throws WebClientException if there is a problem connecting to Salesforce
+//     * @throws SalesforceException if Salesforce had a problem with the data
+//     */
+//    void initiateSfCandidateSync(Integer noOfPages);
 
     /**
      * Upserts candidates to SF contacts and updates their TC profile SF links

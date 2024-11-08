@@ -24,8 +24,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -42,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -66,6 +65,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -184,6 +184,9 @@ import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.PersistenceContextHelper;
+import org.tctalent.server.util.background.BackProcessor;
+import org.tctalent.server.util.background.BackRunner;
+import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
@@ -271,6 +274,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final ElasticsearchService elasticsearchService;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
+    private final TaskScheduler taskScheduler;
 
     @Transactional
     @Override
@@ -2935,111 +2939,24 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-        lockAtMostFor = "PT23H")
-    public void scheduledSfProdCandidateSync() {
-        // We only want to run the full sync in prod, due to SF sandbox object limit of 10,000.
-        // We're passing a very high noOfPagesRequested, so that totalPages is used instead.
-        if (environment.equalsIgnoreCase(Environment.prod.name())) {
-            syncCandidatesToSf(200, 0, 100000);
-        }
-    }
-
-    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-        lockAtMostFor = "PT23H")
-    public void scheduledSfSandboxCandidateSync() {
-        // Scaled-down replica of prod for testing purposes (4,000 candidates)
-        if (environment.equalsIgnoreCase(Environment.staging.name())) {
-            syncCandidatesToSf(200, 0, 20);
-        }
-    }
-
-    @Override
-    public void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPagesRequested)
-        throws SalesforceException, WebClientException {
-
-        Instant startOverall = Instant.now();
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("Initiating TC-SF candidate sync")
-            .logInfo();
-
-        Pageable pageable = PageRequest.of(
-            firstPageIndex,
-            pageSize,
-            Sort.by("id").ascending()
-        );
-
-        // Candidates with an 'active' status or already uploaded to SF
-        List<CandidateStatus> statuses = new ArrayList<>(
-            EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
-                CandidateStatus.incomplete));
-
-        Page<Candidate> candidatePage = candidateRepository
-            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message(candidatePage.getTotalElements() + " candidates meet the criteria")
-            .logInfo();
-
-        int totalPages = candidatePage.getTotalPages();
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("With a page size of " + pageSize + " this amounts to a total of " +
-                totalPages + " pages.")
-            .logInfo();
-
-        int noOfPagesToProcess = Math.min(totalPages - firstPageIndex, noOfPagesRequested);
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("This request will process pages " + (firstPageIndex + 1) + " to " +
-                (firstPageIndex + noOfPagesToProcess))
-            .logInfo();
-
-        int pagesProcessed = 0;
-
-        // Iterate through batches, upserting to SF
-        while(pagesProcessed < noOfPagesToProcess) {
-            Instant start = Instant.now();
-            List<Candidate> candidateList = candidatePage.getContent();
-            upsertCandidatesToSf(candidateList);
-            // Clears the persistence context of managed entities that would otherwise pile up.
-            persistenceContextHelper.flushAndClearEntityManager();
-            candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
-                statuses, candidatePage.nextPageable());
-            pagesProcessed++;
-
-            Instant end = Instant.now();
-            Duration timeElapsed = Duration.between(start, end);
-
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("Sync Candidates to Salesforce")
-                .message("Processed page " + pagesProcessed + " of " + noOfPagesToProcess +
-                    " in " + timeElapsed.toSeconds() + " seconds.")
-                .logInfo();
-        }
-
-        Instant endOverall = Instant.now();
-        Duration timeElapsedOverall = Duration.between(startOverall, endOverall);
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("With these parameters it took " + timeElapsedOverall.toMinutes() +
-                " minutes to process " + (noOfPagesToProcess * pageSize) + " candidates.")
-            .logInfo();
-    }
+//    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
+//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+//        lockAtMostFor = "PT23H")
+//    public void scheduledSfProdCandidateSync() {
+//        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+//            initiateSfCandidateSync(null);
+//        }
+//    }
+//
+//    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
+//    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+//        lockAtMostFor = "PT23H")
+//    public void scheduledSfSandboxCandidateSync() {
+//        // Scaled-down replica of prod for testing purposes (4,000 candidates)
+//        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+//            initiateSfCandidateSync(20);
+//        }
+//    }
 
     @Override
     public void upsertCandidatesToSf(List<Candidate> orderedCandidates)
