@@ -50,13 +50,7 @@ public class EmailTester {
     private static EmailSender stubEmailSender() {
         EmailSender sender = new EmailSender();
         sender.setType(EmailType.STUB);
-        sender.setHost("");
-        sender.setPort(0);
-        sender.setUser("");
-        sender.setPassword("");
-        sender.setAuthenticated(false);
         sender.setDefaultEmail("test-from@dp.test.com");
-        sender.setTestOverrideEmail("");
         sender.init();
         return sender;
     }

@@ -98,6 +98,7 @@ dependencies {
     implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation('org.springframework.boot:spring-boot-starter-webflux')
 
@@ -128,9 +129,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.apache.commons:commons-lang3")
     implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
-    implementation("com.sun.mail:jakarta.mail")
-    // https://mvnrepository.com/artifact/com.sun.activation/jakarta.activation
-    implementation 'com.sun.activation:jakarta.activation'
+
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
     implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
