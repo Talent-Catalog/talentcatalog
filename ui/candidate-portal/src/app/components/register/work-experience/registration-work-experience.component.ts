@@ -22,7 +22,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateJobExperienceService} from "../../../services/candidate-job-experience.service";
@@ -53,7 +53,7 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
     occupations: true
   };
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   candidateJobExperiences: CandidateJobExperience[];
   countries: Country[];
   occupations: CandidateOccupation[];
@@ -65,7 +65,7 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
 
   subscription;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateOccupationService: CandidateOccupationService,

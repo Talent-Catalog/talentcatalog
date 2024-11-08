@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../../services/auth.service";
 import {ActivatedRoute} from "@angular/router";
 import {BrandingService} from "../../../services/branding.service";
@@ -23,7 +23,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
-  registrationForm: FormGroup;
+  registrationForm: UntypedFormGroup;
   error: any;
 
   // Form states
@@ -37,7 +37,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
 
   readonly emailRegex: string = EMAIL_REGEX;
 
-  constructor(private builder: FormBuilder,
+  constructor(private builder: UntypedFormBuilder,
               private route: ActivatedRoute,
               private brandingService: BrandingService,
               private candidateService: CandidateService,
@@ -74,12 +74,12 @@ export class RegistrationCreateAccountComponent implements OnInit {
       this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
 
       // The user has not registered - add the password fields to the reactive form
-      this.registrationForm.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
-      this.registrationForm.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
+      this.registrationForm.addControl('password', new UntypedFormControl('', [Validators.required, Validators.minLength(8)]));
+      this.registrationForm.addControl('passwordConfirmation', new UntypedFormControl('', [Validators.required, Validators.minLength(8)]));
 
       // The user has not registered - add the email consent fields
-      this.registrationForm.addControl('contactConsentRegistration', new FormControl(false, [Validators.requiredTrue]));
-      this.registrationForm.addControl('contactConsentPartners', new FormControl(false));
+      this.registrationForm.addControl('contactConsentRegistration', new UntypedFormControl(false, [Validators.requiredTrue]));
+      this.registrationForm.addControl('contactConsentPartners', new UntypedFormControl(false));
 
       this.loading = false;
     }
