@@ -29,42 +29,51 @@ const routes: Routes = [
   {
     path: '',
     component: LandingComponent,
+    title: 'Landing Page'
   },
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
+    title: 'Reset Password'
   },
   {
     path: 'reset-password/:token',
-    component: ChangePasswordComponent
+    component: ChangePasswordComponent,
+    title: 'Change Password'
   },
   {
     path: 'login',
-    component: LandingComponent
+    component: LandingComponent,
+    title: 'Login'
   },
   {
     path: 'register',
-    component: RegisterComponent
+    component: RegisterComponent,
+    title: 'Register'
   },
   {
     path: 'home',
     component: HomeComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    title: 'Home'
   },
   {
     path: 'profile',
     component: ViewCandidateComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    title: 'Profile'
   },
   {
     path: 'profile/edit/:section',
     component: EditCandidateComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    title: 'Edit Profile'
   },
   /* Keep wildcard redirect at the bottom of the array */
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: '',
+    title: 'Redirecting...'
   },
 ];
 
