@@ -49,6 +49,8 @@ export class LanguageLoader implements TranslateLoader {
   //process.
   //Had to make this static because I could not avoid two LanguageLoader
   //instances being created - JC.
+  //Making these non-static else the app fails at startup in Angular 16+.
+  //See related updates in app.module.ts that ensure a single instance - SM.
   private languageLoading = new Subject<boolean>();
   languageLoading$ = this.languageLoading.asObservable();
 
