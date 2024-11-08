@@ -112,8 +112,6 @@ dependencies {
 
     implementation("org.apache.commons:commons-lang3")
     implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
-    // https://mvnrepository.com/artifact/com.sun.activation/jakarta.activation
-    implementation 'com.sun.activation:jakarta.activation'
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.4')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
