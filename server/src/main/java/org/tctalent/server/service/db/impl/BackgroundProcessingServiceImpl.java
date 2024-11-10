@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,11 +34,13 @@ import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateService;
 
 /**
- * Provides separation for background processing methods when desired. Particularly useful when
- * processing requires Spring's @Transactional annotation, which doesn't work when annotated method
- * is called by another in its class.
+ * Service for background processing methods
+ *
+ * <p>Particularly useful to separate methods using Spring's @Transactional annotation, which doesn't
+ * work when the annotated method is called by another in its class.</p>
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class BackgroundProcessingServiceImpl implements BackgroundProcessingService {
     private final CandidateRepository candidateRepository;
@@ -54,6 +57,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
       Page<Candidate> newCandidatePage = candidateRepository
           .findByStatusesOrSfLinkIsNotNull(statuses, newPageable);
       List<Candidate> candidateList = newCandidatePage.getContent();
+
       candidateService.upsertCandidatesToSf(candidateList);
     }
 }

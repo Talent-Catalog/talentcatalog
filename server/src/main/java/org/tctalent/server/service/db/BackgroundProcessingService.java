@@ -22,9 +22,10 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateStatus;
 
 /**
- * Provides separation for background processing methods when desired. Particularly useful when
- * processing requires Spring's @Transactional annotation, which doesn't work when annotated method
- * is called by another in its class.
+ * Service for background processing methods
+ *
+ * <p>Particularly useful to separate methods using Spring's @Transactional annotation, which doesn't
+ * work when the annotated method is called by another in its class.</p>
  */
 public interface BackgroundProcessingService {
 

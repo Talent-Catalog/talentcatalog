@@ -2776,12 +2776,12 @@ public class SystemAdminApi {
     }
 
     /**
-     * Stub for manual trigger of SF candidate sync
+     * Stub for manual call to sync active candidates to SF
      * @param noOfPagesRequested total no of pages (containing up to 200 candidates max) to be
      *                           synced. NB: passing <code>0</code> will sync full search results.
      */
-    @GetMapping("sf-update-candidates/{noOfPagesRequested}")
-    public ResponseEntity<?> sfUpdateCandidates(
+    @GetMapping("sf-sync-candidates/{noOfPagesRequested}")
+    public ResponseEntity<?> sfSyncCandidates(
         @PathVariable("noOfPagesRequested") long noOfPagesRequested
     ) {
         try {
@@ -2796,7 +2796,7 @@ public class SystemAdminApi {
 
         } catch(Exception e) {
             LogBuilder.builder(log)
-                .action("sfUpdateCandidates")
+                .action("sfSyncCandidates")
                 .message("TC-SF candidate sync failed.")
                 .logError(e);
 
@@ -2817,7 +2817,7 @@ public class SystemAdminApi {
         throws SalesforceException, WebClientException {
 
         LogBuilder.builder(log)
-            .action("Sync Candidates to Salesforce")
+            .action("initiateSfCandidateSync")
             .message("Initiating TC-SF candidate sync")
             .logInfo();
 
@@ -2835,7 +2835,7 @@ public class SystemAdminApi {
             .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
 
         LogBuilder.builder(log)
-            .action("Sync Candidates to Salesforce")
+            .action("initiateSfCandidateSync")
             .message(candidatePage.getTotalElements() + " candidates meet the criteria")
             .logInfo();
 
@@ -2844,27 +2844,44 @@ public class SystemAdminApi {
             Optional.ofNullable(noOfPagesRequested).orElse((long) candidatePage.getTotalPages());
 
         LogBuilder.builder(log)
-            .action("Sync Candidates to Salesforce")
-            .message("This request will process " + totalNoOfPages +
-                " pages of up to 200 candidates each.")
+            .action("initiateSfCandidateSync")
+            .message("This request will process " + totalNoOfPages + " pages of 200 candidates.")
             .logInfo();
 
-        // Set up the background processing
+        // Implement background processing
+        BackProcessor<PageContext> backProcessor =
+            createSfSyncBackProcessor(statuses, totalNoOfPages);
+
+        // Schedule background processing
         BackRunner<PageContext> backRunner = new BackRunner<>();
+
+        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
+            new PageContext(null, 1), 20);
+    }
+
+    BackProcessor<PageContext> createSfSyncBackProcessor(
+        List<CandidateStatus> statuses, long totalNoOfPages
+    ) {
         BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
             @Override
-            public boolean process(PageContext ctx) {
+            public boolean process(PageContext ctx) throws SalesforceException, WebClientException {
                 long startPage =
                     ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
                 // Delegate page processing to the service, which will open a transaction
                 backgroundProcessingService.processSfCandidateSyncPage(startPage, statuses);
 
+                // Log completed page
+                LogBuilder.builder(log)
+                    .action("processSfCandidateSyncPage")
+                    .message("Processed page " + (startPage + 1) + " of " + totalNoOfPages)
+                    .logInfo();
+
                 // Set last processed page
                 long lastProcessed = startPage + ctx.getNumToProcess() - 1;
                 ctx.setLastProcessedPage(lastProcessed);
 
-                // Log if complete
+                // Log if processing complete
                 if (startPage + ctx.getNumToProcess() >= totalNoOfPages) {
                     LogBuilder.builder(log)
                         .action("Sync Candidates to Salesforce")
@@ -2877,15 +2894,16 @@ public class SystemAdminApi {
             }
         };
 
-        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-            new PageContext(null, 1), 20);
+        return backProcessor;
     }
+
 
     @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
     public void scheduledSfProdCandidateSync() {
         if (environment.equalsIgnoreCase(Environment.prod.name())) {
+            // Passing null means all results will be processed
             initiateSfCandidateSync(null);
         }
     }
