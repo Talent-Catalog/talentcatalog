@@ -142,13 +142,6 @@ a:hover .card-description {
 }
 
 @media screen and (max-width: 768px) {
-  .card-image-container-narrow .card-image {
-    max-width: 90%;
-    margin: 16px 0;
-  }
-}
-
-@media screen and (max-width: 768px) {
   .card-image-container-narrow {
     max-width: 100%;
     margin: 16px 0;
