@@ -38,13 +38,15 @@ export class AuthService {
   apiUrl = environment.apiUrl + '/auth';
 
   private user: User;
-  private _user: BehaviorSubject<User> = new BehaviorSubject(this.getLoggedInUser());
+  private _user: BehaviorSubject<User>;
   //No longer used - replaced by AuthenticationService.loggedInUser
-  private readonly user$: Observable<User> = this._user.asObservable();
+  private readonly user$: Observable<User>;
 
   constructor(private router: Router,
               private http: HttpClient,
               private localStorageService: LocalStorageService) {
+    this._user = new BehaviorSubject(this.getLoggedInUser());
+    this.user$ = this._user.asObservable()
   }
 
   login(credentials: LoginRequest) {
