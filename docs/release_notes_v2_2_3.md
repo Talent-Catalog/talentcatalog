@@ -16,7 +16,7 @@ Check out the newest features and enhancements.
     <div class="card-body">
       <div class="card-title">Search Improvements</div>
       <div class="card-description">
-        Search Functionality Improvements: We have made the search functionality more transparent to users so it is 
+        We have made the search functionality more transparent to users so it is 
         easier to keep track of the status of their selections and searches. This helps to avoid any unintended 
         actions such as extra candidates being added to lists or search filters being replaced.
       </div>
@@ -41,19 +41,12 @@ Check out the newest features and enhancements.
 </div>
 
 # User Guides
-
-  <div class="card-no-border">
-    <img src="./assets/images/v222/EmployerAccessUserGuide.png" alt="Employer Access User Guide" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Employer Access User Guide</div>
-      <div class="card-description">
-        Coming soon - User guide for employers directly accessing the TC.
-      </div>
-    </div>
-  </div>
-
-Other helpful TC user guides from prior releases:
+Helpful TC user guides:
 <ul>
+    <li>
+        <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" 
+        target="_blank">Employer Access User Guide (Coming Soon)</a>
+    </li>
     <li>
         <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" 
         target="_blank">TC Chats Explainer Doc</a>
