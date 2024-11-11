@@ -12,7 +12,7 @@ For <strong>unsaved searches</strong>, the filter changes are autosaved upon eac
 where you can search, leave the page and come back to your filters.
 
 For <strong>saved searches</strong>, as those filters have been specifically chosen and saved we don't autosave filter 
-changes upon each 'Search'. Instead, those filter changes have to be manually saved via the 'Update Search' button. If 
+changes upon each <em>Search</em>. Instead, those filter changes have to be manually saved via the <em>Update Search</em> button. If 
 there are unsaved filter changes made to the saved search filters and the user navigates away from the search page, a pop-up
 will appear to get confirmation to proceed and allow the user to save the changes if desired.
 <div class="card-container">
@@ -32,15 +32,15 @@ will appear to get confirmation to proceed and allow the user to save the change
 # Candidate Selections
 It is important to have selections cleared prior before searching as it avoids selected candidates disappearing from the 
 search but still being selected. These ‘ghost’ selections that have been filtered out of the search 
-then could appear in a list when the selections are copied over. Now we will prompt the user to save their selections 
-prior to running a search, and then the selections will be cleared on each search to maintain a clear and transparent 
+then could appear in a list when the selections are copied over. Now we prompt the user to save their selections 
+prior to running a search. Then the selections will be cleared upon each search to maintain a clear and transparent 
 number of selections.
 <div class="card-container">
     <div class="card-image-container-narrow">
         <video autoplay loop controls class="card-image">
             <source src="./../assets/images/v223/ClearSelectionsOk.webm" type="video/webm">
         </video>
-        <div class="card-image-caption">Searching will prompt you to clear selections prior</div>
+        <div class="card-image-caption">Searching will prompt user to save selections</div>
     </div>
     <div class="card-image-container-narrow">
         <img src="./../assets/images/v223/SelectionsClearModal.png" 
