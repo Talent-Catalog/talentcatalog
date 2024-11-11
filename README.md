@@ -92,15 +92,10 @@ Download and install the latest of the following tools.
   ```
 
 - Node [https://nodejs.org/en/](https://nodejs.org/en/)
-
-    - Note that developers should use the latest version of Node for which Intellij supports
-      Angular debugging - currently that is Node 16 (which is not the latest Node with long term
-      support LTS).
-    -
-    See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html)
+    - See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html)
     and https://nodejs.org/en/about/releases/
   ```
-  brew install node@16
+  brew install node@18
   ```
     - Note the messages from brew at the end of the install.
       You will have to manually set up the path.
@@ -110,9 +105,7 @@ Download and install the latest of the following tools.
   ```
   npm install -g @angular/cli@16
   ```
-    - Note that we cannot use the most recent version of Angular CLI because it requires a version
-      of node
-      greater than 16 (see note on node version above). See https://angular.io/guide/versions
+    - See https://angular.io/guide/versions
     - To upgrade Angular versions, see https://update.angular.io/
 
 
