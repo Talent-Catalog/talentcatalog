@@ -8,7 +8,7 @@ We are implementing some search safeguards in this release to combat the followi
 2. Candidate's being unintentionally added to lists
 
 # Saving Filters
-For <strong>unsaved searches</strong>, the filter changes are autosaved upon each 'Search' click. This allows for a search 'playground' 
+For <strong>unsaved searches</strong>, the filter changes are autosaved upon each <em>Search</em> click. This allows for a search 'playground' 
 where you can search, leave the page and come back to your filters.
 
 For <strong>saved searches</strong>, as those filters have been specifically chosen and saved we don't autosave filter 
