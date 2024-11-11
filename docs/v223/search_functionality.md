@@ -36,7 +36,7 @@ however will appear in a list when the selections are copied over.
 <div class="card-container">
     <div class="card-image-container-narrow">
         <video autoplay loop controls class="card-image">
-            <source src="./../assets/images/v223/SelectionsClearOKother.webm" type="video/webm">
+            <source src="./../assets/images/v223/ClearSelectionsOk.webm" type="video/webm">
         </video>
         <div class="card-image-caption">Searching will prompt you to clear selections prior</div>
     </div>
