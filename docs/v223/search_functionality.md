@@ -26,7 +26,6 @@ will appear to get confirmation to proceed and allow the user to save the change
         <img src="./../assets/images/v223/UnsavedChangesFilterModal.png" 
                 alt="Proceed with Unsaved Filter Changes Modal" class="card-image">
         <div class="card-image-caption">The pop-up for unsaved search filters</div>
-
     </div>
 </div>
 
