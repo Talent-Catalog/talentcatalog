@@ -20,24 +20,22 @@ import java.util.List;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.util.background.BackProcessor;
+import org.tctalent.server.util.background.PageContext;
 
 /**
- * Service for background processing methods
- *
- * <p>Particularly useful to separate methods using Spring's @Transactional annotation, which doesn't
- * work when the annotated method is called by another in its class.</p>
+ * Service for creating background processors
  */
 public interface BackgroundProcessingService {
 
   /**
-   * Processes a single page for the TC-SF candidate sync.
-   * @param startPage page to process (zero-based index)
-   * @param statuses types of {@link CandidateStatus} to filter for in search
-   * @throws WebClientException if there is a problem connecting to Salesforce
-   * @throws SalesforceException if Salesforce had a problem with the data
+   * Creates a back processor to handle TC -> SF sync of active candidates. Page processing is
+   * delegated to {@link CandidateService#processSfCandidateSyncPage(long, List)}, which enables
+   * creation of a user session with Spring's @Transactional annotation, which doesn't work if
+   * annotated method is called by another method in the same class.
    */
-  void processSfCandidateSyncPage(
-      long startPage, List<CandidateStatus> statuses
-  ) throws SalesforceException, WebClientException;
+  BackProcessor<PageContext> createSfSyncBackProcessor(
+      List<CandidateStatus> statuses, long totalNoOfPages
+  );
 
 }

@@ -2806,9 +2806,7 @@ public class SystemAdminApi {
     }
 
     /**
-     * Sets up search parameters and background processing for SF candidate sync. Actual page
-     * processing is handled by {@link BackgroundProcessingService}, which provides the necessary
-     * separation to use the @Transactional annotation to maintain a user session that enables JPA.
+     * Sets up search parameters and scheduled background processing for SF candidate sync.
      * @param noOfPagesRequested no of pages requested to be synced - if null, all results will sync
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
@@ -2850,7 +2848,7 @@ public class SystemAdminApi {
 
         // Implement background processing
         BackProcessor<PageContext> backProcessor =
-            createSfSyncBackProcessor(statuses, totalNoOfPages);
+            backgroundProcessingService.createSfSyncBackProcessor(statuses, totalNoOfPages);
 
         // Schedule background processing
         BackRunner<PageContext> backRunner = new BackRunner<>();
@@ -2859,45 +2857,9 @@ public class SystemAdminApi {
             new PageContext(null, 1), 20);
     }
 
-    BackProcessor<PageContext> createSfSyncBackProcessor(
-        List<CandidateStatus> statuses, long totalNoOfPages
-    ) {
-        BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
-            @Override
-            public boolean process(PageContext ctx) throws SalesforceException, WebClientException {
-                long startPage =
-                    ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
-
-                // Delegate page processing to the service, which will open a transaction
-                backgroundProcessingService.processSfCandidateSyncPage(startPage, statuses);
-
-                // Log completed page
-                LogBuilder.builder(log)
-                    .action("processSfCandidateSyncPage")
-                    .message("Processed page " + (startPage + 1) + " of " + totalNoOfPages)
-                    .logInfo();
-
-                // Set last processed page
-                long lastProcessed = startPage + ctx.getNumToProcess() - 1;
-                ctx.setLastProcessedPage(lastProcessed);
-
-                // Log if processing complete
-                if (startPage + ctx.getNumToProcess() >= totalNoOfPages) {
-                    LogBuilder.builder(log)
-                        .action("Sync Candidates to Salesforce")
-                        .message("SF candidate sync complete!")
-                        .logInfo();
-                }
-
-                // Return true if complete - ends processing
-                return startPage + ctx.getNumToProcess() >= totalNoOfPages;
-            }
-        };
-
-        return backProcessor;
-    }
-
-
+    /**
+     * Scheduled TC -> SF sync of all active candidates
+     */
     @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
@@ -2908,6 +2870,9 @@ public class SystemAdminApi {
         }
     }
 
+    /**
+     * Scheduled TC staging -> SF sandbox sync
+     */
     @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
     @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")

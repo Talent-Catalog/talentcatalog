@@ -56,7 +56,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
@@ -2941,6 +2943,21 @@ public class CandidateServiceImpl implements CandidateService {
                     contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
+    }
+
+    @Transactional
+    @Override
+    public void processSfCandidateSyncPage(
+        long startPage, List<CandidateStatus> statuses
+    ) throws SalesforceException, WebClientException {
+        // Obtain and process new page
+        Pageable newPageable =
+            PageRequest.of((int) startPage, 200, Sort.by("id").ascending());
+        Page<Candidate> newCandidatePage = candidateRepository
+            .findByStatusesOrSfLinkIsNotNull(statuses, newPageable);
+        List<Candidate> candidateList = newCandidatePage.getContent();
+
+        upsertCandidatesToSf(candidateList);
     }
 
     @Override

@@ -27,37 +27,60 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.SalesforceException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.util.background.BackProcessor;
+import org.tctalent.server.util.background.PageContext;
 
 /**
  * Service for background processing methods
- *
- * <p>Particularly useful to separate methods using Spring's @Transactional annotation, which doesn't
- * work when the annotated method is called by another in its class.</p>
  */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class BackgroundProcessingServiceImpl implements BackgroundProcessingService {
-    private final CandidateRepository candidateRepository;
-    private final CandidateService candidateService;
+  private final CandidateService candidateService;
 
-    @Transactional
-    @Override
-    public void processSfCandidateSyncPage(
-        long startPage, List<CandidateStatus> statuses
-    ) throws SalesforceException, WebClientException {
-      // Obtain and process new page
-      Pageable newPageable =
-          PageRequest.of((int) startPage, 200, Sort.by("id").ascending());
-      Page<Candidate> newCandidatePage = candidateRepository
-          .findByStatusesOrSfLinkIsNotNull(statuses, newPageable);
-      List<Candidate> candidateList = newCandidatePage.getContent();
+  public BackProcessor<PageContext> createSfSyncBackProcessor(
+      List<CandidateStatus> statuses, long totalNoOfPages
+  ) {
+    BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
+      @Override
+      public boolean process(PageContext ctx) throws SalesforceException, WebClientException {
+        long startPage =
+            ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
-      candidateService.upsertCandidatesToSf(candidateList);
-    }
+        // Delegate page processing to the service, which will open a transaction
+        candidateService.processSfCandidateSyncPage(startPage, statuses);
+
+        // Log completed page
+        LogBuilder.builder(log)
+            .action("processSfCandidateSyncPage")
+            .message("Processed page " + (startPage + 1) + " of " + totalNoOfPages)
+            .logInfo();
+
+        // Set last processed page
+        long lastProcessed = startPage + ctx.getNumToProcess() - 1;
+        ctx.setLastProcessedPage(lastProcessed);
+
+        // Log if processing complete
+        if (startPage + ctx.getNumToProcess() >= totalNoOfPages) {
+          LogBuilder.builder(log)
+              .action("Sync Candidates to Salesforce")
+              .message("SF candidate sync complete!")
+              .logInfo();
+        }
+
+        // Return true if complete - ends processing
+        return startPage + ctx.getNumToProcess() >= totalNoOfPages;
+      }
+    };
+
+    return backProcessor;
+  }
+
 }
