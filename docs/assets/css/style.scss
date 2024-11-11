@@ -150,7 +150,7 @@ a:hover .card-description {
 
 @media screen and (max-width: 768px) {
   .card-image-container-narrow {
-    width: 100%;
+    max-width: 100%;
     margin: 16px 0;
   }
 }
