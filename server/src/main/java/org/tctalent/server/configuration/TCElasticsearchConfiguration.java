@@ -28,7 +28,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import org.tctalent.server.logging.LogBuilder;
 
 /**
- * TODO JC Doc
+ * Elasticsearch configuration for Talent Catalog
  *
  * @author John Cameron
  */
