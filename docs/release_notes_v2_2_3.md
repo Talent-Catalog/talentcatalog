@@ -11,16 +11,13 @@ Check out the newest features and enhancements.
 # New Features
 
 <div class="card-container">
-  <div class="card-no-border">
-    <img src="./assets/images/v223/EmailNotifications.jpg" alt="Email Notifications" class="card-image">
+  <div class="card-full-width">
+    <img src="./assets/images/v223/EmailNotifications.png" alt="Email Notifications" class="card-image">
     <div class="card-body">
       <div class="card-title">Email Notifications</div>
       <div class="card-description">
         Each day all users get an email notification about chats that they are involved with which have had new posts 
         over the last 24 hours, and which they have not marked as read. Candidates also receive email notifications.
-      </div>
-      <div class="card-footer">
-        Learn more
       </div>
     </div>
   </div>
@@ -34,6 +31,9 @@ Check out the newest features and enhancements.
         Search Functionality Improvements: We have made the search functionality more transparent to users so it is 
         easier to keep track of the status of their selections and searches. This helps to avoid any unintended 
         actions such as extra candidates being added to lists or search filters being replaced.
+      </div>
+      <div class="card-footer">
+        Learn more
       </div>
     </div>
   </a>
