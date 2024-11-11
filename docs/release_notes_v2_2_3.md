@@ -11,18 +11,6 @@ Check out the newest features and enhancements.
 # New Features
 
 <div class="card-container">
-  <div class="card-full-width">
-    <img src="./assets/images/v223/EmailNotifications.png" alt="Email Notifications" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Email Notifications</div>
-      <div class="card-description">
-        Each day all users get an email notification about chats that they are involved with which have had new posts 
-        over the last 24 hours, and which they have not marked as read. Candidates also receive email notifications.
-      </div>
-    </div>
-  </div>
-
-
   <a href="./v223/search_functionality" class="card">
     <img src="./assets/images/v223/SearchFunctionality.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
@@ -37,12 +25,8 @@ Check out the newest features and enhancements.
       </div>
     </div>
   </a>
-
-</div>
-
-<div class="card-container">
   <a href="./v223/list_tags.md" class="card">
-    <img src="./assets/images/v223/SearchFunctionality.png" alt="Search Improvements" class="card-image">
+    <img src="./assets/images/v223/SearchListTags.png" alt="Search List Tags" class="card-image">
     <div class="card-body">
       <div class="card-title">Lists as 'Tags'</div>
       <div class="card-description">
@@ -50,7 +34,19 @@ Check out the newest features and enhancements.
       </div>
     </div>
   </a>
+</div>
 
+<div class="card-container">
+  <div class="card-full-width">
+    <img src="./assets/images/v223/ChatEmailNotifications.png" alt="Email Notifications" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Email Notifications</div>
+      <div class="card-description">
+        Each day all users get an email notification about chats that they are involved with which have had new posts 
+        over the last 24 hours, and which they have not marked as read. Candidates also receive email notifications.
+      </div>
+    </div>
+  </div>
 </div>
 
 # User Guides
