@@ -97,7 +97,7 @@ the <em>Clear Search</em> button.
 
 # Performance Improvements
 
-- Add protection against publishing very long lists which kills our peformance
+- Add protection against publishing very long lists which kills our performance
 - Support for background processing of long tasks
 
 # Security Fixes
