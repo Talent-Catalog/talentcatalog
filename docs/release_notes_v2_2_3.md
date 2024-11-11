@@ -64,6 +64,7 @@ Other helpful TC user guides from prior releases:
 ## General Improvements
 - Don't create candidate chat until a candidate is past prospect stage
 - Hide chat tab from candidates with ineligible statuses
+- Addition of ability to search based on logical combination of candidates in lists (treating lists as tags)
 - Converted Indonesian partner from CRS to YCWS on TC
 - When saving selection to new list from unsaved search, no longer automating creation of search with same name as list
 
@@ -88,9 +89,9 @@ Other helpful TC user guides from prior releases:
 
 ## Other UI / UX Enhancements
 
-- Added "Clear Format" option to text editor in Job Opportunity Intake section
-- Saved Searches have a 'New Search' button to navigate user to the unsaved search screen, this replaces 
-the 'Clear Search' button.
+- Added <em>Clear Format</em> option to text editor in Job Opportunity Intake section
+- Saved Searches have a <em>New Search</em> button to navigate user to the unsaved search screen, this replaces 
+the <em>Clear Search</em> button.
 - Search button disabled unless the search form is changed
 - Clear selections button disabled if no selections are present
 
