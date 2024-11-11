@@ -4,8 +4,8 @@ sass:
   style: compressed
 ---
 We are implementing some search safeguards in this release to combat the following:
-1. Candidate's being unintentionally added to lists
-2. Search filters being overwritten
+1. Search filters being overwritten
+2. Candidate's being unintentionally added to lists
 
 # Saving Filters
 For <strong>unsaved searches</strong>, the filter changes are autosaved upon each 'Search' click. This allows for a search 'playground' 
@@ -31,8 +31,10 @@ will appear to get confirmation to proceed and allow the user to save the change
 
 # Candidate Selections
 It is important to have selections cleared prior before searching as it avoids selected candidates disappearing from the 
-search but still being selected. Basically this causes ‘ghost’ selections that have been filtered out of the search 
-however will appear in a list when the selections are copied over.
+search but still being selected. These ‘ghost’ selections that have been filtered out of the search 
+then could appear in a list when the selections are copied over. Now we will prompt the user to save their selections 
+prior to running a search, and then the selections will be cleared on each search to maintain a clear and transparent 
+number of selections.
 <div class="card-container">
     <div class="card-image-container-narrow">
         <video autoplay loop controls class="card-image">

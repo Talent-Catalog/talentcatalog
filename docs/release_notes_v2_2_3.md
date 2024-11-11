@@ -58,7 +58,6 @@ Other helpful TC user guides from prior releases:
         <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" 
         target="_blank">TC Chats Explainer Doc</a>
     </li>
-    <li></li>
 </ul>
 
 
@@ -70,18 +69,16 @@ Other helpful TC user guides from prior releases:
 
 ## Data Improvements
 
-- 
-
 # UI / UX Enhancements
 
 <div class="card-container">
 
   <div class="card-no-border">
-    <img src="./assets/images/v222/IntakeSummary.png" alt="Employer-ready Navigation" class="card-image">
+    <img src="./assets/images/v223/UpdatedChatsUI.png" alt="Employer-ready Navigation" class="card-image">
     <div class="card-body">
       <div class="card-title">Updated Chats UI</div>
       <div class="card-description">
-        The Chat's UI has been updated with date separation, sender distinction using initials and colour, 
+        The Chat's UI has been updated with date separation, poster distinction using initials and colour, 
         and overall cleaner appearance.
       </div>
     </div>
@@ -104,8 +101,6 @@ the 'Clear Search' button.
 
 # Security Fixes
 
-- 
-
 # Bug Fixes
 
 - Language selection persisting on page refresh
@@ -120,15 +115,9 @@ the 'Clear Search' button.
 
 ## Code Refactoring
 
-- 
-
 ## Continuous Integration & Deployment
 
-- 
-
 ## Cloud Enhancements
-
-- 
 
 ## Logging and Monitoring
 
