@@ -11,8 +11,8 @@ Check out the newest features and enhancements.
 # New Features
 
 <div class="card-container">
-  <a href="./v223/search_functionality" class="card">
-    <img src="./assets/images/v223/SearchFunctionality.png" alt="Search Improvements" class="card-image">
+  <a href="./v223/search_functionality" class="card-full-width">
+    <img src="./assets/images/v223/SearchFunctionalityFull.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">Search Improvements</div>
       <div class="card-description">
@@ -22,15 +22,6 @@ Check out the newest features and enhancements.
       </div>
       <div class="card-footer">
         Learn more
-      </div>
-    </div>
-  </a>
-  <a href="./v223/list_tags.md" class="card">
-    <img src="./assets/images/v223/SearchListTags.png" alt="Search List Tags" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Lists as 'Tags'</div>
-      <div class="card-description">
-        Addition of ability to search based on logical combination of candidates in lists (treating lists as tags).
       </div>
     </div>
   </a>
