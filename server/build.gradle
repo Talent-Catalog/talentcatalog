@@ -103,9 +103,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation('org.springframework.boot:spring-boot-starter-webflux')
 
-    //See https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
-    implementation 'org.springframework.data:spring-data-elasticsearch'
-
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
     implementation 'org.springframework.security:spring-security-web'
 

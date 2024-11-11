@@ -16,20 +16,9 @@
 
 package org.tctalent.server.configuration;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.RestClients;
-import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
-import org.springframework.lang.NonNull;
-import org.tctalent.server.logging.LogBuilder;
 
 /**
  * Based on
@@ -39,10 +28,12 @@ import org.tctalent.server.logging.LogBuilder;
  *
  * @author John Cameron
  */
-@Configuration
-@EnableElasticsearchRepositories(basePackages = "org.tctalent.server.repository.es")
+//@Configuration
+//@EnableElasticsearchRepositories(basePackages = "org.tctalent.server.repository.es")
 @Slf4j
-public class ElasticsearchConfigurationOld extends AbstractElasticsearchConfiguration {
+public class ElasticsearchConfigurationOld
+//    extends AbstractElasticsearchConfiguration
+{
 
     @Value("${spring.elasticsearch.uris}")
     private List<String> uris;
@@ -51,41 +42,41 @@ public class ElasticsearchConfigurationOld extends AbstractElasticsearchConfigur
     @Value("${spring.elasticsearch.password}")
     private String password;
 
-    @Override
-    @Bean
-    public @NonNull RestHighLevelClient elasticsearchClient() {
-        try {
-            if (uris != null && uris.size() > 0) {
-                URI uri = new URI(uris.get(0));
-                String hostAndPort = uri.getAuthority();
-                String protocol = uri.getScheme();
-                boolean useSsl = "https".equals(protocol);
-
-                LogBuilder.builder(log)
-                    .action("ElasticsearchConfiguration")
-                    .message("Connecting to Elasticsearch at " + hostAndPort)
-                    .logInfo();
-
-                ClientConfiguration.MaybeSecureClientConfigurationBuilder x
-                        = ClientConfiguration.builder().connectedTo(hostAndPort);
-
-                if (useSsl) {
-                    x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
-                            x.usingSsl();
-                }
-
-                if (username != null && username.length() > 0) {
-                    x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
-                            x.withBasicAuth(username, password);
-                }
-                ClientConfiguration clientConfiguration = x.build();
-
-                return RestClients.create(clientConfiguration).rest();
-            } else {
-                throw new RuntimeException("Missing Elasticsearch URL");
-            }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Badly formatted Elasticsearch URL: " + uris, e);
-        }
-    }
+//    @Override
+//    @Bean
+//    public @NonNull RestHighLevelClient elasticsearchClient() {
+//        try {
+//            if (uris != null && uris.size() > 0) {
+//                URI uri = new URI(uris.get(0));
+//                String hostAndPort = uri.getAuthority();
+//                String protocol = uri.getScheme();
+//                boolean useSsl = "https".equals(protocol);
+//
+//                LogBuilder.builder(log)
+//                    .action("ElasticsearchConfiguration")
+//                    .message("Connecting to Elasticsearch at " + hostAndPort)
+//                    .logInfo();
+//
+//                ClientConfiguration.MaybeSecureClientConfigurationBuilder x
+//                        = ClientConfiguration.builder().connectedTo(hostAndPort);
+//
+//                if (useSsl) {
+//                    x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
+//                            x.usingSsl();
+//                }
+//
+//                if (username != null && username.length() > 0) {
+//                    x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
+//                            x.withBasicAuth(username, password);
+//                }
+//                ClientConfiguration clientConfiguration = x.build();
+//
+//                return RestClients.create(clientConfiguration).rest();
+//            } else {
+//                throw new RuntimeException("Missing Elasticsearch URL");
+//            }
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException("Badly formatted Elasticsearch URL: " + uris, e);
+//        }
+//    }
 }
