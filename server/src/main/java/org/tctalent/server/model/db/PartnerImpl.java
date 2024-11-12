@@ -26,6 +26,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -160,4 +161,13 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     public String toString() {
         return name;
     }
+
+    /**
+     * If this partner is inactive and a registering candidate uses a URL that would otherwise
+     * assign them to it, this field can redirect them to a new one.
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "redirect_partner_id")
+    private PartnerImpl redirectPartner;
 }

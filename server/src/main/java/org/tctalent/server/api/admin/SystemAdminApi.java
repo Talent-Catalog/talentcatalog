@@ -75,10 +75,12 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
@@ -87,11 +89,13 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.repository.db.JobChatUserRepository;
+import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
@@ -101,6 +105,7 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.NotificationService;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -154,6 +159,8 @@ public class SystemAdminApi {
 
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
+    private final PartnerService partnerService;
+    private final PartnerRepository partnerRepository;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -197,7 +204,8 @@ public class SystemAdminApi {
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-        TaskScheduler taskScheduler) {
+        TaskScheduler taskScheduler, PartnerService partnerService,
+        PartnerRepository partnerRepository) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -225,7 +233,9 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         this.taskScheduler = taskScheduler;
-        countryForGeneralCountry = getExtraCountryMappings();
+      this.partnerService = partnerService;
+      countryForGeneralCountry = getExtraCountryMappings();
+        this.partnerRepository = partnerRepository;
     }
 
     /**
@@ -2870,6 +2880,48 @@ public class SystemAdminApi {
                 .action("Reassign candidates")
                 .message("Reassignment of candidates from list with ID " + listId +
                     " to partner with ID " + partnerId + " failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Provides a utility for system admins to redirect an inactive partner's 'hard-coded' URLs
+     * (used in promo material e.g. flyers, online QR codes) to a new active partner.
+     * @param inactivePartnerId the ID of the inactive partner to redirect away from
+     * @param newPartnerId the ID of the active partner to direct to
+     * @return response details
+     */
+    @GetMapping("redirect-inactive-partner-url/from-{inactivePartnerId}-to-{newPartnerId}")
+    public ResponseEntity<?> redirectInactivePartnerUrl(
+        @PathVariable("inactivePartnerId") long inactivePartnerId,
+        @PathVariable("newPartnerId") long newPartnerId
+    ) {
+        try {
+            // Get the new partner that URLs will redirect to
+            PartnerImpl newPartner = (PartnerImpl) partnerService.getPartner(newPartnerId);
+
+            // Get the inactive partner that URLs will redirect away from
+            PartnerImpl inactivePartner = (PartnerImpl) partnerService.getPartner(inactivePartnerId);
+
+            // Update and save the inactive partner
+            inactivePartner.setRedirectPartner(newPartner);
+            partnerRepository.save(inactivePartner);
+
+            LogBuilder.builder(log)
+                .action("redirectInactivePartnerUrl")
+                .message("URLs identifying inactive partner " + inactivePartner.getName() +
+                    " will now redirect to " + newPartner.getName() + ".")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("redirectInactivePartnerUrl")
+                .message("Redirection failed.")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend

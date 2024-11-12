@@ -67,6 +67,13 @@ public class BrandingServiceImpl implements BrandingService {
             partner = partnerService.getDefaultSourcePartner();
         }
 
+        // Checks and substitutes when a partner has had a redirectPartner assigned — typically when
+        // it is no longer active and another org has assumed responsibility for candidates in that
+        // jurisdiction. Set by SystemAdminApi.redirectInactivePartnerUrl.
+        while (partner.getRedirectPartner() != null) {
+            partner = partner.getRedirectPartner();
+        }
+
         return extractBrandingInfoFromPartner(partner);
     }
 
