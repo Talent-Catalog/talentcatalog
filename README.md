@@ -92,8 +92,16 @@ Download and install the latest of the following tools.
   ```
 
 - Node [https://nodejs.org/en/](https://nodejs.org/en/)
-    - See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html)
-    and https://nodejs.org/en/about/releases/
+    - Note that developers should use **Node version 18**, specifically versions **18.10.0 and 
+    above**, which is currently the latest LTS (Long Term Support) version compatible with Angular 16.
+        - See [Angular Compatibility Table](https://angular.io/guide/versions)
+        - See [Node.js Releases](https://nodejs.org/en/about/releases/)
+    - If using Node 17 or higher, it’s recommended to add `--host=127.0.0.1` to the `ng serve` 
+    command to avoid debugger and sourcemap issues in IntelliJ. The `start` scripts in `package.json`
+    have been bundled with this parameter for convenience.
+        - See [IntelliJ Angular Debugging Guide](https://www.jetbrains.com/help/idea/angular.html)
+        - See [IntelliJ Angular Debugging Troubleshooting](https://www.jetbrains.com/help/idea/angular.html#ws_angular_debug_app_troubleshooting)
+
   ```
   brew install node@18
   ```
