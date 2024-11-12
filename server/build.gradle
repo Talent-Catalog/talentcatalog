@@ -82,6 +82,7 @@ dependencies {
 
     //Extra stuff not part of Spring Initializr
 
+    testImplementation 'org.projectlombok:lombok'
 
     implementation platform('com.google.cloud:libraries-bom:22.0.0')
     implementation 'com.google.cloud:google-cloud-storage'
