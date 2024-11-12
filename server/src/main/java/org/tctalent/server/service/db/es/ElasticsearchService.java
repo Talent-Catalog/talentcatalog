@@ -16,9 +16,11 @@
 
 package org.tctalent.server.service.db.es;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery.Builder;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import java.util.Collection;
 import java.util.Set;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -27,18 +29,41 @@ import org.tctalent.server.model.db.SearchType;
 
 public interface ElasticsearchService {
 
+  //TODO JC
+  @NotNull
+  Builder addElasticNestedFilter(Builder builder, String path, Query nestedQuery);
+
   /**
-   * Adds a term filter to the query builder.
-   * @param builder Query builder
+   * Adds a terms filter to the query builder.
+   * @param builder Elastic Java API BoolQuery builder
    * @param searchType Type of search - Only 'not' is checked.
    * @param field Field to check against
    * @param values comparison values
-   * @return Updated builder
+   * @return Updated builder - with filter added according to searchType
    */
   @NotNull
-  BoolQueryBuilder addElasticTermFilter(
-      BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
+  BoolQuery.Builder addElasticTermsFilter(
+      BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
       Collection<Object> values);
+
+  //TODO JC
+  @NotNull
+  BoolQuery.Builder addElasticTermFilter(BoolQuery.Builder builder, String field, Object value);
+
+  //TODO JC
+  @NotNull
+  BoolQuery.Builder addElasticSimpleQueryStringFilter(
+      BoolQuery.Builder builder, @NonNull String simpleQueryString);
+
+  //TODO JC
+  @NotNull
+  BoolQuery.Builder addElasticExistsFilter(
+      BoolQuery.Builder builder, @Nullable SearchType searchType, @NonNull String field);
+
+  //TODO JC
+  @NotNull
+  BoolQuery.Builder addElasticRangeFilter(
+      BoolQuery.Builder builder, String field, @Nullable Object min, @Nullable Object max);
 
   /**
    * Retrieves the first few candidate IDs by elastic searching for a specified name.
