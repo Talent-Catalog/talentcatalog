@@ -1100,6 +1100,20 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
+        // Checks and substitutes when a partner has had a redirectPartner assigned — typically when
+        // it is no longer active and another org has assumed responsibility for candidates in that
+        // jurisdiction. Set by SystemAdminApi.redirectInactivePartnerUrl.
+        while (sourcePartner.getRedirectPartner() != null) {
+            sourcePartner = sourcePartner.getRedirectPartner();
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Register Candidate")
+                .message(partnerAbbreviation + " is inactive and has a redirect partner assigned. "
+                    + "Candidate will instead be registered to " + sourcePartner.getName() + ".")
+                .logInfo();
+        }
+
         /* Validate that the candidate has marked email consent partners as true in order to continue registration */
         if (!request.getContactConsentRegistration()) {
             throw new InvalidRequestException("Consent required to register.");
