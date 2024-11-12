@@ -132,6 +132,8 @@ column or table:
 6. Commit and push your changes. 
 7. Check out your working branch and merge 'Flyways' into it. 
 8. Restart the Spring service and the changes will be applied to your local DB.
+9. Check the 'Amend' box (if using IntelliJ) and commit and push your changes.
+10. Open a PR to merge your working branch into Staging.
 
 Observing these simple steps means that other developers needing to make DB changes can do so with 
 minimal coordination and potential for time-consuming errors.
