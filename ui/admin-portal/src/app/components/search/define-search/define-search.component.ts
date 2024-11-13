@@ -820,6 +820,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchJoinArray.removeAt(0);
     }
     this.searchJoinArray.push(this.fb.group(this.selectedBaseJoin));
+    this.searchForm.controls['searchJoinRequests'].markAsDirty();
   }
 
   deleteBaseSearchJoin() {
@@ -828,6 +829,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
     this.storedBaseJoin = null;
     this.selectedBaseJoin = null;
+    this.searchForm.controls['searchJoinRequests'].markAsDirty();
   }
 
   canChangeSearchRequest(): boolean {
