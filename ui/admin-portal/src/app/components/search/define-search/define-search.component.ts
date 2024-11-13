@@ -264,8 +264,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.loading = false;
       this.error = error;
     });
-    // Listen to form changes (unsaved changes to the search) and emit to candidate search component where the unsaved
-    // changes guard is implemented. It will throw confirmation modal if navigating away with unsaved search fields.
+    // Listen to form changes and emit form dirty status to candidate search component.
+    // The unsaved changes guard is implemented on the saved search route, see app-routing.module.ts.
+    // This guard will throw confirmation modal if navigating away with unsaved search fields, which
+    // is determined if the form is dirty or not.
     this.searchForm.valueChanges.subscribe(() => {
       this.onFormChange.emit(this.searchForm.dirty);
     });
@@ -498,22 +500,22 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   onExclusionListSelected(list: CandidateSource) {
-    this.exclusionListIdControl.patchValue(list?.id);
     this.exclusionListIdControl.markAsDirty();
+    this.exclusionListIdControl.patchValue(list?.id);
   }
 
   onListAnySelected(lists: CandidateSource[]) {
     //Update form value
     let ids: number[] = lists.map(s => s.id);
-    this.listAnyIdsControl.patchValue(ids);
     this.listAnyIdsControl.markAsDirty();
+    this.listAnyIdsControl.patchValue(ids);
   }
 
   onListAllSelected(lists: CandidateSource[]) {
     //Update form value
     let ids: number[] = lists.map(s => s.id);
-    this.listAllIdsControl.patchValue(ids);
     this.listAllIdsControl.markAsDirty();
+    this.listAllIdsControl.patchValue(ids);
   }
 
   showSavedSearches() {
@@ -847,13 +849,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public onSelectAll(options: any, formControl: any) {
-    this.searchForm.controls[formControl].patchValue(options);
     this.searchForm.controls[formControl].markAsDirty();
+    this.searchForm.controls[formControl].patchValue(options);
   }
 
   public onClearAll(formControl: string) {
-    this.searchForm.controls[formControl].patchValue(null);
     this.searchForm.controls[formControl].markAsDirty();
+    this.searchForm.controls[formControl].patchValue(null);
   }
 
   public getTooltip(formControlName: string) {
