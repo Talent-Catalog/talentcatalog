@@ -17,7 +17,7 @@ Check out the newest features and enhancements.
       <div class="card-title">Search Improvements</div>
       <div class="card-description">
         We have made the search functionality more transparent to users so it is 
-        easier to keep track of the status of their selections and searches. This helps to avoid any unintended 
+        easier to keep track of the status of your selections and searches. This helps to avoid any unintended 
         actions such as extra candidates being added to lists or search filters being replaced.
       </div>
       <div class="card-footer">
@@ -46,7 +46,8 @@ Check out the newest features and enhancements.
     <div class="card-body">
       <div class="card-title">Lists as tags</div>
       <div class="card-description">
-        Addition of ability to search based on logical combination of candidates in lists (treating lists as tags).
+        Addition of ability to search based on logical combination of candidates in lists, effectively allowing you to 
+        treat lists as tags for search purposes. Thanks to Mari for this great feature suggestion!
       </div>
     </div>
   </div>
@@ -69,10 +70,11 @@ Helpful TC user guides:
 
 ## General Improvements
 
-- Don't create candidate chat until a candidate is past prospect stage
+- Do not create candidate chat until the candidate is past prospect stage
 - Hide chat tab from candidates with ineligible statuses
 - Converted Indonesian partner from CRS to YCWS on TC
-- When saving selection to new list from unsaved search, no longer automating creation of search with same name as list
+- When saving selection to a new list from an unsaved search, we will no longer automatically create 
+a saved search with the same name as list
 
 ## Data Improvements
 - Added new candidate opportunity closing stages: Job Ineligible and Job withdrawn
@@ -104,8 +106,8 @@ the <em>Clear Search</em> button.
 
 # Performance Improvements
 
-- Add protection against publishing very long lists which kills our performance
-- Support for background processing of long tasks
+- Add protection against publishing very long lists to maintain system performance
+- Support for 'time-sliced' background processing of long-running tasks
 
 # Bug Fixes
 
