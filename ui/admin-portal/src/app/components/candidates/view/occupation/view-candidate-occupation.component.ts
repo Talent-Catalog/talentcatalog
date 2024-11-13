@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Candidate} from "../../../../model/candidate";
@@ -23,7 +23,9 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperience} from "../../../../model/candidate-job-experience";
 import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
-import {EditCandidateJobExperienceComponent} from "./experience/edit/edit-candidate-job-experience.component";
+import {
+  EditCandidateJobExperienceComponent
+} from "./experience/edit/edit-candidate-job-experience.component";
 import {CreateCandidateOccupationComponent} from "./create/create-candidate-occupation.component";
 
 @Component({
@@ -31,7 +33,7 @@ import {CreateCandidateOccupationComponent} from "./create/create-candidate-occu
   templateUrl: './view-candidate-occupation.component.html',
   styleUrls: ['./view-candidate-occupation.component.scss']
 })
-export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
+export class ViewCandidateOccupationComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -39,9 +41,9 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
 
   candidateJobExperienceForm: FormGroup;
   _loading = {
-    experience: true,
-    occupation: true,
-    candidate: true
+    experience: false,
+    occupation: false,
+    candidate: false
   };
   error;
   candidateOccupations: CandidateOccupation[];
@@ -58,28 +60,17 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
 
   ngOnInit() {}
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.experiences = [];
-    this.orderOccupation = true;
-
-    this.candidateJobExperienceForm = this.fb.group({
-      candidateId: [this.candidate.id],
-      pageSize: 10,
-      pageNumber: 0,
-      sortDirection: 'DESC',
-      sortFields: [['startDate']]
-    });
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doSearch();
-    }
-  }
-
   get loading() {
     const l = this._loading;
     return l.experience || l.occupation || l.candidate;
   }
 
   doSearch() {
+    this._loading = {
+      experience: true,
+      occupation: true,
+      candidate: true
+    };
     /* GET CANDIDATE */
     this.candidateService.get(this.candidate.id).subscribe(
       candidate => {
