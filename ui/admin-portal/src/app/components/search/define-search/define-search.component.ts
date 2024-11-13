@@ -802,6 +802,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchForm.controls['otherMinWrittenLevel'].patchValue(model.writtenLevel);
       this.searchForm.controls['otherMinSpokenLevel'].patchValue(model.spokenLevel);
     }
+    this.searchForm.markAsDirty();
   }
 
   handleSearchTypeChange(control: string, value: 'and' | 'or' | 'not') {

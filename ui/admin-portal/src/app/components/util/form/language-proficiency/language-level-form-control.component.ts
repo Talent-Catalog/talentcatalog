@@ -91,8 +91,15 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
         });
     }
 
-    /* Subscribe to form value changes to emit updates to parent component */
-    this.form.valueChanges.subscribe(() => this.modelUpdated.emit(this.form.value));
+    /* Subscribe to form value changes to emit updates to parent component. Only emit the user
+    form changes aka. form is not pristine. We don't emit patchValue changes during initialisation
+    as that'll set the form to dirty */
+    this.form.valueChanges.subscribe(() => {
+        if (!this.form.pristine) {
+          this.modelUpdated.emit(this.form.value);
+        }
+      }
+    );
   }
 
   private languageLevelsRequired(): ValidatorFn {
@@ -174,6 +181,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     })
   }
 
+  // Used to populate search form with the saved search fields on initialisation
   patchModel(model: LanguageLevelFormControlModel) {
     for (const key of Object.keys(model)) {
       this.form.controls[key].patchValue(model[key]);
