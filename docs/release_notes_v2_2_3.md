@@ -42,7 +42,7 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
   <div class="card-full-width">
-    <img src="./assets/images/v223/ListsAsTagsFeatureSmall.png" alt="Search Improvements" class="card-image">
+    <img src="./assets/images/v223/ListsAsTags.png" alt="Lists as tags" class="card-image">
     <div class="card-body">
       <div class="card-title">Lists as <strong>Tags</strong></div>
       <div class="card-description">
