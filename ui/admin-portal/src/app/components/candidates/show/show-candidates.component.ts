@@ -61,7 +61,9 @@ import {
   ReviewStatus,
   Status
 } from '../../../model/base';
-import {CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
+import {
+  CandidateSourceResultsCacheService
+} from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -79,7 +81,9 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService
+} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {
   EditCandidateReviewStatusItemComponent
@@ -94,7 +98,9 @@ import {SavedListService} from '../../../services/saved-list.service';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {EditCandidateOppComponent} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
+import {
+  EditCandidateOppComponent
+} from "../../candidate-opp/edit-candidate-opp/edit-candidate-opp.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {
@@ -473,7 +479,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         //Run the saved list or saved search as stored on the server.
         this.performSearch(
           this.pageSize,
-          DtoType.FULL,
+          DtoType.EXTENDED,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
             // Restore the selection prior to the search

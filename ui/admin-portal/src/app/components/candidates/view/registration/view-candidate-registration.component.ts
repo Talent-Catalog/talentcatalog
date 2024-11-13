@@ -14,9 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
-import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditCandidateRegistrationComponent} from "./edit/edit-candidate-registration.component";
 
@@ -33,26 +32,10 @@ export class ViewCandidateRegistrationComponent implements OnInit {
   loading: boolean;
   error;
 
-  constructor(private candidateService: CandidateService,
-              private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal) { }
 
   ngOnInit() {
 
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.candidateService.get(this.candidate.id).subscribe(
-        candidate => {
-          this.candidate = candidate;
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
-    }
   }
 
   editRegistrationDetails() {

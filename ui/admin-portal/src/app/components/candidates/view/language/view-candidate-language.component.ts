@@ -51,9 +51,7 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.search();
-    }
+     console.log(changes.candidate);
   }
 
   search() {

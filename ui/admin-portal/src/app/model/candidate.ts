@@ -111,12 +111,12 @@ export interface Candidate extends HasId {
   fullIntakeCompletedBy: User;
   fullIntakeCompletedDate: number;
 
-  //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];
   candidateEducations?: CandidateEducation[];
   candidateJobExperiences?: CandidateJobExperience[];
   candidateLanguages?: CandidateLanguage[];
   candidateOccupations?: CandidateOccupation[];
+  candidateDestinations?: CandidateDestination[];
 
 }
 

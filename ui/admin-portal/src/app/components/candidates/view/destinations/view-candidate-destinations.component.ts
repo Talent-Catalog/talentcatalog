@@ -31,7 +31,7 @@ export class ViewCandidateDestinationsComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doSearch();
+      this.checkForEmptyDestinations(changes.candidate.currentValue.candidateDestinations);
     }
   }
 
@@ -41,7 +41,7 @@ export class ViewCandidateDestinationsComponent implements OnInit {
       candidateDestinations => {
         this.candidateDestinations = candidateDestinations;
         this.loading = false;
-        this.emptyDestinations = this.checkForEmptyDestinations();
+        this.emptyDestinations = this.checkForEmptyDestinations(candidateDestinations);
       },
       error => {
         this.error = error;
@@ -69,13 +69,12 @@ export class ViewCandidateDestinationsComponent implements OnInit {
   // Some candidates have 'empty' candidate destinations so run a check to only display them if they have data.
   // These were created automatically in old code, having a country ID & candidate ID but no useful data inside.
   // Now we have moved candidate destinations to the registration so all candidates will have to have these filled out.
-  checkForEmptyDestinations() {
-    let empty = false;
-    if (this.candidateDestinations.length === 0) {
-      empty = true;
-    } else if (this.candidateDestinations.length > 0) {
-      empty = this.candidateDestinations.every(cd => cd.interest == null && cd.notes == null);
+  checkForEmptyDestinations(candidateDestinations: CandidateDestination[]) {
+    if (candidateDestinations.length === 0) {
+      this.emptyDestinations = true;
+    } else if (candidateDestinations.length > 0) {
+      this.emptyDestinations = candidateDestinations.every(cd => cd.interest == null && cd.notes == null);
     }
-    return empty;
+    return this.emptyDestinations;
   }
 }

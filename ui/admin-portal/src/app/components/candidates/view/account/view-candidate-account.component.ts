@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {User} from '../../../../model/user';
@@ -27,7 +27,7 @@ import {ChangePasswordComponent} from '../../../account/change-password/change-p
   templateUrl: './view-candidate-account.component.html',
   styleUrls: ['./view-candidate-account.component.scss']
 })
-export class ViewCandidateAccountComponent implements OnInit, OnChanges {
+export class ViewCandidateAccountComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -42,21 +42,6 @@ export class ViewCandidateAccountComponent implements OnInit, OnChanges {
 
   ngOnInit() {
 
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.userService.get(this.candidate.user.id).subscribe(
-        user => {
-          this.user = user;
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
-    }
   }
 
   updatePassword(user: User) {
