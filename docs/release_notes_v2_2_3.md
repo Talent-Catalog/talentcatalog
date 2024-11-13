@@ -42,9 +42,9 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
   <div class="card-full-width">
-    <img src="./assets/images/v223/ListsAsTagsFeature.png" alt="Search Improvements" class="card-image">
+    <img src="./assets/images/v223/ListsAsTagsFeatureSmall.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
-      <div class="card-title">Lists as <em>Tags</em></div>
+      <div class="card-title">Lists as <strong>Tags</strong></div>
       <div class="card-description">
         Addition of ability to search based on logical combination of candidates in lists (treating lists as tags).
       </div>
@@ -71,7 +71,6 @@ Helpful TC user guides:
 
 - Don't create candidate chat until a candidate is past prospect stage
 - Hide chat tab from candidates with ineligible statuses
-- Addition of ability to search based on logical combination of candidates in lists (treating lists as tags)
 - Converted Indonesian partner from CRS to YCWS on TC
 - When saving selection to new list from unsaved search, no longer automating creation of search with same name as list
 
