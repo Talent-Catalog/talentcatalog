@@ -90,8 +90,8 @@ import {first} from "rxjs/operators";
  * Some of the search fields are simple form controls, others are child components which pass values
  * to the form control. When patchValue is called it doesn't mark the form as dirty,
  * so this must be done manually. The unsaved changes router guard requires the dirty state, so this
- * needs to be emitted to the parent component. We automate the emit of the dirty status if the
- * form value changes(via patchValue or user form changes). However if we are updating the form values in
+ * needs to be emitted to the parent component. We automate emit of the dirty status if the
+ * form value changes(via patchValue or user form changes). However, if we are updating the form values in
  * a different way (eg. add/delete base search) we need to make sure to emit the dirty status.
  * After a saved search is initially loaded into the form controls, we manually set the form status
  * to pristine. This will override any places the form controls have been marked as dirty when
