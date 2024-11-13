@@ -730,8 +730,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();
 
-    /* Mark as pristine after search loaded, some fields may have been marked as dirty if they
-    used patchValue but as this is the initial load of the form we don't want it to be dirty.
+    /* Mark as pristine after search loaded, some fields may have been marked as dirty when
+    populating the form fields but as this is the initial load of the form we don't want it to be dirty.
      */
     this.searchForm.markAsPristine();
     let isDirty = false;
