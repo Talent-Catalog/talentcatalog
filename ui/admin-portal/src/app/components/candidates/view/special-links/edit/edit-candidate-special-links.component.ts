@@ -35,7 +35,7 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
-  sfUrlPlaceholder: string = this.envService.sfLightningUrl;
+  sfUrlPlaceholder: string;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: UntypedFormBuilder,
@@ -43,6 +43,8 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
               private envService: EnvService) { }
 
   ngOnInit() {
+    this.sfUrlPlaceholder = this.envService.sfLightningUrl;
+
     const linkedInRegex = /^http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/
     this.loading = true;
 
