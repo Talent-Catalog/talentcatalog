@@ -40,6 +40,18 @@ Check out the newest features and enhancements.
   </div>
 </div>
 
+<div class="card-container">
+  <div class="card-full-width">
+    <img src="./assets/images/v223/ListsAsTagsFeature.png" alt="Search Improvements" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Lists as <em>Tags</em></div>
+      <div class="card-description">
+        Addition of ability to search based on logical combination of candidates in lists (treating lists as tags).
+      </div>
+    </div>
+  </div>
+</div>
+
 # User Guides
 
 Helpful TC user guides:
