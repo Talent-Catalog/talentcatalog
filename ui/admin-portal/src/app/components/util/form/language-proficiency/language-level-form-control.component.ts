@@ -91,9 +91,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
         });
     }
 
-    /* Subscribe to form value changes to emit updates to parent component. Only emit the user
-    form changes aka. form is not pristine. We don't emit patchValue changes during initialisation
-    as that'll set the form to dirty */
+    /* Subscribe to form value changes to emit updates to parent component */
     this.form.valueChanges.subscribe(() => this.modelUpdated.emit(this.form.value));
   }
 
