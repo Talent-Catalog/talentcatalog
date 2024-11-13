@@ -44,7 +44,7 @@ Check out the newest features and enhancements.
   <div class="card-full-width">
     <img src="./assets/images/v223/ListsAsTags.png" alt="Lists as tags" class="card-image">
     <div class="card-body">
-      <div class="card-title">Lists as <strong>Tags</strong></div>
+      <div class="card-title">Lists as tags</div>
       <div class="card-description">
         Addition of ability to search based on logical combination of candidates in lists (treating lists as tags).
       </div>
@@ -73,6 +73,9 @@ Helpful TC user guides:
 - Hide chat tab from candidates with ineligible statuses
 - Converted Indonesian partner from CRS to YCWS on TC
 - When saving selection to new list from unsaved search, no longer automating creation of search with same name as list
+
+## Data Improvements
+- Added new candidate opportunity closing stages: Job Ineligible and Job withdrawn
 
 # UI / UX Enhancements
 
