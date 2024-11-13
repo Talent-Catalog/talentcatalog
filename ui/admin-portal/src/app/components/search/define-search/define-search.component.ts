@@ -836,10 +836,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   public onSelectAll(options: any, formControl: any) {
     this.searchForm.controls[formControl].patchValue(options);
+    this.searchForm.controls[formControl].markAsDirty();
   }
 
   public onClearAll(formControl: string) {
     this.searchForm.controls[formControl].patchValue(null);
+    this.searchForm.controls[formControl].markAsDirty();
   }
 
   public getTooltip(formControlName: string) {
