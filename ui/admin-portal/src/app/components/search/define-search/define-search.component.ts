@@ -499,6 +499,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   onExclusionListSelected(list: CandidateSource) {
     this.exclusionListIdControl.patchValue(list?.id);
+    this.exclusionListIdControl.markAsDirty();
   }
 
   onListAnySelected(lists: CandidateSource[]) {
