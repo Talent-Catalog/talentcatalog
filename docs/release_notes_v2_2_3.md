@@ -41,11 +41,12 @@ Check out the newest features and enhancements.
 </div>
 
 # User Guides
+
 Helpful TC user guides:
 <ul>
     <li>
         <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" 
-        target="_blank">Employer Access User Guide (Coming Soon)</a>
+        target="_blank">Employer Access User Guide</a>
     </li>
     <li>
         <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" 
@@ -55,13 +56,12 @@ Helpful TC user guides:
 
 
 ## General Improvements
+
 - Don't create candidate chat until a candidate is past prospect stage
 - Hide chat tab from candidates with ineligible statuses
 - Addition of ability to search based on logical combination of candidates in lists (treating lists as tags)
 - Converted Indonesian partner from CRS to YCWS on TC
 - When saving selection to new list from unsaved search, no longer automating creation of search with same name as list
-
-## Data Improvements
 
 # UI / UX Enhancements
 
@@ -93,25 +93,12 @@ the <em>Clear Search</em> button.
 - Add protection against publishing very long lists which kills our performance
 - Support for background processing of long tasks
 
-# Security Fixes
-
 # Bug Fixes
 
 - Language selection persisting on page refresh
 - Candidate selections being picked from correct selection list, instead of the unsaved search selection list
 
 # Developer Notes
-
-## Test Coverage
-
-- Unit Test documentation here?
-
-
-## Code Refactoring
-
-## Continuous Integration & Deployment
-
-## Cloud Enhancements
 
 ## Logging and Monitoring
 
