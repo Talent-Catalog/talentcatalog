@@ -59,6 +59,8 @@ public enum CandidateOpportunityStage {
         jobOfferRetracted ("Job offer retracted", true, false, false),
         relocatedNoJobOfferPathway("Relocated no job offer pathway", true, false, false),
         trainingNotCompleted("Training not completed", true, false, false),
+        jobWithdrawn("Job withdrawn", true, false, false),
+        jobIneligible("Job ineligible", true, false, false),
         candidateMistakenlyAddedToList("Candidate mistakenly added to list", true, false, false)
         ;
 
