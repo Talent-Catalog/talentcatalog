@@ -727,6 +727,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();
+
+    /* Mark as pristine after search loaded, some fields may have been marked as dirty if they
+    used patchValue but as this is the initial load of the form we don't want it to be dirty.
+     */
+    this.searchForm.markAsPristine();
+    let isDirty = false;
+    this.onFormChange.emit(isDirty);
   }
 
   get exclusionListId(): number {
@@ -780,8 +787,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   handleDateSelected(e: { fromDate: NgbDateStruct, toDate: NgbDateStruct }, control: string) {
+    this.searchForm.markAsDirty();
     if (e.fromDate) {
-      // console.log(e);
       this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + ('0' + e.fromDate.month).slice(-2) + '-' + ('0' + e.fromDate.day).slice(-2));
     } else {
       this.searchForm.controls[control + 'From'].patchValue(null);
@@ -791,10 +798,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     } else {
       this.searchForm.controls[control + 'To'].patchValue(null);
     }
-    this.searchForm.markAsDirty();
   }
 
   handleLanguageLevelChange(model: LanguageLevelFormControlModel, languageKey: string) {
+    this.searchForm.markAsDirty();
     if (languageKey === 'english') {
       this.searchForm.controls['englishMinWrittenLevel'].patchValue(model.writtenLevel);
       this.searchForm.controls['englishMinSpokenLevel'].patchValue(model.spokenLevel);
@@ -804,7 +811,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchForm.controls['otherMinWrittenLevel'].patchValue(model.writtenLevel);
       this.searchForm.controls['otherMinSpokenLevel'].patchValue(model.spokenLevel);
     }
-    this.searchForm.markAsDirty();
   }
 
   handleSearchTypeChange(control: string, value: 'and' | 'or' | 'not') {
@@ -823,6 +829,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
     this.searchJoinArray.push(this.fb.group(this.selectedBaseJoin));
     this.searchForm.controls['searchJoinRequests'].markAsDirty();
+    this.onFormChange.emit(this.searchForm.dirty);
   }
 
   deleteBaseSearchJoin() {
@@ -832,6 +839,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.storedBaseJoin = null;
     this.selectedBaseJoin = null;
     this.searchForm.controls['searchJoinRequests'].markAsDirty();
+    this.onFormChange.emit(this.searchForm.dirty);
   }
 
   canChangeSearchRequest(): boolean {
