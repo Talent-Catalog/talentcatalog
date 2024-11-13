@@ -790,6 +790,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     } else {
       this.searchForm.controls[control + 'To'].patchValue(null);
     }
+    this.searchForm.markAsDirty();
   }
 
   handleLanguageLevelChange(model: LanguageLevelFormControlModel, languageKey: string) {
