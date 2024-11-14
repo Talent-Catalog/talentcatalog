@@ -117,7 +117,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
             + " left join fetch c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
-    
+
     @Query(" select c from Candidate c "
             + " left join fetch c.candidateDestinations dest "
             + " where c.id = :id ")
@@ -199,6 +199,16 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
 
                                          Pageable pageable);
+
+    @Query(" select distinct c from Candidate c left join c.user u "
+        + " where lower(u.firstName) like lower(:candidateName)"
+        + " or lower(u.lastName) like lower(:candidateName)"
+        + excludeDeleted
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
     /**
      * Note that we need to pass in a CandidateStatus.deleted constant in the
      * "exclude" parameter because I haven't been able to just put
@@ -215,6 +225,22 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         + excludeDeleted
         + sourceCountryRestriction)
     Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
+    @Query(" select distinct c from Candidate c left join c.user u "
+        + " where (lower(c.phone) like lower(:emailOrPhone) "
+        + " or lower(u.email) like lower(:emailOrPhone)) "
+        + excludeDeleted
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidateEmailOrPhone(@Param("emailOrPhone") String emailOrPhone,
+        @Param("userSourceCountries") Set<Country> userSourceCountries,
+        Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+        + " where lower(c.externalId) like lower(:externalId) "
+        + sourceCountryRestriction)
+    Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
         Pageable pageable);
 

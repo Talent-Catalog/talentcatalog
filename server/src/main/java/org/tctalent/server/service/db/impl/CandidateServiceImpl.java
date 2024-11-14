@@ -17,6 +17,9 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.servlet.http.HttpServletRequest;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -45,9 +48,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -180,7 +180,6 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
-import org.tctalent.server.service.db.es.ElasticsearchService;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.PersistenceContextHelper;
@@ -268,7 +267,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
     private final TextExtracter textExtracter;
-    private final ElasticsearchService elasticsearchService;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
 
@@ -443,11 +441,12 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidateEmailOrPhoneSearchRequest request) {
         String s = request.getCandidateEmailOrPhone();
         User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        // Get candidate ids from Elasticsearch then fetch and return from the database
-        Set<Long> candidateIds = elasticsearchService.findByPhoneOrEmailWithLimit(s);
-        Page<Candidate> candidates = fetchCandidates(request, candidateIds);
+        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+        Page<Candidate> candidates = candidateRepository.searchCandidateEmailOrPhone(
+            '%' + s + '%', sourceCountries,
+            request.getPageRequestWithoutSort());
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
@@ -469,16 +468,15 @@ public class CandidateServiceImpl implements CandidateService {
 
         Page<Candidate> candidates;
 
-        // Get candidate ids from Elasticsearch
-        Set<Long> candidateIds;
         if (searchForNumber) {
             candidates = candidateRepository.searchCandidateNumber(
                 s +'%', sourceCountries,
                 request.getPageRequestWithoutSort());
         } else {
             if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-                candidateIds = elasticsearchService.findByNameWithLimit(s);
-                candidates = fetchCandidates(request, candidateIds);
+                candidates = candidateRepository.searchCandidateName(
+                    '%' + s + '%', sourceCountries,
+                    request.getPageRequestWithoutSort());
             } else {
                 return null;
             }
@@ -500,9 +498,11 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         if (authService.hasAdminPrivileges(loggedInUser.getRole())) {
-            // Get candidate ids from Elasticsearch then fetch and return from the database
-            Set<Long> candidateIds = elasticsearchService.findByExternalIdWithLimit(s);
-            Page<Candidate> candidates = fetchCandidates(request, candidateIds);
+            Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
+
+            candidates = candidateRepository.searchCandidateExternalId(
+                s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
@@ -517,6 +517,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @NotNull
     public Set<Long> searchCandidatesUsingSql(String sql) {
         Query query = entityManager.createNativeQuery(sql);
         final List resultList = query.getResultList();
