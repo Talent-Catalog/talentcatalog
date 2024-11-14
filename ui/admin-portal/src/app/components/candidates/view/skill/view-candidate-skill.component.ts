@@ -41,9 +41,7 @@ export class ViewCandidateSkillComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doSearch();
-    }
+
   }
 
   doSearch() {

@@ -36,6 +36,7 @@ import {CandidateEducation} from "./candidate-education";
 import {CandidateJobExperience} from "./candidate-job-experience";
 import {CandidateLanguage} from "./candidate-language";
 import {CandidateOccupation} from "./candidate-occupation";
+import {CandidateSkill} from "./candidate-skill";
 
 export interface ShortCandidate {
   id: number;
@@ -117,6 +118,7 @@ export interface Candidate extends HasId {
   candidateLanguages?: CandidateLanguage[];
   candidateOccupations?: CandidateOccupation[];
   candidateDestinations?: CandidateDestination[];
+  candidateSkills?: CandidateSkill[];
 
 }
 

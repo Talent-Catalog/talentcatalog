@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Candidate} from "../../../../model/candidate";
@@ -33,7 +33,7 @@ import {CreateCandidateOccupationComponent} from "./create/create-candidate-occu
   templateUrl: './view-candidate-occupation.component.html',
   styleUrls: ['./view-candidate-occupation.component.scss']
 })
-export class ViewCandidateOccupationComponent implements OnInit {
+export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -48,7 +48,7 @@ export class ViewCandidateOccupationComponent implements OnInit {
   error;
   candidateOccupations: CandidateOccupation[];
   experiences: CandidateJobExperience[];
-  orderOccupation: boolean;
+  orderOccupation: boolean = true;
   hasMore: boolean;
   sortDirection: string;
 
@@ -60,39 +60,16 @@ export class ViewCandidateOccupationComponent implements OnInit {
 
   ngOnInit() {}
 
+  ngOnChanges(changes: SimpleChanges) {
+    this.orderOccupation = true;
+  }
+
   get loading() {
     const l = this._loading;
     return l.experience || l.occupation || l.candidate;
   }
 
   doSearch() {
-    this._loading = {
-      experience: true,
-      occupation: true,
-      candidate: true
-    };
-    /* GET CANDIDATE */
-    this.candidateService.get(this.candidate.id).subscribe(
-      candidate => {
-          this.candidate = candidate;
-          this._loading.candidate = false;
-        },
-      error => {
-          this.error = error;
-          this._loading.candidate = false;
-        });
-
-    /* GET CANDIDATE OCCUPATIONS */
-    this.candidateOccupationService.get(this.candidate.id).subscribe(
-      results => {
-         this.candidateOccupations = results;
-         this._loading.occupation = false;
-         },
-      error => {
-         this.error = error;
-         this._loading.occupation = false;
-       }
-    );
 
     this.loadJobExperiences();
   }
@@ -120,7 +97,7 @@ export class ViewCandidateOccupationComponent implements OnInit {
       // Load the first page
       this.candidateJobExperienceForm.patchValue({pageNumber: 0});
     }
-
+    // todo do we need paged job experiences under occupations? The page size is 10, how likely is it for a candidate to have more than 10 job experiences under a single occupation?
     /* GET CANDIDATE EXPERIENCE */
     this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
       results => {

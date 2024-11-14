@@ -29,9 +29,12 @@ export class ViewCandidateDestinationsComponent implements OnInit {
 
   }
 
+  // todo what happens when the candidate object isn't changing, but we are changing tabs (candidate profile)
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.checkForEmptyDestinations(changes.candidate.currentValue.candidateDestinations);
+      if (changes.candidate.currentValue.candidateDestinations != null) {
+        this.checkForEmptyDestinations(changes.candidate.currentValue.candidateDestinations);
+      }
     }
   }
 
