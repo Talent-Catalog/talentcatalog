@@ -68,6 +68,7 @@ export enum CandidateOpportunityStage {
   notEligibleForVisa = "Closed. Not eligible for visa",
   noInterview = "Closed. No interview",
   candidateLeavesDestination = "Closed. Candidate leaves destination",
+  candidateMistakenProspect = "Closed. Candidate was mistakenly proposed as a prospect for the job",
   candidateRejectsOffer = "Closed. Candidate rejects offer",
   candidateUnreachable = "Closed. Candidate unreachable",
   candidateWithdraws = "Closed. Candidate withdraws",
