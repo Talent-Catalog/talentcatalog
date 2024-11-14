@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db.es;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery.Builder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import java.util.Collection;
 import java.util.Set;
@@ -29,14 +28,20 @@ import org.tctalent.server.model.db.SearchType;
 
 public interface ElasticsearchService {
 
-  //TODO JC
+  /**
+   * Adds a nested query to the Boolean query builder.
+   * @param builder Elastic Java API BoolQuery builder
+   * @param path Path to the nested query
+   * @param nestedQuery Nested query
+   * @return Updated builder
+   */
   @NotNull
-  Builder addElasticNestedFilter(Builder builder, String path, Query nestedQuery);
+  BoolQuery.Builder addElasticNestedFilter(BoolQuery.Builder builder, String path, Query nestedQuery);
 
   /**
-   * Adds a terms filter to the query builder.
+   * Adds a terms filter to the Boolean query builder.
    * @param builder Elastic Java API BoolQuery builder
-   * @param searchType Type of search - Only 'not' is checked.
+   * @param searchType Type of search - default is SearchType.and if null.
    * @param field Field to check against
    * @param values comparison values
    * @return Updated builder - with filter added according to searchType
@@ -46,21 +51,45 @@ public interface ElasticsearchService {
       BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
       Collection<Object> values);
 
-  //TODO JC
+  /**
+   * Adds a single term filter to the Boolean query builder.
+   * @param builder Elastic Java API BoolQuery builder
+   * @param field Field to check against
+   * @param value comparison value
+   * @return Updated builder
+   */
   @NotNull
   BoolQuery.Builder addElasticTermFilter(BoolQuery.Builder builder, String field, Object value);
 
-  //TODO JC
+  /**
+   * Adds a simple query string filter to the Boolean query builder.
+   * @param builder Elastic Java API BoolQuery builder
+   * @param simpleQueryString Query string which defines the query filter
+   * @return Updated builder
+   */
   @NotNull
   BoolQuery.Builder addElasticSimpleQueryStringFilter(
       BoolQuery.Builder builder, @NonNull String simpleQueryString);
 
-  //TODO JC
+  /**
+   * Adds an exists filter to the Boolean query builder.
+   * @param builder Elastic Java API BoolQuery builder
+   * @param searchType Type of search - default is "SearchType.and" if null.
+   * @param field Field to check whether it exists
+   * @return Updated builder - with filter added according to searchType
+   */
   @NotNull
   BoolQuery.Builder addElasticExistsFilter(
       BoolQuery.Builder builder, @Nullable SearchType searchType, @NonNull String field);
 
-  //TODO JC
+  /**
+   * Adds a range filter to the Boolean query builder.
+   * @param builder Elastic Java API BoolQuery builder
+   * @param field Field to check against
+   * @param min Minimum value (inclusive)
+   * @param max Maximum value (inclusive)
+   * @return Updated builder
+   */
   @NotNull
   BoolQuery.Builder addElasticRangeFilter(
       BoolQuery.Builder builder, String field, @Nullable Object min, @Nullable Object max);
