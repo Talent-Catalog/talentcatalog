@@ -45,8 +45,17 @@ import org.tctalent.server.service.db.UserService;
  * <p>
  * This service class handles the construction and execution of search queries, filtering based on
  * deletion status and source country restrictions, and extracts candidate IDs from search hits.
+ * <p/>
+ * Converted to use new Spring NativeQuery together with Elasticsearch's Java API.
+ * <p/>
+ * Note that {@link NativeQuery} is just a wrapper for a single Elasticsearch Java API
+ * {@link Query}. It has little functionality of its own - just serving as a bridge between
+ * Spring and the Elasticsearch Java API. For example, you can't build complex queries from
+ * NativeQuery's. All building is done with Java API and then just wrapped in a NativeQuery
+ * as needed.
  *
  * @author sadatmalik
+ * @author johncameron
  */
 @RequiredArgsConstructor
 @Slf4j
