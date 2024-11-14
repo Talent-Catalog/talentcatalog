@@ -18,22 +18,27 @@ import {Component, OnInit} from '@angular/core';
 import {SavedSearch} from "../../../model/saved-search";
 import {ActivatedRoute} from "@angular/router";
 import {SavedSearchService} from "../../../services/saved-search.service";
+import {BlockUnsavedChanges} from "../../../services/unsaved-changes.guard";
+import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-candidates-search',
   templateUrl: './candidates-search.component.html',
   styleUrls: ['./candidates-search.component.scss']
 })
-export class CandidatesSearchComponent implements OnInit {
+export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
   error: string;
   loading: boolean;
   pageNumber: number;
   pageSize: number;
   savedSearch: SavedSearch;
   private id: number;
+  formDirty: boolean;
 
   constructor(private route: ActivatedRoute,
-              private savedSearchService: SavedSearchService) { }
+              private savedSearchService: SavedSearchService,
+              private modalService: NgbModal) { }
 
   ngOnInit() {
     this.loading = true;
@@ -74,6 +79,28 @@ export class CandidatesSearchComponent implements OnInit {
         });
       }
     });
+  }
+
+  canExit() {
+    return this.formDirty ? this.unsavedChangesCheck() : true;
+  }
+
+  unsavedChangesCheck() {
+    const unsavedChangesModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    unsavedChangesModal.componentInstance.title = "Unsaved search filter changes"
+    unsavedChangesModal.componentInstance.message =
+      'You have unsaved changes to the search filters - to keep please cancel and click the "Update Search" button to save them. Or to proceed without saving - click OK.'
+    return unsavedChangesModal.result.then(
+      () => {
+        return true;
+      },() => {
+        return false;
+      }
+    );
   }
 
 }

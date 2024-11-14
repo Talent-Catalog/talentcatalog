@@ -15,6 +15,7 @@ import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.componen
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
 import {RouterLinkStubDirective} from "../../../login/login.component.spec";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
 describe('ViewJobFromUrlComponent', () => {
   let component: ViewJobFromUrlComponent;
@@ -31,7 +32,7 @@ describe('ViewJobFromUrlComponent', () => {
     mockJobService.get.and.returnValue(of(MockJob));
     TestBed.configureTestingModule({
       imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
-      declarations: [ViewJobFromUrlComponent,ViewJobComponent,JobGeneralTabComponent,ViewJobInfoComponent,ChatReadStatusComponent,ViewJobSummaryComponent,RouterLinkStubDirective],
+      declarations: [ViewJobFromUrlComponent,AutosaveStatusComponent,ViewJobComponent,JobGeneralTabComponent,ViewJobInfoComponent,ChatReadStatusComponent,ViewJobSummaryComponent,RouterLinkStubDirective],
       providers: [
         { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router
         { provide: JobService, useValue: mockJobService },

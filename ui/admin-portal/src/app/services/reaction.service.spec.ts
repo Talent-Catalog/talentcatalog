@@ -74,13 +74,14 @@ describe('ReactionService', () => {
         { id: 1, emoji: '👍', users : [displayUser] },
         { id: 2, emoji: '😊', users : [displayUser] },
       ];
+      const postId = 1;
       const reactionId = 1;
 
-      service.modifyReaction(reactionId).subscribe(reactions => {
+      service.modifyReaction(postId, reactionId).subscribe(reactions => {
         expect(reactions).toEqual(mockReactions);
       });
 
-      const req = httpMock.expectOne(`${environment.chatApiUrl}/reaction/${reactionId}/modify-reaction`);
+      const req = httpMock.expectOne(`${environment.chatApiUrl}/reaction/${postId}/modify-reaction/${reactionId}`);
       expect(req.request.method).toBe('PUT');
       expect(req.request.body).toBeNull();
       req.flush(mockReactions);

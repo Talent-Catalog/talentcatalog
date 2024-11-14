@@ -63,6 +63,15 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer maxYrs;
 
     private String partnerIds;
+
+    private String listAllIds;
+    @Enumerated(EnumType.STRING)
+    private SearchType listAllSearchType;
+
+    private String listAnyIds;
+    @Enumerated(EnumType.STRING)
+    private SearchType listAnySearchType;
+
     private String nationalityIds;
     @Enumerated(EnumType.STRING)
     private SearchType nationalitySearchType;
@@ -247,6 +256,38 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setPartnerIds(String partnerIds) {
         this.partnerIds = partnerIds;
+    }
+
+    public String getListAllIds() {
+        return listAllIds;
+    }
+
+    public void setListAllIds(String listAllIds) {
+        this.listAllIds = listAllIds;
+    }
+
+    public SearchType getListAllSearchType() {
+        return listAllSearchType;
+    }
+
+    public void setListAllSearchType(SearchType listAllSearchType) {
+        this.listAllSearchType = listAllSearchType;
+    }
+
+    public String getListAnyIds() {
+        return listAnyIds;
+    }
+
+    public void setListAnyIds(String listAnyIds) {
+        this.listAnyIds = listAnyIds;
+    }
+
+    public SearchType getListAnySearchType() {
+        return listAnySearchType;
+    }
+
+    public void setListAnySearchType(SearchType listAnySearchType) {
+        this.listAnySearchType = listAnySearchType;
     }
 
     public String getNationalityIds() {

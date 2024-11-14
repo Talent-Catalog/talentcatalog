@@ -41,6 +41,13 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 
 public interface UserService {
 
+    /**
+     * True if given user is a candidate.
+     * @param user User
+     * @return True if user is a candidate. Returns false if user is null or not a candidate.
+     */
+    boolean isCandidate(@Nullable User user);
+
     JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException;
 
     void logout();

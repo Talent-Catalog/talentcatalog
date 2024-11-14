@@ -36,8 +36,8 @@ export class ReactionService {
         return this.http.post<Reaction[]>(`${this.apiUrl}/${chatPostId}/add-reaction`, request);
     }
 
-    modifyReaction(id: number): Observable<Reaction[]> {
-        return this.http.put<Reaction[]>(`${this.apiUrl}/${id}/modify-reaction`, null);
+    modifyReaction(chatPostId: number, id: number): Observable<Reaction[]> {
+        return this.http.put<Reaction[]>(`${this.apiUrl}/${chatPostId}/modify-reaction/${id}`, null);
     }
 
 }

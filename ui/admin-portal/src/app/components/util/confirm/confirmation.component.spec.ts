@@ -82,7 +82,7 @@ describe('ConfirmationComponent', () => {
   it('should display the cancel button if showCancel is true', () => {
     component.showCancel = true;
     fixture.detectChanges();
-    const cancelButton = fixture.debugElement.query(By.css('.modal-footer button:nth-child(2)'));
+    const cancelButton = fixture.debugElement.query(By.css('.modal-footer button:nth-child(1)'));
     expect(cancelButton.nativeElement.textContent).toContain('Cancel');
   });
 

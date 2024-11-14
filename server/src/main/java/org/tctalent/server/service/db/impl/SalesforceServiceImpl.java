@@ -412,7 +412,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 employerFeedback = candidateOppParams.getEmployerFeedback();
                 relocationInfo = candidateOppParams.getRelocationInfo();
 
-                // If relocationInfo not already included in params and new stage is 'Relocated',
+                // If relocationInfo not already included in params and new stage is 'Offer',
                 // update the SF case relocation info - just to assist with monitoring & evaluation,
                 // a failsafe in case admin users haven't clicked the 'Update case stats' button
                 // when updating relocating dependant info, which can be set on a visa job check
@@ -420,7 +420,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 // Typically, would use CandidateOpportunityService here, but that would create a
                 // dependency cycle between beans — so instead querying the SalesforceJobOpp to get
                 // the CandidateOpportunity required for processSfCaseRelocationInfo()
-                if (relocationInfo == null && stage == CandidateOpportunityStage.relocated) {
+                if (relocationInfo == null && stage == CandidateOpportunityStage.offer) {
                     Optional<CandidateOpportunity> candidateOpp =
                         jobOpportunity.getCandidateOpportunities()
                             .stream()

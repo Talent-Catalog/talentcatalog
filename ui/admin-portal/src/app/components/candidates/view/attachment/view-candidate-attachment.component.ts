@@ -72,12 +72,13 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     });
 
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doPagedSearch();
+      this.doPagedSearch(true);
     }
   }
 
-  doPagedSearch(refresh?: boolean) {
+  doPagedSearch(refresh: boolean) {
     this.loading = true;
+    refresh ? this.attachmentForm.controls['pageNumber'].patchValue(0) : null;
     this.candidateAttachmentService.searchPaged(this.attachmentForm.value).subscribe(
       results => {
         if (refresh) {
@@ -98,7 +99,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
   loadMore() {
     this.attachmentForm.controls['pageNumber'].patchValue(this.attachmentForm.value.pageNumber + 1);
-    this.doPagedSearch();
+    this.doPagedSearch(false);
   }
 
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {

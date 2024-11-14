@@ -18,6 +18,7 @@ import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summ
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
 import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {RouterLinkStubDirective} from "../../../login/login.component.spec";
+import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 // Mock isStarredByMe function
 const isStarredByMe = (starringUsers: any[], authService: AuthenticationService) => {
   const loggedInUser = authService.getLoggedInUser();
@@ -43,7 +44,7 @@ describe('ViewJobComponent', () => {
 
     await TestBed.configureTestingModule({
       imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
-      declarations: [ViewJobComponent,RouterLinkStubDirective,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
+      declarations: [ViewJobComponent,AutosaveStatusComponent,RouterLinkStubDirective,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
       providers: [
         FormBuilder,
         { provide: NgbModal, useValue: {} },

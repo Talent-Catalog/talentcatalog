@@ -54,16 +54,17 @@
       </div>
 
       <div class="alert alert-success" *ngIf="attachments?.length">
-        Successfully uploaded {{attachments.length}} attachments
+        Successfully uploaded {{attachments.length}}
+        <span *ngIf="form.value.cv">CV</span> attachment<span *ngIf="attachments.length > 1">s</span>
       </div>
 
-      <div class="mb-3">
+      <div class="mb-3" *ngIf="!attachments?.length && !uploading">
           <label class="form-label" for="cv">Is this file a CV?</label>
           <input id="cv" [formControlName]="'cv'" [value]="'cv'" type="checkbox">
           <div class="form-text">If it is a CV its text will be checked in keyword searches.</div>
       </div>
 
-      <app-file-upload *ngIf="!uploading"
+      <app-file-upload *ngIf="!attachments?.length && !uploading"
                        (error)="onError($event)"
                        (newFiles)="startServerUpload($event)"></app-file-upload>
 

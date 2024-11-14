@@ -21,7 +21,7 @@
     <title>Watcher Notification</title>
 </head>
 <body>
-<div class="password-reset">
+<div>
     <p>Dear <span th:text="${displayName}"></span>,</p>
 
     <p>
@@ -30,9 +30,9 @@
     </p>
 
     <ul>
-        <li th:each="search : ${searches}">
-            <a th:href="'https://tctalent.org/admin-portal/search/'+ ${search.getId()}"
-               th:text="${search.getName()}">Search name</a>
+        <li th:each="link : ${links}">
+            <a th:href="${link.link()}" th:text="${link.name()}"></a>
+            <span th:text="'(Search ' + ${link.id()} + ')'"></span>
         </li>
     </ul>
 </div>

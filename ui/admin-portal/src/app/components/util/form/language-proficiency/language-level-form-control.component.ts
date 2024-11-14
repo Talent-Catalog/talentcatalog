@@ -174,6 +174,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     })
   }
 
+  // Used to populate search form with the saved search fields on initialisation
   patchModel(model: LanguageLevelFormControlModel) {
     for (const key of Object.keys(model)) {
       this.form.controls[key].patchValue(model[key]);

@@ -37,6 +37,9 @@ public enum JobChatType {
      * Participants: Source partner and candidate in source location who is a prospect for the job,
      * but who has not yet reached the stage (after CV Review) where they will be communicating
      * directly with the destination partner.
+     * <p/>
+     * Can also be used when there is no job yet associated - just between source partner and
+     * candidate.
      */
     CandidateProspect,
 

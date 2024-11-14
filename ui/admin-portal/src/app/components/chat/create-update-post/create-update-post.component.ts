@@ -126,7 +126,7 @@ export class CreateUpdatePostComponent implements OnInit {
     this.emojiPickerVisible = false;
     const index: number = this.quillEditorRef.selection.savedRange.index;
     this.quillEditorRef.insertText(index, `${event.emoji.native}`, 'user');
-    this.quillEditorRef.setSelection(index + 2, 0);
+    this.quillEditorRef.setSelection(index + event.emoji.native.length, 0);
   }
 
   // Toggles the emoji picker on and off using the button on the editor toolbar, refocuses the caret.

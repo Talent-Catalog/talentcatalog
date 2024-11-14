@@ -79,6 +79,12 @@ export class ViewPostComponent implements OnInit, OnChanges {
     return UserService.userToString(user, false, false);
   }
 
+   // Returns the abbreviation of the user who created the post, if it exists.
+   getUserAbbreviation(input: string): string | null {
+    const match = input.match(/\(([^)]+)\)/);
+    return match ? match[1] : null;
+  }
+
   //If readonly does nothing.
   //Otherwise, toggles the picker on and off, situating it appropriately in relation to the button
   // The picker's height is 353 x 425 px, navbar is 85px
@@ -116,7 +122,7 @@ export class ViewPostComponent implements OnInit, OnChanges {
 
   public onSelectReaction(reaction: Reaction) {
     if (!this.readOnly) {
-      this.reactionService.modifyReaction(reaction.id)
+      this.reactionService.modifyReaction(this.post.id, reaction.id)
       .subscribe({
         next: (updatedReactions) =>
           this.post.reactions = updatedReactions

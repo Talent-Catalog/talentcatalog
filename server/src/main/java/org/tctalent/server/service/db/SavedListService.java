@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -34,6 +33,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
@@ -202,8 +202,34 @@ public interface SavedListService {
      * @return Set of candidates - never null. Empty if no candidates in request.
      * @throws NoSuchObjectException if a candidate in the request does not exist
      */
-    @NotNull Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
+    @NonNull
+    Set<Candidate> fetchCandidates(IHasSetOfCandidates request)
         throws NoSuchObjectException;
+
+    /**
+     * Fetches the ids of candidates in the given list
+     * @param listId Id of list
+     * @return Ids of candidates contained in the list
+     */
+    @NonNull
+    Set<Long> fetchCandidateIds(long listId);
+
+    /**
+     * Fetches the ids of the union of all candidates in all the given lists
+     * @param listIds Ids of lists
+     * @return Ids of candidates contained in the lists or null if ids is null
+     */
+    @Nullable
+    Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds);
+
+    /**
+     * Fetches the ids of candidates which appear in all the given lists
+     * @param listIds Ids of lists
+     * @return Ids of candidates contained in the lists or null if ids is null
+     */
+    @Nullable
+    Set<Long> fetchIntersectionCandidateIds(@Nullable List<Long> listIds);
+
 
     /**
      * Get the SavedList with the given id.
@@ -235,7 +261,7 @@ public interface SavedListService {
      * Return all SavedList's associated with the given candidate that match
      * the given request, ordered by name.
      * <p/>
-     * See also {@link #listSavedLists} which does the same except for
+     * See also {@link #search} which does the same except for
      * any candidate.
      *
      * @param candidateId Candidate whose lists we are searching
@@ -245,14 +271,21 @@ public interface SavedListService {
     List<SavedList> search(long candidateId, SearchSavedListRequest request);
 
     /**
+     * Return all SavedList's that match the given ids, ordered by name.
+     * @param request Defines the ids of the SavedList's to return
+     * @return Requested SavedList's
+     */
+    List<SavedList> search(IdsRequest request);
+
+    /**
      * Return all SavedList's that match the given request, ordered by name.
      * <p/>
-     * See also {@link #searchSavedLists} which does the same except
+     * See also {@link #searchPaged} which does the same except
      * returns just one page of results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    List<SavedList> listSavedLists(SearchSavedListRequest request);
+    List<SavedList> search(SearchSavedListRequest request);
 
     /**
      * This is how candidates are added to a list.
@@ -282,12 +315,12 @@ public interface SavedListService {
      * Return a page of SavedList's that match the given request, ordered by
      * name.
      * <p/>
-     * See also {@link #listSavedLists} which does the same except it
+     * See also {@link #search} which does the same except it
      * returns all matching results.
      * @param request Defines which SavedList's to return
      * @return Matching SavedList's
      */
-    Page<SavedList> searchSavedLists(SearchSavedListRequest request);
+    Page<SavedList> searchPaged(SearchSavedListRequest request);
 
     /**
      * Mark the given Candidate objects with the given list context.
@@ -425,5 +458,4 @@ public interface SavedListService {
      */
     @Nullable
     SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
-
 }

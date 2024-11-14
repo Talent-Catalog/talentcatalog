@@ -794,7 +794,10 @@ import {
   EditCandidateExamComponent
 } from "./components/candidates/view/exam/edit/edit-candidate-exam.component";
 import {JoiDataComponent} from './components/job/intake/joi-data/joi-data.component';
-import {FindCandidateSourceComponent} from './components/candidates/find-candidate-source/find-candidate-source.component';
+import {
+  FindCandidateSourceComponent
+} from './components/candidates/find-candidate-source/find-candidate-source.component';
+import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
 
 @NgModule({
   declarations: [
@@ -1158,6 +1161,7 @@ import {FindCandidateSourceComponent} from './components/candidates/find-candida
     {provide: RxStompService},
     AuthorizationService,
     RoleGuardService,
+    UnsavedChangesGuard,
     Title,
     DatePipe, TitleCasePipe
   ],
