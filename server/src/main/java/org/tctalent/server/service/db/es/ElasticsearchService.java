@@ -19,10 +19,12 @@ package org.tctalent.server.service.db.es;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import java.util.Collection;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.SearchType;
+import org.tctalent.server.model.es.CandidateEs;
 
 
 public interface ElasticsearchService {
@@ -34,7 +36,7 @@ public interface ElasticsearchService {
    * @param nestedQuery Nested query
    * @return Updated builder
    */
-  @NotNull
+  @NonNull
   BoolQuery.Builder addElasticNestedFilter(BoolQuery.Builder builder, String path, Query nestedQuery);
 
   /**
@@ -45,7 +47,7 @@ public interface ElasticsearchService {
    * @param values comparison values
    * @return Updated builder - with filter added according to searchType
    */
-  @NotNull
+  @NonNull
   BoolQuery.Builder addElasticTermsFilter(
       BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
       Collection<Object> values);
@@ -57,7 +59,7 @@ public interface ElasticsearchService {
    * @param value comparison value
    * @return Updated builder
    */
-  @NotNull
+  @NonNull
   BoolQuery.Builder addElasticTermFilter(BoolQuery.Builder builder, String field, Object value);
 
   /**
@@ -66,7 +68,7 @@ public interface ElasticsearchService {
    * @param simpleQueryString Query string which defines the query filter
    * @return Updated builder
    */
-  @NotNull
+  @NonNull
   BoolQuery.Builder addElasticSimpleQueryStringFilter(
       BoolQuery.Builder builder, @NonNull String simpleQueryString);
 
@@ -77,7 +79,7 @@ public interface ElasticsearchService {
    * @param field Field to check whether it exists
    * @return Updated builder - with filter added according to searchType
    */
-  @NotNull
+  @NonNull
   BoolQuery.Builder addElasticExistsFilter(
       BoolQuery.Builder builder, @Nullable SearchType searchType, @NonNull String field);
 
@@ -89,7 +91,16 @@ public interface ElasticsearchService {
    * @param max Maximum value (inclusive)
    * @return Updated builder
    */
-  @NotNull
+  @NonNull
   BoolQuery.Builder addElasticRangeFilter(
       BoolQuery.Builder builder, String field, @Nullable Object min, @Nullable Object max);
+
+  /**
+   * Searches for CandidateEs objects matching the given query
+   * @param query Query to execute
+   * @return Results
+   */
+  @NonNull
+  SearchHits<CandidateEs> searchCandidateEs(NativeQuery query);
+
 }

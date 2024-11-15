@@ -26,10 +26,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.SearchType;
+import org.tctalent.server.model.es.CandidateEs;
 
 /**
  * Implementation of {@link ElasticsearchService} that interacts with Elasticsearch to perform
@@ -53,6 +57,8 @@ import org.tctalent.server.model.db.SearchType;
 @Slf4j
 @Service
 public class ElasticsearchServiceImpl implements ElasticsearchService {
+
+  private final ElasticsearchOperations elasticsearchOperations;
 
   @NotNull
   public BoolQuery.Builder addElasticTermsFilter(
@@ -170,5 +176,12 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         .build();
 
     return builder.filter(query.getQuery());
+  }
+
+  @NonNull
+  @Override
+  public SearchHits<CandidateEs> searchCandidateEs(NativeQuery query) {
+      return elasticsearchOperations.search(
+          query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
   }
 }

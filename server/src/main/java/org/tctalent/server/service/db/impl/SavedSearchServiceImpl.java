@@ -51,10 +51,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -151,7 +149,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
     private final PartnerService partnerService;
-    private final ElasticsearchOperations elasticsearchOperations;
     private final ElasticsearchService elasticsearchService;
     private final EmailHelper emailHelper;
     private final UserRepository userRepository;
@@ -1829,8 +1826,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .message("Elasticsearch sort: " + req)
                 .logInfo();
 
-            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
+            SearchHits<CandidateEs> hits = elasticsearchService.searchCandidateEs(query);
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
