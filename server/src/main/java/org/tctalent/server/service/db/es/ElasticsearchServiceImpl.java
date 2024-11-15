@@ -27,6 +27,7 @@ import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -34,8 +35,10 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.security.AuthService;
 
 /**
  * Implementation of {@link ElasticsearchService} that interacts with Elasticsearch to perform
@@ -47,10 +50,9 @@ import org.tctalent.server.model.es.CandidateEs;
  * Converted to use new Spring NativeQuery together with Elasticsearch's Java API.
  * <p/>
  * Note that {@link NativeQuery} is just a wrapper for a single Elasticsearch Java API
- * {@link Query}. It has little functionality of its own - just serving as a bridge between
- * Spring and the Elasticsearch Java API. For example, you can't build complex queries from
- * NativeQuery's. All building is done with Java API and then just wrapped in a NativeQuery
- * as needed.
+ * {@link Query}. It has little functionality of its own - just serving as a bridge between Spring
+ * and the Elasticsearch Java API. For example, you can't build complex queries from NativeQuery's.
+ * All building is done with Java API and then just wrapped in a NativeQuery as needed.
  *
  * @author sadatmalik
  * @author johncameron
@@ -60,144 +62,162 @@ import org.tctalent.server.model.es.CandidateEs;
 @Service
 public class ElasticsearchServiceImpl implements ElasticsearchService {
 
-  private final ElasticsearchOperations elasticsearchOperations;
+    private final ElasticsearchOperations elasticsearchOperations;
+    private final AuthService authService;
 
-  @NotNull
-  public BoolQuery.Builder addElasticTermsFilter(
-      BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
-      Collection<Object> values) {
+    @NotNull
+    public BoolQuery.Builder addElasticTermsFilter(
+        BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
+        Collection<Object> values) {
 
-    final int nValues = values.size();
-    if (nValues > 0) {
+        final int nValues = values.size();
+        if (nValues > 0) {
 
-      //Construct the field values to be checked against
-      TermsQueryField fieldValues = new TermsQueryField.Builder()
-          .value(values.stream().map(FieldValue::of).toList())
-          .build();
-      //Build the native query
-      NativeQuery query = NativeQuery.builder()
-          .withQuery(q -> q
-              .terms(ma -> ma
-                  .field(field)
-                  .terms(fieldValues)
-              )
-          )
-          .build();
+            //Construct the field values to be checked against
+            TermsQueryField fieldValues = new TermsQueryField.Builder()
+                .value(values.stream().map(FieldValue::of).toList())
+                .build();
+            //Build the native query
+            NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q
+                    .terms(ma -> ma
+                        .field(field)
+                        .terms(fieldValues)
+                    )
+                )
+                .build();
 
-
-      if (searchType == SearchType.not) {
-        builder = builder.mustNot(query.getQuery());
-      } else if (searchType == SearchType.or) {
-        builder = builder.should(query.getQuery());
-      } else {
-        builder = builder.filter(query.getQuery());
-      }
-    }
-    return builder;
-  }
-
-  @NotNull
-  public BoolQuery.Builder addElasticTermFilter(
-      BoolQuery.Builder builder, String field, Object value) {
-
-    //Build the native query
-    NativeQuery query = NativeQuery.builder()
-        .withQuery(q -> q
-            .term(ma -> ma
-                .field(field)
-                .value(FieldValue.of(value))
-            )
-        )
-        .build();
-
-    return builder.filter(query.getQuery());
-  }
-
-  @NotNull
-  @Override
-  public BoolQuery.Builder addElasticSimpleQueryStringFilter(
-      BoolQuery.Builder builder, @NonNull String simpleQueryString) {
-    NativeQuery query = NativeQuery.builder()
-        .withQuery(q -> q
-            .simpleQueryString(ss -> ss
-                .query(simpleQueryString)
-            )
-        )
-        .build();
-
-    return builder.filter(query.getQuery());
-  }
-
-  @NotNull
-  @Override
-  public BoolQuery.Builder addElasticExistsFilter(
-      BoolQuery.Builder builder, @Nullable SearchType searchType, @NonNull String field) {
-    NativeQuery query = NativeQuery.builder()
-        .withQuery(q -> q
-            .exists(ex -> ex
-                .field(field)
-            )
-        )
-        .build();
-
-    if (searchType == SearchType.not) {
-      builder = builder.mustNot(query.getQuery());
-    } else {
-      builder = builder.filter(query.getQuery());
+            if (searchType == SearchType.not) {
+                builder = builder.mustNot(query.getQuery());
+            } else if (searchType == SearchType.or) {
+                builder = builder.should(query.getQuery());
+            } else {
+                builder = builder.filter(query.getQuery());
+            }
+        }
+        return builder;
     }
 
-    return builder;
-  }
+    @NotNull
+    public BoolQuery.Builder addElasticTermFilter(
+        BoolQuery.Builder builder, String field, Object value) {
 
-  @NotNull
-  @Override
-  public BoolQuery.Builder addElasticRangeFilter(BoolQuery.Builder builder, String field, Object min, Object max) {
-    NativeQuery query = NativeQuery.builder()
-        .withQuery(q -> q
-            .range(ra -> {
-                  Builder build = ra.field(field);
-                  if (min != null) {
-                    build = build.gte(JsonData.of(min));
-                  }
-                  if (max != null) {
-                    build = build.lte(JsonData.of(max));
-                  }
-                  return build;
-                }
+        //Build the native query
+        NativeQuery query = NativeQuery.builder()
+            .withQuery(q -> q
+                .term(ma -> ma
+                    .field(field)
+                    .value(FieldValue.of(value))
+                )
             )
-        )
-        .build();
+            .build();
 
-    return builder.filter(query.getQuery());
-  }
+        return builder.filter(query.getQuery());
+    }
 
-  @NotNull
-  @Override
-  public BoolQuery.Builder addElasticNestedFilter(BoolQuery.Builder builder, String path, Query nestedQuery) {
-    NativeQuery query = NativeQuery.builder()
-        .withQuery(q -> q
-            .nested(ne -> ne
-                .path(path)
-                .query(nestedQuery)
-                .scoreMode(ChildScoreMode.Avg)
+    @NotNull
+    @Override
+    public BoolQuery.Builder addElasticSimpleQueryStringFilter(
+        BoolQuery.Builder builder, @NonNull String simpleQueryString) {
+        NativeQuery query = NativeQuery.builder()
+            .withQuery(q -> q
+                .simpleQueryString(ss -> ss
+                    .query(simpleQueryString)
+                )
             )
-        )
-        .build();
+            .build();
 
-    return builder.filter(query.getQuery());
-  }
+        return builder.filter(query.getQuery());
+    }
 
-  @NonNull
-  @Override
-  public String convertNativeQueryToJson(@NonNull NativeQuery query) {
-    final Query internalQuery = query.getQuery();
-    return internalQuery == null ? "" : internalQuery.toString();
-  }
+    @NotNull
+    @Override
+    public BoolQuery.Builder addElasticExistsFilter(
+        BoolQuery.Builder builder, @Nullable SearchType searchType, @NonNull String field) {
+        NativeQuery query = NativeQuery.builder()
+            .withQuery(q -> q
+                .exists(ex -> ex
+                    .field(field)
+                )
+            )
+            .build();
 
-  @NonNull
-  @Override
-  public SearchHits<CandidateEs> searchCandidateEs(NativeQuery query) {
-      return elasticsearchOperations.search(
-          query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
-  }
+        if (searchType == SearchType.not) {
+            builder = builder.mustNot(query.getQuery());
+        } else {
+            builder = builder.filter(query.getQuery());
+        }
+
+        return builder;
+    }
+
+    @NotNull
+    @Override
+    public BoolQuery.Builder addElasticRangeFilter(BoolQuery.Builder builder, String field,
+        Object min, Object max) {
+        NativeQuery query = NativeQuery.builder()
+            .withQuery(q -> q
+                .range(ra -> {
+                        Builder build = ra.field(field);
+                        if (min != null) {
+                            build.gte(JsonData.of(min));
+                        }
+                        if (max != null) {
+                            build.lte(JsonData.of(max));
+                        }
+                        return build;
+                    }
+                )
+            )
+            .build();
+
+        return builder.filter(query.getQuery());
+    }
+
+    @NotNull
+    @Override
+    public BoolQuery.Builder addElasticNestedFilter(BoolQuery.Builder builder, String path,
+        Query nestedQuery) {
+        NativeQuery query = NativeQuery.builder()
+            .withQuery(q -> q
+                .nested(ne -> ne
+                    .path(path)
+                    .query(nestedQuery)
+                    .scoreMode(ChildScoreMode.Avg)
+                )
+            )
+            .build();
+
+        return builder.filter(query.getQuery());
+    }
+
+    @NonNull
+    @Override
+    public SearchHits<CandidateEs> searchCandidateEs(BoolQuery.Builder builder,
+        PageRequest pageRequest) {
+
+        final Query boolQuery = builder.build()._toQuery();
+        NativeQuery query = NativeQuery.builder()
+            .withQuery(boolQuery)
+            .withPageable(pageRequest)
+            .build();
+
+        // Convert query to a compact JSON string
+        String queryAsJson = boolQuery.toString();
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("searchCandidateEs")
+            .message("Elasticsearch query: " + queryAsJson)
+            .logInfo();
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("searchCandidateEs")
+            .message("Elasticsearch sort: " + pageRequest)
+            .logInfo();
+
+        return elasticsearchOperations.search(
+            query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
+    }
 }

@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.repository.es.CandidateEsRepository;
@@ -80,15 +79,10 @@ class ElasticsearchServiceImplTest {
         builder = elasticsearchService.addElasticTermsFilter(builder,
             null, "firstName.keyword", Collections.singleton("Jim"));
 
-        NativeQuery query = NativeQuery.builder()
-            .withQuery(builder.build()._toQuery())
-            .build();
+        SearchHits<CandidateEs> searchHits =
+            elasticsearchService.searchCandidateEs(builder, null);
 
-        System.out.println(elasticsearchService.convertNativeQueryToJson(query));
-
-        final SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(query);
-
-        assertTrue(searchHits.getTotalHits()>= 1);
+        assertTrue(searchHits.getTotalHits() > 0);
     }
 
     @Test
@@ -96,17 +90,13 @@ class ElasticsearchServiceImplTest {
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticTermFilter(builder, "firstName.keyword", "Jim");
+        builder = elasticsearchService.addElasticTermFilter(builder,
+            "firstName.keyword", "Jim");
 
-        NativeQuery query = NativeQuery.builder()
-            .withQuery(builder.build()._toQuery())
-            .build();
+        SearchHits<CandidateEs> searchHits =
+            elasticsearchService.searchCandidateEs(builder, null);
 
-        System.out.println(elasticsearchService.convertNativeQueryToJson(query));
-
-        final SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(query);
-
-        assertTrue(searchHits.getTotalHits()>= 1);
+        assertTrue(searchHits.getTotalHits() > 0);
     }
 
     @Test
@@ -117,15 +107,11 @@ class ElasticsearchServiceImplTest {
     void addElasticExistsFilter() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticExistsFilter(builder, null, "firstName");
+        builder = elasticsearchService.addElasticExistsFilter(builder,
+            null, "firstName");
 
-        NativeQuery query = NativeQuery.builder()
-            .withQuery(builder.build()._toQuery())
-            .build();
-
-        System.out.println(elasticsearchService.convertNativeQueryToJson(query));
-
-        final SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(query);
+        SearchHits<CandidateEs> searchHits =
+            elasticsearchService.searchCandidateEs(builder, null);
 
         assertTrue(searchHits.getTotalHits() > 0);
 
@@ -138,13 +124,8 @@ class ElasticsearchServiceImplTest {
         builder = elasticsearchService.addElasticRangeFilter(builder,
             "candidateNumber", "12344", "12346");
 
-        NativeQuery query = NativeQuery.builder()
-            .withQuery(builder.build()._toQuery())
-            .build();
-
-        System.out.println(elasticsearchService.convertNativeQueryToJson(query));
-
-        final SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(query);
+        SearchHits<CandidateEs> searchHits =
+            elasticsearchService.searchCandidateEs(builder, null);
 
         assertTrue(searchHits.getTotalHits() > 0);
     }

@@ -49,7 +49,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.jpa.domain.Specification;
@@ -1803,29 +1802,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            NativeQuery query = NativeQuery.builder()
-                .withQuery(boolQueryBuilder.build()._toQuery())
-                .withPageable(req)
-                .build();
-
-            // Convert query to a compact JSON string
-            String queryAsJson = elasticsearchService.convertNativeQueryToJson(query);
-
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .searchId(searchRequest.getSavedSearchId())
-                .action("doSearchCandidates")
-                .message("Elasticsearch query: " + queryAsJson)
-                .logInfo();
-
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .searchId(searchRequest.getSavedSearchId())
-                .action("doSearchCandidates")
-                .message("Elasticsearch sort: " + req)
-                .logInfo();
-
-            SearchHits<CandidateEs> hits = elasticsearchService.searchCandidateEs(query);
+            SearchHits<CandidateEs> hits =
+                elasticsearchService.searchCandidateEs(boolQueryBuilder, req);
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet

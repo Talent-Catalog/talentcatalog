@@ -19,7 +19,7 @@ package org.tctalent.server.service.db.es;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import java.util.Collection;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -96,20 +96,12 @@ public interface ElasticsearchService {
       BoolQuery.Builder builder, String field, @Nullable Object min, @Nullable Object max);
 
   /**
-   * Displays the given NativeQuery as a JSON string
-   *
-   * @param query Native query
-   * @return JSON string or empty String if query is empty
-   */
-  @NonNull
-  String convertNativeQueryToJson(@NonNull NativeQuery query);
-
-  /**
    * Searches for CandidateEs objects matching the given query
-   * @param query Query to execute
+   * @param builder BoolQuery builder containing query to execute
+   * @param pageRequest Page request containing sort and and paging info
    * @return Results
    */
   @NonNull
-  SearchHits<CandidateEs> searchCandidateEs(NativeQuery query);
+  SearchHits<CandidateEs> searchCandidateEs(BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
 
 }
