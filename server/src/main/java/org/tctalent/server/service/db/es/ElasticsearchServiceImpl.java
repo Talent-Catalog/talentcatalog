@@ -180,6 +180,13 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
   @NonNull
   @Override
+  public String convertNativeQueryToJson(@NonNull NativeQuery query) {
+    final Query internalQuery = query.getQuery();
+    return internalQuery == null ? "" : internalQuery.toString();
+  }
+
+  @NonNull
+  @Override
   public SearchHits<CandidateEs> searchCandidateEs(NativeQuery query) {
       return elasticsearchOperations.search(
           query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));

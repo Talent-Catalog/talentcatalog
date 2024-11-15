@@ -19,7 +19,6 @@ package org.tctalent.server.service.db.impl;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import com.opencsv.CSVWriter;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
@@ -1810,7 +1809,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .build();
 
             // Convert query to a compact JSON string
-            String queryAsJson = convertToJson(query.getQuery());
+            String queryAsJson = elasticsearchService.convertNativeQueryToJson(query);
 
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
@@ -1948,17 +1947,5 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         }
         return boolQueryBuilder;
-    }
-
-    private String convertToJson(@Nullable Query query) {
-        return query == null ? null : query.toString();
-    }
-
-    private void logConversionFailure(Exception e) {
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("convertToJson")
-            .message("Failed to convert BoolQueryBuilder to compact JSON: " + e.getMessage())
-            .logWarn();
     }
 }

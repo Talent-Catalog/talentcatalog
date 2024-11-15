@@ -96,6 +96,15 @@ public interface ElasticsearchService {
       BoolQuery.Builder builder, String field, @Nullable Object min, @Nullable Object max);
 
   /**
+   * Displays the given NativeQuery as a JSON string
+   *
+   * @param query Native query
+   * @return JSON string or empty String if query is empty
+   */
+  @NonNull
+  String convertNativeQueryToJson(@NonNull NativeQuery query);
+
+  /**
    * Searches for CandidateEs objects matching the given query
    * @param query Query to execute
    * @return Results
