@@ -18,7 +18,9 @@ package org.tctalent.server.service.db.es;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.ChildScoreMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery.Builder;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
 import co.elastic.clients.json.JsonData;
 import java.util.Collection;
@@ -152,10 +154,16 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
   public BoolQuery.Builder addElasticRangeFilter(BoolQuery.Builder builder, String field, Object min, Object max) {
     NativeQuery query = NativeQuery.builder()
         .withQuery(q -> q
-            .range(ra -> ra
-                .field(field)
-                .gte(JsonData.of(min))
-                .lte(JsonData.of(max))
+            .range(ra -> {
+                  Builder build = ra.field(field);
+                  if (min != null) {
+                    build = build.gte(JsonData.of(min));
+                  }
+                  if (max != null) {
+                    build = build.lte(JsonData.of(max));
+                  }
+                  return build;
+                }
             )
         )
         .build();
@@ -171,6 +179,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
             .nested(ne -> ne
                 .path(path)
                 .query(nestedQuery)
+                .scoreMode(ChildScoreMode.Avg)
             )
         )
         .build();
