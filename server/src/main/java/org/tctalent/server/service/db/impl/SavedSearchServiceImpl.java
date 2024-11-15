@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import com.opencsv.CSVWriter;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
@@ -1806,14 +1807,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            // Convert BoolQueryBuilder to a compact JSON string
-            String boolQueryJson = convertToJson(boolQueryBuilder);
+            NativeQuery query = NativeQuery.builder()
+                .withQuery(boolQueryBuilder.build()._toQuery())
+                .withPageable(req)
+                .build();
+
+            // Convert query to a compact JSON string
+            String queryAsJson = convertToJson(query.getQuery());
 
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .searchId(searchRequest.getSavedSearchId())
                 .action("doSearchCandidates")
-                .message("Elasticsearch query: " + boolQueryJson)
+                .message("Elasticsearch query: " + queryAsJson)
                 .logInfo();
 
             LogBuilder.builder(log)
@@ -1822,11 +1828,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .action("doSearchCandidates")
                 .message("Elasticsearch sort: " + req)
                 .logInfo();
-
-            NativeQuery query = NativeQuery.builder()
-                .withQuery(boolQueryBuilder.build()._toQuery())
-                .withPageable(req)
-                .build();
 
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
                 query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
@@ -1953,8 +1954,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return boolQueryBuilder;
     }
 
-    private String convertToJson(BoolQuery.Builder boolQueryBuilder) {
-        return boolQueryBuilder.toString();
+    private String convertToJson(@Nullable Query query) {
+        return query == null ? null : query.toString();
     }
 
     private void logConversionFailure(Exception e) {
