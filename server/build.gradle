@@ -32,9 +32,19 @@ java {
     }
 }
 
+//See https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("-parameters")
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
+    }
+
+    //See https://stackoverflow.com/questions/76706612/standard-commons-logging-discovery-in-action-with-spring-jcl
+    configureEach {
+        exclude group: 'commons-logging', module: 'commons-logging'
     }
 }
 
