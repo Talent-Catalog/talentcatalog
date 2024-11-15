@@ -61,7 +61,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -1050,13 +1049,6 @@ public class CandidateServiceImpl implements CandidateService {
                 partnerAbbreviation = rootRequest.getPartnerAbbreviation();
             }
         }
-        if (partnerAbbreviation != null) {
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("Register Candidate")
-                .message("Registration with partner abbreviation: " + partnerAbbreviation)
-                .logInfo();
-        }
 
         //Pick up query parameters from request if they are passed in
         HasTcQueryParameters queryParameters;
@@ -1091,19 +1083,25 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
-        // Checks and substitutes when a partner has had a redirectPartner assigned — typically when
-        // it is no longer active and another org has assumed responsibility for candidates in that
+        // Check for and replace partner if it has a redirectPartner assigned — typically when it is
+        // no longer active and another org has assumed responsibility for candidates in its
         // jurisdiction. Set by SystemAdminApi.redirectInactivePartnerUrl.
         while (sourcePartner.getRedirectPartner() != null) {
-            sourcePartner = sourcePartner.getRedirectPartner();
-
-            LogBuilder.builder(log)
+            LogBuilder.builder(log) // Log the reassignment
                 .user(authService.getLoggedInUser())
                 .action("Register Candidate")
-                .message(partnerAbbreviation + " is inactive and has a redirect partner assigned. "
-                    + "Candidate will instead be registered to " + sourcePartner.getName() + ".")
+                .message(sourcePartner.getName() + " has a redirectPartner assigned - registration "
+                    + "redirected to " + sourcePartner.getRedirectPartner().getName() + ".")
                 .logInfo();
+
+            sourcePartner = sourcePartner.getRedirectPartner();
         }
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Register Candidate")
+            .message("Registration with partner: " + sourcePartner.getName())
+            .logInfo();
 
         /* Validate that the candidate has marked email consent partners as true in order to continue registration */
         if (!request.getContactConsentRegistration()) {

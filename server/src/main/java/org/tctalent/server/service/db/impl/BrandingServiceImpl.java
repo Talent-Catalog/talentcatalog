@@ -17,12 +17,16 @@
 package org.tctalent.server.service.db.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.BrandingInfo;
+import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
@@ -35,10 +39,12 @@ import javax.validation.constraints.NotNull;
  * @author John Cameron
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class BrandingServiceImpl implements BrandingService {
     private final PartnerService partnerService;
     private final UserService userService;
+    private final AuthService authService;
 
     /**
      * Returns the branding information for a partner.
@@ -67,11 +73,21 @@ public class BrandingServiceImpl implements BrandingService {
             partner = partnerService.getDefaultSourcePartner();
         }
 
-        // Checks and substitutes when a partner has had a redirectPartner assigned — typically when
-        // it is no longer active and another org has assumed responsibility for candidates in that
-        // jurisdiction. Set by SystemAdminApi.redirectInactivePartnerUrl.
-        while (partner.getRedirectPartner() != null) {
-            partner = partner.getRedirectPartner();
+        // When logged-in user is a candidate, check for and replace partner if it has a
+        // redirectPartner assigned — typically because it is no longer active and another org has
+        // assumed responsibility for candidates in its jurisdiction.
+        // Set by SystemAdminApi.redirectInactivePartnerUrl.
+        if (user != null && user.getRole() == Role.user) { // User is a candidate
+            while (partner.getRedirectPartner() != null) {
+                LogBuilder.builder(log) // Log the reassignment
+                    .user(authService.getLoggedInUser())
+                    .action("Get Branding Info")
+                    .message(partner.getName() + " has a redirectPartner assigned - request "
+                        + "redirected to " + partner.getRedirectPartner().getName() + ".")
+                    .logInfo();
+
+                partner = partner.getRedirectPartner();
+            }
         }
 
         return extractBrandingInfoFromPartner(partner);

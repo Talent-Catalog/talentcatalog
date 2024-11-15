@@ -85,6 +85,7 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
@@ -103,7 +104,6 @@ import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
-import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -221,7 +221,7 @@ public class SystemAdminApi {
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-        PartnerService partnerService) {
+        PartnerService partnerService, PartnerRepository partnerRepository) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -2996,6 +2996,56 @@ public class SystemAdminApi {
                 .action("Reassign candidates")
                 .message("Reassignment of candidates from list with ID " + listId +
                     " to partner with ID " + partnerId + " failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Provides a utility for system admins to redirect an inactive partner's 'hard-coded' URLs
+     * (used in promo material e.g. flyers, online QR codes) to a new active partner.
+     * @param inactivePartnerId the ID of the inactive partner to redirect away from
+     * @param newPartnerId the ID of the active partner to direct to
+     * @return response details
+     */
+    @GetMapping("redirect-inactive-partner-url/from-{inactivePartnerId}-to-{newPartnerId}")
+    public ResponseEntity<?> redirectInactivePartnerUrl(
+        @PathVariable("inactivePartnerId") long inactivePartnerId,
+        @PathVariable("newPartnerId") long newPartnerId
+    ) {
+        try {
+            // Get the new partner that URLs will redirect to
+            PartnerImpl newPartner = (PartnerImpl) partnerService.getPartner(newPartnerId);
+
+            // Get the inactive partner that URLs will redirect away from
+            PartnerImpl inactivePartner = (PartnerImpl) partnerService.getPartner(inactivePartnerId);
+
+            // The partner we're redirecting to could itself have been deactivated in the past and
+            // therefore have a redirectPartner assigned that we would no longer wish to honour -
+            // not only for operational reasons but also because we could cause a recursive loop.
+            if (newPartner.getRedirectPartner() != null) {
+                newPartner.setRedirectPartner(null);
+                newPartner = partnerRepository.save(newPartner);
+            }
+
+            // Update and save the inactive partner
+            inactivePartner.setRedirectPartner(newPartner);
+            partnerRepository.save(inactivePartner);
+
+            LogBuilder.builder(log)
+                .action("redirectInactivePartnerUrl")
+                .message("URLs identifying inactive partner " + inactivePartner.getName() +
+                    " will now redirect to " + newPartner.getName() + ".")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("redirectInactivePartnerUrl")
+                .message("Redirection failed.")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend
