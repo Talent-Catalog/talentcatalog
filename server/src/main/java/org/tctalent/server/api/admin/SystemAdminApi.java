@@ -105,7 +105,6 @@ import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
-import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -251,10 +250,10 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         this.taskScheduler = taskScheduler;
-      this.backgroundProcessingService = backgroundProcessingService;
-      countryForGeneralCountry = getExtraCountryMappings();
-      this.partnerService = partnerService;
-      this.partnerRepository = partnerRepository;
+        this.backgroundProcessingService = backgroundProcessingService;
+        countryForGeneralCountry = getExtraCountryMappings();
+        this.partnerService = partnerService;
+        this.partnerRepository = partnerRepository;
     }
 
     /**
@@ -3023,6 +3022,14 @@ public class SystemAdminApi {
 
             // Get the inactive partner that URLs will redirect away from
             PartnerImpl inactivePartner = (PartnerImpl) partnerService.getPartner(inactivePartnerId);
+
+            // The partner we're redirecting to could itself have been deactivated in the past and
+            // therefore have a redirectPartner assigned that we would no longer wish to honour -
+            // not only for operational reasons but also because we could cause a recursive loop.
+            if (newPartner.getRedirectPartner() != null) {
+                newPartner.setRedirectPartner(null);
+                newPartner = partnerRepository.save(newPartner);
+            }
 
             // Update and save the inactive partner
             inactivePartner.setRedirectPartner(newPartner);
