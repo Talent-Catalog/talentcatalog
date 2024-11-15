@@ -24,8 +24,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -34,7 +32,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,13 +47,11 @@ import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
@@ -66,7 +61,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -83,7 +78,6 @@ import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCitizenship;
 import org.tctalent.server.model.db.CandidateDestination;
@@ -218,9 +212,6 @@ public class CandidateServiceImpl implements CandidateService {
 
     private static final Map<CandidateSubfolderType, String> candidateSubfolderNames;
     private static final String NOT_AUTHORIZED = "Hidden";
-
-    @Value("${environment}")
-    private String environment;
 
     static {
         candidateSubfolderNames = new HashMap<>();
@@ -2949,112 +2940,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-        lockAtMostFor = "PT23H")
-    public void scheduledSfProdCandidateSync() {
-        // We only want to run the full sync in prod, due to SF sandbox object limit of 10,000.
-        // We're passing a very high noOfPagesRequested, so that totalPages is used instead.
-        if (environment.equalsIgnoreCase(Environment.prod.name())) {
-            syncCandidatesToSf(200, 0, 100000);
-        }
-    }
-
-    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-        lockAtMostFor = "PT23H")
-    public void scheduledSfSandboxCandidateSync() {
-        // Scaled-down replica of prod for testing purposes (4,000 candidates)
-        if (environment.equalsIgnoreCase(Environment.staging.name())) {
-            syncCandidatesToSf(200, 0, 20);
-        }
-    }
-
-    @Override
-    public void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPagesRequested)
-        throws SalesforceException, WebClientException {
-
-        Instant startOverall = Instant.now();
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("Initiating TC-SF candidate sync")
-            .logInfo();
-
-        Pageable pageable = PageRequest.of(
-            firstPageIndex,
-            pageSize,
-            Sort.by("id").ascending()
-        );
-
-        // Candidates with an 'active' status or already uploaded to SF
-        List<CandidateStatus> statuses = new ArrayList<>(
-            EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
-                CandidateStatus.incomplete));
-
-        Page<Candidate> candidatePage = candidateRepository
-            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message(candidatePage.getTotalElements() + " candidates meet the criteria")
-            .logInfo();
-
-        int totalPages = candidatePage.getTotalPages();
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("With a page size of " + pageSize + " this amounts to a total of " +
-                totalPages + " pages.")
-            .logInfo();
-
-        int noOfPagesToProcess = Math.min(totalPages - firstPageIndex, noOfPagesRequested);
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("This request will process pages " + (firstPageIndex + 1) + " to " +
-                (firstPageIndex + noOfPagesToProcess))
-            .logInfo();
-
-        int pagesProcessed = 0;
-
-        // Iterate through batches, upserting to SF
-        while(pagesProcessed < noOfPagesToProcess) {
-            Instant start = Instant.now();
-            List<Candidate> candidateList = candidatePage.getContent();
-            upsertCandidatesToSf(candidateList);
-            // Clears the persistence context of managed entities that would otherwise pile up.
-            persistenceContextHelper.flushAndClearEntityManager();
-            candidatePage = candidateRepository.findByStatusesOrSfLinkIsNotNull(
-                statuses, candidatePage.nextPageable());
-            pagesProcessed++;
-
-            Instant end = Instant.now();
-            Duration timeElapsed = Duration.between(start, end);
-
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("Sync Candidates to Salesforce")
-                .message("Processed page " + pagesProcessed + " of " + noOfPagesToProcess +
-                    " in " + timeElapsed.toSeconds() + " seconds.")
-                .logInfo();
-        }
-
-        Instant endOverall = Instant.now();
-        Duration timeElapsedOverall = Duration.between(startOverall, endOverall);
-
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Sync Candidates to Salesforce")
-            .message("With these parameters it took " + timeElapsedOverall.toMinutes() +
-                " minutes to process " + (noOfPagesToProcess * pageSize) + " candidates.")
-            .logInfo();
-    }
-
     @Override
     public void upsertCandidatesToSf(List<Candidate> orderedCandidates)
         throws SalesforceException, WebClientException {
@@ -3072,6 +2957,21 @@ public class CandidateServiceImpl implements CandidateService {
                     contact.getUrl(salesforceConfig.getBaseLightningUrl()));
             }
         }
+    }
+
+    @Transactional
+    @Override
+    public void processSfCandidateSyncPage(
+        long startPage, List<CandidateStatus> statuses
+    ) throws SalesforceException, WebClientException {
+        // Obtain and process new page
+        Pageable newPageable =
+            PageRequest.of((int) startPage, 200, Sort.by("id").ascending());
+        Page<Candidate> newCandidatePage = candidateRepository
+            .findByStatusesOrSfLinkIsNotNull(statuses, newPageable);
+        List<Candidate> candidateList = newCandidatePage.getContent();
+
+        upsertCandidatesToSf(candidateList);
     }
 
     @Override

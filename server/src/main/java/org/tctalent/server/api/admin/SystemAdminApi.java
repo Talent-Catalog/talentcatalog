@@ -50,21 +50,31 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -75,12 +85,10 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
-import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
@@ -97,6 +105,7 @@ import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -114,6 +123,7 @@ import org.tctalent.server.service.db.cache.CacheService;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.IdContext;
+import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -159,6 +169,7 @@ public class SystemAdminApi {
 
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
+    private final BackgroundProcessingService backgroundProcessingService;
     private final PartnerService partnerService;
     private final PartnerRepository partnerRepository;
 
@@ -182,8 +193,13 @@ public class SystemAdminApi {
 
     @Value("${google.drive.listFoldersRootId}")
     private String listFoldersRootId;
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Value("${environment}")
+    private String environment;
+
     @Autowired
     public SystemAdminApi(
             DataSharingService dataSharingService,
@@ -204,8 +220,8 @@ public class SystemAdminApi {
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-        TaskScheduler taskScheduler, PartnerService partnerService,
-        PartnerRepository partnerRepository) {
+        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
+        PartnerService partnerService) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -233,8 +249,9 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         this.taskScheduler = taskScheduler;
-      this.partnerService = partnerService;
-      countryForGeneralCountry = getExtraCountryMappings();
+        this.backgroundProcessingService = backgroundProcessingService;
+        countryForGeneralCountry = getExtraCountryMappings();
+        this.partnerService = partnerService;
         this.partnerRepository = partnerRepository;
     }
 
@@ -2766,13 +2783,112 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
-    @GetMapping("sf-update-candidates/{pageSize}-{firstPageIndex}-{noOfPagesRequested}")
-    public void sfUpdateCandidates(
-        @PathVariable("pageSize") int pageSize,
-        @PathVariable("firstPageIndex") int firstPageIndex,
-        @PathVariable("noOfPagesRequested") int noOfPagesRequested
+    /**
+     * Stub for manual call to sync active candidates to SF
+     * @param noOfPagesRequested total no of pages (containing up to 200 candidates max) to be
+     *                           synced. NB: passing <code>0</code> will sync full search results.
+     */
+    @GetMapping("sf-sync-candidates/{noOfPagesRequested}")
+    public ResponseEntity<?> sfSyncCandidates(
+        @PathVariable("noOfPagesRequested") long noOfPagesRequested
     ) {
-        candidateService.syncCandidatesToSf(pageSize, firstPageIndex, noOfPagesRequested);
+        try {
+            // 0 syncs all results
+            if (noOfPagesRequested == 0) {
+                initiateSfCandidateSync(null);
+            } else {
+                initiateSfCandidateSync(noOfPagesRequested);
+            }
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("sfSyncCandidates")
+                .message("TC-SF candidate sync failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Sets up search parameters and scheduled background processing for SF candidate sync.
+     * @param noOfPagesRequested no of pages requested to be synced - if null, all results will sync
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    private void initiateSfCandidateSync(@Nullable Long noOfPagesRequested)
+        throws SalesforceException, WebClientException {
+
+        LogBuilder.builder(log)
+            .action("initiateSfCandidateSync")
+            .message("Initiating TC-SF candidate sync")
+            .logInfo();
+
+        // Obtain and log search results metrics
+        Pageable pageable = PageRequest.of(
+            0, 200, Sort.by("id").ascending()
+        );
+
+        // Candidates with an 'active' status or already uploaded to SF
+        final List<CandidateStatus> statuses = new ArrayList<>(
+            EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
+                CandidateStatus.incomplete));
+
+        Page<Candidate> candidatePage = candidateRepository
+            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
+
+        LogBuilder.builder(log)
+            .action("initiateSfCandidateSync")
+            .message(candidatePage.getTotalElements() + " candidates meet the criteria")
+            .logInfo();
+
+        // Set total page count - if requested amount is null, defers to total pages in results
+        long totalNoOfPages =
+            Optional.ofNullable(noOfPagesRequested).orElse((long) candidatePage.getTotalPages());
+
+        LogBuilder.builder(log)
+            .action("initiateSfCandidateSync")
+            .message("This request will process " + totalNoOfPages + " pages of 200 candidates.")
+            .logInfo();
+
+        // Implement background processing
+        BackProcessor<PageContext> backProcessor =
+            backgroundProcessingService.createSfSyncBackProcessor(statuses, totalNoOfPages);
+
+        // Schedule background processing
+        BackRunner<PageContext> backRunner = new BackRunner<>();
+
+        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
+            new PageContext(null, 1), 20);
+    }
+
+    /**
+     * Scheduled TC -> SF sync of all active candidates
+     */
+    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfProdCandidateSync() {
+        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+            // Passing null means all results will be processed
+            initiateSfCandidateSync(null);
+        }
+    }
+
+    /**
+     * Scheduled TC staging -> SF sandbox sync
+     */
+    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfSandboxCandidateSync() {
+        // Scaled-down replica of prod for testing purposes (4,000 candidates)
+        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+            initiateSfCandidateSync(20L);
+        }
     }
 
     @GetMapping("delete-job/{jobId}")
@@ -2880,48 +2996,6 @@ public class SystemAdminApi {
                 .action("Reassign candidates")
                 .message("Reassignment of candidates from list with ID " + listId +
                     " to partner with ID " + partnerId + " failed.")
-                .logError(e);
-
-            // Return 500 Internal Server Error including error in body for display on frontend
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
-        }
-    }
-
-    /**
-     * Provides a utility for system admins to redirect an inactive partner's 'hard-coded' URLs
-     * (used in promo material e.g. flyers, online QR codes) to a new active partner.
-     * @param inactivePartnerId the ID of the inactive partner to redirect away from
-     * @param newPartnerId the ID of the active partner to direct to
-     * @return response details
-     */
-    @GetMapping("redirect-inactive-partner-url/from-{inactivePartnerId}-to-{newPartnerId}")
-    public ResponseEntity<?> redirectInactivePartnerUrl(
-        @PathVariable("inactivePartnerId") long inactivePartnerId,
-        @PathVariable("newPartnerId") long newPartnerId
-    ) {
-        try {
-            // Get the new partner that URLs will redirect to
-            PartnerImpl newPartner = (PartnerImpl) partnerService.getPartner(newPartnerId);
-
-            // Get the inactive partner that URLs will redirect away from
-            PartnerImpl inactivePartner = (PartnerImpl) partnerService.getPartner(inactivePartnerId);
-
-            // Update and save the inactive partner
-            inactivePartner.setRedirectPartner(newPartner);
-            partnerRepository.save(inactivePartner);
-
-            LogBuilder.builder(log)
-                .action("redirectInactivePartnerUrl")
-                .message("URLs identifying inactive partner " + inactivePartner.getName() +
-                    " will now redirect to " + newPartner.getName() + ".")
-                .logInfo();
-
-            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
-
-        } catch(Exception e) {
-            LogBuilder.builder(log)
-                .action("redirectInactivePartnerUrl")
-                .message("Redirection failed.")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend
