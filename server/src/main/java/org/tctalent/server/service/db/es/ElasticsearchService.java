@@ -98,10 +98,11 @@ public interface ElasticsearchService {
   /**
    * Searches for CandidateEs objects matching the given query
    * @param builder BoolQuery builder containing query to execute
-   * @param pageRequest Page request containing sort and and paging info
+   * @param pageRequest Optional page request containing sort and and paging info
    * @return Results
    */
   @NonNull
-  SearchHits<CandidateEs> searchCandidateEs(BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
+  SearchHits<CandidateEs> searchCandidateEs(
+      BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
 
 }
