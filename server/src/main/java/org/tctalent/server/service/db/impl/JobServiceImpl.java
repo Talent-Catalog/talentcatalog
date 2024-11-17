@@ -181,8 +181,26 @@ public class JobServiceImpl implements JobService {
         Arrays.stream(CandidateOpportunityStage.values())
             .filter(s -> !s.isEmployed() && !s.isClosed())
                 .forEach(s -> {
+                    // Recruitment doesn't proceed for reasons unrelated to candidate:
+                    //      1. Job/employer ineligible
+                    addClosingLogic(JobOpportunityStage.ineligibleEmployer,
+                        s, CandidateOpportunityStage.jobIneligible);
+                    addClosingLogic(JobOpportunityStage.ineligibleRegion,
+                        s, CandidateOpportunityStage.jobIneligible);
+                    addClosingLogic(JobOpportunityStage.ineligibleOccupation,
+                        s, CandidateOpportunityStage.jobIneligible);
+
+                    //      2. Employer issues with process
                     addClosingLogic(JobOpportunityStage.noInterest,
-                        s, CandidateOpportunityStage.notFitForRole);
+                        s, CandidateOpportunityStage.jobWithdrawn);
+                    addClosingLogic(JobOpportunityStage.tooExpensive,
+                        s, CandidateOpportunityStage.jobWithdrawn);
+                    addClosingLogic(JobOpportunityStage.tooHighWage,
+                        s, CandidateOpportunityStage.jobWithdrawn);
+                    addClosingLogic(JobOpportunityStage.tooLong,
+                        s, CandidateOpportunityStage.jobWithdrawn);
+
+                    // Recruitment doesn't proceed for reasons related to candidate:
                     addClosingLogic(JobOpportunityStage.noSuitableCandidates,
                         s, CandidateOpportunityStage.notFitForRole);
                     addClosingLogic(JobOpportunityStage.noJobOffer,
@@ -190,15 +208,6 @@ public class JobServiceImpl implements JobService {
                     addClosingLogic(JobOpportunityStage.noVisa,
                         s, CandidateOpportunityStage.notFitForRole);
                     addClosingLogic(JobOpportunityStage.hiringCompleted,
-                        s, CandidateOpportunityStage.notFitForRole);
-
-                    //It is unlikely that there will be any candidate opps if the job stage
-                    //closes in the following stages - but if there are mark them as notFitForRole
-                    addClosingLogic(JobOpportunityStage.tooExpensive,
-                        s, CandidateOpportunityStage.notFitForRole);
-                    addClosingLogic(JobOpportunityStage.tooHighWage,
-                        s, CandidateOpportunityStage.notFitForRole);
-                    addClosingLogic(JobOpportunityStage.tooLong,
                         s, CandidateOpportunityStage.notFitForRole);
                 });
 

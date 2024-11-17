@@ -53,12 +53,15 @@ public enum CandidateOpportunityStage {
         notEligibleForVisa ("Not eligible for visa", true, false, false),
         noInterview ("No interview", true, false, false),
         candidateLeavesDestination ("Candidate leaves destination", true, true, false),
+        candidateMistakenProspect("Candidate was mistakenly proposed as a prospect for the job", true, false, false),
         candidateRejectsOffer ("Candidate rejects offer", true, false, false),
         candidateUnreachable ("Candidate unreachable", true, false, false),
         candidateWithdraws ("Candidate withdraws", true, false, false),
+        jobIneligible("Job ineligible", true, false, false),
         jobOfferRetracted ("Job offer retracted", true, false, false),
+        jobWithdrawn("Job withdrawn", true, false, false),
         relocatedNoJobOfferPathway("Relocated no job offer pathway", true, false, false),
-        trainingNotCompleted("Training not completed", true, false, false)
+        trainingNotCompleted("Training not completed", true, false, false),
         ;
 
         private final String salesforceStageName;

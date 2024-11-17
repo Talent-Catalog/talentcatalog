@@ -32,7 +32,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.ExportFailedException;
@@ -41,6 +40,7 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateSubfolderType;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
@@ -584,23 +584,23 @@ public interface CandidateService {
     void resolveOutstandingTaskAssignments(ResolveTaskAssignmentsRequest request);
 
     /**
-     * Syncs all live (status incomplete, pending, active) TC candidates, or those with a Salesforce Link, to Salesforce.
-     * @param pageSize no. of results per page
-     * @param firstPageIndex index of first page (begins from 0)
-     * @param noOfPages no. of pages to process
-     * Has a stub in {@link SystemAdminApi}, sfUpdateCandidates()
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    void syncCandidatesToSf(int pageSize, int firstPageIndex, int noOfPages);
-
-    /**
      * Upserts candidates to SF contacts and updates their TC profile SF links
      * @param orderedCandidates - candidates must be ordered for final step of updating SF links to work
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
+
+    /**
+     * Processes a single page for the TC-SF candidate sync.
+     * @param startPage page to process (zero-based index)
+     * @param statuses types of {@link CandidateStatus} to filter for in search
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    void processSfCandidateSyncPage(
+        long startPage, List<CandidateStatus> statuses
+    ) throws SalesforceException, WebClientException;
 
     /**
      * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in

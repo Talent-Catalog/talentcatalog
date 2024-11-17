@@ -47,9 +47,9 @@
           </div>
           <div *ngFor="let level of languageLevels">
             <div class="form-check">
-              <input [id]="level.name" class="form-check-input" type="radio"
+              <input [id]="level.name + 'spoken'" class="form-check-input" type="radio"
                      [formControlName]="'spokenLevel'" [value]="level.level">
-              <label [for]="level.name" class="form-check-label fw-light" >
+              <label [for]="level.name + 'spoken'" class="form-check-label fw-light" >
                 {{level.name}}
               </label>
             </div>
@@ -66,9 +66,9 @@
           </div>
           <div *ngFor="let level of languageLevels">
             <div class="form-check">
-              <input [id]="level.name" class="form-check-input" type="radio" required
+              <input [id]="level.name + 'written'" class="form-check-input" type="radio" required
                      [formControlName]="'writtenLevel'" [value]="level.level">
-              <label [for]="level.name" class="form-check-label fw-light">
+              <label [for]="level.name + 'written'" class="form-check-label fw-light">
                 {{level.name}}
               </label>
             </div>
