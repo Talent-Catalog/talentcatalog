@@ -106,8 +106,9 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
     }
 
     // If base search loaded from database (memory)
-    if (changes && changes.baseSearch && changes.baseSearch.previousValue === null && changes.baseSearch.currentValue !== null && this.selectedBaseSearch === null) {
-      this.selected(changes.baseSearch.currentValue.id);
+    if (changes && changes.baseSearch && changes.baseSearch.previousValue === null
+      && changes.baseSearch.currentValue !== null && this.selectedBaseSearch === null) {
+      this.selectedBaseSearch = changes.baseSearch.currentValue;
     }
   }
 
