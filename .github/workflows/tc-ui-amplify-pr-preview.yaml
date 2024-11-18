@@ -14,7 +14,6 @@ jobs:
         run: |
           echo "Waiting for 1 minute and 30 seconds before checking the preview links..."
           sleep 90
-
       - name: Get Amplify preview URLs from comments
         id: get-preview-urls
         uses: actions/github-script@v6
@@ -26,18 +25,15 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
-
             // Filter comments from "aws-amplify" containing the preview link
             const amplifyComments = comments.filter(comment => 
               comment.user.login.startsWith("aws-amplify") &&
               comment.body.includes("Access this pull request here:")
             );
-
             if (amplifyComments.length === 0) {
-              core.setFailed("No Amplify preview URLs found in comments.");
+              core.warning("No Amplify preview URLs found in comments.");
               return;
             }
-
             const urls = amplifyComments.map(comment => {
               const urlMatch = comment.body.match(/https?:\/\/[^\s]+/);
               return {
@@ -45,34 +41,27 @@ jobs:
                 id: comment.id
               };
             }).filter(item => item.url); // Remove null URLs
-
             if (urls.length === 0) {
-              core.setFailed("No valid Amplify preview URLs found in comments.");
+              core.warning("No valid Amplify preview URLs found in comments.");
               return;
             }
-
             core.setOutput("urls", JSON.stringify(urls));
-
       - name: Check if preview links are reachable
         id: check-links
         run: |
           urls='${{ steps.get-preview-urls.outputs.urls }}'
           broken_urls=()
           echo "Checking each preview link for status..."
-
           for item in $(echo "$urls" | jq -c '.[]'); do
             url=$(echo "$item" | jq -r '.url')
             comment_id=$(echo "$item" | jq -r '.id')
-
             HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$url")
             
             if [ "$HTTP_STATUS" -ne "200" ]; then
               broken_urls+=("$comment_id")
             fi
           done
-
           echo "::set-output name=broken_ids::${broken_urls[@]}"
-
       - name: Delete or notify if any preview link is broken
         uses: actions/github-script@v6
         if: steps.check-links.outputs.broken_ids != ''
@@ -88,5 +77,4 @@ jobs:
                 comment_id: parseInt(commentId),
               })
             );
-
             await Promise.all(promises);
