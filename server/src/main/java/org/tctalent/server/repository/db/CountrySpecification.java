@@ -26,22 +26,24 @@ import org.tctalent.server.request.country.SearchCountryRequest;
 public class CountrySpecification {
 
     public static Specification<Country> buildSearchQuery(final SearchCountryRequest request) {
-        return (country, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (country, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("GetSavedListsQuery.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(country.get("name")), likeMatchTerm)
-                        ));
+                conjunction = cb.and(conjunction,
+                                cb.like(cb.lower(country.get("name")), likeMatchTerm));
             }
 
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(country.get("status"), request.getStatus()));
+                conjunction = cb.and(conjunction, cb.equal(country.get("status"), request.getStatus()));
             }
 
             return conjunction;
