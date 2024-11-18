@@ -33,6 +33,7 @@ import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
+import {CandidateService} from "../../../services/candidate.service";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -72,7 +73,8 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
   afterViewCheckedHasRun: boolean = false;
 
   constructor(private localStorageService: LocalStorageService,
-              private authorizationService: AuthorizationService) { }
+              private authorizationService: AuthorizationService,
+              private candidateService: CandidateService) { }
 
   ngOnInit() {
   }
@@ -85,6 +87,10 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
       // Parent component has stored previous scroll position, will restore if pixels from top > 0.
       this.onSearchCardRendered.emit();
     }
+    // todo what can be updated via search card that would need to be updated in the list of candidates? Put here.
+    this.candidateService.candidateUpdated$.subscribe(candidate => {
+
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
