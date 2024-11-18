@@ -49,7 +49,7 @@ export class ViewCandidateContactComponent implements OnInit {
     editCandidateModal.componentInstance.candidateId = this.candidate.id;
 
     editCandidateModal.result
-      .then((candidate) => this.candidate = candidate)
+      .then((candidate) => this.candidateService.updateCandidate(candidate))
       .catch(() => { /* Isn't possible */ });
 
   }

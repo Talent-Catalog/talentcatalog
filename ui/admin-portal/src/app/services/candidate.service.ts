@@ -25,7 +25,7 @@ import {
   UpdateCandidateShareableNotesRequest,
   UpdateCandidateStatusRequest
 } from '../model/candidate';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
@@ -48,6 +48,9 @@ export interface IntakeAuditRequest {
 
 @Injectable({providedIn: 'root'})
 export class CandidateService implements IntakeService {
+
+  private candidateUpdatedSource = new Subject<Candidate>();
+  candidateUpdated$ = this.candidateUpdatedSource.asObservable();
 
   private apiUrl = environment.apiUrl + '/candidate';
 
@@ -215,6 +218,10 @@ export class CandidateService implements IntakeService {
     return this.http.post<SearchResults<Candidate>>(
       `${this.apiUrl}/fetch-candidates-with-chat`, request
     );
+  }
+
+  updateCandidate(candidate: Candidate) {
+    this.candidateUpdatedSource.next(candidate);
   }
 
 }

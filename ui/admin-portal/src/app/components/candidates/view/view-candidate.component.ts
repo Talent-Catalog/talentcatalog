@@ -16,11 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
-import {
-  Candidate,
-  UpdateCandidateStatusInfo,
-  UpdateCandidateStatusRequest
-} from '../../../model/candidate';
+import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
@@ -105,6 +101,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
         this.candidateChat = result;
       })
     }
+
+    this.candidateService.candidateUpdated$.subscribe(candidate => {
+      this.candidate = candidate;
+    });
   }
 
   refreshCandidateProfile() {
