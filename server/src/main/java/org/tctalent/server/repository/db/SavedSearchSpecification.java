@@ -139,7 +139,9 @@ public class SavedSearchSpecification {
                 }
             }
 
-            conjunction = cb.and(conjunction, disjunction);
+            if (!disjunction.getExpressions().isEmpty()) {
+                conjunction = cb.and(conjunction, disjunction);
+            }
 
             return conjunction;
         };

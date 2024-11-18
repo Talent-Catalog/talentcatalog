@@ -268,7 +268,9 @@ public class CandidateOpportunitySpecification {
                                             disjunction = cb.or(disjunction, cb.isNull(contact));
                                         }
 
-                                        conjunction = cb.and(conjunction, disjunction);
+                                        if (!disjunction.getExpressions().isEmpty()) {
+                                            conjunction = cb.and(conjunction, disjunction);
+                                        }
                                     }
                                 }
                             }

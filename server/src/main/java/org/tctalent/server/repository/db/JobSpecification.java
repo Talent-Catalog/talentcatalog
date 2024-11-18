@@ -142,7 +142,10 @@ public class JobSpecification {
                             disjunction = cb.or(disjunction,
                                 cb.isNull(job.get("publishedDate")));
                         }
-                        conjunction = cb.and(conjunction, disjunction);
+
+                        if (!disjunction.getExpressions().isEmpty()) {
+                            conjunction = cb.and(conjunction, disjunction);
+                        }
                     }
                 }
             }
@@ -220,7 +223,9 @@ public class JobSpecification {
                 }
             }
 
-            conjunction = cb.and(conjunction, ors);
+            if (!ors.getExpressions().isEmpty()) {
+                conjunction = cb.and(conjunction, ors);
+            }
 
             return conjunction;
         };
