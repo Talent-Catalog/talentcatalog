@@ -18,6 +18,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditCandidateRegistrationComponent} from "./edit/edit-candidate-registration.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-registration',
@@ -32,7 +33,8 @@ export class ViewCandidateRegistrationComponent implements OnInit {
   loading: boolean;
   error;
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal,
+              private candidateService: CandidateService) { }
 
   ngOnInit() {
 
@@ -47,7 +49,7 @@ export class ViewCandidateRegistrationComponent implements OnInit {
     editCandidateRegistrationModal.componentInstance.candidateId = this.candidate.id;
 
     editCandidateRegistrationModal.result
-      .then((candidate) => this.candidate = candidate)
+      .then((candidate) => this.candidateService.updateCandidate(candidate))
       .catch(() => { /* Isn't possible */ });
 
   }

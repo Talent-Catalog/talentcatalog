@@ -103,7 +103,13 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     }
 
     this.candidateService.candidateUpdated$.subscribe(candidate => {
-      this.candidate = candidate;
+      // this way using the returned updated object from the update methods (smaller dto though currently)
+      //this.candidate = candidate;
+
+      // or this way I could just call the getByNumber dto again which returns the desired extended dto.
+      this.candidateService.getByNumber(this.candidate.candidateNumber).subscribe((candidate) =>
+        this.candidate = candidate
+      )
     });
   }
 
