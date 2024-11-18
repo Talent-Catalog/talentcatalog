@@ -23,9 +23,7 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperience} from "../../../../model/candidate-job-experience";
 import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
-import {
-  EditCandidateJobExperienceComponent
-} from "./experience/edit/edit-candidate-job-experience.component";
+import {EditCandidateJobExperienceComponent} from "./experience/edit/edit-candidate-job-experience.component";
 import {CreateCandidateOccupationComponent} from "./create/create-candidate-occupation.component";
 
 @Component({
@@ -62,6 +60,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.orderOccupation = true;
+    this.experiences = this.candidate?.candidateJobExperiences;
   }
 
   get loading() {
@@ -98,21 +97,21 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
       this.candidateJobExperienceForm.patchValue({pageNumber: 0});
     }
     // todo do we need paged job experiences under occupations? The page size is 10, how likely is it for a candidate to have more than 10 job experiences under a single occupation?
-    /* GET CANDIDATE EXPERIENCE */
-    this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
-      results => {
-        if (more) {
-          this.experiences = this.experiences.concat(results.content);
-        } else {
-          this.experiences = results.content;
-        }
-        this.hasMore = results.totalPages > results.number + 1;
-        this._loading.experience = false;
-      },
-      error => {
-        this.error = error;
-        this._loading.experience = false;
-      });
+    // /* GET CANDIDATE EXPERIENCE */
+    // this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
+    //   results => {
+    //     if (more) {
+    //       this.experiences = this.experiences.concat(results.content);
+    //     } else {
+    //       this.experiences = results.content;
+    //     }
+    //     this.hasMore = results.totalPages > results.number + 1;
+    //     this._loading.experience = false;
+    //   },
+    //   error => {
+    //     this.error = error;
+    //     this._loading.experience = false;
+    //   });
   }
 
   createCandidateOccupation() {

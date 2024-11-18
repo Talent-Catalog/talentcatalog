@@ -46,7 +46,7 @@
   <!-- OCCUPATION VIEW -->
   <ng-container *ngIf="orderOccupation">
 
-    <app-view-candidate-job-experience *ngFor="let occupation of candidate.candidateOccupations"
+    <app-view-candidate-job-experience *ngFor="let occupation of candidate?.candidateOccupations"
                                        [candidate]="candidate"
                                        [candidateOccupation]="occupation"
                                        [editable]="editable"
@@ -59,7 +59,7 @@
   <!-- EXPERIENCE VIEW -->
   <ng-container *ngIf="!orderOccupation">
 
-    <div class="card mb-4" *ngFor="let experience of candidate.candidateJobExperiences">
+    <div class="card mb-4" *ngFor="let experience of candidate?.candidateJobExperiences">
 
       <!-- HEADER -->
       <div class="card-header">

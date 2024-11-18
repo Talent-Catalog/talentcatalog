@@ -16,13 +16,13 @@
 
 package org.tctalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,7 +157,7 @@ public class CandidateAdminApi {
     @GetMapping("number/{number}")
     public Map<String, Object> get(@PathVariable("number") String number) {
         Candidate candidate = candidateService.findByCandidateNumberRestricted(number);
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.EXTENDED);
         return builder.build(candidate);
     }
 

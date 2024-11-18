@@ -46,9 +46,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-       this.search();
-    }
+
   }
 
   search(){

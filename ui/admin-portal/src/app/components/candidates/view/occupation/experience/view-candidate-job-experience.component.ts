@@ -59,21 +59,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.expanded = false;
-    this.experiences = [];
-
-    this.candidateJobExperienceForm = this.fb.group({
-      candidateOccupationId: [this.candidateOccupation.id],
-      pageSize: 10,
-      pageNumber: 0,
-      sortDirection: 'DESC',
-      sortFields: [['endDate']]
-    });
-
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.doSearch();
-    }
-
+    this.experiences = this.candidate?.candidateJobExperiences.filter(je => je.candidateOccupation.id == this.candidateOccupation.id);
   }
 
   doSearch() {
