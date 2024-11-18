@@ -17,10 +17,6 @@
 package org.tctalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Order;
@@ -28,6 +24,10 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -68,10 +68,7 @@ public class CandidateOpportunitySpecification {
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction = cb.and(conjunction,
-                        cb.or(
-                                cb.like(cb.lower(opp.get("name")), likeMatchTerm)
-                        ));
+                conjunction = cb.and(conjunction, cb.like(cb.lower(opp.get("name")), likeMatchTerm));
             }
 
 
