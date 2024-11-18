@@ -72,10 +72,6 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
       sortFields: [['createdDate']]
     });
 
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doSearch();
-    }
-
   }
 
   doSearch() {

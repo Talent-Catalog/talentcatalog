@@ -42,8 +42,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.getCandidate();
+      this.filterTasks();
     }
   }
 
@@ -51,26 +50,30 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     this.candidateService.get(this.candidate.id).subscribe(
       candidate => {
         this.candidate = candidate;
-        if (this.candidate.taskAssignments) {
-          this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
-            t.completedDate == null &&
-            t.abandonedDate == null &&
-            t.status === Status.active).sort(taskAssignmentSort);
-          this.completedTasks = this.candidate.taskAssignments.filter(t =>
-            t.completedDate != null ||
-            t.abandonedDate != null).sort(taskAssignmentSort);
-          this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
-            t.status === Status.inactive);
-        } else {
-          this.ongoingTasks = [];
-          this.completedTasks = [];
-        }
+        this.filterTasks();
         this.loading = false;
       },
       error => {
         this.error = error;
         this.loading = false;
       });
+  }
+
+  filterTasks() {
+    if (this.candidate.taskAssignments) {
+      this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
+        t.completedDate == null &&
+        t.abandonedDate == null &&
+        t.status === Status.active).sort(taskAssignmentSort);
+      this.completedTasks = this.candidate.taskAssignments.filter(t =>
+        t.completedDate != null ||
+        t.abandonedDate != null).sort(taskAssignmentSort);
+      this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
+        t.status === Status.inactive);
+    } else {
+      this.ongoingTasks = [];
+      this.completedTasks = [];
+    }
   }
 
   isOverdue(ta: TaskAssignment) {

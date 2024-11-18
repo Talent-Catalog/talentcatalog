@@ -71,8 +71,12 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
       sortFields: [['createdDate']]
     });
 
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
+    // Only do paged search of attachments if on candidate profile (editable = true).
+    // On the search card we display all attachments no paging.
+    if (this.editable) {
       this.doPagedSearch(true);
+    } else {
+      this.attachments = this.candidate.candidateAttachments;
     }
   }
 

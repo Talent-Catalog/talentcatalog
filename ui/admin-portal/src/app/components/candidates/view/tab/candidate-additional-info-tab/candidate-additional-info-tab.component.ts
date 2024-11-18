@@ -40,20 +40,9 @@ export class CandidateAdditionalInfoTabComponent implements OnInit, OnChanges {
   ngOnInit() {
   }
 
-  // Fetch the updated candidate object when changing the tabs to refresh any changes in data from the tab components.
+  // todo update the candidate object when changing the tabs to refresh any changes in data from the tab components.
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.candidateService.get(this.candidate.id).subscribe(
-        candidate => {
-          this.candidate = candidate;
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        })
-    }
+
   }
 
 }
