@@ -17,7 +17,6 @@
 package org.tctalent.server.repository.db;
 
 import jakarta.persistence.criteria.Predicate;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.Occupation;
@@ -26,22 +25,25 @@ import org.tctalent.server.request.occupation.SearchOccupationRequest;
 public class OccupationSpecification {
 
     public static Specification<Occupation> buildSearchQuery(final SearchOccupationRequest request) {
-        return (occupation, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (occupation, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("OccupationSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(occupation.get("name")), likeMatchTerm)
-                        ));
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(occupation.get("name")), likeMatchTerm));
             }
 
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(occupation.get("status"), request.getStatus()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(occupation.get("status"), request.getStatus()));
             }
 
             return conjunction;

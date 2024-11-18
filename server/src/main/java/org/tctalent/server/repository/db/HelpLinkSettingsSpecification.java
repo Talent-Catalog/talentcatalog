@@ -33,23 +33,28 @@ import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 public class HelpLinkSettingsSpecification {
 
     public static Specification<HelpLink> buildSearchQuery(final SearchHelpLinkRequest request) {
-        return (helpLink, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (helpLink, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("HelpLinkSettingsSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(helpLink.get("label")), likeMatchTerm),
-                                builder.like(builder.lower(helpLink.get("link")), likeMatchTerm)
+                conjunction = cb.and(conjunction,
+                        cb.or(
+                                cb.like(cb.lower(helpLink.get("label")), likeMatchTerm),
+                                cb.like(cb.lower(helpLink.get("link")), likeMatchTerm)
                         ));
             }
 
             if (request.getCountryId() != null){
-                conjunction.getExpressions().add(builder.equal(helpLink.get("country").get("id"), request.getCountryId()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(helpLink.get("country").get("id"), request.getCountryId()));
             }
 
             return conjunction;

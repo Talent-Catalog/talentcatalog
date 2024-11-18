@@ -16,27 +16,28 @@
 
 package org.tctalent.server.repository.db;
 
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.SavedListLink;
 import org.tctalent.server.request.link.SearchLinkRequest;
 
-import jakarta.persistence.criteria.Predicate;
-
 public class SavedListLinkSpecification {
     public static Specification<SavedListLink> buildSearchQuery(final SearchLinkRequest request) {
-        return (savedListLink, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (savedListLink, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("SavedListLinkSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(savedListLink.get("name")), likeMatchTerm)
-                        ));
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(savedListLink.get("name")), likeMatchTerm));
             }
 
             return conjunction;

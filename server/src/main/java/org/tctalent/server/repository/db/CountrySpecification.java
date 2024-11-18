@@ -17,7 +17,6 @@
 package org.tctalent.server.repository.db;
 
 import jakarta.persistence.criteria.Predicate;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.Country;
@@ -43,7 +42,8 @@ public class CountrySpecification {
             }
 
             if (request.getStatus() != null){
-                conjunction = cb.and(conjunction, cb.equal(country.get("status"), request.getStatus()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(country.get("status"), request.getStatus()));
             }
 
             return conjunction;

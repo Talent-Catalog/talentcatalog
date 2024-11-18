@@ -16,29 +16,32 @@
 
 package org.tctalent.server.repository.db;
 
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.request.task.SearchTaskRequest;
 
-import jakarta.persistence.criteria.Predicate;
-
 public class TaskSpecification {
 
     public static Specification<TaskImpl> buildSearchQuery(final SearchTaskRequest request) {
-        return (task, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (task, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("TaskSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(task.get("name")), likeMatchTerm),
-                                builder.like(builder.lower(task.get("displayName")), likeMatchTerm),
-                                builder.like(builder.lower(task.get("description")), likeMatchTerm)
+                conjunction = cb.and(conjunction,
+                        cb.or(
+                                cb.like(cb.lower(task.get("name")), likeMatchTerm),
+                                cb.like(cb.lower(task.get("displayName")), likeMatchTerm),
+                                cb.like(cb.lower(task.get("description")), likeMatchTerm)
                         ));
             }
 
