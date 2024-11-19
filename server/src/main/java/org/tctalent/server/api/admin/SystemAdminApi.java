@@ -44,25 +44,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
@@ -91,6 +103,7 @@ import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -104,6 +117,10 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.util.background.BackProcessor;
+import org.tctalent.server.util.background.BackRunner;
+import org.tctalent.server.util.background.IdContext;
+import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -113,9 +130,9 @@ import org.tctalent.server.util.textExtract.TextExtractHelper;
 @RequestMapping("/api/admin/system")
 @Slf4j
 public class SystemAdminApi {
+    final static String DATE_FORMAT = "dd-MM-yyyy";
 
     private final AuthService authService;
-    final static String DATE_FORMAT = "dd-MM-yyyy";
 
     private final DataSharingService dataSharingService;
 
@@ -148,6 +165,8 @@ public class SystemAdminApi {
     private final Map<Integer, Integer> countryForGeneralCountry;
 
     private final GoogleDriveConfig googleDriveConfig;
+    private final TaskScheduler taskScheduler;
+    private final BackgroundProcessingService backgroundProcessingService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -169,8 +188,13 @@ public class SystemAdminApi {
 
     @Value("${google.drive.listFoldersRootId}")
     private String listFoldersRootId;
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Value("${environment}")
+    private String environment;
+
     @Autowired
     public SystemAdminApi(
             DataSharingService dataSharingService,
@@ -190,7 +214,8 @@ public class SystemAdminApi {
             SavedListRepository savedListRepository,
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig, CacheService cacheService) {
+            GoogleDriveConfig googleDriveConfig, CacheService cacheService,
+        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -217,7 +242,33 @@ public class SystemAdminApi {
         this.s3ResourceHelper = s3ResourceHelper;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
-        countryForGeneralCountry = getExtraCountryMappings();
+        this.taskScheduler = taskScheduler;
+      this.backgroundProcessingService = backgroundProcessingService;
+      countryForGeneralCountry = getExtraCountryMappings();
+    }
+
+    /**
+     * todo The intention is that this can be used to implement a operations which do not
+     * max out the TC's CPU.
+     * @see BackRunner
+     */
+    @GetMapping("export_search/{id}")
+    public void exportSearch() {
+        BackRunner<IdContext> backRunner = new BackRunner<>();
+        BackProcessor<IdContext> backProcessor = new BackProcessor<>() {
+            @Override
+            public boolean process(IdContext ctx) {
+                long startId = ctx.getLastProcessedId() == null ? 0 : ctx.getLastProcessedId()+1;
+                System.out.println("Processing " + ctx.getNumToProcess() + " ids starting from "
+                    + (startId == 0 ? "beginning " : startId) );
+                long lastProcessed = startId + ctx.getNumToProcess() - 1;
+                ctx.setLastProcessedId(lastProcessed);
+                return lastProcessed+1 >= 50;
+            }
+        };
+        ScheduledFuture<?> scheduledFuture =
+            backRunner.start(taskScheduler, backProcessor, new IdContext(0L, 10),
+                20);
     }
 
     @GetMapping("fix_null_case_sfids")
@@ -2724,13 +2775,112 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
-    @GetMapping("sf-update-candidates/{pageSize}-{firstPageIndex}-{noOfPagesRequested}")
-    public void sfUpdateCandidates(
-        @PathVariable("pageSize") int pageSize,
-        @PathVariable("firstPageIndex") int firstPageIndex,
-        @PathVariable("noOfPagesRequested") int noOfPagesRequested
+    /**
+     * Stub for manual call to sync active candidates to SF
+     * @param noOfPagesRequested total no of pages (containing up to 200 candidates max) to be
+     *                           synced. NB: passing <code>0</code> will sync full search results.
+     */
+    @GetMapping("sf-sync-candidates/{noOfPagesRequested}")
+    public ResponseEntity<?> sfSyncCandidates(
+        @PathVariable("noOfPagesRequested") long noOfPagesRequested
     ) {
-        candidateService.syncCandidatesToSf(pageSize, firstPageIndex, noOfPagesRequested);
+        try {
+            // 0 syncs all results
+            if (noOfPagesRequested == 0) {
+                initiateSfCandidateSync(null);
+            } else {
+                initiateSfCandidateSync(noOfPagesRequested);
+            }
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("sfSyncCandidates")
+                .message("TC-SF candidate sync failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Sets up search parameters and scheduled background processing for SF candidate sync.
+     * @param noOfPagesRequested no of pages requested to be synced - if null, all results will sync
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    private void initiateSfCandidateSync(@Nullable Long noOfPagesRequested)
+        throws SalesforceException, WebClientException {
+
+        LogBuilder.builder(log)
+            .action("initiateSfCandidateSync")
+            .message("Initiating TC-SF candidate sync")
+            .logInfo();
+
+        // Obtain and log search results metrics
+        Pageable pageable = PageRequest.of(
+            0, 200, Sort.by("id").ascending()
+        );
+
+        // Candidates with an 'active' status or already uploaded to SF
+        final List<CandidateStatus> statuses = new ArrayList<>(
+            EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
+                CandidateStatus.incomplete));
+
+        Page<Candidate> candidatePage = candidateRepository
+            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
+
+        LogBuilder.builder(log)
+            .action("initiateSfCandidateSync")
+            .message(candidatePage.getTotalElements() + " candidates meet the criteria")
+            .logInfo();
+
+        // Set total page count - if requested amount is null, defers to total pages in results
+        long totalNoOfPages =
+            Optional.ofNullable(noOfPagesRequested).orElse((long) candidatePage.getTotalPages());
+
+        LogBuilder.builder(log)
+            .action("initiateSfCandidateSync")
+            .message("This request will process " + totalNoOfPages + " pages of 200 candidates.")
+            .logInfo();
+
+        // Implement background processing
+        BackProcessor<PageContext> backProcessor =
+            backgroundProcessingService.createSfSyncBackProcessor(statuses, totalNoOfPages);
+
+        // Schedule background processing
+        BackRunner<PageContext> backRunner = new BackRunner<>();
+
+        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
+            new PageContext(null, 1), 20);
+    }
+
+    /**
+     * Scheduled TC -> SF sync of all active candidates
+     */
+    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfProdCandidateSync() {
+        if (environment.equalsIgnoreCase(Environment.prod.name())) {
+            // Passing null means all results will be processed
+            initiateSfCandidateSync(null);
+        }
+    }
+
+    /**
+     * Scheduled TC staging -> SF sandbox sync
+     */
+    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
+    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
+    public void scheduledSfSandboxCandidateSync() {
+        // Scaled-down replica of prod for testing purposes (4,000 candidates)
+        if (environment.equalsIgnoreCase(Environment.staging.name())) {
+            initiateSfCandidateSync(20L);
+        }
     }
 
     @GetMapping("delete-job/{jobId}")

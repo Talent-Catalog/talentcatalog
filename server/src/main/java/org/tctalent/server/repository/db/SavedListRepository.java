@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -65,4 +66,11 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
 
     @Query(" select s from SavedList s where s.sfJobOpp is not null and s.status != 'deleted'")
     List<SavedList> findListsWithJobs();
+
+    @Query(" select s from SavedList s where s.id in (:ids) order by s.name")
+    List<SavedList> findByIds(@Param("ids") Iterable<Long> ids);
+
+    @Query(value = "select csl.candidate_id from candidate_saved_list csl "
+        + "where csl.saved_list_id in (:listIds)", nativeQuery = true)
+    Set<Long> findUnionOfCandidates(@Param("listIds") List<Long> listIds);
 }

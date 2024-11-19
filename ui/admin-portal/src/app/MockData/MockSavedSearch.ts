@@ -79,6 +79,12 @@ export class MockSavedSearch implements SavedSearch {
   exclusionListId: number = 1;
   miniIntakeCompleted: boolean = true;
   fullIntakeCompleted: boolean = false;
+  unhcrStatuses = [];
+  listAnyIds = [];
+  listAnySearchType = null;
+  listAllIds =  [];
+  listAllSearchType = null;
+
 
   constructor(searchJoins: MockSavedJoin[] = []) {
     // Initialize other properties

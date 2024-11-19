@@ -122,13 +122,13 @@ describe('ViewPostComponent', () => {
     component.post.content = '<p>This is <strong>HTML</strong> content.</p>';
     fixture.detectChanges();
 
-    const content = fixture.debugElement.query(By.css('.content.html'));
+    const content = fixture.debugElement.query(By.css('.message-text.html'));
     expect(content).toBeTruthy();
 
     component.post.content = 'This is plain text content.';
     fixture.detectChanges();
 
-    const textContent = fixture.debugElement.query(By.css('.content.text'));
+    const textContent = fixture.debugElement.query(By.css('.message-text.text'));
     expect(textContent).toBeTruthy();
   });
 

@@ -28,7 +28,6 @@ import {
 } from '@angular/core';
 
 import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
-import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
 import {Language} from '../../../model/language';
@@ -55,7 +54,9 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -84,6 +85,21 @@ import {SearchQueryService} from "../../../services/search-query.service";
 import {first} from "rxjs/operators";
 import {LocalStorageService} from "../../../services/local-storage.service";
 
+/**
+ * This component contains all the search fields for saved and unsaved searches. It communicates
+ * with the parent component candidates-search which contains the results part of the search.
+ * Communicating with the parent allows us trigger the unsaved-changes router guard used on saved searches.
+ * Some of the search fields are simple form controls, others are child components which pass values
+ * to the form control. When patchValue is called it doesn't mark the form as dirty,
+ * so this must be done manually. The unsaved changes router guard requires the dirty state, so this
+ * needs to be emitted to the parent component. We automate emit of the dirty status if the
+ * form value changes(via patchValue or user form changes). However, if we are updating the form values in
+ * a different way (eg. add/delete base search) we need to make sure to emit the dirty status.
+ * After a saved search is initially loaded into the form controls, we manually set the form status
+ * to pristine. This will override any places the form controls have been marked as dirty when
+ * populating as we don't want to trigger the unsaved changes guard after a search load, and we want
+ * the search button disabled as no user changes have been made to the form.
+ */
 @Component({
   selector: 'app-define-search',
   templateUrl: './define-search.component.html',
@@ -138,8 +154,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   selectedBaseJoin;
   storedBaseJoin;
 
-  constructor(private http: HttpClient, private fb: UntypedFormBuilder,
-              private candidateService: CandidateService,
+  constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
               private languageService: LanguageService,
               private partnerService: PartnerService,
@@ -150,8 +165,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private surveyTypeService: SurveyTypeService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
-              private localStorageService: LocalStorageService,
-              private route: ActivatedRoute,
               private router: Router,
               private savedListService: SavedListService,
               private authorizationService: AuthorizationService,
@@ -159,6 +172,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private searchQueryService: SearchQueryService
               ) {
     /* SET UP FORM */
+    //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
       savedSearchId: [null],
       simpleQueryString: [null],
@@ -202,6 +216,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],
+      // todo Maybe this needs to be SavedList objects - or as well as, like countries
+      listAnyIds: [[]],
+      listAnySearchType: ['or'],
+      listAllIds: [[]],
+      listAllSearchType: ['and'],
       unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
@@ -262,8 +281,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.loading = false;
       this.error = error;
     });
-    // Listen to form changes (unsaved changes to the search) and emit to candidate search component where the unsaved
-    // changes guard is implemented. It will throw confirmation modal if navigating away with unsaved search fields.
+    // Listen to form changes and emit form dirty status to candidate search component.
+    // The unsaved changes guard is implemented on the saved search route, see app-routing.module.ts.
+    // This guard will throw confirmation modal if navigating away with unsaved search fields, which
+    // is determined if the form is dirty or not.
     this.searchForm.valueChanges.subscribe(() => {
       this.onFormChange.emit(this.searchForm.dirty);
     });
@@ -358,6 +379,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
   }
 
+  /**
+   * Replaces arrays of objects with their corresponding ids.
+   * @param request Form data
+   */
   getIdsMultiSelect(request): SearchCandidateRequestPaged {
     if (request.countries != null) {
       request.countryIds = request.countries.map(c => c.id);
@@ -412,6 +437,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
+    this.searchForm.controls['listAllSearchType'].patchValue('or');
+    this.searchForm.controls['listAnySearchType'].patchValue('and');
 
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
@@ -490,7 +517,22 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   onExclusionListSelected(list: CandidateSource) {
+    this.exclusionListIdControl.markAsDirty();
     this.exclusionListIdControl.patchValue(list?.id);
+  }
+
+  onListAnySelected(lists: CandidateSource[]) {
+    //Update form value
+    let ids: number[] = lists.map(s => s.id);
+    this.listAnyIdsControl.markAsDirty();
+    this.listAnyIdsControl.patchValue(ids);
+  }
+
+  onListAllSelected(lists: CandidateSource[]) {
+    //Update form value
+    let ids: number[] = lists.map(s => s.id);
+    this.listAllIdsControl.markAsDirty();
+    this.listAllIdsControl.patchValue(ids);
   }
 
   showSavedSearches() {
@@ -575,6 +617,32 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchForm.controls[name].patchValue(request[name]);
     });
 
+    /* DEFAULTS */
+    let searchType = request.countrySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['countrySearchType'].patchValue(searchType);
+
+    searchType = request.nationalitySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
+
+    searchType = request.listAllSearchType;
+    if (searchType == null) {
+      searchType = 'and';
+    }
+    this.searchForm.controls['listAllSearchType'].patchValue(searchType);
+
+    searchType = request.listAnySearchType;
+    if (searchType == null) {
+      searchType = 'or';
+    }
+    this.searchForm.controls['listAnySearchType'].patchValue(searchType);
+
+
     // For the multiselects we have to set the corresponding id/name object by searching for the
     // values in the given search request in the complete set of drop down options for that field.
 
@@ -648,11 +716,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       countries = this.countries.filter(c => request.countryIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['countries'].patchValue(countries);
-    let countrySearchType = request.countrySearchType;
-    if (countrySearchType == null) {
-      countrySearchType = 'or';
-    }
-    this.searchForm.controls['countrySearchType'].patchValue(countrySearchType);
 
     /* NATIONALITIES */
     let nationalities = [];
@@ -660,11 +723,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
-    let searchType = request.nationalitySearchType;
-    if (searchType == null) {
-      searchType = 'or';
-    }
-    this.searchForm.controls['nationalitySearchType'].patchValue(searchType);
 
     /* UNHCR STATUSES */
     let unhcrStatuses: EnumOption[] = [];
@@ -688,6 +746,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();
+
+    /* Mark as pristine after search loaded, some fields may have been marked as dirty when
+    populating the form fields but as this is the initial load of the form we don't want it to be dirty.
+     */
+    this.searchForm.markAsPristine();
+    let isDirty = false;
+    this.onFormChange.emit(isDirty);
   }
 
   get exclusionListId(): number {
@@ -696,6 +761,22 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   get exclusionListIdControl(): AbstractControl {
     return this.searchForm.get('exclusionListId');
+  }
+
+  get listAllIds(): number[] {
+    return this.listAllIdsControl?.value;
+  }
+
+  get listAllIdsControl(): AbstractControl {
+    return this.searchForm.get('listAllIds');
+  }
+
+  get listAnyIds(): number[] {
+    return this.listAnyIdsControl?.value;
+  }
+
+  get listAnyIdsControl(): AbstractControl {
+    return this.searchForm.get('listAnyIds');
   }
 
   get searchJoinArray() {
@@ -725,8 +806,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   handleDateSelected(e: { fromDate: NgbDateStruct, toDate: NgbDateStruct }, control: string) {
+    this.searchForm.markAsDirty();
     if (e.fromDate) {
-      // console.log(e);
       this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + ('0' + e.fromDate.month).slice(-2) + '-' + ('0' + e.fromDate.day).slice(-2));
     } else {
       this.searchForm.controls[control + 'From'].patchValue(null);
@@ -739,6 +820,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   handleLanguageLevelChange(model: LanguageLevelFormControlModel, languageKey: string) {
+    this.searchForm.markAsDirty();
     if (languageKey === 'english') {
       this.searchForm.controls['englishMinWrittenLevel'].patchValue(model.writtenLevel);
       this.searchForm.controls['englishMinSpokenLevel'].patchValue(model.spokenLevel);
@@ -750,7 +832,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  handleSearchTypeChange(control: string, value: 'or' | 'not') {
+  handleSearchTypeChange(control: string, value: 'and' | 'or' | 'not') {
     this.searchForm.controls[control].patchValue(value);
   }
 
@@ -765,6 +847,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchJoinArray.removeAt(0);
     }
     this.searchJoinArray.push(this.fb.group(this.selectedBaseJoin));
+    this.searchForm.controls['searchJoinRequests'].markAsDirty();
+    this.onFormChange.emit(this.searchForm.dirty);
   }
 
   deleteBaseSearchJoin() {
@@ -773,6 +857,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
     this.storedBaseJoin = null;
     this.selectedBaseJoin = null;
+    this.searchForm.controls['searchJoinRequests'].markAsDirty();
+    this.onFormChange.emit(this.searchForm.dirty);
   }
 
   canChangeSearchRequest(): boolean {
@@ -780,10 +866,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public onSelectAll(options: any, formControl: any) {
+    this.searchForm.controls[formControl].markAsDirty();
     this.searchForm.controls[formControl].patchValue(options);
   }
 
   public onClearAll(formControl: string) {
+    this.searchForm.controls[formControl].markAsDirty();
     this.searchForm.controls[formControl].patchValue(null);
   }
 

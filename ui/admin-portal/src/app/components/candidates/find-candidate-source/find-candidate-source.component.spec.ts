@@ -6,14 +6,15 @@ import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {FormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
-describe('FindListComponent', () => {
+describe('FindCandidateSourceComponent', () => {
   let component: FindCandidateSourceComponent;
   let fixture: ComponentFixture<FindCandidateSourceComponent>;
   let candidateSourceService: jasmine.SpyObj<CandidateSourceService>;
   let mockCandidateSource: MockCandidateSource = new MockCandidateSource();
 
   beforeEach(async () => {
-    const candidateSourceServiceSpy = jasmine.createSpyObj('CandidateSourceService', ['searchPaged', 'get']);
+    const candidateSourceServiceSpy = jasmine.createSpyObj('CandidateSourceService',
+      ['searchPaged', 'get','searchByIds']);
 
     await TestBed.configureTestingModule({
       declarations: [ FindCandidateSourceComponent ],
@@ -34,6 +35,7 @@ describe('FindListComponent', () => {
     fixture = TestBed.createComponent(FindCandidateSourceComponent);
     component = fixture.componentInstance;
     candidateSourceService.get.and.returnValue(of(mockCandidateSource));
+    candidateSourceService.searchByIds.and.returnValue(of([mockCandidateSource]));
 
     fixture.detectChanges();
   });
@@ -44,9 +46,10 @@ describe('FindListComponent', () => {
 
 
   it('should initialize correctly', () => {
-    component.single = true;
-    component.id = 1;
     component.ngOnInit();
+    component.single = true;
+    component.selectedIds = 1;
+    component.ngOnChanges(null);
 
     expect(component.currentSelection).toEqual(mockCandidateSource);
   });
