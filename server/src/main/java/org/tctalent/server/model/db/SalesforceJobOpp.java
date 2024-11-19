@@ -16,11 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import javax.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,6 +29,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -279,5 +279,9 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     public void setStage(JobOpportunityStage stage) {
         this.stage = stage;
         setStageOrder(stage.ordinal());
+
+        //Set redundant closed and won fields.
+        setClosed(this.stage.isClosed());
+        setWon(this.stage.isWon());
     }
 }
