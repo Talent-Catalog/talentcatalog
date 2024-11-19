@@ -89,6 +89,8 @@ dependencies {
     //Extra stuff not part of Spring Initializr
 
     testImplementation 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     //Note that Spring Initializr pulls in org.flywaydb:flyway-core but that will not process
     //older Postgres DB versions. We need the the following dependency
