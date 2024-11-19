@@ -18,6 +18,8 @@ package org.tctalent.server.api.admin;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -47,8 +49,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
@@ -2668,7 +2668,7 @@ public class SystemAdminApi {
 
     private Long whackyExtraCountryLookup(Integer origCountryId) {
         Integer val = countryForGeneralCountry.get(origCountryId);
-        if (val != null) return new Long(val);
+        if (val != null) return val.longValue();
         return null;
     }
 
