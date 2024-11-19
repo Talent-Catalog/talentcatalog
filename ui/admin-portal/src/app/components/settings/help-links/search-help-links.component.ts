@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {SearchResults} from "../../../model/search-results";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -26,7 +26,7 @@ export class SearchHelpLinksComponent implements OnInit {
   pageSize: number;
   readOnly: boolean;
   results: SearchResults<HelpLink>;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   destinationCountries: Country[];
 
   labelHelpRequest: SearchHelpLinkRequest = {jobStage: 'recruitmentProcess'};
@@ -34,7 +34,7 @@ export class SearchHelpLinksComponent implements OnInit {
   constructor(
     private helpLinkService: HelpLinkService,
     private countryService: CountryService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private modalService: NgbModal,
     private authService: AuthorizationService) { }
 

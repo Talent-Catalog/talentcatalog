@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
 import {BUTTONS, NgxWigToolbarService} from "ngx-wig";
 import {CUSTOM_CLEAR_FORMAT_BUTTON} from "../../../../util/clear-format";
@@ -29,7 +29,7 @@ export class JoiDataComponent extends JobIntakeComponentBase implements OnInit {
   @Input() inputType = "text";
   @Input() required = false;
 
-  constructor(fb: FormBuilder, jobService: JobService) {
+  constructor(fb: UntypedFormBuilder, jobService: JobService) {
     super(fb, jobService);
   }
 

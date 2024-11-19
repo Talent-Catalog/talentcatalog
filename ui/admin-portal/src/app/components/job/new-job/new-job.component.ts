@@ -14,7 +14,7 @@ import {SlackService} from "../../../services/slack.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {Job, UpdateJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {Employer} from "../../../model/partner";
@@ -47,12 +47,12 @@ export class NewJobComponent implements OnInit {
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
   errorGettingJobsToCopySlack: string = null;
-  jobForm: FormGroup;
+  jobForm: UntypedFormGroup;
 
   constructor(
     private authorizationService: AuthorizationService,
     private authenticationService: AuthenticationService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private jobService: JobService,
     public salesforceService: SalesforceService,
     private savedListService: SavedListService,

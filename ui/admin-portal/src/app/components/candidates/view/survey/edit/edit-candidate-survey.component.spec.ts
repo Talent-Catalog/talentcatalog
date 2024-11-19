@@ -15,7 +15,7 @@
  */
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {EditCandidateSurveyComponent} from './edit-candidate-survey.component';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {SurveyTypeService} from '../../../../../services/survey-type.service';
@@ -49,7 +49,7 @@ describe('EditCandidateSurveyComponent', () => {
       declarations: [EditCandidateSurveyComponent],
       imports: [ReactiveFormsModule, HttpClientTestingModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         NgbActiveModal,
         {provide: CandidateService, useValue: candidateServiceSpy},
         {provide: SurveyTypeService, useValue: surveyTypeServiceSpy}

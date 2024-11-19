@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
 import {
   JoiDataComponent
@@ -28,7 +28,7 @@ import {CUSTOM_CLEAR_FORMAT_BUTTON} from "../../../../util/clear-format";
 })
 export class CostCommitEmployerComponent extends JoiDataComponent implements OnInit {
 
-  constructor(fb: FormBuilder, jobService: JobService) {
+  constructor(fb: UntypedFormBuilder, jobService: JobService) {
     super(fb, jobService);
 
     //These inputs are predefined for this component

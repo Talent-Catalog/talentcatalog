@@ -15,7 +15,6 @@
  */
 
 import {NgbModal, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {SavedListService} from "../../../services/saved-list.service";
@@ -49,6 +48,7 @@ import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {MockPartner} from "../../../MockData/MockPartner";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('ViewCandidateComponent', () => {
   let component: ViewCandidateComponent;

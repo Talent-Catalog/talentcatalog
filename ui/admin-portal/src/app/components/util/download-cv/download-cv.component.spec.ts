@@ -2,7 +2,7 @@ import {DownloadCvComponent} from "./download-cv.component";
 import {CandidateService, DownloadCVRequest} from "../../../services/candidate.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {of, throwError} from "rxjs";
 
 describe('DownloadCvComponent', () => {
@@ -19,7 +19,7 @@ describe('DownloadCvComponent', () => {
       declarations: [DownloadCvComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateService },
         { provide: NgbActiveModal, useValue: activeModal }
       ]

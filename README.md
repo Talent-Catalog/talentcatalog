@@ -92,15 +92,18 @@ Download and install the latest of the following tools.
   ```
 
 - Node [https://nodejs.org/en/](https://nodejs.org/en/)
+    - Note that developers should use **Node version 18**, specifically versions **18.10.0 and 
+    above**, which is currently the latest LTS (Long Term Support) version compatible with Angular 16.
+        - See [Angular Compatibility Table](https://angular.io/guide/versions)
+        - See [Node.js Releases](https://nodejs.org/en/about/releases/)
+    - If using Node 17 or higher, it’s recommended to add `--host=127.0.0.1` to the `ng serve` 
+    command to avoid debugger and sourcemap issues in IntelliJ. The `start` scripts in `package.json`
+    have been bundled with this parameter for convenience.
+        - See [IntelliJ Angular Debugging Guide](https://www.jetbrains.com/help/idea/angular.html)
+        - See [IntelliJ Angular Debugging Troubleshooting](https://www.jetbrains.com/help/idea/angular.html#ws_angular_debug_app_troubleshooting)
 
-    - Note that developers should use the latest version of Node for which Intellij supports
-      Angular debugging - currently that is Node 16 (which is not the latest Node with long term
-      support LTS).
-    -
-    See [https://www.jetbrains.com/help/idea/angular.html](https://www.jetbrains.com/help/idea/angular.html)
-    and https://nodejs.org/en/about/releases/
   ```
-  brew install node@16
+  brew install node@18
   ```
     - Note the messages from brew at the end of the install.
       You will have to manually set up the path.
@@ -110,13 +113,15 @@ Download and install the latest of the following tools.
   ```
   npm install -g @angular/cli@16
   ```
-    - Note that we cannot use the most recent version of Angular CLI because it requires a version
-      of node
-      greater than 16 (see note on node version above). See https://angular.io/guide/versions
+    - See https://angular.io/guide/versions
     - To upgrade Angular versions, see https://update.angular.io/
 
 
-- Docker
+- Git - [see Git website](https://git-scm.com/downloads) - Not really necessary now with Intellij
+  which will prompt you to install Git if needed.
+
+
+- Docker and docker-compose
     - Install Docker Desktop for Mac -
       see [docker website](https://hub.docker.com/editions/community/docker-ce-desktop-mac/)
     - Note for Mac Silicon users. The current Docker doc (link above) implies that installing
@@ -124,39 +129,75 @@ Download and install the latest of the following tools.
       But if you don't do it you won't be able to install Docker.
       You need to execute softwareupdate --install-rosetta just to run Docker for the first time
       after installing it.
+    - When you install Docker Desktop for Mac, Docker Compose is bundled with it. You can verify the 
+      installation by running:
+      ```shell
+        docker-compose --version
+      ```
 
+### Clone the Talent Catalog repository from Git ###
 
-- Elasticsearch (for text search)
-    - Install Docker image.
-      See [Elastic search website](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
-      Just pull the image to install. See later for how to run.
+- Clone [the repository](https://github.com/Talent-Catalog/talentcatalog.git) to your local system
+```shell
+git clone https://github.com/Talent-Catalog/talentcatalog.git
+```
+- Open the root folder in IntelliJ IDEA (it should auto detect gradle and self-configure)
 
-    ```
-    docker pull docker.elastic.co/elasticsearch/elasticsearch:7.17.11
-    ```
+### Using Docker-Compose to Start Services ###
 
-- Kibana (for monitoring Elasticsearch)
-    - Install Docker image.
-      See [Elastic search website](https://www.elastic.co/guide/en/kibana/current/docker.html)
-      Just pull the image to install. See later for how to run.
-   ```
-   docker pull docker.elastic.co/kibana/kibana:7.17.11
-   ```
+With Docker and Docker Compose installed, you can now use docker-compose to set up the required 
+services: PostgreSQL, Redis, Elasticsearch, and optionally, Kibana.
 
-- Git - [see Git website](https://git-scm.com/downloads) - Not really necessary now with Intellij
-  which will prompt you install Git if needed
+- The Talent Catalog repository includes a docker-compose.yml file in the docker-compose folder, 
+with preconfigured services for PostgreSQL, Redis, Elasticsearch, and Kibana. This file is ready 
+for you to use.
+- To start the services, navigate to the docker-compose folder and run the following command:
+```shell
+cd talentcatalog/docker-compose
+docker-compose up -d
+```
+- The -d flag runs the services in detached mode.
+- To stop the services, run the following command:
+```shell
+docker-compose down
+```
 
+### Using IntelliJ’s Docker-Compose Integration to Start Services ###
 
-- PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
-    - Homebrew - see https://wiki.postgresql.org/wiki/Homebrew
+IntelliJ IDEA provides built-in support for Docker Compose, allowing you to start and stop services 
+directly from the IDE, either from the Services tool window or directly from the docker-compose.yml 
+file itself.
 
-  ```
-  brew install postgresql@14
-  ```
+- In the Project tool window, navigate to and open the docker-compose.yml file.
+- IntelliJ adds green Run/Debug triangles in the gutter (left margin) next to each service in the 
+docker-compose.yml file.
+- Click on the green Run triangle next to a service (e.g., postgres or redis) to start that specific 
+service.
+- You can also click the Run triangle next to the services block at the top of the file to start all 
+services at once.
 
-  ```
-  brew services restart postgresql@14
-  ```
+### Verify Services ###
+
+**PostgreSQL** will run listening on port 5432.
+You can verify this by running the following command in your terminal:
+```shell
+brew install postgresql
+psql -h localhost -U tctalent -d tctalent
+```
+
+**Redis** will run listening on port 6379.
+You can verify this by running the following commands in your terminal:
+```shell
+brew install redis
+redis-cli -h localhost -p 6379
+````
+
+**Elasticsearch** will run listening on port 9200.
+You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
+
+**Kibana** runs listening on port 5601.
+You can verify this by going to [localhost:5601](http://localhost:5601) in your browser
+
 
 ### AWS management tools ###
 
@@ -210,72 +251,20 @@ Then you can run `init` (only need to do this once), and then `plan` or `apply`,
 
 ### Setup your local database ###
 
-Use the psql tool.
-
-   ```
-   psql postgres
-   ```
-
-Now you will see the command line prompt =#
-
-   ```
-   CREATE DATABASE tctalent;
-   CREATE USER tctalent WITH SUPERUSER PASSWORD 'tctalent';
-   \q
-   ```
-
 Ask Talent Catalog developers for a `pg_dump` of the database. Note that the dump does not have to
-be recent.
-The Talent Catalog software will automatically apply any requuired updates to the database
-definition, driven
-by Flyway files stored in GitHub. A standard dump file is kept specifically for getting new
-developers started.
-Just ask for a copy of the file.
+be recent. The Talent Catalog software will automatically apply any required updates to the 
+database definition, driven by Flyway files stored in GitHub. A standard dump file is kept 
+specifically for getting new developers started. Just ask for a copy of the file.
 
    ```    
    pg_dump --file=path/to/file.sql --create --username=tctalent --host=localhost --port=5432
    ```
 
-Use `psql` to import that dump file into your newly created database.
+Use `psql` to import that dump file into your newly created docker-compose database service.
 
    ```
    psql -h localhost -d tctalent -U tctalent -f path/to/file.sql
    ```
-
-### Download and edit the code ###
-
-- Clone [the repository](https://github.com/Talent-Catalog/talentcatalog.git) to your local system
-- Open the root folder in IntelliJ IDEA (it should auto detect gradle and self-configure)
-
-### Run Elasticsearch ###
-
-Use `docker` to run from Docker desktop for Mac, or (replacing appropriate version number)...
-
-   ```
-   docker rm elasticsearch
-   ```
-
-   ```
-   docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.11
-   ```
-
-Elasticsearch will run listening on port 9200.
-You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
-
-### Run Kibana (optional) ###
-
-Can run from Docker desktop for Mac, or (replacing appropriate version number)...
-
-   ```
-   docker rm kibana
-   ```
-
-   ```
-   docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.17.11
-   ```
-
-Kibana runs listening on port 5601.
-You can verify this by going to [localhost:5601](http://localhost:5601) in your browser
 
 ### Run the server ###
 

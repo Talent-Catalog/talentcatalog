@@ -17,7 +17,7 @@ import {EditCandidateContactComponent} from "./edit-candidate-contact.component"
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -31,7 +31,7 @@ describe('EditCandidateContactComponent', () => {
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
   let countryServiceSpy: jasmine.SpyObj<CountryService>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
   beforeEach(waitForAsync(() => {
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
@@ -45,14 +45,14 @@ describe('EditCandidateContactComponent', () => {
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: CandidateService, useValue: candidateServiceSpyObj },
         { provide: CountryService, useValue: countryServiceSpyObj },
-        FormBuilder,
+        UntypedFormBuilder,
       ],
     }).compileComponents();
 
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
     countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   }));
 
   beforeEach(() => {

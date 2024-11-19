@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Candidate, CandidateDestination} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
@@ -28,7 +28,7 @@ export class RegistrationDestinationsComponent implements OnInit {
 
   candidate: Candidate;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   loading: boolean;
   saving: boolean;
@@ -36,7 +36,7 @@ export class RegistrationDestinationsComponent implements OnInit {
   destinations: Country[];
   destinationForms: any[];
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private countryService: CountryService,
               private candidateDestinationService: CandidateDestinationService,

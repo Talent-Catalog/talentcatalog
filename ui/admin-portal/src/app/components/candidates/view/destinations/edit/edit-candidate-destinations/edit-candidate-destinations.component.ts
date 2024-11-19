@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateDestination} from "../../../../../../model/candidate-destination";
 import {
@@ -16,7 +16,7 @@ import {YesNoUnsureLearn} from "../../../../../../model/candidate";
 })
 export class EditCandidateDestinationsComponent implements OnInit {
   candidateDestination: CandidateDestination;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   error;
   loading: boolean;
@@ -25,7 +25,7 @@ export class EditCandidateDestinationsComponent implements OnInit {
   public destInterestOptions: EnumOption[] = enumOptions(YesNoUnsureLearn);
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateDestinationService: CandidateDestinationService) {
   }
 

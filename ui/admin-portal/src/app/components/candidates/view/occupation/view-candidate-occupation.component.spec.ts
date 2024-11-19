@@ -16,7 +16,7 @@
 import {ViewCandidateOccupationComponent} from "./view-candidate-occupation.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -44,7 +44,7 @@ describe('ViewCandidateOccupationComponent', () => {
       declarations: [ ViewCandidateOccupationComponent ],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbModal, useValue: mockModalService },
         { provide: CandidateService, useValue: mockCandidateService },
         { provide: CandidateOccupationService, useValue: mockCandidateOccupationService },

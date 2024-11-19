@@ -8,7 +8,6 @@ import { JobsComponent } from '../jobs/jobs.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {Router} from "@angular/router";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
@@ -33,7 +32,6 @@ describe('JobsWithDetailComponent', () => {
         HttpClientTestingModule,
         ReactiveFormsModule,
         NgbPaginationModule,
-        LocalStorageModule.forRoot({}),
         NgSelectModule
       ],
       providers: [

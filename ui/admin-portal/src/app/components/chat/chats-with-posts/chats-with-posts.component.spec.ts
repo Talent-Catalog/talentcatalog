@@ -6,13 +6,12 @@ import {By} from "@angular/platform-browser";
 import {ChatsComponent} from "../chats/chats.component";
 import {ViewChatPostsComponent} from "../view-chat-posts/view-chat-posts.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {of} from "rxjs";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {MockChatPost} from "../../../MockData/MockChatPost";
 import {ViewPostComponent} from "../view-post/view-post.component";
 import {CreateUpdatePostComponent} from "../create-update-post/create-update-post.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {QuillModule} from "ngx-quill";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
@@ -32,11 +31,11 @@ describe('ChatsWithPostsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsWithPostsComponent, ChatsComponent, ViewChatPostsComponent, ViewPostComponent, CreateUpdatePostComponent ],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}),NgbTooltipModule,FormsModule,ReactiveFormsModule,QuillModule,
+      imports: [HttpClientTestingModule,NgbTooltipModule,FormsModule,ReactiveFormsModule,QuillModule,
         TranslateModule.forRoot({})],
 
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: ChatService, useValue: chatServiceSpy },
         { provide: AuthenticationService, useValue: authSpy }
       ]

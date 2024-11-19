@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {EligiblePathwaysComponent} from './eligible-pathways.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
@@ -13,7 +13,7 @@ describe('EligiblePathwaysComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [EligiblePathwaysComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule],
-      providers: [FormBuilder, CandidateVisaCheckService]
+      providers: [UntypedFormBuilder, CandidateVisaCheckService]
     }).compileComponents();
   });
 

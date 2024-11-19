@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {EducationMajor} from "../../../model/education-major";
 import {EducationMajorService} from "../../../services/education-major.service";
@@ -40,8 +40,8 @@ export class SearchEducationMajorsComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  importForm: FormGroup;
-  searchForm: FormGroup;
+  importForm: UntypedFormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -49,7 +49,7 @@ export class SearchEducationMajorsComponent implements OnInit {
   results: SearchResults<EducationMajor>;
 
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private educationMajorService: EducationMajorService,
               private modalService: NgbModal,
               private authService: AuthorizationService) {

@@ -6,7 +6,6 @@ import {By} from '@angular/platform-browser';
 import {JobPrepItem} from "../../../../../model/job-prep-item";
 import {ViewJobSuggestedSearchesComponent} from "../../suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockJobPrepItem} from "../../../../../MockData/MockJobPrepItem";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 
@@ -20,7 +19,7 @@ describe('JobSuggestedSearchesTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,LocalStorageModule.forRoot({})],
+      imports:[HttpClientTestingModule],
       declarations: [ JobSuggestedSearchesTabComponent,ViewJobSuggestedSearchesComponent,RouterLinkStubDirective ]
     })
     .compileComponents();

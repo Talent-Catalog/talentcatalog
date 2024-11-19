@@ -16,7 +16,6 @@
 import {VisaCheckAuComponent} from "./visa-check-au.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageModule, LocalStorageService} from "angular-2-local-storage";
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
@@ -27,6 +26,7 @@ import {MockJob} from "../../../../../../MockData/MockJob";
 import {
   mockCandidateIntakeData
 } from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {LocalStorageService} from "../../../../../../services/local-storage.service";
 
 describe('VisaCheckAuComponent', () => {
   let component: VisaCheckAuComponent;
@@ -36,7 +36,7 @@ describe('VisaCheckAuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ VisaCheckAuComponent ],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule ,NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbAccordionModule ,NgSelectModule],
       providers: [
         { provide: NgbModal, useValue: {} },
         { provide: LocalStorageService, useValue: {} }

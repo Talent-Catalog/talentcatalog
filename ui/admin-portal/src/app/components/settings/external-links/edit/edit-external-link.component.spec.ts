@@ -18,7 +18,7 @@ import {of, throwError} from "rxjs";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
 import {EditExternalLinkComponent} from "./edit-external-link.component";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {SavedListService} from "../../../../services/saved-list.service";
@@ -30,7 +30,7 @@ describe('EditExternalLinkComponent', () => {
   let fixture: ComponentFixture<EditExternalLinkComponent>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   const mockSavedList:SavedList = MockSavedList;
   beforeEach(async () => {
     const savedListServiceSpyObj = jasmine.createSpyObj('SavedListService', ['search', 'updateShortName']);
@@ -47,7 +47,7 @@ describe('EditExternalLinkComponent', () => {
 
     savedListServiceSpy = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {
