@@ -24,6 +24,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import java.util.Collections;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 
+@Tag("springboottest")
 @SpringBootTest
 class ElasticsearchServiceImplTest {
     @Autowired
