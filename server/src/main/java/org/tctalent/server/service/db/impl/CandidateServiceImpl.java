@@ -61,7 +61,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -1644,7 +1643,7 @@ public class CandidateServiceImpl implements CandidateService {
         List<DataRow> dataRows = new ArrayList<>(objects.size());
         for (Object[] row: objects) {
             String label = row[0] == null ? "undefined" : row[0].toString();
-            DataRow dataRow = new DataRow(label, (BigInteger)row[1]);
+            DataRow dataRow = new DataRow(label, BigInteger.valueOf((Long)row[1]));
             dataRows.add(dataRow);
         }
         return dataRows;

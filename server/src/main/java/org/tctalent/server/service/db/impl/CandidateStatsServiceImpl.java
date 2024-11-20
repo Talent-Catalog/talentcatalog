@@ -735,8 +735,7 @@ public class CandidateStatsServiceImpl implements CandidateStatsService {
         for (Object obj: objects) {
             Object[] row = (Object[]) obj;
             String label = row[0] == null ? "undefined" : row[0].toString();
-            Long count = (Long) row[1];
-            DataRow dataRow = new DataRow(label, BigInteger.valueOf(count));
+            DataRow dataRow = new DataRow(label, BigInteger.valueOf((Long)row[1]));
             dataRows.add(dataRow);
         }
         return dataRows;
