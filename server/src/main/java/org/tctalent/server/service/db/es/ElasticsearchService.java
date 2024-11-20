@@ -40,7 +40,8 @@ public interface ElasticsearchService {
   BoolQuery.Builder addElasticNestedFilter(BoolQuery.Builder builder, String path, Query nestedQuery);
 
   /**
-   * Adds a terms filter to the Boolean query builder.
+   * Adds a terms filter to the Boolean query builder. The terms are combined according
+   * to the searchType
    * @param builder Elastic Java API BoolQuery builder
    * @param searchType Type of search - default is SearchType.and if null.
    * @param field Field to check against
@@ -51,6 +52,18 @@ public interface ElasticsearchService {
   BoolQuery.Builder addElasticTermsFilter(
       BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
       Collection<Object> values);
+
+  /**
+   * Adds a boolean query to the Boolean query builder.
+   * @param builder Elastic Java API BoolQuery builder
+   * @param subQueryBuilder Allows a boolean subquery - represented as another builder - to be added
+   *                        to the given Boolean builder. The subquery is built, and its result
+   *                        added to the filter.
+   * @return Updated builder - with filter added according to searchType
+   */
+  @NonNull
+  BoolQuery.Builder addElasticBooleanFilter(
+      BoolQuery.Builder builder, BoolQuery.Builder subQueryBuilder);
 
   /**
    * Adds a single term filter to the Boolean query builder.

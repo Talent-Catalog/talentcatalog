@@ -1059,24 +1059,36 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Exclude given candidates
         if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
+            BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
-            boolQueryBuilder = elasticsearchService.addElasticTermsFilter(boolQueryBuilder,
+            subQueryBuilder = elasticsearchService.addElasticTermsFilter(subQueryBuilder,
                 SearchType.not,"masterId", candidateIds);
+
+            boolQueryBuilder = elasticsearchService.addElasticBooleanFilter(
+                boolQueryBuilder, subQueryBuilder);
         }
 
         //List any and all candidates
         if (searchType1 != null && candidateIds1 != null) {
+            BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
             //Cast to Collection<Object> using Collections.unmodifiableCollection
             //See https://stackoverflow.com/a/63441108/929968
-            boolQueryBuilder = elasticsearchService.addElasticTermsFilter(boolQueryBuilder,
+            subQueryBuilder = elasticsearchService.addElasticTermsFilter(subQueryBuilder,
                 searchType1,"masterId", Collections.unmodifiableCollection(candidateIds1));
+
+            boolQueryBuilder = elasticsearchService.addElasticBooleanFilter(
+                boolQueryBuilder, subQueryBuilder);
         }
         if (searchType2 != null && candidateIds2 != null) {
+            BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
             //Cast to Collection<Object> using Collections.unmodifiableCollection
             //See https://stackoverflow.com/a/63441108/929968
-            boolQueryBuilder = elasticsearchService.addElasticTermsFilter(boolQueryBuilder,
+            subQueryBuilder = elasticsearchService.addElasticTermsFilter(subQueryBuilder,
                 searchType2,"masterId", Collections.unmodifiableCollection(candidateIds2));
+
+            boolQueryBuilder = elasticsearchService.addElasticBooleanFilter(
+                boolQueryBuilder, subQueryBuilder);
         }
 
         //Occupations

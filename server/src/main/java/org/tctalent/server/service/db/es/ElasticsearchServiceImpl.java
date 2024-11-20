@@ -65,6 +65,13 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     private final ElasticsearchOperations elasticsearchOperations;
     private final AuthService authService;
 
+    @NonNull
+    @Override
+    public BoolQuery.Builder addElasticBooleanFilter(
+        BoolQuery.Builder builder, BoolQuery.Builder subQueryBuilder) {
+        return builder.filter(subQueryBuilder.build()._toQuery());
+    }
+
     @NotNull
     public BoolQuery.Builder addElasticTermsFilter(
         BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
