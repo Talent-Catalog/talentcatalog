@@ -1060,6 +1060,27 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Assign partner based on the partner abbreviation, if any
         Partner sourcePartner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+
+        // Check for and replace partner if it has a redirectPartner assigned — typically when it is
+        // no longer active and another org has assumed responsibility for candidates in its
+        // jurisdiction.
+        // Set by SystemAdminApi.redirectInactivePartnerUrl.
+        if (sourcePartner != null) {
+            while (sourcePartner.getRedirectPartner() != null) {
+                LogBuilder.builder(log) // Log the reassignment
+                    .user(authService.getLoggedInUser())
+                    .action("Register Candidate")
+                    .message(sourcePartner.getName() + " has a redirectPartner assigned - registration "
+                        + "redirected to " + sourcePartner.getRedirectPartner().getName() + ".")
+                    .logInfo();
+
+                sourcePartner = sourcePartner.getRedirectPartner();
+            }
+
+            // This is a failsafe: we never want to assign candidates to an inactive partner.
+            sourcePartner = sourcePartner.getStatus() == Status.active ? sourcePartner : null;
+        }
+
         if (sourcePartner == null || !sourcePartner.isSourcePartner()) {
             //No source partner found based on partner query param.
 
@@ -1081,20 +1102,6 @@ public class CandidateServiceImpl implements CandidateService {
                 //Use default partner.
                 sourcePartner = partnerService.getDefaultSourcePartner();
             }
-        }
-
-        // Check for and replace partner if it has a redirectPartner assigned — typically when it is
-        // no longer active and another org has assumed responsibility for candidates in its
-        // jurisdiction. Set by SystemAdminApi.redirectInactivePartnerUrl.
-        while (sourcePartner.getRedirectPartner() != null) {
-            LogBuilder.builder(log) // Log the reassignment
-                .user(authService.getLoggedInUser())
-                .action("Register Candidate")
-                .message(sourcePartner.getName() + " has a redirectPartner assigned - registration "
-                    + "redirected to " + sourcePartner.getRedirectPartner().getName() + ".")
-                .logInfo();
-
-            sourcePartner = sourcePartner.getRedirectPartner();
         }
 
         LogBuilder.builder(log)

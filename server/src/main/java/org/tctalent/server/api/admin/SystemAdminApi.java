@@ -3004,8 +3004,10 @@ public class SystemAdminApi {
     }
 
     /**
-     * Provides a utility for system admins to redirect an inactive partner's 'hard-coded' URLs
-     * (used in promo material e.g. flyers, online QR codes) to a new active partner.
+     * Provides a utility for system admins to redirect an outgoing partner's 'hard-coded' URLs
+     * (used in promo material e.g. flyers, online QR codes) to a new partner.
+     * <p><strong>NB: will set new partner to active and old to inactive if not already done </strong>
+     * — CP registration and branding info will only utilise active partners.</p>
      * @param inactivePartnerId the ID of the inactive partner to redirect away from
      * @param newPartnerId the ID of the active partner to direct to
      * @return response details
@@ -3023,15 +3025,26 @@ public class SystemAdminApi {
             PartnerImpl inactivePartner = (PartnerImpl) partnerService.getPartner(inactivePartnerId);
 
             // The partner we're redirecting to could itself have been deactivated in the past and
-            // therefore have a redirectPartner assigned that we would no longer wish to honour -
-            // not only for operational reasons but also because we could cause a recursive loop.
+            // therefore have had a redirectPartner assigned to it that we now wish to ignore -
+            // not only for operational reasons but also to avoid getting stuck in a recursive loop!
             if (newPartner.getRedirectPartner() != null) {
                 newPartner.setRedirectPartner(null);
                 newPartner = partnerRepository.save(newPartner);
             }
 
-            // Update and save the inactive partner
-            inactivePartner.setRedirectPartner(newPartner);
+            // Failsafe: the new partner should always be active, admin user may have forgotten!
+            if (newPartner.getStatus() != Status.active) {
+                newPartner.setStatus(Status.active);
+                newPartner = partnerRepository.save(newPartner);
+            }
+
+            inactivePartner.setRedirectPartner(newPartner); // Add the redirect partner
+
+            // In case the admin user has forgotten, set the old partner to inactive
+            if (inactivePartner.getStatus() != Status.inactive) {
+                inactivePartner.setStatus(Status.inactive);
+            }
+
             partnerRepository.save(inactivePartner);
 
             LogBuilder.builder(log)
