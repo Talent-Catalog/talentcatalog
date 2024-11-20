@@ -143,15 +143,14 @@ class ElasticsearchServiceImplTest {
 
     @Test
     void addElasticNestedFilter() {
-        BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
 
+        BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
         nestedQueryBuilder = elasticsearchService.addElasticTermFilter(nestedQueryBuilder,
             "occupations.name.keyword", "Basket weaver");
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-
-        builder = elasticsearchService.addElasticNestedFilter(builder,
-            "occupations", nestedQueryBuilder.build()._toQuery());
+        builder = elasticsearchService.addElasticNestedFilter(
+            builder,"occupations", nestedQueryBuilder);
 
         SearchHits<CandidateEs> searchHits =
             elasticsearchService.searchCandidateEs(builder, null);

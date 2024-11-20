@@ -18,7 +18,6 @@ package org.tctalent.server.service.db.es;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.ChildScoreMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery.Builder;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
@@ -183,14 +182,13 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     @NotNull
     @Override
-    public BoolQuery.Builder addElasticNestedFilter(BoolQuery.Builder builder, String path,
-        Query nestedQuery) {
+    public BoolQuery.Builder addElasticNestedFilter(
+        BoolQuery.Builder builder, String path, BoolQuery.Builder nestedQueryBuilder) {
         NativeQuery query = NativeQuery.builder()
             .withQuery(q -> q
                 .nested(ne -> ne
                     .path(path)
-                    .query(nestedQuery)
-                    .scoreMode(ChildScoreMode.Avg)
+                    .query(nestedQueryBuilder.build()._toQuery())
                 )
             )
             .build();

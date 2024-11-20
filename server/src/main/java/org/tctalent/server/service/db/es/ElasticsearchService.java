@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db.es;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import java.util.Collection;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -33,11 +32,14 @@ public interface ElasticsearchService {
    * Adds a nested query to the Boolean query builder.
    * @param builder Elastic Java API BoolQuery builder
    * @param path Path to the nested query
-   * @param nestedQuery Nested query
+   * @param nestedQueryBuilder Allows a boolean nested query - represented as another builder -
+   *                           to be added to the given Boolean builder. The nested query is built,
+   *                           and its result is used to construct the nested filter.
    * @return Updated builder
    */
   @NonNull
-  BoolQuery.Builder addElasticNestedFilter(BoolQuery.Builder builder, String path, Query nestedQuery);
+  BoolQuery.Builder addElasticNestedFilter(
+      BoolQuery.Builder builder, String path, BoolQuery.Builder nestedQueryBuilder);
 
   /**
    * Adds a terms filter to the Boolean query builder. The terms are combined according

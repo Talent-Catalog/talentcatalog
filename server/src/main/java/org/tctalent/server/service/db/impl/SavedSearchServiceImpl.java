@@ -1052,7 +1052,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 }
 
                 boolQueryBuilder = elasticsearchService.addElasticNestedFilter(
-                    boolQueryBuilder,"otherLanguages", nestedQueryBuilder.build()._toQuery());
+                    boolQueryBuilder,"otherLanguages", nestedQueryBuilder);
             }
 
         }
@@ -1111,7 +1111,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                         nestedQueryBuilder, "occupations.yearsExperience", minYrs, maxYrs);
                 }
                 boolQueryBuilder = elasticsearchService.addElasticNestedFilter(
-                    boolQueryBuilder,"occupations", nestedQueryBuilder.build()._toQuery());
+                    boolQueryBuilder,"occupations", nestedQueryBuilder);
             }
         }
 
