@@ -21,7 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.model.es.CandidateEs.Occupation;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 
 @Tag("skip-test-in-gradle-build")
@@ -41,19 +44,27 @@ class ElasticsearchServiceImplTest {
     @Autowired
     CandidateEsRepository candidateEsRepository;
 
+    private CandidateEs testCandidate;
+
     @BeforeEach
     void setUp() {
-        CandidateEs candidate = new CandidateEs();
-        candidate.setCandidateNumber("12345");
-        candidate.setFirstName("Jim");
-        candidate.setLastName("Dim");
+        testCandidate = new CandidateEs();
+        testCandidate.setCandidateNumber("12345");
+        testCandidate.setFirstName("Jim");
+        testCandidate.setLastName("Dim");
 
-        candidateEsRepository.save(candidate);
+        List<CandidateEs.Occupation> occupations = new ArrayList<>();
+        Occupation occupation = new Occupation();
+        occupation.setName("Basket weaver");
+        occupations.add(occupation);
+        testCandidate.setOccupations(occupations);
+
+        candidateEsRepository.save(testCandidate);
     }
 
     @AfterEach
     void tearDown() {
-
+        candidateEsRepository.delete(testCandidate);
     }
 
     @Test
@@ -70,8 +81,6 @@ class ElasticsearchServiceImplTest {
 
         assertEquals("Jim", savedCandidate.getFirstName());
         assertEquals("Dim", savedCandidate.getLastName());
-
-        candidateEsRepository.delete(savedCandidate);
     }
 
     @Test
@@ -134,5 +143,19 @@ class ElasticsearchServiceImplTest {
 
     @Test
     void addElasticNestedFilter() {
+        BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
+
+        nestedQueryBuilder = elasticsearchService.addElasticTermFilter(nestedQueryBuilder,
+            "occupations.name.keyword", "Basket weaver");
+
+        BoolQuery.Builder builder = new BoolQuery.Builder();
+
+        builder = elasticsearchService.addElasticNestedFilter(builder,
+            "occupations", nestedQueryBuilder.build()._toQuery());
+
+        SearchHits<CandidateEs> searchHits =
+            elasticsearchService.searchCandidateEs(builder, null);
+
+        assertTrue(searchHits.getTotalHits() > 0);
     }
 }
