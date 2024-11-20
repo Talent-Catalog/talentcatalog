@@ -37,9 +37,13 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add("-parameters")
 }
 
+//@SpringBootTest's typically won't work during GitHub builds because they require that the whole
+//application starts up. We used to comment out the @Test's in the code. But this allows us to
+//tag those tests and then exclude running them. So the code is not changed and we can manually
+//run those test when we need to in our dev environments. JC.
 tasks.withType(Test).configureEach {
     useJUnitPlatform {
-        excludeTags 'springboottest'
+        excludeTags 'skip-test-in-gradle-build'
     }
 }
 

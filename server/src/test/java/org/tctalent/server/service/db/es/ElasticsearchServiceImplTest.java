@@ -32,7 +32,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 
-@Tag("springboottest")
+@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 class ElasticsearchServiceImplTest {
     @Autowired
