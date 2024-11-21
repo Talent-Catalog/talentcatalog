@@ -348,8 +348,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 candidateIds.add(candidate.getId());
             }
 
-            //Flush and clear persistence context to free up memory
-            persistenceContextHelper.flushAndClearEntityManager();
+            persistenceContextHelper.clearEntityManager(); // Detach in-memory managed entities
         } while (pageOfCandidates.hasNext());
         return candidateIds;
     }
