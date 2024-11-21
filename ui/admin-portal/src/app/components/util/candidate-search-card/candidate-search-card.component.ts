@@ -86,8 +86,8 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
     // The only things that can be updated via the search card (and therefore need to be updated into the list of
     // candidate results) is the selected attachments.
     this.candidateService.candidateUpdated$.pipe(takeUntil(this.destroy$)).subscribe(candidate => {
-      // todo could we use the existing extended candidate object, and use the spread operator to merge in the updates
-      // with the candidate object that's passed in?
+      // use the existing extended candidate object, and use the spread operator to merge in the updates
+      // with the candidate object that's passed in
       this.candidate = {...this.candidate, ...candidate};
       this.candidateUpdated.emit(this.candidate);
     })
