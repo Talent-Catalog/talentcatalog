@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
@@ -62,6 +63,7 @@ class BrandingServiceImplTest {
         partner.setLogo(LOGO);
         partner.setName(PARTNER_NAME);
         partner.setWebsiteUrl(WEBSITE_URL);
+        partner.setStatus(Status.active);
     }
 
     @Test
