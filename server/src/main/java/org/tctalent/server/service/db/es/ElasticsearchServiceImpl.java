@@ -67,8 +67,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     @NonNull
     @Override
     public BoolQuery.Builder addElasticBooleanFilter(
-        BoolQuery.Builder builder, BoolQuery.Builder subQueryBuilder) {
-        return builder.filter(subQueryBuilder.build()._toQuery());
+        BoolQuery.Builder builder, @Nullable SearchType searchType, BoolQuery.Builder subQueryBuilder) {
+
+        return SearchType.or.equals(searchType)
+            ? builder.should(subQueryBuilder.build()._toQuery())
+            : builder.filter(subQueryBuilder.build()._toQuery());
     }
 
     @NotNull

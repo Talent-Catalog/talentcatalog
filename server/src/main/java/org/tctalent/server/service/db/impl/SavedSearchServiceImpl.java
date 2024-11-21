@@ -1066,7 +1066,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 SearchType.not,"masterId", candidateIds);
 
             boolQueryBuilder = elasticsearchService.addElasticBooleanFilter(
-                boolQueryBuilder, subQueryBuilder);
+                boolQueryBuilder, null, subQueryBuilder);
         }
 
         //List any and all candidates
@@ -1078,7 +1078,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 searchType1,"masterId", Collections.unmodifiableCollection(candidateIds1));
 
             boolQueryBuilder = elasticsearchService.addElasticBooleanFilter(
-                boolQueryBuilder, subQueryBuilder);
+                boolQueryBuilder, null, subQueryBuilder);
         }
         if (searchType2 != null && candidateIds2 != null) {
             BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
@@ -1088,7 +1088,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 searchType2,"masterId", Collections.unmodifiableCollection(candidateIds2));
 
             boolQueryBuilder = elasticsearchService.addElasticBooleanFilter(
-                boolQueryBuilder, subQueryBuilder);
+                boolQueryBuilder, null, subQueryBuilder);
         }
 
         //Occupations
@@ -1103,13 +1103,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 reqOccupations.add(occupation.getName());
             }
             if (!reqOccupations.isEmpty()) {
-                BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
-                nestedQueryBuilder = elasticsearchService.addElasticTermsFilter(
-                    nestedQueryBuilder, SearchType.or, "occupations.name.keyword", reqOccupations);
+                //Occupation name = ? and Years experience = ?
+                BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
+                subQueryBuilder = elasticsearchService.addElasticTermsFilter(
+                    subQueryBuilder, null, "occupations.name.keyword", reqOccupations);
                 if (minYrs != null || maxYrs != null) {
-                    nestedQueryBuilder = elasticsearchService.addElasticRangeFilter(
-                        nestedQueryBuilder, "occupations.yearsExperience", minYrs, maxYrs);
+                    subQueryBuilder = elasticsearchService.addElasticRangeFilter(
+                        subQueryBuilder, "occupations.yearsExperience", minYrs, maxYrs);
                 }
+
+                //Or together above matching occupations and experience
+                //(Occupation = occ1 and Years exp1) or (Occupation = occ2 and Years exp2) or ...
+                BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
+                nestedQueryBuilder = elasticsearchService.addElasticBooleanFilter(
+                    nestedQueryBuilder, SearchType.or, subQueryBuilder);
+
+                //Construct nested query
                 boolQueryBuilder = elasticsearchService.addElasticNestedFilter(
                     boolQueryBuilder,"occupations", nestedQueryBuilder);
             }

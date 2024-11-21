@@ -58,6 +58,9 @@ public interface ElasticsearchService {
   /**
    * Adds a boolean query to the Boolean query builder.
    * @param builder Elastic Java API BoolQuery builder
+   * @param searchType May be null, in which case default is SearchType.and which translates to
+   *                   "filter", but it can also be SearchType.or which translates to "should".
+   *                   SearchType.not is not supported - it is ignored and default is used.
    * @param subQueryBuilder Allows a boolean subquery - represented as another builder - to be added
    *                        to the given Boolean builder. The subquery is built, and its result
    *                        added to the filter.
@@ -65,7 +68,7 @@ public interface ElasticsearchService {
    */
   @NonNull
   BoolQuery.Builder addElasticBooleanFilter(
-      BoolQuery.Builder builder, BoolQuery.Builder subQueryBuilder);
+      BoolQuery.Builder builder, @Nullable SearchType searchType, BoolQuery.Builder subQueryBuilder);
 
   /**
    * Adds a single term filter to the Boolean query builder.

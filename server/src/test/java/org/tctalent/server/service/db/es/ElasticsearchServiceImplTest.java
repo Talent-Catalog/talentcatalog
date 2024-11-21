@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.es.CandidateEs.Occupation;
 import org.tctalent.server.repository.es.CandidateEsRepository;
@@ -45,26 +46,43 @@ class ElasticsearchServiceImplTest {
     CandidateEsRepository candidateEsRepository;
 
     private CandidateEs testCandidate;
+    private CandidateEs testCandidate2;
 
     @BeforeEach
     void setUp() {
         testCandidate = new CandidateEs();
-        testCandidate.setCandidateNumber("12345");
+        testCandidate.setCandidateNumber("9999998");
         testCandidate.setFirstName("Jim");
         testCandidate.setLastName("Dim");
 
         List<CandidateEs.Occupation> occupations = new ArrayList<>();
         Occupation occupation = new Occupation();
         occupation.setName("Basket weaver");
+        occupation.setYearsExperience(4L);
         occupations.add(occupation);
         testCandidate.setOccupations(occupations);
 
         candidateEsRepository.save(testCandidate);
+
+        testCandidate2 = new CandidateEs();
+        testCandidate2.setCandidateNumber("9999999");
+        testCandidate2.setFirstName("Joe");
+        testCandidate2.setLastName("Blow");
+
+        List<CandidateEs.Occupation> occupations2 = new ArrayList<>();
+        Occupation occupation2 = new Occupation();
+        occupation2.setName("Snake charmer");
+        occupation2.setYearsExperience(4L);
+        occupations2.add(occupation2);
+        testCandidate2.setOccupations(occupations2);
+
+        candidateEsRepository.save(testCandidate2);
     }
 
     @AfterEach
     void tearDown() {
         candidateEsRepository.delete(testCandidate);
+        candidateEsRepository.delete(testCandidate2);
     }
 
     @Test
@@ -142,11 +160,21 @@ class ElasticsearchServiceImplTest {
     }
 
     @Test
-    void addElasticNestedFilter() {
+    void addElasticNestedFilterTerms() {
 
+        //Occupation name = Basket weaver and Years experience >= 4
+        BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
+        subQueryBuilder = elasticsearchService.addElasticTermsFilter(subQueryBuilder,
+            null, "occupations.name.keyword",
+            List.of("Basket weaver", "Snake charmer"));
+        subQueryBuilder = elasticsearchService.addElasticRangeFilter(
+            subQueryBuilder, "occupations.yearsExperience", 4, null);
+
+        //Or together above matching occupations and experience
+        //(Occupation = occ1 and Years exp1) or (Occupation = occ2 and Years exp2) or ...
         BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
-        nestedQueryBuilder = elasticsearchService.addElasticTermFilter(nestedQueryBuilder,
-            "occupations.name.keyword", "Basket weaver");
+        nestedQueryBuilder = elasticsearchService.addElasticBooleanFilter(
+            nestedQueryBuilder, SearchType.or, subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
         builder = elasticsearchService.addElasticNestedFilter(
@@ -155,6 +183,30 @@ class ElasticsearchServiceImplTest {
         SearchHits<CandidateEs> searchHits =
             elasticsearchService.searchCandidateEs(builder, null);
 
-        assertTrue(searchHits.getTotalHits() > 0);
+        //There may be many occupations at least with 4 years or more experience,
+        //but there should only be two that are Basket weaver or Snake charmers (Jim Dim and Joe Blow)
+        assertEquals(2, searchHits.getTotalHits());
+    }
+
+    @Test
+    void addElasticNestedFilterTerm() {
+
+        //Occupation name = Basket weaver and Years experience >= 4
+        BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
+        subQueryBuilder = elasticsearchService.addElasticTermFilter(subQueryBuilder,
+             "occupations.name.keyword", "Basket weaver");
+        subQueryBuilder = elasticsearchService.addElasticRangeFilter(
+            subQueryBuilder, "occupations.yearsExperience", 4, null);
+
+        BoolQuery.Builder builder = new BoolQuery.Builder();
+        builder = elasticsearchService.addElasticNestedFilter(
+            builder,"occupations", subQueryBuilder);
+
+        SearchHits<CandidateEs> searchHits =
+            elasticsearchService.searchCandidateEs(builder, null);
+
+        //There are two occupations at least with 4 years or more experience (Jim Dim and Joe Blow),
+        //but there should only be one Basket weaver
+        assertEquals(1, searchHits.getTotalHits());
     }
 }
