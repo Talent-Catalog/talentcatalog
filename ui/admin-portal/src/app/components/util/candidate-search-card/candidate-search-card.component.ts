@@ -19,6 +19,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
@@ -34,13 +35,15 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {CandidateService} from "../../../services/candidate.service";
+import {takeUntil} from "rxjs/operators";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-candidate-search-card',
   templateUrl: './candidate-search-card.component.html',
   styleUrls: ['./candidate-search-card.component.scss']
 })
-export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
+export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
@@ -51,6 +54,9 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   @Output() closeEvent = new EventEmitter();
   @Output() onSearchCardRendered = new EventEmitter();
+  @Output() candidateUpdated = new EventEmitter<Candidate>();
+
+  private destroy$ = new Subject<void>();
 
   showAttachments: boolean = false;
   showNotes: boolean = true;
@@ -77,6 +83,26 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
               private candidateService: CandidateService) { }
 
   ngOnInit() {
+    // The only things that can be updated via the search card (and therefore need to be updated into the list of
+    // candidate results) is the selected attachments.
+    this.candidateService.candidateUpdated$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(candidate => {
+      console.log("in subscribe for search card")
+      // The candidate object that is passed in through subscribe isn't an extended dto object, so it's missing
+      // some of the fields we need for the search card display. This is why we need to re-fetch the extended candidate
+      // object when the candidate is updated. The getByNumber method returns the extended candidate dto object.
+      this.candidateService.getByNumber(candidate.candidateNumber).subscribe(
+        (extendedCandidate) => {
+          this.candidate = extendedCandidate;
+          // pass updated extended candidate object up to parent so it can replace its old self in list of candidate results
+          this.candidateUpdated.emit(extendedCandidate);
+        },
+        (error) => {
+
+        }
+      )
+    })
   }
 
   ngAfterViewChecked(): void {
@@ -87,10 +113,6 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
       // Parent component has stored previous scroll position, will restore if pixels from top > 0.
       this.onSearchCardRendered.emit();
     }
-    // todo what can be updated via search card that would need to be updated in the list of candidates? Put here.
-    this.candidateService.candidateUpdated$.subscribe(candidate => {
-
-    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -179,6 +201,11 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
 
   isAnAdmin(): boolean {
     return this.authorizationService.isAnAdmin();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
@@ -89,6 +81,7 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     }
     this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
       (candidate) => {
+        this.candidateService.updateCandidate(candidate);
         this.candidateChange.emit(candidate);
         if (this.isList) {
           this.setCandidateListDocs();

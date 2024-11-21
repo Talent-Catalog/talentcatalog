@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
 import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -28,7 +28,7 @@ import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../m
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
@@ -39,6 +39,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {DtoType} from "../../../model/base";
+import {takeUntil} from "rxjs/operators";
 
 
 @Component({
@@ -46,7 +47,7 @@ import {DtoType} from "../../../model/base";
   templateUrl: './view-candidate.component.html',
   styleUrls: ['./view-candidate.component.scss']
 })
-export class ViewCandidateComponent extends MainSidePanelBase implements OnInit {
+export class ViewCandidateComponent extends MainSidePanelBase implements OnInit, OnDestroy {
 
   private lastTabKey: string = 'CandidateLastTab';
 
@@ -64,6 +65,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
   token: string;
+
+  private destroy$ = new Subject<void>();
 
   constructor(private candidateService: CandidateService,
               private chatService: ChatService,
@@ -84,7 +87,13 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
+    this.candidateService.candidateUpdated$.pipe(takeUntil(this.destroy$)).subscribe(candidate => {
+      this.candidateService.getByNumber(this.candidate.candidateNumber).subscribe((candidate) =>
+        this.candidate = candidate
+      )
+    });
   }
+
   private setChatAccess() {
     const candidatePartner = this.candidate.user?.partner;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
@@ -101,16 +110,6 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
         this.candidateChat = result;
       })
     }
-
-    this.candidateService.candidateUpdated$.subscribe(candidate => {
-      // this way using the returned updated object from the update methods (smaller dto though currently)
-      //this.candidate = candidate;
-
-      // or this way I could just call the getByNumber dto again which returns the desired extended dto.
-      this.candidateService.getByNumber(this.candidate.candidateNumber).subscribe((candidate) =>
-        this.candidate = candidate
-      )
-    });
   }
 
   refreshCandidateProfile() {
@@ -427,5 +426,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
   isReadOnlyUser() {
     return this.authorizationService.isReadOnly();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
