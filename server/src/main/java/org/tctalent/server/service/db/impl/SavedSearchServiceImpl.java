@@ -711,7 +711,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
-                persistenceContextHelper.flushAndClearEntityManager();
+                persistenceContextHelper.clearEntityManager(); // Detach in-memory managed entities
                 Page<Candidate> result = doSearchCandidates(request);
                 setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {
