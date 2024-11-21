@@ -14,7 +14,6 @@ import {CandidateSource} from "../../../../model/base";
 export class ShareableDocsComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
-  @Output() candidateChange = new EventEmitter<Candidate>();
 
   @Input() candidateSource: CandidateSource;
 
@@ -82,7 +81,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
       (candidate) => {
         this.candidateService.updateCandidate(candidate);
-        this.candidateChange.emit(candidate);
         if (this.isList) {
           this.setCandidateListDocs();
         }
@@ -109,7 +107,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     } else {
       this.candidate.listShareableDoc = null;
     }
-    this.updatedShareableCV.emit(this.candidate.listShareableCv);
   }
 
   get shareableCvId() {
