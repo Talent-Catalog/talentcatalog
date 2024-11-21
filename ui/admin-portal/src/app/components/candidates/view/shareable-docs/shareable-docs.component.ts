@@ -14,6 +14,7 @@ import {CandidateSource} from "../../../../model/base";
 export class ShareableDocsComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
+  @Output() candidateChange = new EventEmitter<Candidate>();
 
   @Input() candidateSource: CandidateSource;
 
@@ -80,9 +81,16 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     }
     this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
       (candidate) => {
-        this.candidateService.updateCandidate(candidate);
+        // // todo I want to keep the list specific fields for this candidate that come from the results of candidates for my list. I can't
+        // // just replace that candidate with one I fetch that isn't list specific, as that won't have the list specific fields.
+        // // So I need to merge my candidate from the list, with the updated candidate.
+        // let mergedCandidate = {...this.candidate, ...candidate};
+        this.candidateChange.emit(candidate);
         if (this.isList) {
+          // todo could we return the listShareableDoc fields from the API like we return in the pagedSearch? That way we don't need the setCandidateListDocs method.
           this.setCandidateListDocs();
+        } else {
+          this.candidateService.updateCandidate(candidate);
         }
         this.saving = false;
       },
@@ -107,6 +115,7 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     } else {
       this.candidate.listShareableDoc = null;
     }
+    this.candidateService.updateCandidate(this.candidate);
   }
 
   get shareableCvId() {

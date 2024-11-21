@@ -85,23 +85,11 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
   ngOnInit() {
     // The only things that can be updated via the search card (and therefore need to be updated into the list of
     // candidate results) is the selected attachments.
-    this.candidateService.candidateUpdated$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(candidate => {
-      console.log("in subscribe for search card")
-      // The candidate object that is passed in through subscribe isn't an extended dto object, so it's missing
-      // some of the fields we need for the search card display. This is why we need to re-fetch the extended candidate
-      // object when the candidate is updated. The getByNumber method returns the extended candidate dto object.
-      this.candidateService.getByNumber(candidate.candidateNumber).subscribe(
-        (extendedCandidate) => {
-          this.candidate = extendedCandidate;
-          // pass updated extended candidate object up to parent so it can replace its old self in list of candidate results
-          this.candidateUpdated.emit(extendedCandidate);
-        },
-        (error) => {
-
-        }
-      )
+    this.candidateService.candidateUpdated$.pipe(takeUntil(this.destroy$)).subscribe(candidate => {
+      // todo could we use the existing extended candidate object, and use the spread operator to merge in the updates
+      // with the candidate object that's passed in?
+      this.candidate = {...this.candidate, ...candidate};
+      this.candidateUpdated.emit(this.candidate);
     })
   }
 

@@ -88,10 +88,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
     this.candidateService.candidateUpdated$.pipe(takeUntil(this.destroy$)).subscribe(candidate => {
-      this.candidateService.getByNumber(this.candidate.candidateNumber).subscribe((candidate) =>
-        this.candidate = candidate
-      )
-    });
+      // Spread operator to merge the updated candidate object from the observable, with the extended dto candidate object
+      // that we get when initially loading the candidate profile. See doc about Spread
+      // https://www.typescriptlang.org/docs/handbook/variable-declarations.html#spread.
+      this.candidate = {...this.candidate, ...candidate}
+    })
   }
 
   private setChatAccess() {
