@@ -4,8 +4,7 @@ import { CandidateOpportunityService } from '../../../services/candidate-opportu
 import { JobService } from '../../../services/job.service';
 import {of, throwError} from 'rxjs';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule} from "angular-2-local-storage";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {JobsWithDetailComponent} from "../jobs-with-detail/jobs-with-detail.component";
 import { Router} from "@angular/router";
@@ -32,7 +31,6 @@ describe('JobHomeComponent', () => {
       imports: [
         HttpClientTestingModule,
         ReactiveFormsModule,
-        LocalStorageModule.forRoot({}),
         NgbModule,
         NgSelectModule
       ],
@@ -40,7 +38,7 @@ describe('JobHomeComponent', () => {
         { provide: CandidateOpportunityService, useValue: candidateOpportunityServiceSpy },
         { provide: JobService, useValue: jobServiceSpy },
         { provide: CandidateService, useValue: candidateServiceSpy },
-        { provide: FormBuilder, useClass: FormBuilder },
+        { provide: UntypedFormBuilder, useClass: UntypedFormBuilder },
         { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') }}
       ]
     })

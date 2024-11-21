@@ -17,7 +17,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {NotRegisteredStatus, UnhcrStatus, YesNo} from '../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 
@@ -34,7 +34,7 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
   public unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
   public NotRegisteredStatusOptions: EnumOption[] = enumOptions(NotRegisteredStatus);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

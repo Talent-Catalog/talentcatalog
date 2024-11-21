@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {of} from 'rxjs';
 import {LanguageThresholdComponent} from './language-threshold.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
@@ -22,7 +22,7 @@ describe('LanguageThresholdComponent', () => {
       declarations: [LanguageThresholdComponent, AutosaveStatusComponent],
       imports: [ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: LanguageService, useValue: languageServiceSpy },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
       ]

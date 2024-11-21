@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {OccupationSubcategoryComponent} from './occupation-subcategory.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -18,7 +18,7 @@ describe('OccupationSubcategoryComponent', () => {
       declarations: [OccupationSubcategoryComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
       ]
     }).compileComponents();

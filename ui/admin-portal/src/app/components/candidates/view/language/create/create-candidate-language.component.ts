@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {CandidateLanguage} from "../../../../../model/candidate-language";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../../services/language.service";
 import {
@@ -19,7 +19,7 @@ export class CreateCandidateLanguageComponent implements OnInit {
 
   candidateLanguage: CandidateLanguage;
 
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
   candidateId: number;
   languages = [];
   languageLevels = [];
@@ -29,7 +29,7 @@ export class CreateCandidateLanguageComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private languageService: LanguageService,
               private candidateLanguageService: CandidateLanguageService,
               private countryService: CountryService,

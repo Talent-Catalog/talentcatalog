@@ -2,7 +2,7 @@ import {By} from '@angular/platform-browser';
 import {CandidateShareableNotesComponent} from "./candidate-shareable-notes.component";
 import {CandidateService} from "../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {Candidate, UpdateCandidateShareableNotesRequest} from "../../../model/candidate";
 import {of} from "rxjs";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
@@ -19,7 +19,7 @@ describe('CandidateShareableNotesComponent', () => {
       declarations: [CandidateShareableNotesComponent,AutosaveStatusComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateServiceSpy }
       ]
     }).compileComponents();

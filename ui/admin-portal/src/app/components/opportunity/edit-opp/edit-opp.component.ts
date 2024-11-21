@@ -4,7 +4,7 @@ import {
   CandidateOpportunityStage,
   isCandidateOpportunity
 } from "../../../model/candidate-opportunity";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
@@ -25,7 +25,7 @@ export class EditOppComponent implements OnInit {
 
   opp: Opportunity;
 
-  salesforceStageForm: FormGroup;
+  salesforceStageForm: UntypedFormGroup;
   opportunityStageOptions: EnumOption[] = [];
 
   closing = false;
@@ -46,7 +46,7 @@ export class EditOppComponent implements OnInit {
     private savedListService: SavedListService,
     private candidateSourceCandidateService: CandidateSourceCandidateService,
     private jobService: JobService,
-    private fb: FormBuilder) { }
+    private fb: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     let stage = null;

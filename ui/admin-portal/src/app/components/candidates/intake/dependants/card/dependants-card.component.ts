@@ -17,7 +17,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {CandidateDependant, DependantRelations, Gender, Registrations, YesNo} from '../../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
@@ -38,7 +38,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
   dependantRegisterOptions: EnumOption[] = enumOptions(Registrations);
   dependentHealthConcerns: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService,
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService,
               private candidateDependantService: CandidateDependantService) {
     super(fb, candidateService);
   }

@@ -2,7 +2,7 @@ import {CandidateSourceDescriptionComponent} from "./candidate-source-descriptio
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateSource} from "../../../model/base";
 import {of, throwError} from "rxjs";
 import {AutosaveStatusComponent} from "../autosave-status/autosave-status.component";
@@ -24,7 +24,7 @@ describe('CandidateSourceDescriptionComponent', () => {
       declarations: [CandidateSourceDescriptionComponent,AutosaveStatusComponent],
       imports: [ReactiveFormsModule, FormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: mockCandidateService },
         { provide: CandidateSourceService, useValue: mockCandidateSourceService },
         { provide: AuthorizationService, useValue: mockAuthorizationService }

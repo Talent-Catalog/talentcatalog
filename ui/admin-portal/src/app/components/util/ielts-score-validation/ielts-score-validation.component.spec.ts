@@ -1,6 +1,6 @@
 import {IeltsScoreValidationComponent} from "./ielts-score-validation.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SimpleChanges} from "@angular/core";
 
 describe('IeltsScoreValidationComponent', () => {
@@ -17,7 +17,7 @@ describe('IeltsScoreValidationComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(IeltsScoreValidationComponent);
     component = fixture.componentInstance;
-    component.control = new FormControl('');
+    component.control = new UntypedFormControl('');
     component.examType = 'IELTSGen'; // Set an initial exam type for testing
     fixture.detectChanges();
   });

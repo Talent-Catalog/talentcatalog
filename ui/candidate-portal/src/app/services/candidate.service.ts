@@ -20,7 +20,7 @@ import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {Candidate} from '../model/candidate';
 import {map} from 'rxjs/operators';
-import {LocalStorageService} from "angular-2-local-storage";
+import {LocalStorageService} from "./local-storage.service";
 
 export interface UpdateCandidateAdditionalInfo extends UpdateCandidateSurvey {
   additionalInfo?: string,

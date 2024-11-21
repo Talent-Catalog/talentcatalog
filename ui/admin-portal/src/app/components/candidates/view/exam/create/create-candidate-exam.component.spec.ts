@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CreateCandidateExamComponent} from './create-candidate-exam.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbActiveModal, NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
@@ -14,7 +14,7 @@ describe('CreateCandidateExamComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ CreateCandidateExamComponent ],
       imports: [HttpClientTestingModule, NgbModalModule,ReactiveFormsModule,NgSelectModule],
-      providers: [NgbActiveModal,FormBuilder],
+      providers: [NgbActiveModal,UntypedFormBuilder],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();

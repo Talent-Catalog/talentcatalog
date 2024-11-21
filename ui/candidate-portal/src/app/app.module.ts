@@ -61,7 +61,6 @@ import {
 import {
   RegistrationAdditionalInfoComponent
 } from './components/register/additional-info/registration-additional-info.component';
-import {LocalStorageModule} from 'angular-2-local-storage';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {LanguageInterceptor} from './services/language.interceptor';
 import {LoginComponent} from './components/account/login/login.component';
@@ -309,15 +308,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
-    LocalStorageModule.forRoot({
-      prefix: 'tbb-candidate-portal',
-      storageType: 'localStorage'
-    }),
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
-        useClass: LanguageLoader
+        useExisting: LanguageLoader
         // Below is the standard loader which finds json translation files in assets/i18n
         //See https://github.com/ngx-translate/core#configuration
         //See doc for LanguageLoader for the reasons why we do what we do.
@@ -346,8 +341,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n},
     {provide: RxStompService},
-    DatePipe
-
+    DatePipe,
+    LanguageLoader
   ],
   exports: [
     CandidateOppsComponent,

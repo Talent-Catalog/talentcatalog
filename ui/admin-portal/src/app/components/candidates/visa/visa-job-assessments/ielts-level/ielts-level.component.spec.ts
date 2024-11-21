@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {IeltsLevelComponent} from './ielts-level.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
@@ -7,20 +7,20 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 describe('IeltsLevelComponent', () => {
   let component: IeltsLevelComponent;
   let fixture: ComponentFixture<IeltsLevelComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [IeltsLevelComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule],
-      providers: [FormBuilder]
+      providers: [UntypedFormBuilder]
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(IeltsLevelComponent);
     component = fixture.componentInstance;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
     fixture.detectChanges();
   });
 

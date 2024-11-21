@@ -16,7 +16,6 @@
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {VisaJobCheckCaComponent} from "./visa-job-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
@@ -89,7 +88,7 @@ describe('VisaJobCheckCaComponent', () => {
     const occupationSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,NgbAccordionModule,ReactiveFormsModule,
-        NgSelectModule,LocalStorageModule.forRoot({})],
+        NgSelectModule],
       declarations: [ VisaJobCheckCaComponent,DependantsComponent,VisaJobNotesComponent,FixedInputComponent,
         RelocatingDependantsComponent,JobEligibilityAssessmentComponent,JobInterestComponent,
         AgeRequirementComponent,RelevantWorkExpComponent,IneligiblePathwaysComponent,PreferredPathwaysComponent,

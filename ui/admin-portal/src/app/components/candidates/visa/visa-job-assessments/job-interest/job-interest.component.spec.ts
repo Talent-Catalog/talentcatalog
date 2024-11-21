@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {JobInterestComponent} from './job-interest.component';
 import {CandidateVisaJobCheck, YesNo} from '../../../../../model/candidate';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
@@ -10,20 +10,20 @@ import {NgSelectModule} from "@ng-select/ng-select";
 describe('JobInterestComponent', () => {
   let component: JobInterestComponent;
   let fixture: ComponentFixture<JobInterestComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [JobInterestComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
-      providers: [FormBuilder]
+      providers: [UntypedFormBuilder]
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(JobInterestComponent);
     component = fixture.componentInstance;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
     component.visaJobCheck = MockCandidateVisaJobCheck;
     fixture.detectChanges();
   });

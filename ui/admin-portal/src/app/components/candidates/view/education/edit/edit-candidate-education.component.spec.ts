@@ -16,7 +16,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {EditCandidateEducationComponent} from './edit-candidate-education.component';
-import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {of, throwError} from 'rxjs';
 import {CandidateEducationService} from '../../../../../services/candidate-education.service';
@@ -46,7 +46,7 @@ describe('EditCandidateEducationComponent', () => {
       declarations: [EditCandidateEducationComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         {provide: NgbActiveModal, useValue: mockActiveModal},
         {provide: CandidateEducationService, useValue: mockCandidateEducationService},
         {provide: CountryService, useValue: mockCountryService},

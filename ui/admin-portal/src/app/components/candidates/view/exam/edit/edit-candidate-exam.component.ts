@@ -15,7 +15,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateExam, Exam} from "../../../../../model/candidate";
 import {CandidateExamService, UpdateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
@@ -32,7 +32,7 @@ export class EditCandidateExamComponent implements OnInit {
 
   candidateExam: CandidateExam;
 
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
 
   years = [];
   error;
@@ -41,7 +41,7 @@ export class EditCandidateExamComponent implements OnInit {
   examOptions: EnumOption[] = enumOptions(Exam);
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateExamService: CandidateExamService) {
   }
 

@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   CandidateEducationService,
@@ -35,7 +35,7 @@ export class CreateCandidateEducationComponent implements OnInit {
 
   candidateEducation: CandidateEducation;
 
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
 
   candidateId: number;
   majors = [];
@@ -46,7 +46,7 @@ export class CreateCandidateEducationComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateEducationService: CandidateEducationService,
               private countryService: CountryService,
               private educationMajorService: EducationMajorService) {

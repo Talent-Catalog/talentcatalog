@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
 import {environment} from "../../../../environments/environment";
@@ -14,14 +14,14 @@ export class ResetPasswordComponent implements OnInit {
 
   loading: boolean;
   error: any;
-  resetPasswordForm: FormGroup;
+  resetPasswordForm: UntypedFormGroup;
   updated: boolean;
 
   backgroundImage: string;
 
   readonly emailRegex: string = EMAIL_REGEX;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private userService: UserService) {
   }
 

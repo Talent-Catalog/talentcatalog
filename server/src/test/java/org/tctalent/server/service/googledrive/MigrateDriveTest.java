@@ -24,7 +24,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -32,7 +37,8 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.service.db.impl.GoogleFileSystemServiceImpl;
 
 
-// @SpringBootTest
+@Tag("skip-test-in-gradle-build")
+@SpringBootTest
 @Slf4j
 public class MigrateDriveTest {
 
@@ -51,9 +57,9 @@ public class MigrateDriveTest {
     private List<File> folders;
     private Candidate candidate;
 
-//    @Transactional
-//    @Test
-//    @BeforeEach
+    @Transactional
+    @Test
+    @BeforeEach
     void getSampleGoogleFolders() throws IOException, GeneralSecurityException {
         FileList result = googleDriveConfig.getGoogleDriveService().files().list()
                 .setQ("'" + googleDriveConfig.getCandidateRootFolderId() + "' in parents" +
@@ -67,7 +73,7 @@ public class MigrateDriveTest {
         folders = result.getFiles();
     }
 
-//    @Test
+    @Test
     void loopFoldersGetLocation() {
         for(File folder: folders) {
             setCandidateFolderLink(folder);

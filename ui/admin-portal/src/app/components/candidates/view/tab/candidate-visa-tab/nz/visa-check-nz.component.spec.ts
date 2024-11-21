@@ -14,7 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {VisaCheckNzComponent} from "./visa-check-nz.component";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
@@ -30,7 +29,7 @@ describe('VisaCheckNzComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [VisaCheckNzComponent],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

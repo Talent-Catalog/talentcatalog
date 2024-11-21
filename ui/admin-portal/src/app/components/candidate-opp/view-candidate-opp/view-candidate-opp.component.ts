@@ -20,12 +20,12 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {getOpportunityStageName, Opportunity} from "../../../model/opportunity";
 import {ShortSavedList} from "../../../model/saved-list";
-import {LocalStorageService} from "angular-2-local-storage";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {ChatService} from "../../../services/chat.service";
 import {forkJoin} from "rxjs";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-view-candidate-opp',

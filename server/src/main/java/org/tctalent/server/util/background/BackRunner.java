@@ -16,8 +16,8 @@
 
 package org.tctalent.server.util.background;
 
+import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.scheduling.TaskScheduler;
@@ -65,7 +65,6 @@ public class BackRunner<CONTEXT> implements Runnable {
     public void run() {
         boolean complete = backProcessor.process(batchContext);
         if (complete) {
-            //todo The runner could be configured to notify by email once processing is complete.
             scheduledFuture.cancel(true);
         }
     }
@@ -79,13 +78,12 @@ public class BackRunner<CONTEXT> implements Runnable {
      * @param backProcessor Processor called to do the processing
      * @param batchContext Context object used to keep track of processing - initialized to its
      *                     beginning value - ie indicating where processing should start.
-     * @param period Delay between each processing call
-     * @param timeUnit Seconds etc
+     * @param delay Delay between each processing call
      * @return ScheduledFuture which can be used to query the state of the scheduling.
      */
     public ScheduledFuture<?> start(TaskScheduler taskScheduler,
-        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, long period, TimeUnit timeUnit) {
-        this.trigger = new PeriodicTrigger(period, timeUnit);
+        BackProcessor<CONTEXT> backProcessor, CONTEXT batchContext, Duration delay) {
+        this.trigger = new PeriodicTrigger(delay);
         return start(taskScheduler, backProcessor, batchContext, trigger);
     }
 

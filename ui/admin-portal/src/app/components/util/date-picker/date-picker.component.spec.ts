@@ -1,6 +1,6 @@
 import {DatePickerComponent} from "./date-picker.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {AbstractControl, FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {AbstractControl, UntypedFormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
@@ -18,7 +18,7 @@ describe('DatePickerComponent', () => {
 
     fixture = TestBed.createComponent(DatePickerComponent);
     component = fixture.componentInstance;
-    control = new FormControl('');
+    control = new UntypedFormControl('');
     component.control = control;
     fixture.detectChanges();
   });

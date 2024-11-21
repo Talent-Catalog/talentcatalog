@@ -8,7 +8,6 @@ import {Reaction} from "../../../model/reaction";
 import {MOCK_REACTIONS} from "../../../MockData/MockReactions";
 import {By} from "@angular/platform-browser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {MockUser} from "../../../MockData/MockUser";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
@@ -25,9 +24,7 @@ describe('ViewPostComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ViewPostComponent ],
-      imports: [HttpClientTestingModule,NgbTooltipModule,
-        LocalStorageModule.forRoot({}),
-      ],
+      imports: [HttpClientTestingModule,NgbTooltipModule],
       providers: [
         { provide: ReactionService, useValue: spy },
         { provide: AuthenticationService, useValue: authSpy }

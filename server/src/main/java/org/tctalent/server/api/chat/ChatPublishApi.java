@@ -66,7 +66,7 @@ public class ChatPublishApi {
      */
     @MessageMapping("/chat/{chatId}")
     @SendTo(ChatPostService.CHAT_PUBLISH_ROOT + "/{chatId}")
-    public Map<String, Object> sendPost(Post post, @DestinationVariable Long chatId) {
+    public Map<String, Object> sendPost(Post post, @DestinationVariable("chatId") Long chatId) {
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
             throw new UnauthorisedActionException("publish post");

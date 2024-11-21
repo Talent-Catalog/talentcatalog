@@ -6,7 +6,6 @@ import {SearchOppsBy} from "../../../model/base";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {CandidateOppsComponent} from "../candidate-opps/candidate-opps.component";
 
 describe('CandidateOppsWithDetailComponent', () => {
@@ -16,7 +15,7 @@ describe('CandidateOppsWithDetailComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CandidateOppsWithDetailComponent,CandidateOppsComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule],
 
     })
     .compileComponents();

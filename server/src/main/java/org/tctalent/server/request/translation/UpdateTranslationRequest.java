@@ -16,7 +16,7 @@
 
 package org.tctalent.server.request.translation;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class UpdateTranslationRequest {
 

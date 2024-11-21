@@ -2,7 +2,7 @@ import {By} from '@angular/platform-browser';
 import {SfJoblinkComponent, SfJoblinkValidationEvent} from "./sf-joblink.component";
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular/core/testing";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
@@ -20,7 +20,7 @@ describe('SfJoblinkComponent', () => {
       declarations: [SfJoblinkComponent],
       imports: [ReactiveFormsModule,FormsModule,HttpClientTestingModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: SalesforceService, useValue: spy }
       ]
     }).compileComponents();

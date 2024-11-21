@@ -19,7 +19,7 @@ package org.tctalent.server.service.db.impl;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;

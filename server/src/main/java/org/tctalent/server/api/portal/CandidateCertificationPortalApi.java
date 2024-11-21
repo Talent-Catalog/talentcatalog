@@ -25,7 +25,7 @@ import org.tctalent.server.request.candidate.certification.UpdateCandidateCertif
 import org.tctalent.server.service.db.CandidateCertificationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Map;
 
 @RestController()

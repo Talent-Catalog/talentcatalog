@@ -18,7 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {AvailImmediateReason, YesNo, YesNoUnsure} from '../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 
 @Component({
@@ -33,7 +33,7 @@ export class AvailImmediateComponent extends IntakeComponentBase implements OnIn
   public availImmediateReasonOptions: EnumOption[] = enumOptions(AvailImmediateReason);
   public interestedOptions: EnumOption[] = enumOptions(YesNoUnsure);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

@@ -1,5 +1,4 @@
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {By} from "@angular/platform-browser";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {
@@ -27,7 +26,6 @@ describe('PublishedDocColumnSelectorComponent', () => {
       declarations: [ PublishedDocColumnSelectorComponent],
       imports: [
         HttpClientTestingModule,
-        LocalStorageModule.forRoot({}),
         FormsModule,
         NgbDropdownModule,
         NgSelectModule,

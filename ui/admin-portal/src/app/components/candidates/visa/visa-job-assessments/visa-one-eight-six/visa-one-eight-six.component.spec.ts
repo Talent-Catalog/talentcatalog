@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {VisaOneEightSixComponent} from './visa-one-eight-six.component';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -13,7 +13,7 @@ describe('VisaOneEightSixComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [VisaOneEightSixComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
-      providers: [FormBuilder] // Provide the FormBuilder
+      providers: [UntypedFormBuilder] // Provide the FormBuilder
     }).compileComponents();
   });
 

@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
 import {Observable} from 'rxjs';
 import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
@@ -35,7 +35,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
   @Input() candidateSource: CandidateSource;
   @Input() editable: boolean;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateSourceService: CandidateSourceService) {
     super(null);
   }

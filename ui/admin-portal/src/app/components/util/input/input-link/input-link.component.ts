@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 export interface UpdateLinkRequest {
@@ -13,7 +13,7 @@ export interface UpdateLinkRequest {
   styleUrls: ['./input-link.component.scss']
 })
 export class InputLinkComponent implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   initialValue: UpdateLinkRequest;
   instructions: string;
   showCancel: boolean = true;
@@ -21,7 +21,7 @@ export class InputLinkComponent implements OnInit {
 
   constructor(
     private activeModal: NgbActiveModal,
-    private fb: FormBuilder) { }
+    private fb: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({

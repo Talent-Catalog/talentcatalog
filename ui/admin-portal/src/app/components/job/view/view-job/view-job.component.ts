@@ -12,7 +12,6 @@ import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
 import {User} from "../../../../model/user";
 import {AuthorizationService} from "../../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../../services/salesforce.service";
 import {JobService} from "../../../../services/job.service";
 import {SlackService} from "../../../../services/slack.service";
@@ -39,6 +38,7 @@ import {ChatService} from "../../../../services/chat.service";
 import {PartnerService} from "../../../../services/partner.service";
 import {Partner} from "../../../../model/partner";
 import {JobOppIntake} from "../../../../model/job-opp-intake";
+import {LocalStorageService} from "../../../../services/local-storage.service";
 
 /**
  * Display details of a job object passed in as an @Input.

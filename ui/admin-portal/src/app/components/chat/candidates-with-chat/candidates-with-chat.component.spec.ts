@@ -8,12 +8,11 @@ import {of} from "rxjs";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {ShowCandidatesWithChatComponent} from "../show-candidates-with-chat/show-candidates-with-chat.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {ViewChatPostsComponent} from "../view-chat-posts/view-chat-posts.component";
 import {MockChatPost} from "../../../MockData/MockChatPost";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {Component, Input} from "@angular/core";
 import {ChatPost} from "../../../model/chat";
 
@@ -37,12 +36,12 @@ describe('CandidatesWithChatComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CandidatesWithChatComponent, ShowCandidatesWithChatComponent,
-        SortedByComponent, NgbPagination, ViewChatPostsComponent, MockViewPostComponent],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, LocalStorageModule.forRoot({})],
+        SortedByComponent, ViewChatPostsComponent, MockViewPostComponent],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, NgbPagination],
       providers: [
         { provide: ChatService, useValue: chatService },
         { provide: AuthorizationService, useValue: authorizationService },
-        { provide: FormBuilder }
+        { provide: UntypedFormBuilder }
       ]
     })
     .compileComponents();
