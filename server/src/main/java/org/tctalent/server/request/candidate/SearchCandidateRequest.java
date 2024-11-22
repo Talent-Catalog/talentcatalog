@@ -19,6 +19,9 @@ package org.tctalent.server.request.candidate;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -28,9 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -121,6 +121,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<Long> surveyTypeIds;
     private Long exclusionListId;
     private List<Long> listAllIds;
+    //TODO JC Replace SearchType with Boolean negated
     private SearchType listAllSearchType;
     private List<Long> listAnyIds;
     private SearchType listAnySearchType;

@@ -75,6 +75,25 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
             : builder.filter(subQueryBuilder.build()._toQuery());
     }
 
+    @NonNull
+    @Override
+    public NativeQuery makeElasticTermsQuery(@Nullable SearchType searchType, String field,
+        @NonNull Collection<Object> values) {
+
+        //Construct the field values to be checked against
+        TermsQueryField fieldValues = new TermsQueryField.Builder()
+            .value(values.stream().map(FieldValue::of).toList())
+            .build();
+        //Build the native query
+        return NativeQuery.builder()
+            .withQuery(q -> q
+                .terms(ma -> ma
+                    .field(field)
+                    .terms(fieldValues)
+                )
+            ).build();
+    }
+
     @NotNull
     public BoolQuery.Builder addElasticTermsFilter(
         BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
@@ -82,20 +101,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
         final int nValues = values.size();
         if (nValues > 0) {
-
-            //Construct the field values to be checked against
-            TermsQueryField fieldValues = new TermsQueryField.Builder()
-                .value(values.stream().map(FieldValue::of).toList())
-                .build();
-            //Build the native query
-            NativeQuery query = NativeQuery.builder()
-                .withQuery(q -> q
-                    .terms(ma -> ma
-                        .field(field)
-                        .terms(fieldValues)
-                    )
-                )
-                .build();
+            NativeQuery query = makeElasticTermsQuery(searchType, field, values);
 
             if (searchType == SearchType.not) {
                 builder = builder.mustNot(query.getQuery());
@@ -180,6 +186,8 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
                 )
             )
             .build();
+        System.out.println(nativeQueryToJson(query));
+
 
         return builder.filter(query.getQuery());
     }

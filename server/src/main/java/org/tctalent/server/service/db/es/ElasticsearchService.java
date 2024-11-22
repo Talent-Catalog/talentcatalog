@@ -43,20 +43,6 @@ public interface ElasticsearchService {
       BoolQuery.Builder builder, String path, BoolQuery.Builder nestedQueryBuilder);
 
   /**
-   * Adds a terms filter to the Boolean query builder. The terms are combined according
-   * to the searchType
-   * @param builder Elastic Java API BoolQuery builder
-   * @param searchType Type of search - default is SearchType.and if null.
-   * @param field Field to check against
-   * @param values comparison values
-   * @return Updated builder - with filter added according to searchType
-   */
-  @NonNull
-  BoolQuery.Builder addElasticTermsFilter(
-      BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
-      Collection<Object> values);
-
-  /**
    * Adds a boolean query to the Boolean query builder.
    * @param builder Elastic Java API BoolQuery builder
    * @param searchType May be null, in which case default is SearchType.and which translates to
@@ -80,6 +66,24 @@ public interface ElasticsearchService {
    */
   @NonNull
   BoolQuery.Builder addElasticTermFilter(BoolQuery.Builder builder, String field, Object value);
+
+  /**
+   * Adds a terms filter to the Boolean query builder. The terms are combined according
+   * to the searchType
+   * @param builder Elastic Java API BoolQuery builder
+   * @param searchType Type of search - default is SearchType.and if null.
+   * @param field Field to check against
+   * @param values comparison values
+   * @return Updated builder - with filter added according to searchType
+   */
+  @NonNull
+  BoolQuery.Builder addElasticTermsFilter(
+      BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
+      Collection<Object> values);
+
+  @NonNull
+  NativeQuery makeElasticTermsQuery(
+      @Nullable SearchType searchType, String field, Collection<Object> values);
 
   /**
    * Adds a simple query string filter to the Boolean query builder.
