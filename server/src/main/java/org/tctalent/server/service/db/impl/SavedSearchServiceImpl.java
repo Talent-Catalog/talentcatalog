@@ -334,8 +334,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 candidateIds.add(candidate.getId());
             }
 
-            //Flush and clear persistence context to free up memory
-            persistenceContextHelper.flushAndClearEntityManager();
+            persistenceContextHelper.clearEntityManager(); // Detach in-memory managed entities
         } while (pageOfCandidates.hasNext());
         return candidateIds;
     }
@@ -697,7 +696,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
-                persistenceContextHelper.flushAndClearEntityManager();
+                persistenceContextHelper.clearEntityManager(); // Detach in-memory managed entities
                 Page<Candidate> result = doSearchCandidates(request);
                 setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {

@@ -39,8 +39,34 @@ public class PersistenceContextHelper {
   @PersistenceContext
   private EntityManager entityManager;
 
+  /**
+   * Flushes and clears the persistence context.
+   * <p>
+   * - Ensures all pending changes in the persistence context are written to the database.
+   * - Clears the persistence context, detaching all managed entities.
+   * <p>
+   * Use this method when you need to explicitly synchronize changes with the database
+   * and reset the persistence context to prevent memory overhead or side effects from managed entities.
+   * <p>
+   * Note: Requires an active transaction to execute successfully.
+   */
   public void flushAndClearEntityManager() {
     entityManager.flush();  // Flush changes to DB
     entityManager.clear();  // Clear in-memory persistence context
+  }
+
+  /**
+   * Clears the persistence context without flushing.
+   * <p>
+   * - Detaches all managed entities from the persistence context.
+   * - No changes are synchronized with the database.
+   * <p>
+   * Use this method to reset the persistence context when you want to avoid potential memory overhead
+   * or stale data issues, without committing changes to the database.
+   * <p>
+   * Note: Does not require an active transaction since no database operation is performed.
+   */
+  public void clearEntityManager() {
+    entityManager.clear();
   }
 }
