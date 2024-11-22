@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
@@ -201,17 +202,38 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     @NonNull
     @Override
-    public SearchHits<CandidateEs> searchCandidateEs(BoolQuery.Builder builder,
-        PageRequest pageRequest) {
+    public NativeQuery constructNativeQuery(
+        BoolQuery.Builder builder, @Nullable PageRequest pageRequest) {
 
-        final Query boolQuery = builder.build()._toQuery();
-        NativeQuery query = NativeQuery.builder()
-            .withQuery(boolQuery)
-            .withPageable(pageRequest)
-            .build();
+        NativeQueryBuilder nqBuilder = NativeQuery.builder()
+            .withQuery(builder.build()._toQuery());
+
+        if (pageRequest != null) {
+            nqBuilder = nqBuilder.withPageable(pageRequest);
+        }
+
+        return nqBuilder.build();
+    }
+
+    @Nullable
+    @Override
+    public String nativeQueryToJson(@Nullable NativeQuery nativeQuery) {
+        String json;
+        if (nativeQuery == null) {
+            json = null;
+        } else {
+            Query query = nativeQuery.getQuery();
+            json = query == null ? null : query.toString();
+        }
+        return json;
+    }
+
+    @NonNull
+    @Override
+    public SearchHits<CandidateEs> searchCandidateEs(NativeQuery nativeQuery) {
 
         // Convert query to a compact JSON string
-        String queryAsJson = boolQuery.toString();
+        String queryAsJson = nativeQueryToJson(nativeQuery);
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
@@ -222,10 +244,10 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
             .action("searchCandidateEs")
-            .message("Elasticsearch sort: " + pageRequest)
+            .message("Elasticsearch sort: " + nativeQuery.getPageable())
             .logInfo();
 
         return elasticsearchOperations.search(
-            query, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
+            nativeQuery, CandidateEs.class, IndexCoordinates.of(CandidateEs.INDEX_NAME));
     }
 }
