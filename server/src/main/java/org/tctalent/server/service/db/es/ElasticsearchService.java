@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.es;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import java.util.Collection;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -114,13 +115,28 @@ public interface ElasticsearchService {
       BoolQuery.Builder builder, String field, @Nullable Object min, @Nullable Object max);
 
   /**
-   * Searches for CandidateEs objects matching the given query
-   * @param builder BoolQuery builder containing query to execute
-   * @param pageRequest Optional page request containing sort and and paging info
+   * Builds the given builder and uses the resulting BooQuery and optional PageRequest to
+   * creat a NativeQuery.
+   * @param builder Builder
+   * @param pageRequest Optional PageRequest
+   * @return NativeQuery
+   */
+  @NonNull
+  NativeQuery constructNativeQuery(BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
+
+  /**
+   * Extracts the JSON query (if any) from the given native query.
+   * @param nativeQuery Native query
+   * @return JSON corresponding to underlying query - null if no query found
+   */
+  @Nullable
+  String nativeQueryToJson(@Nullable NativeQuery nativeQuery);
+
+  /**
+   * Searches for CandidateEs objects matching the given native query
+   * @param nativeQuery Native query to be executed
    * @return Results
    */
   @NonNull
-  SearchHits<CandidateEs> searchCandidateEs(
-      BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
-
+  SearchHits<CandidateEs> searchCandidateEs(NativeQuery nativeQuery);
 }

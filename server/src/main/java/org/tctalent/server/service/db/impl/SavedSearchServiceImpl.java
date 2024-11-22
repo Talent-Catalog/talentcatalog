@@ -49,6 +49,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.jpa.domain.Specification;
@@ -1823,8 +1824,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            SearchHits<CandidateEs> hits =
-                elasticsearchService.searchCandidateEs(boolQueryBuilder, req);
+            NativeQuery nativeQuery =
+                elasticsearchService.constructNativeQuery(boolQueryBuilder, req);
+            SearchHits<CandidateEs> hits = elasticsearchService.searchCandidateEs(nativeQuery);
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet

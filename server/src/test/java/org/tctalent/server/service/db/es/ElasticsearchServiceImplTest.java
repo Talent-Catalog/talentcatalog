@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.es.CandidateEs;
@@ -50,6 +51,9 @@ class ElasticsearchServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        candidateEsRepository.deleteByCandidateNumber("9999998");
+        candidateEsRepository.deleteByCandidateNumber("9999999");
+
         testCandidate = new CandidateEs();
         testCandidate.setCandidateNumber("9999998");
         testCandidate.setFirstName("Jim");
@@ -99,6 +103,8 @@ class ElasticsearchServiceImplTest {
 
         assertEquals("Jim", savedCandidate.getFirstName());
         assertEquals("Dim", savedCandidate.getLastName());
+
+        candidateEsRepository.delete(candidate);
     }
 
     @Test
@@ -108,8 +114,9 @@ class ElasticsearchServiceImplTest {
         builder = elasticsearchService.addElasticTermsFilter(builder,
             null, "firstName.keyword", Collections.singleton("Jim"));
 
-        SearchHits<CandidateEs> searchHits =
-            elasticsearchService.searchCandidateEs(builder, null);
+        NativeQuery nativeQuery =
+            elasticsearchService.constructNativeQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         assertTrue(searchHits.getTotalHits() > 0);
     }
@@ -122,8 +129,9 @@ class ElasticsearchServiceImplTest {
         builder = elasticsearchService.addElasticTermFilter(builder,
             "firstName.keyword", "Jim");
 
-        SearchHits<CandidateEs> searchHits =
-            elasticsearchService.searchCandidateEs(builder, null);
+        NativeQuery nativeQuery =
+            elasticsearchService.constructNativeQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         assertTrue(searchHits.getTotalHits() > 0);
     }
@@ -139,8 +147,9 @@ class ElasticsearchServiceImplTest {
         builder = elasticsearchService.addElasticExistsFilter(builder,
             null, "firstName");
 
-        SearchHits<CandidateEs> searchHits =
-            elasticsearchService.searchCandidateEs(builder, null);
+        NativeQuery nativeQuery =
+            elasticsearchService.constructNativeQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         assertTrue(searchHits.getTotalHits() > 0);
 
@@ -153,8 +162,9 @@ class ElasticsearchServiceImplTest {
         builder = elasticsearchService.addElasticRangeFilter(builder,
             "candidateNumber", "12344", "12346");
 
-        SearchHits<CandidateEs> searchHits =
-            elasticsearchService.searchCandidateEs(builder, null);
+        NativeQuery nativeQuery =
+            elasticsearchService.constructNativeQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         assertTrue(searchHits.getTotalHits() > 0);
     }
@@ -180,12 +190,17 @@ class ElasticsearchServiceImplTest {
         builder = elasticsearchService.addElasticNestedFilter(
             builder,"occupations", nestedQueryBuilder);
 
-        SearchHits<CandidateEs> searchHits =
-            elasticsearchService.searchCandidateEs(builder, null);
+        NativeQuery nativeQuery =
+            elasticsearchService.constructNativeQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         //There may be many occupations at least with 4 years or more experience,
         //but there should only be two that are Basket weaver or Snake charmers (Jim Dim and Joe Blow)
         assertEquals(2, searchHits.getTotalHits());
+
+        String expectJson = "Query: " + """
+            {"bool":{"filter":[{"nested":{"path":"occupations","query":{"bool":{"should":[{"bool":{"filter":[{"terms":{"occupations.name.keyword":["Basket weaver","Snake charmer"]}},{"range":{"occupations.yearsExperience":{"gte":4}}}]}}]}}}}]}}""";
+        assertEquals(expectJson, elasticsearchService.nativeQueryToJson(nativeQuery));
     }
 
     @Test
@@ -202,8 +217,9 @@ class ElasticsearchServiceImplTest {
         builder = elasticsearchService.addElasticNestedFilter(
             builder,"occupations", subQueryBuilder);
 
-        SearchHits<CandidateEs> searchHits =
-            elasticsearchService.searchCandidateEs(builder, null);
+        NativeQuery nativeQuery =
+            elasticsearchService.constructNativeQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         //There are two occupations at least with 4 years or more experience (Jim Dim and Joe Blow),
         //but there should only be one Basket weaver
