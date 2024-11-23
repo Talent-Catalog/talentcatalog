@@ -1041,7 +1041,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
                 BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
 
-                nq = elasticsearchService.makeElasticTermQuery(
+                nq = elasticsearchService.makeTermQuery(
                     "otherLanguages.name.keyword", otherLanguage.get().getName());
                 elasticsearchService.addConjunction(nestedQueryBuilder, nq);
 
@@ -1070,7 +1070,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
-            nq = elasticsearchService.makeElasticTermsQuery("masterId", candidateIds);
+            nq = elasticsearchService.makeTermsQuery("masterId", candidateIds);
             nq = elasticsearchService.negate(nq);
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
@@ -1079,7 +1079,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (candidateIds1 != null) {
             //Cast to Collection<Object> using Collections.unmodifiableCollection
             //See https://stackoverflow.com/a/63441108/929968
-            nq = elasticsearchService.makeElasticTermsQuery(
+            nq = elasticsearchService.makeTermsQuery(
                 "masterId", Collections.unmodifiableCollection(candidateIds1));
             if (SearchType.not.equals(searchType1)) {
                 nq = elasticsearchService.negate(nq);
@@ -1087,7 +1087,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
         if (candidateIds2 != null) {
-            nq = elasticsearchService.makeElasticTermsQuery(
+            nq = elasticsearchService.makeTermsQuery(
                 "masterId", Collections.unmodifiableCollection(candidateIds2));
             if (SearchType.not.equals(searchType2)) {
                 nq = elasticsearchService.negate(nq);
@@ -1111,7 +1111,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
                 //TODO JC I think we need to loop through reqOccupations here
                 //todo Perfect one for unit test
-                nq = elasticsearchService.makeElasticTermsQuery(
+                nq = elasticsearchService.makeTermsQuery(
                     "occupations.name.keyword", reqOccupations);
                 elasticsearchService.addConjunction(subQueryBuilder, nq);
                 if (minYrs != null || maxYrs != null) {
@@ -1142,7 +1142,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         if (!reqCountries.isEmpty()) {
-            nq = elasticsearchService.makeElasticTermsQuery("country.keyword", reqCountries);
+            nq = elasticsearchService.makeTermsQuery("country.keyword", reqCountries);
             if (SearchType.not.equals(request.getCountrySearchType())) {
                 nq = elasticsearchService.negate(nq);
             }
@@ -1159,7 +1159,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 reqNationalities.add(nationality.getName());
             }
             if (!reqNationalities.isEmpty()) {
-                nq = elasticsearchService.makeElasticTermsQuery(
+                nq = elasticsearchService.makeTermsQuery(
                     "nationality.keyword", reqNationalities);
                 if (SearchType.not.equals(request.getNationalitySearchType())) {
                     nq = elasticsearchService.negate(nq);
@@ -1177,7 +1177,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final Partner partner = partnerService.getPartner(id);
                 reqPartners.add(partner.getAbbreviation());
             }
-            nq = elasticsearchService.makeElasticTermsQuery("partner.keyword", reqPartners);
+            nq = elasticsearchService.makeTermsQuery("partner.keyword", reqPartners);
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
 
@@ -1189,7 +1189,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             for (CandidateStatus status : statuses) {
                 reqStatuses.add(status.name());
             }
-            nq = elasticsearchService.makeElasticTermsQuery("status.keyword", reqStatuses);
+            nq = elasticsearchService.makeTermsQuery("status.keyword", reqStatuses);
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
 
@@ -1201,7 +1201,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             for (UnhcrStatus unhcrStatus : unhcrStatuses) {
                 reqUnhcrStatuses.add(unhcrStatus.name());
             }
-            nq = elasticsearchService.makeElasticTermsQuery(
+            nq = elasticsearchService.makeTermsQuery(
                 "unhcrStatus.keyword", reqUnhcrStatuses);
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
@@ -1209,7 +1209,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Referrer
         String referrer = request.getRegoReferrerParam();
         if (referrer != null && !referrer.isEmpty()) {
-            nq = elasticsearchService.makeElasticTermQuery(
+            nq = elasticsearchService.makeTermQuery(
                 "regoReferrerParam.keyword", referrer);
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
@@ -1217,7 +1217,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Gender
         Gender gender = request.getGender();
         if (gender != null) {
-            nq = elasticsearchService.makeElasticTermQuery("gender", gender.name());
+            nq = elasticsearchService.makeTermQuery("gender", gender.name());
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
 
@@ -1238,7 +1238,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
                 reqEducations.add(educationMajor.getName());
             }
-            nq = elasticsearchService.makeElasticTermsQuery(
+            nq = elasticsearchService.makeTermsQuery(
                 "educationMajors.keyword", reqEducations);
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
@@ -1302,7 +1302,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         final List<Long> surveyTypeIds = request.getSurveyTypeIds();
         if (surveyTypeIds != null) {
             List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
-            nq = elasticsearchService.makeElasticTermsQuery("surveyType", surveyTypeObjList);
+            nq = elasticsearchService.makeTermsQuery("surveyType", surveyTypeObjList);
             elasticsearchService.addConjunction(boolQueryBuilder, nq);
         }
 

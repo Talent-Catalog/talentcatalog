@@ -43,7 +43,7 @@ class ElasticsearchServiceImplTest2 {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
         elasticsearchService.addConjunction(builder, nq);
 
@@ -57,7 +57,7 @@ class ElasticsearchServiceImplTest2 {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
         elasticsearchService.addConjunction(builder, nq);
 
@@ -75,7 +75,7 @@ class ElasticsearchServiceImplTest2 {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
-        nq = elasticsearchService.makeElasticTermQuery("firstName.keyword", "Jim");
+        nq = elasticsearchService.makeTermQuery("firstName.keyword", "Jim");
         elasticsearchService.addConjunction(builder, nq);
 
         nq = elasticsearchService.makeCompoundQuery(builder, null);
@@ -120,7 +120,7 @@ class ElasticsearchServiceImplTest2 {
         //Occupation name = Basket weaver and Years experience >= 4
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
         //TODO JC Think we have to loop through occupations
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
             "occupations.name.keyword", List.of("Basket weaver", "Snake charmer"));
         elasticsearchService.addConjunction(subQueryBuilder, nq);
         nq = elasticsearchService.makeRangeQuery(
@@ -145,7 +145,7 @@ class ElasticsearchServiceImplTest2 {
         NativeQuery nq;
         //Occupation name = Basket weaver and Years experience >= 4
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
-        nq = elasticsearchService.makeElasticTermQuery(
+        nq = elasticsearchService.makeTermQuery(
             "occupations.name.keyword", "Basket weaver");
         elasticsearchService.addConjunction(subQueryBuilder, nq);
         nq = elasticsearchService.makeRangeQuery(
@@ -165,7 +165,7 @@ class ElasticsearchServiceImplTest2 {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
@@ -186,7 +186,7 @@ class ElasticsearchServiceImplTest2 {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
@@ -206,7 +206,7 @@ class ElasticsearchServiceImplTest2 {
     void negate() {
 
         NativeQuery nq;
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
              "firstName.keyword", Collections.singleton("Jim"));
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 

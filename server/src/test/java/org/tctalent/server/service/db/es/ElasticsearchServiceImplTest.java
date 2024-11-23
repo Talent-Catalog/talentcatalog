@@ -111,7 +111,7 @@ class ElasticsearchServiceImplTest {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
         elasticsearchService.addConjunction(builder, nq);
 
@@ -128,7 +128,7 @@ class ElasticsearchServiceImplTest {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
         elasticsearchService.addConjunction(builder, nq);
 
@@ -147,14 +147,14 @@ class ElasticsearchServiceImplTest {
     @Test
     void addElasticTermFilter() {
 
+        NativeQuery nq;
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticTermFilter(builder,
-            "firstName.keyword", "Jim");
+        nq = elasticsearchService.makeTermQuery("firstName.keyword", "Jim");
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.makeCompoundQuery(builder, null);
-        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         assertTrue(searchHits.getTotalHits() > 0);
     }
@@ -166,13 +166,13 @@ class ElasticsearchServiceImplTest {
     @Test
     void addElasticExistsFilter() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
+        NativeQuery nq;
 
-        builder = elasticsearchService.addElasticExistsFilter(builder,
-            null, "firstName");
+        nq = elasticsearchService.makeExistsQuery("firstName");
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.makeCompoundQuery(builder, null);
-        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         assertTrue(searchHits.getTotalHits() > 0);
 
@@ -181,13 +181,13 @@ class ElasticsearchServiceImplTest {
     @Test
     void addElasticRangeFilter() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
-
-        builder = elasticsearchService.addElasticRangeFilter(builder,
+        NativeQuery nq;
+        nq = elasticsearchService.makeRangeQuery(
             "candidateNumber", "12344", "12346");
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.makeCompoundQuery(builder, null);
-        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         assertTrue(searchHits.getTotalHits() > 0);
     }
@@ -198,7 +198,7 @@ class ElasticsearchServiceImplTest {
         //Occupation name = Basket weaver and Years experience >= 4
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
         //TODO JC Think we have to loop through occupations
-        nq = elasticsearchService.makeElasticTermsQuery(
+        nq = elasticsearchService.makeTermsQuery(
             "occupations.name.keyword", List.of("Basket weaver", "Snake charmer"));
         elasticsearchService.addConjunction(subQueryBuilder, nq);
         nq = elasticsearchService.makeRangeQuery(
@@ -229,7 +229,7 @@ class ElasticsearchServiceImplTest {
         NativeQuery nq;
         //Occupation name = Basket weaver and Years experience >= 4
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
-        nq = elasticsearchService.makeElasticTermQuery(
+        nq = elasticsearchService.makeTermQuery(
             "occupations.name.keyword", "Basket weaver");
         elasticsearchService.addConjunction(subQueryBuilder, nq);
         nq = elasticsearchService.makeRangeQuery(

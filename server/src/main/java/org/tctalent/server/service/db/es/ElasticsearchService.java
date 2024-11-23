@@ -73,7 +73,7 @@ public interface ElasticsearchService {
 
   //TODO JC Doc
   @NonNull
-  NativeQuery makeElasticTermQuery(String field, Object value);
+  NativeQuery makeTermQuery(String field, Object value);
 
   /**
    * Adds a terms filter to the Boolean query builder. The terms are combined according
@@ -91,7 +91,7 @@ public interface ElasticsearchService {
 
   //TODO JC Doc
   @NonNull
-  NativeQuery makeElasticTermsQuery(String field, Collection<Object> values);
+  NativeQuery makeTermsQuery(String field, Collection<Object> values);
 
 
   /**

@@ -77,7 +77,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     @NonNull
     @Override
-    public NativeQuery makeElasticTermsQuery(String field,
+    public NativeQuery makeTermsQuery(String field,
         @NonNull Collection<Object> values) {
 
         //Construct the field values to be checked against
@@ -118,7 +118,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
         final int nValues = values.size();
         if (nValues > 0) {
-            NativeQuery query = makeElasticTermsQuery(field, values);
+            NativeQuery query = makeTermsQuery(field, values);
 
             if (searchType == SearchType.not) {
                 builder = builder.mustNot(query.getQuery());
@@ -150,7 +150,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     @NotNull
     @Override
-    public NativeQuery makeElasticTermQuery(String field, Object value) {
+    public NativeQuery makeTermQuery(String field, Object value) {
         //Build the native query
         return NativeQuery.builder()
             .withQuery(q -> q
