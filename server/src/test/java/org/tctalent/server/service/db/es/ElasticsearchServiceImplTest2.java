@@ -25,7 +25,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.tctalent.server.model.db.SearchType;
 
 class ElasticsearchServiceImplTest2 {
     ElasticsearchService elasticsearchService;
@@ -40,42 +39,47 @@ class ElasticsearchServiceImplTest2 {
     }
 
     @Test
-    void addElasticTermsFilter() {
+    void makeElasticTermsFilter() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticTermsFilter(builder,
-            null, "firstName.keyword", Collections.singleton("Jim"));
+        NativeQuery nq;
+        nq = elasticsearchService.makeElasticTermsQuery(
+            "firstName.keyword", Collections.singleton("Jim"));
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
 
-        System.out.println(elasticsearchService.nativeQueryToJson(nativeQuery));
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
     }
 
     @Test
-    void addElasticTermsFilterNegatedCompound() {
+    void makeElasticTermsFilterNegatedCompound() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticTermsFilter(builder,
-            null, "firstName.keyword", Collections.singleton("Jim"));
+        NativeQuery nq;
+        nq = elasticsearchService.makeElasticTermsQuery(
+            "firstName.keyword", Collections.singleton("Jim"));
+        elasticsearchService.addConjunction(builder, nq);
 
-        builder = elasticsearchService.addElasticRangeFilter(builder,
+        nq = elasticsearchService.makeRangeQuery(
             "candidateNumber", "12344", "12346");
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
     }
 
     @Test
-    void addElasticTermFilter() {
+    void makeElasticTermFilter() {
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticTermFilter(builder,
-            "firstName.keyword", "Jim");
+        NativeQuery nq;
+        nq = elasticsearchService.makeElasticTermQuery("firstName.keyword", "Jim");
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
     }
 
     @Test
@@ -86,11 +90,11 @@ class ElasticsearchServiceImplTest2 {
     void addElasticExistsFilter() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticExistsFilter(builder,
-            null, "firstName");
+        NativeQuery nq;
+        nq = elasticsearchService.makeExistsQuery("firstName");
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
 
     }
 
@@ -98,60 +102,117 @@ class ElasticsearchServiceImplTest2 {
     void addElasticRangeFilter() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticRangeFilter(builder,
+        NativeQuery nq;
+        nq = elasticsearchService.makeRangeQuery(
             "candidateNumber", "12344", "12346");
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
 
-        System.out.println(elasticsearchService.nativeQueryToJson(nativeQuery));
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
     }
 
     @Test
-    void addElasticNestedFilterTerms() {
+    void makeElasticNestedFilterTerms() {
 
+        NativeQuery nq;
         //Occupation name = Basket weaver and Years experience >= 4
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
-        subQueryBuilder = elasticsearchService.addElasticTermsFilter(subQueryBuilder,
-            null, "occupations.name.keyword",
-            List.of("Basket weaver", "Snake charmer"));
-        subQueryBuilder = elasticsearchService.addElasticRangeFilter(
-            subQueryBuilder, "occupations.yearsExperience", 4, null);
+        //TODO JC Think we have to loop through occupations
+        nq = elasticsearchService.makeElasticTermsQuery(
+            "occupations.name.keyword", List.of("Basket weaver", "Snake charmer"));
+        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        nq = elasticsearchService.makeRangeQuery(
+            "occupations.yearsExperience", 4, null);
 
-        //Or together above matching occupations and experience
-        //(Occupation = occ1 and Years exp1) or (Occupation = occ2 and Years exp2) or ...
-        BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
-        nestedQueryBuilder = elasticsearchService.addElasticBooleanFilter(
-            nestedQueryBuilder, SearchType.or, subQueryBuilder);
+        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-        builder = elasticsearchService.addElasticNestedFilter(
-            builder,"occupations", nestedQueryBuilder);
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
 
         String expectJson = "Query: " + """
             {"bool":{"filter":[{"nested":{"path":"occupations","query":{"bool":{"should":[{"bool":{"filter":[{"terms":{"occupations.name.keyword":["Basket weaver","Snake charmer"]}},{"range":{"occupations.yearsExperience":{"gte":4}}}]}}]}}}}]}}""";
-        assertEquals(expectJson, elasticsearchService.nativeQueryToJson(nativeQuery));
+        assertEquals(expectJson, elasticsearchService.nativeQueryToJson(nq));
     }
 
     @Test
-    void addElasticNestedFilterTerm() {
+    void makeElasticNestedFilterTerm() {
 
+        NativeQuery nq;
         //Occupation name = Basket weaver and Years experience >= 4
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
-        subQueryBuilder = elasticsearchService.addElasticTermFilter(subQueryBuilder,
-             "occupations.name.keyword", "Basket weaver");
-        subQueryBuilder = elasticsearchService.addElasticRangeFilter(
-            subQueryBuilder, "occupations.yearsExperience", 4, null);
+        nq = elasticsearchService.makeElasticTermQuery(
+            "occupations.name.keyword", "Basket weaver");
+        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        nq = elasticsearchService.makeRangeQuery(
+            "occupations.yearsExperience", 4, null);
+
+        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-        builder = elasticsearchService.addElasticNestedFilter(
-            builder,"occupations", subQueryBuilder);
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+    }
+
+    @Test
+    void addConjunction() {
+        BoolQuery.Builder builder = new BoolQuery.Builder();
+
+        NativeQuery nq;
+        nq = elasticsearchService.makeElasticTermsQuery(
+            "firstName.keyword", Collections.singleton("Jim"));
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
+        elasticsearchService.addConjunction(builder, nq);
+
+        nq = elasticsearchService.negate(nq);
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
+        elasticsearchService.addConjunction(builder, nq);
+
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
+    }
+
+    @Test
+    void addDisjunction() {
+        BoolQuery.Builder builder = new BoolQuery.Builder();
+
+        NativeQuery nq;
+        nq = elasticsearchService.makeElasticTermsQuery(
+            "firstName.keyword", Collections.singleton("Jim"));
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
+        elasticsearchService.addDisjunction(builder, nq);
+
+        nq = elasticsearchService.negate(nq);
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
+        elasticsearchService.addDisjunction(builder, nq);
+
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
+    }
+
+    @Test
+    void negate() {
+
+        NativeQuery nq;
+        nq = elasticsearchService.makeElasticTermsQuery(
+             "firstName.keyword", Collections.singleton("Jim"));
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
+        nq = elasticsearchService.negate(nq);
+
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
     }
 }

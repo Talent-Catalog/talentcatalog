@@ -77,7 +77,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     @NonNull
     @Override
-    public NativeQuery makeElasticTermsQuery(@Nullable SearchType searchType, String field,
+    public NativeQuery makeElasticTermsQuery(String field,
         @NonNull Collection<Object> values) {
 
         //Construct the field values to be checked against
@@ -94,6 +94,23 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
             ).build();
     }
 
+    @Override
+    public void addConjunction(BoolQuery.Builder builder, NativeQuery nq) {
+        builder.filter(nq.getQuery());
+    }
+
+    @Override
+    public void addDisjunction(BoolQuery.Builder builder, NativeQuery nq) {
+        builder.should(nq.getQuery());
+    }
+
+    @Override
+    public NativeQuery negate(NativeQuery nq) {
+        BoolQuery.Builder builder = new BoolQuery.Builder();
+        builder = builder.mustNot(nq.getQuery());
+        return makeCompoundQuery(builder, null);
+    }
+
     @NotNull
     public BoolQuery.Builder addElasticTermsFilter(
         BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
@@ -101,7 +118,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
         final int nValues = values.size();
         if (nValues > 0) {
-            NativeQuery query = makeElasticTermsQuery(searchType, field, values);
+            NativeQuery query = makeElasticTermsQuery(field, values);
 
             if (searchType == SearchType.not) {
                 builder = builder.mustNot(query.getQuery());
@@ -133,6 +150,20 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     @NotNull
     @Override
+    public NativeQuery makeElasticTermQuery(String field, Object value) {
+        //Build the native query
+        return NativeQuery.builder()
+            .withQuery(q -> q
+                .term(ma -> ma
+                    .field(field)
+                    .value(FieldValue.of(value))
+                )
+            )
+            .build();
+    }
+
+    @NotNull
+    @Override
     public BoolQuery.Builder addElasticSimpleQueryStringFilter(
         BoolQuery.Builder builder, @NonNull String simpleQueryString) {
         NativeQuery query = NativeQuery.builder()
@@ -144,6 +175,18 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
             .build();
 
         return builder.filter(query.getQuery());
+    }
+
+    @NotNull
+    @Override
+    public NativeQuery makeSimpleQueryStringQuery(@NotNull String simpleQueryString) {
+        return NativeQuery.builder()
+            .withQuery(q -> q
+                .simpleQueryString(ss -> ss
+                    .query(simpleQueryString)
+                )
+            )
+            .build();
     }
 
     @NotNull
@@ -169,7 +212,19 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     @NotNull
     @Override
-    public BoolQuery.Builder addElasticRangeFilter(BoolQuery.Builder builder, String field,
+    public NativeQuery makeExistsQuery(@NotNull String field) {
+        return NativeQuery.builder()
+            .withQuery(q -> q
+                .exists(ex -> ex
+                    .field(field)
+                )
+            )
+            .build();
+    }
+
+    @NotNull
+    @Override
+    public BoolQuery.Builder addElasticRangeFilter(BoolQuery.Builder builder, @NotNull String field,
         Object min, Object max) {
         NativeQuery query = NativeQuery.builder()
             .withQuery(q -> q
@@ -194,6 +249,27 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     @NotNull
     @Override
+    public NativeQuery makeRangeQuery(
+        @NotNull String field, @Nullable Object min, @Nullable Object max) {
+        return NativeQuery.builder()
+            .withQuery(q -> q
+                .range(ra -> {
+                        Builder build = ra.field(field);
+                        if (min != null) {
+                            build.gte(JsonData.of(min));
+                        }
+                        if (max != null) {
+                            build.lte(JsonData.of(max));
+                        }
+                        return build;
+                    }
+                )
+            )
+            .build();
+    }
+
+    @NotNull
+    @Override
     public BoolQuery.Builder addElasticNestedFilter(
         BoolQuery.Builder builder, String path, BoolQuery.Builder nestedQueryBuilder) {
         NativeQuery query = NativeQuery.builder()
@@ -208,9 +284,23 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         return builder.filter(query.getQuery());
     }
 
+    @NotNull
+    @Override
+    public NativeQuery makeNestedQuery(
+        @NonNull String path, @NonNull BoolQuery.Builder nestedQueryBuilder) {
+        return NativeQuery.builder()
+            .withQuery(q -> q
+                .nested(ne -> ne
+                    .path(path)
+                    .query(nestedQueryBuilder.build()._toQuery())
+                )
+            )
+            .build();
+    }
+
     @NonNull
     @Override
-    public NativeQuery constructNativeQuery(
+    public NativeQuery makeCompoundQuery(
         BoolQuery.Builder builder, @Nullable PageRequest pageRequest) {
 
         NativeQueryBuilder nqBuilder = NativeQuery.builder()

@@ -42,6 +42,10 @@ public interface ElasticsearchService {
   BoolQuery.Builder addElasticNestedFilter(
       BoolQuery.Builder builder, String path, BoolQuery.Builder nestedQueryBuilder);
 
+  //TODO JC Doc
+  @NonNull
+  NativeQuery makeNestedQuery(@NonNull String path, @NonNull BoolQuery.Builder nestedQueryBuilder);
+
   /**
    * Adds a boolean query to the Boolean query builder.
    * @param builder Elastic Java API BoolQuery builder
@@ -67,6 +71,10 @@ public interface ElasticsearchService {
   @NonNull
   BoolQuery.Builder addElasticTermFilter(BoolQuery.Builder builder, String field, Object value);
 
+  //TODO JC Doc
+  @NonNull
+  NativeQuery makeElasticTermQuery(String field, Object value);
+
   /**
    * Adds a terms filter to the Boolean query builder. The terms are combined according
    * to the searchType
@@ -81,9 +89,26 @@ public interface ElasticsearchService {
       BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
       Collection<Object> values);
 
+  //TODO JC Doc
   @NonNull
-  NativeQuery makeElasticTermsQuery(
-      @Nullable SearchType searchType, String field, Collection<Object> values);
+  NativeQuery makeElasticTermsQuery(String field, Collection<Object> values);
+
+
+  /**
+   * Builds the given builder and uses the resulting BooQuery and optional PageRequest to
+   * creat a NativeQuery.
+   * @param builder Builder
+   * @param pageRequest Optional PageRequest
+   * @return NativeQuery
+   */
+  @NonNull
+  NativeQuery makeCompoundQuery(BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
+
+  void addConjunction(BoolQuery.Builder builder, NativeQuery nq);
+  void addDisjunction(BoolQuery.Builder builder, NativeQuery nq);
+  NativeQuery negate(NativeQuery nq);
+
+
 
   /**
    * Adds a simple query string filter to the Boolean query builder.
@@ -94,6 +119,10 @@ public interface ElasticsearchService {
   @NonNull
   BoolQuery.Builder addElasticSimpleQueryStringFilter(
       BoolQuery.Builder builder, @NonNull String simpleQueryString);
+
+  //TODO JC Doc
+  @NonNull
+  NativeQuery makeSimpleQueryStringQuery(@NonNull String simpleQueryString);
 
   /**
    * Adds an exists filter to the Boolean query builder.
@@ -106,6 +135,10 @@ public interface ElasticsearchService {
   BoolQuery.Builder addElasticExistsFilter(
       BoolQuery.Builder builder, @Nullable SearchType searchType, @NonNull String field);
 
+  //TODO JC Doc
+  @NonNull
+  NativeQuery makeExistsQuery(@NonNull String field);
+
   /**
    * Adds a range filter to the Boolean query builder.
    * @param builder Elastic Java API BoolQuery builder
@@ -116,17 +149,11 @@ public interface ElasticsearchService {
    */
   @NonNull
   BoolQuery.Builder addElasticRangeFilter(
-      BoolQuery.Builder builder, String field, @Nullable Object min, @Nullable Object max);
+      BoolQuery.Builder builder, @NonNull String field, @Nullable Object min, @Nullable Object max);
 
-  /**
-   * Builds the given builder and uses the resulting BooQuery and optional PageRequest to
-   * creat a NativeQuery.
-   * @param builder Builder
-   * @param pageRequest Optional PageRequest
-   * @return NativeQuery
-   */
+  //TODO JC Doc
   @NonNull
-  NativeQuery constructNativeQuery(BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
+  NativeQuery makeRangeQuery(@NonNull String field, @Nullable Object min, @Nullable Object max);
 
   /**
    * Extracts the JSON query (if any) from the given native query.

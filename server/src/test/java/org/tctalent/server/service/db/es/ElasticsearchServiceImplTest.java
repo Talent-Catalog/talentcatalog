@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.es.CandidateEs.Occupation;
 import org.tctalent.server.repository.es.CandidateEsRepository;
@@ -111,12 +110,15 @@ class ElasticsearchServiceImplTest {
     void addElasticTermsFilter() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticTermsFilter(builder,
-            null, "firstName.keyword", Collections.singleton("Jim"));
+        NativeQuery nq;
+        nq = elasticsearchService.makeElasticTermsQuery(
+            "firstName.keyword", Collections.singleton("Jim"));
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
-        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         assertTrue(searchHits.getTotalHits() > 0);
     }
@@ -125,15 +127,19 @@ class ElasticsearchServiceImplTest {
     void addElasticTermsFilterNegatedCompound() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
-        builder = elasticsearchService.addElasticTermsFilter(builder,
-            null, "firstName.keyword", Collections.singleton("Jim"));
+        NativeQuery nq;
+        nq = elasticsearchService.makeElasticTermsQuery(
+            "firstName.keyword", Collections.singleton("Jim"));
+        elasticsearchService.addConjunction(builder, nq);
 
-        builder = elasticsearchService.addElasticRangeFilter(builder,
+        nq = elasticsearchService.makeRangeQuery(
             "candidateNumber", "12344", "12346");
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
-        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        System.out.println(elasticsearchService.nativeQueryToJson(nq));
+
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         assertTrue(searchHits.getTotalHits() > 0);
     }
@@ -147,7 +153,7 @@ class ElasticsearchServiceImplTest {
             "firstName.keyword", "Jim");
 
         NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+            elasticsearchService.makeCompoundQuery(builder, null);
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         assertTrue(searchHits.getTotalHits() > 0);
@@ -165,7 +171,7 @@ class ElasticsearchServiceImplTest {
             null, "firstName");
 
         NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+            elasticsearchService.makeCompoundQuery(builder, null);
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         assertTrue(searchHits.getTotalHits() > 0);
@@ -180,7 +186,7 @@ class ElasticsearchServiceImplTest {
             "candidateNumber", "12344", "12346");
 
         NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
+            elasticsearchService.makeCompoundQuery(builder, null);
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
 
         assertTrue(searchHits.getTotalHits() > 0);
@@ -188,28 +194,25 @@ class ElasticsearchServiceImplTest {
 
     @Test
     void addElasticNestedFilterTerms() {
-
+        NativeQuery nq;
         //Occupation name = Basket weaver and Years experience >= 4
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
-        subQueryBuilder = elasticsearchService.addElasticTermsFilter(subQueryBuilder,
-            null, "occupations.name.keyword",
-            List.of("Basket weaver", "Snake charmer"));
-        subQueryBuilder = elasticsearchService.addElasticRangeFilter(
-            subQueryBuilder, "occupations.yearsExperience", 4, null);
+        //TODO JC Think we have to loop through occupations
+        nq = elasticsearchService.makeElasticTermsQuery(
+            "occupations.name.keyword", List.of("Basket weaver", "Snake charmer"));
+        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        nq = elasticsearchService.makeRangeQuery(
+            "occupations.yearsExperience", 4, null);
 
-        //Or together above matching occupations and experience
-        //(Occupation = occ1 and Years exp1) or (Occupation = occ2 and Years exp2) or ...
-        BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
-        nestedQueryBuilder = elasticsearchService.addElasticBooleanFilter(
-            nestedQueryBuilder, SearchType.or, subQueryBuilder);
+        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-        builder = elasticsearchService.addElasticNestedFilter(
-            builder,"occupations", nestedQueryBuilder);
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
-        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         //There may be many occupations at least with 4 years or more experience,
         //but there should only be two that are Basket weaver or Snake charmers (Jim Dim and Joe Blow)
@@ -217,26 +220,29 @@ class ElasticsearchServiceImplTest {
 
         String expectJson = "Query: " + """
             {"bool":{"filter":[{"nested":{"path":"occupations","query":{"bool":{"should":[{"bool":{"filter":[{"terms":{"occupations.name.keyword":["Basket weaver","Snake charmer"]}},{"range":{"occupations.yearsExperience":{"gte":4}}}]}}]}}}}]}}""";
-        assertEquals(expectJson, elasticsearchService.nativeQueryToJson(nativeQuery));
+        assertEquals(expectJson, elasticsearchService.nativeQueryToJson(nq));
     }
 
     @Test
     void addElasticNestedFilterTerm() {
 
+        NativeQuery nq;
         //Occupation name = Basket weaver and Years experience >= 4
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
-        subQueryBuilder = elasticsearchService.addElasticTermFilter(subQueryBuilder,
-             "occupations.name.keyword", "Basket weaver");
-        subQueryBuilder = elasticsearchService.addElasticRangeFilter(
-            subQueryBuilder, "occupations.yearsExperience", 4, null);
+        nq = elasticsearchService.makeElasticTermQuery(
+            "occupations.name.keyword", "Basket weaver");
+        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        nq = elasticsearchService.makeRangeQuery(
+            "occupations.yearsExperience", 4, null);
+
+        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-        builder = elasticsearchService.addElasticNestedFilter(
-            builder,"occupations", subQueryBuilder);
+        elasticsearchService.addConjunction(builder, nq);
 
-        NativeQuery nativeQuery =
-            elasticsearchService.constructNativeQuery(builder, null);
-        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nativeQuery);
+        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         //There are two occupations at least with 4 years or more experience (Jim Dim and Joe Blow),
         //but there should only be one Basket weaver
