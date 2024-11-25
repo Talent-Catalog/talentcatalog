@@ -19,29 +19,57 @@ package org.tctalent.server.response;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.CouponStatus;
 
+/**
+ * Represents a response object for Duolingo coupons.
+ * This class contains details about a Duolingo coupon, such as its code,
+ * expiration date, and status, which are returned to the client.
+ */
 @Getter
 @Setter
 public class DuolingoCouponResponse {
+
+  /** The unique identifier of the Duolingo coupon. */
   private Long id;
+
+  /** The unique code of the Duolingo coupon. */
   private String couponCode;
-  private String assigneeEmail;
+
+  /** The expiration date and time of the coupon. */
   private LocalDateTime expirationDate;
+
+  /** The date and time when the coupon was sent to the assignee, if applicable. */
   private LocalDateTime dateSent;
-  private String couponStatus;
+
+  /** The current status of the coupon (e.g., "Active", "Redeemed", "Expired"). */
+  private CouponStatus couponStatus;
+
+  /** The test status associated with the coupon (e.g., "Test Started", "Test Completed"). */
   private String testStatus;
-  // Constructor, getters, and setters
-  public DuolingoCouponResponse(Long id,String couponCode, String assigneeEmail, LocalDateTime expirationDate,
-      LocalDateTime dateSent, String couponStatus, String testStatus) {
+
+  /**
+   * Constructs a new DuolingoCouponResponse object with the specified details.
+   *
+   * @param id            the unique identifier of the coupon
+   * @param couponCode    the unique code of the coupon
+   * @param expirationDate the expiration date and time of the coupon
+   * @param dateSent      the date and time when the coupon was sent
+   * @param couponStatus  the current status of the coupon
+   * @param testStatus    the test status associated with the coupon
+   */
+  public DuolingoCouponResponse(
+      Long id,
+      String couponCode,
+      LocalDateTime expirationDate,
+      LocalDateTime dateSent,
+      CouponStatus couponStatus,
+      String testStatus) {
     this.id = id;
     this.couponCode = couponCode;
-    this.assigneeEmail = assigneeEmail;
     this.expirationDate = expirationDate;
     this.dateSent = dateSent;
     this.couponStatus = couponStatus;
     this.testStatus = testStatus;
   }
-
 }
-
-
