@@ -45,9 +45,9 @@ class ElasticsearchServiceImplTest2 {
         NativeQuery nq;
         nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
 
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
     }
@@ -59,13 +59,13 @@ class ElasticsearchServiceImplTest2 {
         NativeQuery nq;
         nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
         nq = elasticsearchService.makeRangeQuery(
             "candidateNumber", "12344", "12346");
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
     }
 
@@ -76,9 +76,9 @@ class ElasticsearchServiceImplTest2 {
 
         NativeQuery nq;
         nq = elasticsearchService.makeTermQuery("firstName.keyword", "Jim");
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
     }
 
@@ -92,9 +92,9 @@ class ElasticsearchServiceImplTest2 {
 
         NativeQuery nq;
         nq = elasticsearchService.makeExistsQuery("firstName");
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
 
     }
 
@@ -105,9 +105,9 @@ class ElasticsearchServiceImplTest2 {
         NativeQuery nq;
         nq = elasticsearchService.makeRangeQuery(
             "candidateNumber", "12344", "12346");
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
 
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
@@ -122,17 +122,17 @@ class ElasticsearchServiceImplTest2 {
         //TODO JC Think we have to loop through occupations
         nq = elasticsearchService.makeTermsQuery(
             "occupations.name.keyword", List.of("Basket weaver", "Snake charmer"));
-        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        elasticsearchService.addAnd(subQueryBuilder, nq);
         nq = elasticsearchService.makeRangeQuery(
             "occupations.yearsExperience", 4, null);
 
-        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        elasticsearchService.addAnd(subQueryBuilder, nq);
         nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
 
         String expectJson = "Query: " + """
             {"bool":{"filter":[{"nested":{"path":"occupations","query":{"bool":{"should":[{"bool":{"filter":[{"terms":{"occupations.name.keyword":["Basket weaver","Snake charmer"]}},{"range":{"occupations.yearsExperience":{"gte":4}}}]}}]}}}}]}}""";
@@ -147,21 +147,21 @@ class ElasticsearchServiceImplTest2 {
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
         nq = elasticsearchService.makeTermQuery(
             "occupations.name.keyword", "Basket weaver");
-        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        elasticsearchService.addAnd(subQueryBuilder, nq);
         nq = elasticsearchService.makeRangeQuery(
             "occupations.yearsExperience", 4, null);
 
-        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        elasticsearchService.addAnd(subQueryBuilder, nq);
         nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
     }
 
     @Test
-    void addConjunction() {
+    void addAnd() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
@@ -169,20 +169,20 @@ class ElasticsearchServiceImplTest2 {
             "firstName.keyword", Collections.singleton("Jim"));
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.negate(nq);
+        nq = elasticsearchService.not(nq);
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
     }
 
     @Test
-    void addDisjunction() {
+    void addOr() {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         NativeQuery nq;
@@ -190,27 +190,27 @@ class ElasticsearchServiceImplTest2 {
             "firstName.keyword", Collections.singleton("Jim"));
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
-        elasticsearchService.addDisjunction(builder, nq);
+        elasticsearchService.addOr(builder, nq);
 
-        nq = elasticsearchService.negate(nq);
+        nq = elasticsearchService.not(nq);
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
-        elasticsearchService.addDisjunction(builder, nq);
+        elasticsearchService.addOr(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
     }
 
     @Test
-    void negate() {
+    void not() {
 
         NativeQuery nq;
         nq = elasticsearchService.makeTermsQuery(
              "firstName.keyword", Collections.singleton("Jim"));
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
-        nq = elasticsearchService.negate(nq);
+        nq = elasticsearchService.not(nq);
 
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 

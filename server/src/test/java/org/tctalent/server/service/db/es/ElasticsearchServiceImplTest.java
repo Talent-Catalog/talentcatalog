@@ -113,9 +113,9 @@ class ElasticsearchServiceImplTest {
         NativeQuery nq;
         nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
 
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
@@ -130,13 +130,13 @@ class ElasticsearchServiceImplTest {
         NativeQuery nq;
         nq = elasticsearchService.makeTermsQuery(
             "firstName.keyword", Collections.singleton("Jim"));
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
         nq = elasticsearchService.makeRangeQuery(
             "candidateNumber", "12344", "12346");
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         System.out.println(elasticsearchService.nativeQueryToJson(nq));
 
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
@@ -151,9 +151,9 @@ class ElasticsearchServiceImplTest {
         BoolQuery.Builder builder = new BoolQuery.Builder();
 
         nq = elasticsearchService.makeTermQuery("firstName.keyword", "Jim");
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         assertTrue(searchHits.getTotalHits() > 0);
@@ -169,9 +169,9 @@ class ElasticsearchServiceImplTest {
         NativeQuery nq;
 
         nq = elasticsearchService.makeExistsQuery("firstName");
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         assertTrue(searchHits.getTotalHits() > 0);
@@ -184,9 +184,9 @@ class ElasticsearchServiceImplTest {
         NativeQuery nq;
         nq = elasticsearchService.makeRangeQuery(
             "candidateNumber", "12344", "12346");
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         assertTrue(searchHits.getTotalHits() > 0);
@@ -200,17 +200,17 @@ class ElasticsearchServiceImplTest {
         //TODO JC Think we have to loop through occupations
         nq = elasticsearchService.makeTermsQuery(
             "occupations.name.keyword", List.of("Basket weaver", "Snake charmer"));
-        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        elasticsearchService.addAnd(subQueryBuilder, nq);
         nq = elasticsearchService.makeRangeQuery(
             "occupations.yearsExperience", 4, null);
 
-        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        elasticsearchService.addAnd(subQueryBuilder, nq);
         nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
 
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
@@ -231,17 +231,17 @@ class ElasticsearchServiceImplTest {
         BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
         nq = elasticsearchService.makeTermQuery(
             "occupations.name.keyword", "Basket weaver");
-        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        elasticsearchService.addAnd(subQueryBuilder, nq);
         nq = elasticsearchService.makeRangeQuery(
             "occupations.yearsExperience", 4, null);
 
-        elasticsearchService.addConjunction(subQueryBuilder, nq);
+        elasticsearchService.addAnd(subQueryBuilder, nq);
         nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
 
         BoolQuery.Builder builder = new BoolQuery.Builder();
-        elasticsearchService.addConjunction(builder, nq);
+        elasticsearchService.addAnd(builder, nq);
 
-        nq = elasticsearchService.makeCompoundQuery(builder, null);
+        nq = elasticsearchService.makeCompoundQuery(builder);
         SearchHits<CandidateEs> searchHits = elasticsearchService.searchCandidateEs(nq);
 
         //There are two occupations at least with 4 years or more experience (Jim Dim and Joe Blow),

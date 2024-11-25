@@ -148,7 +148,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
     private final PartnerService partnerService;
-    private final ElasticsearchService elasticsearchService;
+    private final ElasticsearchService esService;
     private final EmailHelper emailHelper;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -994,8 +994,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         // Not every base search will contain an elastic search term, since we're processing
         // joined regular searches here too — so we need a safe escape here
         if (simpleQueryString != null && !simpleQueryString.isEmpty()) {
-            nq = elasticsearchService.makeSimpleQueryStringQuery(simpleQueryString);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            nq = esService.makeSimpleStringQuery(simpleQueryString);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Add filters - each filter must return true for a hit
@@ -1015,22 +1015,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (minAge != null || maxAge != null) {
             String maxAgeDob = constructDobFilter(maxAge);
             String minAgeDob = constructDobFilter(minAge);
-            nq = elasticsearchService.makeRangeQuery("dob", maxAgeDob, minAgeDob);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            nq = esService.makeRangeQuery("dob", maxAgeDob, minAgeDob);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //English levels
         Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
         if (minSpokenLevel != null) {
-            nq = elasticsearchService.makeRangeQuery(
+            nq = esService.makeRangeQuery(
                 "minEnglishSpokenLevel", minSpokenLevel, null);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
         Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
         if (minWrittenLevel != null) {
-            nq = elasticsearchService.makeRangeQuery(
+            nq = esService.makeRangeQuery(
                 "minEnglishWrittenLevel", minWrittenLevel, null);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Other languages
@@ -1041,27 +1041,27 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
                 BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
 
-                nq = elasticsearchService.makeTermQuery(
+                nq = esService.makeTermQuery(
                     "otherLanguages.name.keyword", otherLanguage.get().getName());
-                elasticsearchService.addConjunction(nestedQueryBuilder, nq);
+                esService.addAnd(nestedQueryBuilder, nq);
 
                 Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
                 if (minOtherSpokenLevel != null) {
-                    nq = elasticsearchService.makeRangeQuery(
+                    nq = esService.makeRangeQuery(
                         "otherLanguages.minSpokenLevel", minOtherSpokenLevel, null);
-                    elasticsearchService.addConjunction(nestedQueryBuilder, nq);
+                    esService.addAnd(nestedQueryBuilder, nq);
                 }
 
                 Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
                 if (minOtherWrittenLevel != null) {
-                    nq = elasticsearchService.makeRangeQuery(
+                    nq = esService.makeRangeQuery(
                         "otherLanguages.minWrittenLevel", minOtherWrittenLevel, null);
-                    elasticsearchService.addConjunction(nestedQueryBuilder, nq);
+                    esService.addAnd(nestedQueryBuilder, nq);
                 }
 
-                nq = elasticsearchService.makeNestedQuery(
+                nq = esService.makeNestedQuery(
                     "otherLanguages", nestedQueryBuilder);
-                elasticsearchService.addConjunction(boolQueryBuilder, nq);
+                esService.addAnd(boolQueryBuilder, nq);
             }
 
         }
@@ -1070,29 +1070,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (excludedCandidates != null && !excludedCandidates.isEmpty()) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
-            nq = elasticsearchService.makeTermsQuery("masterId", candidateIds);
-            nq = elasticsearchService.negate(nq);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            nq = esService.makeTermsQuery("masterId", candidateIds);
+            nq = esService.not(nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //List any and all candidates
         if (candidateIds1 != null) {
             //Cast to Collection<Object> using Collections.unmodifiableCollection
             //See https://stackoverflow.com/a/63441108/929968
-            nq = elasticsearchService.makeTermsQuery(
+            nq = esService.makeTermsQuery(
                 "masterId", Collections.unmodifiableCollection(candidateIds1));
             if (SearchType.not.equals(searchType1)) {
-                nq = elasticsearchService.negate(nq);
+                nq = esService.not(nq);
             }
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
         if (candidateIds2 != null) {
-            nq = elasticsearchService.makeTermsQuery(
+            nq = esService.makeTermsQuery(
                 "masterId", Collections.unmodifiableCollection(candidateIds2));
             if (SearchType.not.equals(searchType2)) {
-                nq = elasticsearchService.negate(nq);
+                nq = esService.not(nq);
             }
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Occupations
@@ -1111,16 +1111,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
                 //TODO JC I think we need to loop through reqOccupations here
                 //todo Perfect one for unit test
-                nq = elasticsearchService.makeTermsQuery(
+                nq = esService.makeTermsQuery(
                     "occupations.name.keyword", reqOccupations);
-                elasticsearchService.addConjunction(subQueryBuilder, nq);
+                esService.addAnd(subQueryBuilder, nq);
                 if (minYrs != null || maxYrs != null) {
-                    nq = elasticsearchService.makeRangeQuery(
+                    nq = esService.makeRangeQuery(
                         "occupations.yearsExperience", minYrs, maxYrs);
-                    elasticsearchService.addConjunction(subQueryBuilder, nq);
+                    esService.addAnd(subQueryBuilder, nq);
                 }
-                nq = elasticsearchService.makeNestedQuery("occupations", subQueryBuilder);
-                elasticsearchService.addConjunction(boolQueryBuilder, nq);
+                nq = esService.makeNestedQuery("occupations", subQueryBuilder);
+                esService.addAnd(boolQueryBuilder, nq);
             }
         }
 
@@ -1142,11 +1142,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         if (!reqCountries.isEmpty()) {
-            nq = elasticsearchService.makeTermsQuery("country.keyword", reqCountries);
+            nq = esService.makeTermsQuery("country.keyword", reqCountries);
             if (SearchType.not.equals(request.getCountrySearchType())) {
-                nq = elasticsearchService.negate(nq);
+                nq = esService.not(nq);
             }
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Nationalities
@@ -1159,12 +1159,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 reqNationalities.add(nationality.getName());
             }
             if (!reqNationalities.isEmpty()) {
-                nq = elasticsearchService.makeTermsQuery(
+                nq = esService.makeTermsQuery(
                     "nationality.keyword", reqNationalities);
                 if (SearchType.not.equals(request.getNationalitySearchType())) {
-                    nq = elasticsearchService.negate(nq);
+                    nq = esService.not(nq);
                 }
-                elasticsearchService.addConjunction(boolQueryBuilder, nq);
+                esService.addAnd(boolQueryBuilder, nq);
             }
         }
 
@@ -1177,8 +1177,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final Partner partner = partnerService.getPartner(id);
                 reqPartners.add(partner.getAbbreviation());
             }
-            nq = elasticsearchService.makeTermsQuery("partner.keyword", reqPartners);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            nq = esService.makeTermsQuery("partner.keyword", reqPartners);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Statuses
@@ -1189,8 +1189,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             for (CandidateStatus status : statuses) {
                 reqStatuses.add(status.name());
             }
-            nq = elasticsearchService.makeTermsQuery("status.keyword", reqStatuses);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            nq = esService.makeTermsQuery("status.keyword", reqStatuses);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //UNHCR Statuses
@@ -1201,32 +1201,32 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             for (UnhcrStatus unhcrStatus : unhcrStatuses) {
                 reqUnhcrStatuses.add(unhcrStatus.name());
             }
-            nq = elasticsearchService.makeTermsQuery(
+            nq = esService.makeTermsQuery(
                 "unhcrStatus.keyword", reqUnhcrStatuses);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Referrer
         String referrer = request.getRegoReferrerParam();
         if (referrer != null && !referrer.isEmpty()) {
-            nq = elasticsearchService.makeTermQuery(
+            nq = esService.makeTermQuery(
                 "regoReferrerParam.keyword", referrer);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Gender
         Gender gender = request.getGender();
         if (gender != null) {
-            nq = elasticsearchService.makeTermQuery("gender", gender.name());
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            nq = esService.makeTermQuery("gender", gender.name());
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Education Level (minimum)
         Integer minEducationLevel = request.getMinEducationLevel();
         if (minEducationLevel != null) {
-            nq = elasticsearchService.makeRangeQuery(
+            nq = esService.makeRangeQuery(
                 "maxEducationLevel", minEducationLevel, null);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Educations
@@ -1238,9 +1238,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
                 reqEducations.add(educationMajor.getName());
             }
-            nq = elasticsearchService.makeTermsQuery(
+            nq = esService.makeTermsQuery(
                 "educationMajors.keyword", reqEducations);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Mini Intake
@@ -1252,11 +1252,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             } else {
                 searchType = SearchType.not;
             }
-            nq = elasticsearchService.makeExistsQuery("miniIntakeCompletedDate");
+            nq = esService.makeExistsQuery("miniIntakeCompletedDate");
             if (SearchType.not.equals(searchType)) {
-                nq = elasticsearchService.negate(nq);
+                nq = esService.not(nq);
             }
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Full Intake
@@ -1268,11 +1268,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             } else {
                 searchType = SearchType.not;
             }
-            nq = elasticsearchService.makeExistsQuery("fullIntakeCompletedDate");
+            nq = esService.makeExistsQuery("fullIntakeCompletedDate");
             if (SearchType.not.equals(searchType)) {
-                nq = elasticsearchService.negate(nq);
+                nq = esService.not(nq);
             }
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         // Last Modified
@@ -1293,17 +1293,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     ZoneOffset.UTC
                 ).toInstant().toEpochMilli();
 
-            nq = elasticsearchService.makeRangeQuery(
+            nq = esService.makeRangeQuery(
                 "updated", lastModifiedFrom, lastModifiedTo);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         // Survey types
         final List<Long> surveyTypeIds = request.getSurveyTypeIds();
         if (surveyTypeIds != null) {
             List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
-            nq = elasticsearchService.makeTermsQuery("surveyType", surveyTypeObjList);
-            elasticsearchService.addConjunction(boolQueryBuilder, nq);
+            nq = esService.makeTermsQuery("surveyType", surveyTypeObjList);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         return boolQueryBuilder;
@@ -1838,9 +1838,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            NativeQuery nativeQuery =
-                elasticsearchService.makeCompoundQuery(boolQueryBuilder, req);
-            SearchHits<CandidateEs> hits = elasticsearchService.searchCandidateEs(nativeQuery);
+            NativeQuery nativeQuery = esService.makeCompoundQueryWithPaging(boolQueryBuilder, req);
+            SearchHits<CandidateEs> hits = esService.searchCandidateEs(nativeQuery);
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
