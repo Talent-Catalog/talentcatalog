@@ -3,6 +3,8 @@ package org.tctalent.server.service.db;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.model.db.CouponStatus;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.response.DuolingoCouponResponse;
 
@@ -23,7 +25,7 @@ public interface DuolingoCouponService {
    *
    * @param file the MultipartFile representing the CSV file to import.
    */
-  void importCoupons(MultipartFile file);
+  void importCoupons(MultipartFile file) throws ImportFailedException;
 
   /**
    * Assigns an available coupon to a specified candidate.
@@ -56,7 +58,7 @@ public interface DuolingoCouponService {
    * @param couponCode the unique code identifying the coupon to update.
    * @param status the new status to be assigned to the coupon.
    */
-  void updateCouponStatus(String couponCode, String status);
+  void updateCouponStatus(String couponCode, CouponStatus status);
 
   /**
    * Retrieves all available (unassigned) coupons.
