@@ -27,11 +27,18 @@ import {
   checkForOverdue,
   TaskAssignment
 } from "../model/task-assignment";
+import {CandidateOpportunity} from "../model/candidate-opportunity";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CandidateFieldService {
+
+  private candidateSource: CandidateSource;
+
+  setCandidateSource(source: CandidateSource) {
+    this.candidateSource = source;
+  }
 
   //Note - if you want to use any other pipes for formatting, you also need to
   //add them to providers array in app.module.ts.
@@ -69,6 +76,14 @@ export class CandidateFieldService {
     return this.getIntakeDates(value);
   }
 
+  private nextStepFormatter = (value) => {
+    return this.getNextStep(value);
+  }
+
+  private addedByFormatter = (value) => {
+    return this.getAddedBy(value);
+  }
+
   private allDisplayableFields = [];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
@@ -100,7 +115,7 @@ export class CandidateFieldService {
   constructor(
     private authService: AuthorizationService,
     private datePipe: DatePipe,
-    private titleCasePipe: TitleCasePipe
+    private titleCasePipe: TitleCasePipe,
   ) {
 
   this.allDisplayableFields = [
@@ -146,12 +161,14 @@ export class CandidateFieldService {
         this.ieltsScoreFormatter, null, true),
       new CandidateFieldInfo("NCLC Score", "frenchAssessmentScoreNclc", null,
         this.nclcScoreFormatter, null, true),
-    new CandidateFieldInfo("Legal status", "residenceStatus", null,
+      new CandidateFieldInfo("Legal status", "residenceStatus", null,
         this.residenceStatusFormatter, null, true),
       new CandidateFieldInfo("Dependants", "numberDependants", null,
         null, null, true),
-      new CandidateFieldInfo("NextStep", "candidateOpportunities.nextStep", null,
-      null, null, true),
+      new CandidateFieldInfo("Next Step", "candidateOpportunities.nextStep", null,
+      this.nextStepFormatter, null, true),
+      new CandidateFieldInfo("Added By", "candidateOpportunities.createdBy", null,
+      this.addedByFormatter, null, true),
       new CandidateFieldInfo("Latest Intake", "latestIntake", this.intakeDatesTooltip,
       this.intakeTypeFormatter, null, false),
       new CandidateFieldInfo("Latest Intake Date", "latestIntakeDate", null,
@@ -364,6 +381,23 @@ export class CandidateFieldService {
       status = null;
     }
     return status;
+  }
+
+  getNextStep(candidate: Candidate): string {
+    let candidateOppForThisList: CandidateOpportunity = this.findCandidateOpp(candidate);
+    return candidateOppForThisList?.nextStep;
+  }
+
+  getAddedBy(candidate: Candidate): string {
+    let candidateOppForThisList: CandidateOpportunity = this.findCandidateOpp(candidate);
+    return candidateOppForThisList?.createdBy.firstName + " " +
+      candidateOppForThisList?.createdBy.lastName;
+  }
+
+  findCandidateOpp(candidate: Candidate): CandidateOpportunity {
+    return candidate.candidateOpportunities.find(
+      opp => opp.jobOpp.submissionList.id == this.candidateSource.id
+    );
   }
 
 }

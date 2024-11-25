@@ -403,9 +403,6 @@
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
-            <th *ngIf="this.sourceType() == 'list'">
-              Added By
-            </th>
             <th *ngIf="isShowStage()">
               Stage
             </th>
@@ -531,9 +528,6 @@
                   [completedTasks]="getCompletedMonitoredTasks(candidate)"
                   [totalTasks]="getTotalMonitoredTasks(candidate)">
                 </app-tasks-monitor>
-              </td>
-              <td *ngIf="this.sourceType() == 'list'">
-                {{getAddedBy(candidate)}}
               </td>
               <td *ngIf="isShowStage()">
                 <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"

@@ -278,6 +278,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           )
         );
     }
+
+    this.candidateFieldService.setCandidateSource(this.candidateSource);
   }
 
   get pluralType() {
@@ -1709,8 +1711,11 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   getAddedBy(candidate:Candidate): string {
-    let candidateOppForThisList: CandidateOpportunity = candidate.candidateOpportunities.find(opp => opp.jobOpp.submissionList.id == this.candidateSource.id);
-    return candidateOppForThisList?.createdBy?.firstName + " " + candidateOppForThisList?.createdBy?.lastName;
+    let candidateOppForThisList: CandidateOpportunity = candidate.candidateOpportunities.find(
+      opp => opp.jobOpp.submissionList.id == this.candidateSource.id
+    );
+    return candidateOppForThisList?.createdBy?.firstName + " " +
+      candidateOppForThisList?.createdBy?.lastName;
   }
 
   closeSelectedOpportunities() {
