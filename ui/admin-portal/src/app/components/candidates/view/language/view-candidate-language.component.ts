@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate, hasIeltsExam} from '../../../../model/candidate';
 import {CandidateLanguage} from '../../../../model/candidate-language';
@@ -28,7 +28,7 @@ import {ConfirmationComponent} from "../../../util/confirm/confirmation.componen
   templateUrl: './view-candidate-language.component.html',
   styleUrls: ['./view-candidate-language.component.scss']
 })
-export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
+export class ViewCandidateLanguageComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -48,10 +48,6 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
       If an accordion in intake set subscribe to the toggle all buttons in intake candidate component
       called when the toggleAll method is called in the parent component
      */
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-     console.log(changes.candidate);
   }
 
   search() {

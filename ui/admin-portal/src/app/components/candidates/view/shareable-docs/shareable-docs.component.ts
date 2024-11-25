@@ -81,17 +81,15 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
     }
     this.candidateService.updateShareableDocs(this.candidate.id, request).subscribe(
       (candidate) => {
-        // // todo I want to keep the list specific fields for this candidate that come from the results of candidates for my list. I can't
-        // // just replace that candidate with one I fetch that isn't list specific, as that won't have the list specific fields.
-        // // So I need to merge my candidate from the list, with the updated candidate.
-        // let mergedCandidate = {...this.candidate, ...candidate};
-        this.candidateChange.emit(candidate);
-        if (this.isList) {
-          // todo could we return the listShareableDoc fields from the API like we return in the pagedSearch? That way we don't need the setCandidateListDocs method.
-          this.setCandidateListDocs();
-        } else {
-          this.candidateService.updateCandidate(candidate);
+        // As null values aren't returned in the DTO we need to capture these and add them to the candidate object so
+        // the null value can replace the old values in the existing candidate object.
+        if (formValue.shareableCvAttachmentId == null) {
+          this.isList ? candidate.listShareableCv = null : candidate.shareableCv = null;
         }
+        if (formValue.shareableDocAttachmentId == null) {
+          this.isList ? candidate.listShareableDoc = null : candidate.shareableDoc = null;
+        }
+        this.candidateService.updateCandidate(candidate);
         this.saving = false;
       },
       (error) => {
@@ -99,23 +97,6 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
         this.saving = false;
       }
     )
-  }
-
-  setCandidateListDocs() {
-    // In a list, we need to set the updated value of the shareable docs to the candidate as we are switching between.
-    // Note: We don't need to do this for regular shareable docs in the view candidate component as
-    // the new candidate is loaded when changing tabs or refreshing.
-    if (this.shareableCvId != null) {
-      this.candidate.listShareableCv = this.cvs.find(att => att.id === this.shareableCvId);
-    } else {
-      this.candidate.listShareableCv = null;
-    }
-    if (this.shareableDocId != null) {
-      this.candidate.listShareableDoc = this.other.find(att => att.id === this.shareableDocId);
-    } else {
-      this.candidate.listShareableDoc = null;
-    }
-    this.candidateService.updateCandidate(this.candidate);
   }
 
   get shareableCvId() {
