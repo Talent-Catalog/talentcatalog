@@ -972,9 +972,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //This is used a temporary variable to hold queries build from the search filters.
         NativeQuery nq;
 
-        // Not every base search will contain an elastic search term, since we're processing
-        // joined regular searches here too — so we need a safe escape here
-        if (simpleQueryString != null && !simpleQueryString.isEmpty()) {
+        //Simple query string
+        if (!ObjectUtils.isEmpty(simpleQueryString)) {
             nq = esService.makeSimpleStringQuery(simpleQueryString);
             esService.addAnd(boolQueryBuilder, nq);
         }
