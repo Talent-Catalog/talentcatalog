@@ -39,7 +39,8 @@ export class CandidateFieldInfo {
    * @param fieldSelector If null, field is always available for display. If not null, field is
    * only available for display if this function returns true. For example, candidate names are
    * only displayable to user admins.
-   * @param sortable Designates whether a field is intended to be sortable, meaning we can include non-sortable (e.g. @Transient) fields and disable the frontend sort-on-click behaviour that would otherwise cause an error (using *ngIf).
+   * @param sortable Designates whether a field is intended to be sortable, meaning we can include
+   * non-sortable (e.g. @Transient) fields.
    */
   constructor(displayName: string, fieldPath: string,
               private tooltipSupplier: (value: any) => string,

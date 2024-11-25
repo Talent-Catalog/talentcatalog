@@ -28,6 +28,7 @@ import {
   TaskAssignment
 } from "../model/task-assignment";
 import {CandidateOpportunity} from "../model/candidate-opportunity";
+import {SavedList} from "../model/saved-list";
 
 @Injectable({
   providedIn: 'root'
@@ -286,7 +287,7 @@ export class CandidateFieldService {
   }
 
   isSourceSubmissionList = (): boolean => {
-   return this.candidateSource.sfJobOpp != null;
+    return (this.candidateSource as SavedList).registeredJob === true;
   }
 
   isDefault(fieldPaths: string[], longFormat: boolean) {
