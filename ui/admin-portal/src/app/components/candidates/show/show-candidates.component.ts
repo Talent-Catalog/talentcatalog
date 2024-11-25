@@ -33,6 +33,7 @@ import {
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
+import {SearchResults} from '../../../model/search-results';
 import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
@@ -106,7 +107,6 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
 import {LocalStorageService} from "../../../services/local-storage.service";
-import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1706,14 +1706,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       stage = getOpportunityStageName(opp);
     }
     return stage;
-  }
-
-  getAddedBy(candidate:Candidate): string {
-    let candidateOppForThisList: CandidateOpportunity = candidate.candidateOpportunities.find(
-      opp => opp.jobOpp.submissionList.id == this.candidateSource.id
-    );
-    return candidateOppForThisList?.createdBy?.firstName + " " +
-      candidateOppForThisList?.createdBy?.lastName;
   }
 
   closeSelectedOpportunities() {

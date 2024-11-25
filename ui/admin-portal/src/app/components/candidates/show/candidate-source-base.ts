@@ -84,6 +84,8 @@ export class CandidateSourceBaseComponent {
   }
 
   protected loadSelectedFields() {
+    // Service and child components need to know the candidate source type
+    // (e.g. list (submission/regular), search) to set available fields
     this.candidateFieldService.setCandidateSource(this.candidateSource);
 
     this.selectedFields = this.candidateFieldService

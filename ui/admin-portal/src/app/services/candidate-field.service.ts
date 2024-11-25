@@ -35,9 +35,16 @@ import {SavedList} from "../model/saved-list";
 })
 export class CandidateFieldService {
 
+  // Dictates whether certain fields are available, e.g. Next Step and Added By, which require the
+  // source to be a submission list.
   private candidateSource: CandidateSource;
 
-  setCandidateSource(source: CandidateSource) {
+  /**
+   * Set by the component that requires the service, as a first step before rendering the table
+   * headers, which depend on checking this property.
+   * @param source the source type for which the candidate fields are being provided
+   */
+  public setCandidateSource(source: CandidateSource) {
     this.candidateSource = source;
   }
 
@@ -120,7 +127,7 @@ export class CandidateFieldService {
   constructor(
     private authService: AuthorizationService,
     private datePipe: DatePipe,
-    private titleCasePipe: TitleCasePipe,
+    private titleCasePipe: TitleCasePipe
   ) {
 
   this.allDisplayableFields = [
@@ -392,23 +399,29 @@ export class CandidateFieldService {
     return status;
   }
 
-  getNextStep(candidate: Candidate): string {
-    let candidateOppForThisList: CandidateOpportunity = this.findCandidateOpp(candidate);
+  public getNextStep(candidate: Candidate): string {
+    let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
     return candidateOppForThisList?.nextStep;
   }
 
-  getAddedBy(candidate: Candidate): string {
-    let candidateOppForThisList: CandidateOpportunity = this.findCandidateOpp(candidate);
+  public getAddedBy(candidate: Candidate): string {
+    let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
     return candidateOppForThisList?.createdBy.firstName + " " +
       candidateOppForThisList?.createdBy.lastName;
   }
 
-  getAddedByPartner(candidate: Candidate): string {
-    let candidateOppForThisList: CandidateOpportunity = this.findCandidateOpp(candidate);
+  /**
+   * Populates the tooltip for values in the Added By column — saves table space by providing the
+   * partner name in this form.
+   * @param candidate the given candidate for this table row
+   */
+  public getAddedByPartner(candidate: Candidate): string {
+    let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
     return candidateOppForThisList?.createdBy?.partner.name;
   }
 
-  findCandidateOpp(candidate: Candidate): CandidateOpportunity {
+  // When displaying a submission list, will find the relevant candidate opp for given candidate.
+  private findRelevantCandidateOpp(candidate: Candidate): CandidateOpportunity {
     return candidate.candidateOpportunities.find(
       opp => opp.jobOpp.submissionList.id == this.candidateSource.id
     );
