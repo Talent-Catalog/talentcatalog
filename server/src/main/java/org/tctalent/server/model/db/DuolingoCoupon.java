@@ -19,6 +19,8 @@ package org.tctalent.server.model.db;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -75,16 +77,13 @@ public class DuolingoCoupon {
   @Nullable
   @Column(name = "date_sent")
   private LocalDateTime dateSent;
-
-  @Nullable
-  @Column(name = "assignee_email")
-  private String assigneeEmail;
   /**
    * Current status of the coupon (e.g., "Available", "Assigned", "Redeemed"). This field tracks the
    * lifecycle of the coupon.
    */
   @Column(name = "coupon_status")
-  private String couponStatus;
+  @Enumerated(EnumType.STRING)
+  private CouponStatus couponStatus;
   /**
    * The test status associated with this coupon (e.g., "Completed", "In Progress"). Can be null if
    * no test activity has occurred.
