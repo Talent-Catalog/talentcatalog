@@ -16,7 +16,7 @@
 import {EditTaskComponent} from "./edit-task.component";
 import {TaskService, UpdateTaskRequest} from "../../../../services/task.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -28,7 +28,7 @@ describe('EditTaskComponent', () => {
   let fixture: ComponentFixture<EditTaskComponent>;
   let taskServiceSpy: jasmine.SpyObj<TaskService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   // @ts-expect-error
   const taskData:Task = {
     displayName: 'Task 1',
@@ -62,7 +62,7 @@ describe('EditTaskComponent', () => {
 
     taskServiceSpy = TestBed.inject(TaskService) as jasmine.SpyObj<TaskService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

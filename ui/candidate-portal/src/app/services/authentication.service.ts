@@ -3,11 +3,11 @@ import {catchError, map} from "rxjs/operators";
 import {JwtResponse} from "../model/jwt-response";
 import {Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
-import {LocalStorageService} from "angular-2-local-storage";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
 import {AuthenticateInContextTranslationRequest} from "./auth.service";
 import {LoginRequest} from "../model/base";
+import {LocalStorageService} from "./local-storage.service";
 
 /**
  * Manages authentication - ie login/logout.

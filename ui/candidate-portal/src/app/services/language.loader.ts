@@ -49,8 +49,10 @@ export class LanguageLoader implements TranslateLoader {
   //process.
   //Had to make this static because I could not avoid two LanguageLoader
   //instances being created - JC.
-  private static languageLoading = new Subject<boolean>();
-  static languageLoading$ = LanguageLoader.languageLoading.asObservable();
+  //Making these non-static else the app fails at startup in Angular 16+.
+  //See related updates in app.module.ts that ensure a single instance - SM.
+  private languageLoading = new Subject<boolean>();
+  languageLoading$ = this.languageLoading.asObservable();
 
   //Used to demonstrate two instances.
   instance: string;
@@ -68,11 +70,11 @@ export class LanguageLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
 
     //Publish loading = true to the observable
-    LanguageLoader.languageLoading.next(true);
+    this.languageLoading.next(true);
     const loadLanguage$ = this.http.get(`${environment.apiUrl}/language/translations/file/${lang}`);
     loadLanguage$.subscribe(
       //Publish loading = false to the observable - language has loaded.
-      () => {LanguageLoader.languageLoading.next(false)}
+      () => {this.languageLoading.next(false)}
     );
 
     return loadLanguage$;

@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {CandidateService} from '../../../services/candidate.service';
 import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
@@ -49,7 +49,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     occupations: true
   };
   saving: boolean;
-  form: FormGroup;
+  form: UntypedFormGroup;
   candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
   showForm;
@@ -58,7 +58,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
   candidateOccupation: CandidateOccupation;
   candidateJobExperiences: CandidateJobExperience[];
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private occupationService: OccupationService,

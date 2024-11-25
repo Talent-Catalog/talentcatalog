@@ -24,7 +24,7 @@ import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.model.db.task.UploadTask;
 import org.tctalent.server.model.db.task.UploadType;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 /**

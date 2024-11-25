@@ -19,7 +19,10 @@ package org.tctalent.server.repository.db;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
@@ -28,7 +31,8 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.UserService;
 
-//@SpringBootTest
+@Tag("skip-test-in-gradle-build")
+@SpringBootTest
 class TaskAssignmentRepositoryTest {
 
     private Candidate assignedCandidate;
@@ -68,7 +72,7 @@ class TaskAssignmentRepositoryTest {
         taskRepository.delete(task);
     }
 
-    //@Test
+    @Test
     void create() {
         taskAssignment = new TaskAssignmentImpl();
         taskAssignment.setTask(task);

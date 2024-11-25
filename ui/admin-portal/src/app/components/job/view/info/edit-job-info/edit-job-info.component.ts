@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
 import {Job, UpdateJobRequest} from "../../../../../model/job";
 import {SearchUserRequest} from "../../../../../model/base";
@@ -33,7 +33,7 @@ export class EditJobInfoComponent implements OnInit {
 
   job: Job;
 
-  jobForm: FormGroup;
+  jobForm: UntypedFormGroup;
 
   users: User[];
 
@@ -44,7 +44,7 @@ export class EditJobInfoComponent implements OnInit {
   evergreenTip = "An evergreen job is always looking for candidates";
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private authService: AuthorizationService,
               private jobService: JobService,
               private userService: UserService

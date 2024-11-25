@@ -5,7 +5,6 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 
 describe('VisaFinalAssessmentComponent', () => {
@@ -14,7 +13,7 @@ describe('VisaFinalAssessmentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
       declarations: [VisaFinalAssessmentComponent,AutosaveStatusComponent]
     }).compileComponents();
   });

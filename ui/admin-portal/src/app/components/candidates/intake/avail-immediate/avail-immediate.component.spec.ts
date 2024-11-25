@@ -16,7 +16,7 @@
 
 import {AvailImmediateComponent} from "./avail-immediate.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -28,19 +28,19 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 describe('AvailImmediateComponent', () => {
   let component: AvailImmediateComponent;
   let fixture: ComponentFixture<AvailImmediateComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AvailImmediateComponent, AutosaveStatusComponent],
       imports: [HttpClientTestingModule, NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService }
       ]
     }).compileComponents();
 
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

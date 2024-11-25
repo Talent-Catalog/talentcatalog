@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityParams} from "../../../model/candidate";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -29,7 +29,7 @@ export class EditCandidateOppComponent implements OnInit {
    */
   showProgressParams = true;
 
-  salesforceStageForm: FormGroup;
+  salesforceStageForm: UntypedFormGroup;
   candidateOpportunityStageOptions: EnumOption[] = enumOptions(CandidateOpportunityStage);
 
   closing = false;
@@ -38,7 +38,7 @@ export class EditCandidateOppComponent implements OnInit {
 
   constructor(
     private activeModal: NgbActiveModal,
-    private fb: FormBuilder) { }
+    private fb: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     this.salesforceStageForm = this.fb.group({

@@ -18,7 +18,7 @@ import {InfographicComponent} from "./infographic.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {CandidateStatService} from "../../services/candidate-stat.service";
 import {of, throwError} from "rxjs";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {ActivatedRoute} from "@angular/router";
@@ -57,7 +57,7 @@ describe('InfographicComponent', () => {
       declarations: [InfographicComponent,DatePickerComponent,RouterLinkStubDirective],
       imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,NgSelectModule,NgbDatepickerModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: CandidateStatService, useValue: mockCandidateStatService },
         { provide: SavedListService, useValue: mockSavedListService },

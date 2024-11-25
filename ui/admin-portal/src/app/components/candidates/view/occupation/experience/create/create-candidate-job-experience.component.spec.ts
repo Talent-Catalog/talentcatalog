@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -43,7 +43,7 @@ describe('CreateCandidateJobExperienceComponent', () => {
       declarations: [CreateCandidateJobExperienceComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
         { provide: CountryService, useValue: countryServiceSpy },
         { provide: NgbActiveModal, useValue: activeModalSpy }

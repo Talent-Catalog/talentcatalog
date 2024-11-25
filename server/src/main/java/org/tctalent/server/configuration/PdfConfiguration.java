@@ -16,16 +16,14 @@
 
 package org.tctalent.server.configuration;
 
-import java.nio.charset.StandardCharsets;
+import static org.thymeleaf.templatemode.TemplateMode.HTML;
 
+import java.nio.charset.StandardCharsets;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-
-import static org.thymeleaf.templatemode.TemplateMode.HTML;
 
 @Configuration
 public class PdfConfiguration {
@@ -34,7 +32,6 @@ public class PdfConfiguration {
     public TemplateEngine pdfTemplateEngine() {
         final TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.addTemplateResolver(pdfTemplateResolver());
-        templateEngine.addDialect(new Java8TimeDialect());
         return templateEngine;
     }
 

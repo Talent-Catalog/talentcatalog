@@ -37,7 +37,6 @@ import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {ErrorInterceptor} from './services/error.interceptor';
 import {AuthorizationService} from './services/authorization.service';
-import {LocalStorageModule} from 'angular-2-local-storage';
 import {LoginComponent} from './components/login/login.component';
 import {SettingsComponent} from './components/settings/settings.component';
 import {SearchUsersComponent} from './components/settings/users/search-users.component';
@@ -233,7 +232,7 @@ import {
 import {
   BrowseCandidateSourcesComponent
 } from './components/candidates/show/browse/browse-candidate-sources.component';
-import {ChartsModule} from 'ng2-charts';
+import {NgChartsModule} from 'ng2-charts';
 import {InfographicComponent} from './components/infographics/infographic.component';
 import {ChartComponent} from './components/infographics/chart/chart.component';
 import {MonthPickerComponent} from './components/util/month-picker/month-picker.component';
@@ -1128,14 +1127,10 @@ import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
     NgbModule,
     FormsModule,
     InfiniteScrollModule,
-    ChartsModule,
+    NgChartsModule,
     NgxWigModule,
     NgSelectModule,
     DirectiveModule,
-    LocalStorageModule.forRoot({
-      prefix: 'tbb-admin',
-      storageType: 'localStorage'
-    }),
     DragulaModule.forRoot(),
     QuillModule.forRoot(),
     PickerModule,

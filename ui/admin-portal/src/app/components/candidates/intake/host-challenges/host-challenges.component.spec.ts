@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule, FormBuilder, FormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder, FormsModule} from '@angular/forms';
 import {HostChallengesComponent} from './host-challenges.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
@@ -30,7 +30,7 @@ describe('HostChallengesComponent', () => {
       declarations: [ HostChallengesComponent,AutosaveStatusComponent ],
       imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService },
       ]
     })

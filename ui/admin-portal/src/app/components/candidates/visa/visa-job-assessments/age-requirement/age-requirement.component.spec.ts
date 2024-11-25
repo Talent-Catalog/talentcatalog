@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {AgeRequirementComponent} from './age-requirement.component';
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
@@ -9,13 +9,13 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 describe('AgeRequirementComponent', () => {
   let component: AgeRequirementComponent;
   let fixture: ComponentFixture<AgeRequirementComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AgeRequirementComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
-      providers: [FormBuilder]
+      providers: [UntypedFormBuilder]
     })
     .compileComponents();
   });
@@ -23,7 +23,7 @@ describe('AgeRequirementComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AgeRequirementComponent);
     component = fixture.componentInstance;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
     fixture.detectChanges();
   });
 

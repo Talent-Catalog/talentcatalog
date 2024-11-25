@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-@import "~src/scss/variables";
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/buttons";
+@import "src/scss/variables";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/buttons";
 
 .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-info, .btn-warning, .btn-accent-1, .btn-accent-2 {
   color: $white;

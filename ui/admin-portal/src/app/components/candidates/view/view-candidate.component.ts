@@ -29,7 +29,6 @@ import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
 import {forkJoin, Subject} from 'rxjs';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
@@ -39,6 +38,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {DtoType} from "../../../model/base";
+import {LocalStorageService} from "../../../services/local-storage.service";
 import {takeUntil} from "rxjs/operators";
 
 

@@ -1014,7 +1014,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         ClientResponse response = executeWithRetry(spec);
 
         //Only a 204 response is expected - and no body.
-        if (response.rawStatusCode() != 204) {
+        if (response.statusCode().value() != 204) {
             WebClientException ex = response.createException().block();
             assert ex != null;
             throw ex;
@@ -1197,8 +1197,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         if (clientResponse == null) {
             throw new RuntimeException("Null client response to Salesforce request");
-        } else if (clientResponse.rawStatusCode() == 300 ||
-            clientResponse.rawStatusCode() == 400) {
+        } else if (clientResponse.statusCode().value() == 300 ||
+            clientResponse.statusCode().value() == 400) {
             //Pull out the extra info on the error provided by Salesforce.
             //See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/errorcodes.htm
             String errorInfo = clientResponse.bodyToMono(String.class).block();
@@ -1210,7 +1210,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             //Create our own exception with the extra info.
             throw new SalesforceException(ex.getMessage() + ": " + errorInfo);
-        } else if (clientResponse.rawStatusCode() > 300) {
+        } else if (clientResponse.statusCode().value() > 300) {
             WebClientException ex = clientResponse.createException().block();
             assert ex != null;
             throw ex;
@@ -2227,7 +2227,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private List<CandidateDependant> getRelocatingDependants(CandidateOpportunity candidateOpportunity)
         throws NoSuchObjectException {
         List<Long> relocatingDependantIds = candidateOpportunity.getRelocatingDependantIds();
-    
+
         return relocatingDependantIds != null ?
             relocatingDependantIds
                 .stream()

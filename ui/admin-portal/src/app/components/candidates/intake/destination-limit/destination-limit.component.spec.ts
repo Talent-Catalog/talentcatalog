@@ -15,7 +15,7 @@
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DestinationLimitComponent} from './destination-limit.component';
-import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
@@ -30,7 +30,7 @@ describe('DestinationLimitComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [DestinationLimitComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [FormBuilder, CandidateService]
+      providers: [UntypedFormBuilder, CandidateService]
     })
     .compileComponents();
   });

@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {SearchTaskRequest} from "../../../model/base";
 import {User} from "../../../model/user";
-import {LocalStorageService} from "angular-2-local-storage";
 import {Router} from "@angular/router";
 import {indexOfHasId} from "../../../model/saved-search";
 import {TaskService} from "../../../services/task.service";
 import {Task} from "../../../model/task";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-browse-tasks',
@@ -19,7 +19,7 @@ export class BrowseTasksComponent implements OnInit {
   private filterKeySuffix: string = 'Filter';
   private savedStateKeyPrefix: string = 'BrowseKey';
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   public loading: boolean;
   error: any;
   pageNumber: number;
@@ -29,7 +29,7 @@ export class BrowseTasksComponent implements OnInit {
   selectedIndex = 0;
   loggedInUser: User;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
               private authenticationService: AuthenticationService,

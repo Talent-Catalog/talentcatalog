@@ -20,7 +20,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {DragulaModule, DragulaService} from "ng2-dragula";
+import {DragulaModule, DragulaService, DrakeFactory} from "ng2-dragula";
 
 
 describe('CandidateColumnSelectorComponent', () => {
@@ -39,7 +39,7 @@ describe('CandidateColumnSelectorComponent', () => {
       imports: [DragulaModule],
       declarations: [CandidateColumnSelectorComponent],
       providers: [
-        { provide: DragulaService, useValue: new DragulaService() },
+        { provide: DragulaService, useValue: new DragulaService(null) },
         { provide: CandidateFieldService, useValue: candidateFieldServiceSpy },
         { provide: CandidateSourceService, useValue: candidateSourceServiceSpy },
         { provide: NgbActiveModal, useValue: activeModalSpy }

@@ -2,7 +2,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 
 import {CandidateVisaJobComponent} from './candidate-visa-job.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -33,7 +33,7 @@ describe('CandidateVisaJobComponent', () => {
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,RouterTestingModule],
       declarations: [CandidateVisaJobComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateVisaJobService, useValue: candidateVisaJobServiceMock },
         { provide: NgbModal, useValue: modalServiceMock },
         { provide: AuthorizationService, useValue: authServiceMock },

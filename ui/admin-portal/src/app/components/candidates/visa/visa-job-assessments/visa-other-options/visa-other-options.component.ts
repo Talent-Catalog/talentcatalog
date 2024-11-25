@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {OtherVisas} from '../../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
@@ -14,7 +14,7 @@ export class VisaOtherOptionsComponent extends VisaCheckComponentBase implements
 
   public visaOtherOptions: EnumOption[] = enumOptions(OtherVisas);
 
-  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+  constructor(fb: UntypedFormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
     super(fb, candidateVisaCheckService);
   }
 

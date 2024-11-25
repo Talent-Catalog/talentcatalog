@@ -5,8 +5,7 @@ import {
   SearchOpportunityRequest
 } from "../../../model/candidate-opportunity";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
-import {LocalStorageService} from "angular-2-local-storage";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
@@ -17,6 +16,7 @@ import {forkJoin, Observable} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {SearchResults} from "../../../model/search-results";
 import {PartnerService} from "../../../services/partner.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -58,11 +58,11 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   withUnreadMessagesTip = "Only show cases which have unread chat messages";
 
   @ViewChild("searchFilter")
-  searchFilter: ElementRef;
+  declare searchFilter: ElementRef;
 
   constructor(
     chatService: ChatService,
-    fb: FormBuilder,
+    fb: UntypedFormBuilder,
     authService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,

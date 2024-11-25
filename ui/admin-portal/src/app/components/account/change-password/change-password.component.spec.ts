@@ -17,7 +17,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ChangePasswordComponent} from './change-password.component';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from '../../../services/user.service';
 import {of} from 'rxjs';
@@ -43,7 +43,7 @@ describe('ChangePasswordComponent', () => {
         ChangePasswordComponent
       ],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: UserService, useValue: userServiceSpy },
         { provide: NgbActiveModal, useValue: activeModalSpy }
       ]

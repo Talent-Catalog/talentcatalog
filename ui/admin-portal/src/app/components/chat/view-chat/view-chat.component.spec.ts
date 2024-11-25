@@ -4,7 +4,6 @@ import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {JobChat, JobChatType} from "../../../model/chat";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TranslateModule} from "@ngx-translate/core";
-import {LocalStorageModule} from "angular-2-local-storage";
 
 describe('ViewChatComponent', () => {
   let component: ViewChatComponent;
@@ -12,8 +11,7 @@ describe('ViewChatComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, TranslateModule.forRoot({}),
-        LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule, TranslateModule.forRoot({})],
       declarations: [ViewChatComponent],
       schemas: [NO_ERRORS_SCHEMA] // To ignore subcomponent and directive errors
     }).compileComponents();

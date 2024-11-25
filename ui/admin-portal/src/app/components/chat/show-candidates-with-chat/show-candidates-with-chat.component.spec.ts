@@ -2,8 +2,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 
 import {ShowCandidatesWithChatComponent} from './show-candidates-with-chat.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {LocalStorageModule} from "angular-2-local-storage";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
@@ -16,7 +15,7 @@ import {of} from "rxjs";
 describe('ShowCandidatesWithChatComponent', () => {
   let component: ShowCandidatesWithChatComponent;
   let fixture: ComponentFixture<ShowCandidatesWithChatComponent>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   let candidateService: jasmine.SpyObj<CandidateService>;
   const mockCandidate = new MockCandidate();
   const mockSearchResults = new SearchResults<MockCandidate>();
@@ -32,17 +31,16 @@ describe('ShowCandidatesWithChatComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ShowCandidatesWithChatComponent, RouterLinkStubDirective, SortedByComponent, NgbPagination ],
-      imports: [ HttpClientTestingModule, LocalStorageModule.forRoot({}), FormsModule,
-        ReactiveFormsModule ],
+      declarations: [ ShowCandidatesWithChatComponent, RouterLinkStubDirective, SortedByComponent ],
+      imports: [ HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbPagination ],
       providers: [
-        { provide: FormBuilder },
+        { provide: UntypedFormBuilder },
         { provide: CandidateService, useValue: candidateService }
       ]
     })
     .compileComponents();
 
-    formBuilder = TestBed.inject(FormBuilder); // Inject FormBuilder
+    formBuilder = TestBed.inject(UntypedFormBuilder); // Inject FormBuilder
   });
 
   beforeEach(() => {

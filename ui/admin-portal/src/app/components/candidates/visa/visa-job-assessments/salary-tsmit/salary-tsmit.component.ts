@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {YesNo} from '../../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
@@ -13,7 +13,7 @@ import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-
 export class SalaryTsmitComponent extends VisaCheckComponentBase implements OnInit {
   public salaryRequirementOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+  constructor(fb: UntypedFormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
     super(fb, candidateVisaCheckService);
   }
 

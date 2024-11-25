@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {VisaJobPutForwardComponent} from './visa-job-put-forward.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
@@ -35,7 +35,7 @@ describe('VisaJobPutForwardComponent', () => {
       declarations: [VisaJobPutForwardComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
       ]
     }).compileComponents();

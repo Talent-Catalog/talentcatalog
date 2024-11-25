@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {environment} from "../../../../environments/environment";
@@ -15,13 +15,13 @@ export class UserChangePasswordComponent implements OnInit {
   reset: boolean;
   error: any;
   tokenInvalid: boolean;
-  changePasswordForm: FormGroup;
+  changePasswordForm: UntypedFormGroup;
   updated: boolean;
   token: string;
 
   backgroundImage: string;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private userService: UserService,
               private router: Router,
               private route: ActivatedRoute) {

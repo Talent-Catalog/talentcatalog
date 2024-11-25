@@ -17,8 +17,8 @@
 package org.tctalent.server.request.candidate;
 
 import java.time.LocalDate;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.Gender;

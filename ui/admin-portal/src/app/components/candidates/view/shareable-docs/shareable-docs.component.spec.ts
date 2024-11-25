@@ -16,7 +16,7 @@
 import {ShareableDocsComponent} from "./shareable-docs.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
@@ -37,7 +37,7 @@ describe('ShareableDocsComponent', () => {
       declarations: [ShareableDocsComponent],
       imports: [ReactiveFormsModule, NgbTooltipModule, HttpClientTestingModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: mockCandidateService }
       ]
     }).compileComponents();

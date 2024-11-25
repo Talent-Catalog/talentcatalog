@@ -173,7 +173,6 @@
       }
     }
   },
-  "defaultProject": "admin-portal",
   "cli": {
     "analytics": "3297a4ca-e37f-405c-a912-c00461005436"
   }

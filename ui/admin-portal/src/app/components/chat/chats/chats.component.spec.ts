@@ -6,7 +6,6 @@ import {MockJobChat} from "../../../MockData/MockJobChat";
 import {ViewChatComponent} from "../view-chat/view-chat.component";
 import {ChatReadStatusComponent} from "../chat-read-status/chat-read-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {ChatService} from "../../../services/chat.service";
 import {TranslateModule} from "@ngx-translate/core";
 
@@ -22,8 +21,7 @@ describe('ChatsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsComponent,ViewChatComponent,ChatReadStatusComponent ],
-      imports: [HttpClientTestingModule,LocalStorageModule.forRoot({}),
-        TranslateModule.forRoot({})],
+      imports: [HttpClientTestingModule, TranslateModule.forRoot({})],
       providers:[
         { provide: ChatService, useValue: chatServiceSpy }
       ]

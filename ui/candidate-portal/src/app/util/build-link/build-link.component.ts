@@ -1,6 +1,6 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Link, URL_REGEX} from "../../model/base";
 
 /**
@@ -13,7 +13,7 @@ import {Link, URL_REGEX} from "../../model/base";
 })
 export class BuildLinkComponent implements OnInit {
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: string;
   title: string;
 
@@ -25,7 +25,7 @@ export class BuildLinkComponent implements OnInit {
   readonly urlRegex: string = URL_REGEX;
 
   constructor(private modal: NgbActiveModal,
-              private fb: FormBuilder) { }
+              private fb: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
