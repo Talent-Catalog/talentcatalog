@@ -23,11 +23,18 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.DuolingoCoupon;
-
+/**
+ * Represents a request to import a list of Duolingo coupons.
+ * This request contains a list of {@link DuolingoCoupon} objects
+ * that are validated before being processed.
+ */
 @Getter
 @Setter
 public class ImportDuolingoCouponsRequest {
-
+  /**
+   * A list of Duolingo coupons to be imported.
+   * This list must not be empty and each coupon must be valid.
+   */
   @NotEmpty(message = "Coupon list must not be empty")
   @Valid
   private List<DuolingoCoupon> coupons;
