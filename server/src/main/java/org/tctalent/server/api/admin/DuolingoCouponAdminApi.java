@@ -42,7 +42,8 @@ public class DuolingoCouponAdminApi {
   private final DuolingoCouponService couponService;
 
   @Autowired
-  public DuolingoCouponAdminApi(DuolingoCouponService couponService, CandidateService candidateService) {
+  public DuolingoCouponAdminApi(DuolingoCouponService couponService,
+      CandidateService candidateService) {
     this.couponService = couponService;
   }
 
@@ -61,8 +62,10 @@ public class DuolingoCouponAdminApi {
 
       return Map.of("status", "success", "message", "Coupons imported successfully.");
     } catch (RuntimeException e) {
-      log.error("Failed to import coupons from CSV", e);
-
+      LogBuilder.builder(log)
+          .action("importCouponsFromCsv")
+          .message("Failed to import coupons from CSV")
+          .logInfo();
       // Return error response
       return Map.of("status", "failure", "message", "Failed to import coupons from CSV file.");
     }
@@ -70,12 +73,15 @@ public class DuolingoCouponAdminApi {
 
   // Endpoint to assign an available coupon to a candidate
   @PostMapping("{candidateId}/assign")
-  public Map<String, Object> assignCouponToCandidate(@PathVariable("candidateId") Long candidateId) {
+  public Map<String, Object> assignCouponToCandidate(
+      @PathVariable("candidateId") Long candidateId) {
     Optional<DuolingoCoupon> assignedCoupon = couponService.assignCouponToCandidate(candidateId);
 
     return assignedCoupon
         .map(coupon -> {
-          DuolingoCouponResponse response = new DuolingoCouponResponse(coupon.getId(), coupon.getCouponCode(),coupon.getAssigneeEmail(),coupon.getExpirationDate(),coupon.getDateSent(),coupon.getCouponStatus(),coupon.getTestStatus());
+          DuolingoCouponResponse response = new DuolingoCouponResponse(coupon.getId(),
+              coupon.getCouponCode(), coupon.getExpirationDate(),
+              coupon.getDateSent(), coupon.getCouponStatus(), coupon.getTestStatus());
           return Map.of("status", "success", "coupon", response);
         })
         .orElse(Map.of("status", "failure", "message", "No available coupons"));
@@ -83,7 +89,8 @@ public class DuolingoCouponAdminApi {
 
   // Endpoint to retrieve all coupons assigned to a candidate
   @GetMapping("{candidateId}")
-  public List<DuolingoCouponResponse> getCouponsForCandidate(@PathVariable("candidateId") Long candidateId) {
+  public List<DuolingoCouponResponse> getCouponsForCandidate(
+      @PathVariable("candidateId") Long candidateId) {
     return couponService.getCouponsForCandidate(candidateId);
   }
 
