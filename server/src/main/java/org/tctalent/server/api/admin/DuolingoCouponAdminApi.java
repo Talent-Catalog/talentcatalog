@@ -42,8 +42,7 @@ public class DuolingoCouponAdminApi {
   private final DuolingoCouponService couponService;
 
   @Autowired
-  public DuolingoCouponAdminApi(DuolingoCouponService couponService,
-      CandidateService candidateService) {
+  public DuolingoCouponAdminApi(DuolingoCouponService couponService) {
     this.couponService = couponService;
   }
 

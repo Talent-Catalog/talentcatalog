@@ -19,7 +19,7 @@ package org.tctalent.server.request.duolingocoupon;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.CouponStatus;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 
 /**
  * Represents a request to update the status of a Duolingo coupon.
@@ -39,6 +39,6 @@ public class UpdateDuolingoCouponStatusRequest {
    * This field must not be blank.
    */
   @NotBlank(message = "Status must not be blank")
-  private CouponStatus status;
+  private DuolingoCouponStatus status;
 
 }

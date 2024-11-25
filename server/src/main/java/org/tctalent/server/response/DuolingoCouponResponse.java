@@ -19,7 +19,7 @@ package org.tctalent.server.response;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.CouponStatus;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 
 /**
  * Represents a response object for Duolingo coupons.
@@ -43,7 +43,7 @@ public class DuolingoCouponResponse {
   private LocalDateTime dateSent;
 
   /** The current status of the coupon (e.g., "Active", "Redeemed", "Expired"). */
-  private CouponStatus couponStatus;
+  private DuolingoCouponStatus duolingoCouponStatus;
 
   /** The test status associated with the coupon (e.g., "Test Started", "Test Completed"). */
   private String testStatus;
@@ -55,7 +55,7 @@ public class DuolingoCouponResponse {
    * @param couponCode    the unique code of the coupon
    * @param expirationDate the expiration date and time of the coupon
    * @param dateSent      the date and time when the coupon was sent
-   * @param couponStatus  the current status of the coupon
+   * @param duolingoCouponStatus  the current status of the coupon
    * @param testStatus    the test status associated with the coupon
    */
   public DuolingoCouponResponse(
@@ -63,13 +63,13 @@ public class DuolingoCouponResponse {
       String couponCode,
       LocalDateTime expirationDate,
       LocalDateTime dateSent,
-      CouponStatus couponStatus,
+      DuolingoCouponStatus duolingoCouponStatus,
       String testStatus) {
     this.id = id;
     this.couponCode = couponCode;
     this.expirationDate = expirationDate;
     this.dateSent = dateSent;
-    this.couponStatus = couponStatus;
+    this.duolingoCouponStatus = duolingoCouponStatus;
     this.testStatus = testStatus;
   }
 }

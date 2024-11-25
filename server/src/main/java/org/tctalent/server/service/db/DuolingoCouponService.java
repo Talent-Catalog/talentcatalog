@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
-import org.tctalent.server.model.db.CouponStatus;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.response.DuolingoCouponResponse;
 
@@ -58,7 +58,7 @@ public interface DuolingoCouponService {
    * @param couponCode the unique code identifying the coupon to update.
    * @param status the new status to be assigned to the coupon.
    */
-  void updateCouponStatus(String couponCode, CouponStatus status);
+  void updateCouponStatus(String couponCode, DuolingoCouponStatus status);
 
   /**
    * Retrieves all available (unassigned) coupons.

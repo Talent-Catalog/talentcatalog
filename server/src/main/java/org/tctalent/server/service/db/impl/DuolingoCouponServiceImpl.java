@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.CouponStatus;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
@@ -86,7 +86,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
           coupon.setCouponCode(couponCode);
           coupon.setExpirationDate(parseDate(line[2], FORMATTER1, FORMATTER2));
           coupon.setDateSent(parseDate(line[3], FORMATTER1, FORMATTER2));
-          coupon.setCouponStatus(CouponStatus.valueOf(getNullableValue(line[4]).toUpperCase()));
+          coupon.setCouponStatus(DuolingoCouponStatus.valueOf(getNullableValue(line[4]).toUpperCase()));
           coupon.setTestStatus(getNullableValue(line[5]));
           newCoupons.add(coupon);
         }
@@ -105,11 +105,11 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
   public Optional<DuolingoCoupon> assignCouponToCandidate(Long candidateId) {
     return candidateRepository.findById(candidateId).flatMap(candidate -> {
       Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatus(
-          String.valueOf(CouponStatus.AVAILABLE));
+          String.valueOf(DuolingoCouponStatus.AVAILABLE));
       availableCoupon.ifPresent(coupon -> {
         coupon.setCandidate(candidate);
         coupon.setDateSent(LocalDateTime.now());
-        coupon.setCouponStatus(CouponStatus.SENT);
+        coupon.setCouponStatus(DuolingoCouponStatus.SENT);
         couponRepository.save(coupon);
       });
       return availableCoupon;
@@ -131,7 +131,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional
-  public void updateCouponStatus(String couponCode, CouponStatus status) {
+  public void updateCouponStatus(String couponCode, DuolingoCouponStatus status) {
     couponRepository.findByCouponCode(couponCode).ifPresent(coupon -> {
       coupon.setCouponStatus(status);
       couponRepository.save(coupon);

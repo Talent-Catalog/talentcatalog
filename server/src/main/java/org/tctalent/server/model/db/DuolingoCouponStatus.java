@@ -20,7 +20,7 @@ package org.tctalent.server.model.db;
  * Represents the various statuses that a Duolingo coupon can have.
  * These statuses reflect the lifecycle and state of a coupon within the system.
  */
-public enum CouponStatus {
+public enum DuolingoCouponStatus {
 
   /**
    * The coupon is available for assignment but has not been allocated to any candidate.
