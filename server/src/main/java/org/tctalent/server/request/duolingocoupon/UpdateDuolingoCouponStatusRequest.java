@@ -19,15 +19,26 @@ package org.tctalent.server.request.duolingocoupon;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.CouponStatus;
 
+/**
+ * Represents a request to update the status of a Duolingo coupon.
+ * This request includes the coupon code and the new status to be assigned.
+ */
 @Getter
 @Setter
 public class UpdateDuolingoCouponStatusRequest {
-
+  /**
+   * The unique code of the Duolingo coupon to be updated.
+   * This field must not be blank.
+   */
   @NotBlank(message = "Coupon code must not be blank")
   private String couponCode;
-
+  /**
+   * The new status to be assigned to the Duolingo coupon.
+   * This field must not be blank.
+   */
   @NotBlank(message = "Status must not be blank")
-  private String status;
+  private CouponStatus status;
 
 }
