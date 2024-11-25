@@ -124,6 +124,7 @@ export abstract class PostsComponentBase implements OnDestroy{
     if (existingPostIndex !== -1) {
       // If the post already exists, update it
       this.posts[existingPostIndex] = incomingPost;
+      this.groupedMessages = this.groupMessagesByDate(this.posts);
     } else {
       // If it's a new post, add it to the posts array
       this.posts.push(incomingPost);
