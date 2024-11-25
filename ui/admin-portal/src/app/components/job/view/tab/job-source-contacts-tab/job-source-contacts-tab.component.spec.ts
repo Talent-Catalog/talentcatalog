@@ -6,7 +6,6 @@ import {
   JobSourceContactsWithChatsComponent
 } from "../../source-contacts/job-source-contacts-with-chats/job-source-contacts-with-chats.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {
   ViewJobSourceContactsComponent
 } from "../../source-contacts/view-job-source-contacts/view-job-source-contacts.component";
@@ -17,8 +16,7 @@ describe('JobSourceContactsTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,LocalStorageModule.forRoot({}),
-      ],
+      imports:[HttpClientTestingModule],
       declarations: [JobSourceContactsTabComponent,JobSourceContactsWithChatsComponent,ViewJobSourceContactsComponent],
     })
     .compileComponents();

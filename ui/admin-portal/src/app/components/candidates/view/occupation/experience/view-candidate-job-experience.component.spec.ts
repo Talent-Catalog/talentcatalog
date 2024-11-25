@@ -19,7 +19,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   CandidateJobExperienceService
 } from "../../../../../services/candidate-job-experience.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
@@ -34,7 +34,7 @@ describe('ViewCandidateJobExperienceComponent', () => {
   let fixture: ComponentFixture<ViewCandidateJobExperienceComponent>;
   let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;
   let mockNgbModal: jasmine.SpyObj<NgbModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
 
   const mockCandidate = new MockCandidate();
 
@@ -49,7 +49,7 @@ describe('ViewCandidateJobExperienceComponent', () => {
       declarations: [ViewCandidateJobExperienceComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
         { provide: NgbModal, useValue: ngbModalSpy }
       ],
@@ -58,7 +58,7 @@ describe('ViewCandidateJobExperienceComponent', () => {
 
     mockCandidateJobExperienceService = TestBed.inject(CandidateJobExperienceService) as jasmine.SpyObj<CandidateJobExperienceService>;
     mockNgbModal = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
 
     fixture = TestBed.createComponent(ViewCandidateJobExperienceComponent);
     component = fixture.componentInstance;

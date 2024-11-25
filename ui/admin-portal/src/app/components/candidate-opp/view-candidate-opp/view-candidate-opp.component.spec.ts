@@ -7,7 +7,6 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {ChatService} from "../../../services/chat.service";
 import {of} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {MockPartner} from "../../../MockData/MockPartner";
@@ -35,7 +34,7 @@ describe('ViewCandidateOppComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateOppComponent,ChatReadStatusComponent,RouterLinkStubDirective,OpportunityStageNextStepComponent],
-      imports: [HttpClientTestingModule,NgbNavModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,NgbNavModule],
       providers: [
         { provide: NgbModal, useValue: mockModalService },
         { provide: CandidateOpportunityService, useValue: mockCandidateOpportunityService },

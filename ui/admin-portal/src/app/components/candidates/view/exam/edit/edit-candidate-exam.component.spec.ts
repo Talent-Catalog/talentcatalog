@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {EditCandidateExamComponent} from './edit-candidate-exam.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbActiveModal, NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
@@ -25,7 +25,7 @@ describe('EditCandidateExamComponent', () => {
       declarations: [ EditCandidateExamComponent ],
       imports: [HttpClientTestingModule, NgbModalModule, ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: CandidateExamService, useValue: mockCandidateExamService }
       ],

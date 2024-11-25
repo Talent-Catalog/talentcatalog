@@ -7,7 +7,7 @@ import {NgbAccordionModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {
   CostCommitEmployerComponent
 } from "../../../intake/cost-commit-employer/cost-commit-employer.component";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgxWigModule} from "ngx-wig";
 import {MockPartner} from "../../../../../MockData/MockPartner";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
@@ -32,7 +32,7 @@ describe('JobIntakeTabComponent', () => {
       providers: [
         { provide: AuthenticationService, useValue: authServiceSpyObj },
         { provide: JobService, useValue: jobServiceObj  },
-        FormBuilder
+        UntypedFormBuilder
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

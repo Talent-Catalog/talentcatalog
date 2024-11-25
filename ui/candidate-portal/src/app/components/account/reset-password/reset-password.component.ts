@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {UserService} from '../../../services/user.service';
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
 
@@ -28,10 +28,10 @@ export class ResetPasswordComponent implements OnInit {
 
   loading: boolean;
   error: any;
-  form: FormGroup;
+  form: UntypedFormGroup;
   updated: boolean;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private userService: UserService) {
   }
 

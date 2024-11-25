@@ -18,7 +18,7 @@ package org.tctalent.server.api.admin;
 
  import java.io.IOException;
  import java.util.Map;
- import javax.validation.Valid;
+ import jakarta.validation.Valid;
  import lombok.RequiredArgsConstructor;
  import org.springframework.lang.Nullable;
  import org.springframework.web.bind.annotation.PostMapping;

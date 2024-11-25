@@ -17,7 +17,7 @@ import {HostEntryLegallyComponent} from "./host-entry-legally.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {EnumOption} from "../../../../util/enum";
@@ -32,7 +32,7 @@ describe('HostEntryLegallyComponent', () => {
       imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
       declarations: [HostEntryLegallyComponent,AutosaveStatusComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService } // Provide the mock service
       ]
     }).compileComponents();

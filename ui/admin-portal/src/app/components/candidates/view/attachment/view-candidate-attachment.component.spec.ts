@@ -16,7 +16,7 @@
 import {ViewCandidateAttachmentComponent} from "./view-candidate-attachment.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {of} from "rxjs";
@@ -32,7 +32,7 @@ describe('ViewCandidateAttachmentComponent', () => {
   let component: ViewCandidateAttachmentComponent;
   let fixture: ComponentFixture<ViewCandidateAttachmentComponent>;
   let candidateAttachmentServiceSpy: jasmine.SpyObj<CandidateAttachmentService>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
@@ -42,7 +42,7 @@ describe('ViewCandidateAttachmentComponent', () => {
       declarations: [ViewCandidateAttachmentComponent, UpdatedByComponent, UserPipe, ShareableDocsComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateAttachmentService, useValue: spy },
         NgbModal
       ],
@@ -50,7 +50,7 @@ describe('ViewCandidateAttachmentComponent', () => {
     })
     .compileComponents();
 
-    fb = TestBed.inject(FormBuilder) as jasmine.SpyObj<FormBuilder>;
+    fb = TestBed.inject(UntypedFormBuilder) as jasmine.SpyObj<UntypedFormBuilder>;
     candidateAttachmentServiceSpy = TestBed.inject(CandidateAttachmentService) as jasmine.SpyObj<CandidateAttachmentService>;
     candidateAttachmentServiceSpy.searchPaged.and.returnValue(of());
 

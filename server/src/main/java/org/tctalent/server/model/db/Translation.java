@@ -16,9 +16,9 @@
 
 package org.tctalent.server.model.db;
 
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 /**
  * This table stores translations for the english values of other tables

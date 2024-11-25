@@ -18,9 +18,9 @@ package org.tctalent.server.service.db.email;
 
 import java.time.LocalDate;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -35,7 +35,6 @@ import org.thymeleaf.context.Context;
 
 @Service
 @Setter
-@RequiredArgsConstructor
 @Slf4j
 public class EmailHelper {
 
@@ -47,6 +46,21 @@ public class EmailHelper {
     private String portalUrl;
     @Value("${web.admin}")
     private String adminUrl;
+
+    /**
+     * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
+     * the @Qualifier annotation to the constructor.
+     * <p/>
+     * See <a href="https://www.jetbrains.com.cn/en-us/help/inspectopedia/SpringQualifierCopyableLombok.html">
+     *     Intellij doc</a>
+     */
+    public EmailHelper(EmailSender emailSender,
+        @Qualifier("textTemplateEngine") TemplateEngine textTemplateEngine,
+        @Qualifier("htmlTemplateEngine") TemplateEngine htmlTemplateEngine) {
+        this.emailSender = emailSender;
+        this.textTemplateEngine = textTemplateEngine;
+        this.htmlTemplateEngine = htmlTemplateEngine;
+    }
 
     public void sendAlert(String alertMessage) {
         emailSender.sendAlert(alertMessage);

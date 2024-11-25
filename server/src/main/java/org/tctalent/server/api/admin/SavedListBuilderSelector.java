@@ -16,7 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.util.dto.DtoBuilder;

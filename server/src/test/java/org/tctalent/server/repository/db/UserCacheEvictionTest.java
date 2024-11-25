@@ -16,6 +16,8 @@
 
 package org.tctalent.server.repository.db;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,8 +46,6 @@ import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * This class contains unit tests for verifying cache eviction behaviour in the users cache.
  *
@@ -61,6 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * </ul>
  */
 @Disabled("Skipping all tests in this class")
+@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 class UserCacheEvictionTest {
 

@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from "../../../services/language-level.service";
@@ -40,15 +40,15 @@ export class SearchLanguageLevelsComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  importForm: FormGroup;
-  searchForm: FormGroup;
+  importForm: UntypedFormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
   pageSize: number;
   results: SearchResults<LanguageLevel>;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private authService: AuthorizationService) {

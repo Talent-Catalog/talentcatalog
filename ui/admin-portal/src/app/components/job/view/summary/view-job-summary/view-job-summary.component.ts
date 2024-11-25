@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Job} from "../../../../../model/job";
-import {AbstractControl, FormBuilder, FormGroup} from "@angular/forms";
+import {AbstractControl, UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
 import {AutoSaveComponentBase} from "../../../../util/autosave/AutoSaveComponentBase";
 
@@ -14,11 +14,8 @@ export class ViewJobSummaryComponent extends AutoSaveComponentBase implements On
   @Input() editable: boolean;
   @Input() nRows: number = 3;
   @Input() highlight: boolean;
-  form: FormGroup;
-  error: any;
-  saving: boolean;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private jobService: JobService) {
     super (null) }
 

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {CandidateDependant,} from "../../../../../model/candidate";
 import {AutoSaveComponentBase} from "../../../../util/autosave/AutoSaveComponentBase";
 import {CandidateOpportunity} from "../../../../../model/candidate-opportunity";
@@ -24,7 +24,7 @@ export class RelocatingDependantsComponent extends AutoSaveComponentBase impleme
   loading: boolean;
   updatingSf: boolean;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateOpportunityService: CandidateOpportunityService,
               private candidateDependantService: CandidateDependantService,
               private authorizationService: AuthorizationService) {

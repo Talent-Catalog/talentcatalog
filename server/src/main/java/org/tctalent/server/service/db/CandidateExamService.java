@@ -17,7 +17,7 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateExam;

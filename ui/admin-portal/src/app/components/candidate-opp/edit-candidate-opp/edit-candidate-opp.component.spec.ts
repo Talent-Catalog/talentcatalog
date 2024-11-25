@@ -1,13 +1,12 @@
 import {EditCandidateOppComponent} from "./edit-candidate-opp.component";
 import {NgbActiveModal, NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {HelpComponent} from "../../help/help.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {CommonModule} from "@angular/common";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {DatePickerComponent} from "../../util/date-picker/date-picker.component";
 import {NgxWigComponent, NgxWigModule} from "ngx-wig";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -22,9 +21,9 @@ describe('EditCandidateOppComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateOppComponent,HelpComponent,DatePickerComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule, LocalStorageModule.forRoot({}),NgbDatepickerModule,NgxWigModule,NgSelectModule,NgbTooltipModule],
+      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule,NgbDatepickerModule,NgxWigModule,NgSelectModule,NgbTooltipModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: modalSpy }
       ]
     })

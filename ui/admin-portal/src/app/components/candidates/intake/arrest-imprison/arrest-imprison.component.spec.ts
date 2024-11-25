@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ArrestImprisonComponent} from './arrest-imprison.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {YesNoUnsure} from '../../../../model/candidate';
@@ -25,20 +25,20 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 describe('ArrestImprisonComponent', () => {
   let component: ArrestImprisonComponent;
   let fixture: ComponentFixture<ArrestImprisonComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ArrestImprisonComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule, NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        FormControl,
-        FormBuilder,
+        UntypedFormControl,
+        UntypedFormBuilder,
         { provide: CandidateService }
       ]
     }).compileComponents();
 
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

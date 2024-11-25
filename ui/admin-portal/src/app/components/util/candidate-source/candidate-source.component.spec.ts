@@ -29,9 +29,9 @@ import {of, throwError} from "rxjs";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {MockSavedList} from "../../../MockData/MockSavedList";
-import {LocalStorageService} from "angular-2-local-storage";
 import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";
 import {SavedSearch} from "../../../model/saved-search";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('CandidateSourceComponent', () => {
   let component: CandidateSourceComponent;

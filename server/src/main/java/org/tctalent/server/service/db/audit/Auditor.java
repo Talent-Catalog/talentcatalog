@@ -53,7 +53,7 @@ public class Auditor {
 
     @AfterReturning(
             pointcut="@annotation(audit) && args(inputValue,..)",
-            returning="returnValue")
+            returning="returnValue", argNames = "audit,inputValue,returnValue")
     public void handleAuditLog(Audit audit, Object inputValue, Object returnValue)
     {
         try {

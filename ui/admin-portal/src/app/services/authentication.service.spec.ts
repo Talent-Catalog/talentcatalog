@@ -1,7 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {AuthenticationService} from './authentication.service';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {User} from '../model/user';
 import {LoginRequest} from '../model/base';
 import {JwtResponse} from '../model/jwt-response';
@@ -10,6 +9,7 @@ import {of, throwError} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {config_test} from "../../config-test";
 import {EncodedQrImage} from "../util/qr";
+import {LocalStorageService} from "./local-storage.service";
 
 describe('AuthenticationService', () => {
   let service: AuthenticationService;

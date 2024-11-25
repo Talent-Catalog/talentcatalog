@@ -17,7 +17,7 @@ import {ViewChatPostsComponent} from "../../../../chat/view-chat-posts/view-chat
 import {
   CreateUpdatePostComponent
 } from "../../../../chat/create-update-post/create-update-post.component";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {QuillModule} from "ngx-quill";
 import {MockPartner} from "../../../../../MockData/MockPartner";
 import {MockJobChat} from "../../../../../MockData/MockJobChat";
@@ -56,7 +56,7 @@ describe('JobSourceContactsWithChatsComponent', () => {
         { provide: AuthorizationService, useValue: authzSpy },
         { provide: ChatService, useValue: chatService },
         { provide: PartnerService, useValue: partnerService },
-        { provide: FormBuilder },
+        { provide: UntypedFormBuilder },
 
       ]
     })

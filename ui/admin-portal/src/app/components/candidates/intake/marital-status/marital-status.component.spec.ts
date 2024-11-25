@@ -18,7 +18,7 @@ import {MaritalStatusComponent} from "./marital-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
@@ -31,7 +31,7 @@ describe('MaritalStatusComponent', () => {
       declarations: [ MaritalStatusComponent,AutosaveStatusComponent ],
       imports: [HttpClientTestingModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService }
       ]
     })

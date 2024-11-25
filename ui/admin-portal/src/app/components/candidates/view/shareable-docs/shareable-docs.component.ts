@@ -8,7 +8,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateService} from "../../../../services/candidate.service";
 import {isSavedList} from "../../../../model/saved-list";
@@ -37,9 +37,9 @@ export class ShareableDocsComponent implements OnInit, OnChanges {
 
   savedList: boolean;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService) {}
 
   ngOnInit() {

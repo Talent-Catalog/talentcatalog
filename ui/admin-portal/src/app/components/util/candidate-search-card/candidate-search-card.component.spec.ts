@@ -15,7 +15,6 @@
  */
 import {CandidateSearchCardComponent} from "./candidate-search-card.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
@@ -23,6 +22,7 @@ import {CandidateSource} from "../../../model/base";
 import {Candidate} from "../../../model/candidate";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 describe('CandidateSearchCardComponent', () => {
   let component: CandidateSearchCardComponent;

@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   AbstractControl,
-  FormBuilder,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormGroup,
   ValidationErrors,
   ValidatorFn,
   Validators
@@ -102,14 +102,14 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
 
   countries: Country[];
   error = null;
-  form: FormGroup;
+  form: UntypedFormGroup;
   partner: Partner;
   partnerUsers: User[];
   statuses = enumOptions(Status);
   working: boolean;
 
 
-  constructor(fb: FormBuilder,
+  constructor(fb: UntypedFormBuilder,
               private activeModal: NgbActiveModal,
               private authorizationService: AuthorizationService,
               private countryService: CountryService,

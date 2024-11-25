@@ -26,8 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
@@ -37,7 +40,8 @@ import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
 
-//@SpringBootTest
+@Tag("skip-test-in-gradle-build")
+@SpringBootTest
 class UserServiceImplTest {
 
     @Mock
@@ -62,7 +66,7 @@ class UserServiceImplTest {
         when(authService.getLoggedInUser()).thenReturn(Optional.of(loggedInUser));
     }
 
-    //@Test
+    @Test
     void createUserAndCountries(){
         assertNotNull(userService);
         assertNotNull(userRepository);
@@ -75,7 +79,7 @@ class UserServiceImplTest {
         assertNotNull(user);
     }
 
-    //@Test
+    @Test
     void testCreateUserSourceCountries(){
         UpdateUserRequest request = new UpdateUserRequest();
         request.setFirstName("first");
@@ -106,7 +110,7 @@ class UserServiceImplTest {
 
     }
 
-    //@Test
+    @Test
     void updateUser() {
         User user = new User("username2", "first", "last", "email2@test.com", Role.admin);
         user.setId(1L);

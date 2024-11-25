@@ -16,13 +16,13 @@
 
 package org.tctalent.server.model.es;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -198,7 +198,7 @@ public class CandidateEs {
 
     @Getter
     @Setter
-    static class Occupation {
+    public static class Occupation {
         private String name;
 
         @Field(type = FieldType.Long)

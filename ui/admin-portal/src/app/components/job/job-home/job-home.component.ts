@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {SavedSearchService} from "../../../services/saved-search.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {HomeComponent} from "../../candidates/home.component";
@@ -13,6 +12,7 @@ import {SearchJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {SearchOppsBy} from "../../../model/base";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-job-home',

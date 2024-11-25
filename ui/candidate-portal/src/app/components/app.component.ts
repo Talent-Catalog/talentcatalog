@@ -55,7 +55,7 @@ export class AppComponent implements OnInit {
 
     //Register for language translation upload start and end events - which
     //drive the loading status.
-    LanguageLoader.languageLoading$.subscribe(
+    this.languageLoader.languageLoading$.subscribe(
       (loading: boolean) => {
         this.loading = loading;
       })
