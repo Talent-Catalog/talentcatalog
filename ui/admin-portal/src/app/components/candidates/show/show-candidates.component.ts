@@ -278,8 +278,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           )
         );
     }
-
-    this.candidateFieldService.setCandidateSource(this.candidateSource);
   }
 
   get pluralType() {

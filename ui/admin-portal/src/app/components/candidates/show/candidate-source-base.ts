@@ -84,6 +84,8 @@ export class CandidateSourceBaseComponent {
   }
 
   protected loadSelectedFields() {
+    this.candidateFieldService.setCandidateSource(this.candidateSource);
+
     this.selectedFields = this.candidateFieldService
     .getCandidateSourceFields(this.candidateSource, this.longFormat);
   }

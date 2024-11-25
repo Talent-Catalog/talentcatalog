@@ -84,6 +84,10 @@ export class CandidateFieldService {
     return this.getAddedBy(value);
   }
 
+  private addedByTooltip = (value) => {
+    return this.getAddedByPartner(value);
+  }
+
   private allDisplayableFields = [];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
@@ -166,9 +170,9 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Dependants", "numberDependants", null,
         null, null, true),
       new CandidateFieldInfo("Next Step", "candidateOpportunities.nextStep", null,
-      this.nextStepFormatter, null, true),
-      new CandidateFieldInfo("Added By", "candidateOpportunities.createdBy", null,
-      this.addedByFormatter, null, true),
+      this.nextStepFormatter, this.isSourceSubmissionList, true),
+      new CandidateFieldInfo("Added By", "candidateOpportunities.createdBy", this.addedByTooltip,
+      this.addedByFormatter, this.isSourceSubmissionList, true),
       new CandidateFieldInfo("Latest Intake", "latestIntake", this.intakeDatesTooltip,
       this.intakeTypeFormatter, null, false),
       new CandidateFieldInfo("Latest Intake Date", "latestIntakeDate", null,
@@ -279,6 +283,10 @@ export class CandidateFieldService {
 
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
+  }
+
+  isSourceSubmissionList = (): boolean => {
+   return this.candidateSource.sfJobOpp != null;
   }
 
   isDefault(fieldPaths: string[], longFormat: boolean) {
@@ -392,6 +400,11 @@ export class CandidateFieldService {
     let candidateOppForThisList: CandidateOpportunity = this.findCandidateOpp(candidate);
     return candidateOppForThisList?.createdBy.firstName + " " +
       candidateOppForThisList?.createdBy.lastName;
+  }
+
+  getAddedByPartner(candidate: Candidate): string {
+    let candidateOppForThisList: CandidateOpportunity = this.findCandidateOpp(candidate);
+    return candidateOppForThisList?.createdBy?.partner.name;
   }
 
   findCandidateOpp(candidate: Candidate): CandidateOpportunity {
