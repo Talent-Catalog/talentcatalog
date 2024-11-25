@@ -220,9 +220,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       surveyTypes: [[]],
       exclusionListId: [null],
       listAnyIds: [[]],
-      listAnySearchType: ['or'],
+      listAnySearchType: [null],
       listAllIds: [[]],
-      listAllSearchType: ['and'],
+      listAllSearchType: [null],
       unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
@@ -439,8 +439,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
-    this.searchForm.controls['listAllSearchType'].patchValue('and');
-    this.searchForm.controls['listAnySearchType'].patchValue('or');
+    this.searchForm.controls['listAllSearchType'].patchValue(null);
+    this.searchForm.controls['listAnySearchType'].patchValue(null);
 
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array

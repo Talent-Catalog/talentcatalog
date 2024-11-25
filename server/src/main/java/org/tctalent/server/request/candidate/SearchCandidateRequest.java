@@ -121,7 +121,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<Long> surveyTypeIds;
     private Long exclusionListId;
     private List<Long> listAllIds;
-    //TODO JC Replace SearchType with Boolean negated
     private SearchType listAllSearchType;
     private List<Long> listAnyIds;
     private SearchType listAnySearchType;

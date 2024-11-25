@@ -1057,7 +1057,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         //List any and all candidates
-        if (candidateIds1 != null) {
+        if (!CollectionUtils.isEmpty(candidateIds1)) {
             //Cast to Collection<Object> using Collections.unmodifiableCollection
             //See https://stackoverflow.com/a/63441108/929968
             nq = esService.makeTermsQuery(
@@ -1067,7 +1067,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
             esService.addAnd(boolQueryBuilder, nq);
         }
-        if (candidateIds2 != null) {
+        if (!CollectionUtils.isEmpty(candidateIds2)) {
             nq = esService.makeTermsQuery(
                 "masterId", Collections.unmodifiableCollection(candidateIds2));
             if (SearchType.not.equals(searchType2)) {
