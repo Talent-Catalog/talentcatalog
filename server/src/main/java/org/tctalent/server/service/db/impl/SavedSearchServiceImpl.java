@@ -1107,19 +1107,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 reqOccupations.add(occupation.getName());
             }
             if (!reqOccupations.isEmpty()) {
-                //Occupation name = ? and Years experience = ?
-                BoolQuery.Builder subQueryBuilder = new BoolQuery.Builder();
-                //TODO JC I think we need to loop through reqOccupations here
-                //todo Perfect one for unit test
-                nq = esService.makeTermsQuery(
-                    "occupations.name.keyword", reqOccupations);
-                esService.addAnd(subQueryBuilder, nq);
-                if (minYrs != null || maxYrs != null) {
-                    nq = esService.makeRangeQuery(
-                        "occupations.yearsExperience", minYrs, maxYrs);
-                    esService.addAnd(subQueryBuilder, nq);
+
+                //Loop through occupation names
+                // or'ing together "name in equOccupations" and "experience in range"
+                BoolQuery.Builder disjunctionBuilder = new BoolQuery.Builder();
+
+                for (Object occupationName : reqOccupations) {
+                    //Loop through constructing queries
+                    BoolQuery.Builder conjunctionBuilder = new BoolQuery.Builder();
+                    nq = esService.makeTermQuery("occupations.name.keyword", occupationName);
+                    esService.addAnd(conjunctionBuilder, nq);
+                    nq = esService.makeRangeQuery("occupations.yearsExperience", minYrs, maxYrs);
+                    esService.addAnd(conjunctionBuilder, nq);
+
+                    //Make the conjunction into a query
+                    //eg Occupation name = Basket weaver and Years experience >= 4
+                    nq = esService.makeCompoundQuery(conjunctionBuilder);
+                    //And "or" it into the disjunction builder
+                    esService.addOr(disjunctionBuilder, nq);
                 }
-                nq = esService.makeNestedQuery("occupations", subQueryBuilder);
+
+                nq = esService.makeNestedQuery("occupations", disjunctionBuilder);
+
                 esService.addAnd(boolQueryBuilder, nq);
             }
         }
