@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {getDestinationOccupationCatLink} from "../../../../../model/candidate";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 
@@ -13,7 +13,7 @@ export class OccupationCategoryComponent extends VisaCheckComponentBase implemen
 
   occupationCatLink: string;
 
-  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+  constructor(fb: UntypedFormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
     super(fb, candidateVisaCheckService);
   }
 

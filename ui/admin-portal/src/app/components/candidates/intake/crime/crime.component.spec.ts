@@ -18,7 +18,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {YesNoUnsure} from "../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
@@ -38,7 +38,7 @@ describe('CrimeComponent', () => {
       declarations: [CrimeComponent, AutosaveStatusComponent],
       imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService, useValue: mockCandidateService }
       ]
     }).compileComponents();

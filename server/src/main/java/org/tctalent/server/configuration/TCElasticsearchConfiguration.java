@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,29 +20,26 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.RestClients;
-import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.logging.LogBuilder;
 
 /**
- * Based on
- * https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#elasticsearch.clients.rest
- * and
- * https://www.baeldung.com/spring-data-elasticsearch-tutorial
+ * Elasticsearch configuration for Talent Catalog.
+ * <p/>
+ * See <a href="https://docs.spring.io/spring-data/elasticsearch/reference/migration-guides/migration-guide-4.4-5.0.html">
+ *     Spring Doc on upgrading to new Elasticsearch API</a>
  *
  * @author John Cameron
  */
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "org.tctalent.server.repository.es")
 @Slf4j
-public class ElasticsearchConfiguration extends AbstractElasticsearchConfiguration {
+public class TCElasticsearchConfiguration extends ElasticsearchConfiguration {
 
     @Value("${spring.elasticsearch.uris}")
     private List<String> uris;
@@ -52,10 +49,10 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
     private String password;
 
     @Override
-    @Bean
-    public @NonNull RestHighLevelClient elasticsearchClient() {
+    @NonNull
+    public ClientConfiguration clientConfiguration() {
         try {
-            if (uris != null && uris.size() > 0) {
+            if (uris != null && !uris.isEmpty()) {
                 URI uri = new URI(uris.get(0));
                 String hostAndPort = uri.getAuthority();
                 String protocol = uri.getScheme();
@@ -67,20 +64,18 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
                     .logInfo();
 
                 ClientConfiguration.MaybeSecureClientConfigurationBuilder x
-                        = ClientConfiguration.builder().connectedTo(hostAndPort);
+                    = ClientConfiguration.builder().connectedTo(hostAndPort);
 
                 if (useSsl) {
                     x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
-                            x.usingSsl();
+                        x.usingSsl();
                 }
 
-                if (username != null && username.length() > 0) {
+                if (username != null && !username.isEmpty()) {
                     x = (ClientConfiguration.MaybeSecureClientConfigurationBuilder)
-                            x.withBasicAuth(username, password);
+                        x.withBasicAuth(username, password);
                 }
-                ClientConfiguration clientConfiguration = x.build();
-
-                return RestClients.create(clientConfiguration).rest();
+                return x.build();
             } else {
                 throw new RuntimeException("Missing Elasticsearch URL");
             }

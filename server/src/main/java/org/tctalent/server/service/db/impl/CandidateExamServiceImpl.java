@@ -18,7 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidSessionException;

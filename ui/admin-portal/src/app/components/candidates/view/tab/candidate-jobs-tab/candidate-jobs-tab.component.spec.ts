@@ -26,7 +26,6 @@ import {
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {LocalStorageModule} from "angular-2-local-storage";
 
 describe('CandidateJobsTabComponent', () => {
   let component: CandidateJobsTabComponent;
@@ -34,7 +33,7 @@ describe('CandidateJobsTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [CandidateJobsTabComponent,ViewCandidateJobsComponent, CandidateOppsComponent]
     })
     .compileComponents();

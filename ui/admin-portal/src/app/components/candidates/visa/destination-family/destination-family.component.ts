@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {FamilyRelations} from "../../../../model/candidate";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {CandidateVisaCheckService} from "../../../../services/candidate-visa-check.service";
 import {VisaCheckComponentBase} from "../../../util/intake/VisaCheckComponentBase";
 
@@ -14,7 +14,7 @@ export class DestinationFamilyComponent extends VisaCheckComponentBase implement
 
   public destFamilyOptions: EnumOption[] = enumOptions(FamilyRelations);
 
-  constructor(fb: FormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+  constructor(fb: UntypedFormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
     super(fb, candidateVisaCheckService);
   }
 

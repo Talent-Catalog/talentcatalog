@@ -18,7 +18,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {SavedListService} from "../../../services/saved-list.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockSavedList} from "../../../MockData/MockSavedList";
@@ -56,7 +56,7 @@ describe('SearchExternalLinksComponent', () => {
       declarations: [SearchExternalLinksComponent,RouterLinkStubDirective],
       imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         {provide: SavedListService, useValue: savedListServiceMock},
         {provide: NgbModal, useValue: modalServiceMock},
         {provide: AuthorizationService, useValue: authServiceMock}

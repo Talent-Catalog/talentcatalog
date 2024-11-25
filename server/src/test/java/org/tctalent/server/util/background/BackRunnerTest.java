@@ -19,17 +19,12 @@ package org.tctalent.server.util.background;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-/**
- * TODO JC Doc
- *
- * @author John Cameron
- */
 class BackRunnerTest {
 
     private BackRunner<IdContext> backRunner;
@@ -58,7 +53,7 @@ class BackRunnerTest {
     void testFixedScheduling() throws InterruptedException {
         ScheduledFuture<?> scheduledFuture =
             backRunner.start(taskScheduler, backProcessor, new IdContext(null, 10),
-                1, TimeUnit.SECONDS);
+                Duration.ofSeconds(1));
         assertFalse(scheduledFuture.isDone());
         Thread.sleep(5000);
         assertTrue(scheduledFuture.isDone());

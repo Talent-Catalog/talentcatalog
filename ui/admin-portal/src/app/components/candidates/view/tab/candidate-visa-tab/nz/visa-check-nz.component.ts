@@ -25,6 +25,6 @@ import {CandidateIntakeData, CandidateVisa} from "../../../../../../model/candid
 })
 export class VisaCheckNzComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
-  @Input() candidateIntakeData: CandidateIntakeData;
+  @Input() declare candidateIntakeData: CandidateIntakeData;
   visaRecord: CandidateVisa;
 }

@@ -20,9 +20,8 @@ import {PartnerService} from "../../../../services/partner.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../../services/authorization.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {of} from "rxjs";
 import {SearchResults} from "../../../../model/search-results";
 import {Partner} from "../../../../model/partner";
@@ -54,9 +53,9 @@ describe('SearchPartnersComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [SearchPartnersComponent],
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule, LocalStorageModule.forRoot({})],
+      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: PartnerService, useValue: partnerServiceSpy },
         { provide: NgbModal, useValue: modalServiceSpy },
         { provide: AuthorizationService, useValue: authServiceSpy }

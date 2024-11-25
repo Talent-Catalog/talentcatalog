@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule, FormBuilder, FormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder, FormsModule} from '@angular/forms';
 import {AsylumYearComponent} from './asylum-year.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -26,19 +26,19 @@ import {DatePickerComponent} from "../../../util/date-picker/date-picker.compone
 describe('AsylumYearComponent', () => {
   let component: AsylumYearComponent;
   let fixture: ComponentFixture<AsylumYearComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AsylumYearComponent, AutosaveStatusComponent, DatePickerComponent],
       imports: [HttpClientTestingModule,NgbDatepickerModule, NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: CandidateService}
       ]
     }).compileComponents();
 
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

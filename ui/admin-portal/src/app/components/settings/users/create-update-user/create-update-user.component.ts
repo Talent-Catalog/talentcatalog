@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Role, UpdateUserRequest, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
@@ -37,7 +37,7 @@ import {AuthenticationService} from "../../../../services/authentication.service
 export class CreateUpdateUserComponent implements OnInit {
 
   user: User;
-  userForm: FormGroup;
+  userForm: UntypedFormGroup;
   error;
   working: boolean;
 
@@ -49,7 +49,7 @@ export class CreateUpdateUserComponent implements OnInit {
   readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private partnerService: PartnerService,
               private userService: UserService,
               private authenticationService: AuthenticationService,

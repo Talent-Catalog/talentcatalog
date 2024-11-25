@@ -17,10 +17,10 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {HomeComponent} from './home.component';
 import {NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
-import {LocalStorageModule, LocalStorageService} from 'angular-2-local-storage';
 import {SavedSearchService} from '../../services/saved-search.service';
 import {AuthenticationService} from '../../services/authentication.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {LocalStorageService} from "../../services/local-storage.service";
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -38,8 +38,7 @@ describe('HomeComponent', () => {
       declarations: [HomeComponent],
       imports: [
         NgbNavModule,
-        HttpClientTestingModule,
-        LocalStorageModule.forRoot({})
+        HttpClientTestingModule
       ],
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },

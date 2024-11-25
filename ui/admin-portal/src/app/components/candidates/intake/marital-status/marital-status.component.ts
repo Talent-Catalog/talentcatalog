@@ -23,7 +23,7 @@ import {
   YesNo,
   YesNoUnsure
 } from '../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EducationLevel} from '../../../../model/education-level';
@@ -51,7 +51,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
 
   years: number[];
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 

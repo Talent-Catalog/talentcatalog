@@ -18,8 +18,8 @@ import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {User} from "../../model/user";
 import {AuthorizationService} from "../../services/authorization.service";
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthenticationService} from "../../services/authentication.service";
+import {LocalStorageService} from "../../services/local-storage.service";
 
 
 @Component({

@@ -51,11 +51,10 @@ spring:
     redis:
         time-to-live: 300000
 
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
-
   data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
     # We explicitly enable repositories with @EnableJpaRepositories and
     # @EnableElasticsearchRepositories.
     # Turn off default enabling to avoid errors

@@ -1,5 +1,5 @@
 import {Directive, Input, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {CandidateVisaCheckService} from "../../../services/candidate-visa-check.service";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../model/candidate";
@@ -25,7 +25,7 @@ export abstract class VisaCheckComponentBase extends AutoSaveComponentBase imple
    * @param fb FormBuilder
    * @param candidateVisaCheckService Service which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder,
+  protected constructor(protected fb: UntypedFormBuilder,
                         private candidateVisaCheckService: CandidateVisaCheckService) {
     super(candidateVisaCheckService);
   }

@@ -15,7 +15,7 @@
  */
 import {MilitaryServiceComponent} from "./military-service.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -23,7 +23,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 describe('MilitaryServiceComponent', () => {
   let component: MilitaryServiceComponent;
   let fixture: ComponentFixture<MilitaryServiceComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -36,7 +36,7 @@ describe('MilitaryServiceComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MilitaryServiceComponent);
     component = fixture.componentInstance;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
     component.editable = false;
     fixture.detectChanges();
   });

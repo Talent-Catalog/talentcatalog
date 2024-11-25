@@ -21,7 +21,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
 import {By} from "@angular/platform-browser";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('EditCandidateMediaWillingnessComponent', () => {
@@ -29,7 +29,7 @@ describe('EditCandidateMediaWillingnessComponent', () => {
   let fixture: ComponentFixture<EditCandidateMediaWillingnessComponent>;
   let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;
-  let fb : FormBuilder;
+  let fb : UntypedFormBuilder;
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get', 'updateMedia']);
@@ -39,14 +39,14 @@ describe('EditCandidateMediaWillingnessComponent', () => {
       declarations: [EditCandidateMediaWillingnessComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpy },
         { provide: CandidateService, useValue: candidateServiceSpy }
       ]
     })
     .compileComponents();
 
-    fb = TestBed.inject(FormBuilder) as jasmine.SpyObj<FormBuilder>;
+    fb = TestBed.inject(UntypedFormBuilder) as jasmine.SpyObj<UntypedFormBuilder>;
     mockActiveModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     mockCandidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
   });

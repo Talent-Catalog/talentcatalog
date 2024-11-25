@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {RiskAssessmentComponent} from './risk-assessment.component';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
@@ -30,7 +30,7 @@ describe('RiskAssessmentComponent', () => {
       imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
       declarations: [RiskAssessmentComponent,AutosaveStatusComponent],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         {
           provide: CandidateVisaCheckService,
           useValue: jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod'])

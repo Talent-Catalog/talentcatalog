@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-input-text',
@@ -14,11 +14,11 @@ export class InputTextComponent implements OnInit {
   nRows = 1;
   showCancel: boolean = true;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(
     private activeModal: NgbActiveModal,
-    private fb: FormBuilder) { }
+    private fb: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({

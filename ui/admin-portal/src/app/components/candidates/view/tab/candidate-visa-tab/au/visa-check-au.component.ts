@@ -23,7 +23,7 @@ import {
 } from '../../../../../../model/candidate';
 import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
+import {LocalStorageService} from "../../../../../../services/local-storage.service";
 
 @Component({
   selector: 'app-visa-check-au',

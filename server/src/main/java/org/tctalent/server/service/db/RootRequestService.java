@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.RootRequest;
 

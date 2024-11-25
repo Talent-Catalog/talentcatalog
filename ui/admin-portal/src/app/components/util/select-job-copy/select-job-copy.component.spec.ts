@@ -2,7 +2,7 @@ import {SelectJobCopyComponent} from "./select-job-copy.component";
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular/core/testing";
 import {JobService} from "../../../services/job.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockJob} from "../../../MockData/MockJob";
@@ -26,7 +26,7 @@ describe('SelectJobCopyComponent', () => {
       providers: [
         { provide: JobService, useValue: jobService },
         { provide: NgbActiveModal, useValue: activeModal },
-        FormBuilder,
+        UntypedFormBuilder,
       ],
     }).compileComponents();
 

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {SavedList} from "../../../model/saved-list";
 import {TaskService} from "../../../services/task.service";
@@ -14,7 +14,7 @@ import {SavedListService} from "../../../services/saved-list.service";
   styleUrls: ['./assign-tasks-list.component.scss']
 })
 export class AssignTasksListComponent implements OnInit {
-  assignForm: FormGroup;
+  assignForm: UntypedFormGroup;
   filteredTaskAssociations: Task[];
   allTasks: Task[];
   savedList: SavedList;
@@ -23,7 +23,7 @@ export class AssignTasksListComponent implements OnInit {
   estDate: Date;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private modalService: NgbModal,
               private savedListService: SavedListService,
               private taskService: TaskService,

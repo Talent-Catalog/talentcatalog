@@ -15,7 +15,7 @@
  */
 
 import {Component, HostListener, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
 import Quill from 'quill';
@@ -37,7 +37,7 @@ export class CreateUpdatePostComponent implements OnInit {
 
   error: any;
   saving: any;
-  postForm: FormGroup;
+  postForm: UntypedFormGroup;
   quillEditorRef: Quill;
   public emojiPickerVisible: boolean = false;
   regexpLink: RegExp;
@@ -59,7 +59,7 @@ export class CreateUpdatePostComponent implements OnInit {
   public editorSelection: EditorSelection;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private rxStompService: RxStompService,
     private modalService: NgbModal,
     private chatPostService: ChatPostService,

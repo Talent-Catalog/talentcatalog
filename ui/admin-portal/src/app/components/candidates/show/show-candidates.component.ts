@@ -62,7 +62,7 @@ import {
   Status
 } from '../../../model/base';
 import {CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
@@ -80,7 +80,6 @@ import {
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
-import {LocalStorageService} from 'angular-2-local-storage';
 import {
   EditCandidateReviewStatusItemComponent
 } from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
@@ -107,6 +106,7 @@ import {getOpportunityStageName, OpportunityIds} from "../../../model/opportunit
 import {AuthenticationService} from "../../../services/authentication.service";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 interface CachedTargetList {
   sourceID: number;
@@ -126,8 +126,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
-  @Input() pageNumber: number;
-  @Input() pageSize: number;
+  @Input() declare pageNumber: number;
+  @Input() declare pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
@@ -135,7 +135,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Output() selectedCandidatesChange = new EventEmitter<Candidate[]>();
 
   loading: boolean;
-  searching: boolean;
   closing: boolean;
   adding: boolean;
   exporting: boolean;
@@ -148,11 +147,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   updatingTasks: boolean;
   savingSelection: boolean;
   showDescription: boolean = false;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   monitoredTask: Task;
   tasksAssignedToList: Task[];
 
-  results: SearchResults<Candidate>;
   subscription: Subscription;
   sortField = 'id';
   sortDirection = 'DESC';
@@ -171,7 +169,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   targetListId: number;
   targetListReplace: boolean;
   savedSelection: boolean;
-  timestamp: number;
   savedSearchSelectionChange: boolean;
 
   /**
@@ -195,7 +192,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   sideProfile: NgbOffcanvasRef;
 
   constructor(private http: HttpClient,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private candidateSourceService: CandidateSourceService,
               private savedSearchService: SavedSearchService,

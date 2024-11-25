@@ -8,7 +8,7 @@ import {
 import {ConfirmationComponent} from "../../../../../util/confirm/confirmation.component";
 import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
@@ -32,11 +32,11 @@ export class CandidateVisaJobComponent implements OnInit {
   selectedIndex: number;
   loading: boolean;
   error: string;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private authService: AuthorizationService) { }
 
   ngOnInit(): void {

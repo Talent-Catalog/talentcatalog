@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {JobEligibilityAssessmentComponent} from './job-eligibility-assessment.component';
 import {TBBEligibilityAssessment} from '../../../../../model/candidate';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -10,20 +10,20 @@ import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVi
 describe('JobEligibilityAssessmentComponent', () => {
   let component: JobEligibilityAssessmentComponent;
   let fixture: ComponentFixture<JobEligibilityAssessmentComponent>;
-  let fb: FormBuilder;
+  let fb: UntypedFormBuilder;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [JobEligibilityAssessmentComponent,AutosaveStatusComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
-      providers: [FormBuilder]
+      providers: [UntypedFormBuilder]
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(JobEligibilityAssessmentComponent);
     component = fixture.componentInstance;
-    fb = TestBed.inject(FormBuilder);
+    fb = TestBed.inject(UntypedFormBuilder);
     component.visaJobCheck = MockCandidateVisaJobCheck;
     fixture.detectChanges();
   });

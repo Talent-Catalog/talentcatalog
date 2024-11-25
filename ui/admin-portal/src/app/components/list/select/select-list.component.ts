@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {isSubmissionList, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
@@ -52,7 +52,7 @@ export class SelectListComponent implements OnInit {
 
   error: string = null;
   excludeList: SavedList;
-  form: FormGroup;
+  form: UntypedFormGroup;
   jobName: string;
   jobId: number;
   loading: boolean;
@@ -69,7 +69,7 @@ export class SelectListComponent implements OnInit {
   constructor(
     private savedListService: SavedListService,
     private activeModal: NgbActiveModal,
-    private fb: FormBuilder) { }
+    private fb: UntypedFormBuilder) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -163,7 +163,7 @@ export class SelectListComponent implements OnInit {
   }
 
   private nonBlankListName() {
-    return (group: FormGroup): { [key: string]: any } => {
+    return (group: UntypedFormGroup): { [key: string]: any } => {
       const newList: boolean = group.controls['newList'].value;
       if (newList) {
         const newListName: string = group.controls['newListName'].value;

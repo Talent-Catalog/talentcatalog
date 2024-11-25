@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearch} from "../../../../model/saved-search";
 import {CandidateReviewStatusService} from "../../../../services/candidate-review-status.service";
@@ -31,7 +31,7 @@ export class EditCandidateReviewStatusItemComponent implements OnInit {
   savedSearch: SavedSearch;
   candidateReviewStatusItemId: number;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   candidateId: number;
   error;
@@ -40,7 +40,7 @@ export class EditCandidateReviewStatusItemComponent implements OnInit {
   candidateReviewStatusItem: CandidateReviewStatusItem;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateReviewStatusService: CandidateReviewStatusService ) {
   }
 

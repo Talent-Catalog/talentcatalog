@@ -10,7 +10,7 @@ import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
 import {CandidateService} from "../../../services/candidate.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {ChatService} from "../../../services/chat.service";
 import {BehaviorSubject, forkJoin, Observable, Subscription} from "rxjs";
@@ -55,7 +55,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
   pageSize: number = 25;
   sortField = 'id';
   sortDirection = 'DESC';
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   candidates: Candidate[];
   results: SearchResults<Candidate>;
   // Used to stop the view from checking chat read statuses on candidate rows until after the chats
@@ -85,7 +85,7 @@ export class ShowCandidatesWithChatComponent implements OnInit {
 
   constructor(
     private candidateService: CandidateService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private chatService: ChatService
   ) {}
 

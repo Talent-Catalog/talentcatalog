@@ -16,7 +16,7 @@
 import {CreateExternalLinkComponent} from "./create-external-link.component";
 import {SavedListService} from "../../../../services/saved-list.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -29,7 +29,7 @@ describe('CreateExternalLinkComponent', () => {
   let fixture: ComponentFixture<CreateExternalLinkComponent>;
   let savedListServiceSpy: jasmine.SpyObj<SavedListService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: FormBuilder;
+  let formBuilder: UntypedFormBuilder;
   const savedLists: SavedList[] =  [MockSavedList];
   const link: SavedList = {
     fixed: false,
@@ -50,7 +50,7 @@ describe('CreateExternalLinkComponent', () => {
 
     savedListServiceSpy = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(FormBuilder);
+    formBuilder = TestBed.inject(UntypedFormBuilder);
   });
 
   beforeEach(() => {

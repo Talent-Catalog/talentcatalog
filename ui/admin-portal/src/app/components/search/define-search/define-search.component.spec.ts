@@ -17,7 +17,7 @@ import {DefineSearchComponent} from "./define-search.component";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {
   NgbDatepickerModule,
@@ -25,7 +25,6 @@ import {
   NgbTooltipModule,
   NgbTypeaheadModule
 } from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {RouterTestingModule} from "@angular/router/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {
@@ -51,9 +50,9 @@ describe('DefineSearchComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [DefineSearchComponent,LanguageLevelFormControlComponent,JoinSavedSearchComponent,DateRangePickerComponent],
-      imports: [ReactiveFormsModule,NgbTooltipModule,HttpClientTestingModule,NgbTypeaheadModule,NgbDatepickerModule,LocalStorageModule.forRoot({}),RouterTestingModule,NgSelectModule],
+      imports: [ReactiveFormsModule,NgbTooltipModule,HttpClientTestingModule,NgbTypeaheadModule,NgbDatepickerModule,RouterTestingModule,NgSelectModule],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         NgbModal,
         { provide: SearchQueryService, useValue: searchQuerySpy },
         { provide: AuthenticationService, useValue: authSpy },

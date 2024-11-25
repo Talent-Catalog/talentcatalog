@@ -17,7 +17,6 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AppComponent} from './app.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {AuthenticationService} from "../services/authentication.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {of, Subject} from "rxjs";
@@ -45,7 +44,6 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        LocalStorageModule.forRoot({}),
         RouterTestingModule // Add RouterTestingModule to imports
       ],
       declarations: [AppComponent],

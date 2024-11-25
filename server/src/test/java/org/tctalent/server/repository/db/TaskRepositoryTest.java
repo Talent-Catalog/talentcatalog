@@ -23,7 +23,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
@@ -31,7 +34,8 @@ import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.service.db.UserService;
 
-//@SpringBootTest
+@Tag("skip-test-in-gradle-build")
+@SpringBootTest
 class TaskRepositoryTest {
 
     @Autowired
@@ -51,7 +55,7 @@ class TaskRepositoryTest {
         owningUser = userService.getSystemAdminUser();
     }
 
-    //@Test
+    @Test
     void createTask() {
 
         task = new TaskImpl();
@@ -74,7 +78,7 @@ class TaskRepositoryTest {
 
     }
 
-    //@Test
+    @Test
     void fetchTask() {
         List<TaskImpl> tasks;
         tasks = taskRepository.findByName("Sample Upload Task");

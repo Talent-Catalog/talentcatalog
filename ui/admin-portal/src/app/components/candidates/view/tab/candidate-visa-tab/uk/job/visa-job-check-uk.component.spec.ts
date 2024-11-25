@@ -5,7 +5,6 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbAccordionModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {LocalStorageModule} from "angular-2-local-storage";
 import {
   RelocatingDependantsComponent
 } from "../../../../../visa/visa-job-assessments/relocating-dependants/relocating-dependants.component";
@@ -23,7 +22,7 @@ describe('VisaJobCheckUkComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,NgbAccordionModule,ReactiveFormsModule,
-        NgSelectModule,LocalStorageModule.forRoot({})],
+        NgSelectModule],
       declarations: [ VisaJobCheckUkComponent, RelocatingDependantsComponent, DependantsComponent ]
     })
     .compileComponents();

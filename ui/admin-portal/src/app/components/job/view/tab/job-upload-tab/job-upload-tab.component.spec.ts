@@ -6,7 +6,6 @@ import { JobPrepItem } from '../../../../../model/job-prep-item';
 import {MockJob} from "../../../../../MockData/MockJob";
 import {ViewJobUploadsComponent} from "../../uploads/view-job-uploads/view-job-uploads.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LocalStorageModule} from "angular-2-local-storage";
 
 describe('JobUploadTabComponent', () => {
   let component: JobUploadTabComponent;
@@ -14,7 +13,7 @@ describe('JobUploadTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,LocalStorageModule.forRoot({})],
+      imports:[HttpClientTestingModule],
       declarations: [ JobUploadTabComponent ,ViewJobUploadsComponent]
     })
     .compileComponents();

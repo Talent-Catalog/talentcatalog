@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateNoteService} from '../../../../../services/candidate-note.service';
 import {CandidateNote} from '../../../../../model/candidate-note';
@@ -30,7 +30,7 @@ export class EditCandidateNoteComponent implements OnInit {
 
   candidateNote: CandidateNote;
 
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
 
   countries = [];
   years = [];
@@ -39,7 +39,7 @@ export class EditCandidateNoteComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateNoteService: CandidateNoteService,
               private countryService: CountryService ) {
   }

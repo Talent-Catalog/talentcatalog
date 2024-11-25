@@ -3,7 +3,6 @@ import {Candidate, CandidateStatus} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {LocalStorageService} from "angular-2-local-storage";
 import {
   ChatPost,
   JobChat,
@@ -12,6 +11,7 @@ import {
 } from "../../../model/chat";
 import {forkJoin, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
 
 @Component({
   selector: 'app-view-candidate',
