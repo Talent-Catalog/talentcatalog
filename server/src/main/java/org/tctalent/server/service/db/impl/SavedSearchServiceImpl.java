@@ -964,28 +964,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         @Nullable Collection<Candidate> excludedCandidates,
         @Nullable SearchType searchType1, @Nullable Collection<Long> candidateIds1,
         @Nullable SearchType searchType2, @Nullable Collection<Long> candidateIds2) {
-    /*
-       Constructing a filtered simple query that looks like this:
-
-       GET /candidates/_search
-        {
-          "query": {
-            "bool": {
-              "must": [
-                { "simple_query_string": {"query":"the +jet+ engine"}}
-              ],
-              "filter": [
-                { "term":  { "status": "pending" }},
-                { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
-              ]
-            }
-          }
-        }
-     */
 
         User user = userService.getLoggedInUser();
 
-        //This is the conjunction that we will build, and'ing all of the search filters together.
+        //This is the conjunction that we will build, and'ing all the search filters together.
         BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
 
         //This is used a temporary variable to hold queries build from the search filters.
@@ -1059,8 +1041,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     esService.addAnd(nestedQueryBuilder, nq);
                 }
 
-                nq = esService.makeNestedQuery(
-                    "otherLanguages", nestedQueryBuilder);
+                nq = esService.makeNestedQuery("otherLanguages", nestedQueryBuilder);
                 esService.addAnd(boolQueryBuilder, nq);
             }
 
