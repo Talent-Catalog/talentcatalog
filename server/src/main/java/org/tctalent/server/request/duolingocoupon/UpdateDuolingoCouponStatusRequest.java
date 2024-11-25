@@ -16,7 +16,7 @@
 
 package org.tctalent.server.request.duolingocoupon;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.CouponStatus;
