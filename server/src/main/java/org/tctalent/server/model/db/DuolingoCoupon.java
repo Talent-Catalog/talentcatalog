@@ -84,12 +84,5 @@ public class DuolingoCoupon {
   @Column(name = "coupon_status")
   @Enumerated(EnumType.STRING)
   private DuolingoCouponStatus couponStatus;
-  /**
-   * The test status associated with this coupon (e.g., "Completed", "In Progress"). Can be null if
-   * no test activity has occurred.
-   */
-  @Nullable
-  @Column(name = "test_status")
-  private String testStatus;
 
 }
