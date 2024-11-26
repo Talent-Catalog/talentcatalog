@@ -175,4 +175,8 @@ export class CandidateSearchCardComponent implements OnInit, AfterViewChecked {
     return this.authorizationService.isAnAdmin();
   }
 
+  canSeeJobs() {
+    return this.authorizationService.canSeeJobs();
+  }
+
 }

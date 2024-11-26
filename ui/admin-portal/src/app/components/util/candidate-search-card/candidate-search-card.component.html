@@ -178,7 +178,7 @@
       </ng-container>
 
       <!-- JOBS -->
-      <ng-container ngbNavItem="jobs">
+      <ng-container *ngIf="canSeeJobs()" ngbNavItem="jobs">
         <a ngbNavLink>Jobs</a>
         <ng-template ngbNavContent>
           <app-candidate-jobs-tab

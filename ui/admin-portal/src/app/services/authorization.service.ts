@@ -481,4 +481,12 @@ export class AuthorizationService {
     }
     return editable
   }
+
+  /**
+   * Temp fix to stop limited demo partners unnecessarily seeing employer data. When time for
+   * removal, search for 'canSeeJobs' to find all usages.
+   */
+  canSeeJobs() {
+    return this.isSourcePartner() || this.isJobCreatorPartner();
+  }
 }

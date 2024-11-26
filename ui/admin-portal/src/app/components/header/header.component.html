@@ -32,7 +32,7 @@
 
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
       <ul class="nav nav-pills me-auto">
-        <li class="nav-item" >
+        <li *ngIf="canSeeJobs()" class="nav-item">
           <a title="Jobs available to Talent Catalog candidates"
              class="nav-link" [routerLink]="'/jobs'" [routerLinkActive]="'active'">Jobs</a>
         </li>

@@ -88,7 +88,7 @@
 
   </div>
 
-  <div class="d-flex align-items-end mb-4">
+  <div *ngIf="canSeeJobs()" class="d-flex align-items-end mb-4">
     <div class="flex-grow-1">
       <p class="small text-muted mb-0">Add candidate to a list</p>
       <ng-select
@@ -229,7 +229,7 @@
           </ng-container>
 
           <!-- JOBS -->
-          <ng-container ngbNavItem="Jobs">
+          <ng-container *ngIf="canSeeJobs()" ngbNavItem="Jobs">
             <a ngbNavLink>Jobs</a>
             <ng-template ngbNavContent>
               <app-candidate-jobs-tab

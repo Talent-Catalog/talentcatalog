@@ -189,4 +189,8 @@ export class HeaderComponent implements OnInit {
   isLocalEnv(): boolean {
     return window.location.host == 'localhost:4201';
   }
+
+  canSeeJobs() {
+    return this.authService.canSeeJobs();
+  }
 }
