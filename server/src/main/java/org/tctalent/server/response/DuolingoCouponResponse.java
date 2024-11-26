@@ -22,54 +22,58 @@ import lombok.Setter;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 
 /**
- * Represents a response object for Duolingo coupons.
- * This class contains details about a Duolingo coupon, such as its code,
- * expiration date, and status, which are returned to the client.
+ * Represents a response object for Duolingo coupons. This class contains details about a Duolingo
+ * coupon, such as its code, expiration date, and status, which are returned to the client.
  */
 @Getter
 @Setter
 public class DuolingoCouponResponse {
 
-  /** The unique identifier of the Duolingo coupon. */
+  /**
+   * The unique identifier of the Duolingo coupon.
+   */
   private Long id;
 
-  /** The unique code of the Duolingo coupon. */
+  /**
+   * The unique code of the Duolingo coupon.
+   */
   private String couponCode;
 
-  /** The expiration date and time of the coupon. */
+  /**
+   * The expiration date and time of the coupon.
+   */
   private LocalDateTime expirationDate;
 
-  /** The date and time when the coupon was sent to the assignee, if applicable. */
+  /**
+   * The date and time when the coupon was sent to the assignee, if applicable.
+   */
   private LocalDateTime dateSent;
 
-  /** The current status of the coupon (e.g., "Active", "Redeemed", "Expired"). */
+  /**
+   * The current status of the coupon (e.g., "Active", "Redeemed", "Expired").
+   */
   private DuolingoCouponStatus duolingoCouponStatus;
 
-  /** The test status associated with the coupon (e.g., "Test Started", "Test Completed"). */
-  private String testStatus;
 
   /**
    * Constructs a new DuolingoCouponResponse object with the specified details.
    *
-   * @param id            the unique identifier of the coupon
-   * @param couponCode    the unique code of the coupon
-   * @param expirationDate the expiration date and time of the coupon
-   * @param dateSent      the date and time when the coupon was sent
-   * @param duolingoCouponStatus  the current status of the coupon
-   * @param testStatus    the test status associated with the coupon
+   * @param id                   the unique identifier of the coupon
+   * @param couponCode           the unique code of the coupon
+   * @param expirationDate       the expiration date and time of the coupon
+   * @param dateSent             the date and time when the coupon was sent
+   * @param duolingoCouponStatus the current status of the coupon
    */
   public DuolingoCouponResponse(
       Long id,
       String couponCode,
       LocalDateTime expirationDate,
       LocalDateTime dateSent,
-      DuolingoCouponStatus duolingoCouponStatus,
-      String testStatus) {
+      DuolingoCouponStatus duolingoCouponStatus) {
     this.id = id;
     this.couponCode = couponCode;
     this.expirationDate = expirationDate;
     this.dateSent = dateSent;
     this.duolingoCouponStatus = duolingoCouponStatus;
-    this.testStatus = testStatus;
   }
 }
