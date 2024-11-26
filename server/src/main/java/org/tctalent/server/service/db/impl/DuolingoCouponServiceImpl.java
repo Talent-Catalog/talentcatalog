@@ -87,7 +87,6 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
           coupon.setExpirationDate(parseDate(line[2], FORMATTER1, FORMATTER2));
           coupon.setDateSent(parseDate(line[3], FORMATTER1, FORMATTER2));
           coupon.setCouponStatus(DuolingoCouponStatus.valueOf(getNullableValue(line[4]).toUpperCase()));
-          coupon.setTestStatus(getNullableValue(line[5]));
           newCoupons.add(coupon);
         }
       }
@@ -162,8 +161,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
         coupon.getCouponCode(),
         coupon.getExpirationDate(),
         coupon.getDateSent(),
-        coupon.getCouponStatus(),
-        coupon.getTestStatus()
+        coupon.getCouponStatus()
     );
   }
 
@@ -187,7 +185,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
               .action("parseDate")
               .message(String.format("Failed to parse date '%s' with formatter '%s'. Exception: %s",
                   dateString, formatter, ex.getMessage()))
-              .logInfo();
+              .logError(ex);
 
         }
       }
