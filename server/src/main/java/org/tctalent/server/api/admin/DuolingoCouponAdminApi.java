@@ -31,7 +31,6 @@ import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.service.db.DuolingoCouponService;
-import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.logging.LogBuilder;
 
 @RestController
@@ -64,7 +63,7 @@ public class DuolingoCouponAdminApi {
       LogBuilder.builder(log)
           .action("importCouponsFromCsv")
           .message("Failed to import coupons from CSV")
-          .logInfo();
+          .logError();
       // Return error response
       return Map.of("status", "failure", "message", "Failed to import coupons from CSV file.");
     }
@@ -80,7 +79,7 @@ public class DuolingoCouponAdminApi {
         .map(coupon -> {
           DuolingoCouponResponse response = new DuolingoCouponResponse(coupon.getId(),
               coupon.getCouponCode(), coupon.getExpirationDate(),
-              coupon.getDateSent(), coupon.getCouponStatus(), coupon.getTestStatus());
+              coupon.getDateSent(), coupon.getCouponStatus());
           return Map.of("status", "success", "coupon", response);
         })
         .orElse(Map.of("status", "failure", "message", "No available coupons"));
