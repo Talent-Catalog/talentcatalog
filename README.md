@@ -6,7 +6,7 @@ This is the repository for the Talent Catalog (TC), which manages data
 for refugees looking for skilled migration pathways into safe countries and employment.
 
 This repository is a "mono-repo", meaning it contains multiple sub-modules all of which
-make up the Talent Catalog system. In particular, it contains:
+make up the TC system. In particular, it contains:
 
 - **server**: the backend module of the system providing secure API (REST) access to the
   data, stored in an SQL Database. This module is written in Java / Spring Boot.
@@ -135,7 +135,7 @@ Download and install the latest of the following tools.
         docker-compose --version
       ```
 
-### Clone the Talent Catalog repository from Git ###
+### Clone the TC repository from Git ###
 
 - Clone [the repository](https://github.com/Talent-Catalog/talentcatalog.git) to your local system
 ```shell
@@ -148,7 +148,7 @@ git clone https://github.com/Talent-Catalog/talentcatalog.git
 With Docker and Docker Compose installed, you can now use docker-compose to set up the required 
 services: PostgreSQL, Redis, Elasticsearch, and optionally, Kibana.
 
-- The Talent Catalog repository includes a docker-compose.yml file in the docker-compose folder, 
+- The TC repository includes a docker-compose.yml file in the docker-compose folder, 
 with preconfigured services for PostgreSQL, Redis, Elasticsearch, and Kibana. This file is ready 
 for you to use.
 - To start the services, navigate to the docker-compose folder and run the following command:
@@ -178,26 +178,17 @@ services at once.
 
 ### Verify Services ###
 
-**PostgreSQL** will run listening on port 5432.
-You can verify this by running the following command in your terminal:
+The following services will all run from the Docker container:
+
+- **PostgreSQL** (listening on port 5432)
+- **Redis** (6379)
+- **Elasticsearch** (9200)
+- **Kibana** (5601)
+
+Verify with the following terminal command: 
 ```shell
-brew install postgresql
-psql -h localhost -U tctalent -d tctalent
+docker ps
 ```
-
-**Redis** will run listening on port 6379.
-You can verify this by running the following commands in your terminal:
-```shell
-brew install redis
-redis-cli -h localhost -p 6379
-````
-
-**Elasticsearch** will run listening on port 9200.
-You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
-
-**Kibana** runs listening on port 5601.
-You can verify this by going to [localhost:5601](http://localhost:5601) in your browser
-
 
 ### AWS management tools ###
 
@@ -249,29 +240,51 @@ Then you can run `init` (only need to do this once), and then `plan` or `apply`,
    terraform apply
    ```
 
-### Setup your local database ###
+### Set up your local database ###
 
-Ask Talent Catalog developers for a `pg_dump` of the database. Note that the dump does not have to
-be recent. The Talent Catalog software will automatically apply any required updates to the 
-database definition, driven by Flyway files stored in GitHub. A standard dump file is kept 
-specifically for getting new developers started. Just ask for a copy of the file.
+Ask TC developers for a `pg_dump` of the database. Note that the dump does not have to be recent. 
+The software will automatically apply any required updates to the database definition, driven by 
+Flyway files stored in GitHub. 
 
-   ```    
-   pg_dump --file=path/to/file.sql --create --username=tctalent --host=localhost --port=5432
+A standard dump file is kept specifically for getting new developers started, but TC developers can 
+also quickly create a new one from their local containerised version with the following commands:
+
+   ```shell    
+   docker exec -it docker-compose-postgres-1 pg_dump --file=/tmp/dump.sql --create --username=tctalent --host=localhost --port=5432
+   ```
+   ```shell    
+   docker cp docker-compose-postgres-1:/tmp/tcdump.sql </path/to/file>   
    ```
 
-Use `psql` to import that dump file into your newly created docker-compose database service.
+Once you have the dump, run Docker-Compose and check that your newly created `tctalent` database and 
+user are up and running by accessing the psql console:
+```shell
+docker exec -it docker-compose-postgres-1 psql -U tctalent -d tctalent
+```
+It should open with `tctalent=#` as prompt. If you get an error, return to the Docker-Compose setup 
+process.
 
+Otherwise, `\q` will exit the console. You can then copy the dump file to your Docker container and 
+use it to populate your empty database:
+
+   ```shell
+   docker cp <path/to/file> docker-compose-postgres-1:/tmp/dump.sql
    ```
-   psql -h localhost -d tctalent -U tctalent -f path/to/file.sql
+   ```shell
+   docker exec -it docker-compose-postgres-1 psql -U tctalent -d tctalent -f /tmp/dump.sql
    ```
+
+### Connect IntelliJ to your database ###
+- File > New > Data Source > PostgreSQL > PostgreSQL
+- Give the DB a name that clearly identifies it as your local development version.
+- Populate the other setup parameters with the default values in the `postgres` configuration of the project file `docker-compose.yml`.
 
 ### Run the server ###
 
 - Some secret information such as passwords and private keys are set in
-  environment variables - including programmatic access to Talent Catalog's Amazon AWS,
+  environment variables - including programmatic access to TC's Amazon AWS,
   Google and Salesforce accounts. If these environment variables are not set
-  the application will fail at start up. Contact other Talent Catalog developers for a copy of
+  the application will fail at start up. Contact other TC developers for a copy of
   a "secrets" file suitable for developers.
   On development computers you hook the file, tc_secrets.txt, into your computer's start up to
   set the relevant environment variables.
