@@ -21,9 +21,8 @@ CREATE TABLE duolingo_coupon (
                          candidate_id BIGINT,
                          expiration_date TIMESTAMP NOT NULL,
                          date_sent TIMESTAMP,
-                         coupon_status VARCHAR(50) NOT NULL,
-                         test_status VARCHAR(50)
-                    );
+                         coupon_status VARCHAR(50) NOT NULL
+                         );
 
 
 SELECT setval('coupon_id_seq', COALESCE((SELECT MAX(id) FROM duolingo_coupon), 1), false);
