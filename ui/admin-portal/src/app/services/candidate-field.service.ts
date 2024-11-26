@@ -401,13 +401,13 @@ export class CandidateFieldService {
 
   public getNextStep(candidate: Candidate): string {
     let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
-    return candidateOppForThisList?.nextStep;
+    return candidateOppForThisList.nextStep;
   }
 
   public getAddedBy(candidate: Candidate): string {
     let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
-    return candidateOppForThisList?.createdBy.firstName + " " +
-      candidateOppForThisList?.createdBy.lastName;
+    return candidateOppForThisList.createdBy.firstName + " " +
+      candidateOppForThisList.createdBy.lastName;
   }
 
   /**
@@ -416,8 +416,8 @@ export class CandidateFieldService {
    * @param candidate the given candidate for this table row
    */
   public getAddedByPartner(candidate: Candidate): string {
-    let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
-    return candidateOppForThisList?.createdBy?.partner.name;
+    const candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
+    return candidateOppForThisList.createdBy.partner.name;
   }
 
   // When displaying a submission list, will find the relevant candidate opp for given candidate.

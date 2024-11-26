@@ -21,12 +21,18 @@ import {AuthorizationService} from './authorization.service';
 import {Status} from '../model/base';
 import {Candidate} from '../model/candidate';
 import {TaskAssignment} from '../model/task-assignment';
+import {MockSavedList} from "../MockData/MockSavedList";
+import {MockSavedSearch} from "../MockData/MockSavedSearch";
+import {MockCandidate} from "../MockData/MockCandidate";
+import {mockCandidateOpportunity, mockCandidateOpportunity2} from "../MockData/MockCandidateOpportunity";
+import {MockUser} from "../MockData/MockUser";
 
 describe('CandidateFieldService', () => {
   let service: CandidateFieldService;
   let authService: jasmine.SpyObj<AuthorizationService>;
   let datePipe: DatePipe;
   let titleCasePipe: TitleCasePipe;
+  const savedSubList = MockSavedList;
 
   beforeEach(() => {
     const authServiceSpy = jasmine.createSpyObj('AuthorizationService', ['canViewCandidateName', 'canViewCandidateCountry', 'isAnAdmin']);
@@ -135,4 +141,44 @@ describe('CandidateFieldService', () => {
       expect(service.getTasksStatus(tasks)).toBe('Overdue');
     });
   });
+
+  describe('isSourceSubmissionList', () => {
+    it('should recognise when the saved list is not a submission list', () => {
+      savedSubList.registeredJob = false;
+      service['candidateSource'] = savedSubList;
+      expect(service.isSourceSubmissionList()).toBe(false);
+    })
+
+    it('should recognise when the saved list is a submission list', () => {
+      savedSubList.registeredJob = true;
+      service['candidateSource'] = savedSubList;
+      expect(service.isSourceSubmissionList()).toBe(true);
+    })
+
+    it('should recognise when the source is not a submission list', () => {
+      const savedSource = new MockSavedSearch();
+      service['candidateSource'] = savedSource;
+      expect(service.isSourceSubmissionList()).toBe(false);
+    })
+  })
+
+  describe('getAddedBy', () => {
+    it('should get details for the user who created the candidate opp', () => {
+      // Create mock candidate with one opp that matches the job that the sub list relates to.
+      savedSubList.id = 1;
+      service['candidateSource'] = savedSubList;
+
+      const candidate = new MockCandidate();
+      const matchingCandidateOpp = mockCandidateOpportunity;
+      matchingCandidateOpp.createdBy = new MockUser();
+      candidate.candidateOpportunities = [
+        mockCandidateOpportunity, mockCandidateOpportunity2
+      ]
+
+      const addedBy = service.getAddedBy(candidate);
+
+      expect(addedBy).toBe('John Doe');
+    })
+  })
+
 });
