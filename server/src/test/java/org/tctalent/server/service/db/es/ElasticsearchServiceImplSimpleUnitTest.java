@@ -152,6 +152,49 @@ class ElasticsearchServiceImplSimpleUnitTest {
     }
 
     @Test
+    void makeOtherLanguageNestedFilterTerms() {
+        NativeQuery nq;
+        
+        BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
+        
+        String otherLanguageName = "Arabic";
+        int minSpoken = 40;
+        int minWritten = 40;
+        
+
+        nq = esService.makeTermQuery(
+            "otherLanguages.name.keyword", otherLanguageName);
+        esService.addAnd(nestedQueryBuilder, nq);
+
+        Integer minOtherSpokenLevel = minSpoken;
+        if (minOtherSpokenLevel != null) {
+            nq = esService.makeRangeQuery(
+                "otherLanguages.minSpokenLevel", minOtherSpokenLevel, null);
+            esService.addAnd(nestedQueryBuilder, nq);
+        }
+
+        Integer minOtherWrittenLevel = minWritten;
+        if (minOtherWrittenLevel != null) {
+            nq = esService.makeRangeQuery(
+                "otherLanguages.minWrittenLevel", minOtherWrittenLevel, null);
+            esService.addAnd(nestedQueryBuilder, nq);
+        }
+
+        nq = esService.makeNestedQuery("otherLanguages", nestedQueryBuilder);
+
+        BoolQuery.Builder builder = new BoolQuery.Builder();
+        esService.addAnd(builder, nq);
+        
+        nq = esService.makeCompoundQuery(builder);
+        System.out.println(esService.nativeQueryToJson(nq));
+
+        String expectJson = "Query: " + """
+            {"bool":{"filter":[{"nested":{"path":"otherLanguages","query":{"bool":{"filter":[{"term":{"otherLanguages.name.keyword":{"value":"Arabic"}}},{"range":{"otherLanguages.minSpokenLevel":{"gte":40}}},{"range":{"otherLanguages.minWrittenLevel":{"gte":40}}}]}}}}]}}""";
+        assertEquals(expectJson, esService.nativeQueryToJson(nq));
+        
+    }
+
+    @Test
     void makeElasticNestedFilterTerm() {
 
         NativeQuery nq;
