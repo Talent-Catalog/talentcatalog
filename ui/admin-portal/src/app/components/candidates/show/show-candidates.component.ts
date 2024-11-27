@@ -33,7 +33,6 @@ import {
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
-import {SearchResults} from '../../../model/search-results';
 import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
@@ -473,8 +472,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           DtoType.EXTENDED,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
-            // Restore the selection prior to the search
-            this.setCurrentCandidate(saveCurrentCandidate);
+          // Restore the selection prior to the search using the updated results (otherwise updated fields won't appear)
+          const updatedCurrentCandidate = this.results.content.find(c => c.id == saveCurrentCandidate.id);
+          this.setCurrentCandidate(updatedCurrentCandidate);
           }, error => {
             // Error is already displayed in the UI
           }
