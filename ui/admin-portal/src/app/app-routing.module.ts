@@ -45,7 +45,7 @@ import {
   UserChangePasswordComponent
 } from "./components/account/user-change-password/user-change-password.component";
 import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
-import {DefaultRouteGuard} from "./services/defaultRoute.guard";
+import {CanSeeJobsRouteGuard} from "./services/can-see-jobs-route-guard.service";
 
 const routes: Routes = [
   {
@@ -64,8 +64,7 @@ const routes: Routes = [
       {
         //Default to Jobs
         path: '',
-        canActivate: [DefaultRouteGuard],
-        component: JobHomeComponent,
+        redirectTo: 'jobs',
         pathMatch: 'full'
       },
       {
@@ -94,11 +93,13 @@ const routes: Routes = [
       {
         path: 'jobs',
         pathMatch: 'full',
+        canActivate: [CanSeeJobsRouteGuard],
         component: JobHomeComponent,
         data: {title: 'TC Jobs'}
       },
       {
         path: 'job',
+        canActivate: [CanSeeJobsRouteGuard],
         children: [
           {
             path: '',
@@ -121,6 +122,7 @@ const routes: Routes = [
       },
       {
         path: 'opp',
+        canActivate: [CanSeeJobsRouteGuard],
         children: [
           {
             path: ':id',

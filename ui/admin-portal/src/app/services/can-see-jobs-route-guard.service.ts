@@ -21,16 +21,18 @@ import {AuthorizationService} from './authorization.service';
 @Injectable({
   providedIn: 'root'
 })
-export class DefaultRouteGuard implements CanActivate {
+export class CanSeeJobsRouteGuard implements CanActivate {
 
   constructor(private authService: AuthorizationService,
               private router: Router) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const redirectTo = this.authService.canSeeJobs() ? '/jobs' : '/searches';
-
-    this.router.navigate([redirectTo]);
-    return false
+    if (this.authService.canSeeJobs()) {
+      return true;
+    } else {
+      this.router.navigate(['/searches']);
+      return false
+    }
   }
 }
