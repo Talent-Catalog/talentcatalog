@@ -39,7 +39,7 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
-import {takeUntil} from "rxjs/operators";
+import {concatMap, takeUntil} from "rxjs/operators";
 
 
 @Component({
