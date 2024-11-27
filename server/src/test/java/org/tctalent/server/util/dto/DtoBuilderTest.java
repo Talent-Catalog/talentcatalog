@@ -16,15 +16,24 @@
 
 package org.tctalent.server.util.dto;
 
-import java.util.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 class DtoBuilderTest {
 
@@ -32,6 +41,16 @@ class DtoBuilderTest {
 
     @BeforeEach
     void setUp() {
+    }
+
+    @Test
+    @DisplayName("Issue #1607: Demonstrates bug and fix for bug where Page.size was not being serialized.")
+    void buildPage() {
+        builder = new DtoBuilder();
+        Page<String> page = new PageImpl<>(Arrays.asList("a", "b", "c"), Pageable.ofSize(25), 100);
+
+        final Map<String, Object> map = builder.buildPage(page);
+        assertEquals(25, map.get("size"));
     }
 
     static public class DiscriminatorPropertyFilter implements DtoPropertyFilter {
