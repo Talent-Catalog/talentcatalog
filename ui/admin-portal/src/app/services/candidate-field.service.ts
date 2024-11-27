@@ -388,13 +388,17 @@ export class CandidateFieldService {
   }
 
   public getNextStep(candidate: Candidate, source: CandidateSource): string {
-    let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate, source);
-    return candidateOppForThisList.nextStep;
+    let candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.nextStep;
   }
 
   public getAddedBy(candidate: Candidate, source: CandidateSource): string {
-    const candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate, source);
-    return candidateOppForThisList.createdBy.firstName + " " +
+    const candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.createdBy.firstName + " " +
       candidateOppForThisList.createdBy.lastName;
   }
 
@@ -406,15 +410,23 @@ export class CandidateFieldService {
    * search.
    */
   public getAddedByPartner(candidate: Candidate, source: CandidateSource): string {
-    const candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate, source);
-    return candidateOppForThisList.createdBy.partner.name;
+    const candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.createdBy.partner.name;
   }
 
   // When displaying a submission list, will find the relevant candidate opp for given candidate.
   private findRelevantCandidateOpp(candidate: Candidate, source: CandidateSource): CandidateOpportunity {
-    return candidate.candidateOpportunities.find(
+    const opp = candidate.candidateOpportunities.find(
       opp => opp.jobOpp.submissionList.id == source.id
     );
+    if (opp === null) {
+      console.warn('No matching opp found for this candidate and source');
+      return null;
+    } else {
+      return opp;
+    }
   }
 
 }

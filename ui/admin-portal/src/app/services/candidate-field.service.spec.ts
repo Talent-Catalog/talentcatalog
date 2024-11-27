@@ -60,7 +60,7 @@ describe('CandidateFieldService', () => {
 
   describe('get defaultDisplayableFieldsLong', () => {
     it('should return the default fields in long format', () => {
-      const fields = service.defaultDisplayableFieldsLong;
+      const fields = service.getDefaultDisplayableFieldsLong(savedSubList);
       expect(fields.length).toBe(5); // Check the length of default fields
       expect(fields[0].fieldPath).toBe('status');
     });
@@ -68,7 +68,7 @@ describe('CandidateFieldService', () => {
 
   describe('get defaultDisplayableFieldsShort', () => {
     it('should return the default fields in short format', () => {
-      const fields = service.defaultDisplayableFieldsShort;
+      const fields = service.getDefaultDisplayableFieldsShort(savedSubList);
       expect(fields.length).toBe(2); // Check the length of default fields
       expect(fields[0].fieldPath).toBe('user.partner.abbreviation');
     });
@@ -77,7 +77,7 @@ describe('CandidateFieldService', () => {
   describe('getFieldsFromPaths', () => {
     it('should return fields based on provided paths', () => {
       const paths = ['gender'];
-      const fields = service.getFieldsFromPaths(paths);
+      const fields = service.getFieldsFromPaths(paths, savedSubList);
       expect(fields.length).toBe(1);
       expect(fields[0].fieldPath).toBe('gender');
     });
@@ -145,20 +145,17 @@ describe('CandidateFieldService', () => {
   describe('isSourceSubmissionList', () => {
     it('should recognise when the saved list is not a submission list', () => {
       savedSubList.registeredJob = false;
-      service['candidateSource'] = savedSubList;
-      expect(service.isSourceSubmissionList()).toBe(false);
+      expect(service.isSourceSubmissionList(savedSubList)).toBe(false);
     })
 
     it('should recognise when the saved list is a submission list', () => {
       savedSubList.registeredJob = true;
-      service['candidateSource'] = savedSubList;
-      expect(service.isSourceSubmissionList()).toBe(true);
+      expect(service.isSourceSubmissionList(savedSubList)).toBe(true);
     })
 
     it('should recognise when the source is not a submission list', () => {
       const savedSource = new MockSavedSearch();
-      service['candidateSource'] = savedSource;
-      expect(service.isSourceSubmissionList()).toBe(false);
+      expect(service.isSourceSubmissionList(savedSource)).toBe(false);
     })
   })
 
@@ -166,7 +163,6 @@ describe('CandidateFieldService', () => {
     it('should get details for the user who created the candidate opp', () => {
       // Create mock candidate with one opp that matches the job that the sub list relates to.
       savedSubList.id = 1;
-      service['candidateSource'] = savedSubList;
 
       const candidate = new MockCandidate();
       const matchingCandidateOpp = mockCandidateOpportunity;
@@ -175,7 +171,7 @@ describe('CandidateFieldService', () => {
         mockCandidateOpportunity, mockCandidateOpportunity2
       ]
 
-      const addedBy = service.getAddedBy(candidate);
+      const addedBy = service.getAddedBy(candidate, savedSubList);
 
       expect(addedBy).toBe('John Doe');
     })
