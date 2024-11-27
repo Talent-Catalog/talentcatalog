@@ -87,11 +87,16 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
-    this.candidateService.candidateUpdated$.pipe(takeUntil(this.destroy$)).subscribe(candidate => {
-      // Spread operator to merge the updated candidate object from the observable, with the extended dto candidate object
-      // that we get when initially loading the candidate profile. See doc about Spread
-      // https://www.typescriptlang.org/docs/handbook/variable-declarations.html#spread.
-      this.candidate = {...this.candidate, ...candidate}
+    this.candidateService.candidateUpdated$.pipe(
+      takeUntil(this.destroy$),
+      concatMap(() => {
+        return this.candidateService.getByNumber(this.candidate.candidateNumber)
+      })
+      ).subscribe(candidate => {
+      // We aren't able to merge two candidate objects (e.g. using Spread operator like in the candidate-search-card)
+      // if a value is changed to null. Null values aren't returned via the updated object DTO and therefore there is nothing
+      // to replace the old value with the new null value. So in this case, it is best to fetch the new object.
+      this.candidate = candidate;
     })
   }
 
