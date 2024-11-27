@@ -35,18 +35,18 @@ import {SavedList} from "../model/saved-list";
 })
 export class CandidateFieldService {
 
-  // Dictates whether certain fields are available, e.g. Next Step and Added By, which require the
-  // source to be a submission list.
-  private candidateSource: CandidateSource;
-
-  /**
-   * Set by the component that requires the service, as a first step before rendering the table
-   * headers, which depend on checking this property.
-   * @param source the source type for which the candidate fields are being provided
-   */
-  public setCandidateSource(source: CandidateSource) {
-    this.candidateSource = source;
-  }
+  // // Dictates whether certain fields are available, e.g. Next Step and Added By, which require the
+  // // source to be a submission list.
+  // private candidateSource: CandidateSource;
+  //
+  // /**
+  //  * Set by the component that requires the service, as a first step before rendering the table
+  //  * headers, which depend on checking this property.
+  //  * @param source the source type for which the candidate fields are being provided
+  //  */
+  // public setCandidateSource(source: CandidateSource) {
+  //   this.candidateSource = source;
+  // }
 
   //Note - if you want to use any other pipes for formatting, you also need to
   //add them to providers array in app.module.ts.
@@ -199,19 +199,19 @@ export class CandidateFieldService {
     }
   }
 
-  get defaultDisplayableFieldsLong(): CandidateFieldInfo[] {
-    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsLong);
+  getDefaultDisplayableFieldsLong(source: CandidateSource): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsLong, source);
   }
 
-  get defaultDisplayableFieldsShort(): CandidateFieldInfo[] {
-    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsShort);
+  getDefaultDisplayableFieldsShort(source: CandidateSource): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsShort, source);
   }
 
-  get displayableFieldsMap(): Map<string, CandidateFieldInfo> {
+  getDisplayableFieldsMap(source: CandidateSource): Map<string, CandidateFieldInfo> {
     const fields = new Map<string, CandidateFieldInfo>();
     //Filter based on field selectors
     for (const field of this.allDisplayableFields) {
-      if (field.fieldSelector == null || field.fieldSelector()) {
+      if (field.fieldSelector == null || field.fieldSelector(source)) {
         fields.set(field.fieldPath, field);
       }
     }
@@ -236,13 +236,13 @@ export class CandidateFieldService {
           fieldPaths = this.defaultDisplayedFieldPathsShort;
         }
       }
-      fields = this.getFieldsFromPaths(fieldPaths);
+      fields = this.getFieldsFromPaths(fieldPaths, source);
     }
     return fields;
   }
 
 
-  getFieldsFromPaths(fieldPaths: string []): CandidateFieldInfo[] {
+  getFieldsFromPaths(fieldPaths: string [], source:CandidateSource): CandidateFieldInfo[] {
     const fields: CandidateFieldInfo[] = [];
 
     for (const fieldPath of fieldPaths) {
@@ -251,7 +251,7 @@ export class CandidateFieldService {
         console.error("CandidateFieldService: Could not find field for " + fieldPath)
       } else {
         //Ignore fields with a selector which returns false
-        if (field.fieldSelector == null || field.fieldSelector()) {
+        if (field.fieldSelector == null || field.fieldSelector(source)) {
           fields.push(field);
         }
       }
@@ -293,9 +293,10 @@ export class CandidateFieldService {
     return this.authService.isAnAdmin();
   }
 
-  isSourceSubmissionList = (): boolean => {
-    return (this.candidateSource as SavedList).registeredJob === true;
-  }
+  isSourceSubmissionList = (source: CandidateSource): boolean => {
+    return (source as SavedList).registeredJob === true;
+  };
+
 
   isDefault(fieldPaths: string[], longFormat: boolean) {
     if (fieldPaths == null) {

@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {Candidate} from "./candidate";
+import {CandidateSource} from "./base";
 
 export class CandidateFieldInfo {
   /**
@@ -46,7 +47,7 @@ export class CandidateFieldInfo {
   constructor(displayName: string, fieldPath: string,
               private tooltipSupplier: (value: any) => string,
               private fieldFormatter: (value: any) => string,
-              public fieldSelector: () => boolean,
+              public fieldSelector: (source: CandidateSource) => boolean,
               public sortable: boolean) {
     this.displayName = displayName;
     this.fieldPath = fieldPath;
