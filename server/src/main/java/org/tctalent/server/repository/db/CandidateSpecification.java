@@ -402,6 +402,8 @@ public class CandidateSpecification {
             SearchType listAllSearchType = request.getListAllSearchType();
             final List<Long> listAllIds = request.getListAllIds();
             if (!Collections.isEmpty(listAllIds)) {
+                Predicate subExpression = cb.conjunction();
+
                 for (Long listAllId : listAllIds) {
                     Subquery<Candidate> sq = query.subquery(Candidate.class);
                     Root<CandidateSavedList> csl = sq.from(CandidateSavedList.class);
@@ -409,14 +411,12 @@ public class CandidateSpecification {
                         cb.equal(csl.get("savedList").get("id"), listAllId)
                     );
 
-                    //Compute the predicate depending on whether it is negated
-                    //TODO JC If NOT then shouldn't the cb.and be a cb or else apply the NOT at the end.
-                    conjunction = cb.and(conjunction,
-                        SearchType.not.equals(listAllSearchType)
-                            ? cb.in(candidate).value(sq).not()
-                            : cb.in(candidate).value(sq)
-                    );
+                    subExpression = cb.and(subExpression, cb.in(candidate).value(sq));
                 }
+                if (SearchType.not.equals(listAllSearchType)) {
+                    subExpression = cb.not(subExpression);
+                }
+                conjunction = cb.and(conjunction, subExpression);
             }
 
             //CANDIDATE OPPORTUNITIES
