@@ -22,6 +22,7 @@ import {CandidateLanguageService} from '../../../../services/candidate-language.
 import {EditCandidateLanguageComponent} from './edit/edit-candidate-language.component';
 import {CreateCandidateLanguageComponent} from "./create/create-candidate-language.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-language',
@@ -40,28 +41,11 @@ export class ViewCandidateLanguageComponent implements OnInit {
   error;
 
   constructor(private candidateLanguageService: CandidateLanguageService,
+              private candidateService: CandidateService,
               private modalService: NgbModal ) {
   }
 
   ngOnInit() {
-    /*
-      If an accordion in intake set subscribe to the toggle all buttons in intake candidate component
-      called when the toggleAll method is called in the parent component
-     */
-  }
-
-  search() {
-    this.loading = true;
-    this.candidateLanguageService.list(this.candidate.id).subscribe(
-      candidateLanguages => {
-        this.candidateLanguages = candidateLanguages;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
   }
 
   editCandidateLanguage(candidateLanguage: CandidateLanguage) {
@@ -73,7 +57,7 @@ export class ViewCandidateLanguageComponent implements OnInit {
     editCandidateLanguageModal.componentInstance.candidateLanguage = candidateLanguage;
 
     editCandidateLanguageModal.result
-      .then((candidateLanguage) => this.search())
+      .then((candidateLanguage) => this.candidateService.updateCandidate(candidateLanguage.candidate))
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -87,7 +71,7 @@ export class ViewCandidateLanguageComponent implements OnInit {
     createCandidateLanguageModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateLanguageModal.result
-      .then((candidateLanguage) => this.search())
+      .then((candidateLanguage) => this.candidateService.updateCandidate(candidateLanguage.candidate))
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -106,13 +90,12 @@ export class ViewCandidateLanguageComponent implements OnInit {
           this.candidateLanguageService.delete(candidateLanguage.id).subscribe(
             (user) => {
               this.loading = false;
-              this.search();
+              this.candidateService.updateCandidate(candidateLanguage.candidate)
             },
             (error) => {
               this.error = error;
               this.loading = false;
             });
-          this.search();
         }
       })
       .catch(() => { /* Isn't possible */ });
