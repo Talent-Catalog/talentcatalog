@@ -543,16 +543,16 @@
               </td>
               <td *ngFor="let field of selectedFields">
 
-                <span [ngbTooltip]="field.getTooltip(candidate)"  [ngClass]="{
-                'text-danger': field.getValue(candidate) === 'Overdue',
-                'text-success' : field.getValue(candidate) == 'Completed',
-                'text-warning' : field.getValue(candidate) == 'Abandoned'}">
+                <span [ngbTooltip]="field.getTooltip(candidate, candidateSource)"  [ngClass]="{
+                'text-danger': field.getValue(candidate, candidateSource) === 'Overdue',
+                'text-success' : field.getValue(candidate, candidateSource) == 'Completed',
+                'text-warning' : field.getValue(candidate, candidateSource) == 'Abandoned'}">
 <!--                  todo Have switch on display of arrays vs non arrays.
 Non arrays or single value arrays, just display value
 
 arrays with more than one value display in drop down
 -->
-                  {{field.getValue(candidate)}}
+                  {{field.getValue(candidate, candidateSource)}}
                 </span>
               </td>
             </tr>

@@ -35,19 +35,6 @@ import {SavedList} from "../model/saved-list";
 })
 export class CandidateFieldService {
 
-  // // Dictates whether certain fields are available, e.g. Next Step and Added By, which require the
-  // // source to be a submission list.
-  // private candidateSource: CandidateSource;
-  //
-  // /**
-  //  * Set by the component that requires the service, as a first step before rendering the table
-  //  * headers, which depend on checking this property.
-  //  * @param source the source type for which the candidate fields are being provided
-  //  */
-  // public setCandidateSource(source: CandidateSource) {
-  //   this.candidateSource = source;
-  // }
-
   //Note - if you want to use any other pipes for formatting, you also need to
   //add them to providers array in app.module.ts.
   //See https://stackoverflow.com/a/48785621/929968
@@ -84,16 +71,16 @@ export class CandidateFieldService {
     return this.getIntakeDates(value);
   }
 
-  private nextStepFormatter = (value) => {
-    return this.getNextStep(value);
+  private nextStepFormatter = (value: any, value2: any) => {
+    return this.getNextStep(value, value2);
   }
 
-  private addedByFormatter = (value) => {
-    return this.getAddedBy(value);
+  private addedByFormatter = (value: any, value2: any) => {
+    return this.getAddedBy(value, value2);
   }
 
-  private addedByTooltip = (value) => {
-    return this.getAddedByPartner(value);
+  private addedByTooltip = (value: any, value2: any) => {
+    return this.getAddedByPartner(value, value2);
   }
 
   private allDisplayableFields = [];
@@ -400,13 +387,13 @@ export class CandidateFieldService {
     return status;
   }
 
-  public getNextStep(candidate: Candidate): string {
-    let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
+  public getNextStep(candidate: Candidate, source: CandidateSource): string {
+    let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate, source);
     return candidateOppForThisList.nextStep;
   }
 
-  public getAddedBy(candidate: Candidate): string {
-    let candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
+  public getAddedBy(candidate: Candidate, source: CandidateSource): string {
+    const candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate, source);
     return candidateOppForThisList.createdBy.firstName + " " +
       candidateOppForThisList.createdBy.lastName;
   }
@@ -415,16 +402,18 @@ export class CandidateFieldService {
    * Populates the tooltip for values in the Added By column — saves table space by providing the
    * partner name in this form.
    * @param candidate the given candidate for this table row
+   * @param source the source that the displayed candidates belong to, e.g., submission list, saved
+   * search.
    */
-  public getAddedByPartner(candidate: Candidate): string {
-    const candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate);
+  public getAddedByPartner(candidate: Candidate, source: CandidateSource): string {
+    const candidateOppForThisList: CandidateOpportunity = this.findRelevantCandidateOpp(candidate, source);
     return candidateOppForThisList.createdBy.partner.name;
   }
 
   // When displaying a submission list, will find the relevant candidate opp for given candidate.
-  private findRelevantCandidateOpp(candidate: Candidate): CandidateOpportunity {
+  private findRelevantCandidateOpp(candidate: Candidate, source: CandidateSource): CandidateOpportunity {
     return candidate.candidateOpportunities.find(
-      opp => opp.jobOpp.submissionList.id == this.candidateSource.id
+      opp => opp.jobOpp.submissionList.id == source.id
     );
   }
 

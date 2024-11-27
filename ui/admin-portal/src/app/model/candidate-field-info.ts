@@ -45,24 +45,24 @@ export class CandidateFieldInfo {
    * would otherwise cause an error (using *ngIf).
    */
   constructor(displayName: string, fieldPath: string,
-              private tooltipSupplier: (value: any) => string,
-              private fieldFormatter: (value: any) => string,
-              public fieldSelector: (source: CandidateSource) => boolean,
+              private tooltipSupplier: (value: any, value2: any) => string,
+              private fieldFormatter: (value: any, value2: any) => string,
+              public fieldSelector: (value: any) => boolean,
               public sortable: boolean) {
     this.displayName = displayName;
     this.fieldPath = fieldPath;
   }
 
-  getTooltip(candidate: Candidate): string {
+  getTooltip(candidate: Candidate, source: CandidateSource): string {
     let tooltip: string = '';
     if (this.tooltipSupplier != null) {
-      const value = this.getValue(candidate);
-      tooltip = this.tooltipSupplier(candidate);
+      const value = this.getValue(candidate, source);
+      tooltip = this.tooltipSupplier(candidate, source);
     }
     return tooltip;
   }
 
-  getValue(candidate: Candidate): string {
+  getValue(candidate: Candidate, source: CandidateSource): string {
     let value;
     // Need to format field with the candidate object not value
     if (this.fieldPath === "ieltsScore" || this.fieldPath === "frenchAssessmentScoreNclc" ||
@@ -74,7 +74,7 @@ export class CandidateFieldInfo {
       value = this.getUnformattedValue(candidate);
     }
     const ret = value == null ? null :
-      this.fieldFormatter == null ? value : this.fieldFormatter(value);
+      this.fieldFormatter == null ? value : this.fieldFormatter(value, source);
     return ret;
   }
 
