@@ -21,6 +21,7 @@ import {CandidateExamService} from "../../../../services/candidate-exam.service"
 import {CreateCandidateExamComponent} from "./create/create-candidate-exam.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {EditCandidateExamComponent} from "./edit/edit-candidate-exam.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-exam',
@@ -39,25 +40,12 @@ export class ViewCandidateExamComponent implements OnChanges {
   error;
 
   constructor(private candidateExamService: CandidateExamService,
+              private candidateService: CandidateService,
               private modalService: NgbModal) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
 
-  }
-
-  doSearch() {
-    this.loading = true;
-    this.candidateExamService.list(this.candidate.id).subscribe(
-      candidateExams => {
-        this.candidateExams = candidateExams;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
   }
 
   createCandidateExam() {
@@ -69,7 +57,7 @@ export class ViewCandidateExamComponent implements OnChanges {
     createCandidateExamModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateExamModal.result
-    .then((candidateExam) => this.doSearch())
+    .then((candidateExam) => this.candidateService.updateCandidate())
     .catch(() => { /* Isn't possible */ });
 
   }
@@ -83,7 +71,7 @@ export class ViewCandidateExamComponent implements OnChanges {
     editCandidateExamModal.componentInstance.candidateExam = candidateExam;
 
     editCandidateExamModal.result
-    .then(() => this.doSearch())
+    .then(() => this.candidateService.updateCandidate())
     .catch(() => { /* Isn't possible */ });
 
   }
@@ -101,13 +89,12 @@ export class ViewCandidateExamComponent implements OnChanges {
         this.candidateExamService.delete(candidateExam.id).subscribe(
           (user) => {
             this.loading = false;
-            this.doSearch();
+            this.candidateService.updateCandidate();
           },
           (error) => {
             this.error = error;
             this.loading = false;
           });
-        this.doSearch();
       }
     })
     .catch(() => { /* Isn't possible */ });
