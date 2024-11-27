@@ -24,6 +24,7 @@ import {environment} from '../../../../../environments/environment';
 import {CreateCandidateAttachmentComponent} from './create/create-candidate-attachment.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {EditCandidateAttachmentComponent} from './edit/edit-candidate-attachment.component';
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -49,6 +50,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   hasMore: boolean;
 
   constructor(private candidateAttachmentService: CandidateAttachmentService,
+              private candidateService: CandidateService,
               private modalService: NgbModal,
               private fb: UntypedFormBuilder) {
   }
@@ -60,50 +62,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   ngOnInit() {  }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.expanded = false;
-    this.attachments = [];
-
-    this.attachmentForm = this.fb.group({
-      candidateId: [this.candidate.id],
-      pageSize: 10,
-      pageNumber: 0,
-      sortDirection: 'DESC',
-      sortFields: [['createdDate']]
-    });
-
-    // Only do paged search of attachments if on candidate profile (editable = true).
-    // On the search card we display all attachments no paging.
-    if (this.editable) {
-      this.doPagedSearch(true);
-    } else {
       this.attachments = this.candidate.candidateAttachments;
-    }
-  }
-
-  doPagedSearch(refresh: boolean) {
-    this.loading = true;
-    refresh ? this.attachmentForm.controls['pageNumber'].patchValue(0) : null;
-    this.candidateAttachmentService.searchPaged(this.attachmentForm.value).subscribe(
-      results => {
-        if (refresh) {
-          this.attachments = results.content;
-        } else {
-          this.attachments.push(...results.content);
-        }
-
-        this.hasMore = results.totalPages > results.number + 1;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
-  }
-
-  loadMore() {
-    this.attachmentForm.controls['pageNumber'].patchValue(this.attachmentForm.value.pageNumber + 1);
-    this.doPagedSearch(false);
   }
 
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {
@@ -116,16 +75,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
     editCandidateAttachmentModal.result
       .then((updated) => {
-        const index = this.attachments.findIndex(attachment => attachment.id === updated.id);
-        if (index >= 0) {
-          /* DEBUG */
-          // console.log('index', index);
-          this.attachments[index] = updated;
-        } else {
-          /* DEBUG */
-          // console.log('updated', updated);
-          this.doPagedSearch(true); // Shouldn't be necessary, but is here as a fail-safe
-        }
+        this.candidateService.updateCandidate();
       })
       .catch(() => { /* Isn't possible */
       });
@@ -142,10 +92,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
     createCandidateAttachmentModal.result
       .then(() => {
-        this.doPagedSearch(true);
-        //Adding attachment should add a folder link if there was not one
-        //there before. So emit a candidateChanged event.
-        this.candidateChanged.emit();
+        this.candidateService.updateCandidate();
       })
       .catch(() => { /* Isn't possible */ });
   }
@@ -163,7 +110,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
         if (result === true) {
           this.candidateAttachmentService.deleteAttachment(attachment.id).subscribe(
             () => {
-              this.doPagedSearch(true);
+              this.candidateService.updateCandidate();
             },
             (error) => {
               this.error = error;
