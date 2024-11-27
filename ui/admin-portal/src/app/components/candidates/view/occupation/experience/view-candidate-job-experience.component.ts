@@ -22,11 +22,12 @@ import {CandidateJobExperience} from '../../../../../model/candidate-job-experie
 import {CandidateJobExperienceService} from '../../../../../services/candidate-job-experience.service';
 import {EditCandidateJobExperienceComponent} from './edit/edit-candidate-job-experience.component';
 import {CreateCandidateJobExperienceComponent} from './create/create-candidate-job-experience.component';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {UntypedFormGroup} from '@angular/forms';
 import {SearchResults} from '../../../../../model/search-results';
 import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupation.component';
 import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
 import {isHtml} from "../../../../../util/string";
+import {CandidateService} from "../../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-job-experience',
@@ -51,7 +52,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   constructor(private candidateJobExperienceService: CandidateJobExperienceService,
               private modalService: NgbModal,
-              private fb: UntypedFormBuilder) {
+              private candidateService: CandidateService) {
   }
 
   ngOnInit() {
@@ -60,30 +61,6 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.expanded = false;
     this.experiences = this.candidate?.candidateJobExperiences.filter(je => je.candidateOccupation.id == this.candidateOccupation.id);
-  }
-
-  doSearch() {
-    this.loading = true;
-    this.experiences = [];
-
-    /* GET CANDIDATE JOB EXPERIENCES */
-    this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
-      results => {
-        this.experiences = results.content;
-        this.hasMore = results.totalPages > results.number+1;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
-
-  }
-
-  loadMore() {
-   this.candidateJobExperienceForm.controls['pageNumber'].patchValue(this.candidateJobExperienceForm.value.pageNumber+1);
-   this.doSearch();
   }
 
   editOccupation() {
@@ -95,7 +72,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     modal.componentInstance.candidateOccupation = this.candidateOccupation;
 
     modal.result
-      .then((candidateOccupation) => this.candidateOccupation = candidateOccupation)
+      .then((candidateOccupation) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */
       });
 
@@ -112,7 +89,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     createCandidateJobExperienceModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateJobExperienceModal.result
-      .then((candidateJobExperience) => this.doSearch())
+      .then((candidateJobExperience) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */
       });
 
@@ -127,7 +104,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     editCandidateJobExperienceModal.componentInstance.candidateJobExperience = candidateJobExperience;
 
     editCandidateJobExperienceModal.result
-      .then((candidateJobExperience) => this.doSearch())
+      .then((candidateJobExperience) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */
       });
 
@@ -167,13 +144,12 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
           this.candidateJobExperienceService.delete(candidateJobExperience.id).subscribe(
             (user) => {
               this.loading = false;
-              this.doSearch();
+              this.candidateService.updateCandidate()
             },
             (error) => {
               this.error = error;
               this.loading = false;
             });
-          this.doSearch();
         }
       })
       .catch(() => { /* Isn't possible */ });

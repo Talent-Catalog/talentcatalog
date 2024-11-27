@@ -16,13 +16,11 @@
 
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Candidate} from "../../../../model/candidate";
 import {CandidateOccupation} from "../../../../model/candidate-occupation";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperience} from "../../../../model/candidate-job-experience";
-import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
 import {EditCandidateJobExperienceComponent} from "./experience/edit/edit-candidate-job-experience.component";
 import {CreateCandidateOccupationComponent} from "./create/create-candidate-occupation.component";
 
@@ -37,7 +35,6 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
   @Input() editable: boolean;
   @Input() adminUser: boolean;
 
-  candidateJobExperienceForm: UntypedFormGroup;
   _loading = {
     experience: false,
     occupation: false,
@@ -52,9 +49,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
 
   constructor(private candidateService: CandidateService,
               private candidateOccupationService: CandidateOccupationService,
-              private candidateJobExperienceService: CandidateJobExperienceService,
-              private modalService: NgbModal,
-              private fb: UntypedFormBuilder) { }
+              private modalService: NgbModal) { }
 
   ngOnInit() {}
 
@@ -68,11 +63,6 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     return l.experience || l.occupation || l.candidate;
   }
 
-  doSearch() {
-
-    this.loadJobExperiences();
-  }
-
   editCandidateJobExperience(candidateJobExperience: CandidateJobExperience) {
     const editCandidateJobExperienceModal = this.modalService.open(EditCandidateJobExperienceComponent, {
       centered: true,
@@ -82,36 +72,9 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     editCandidateJobExperienceModal.componentInstance.candidateJobExperience = candidateJobExperience;
 
     editCandidateJobExperienceModal.result
-      .then(() => this.doSearch())
+      .then(() => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */
       });
-  }
-
-  loadJobExperiences(more: boolean = false) {
-    if (more) {
-      // Load the next page
-      const page = this.candidateJobExperienceForm.value.pageNumber;
-      this.candidateJobExperienceForm.patchValue({pageNumber: page + 1});
-    } else {
-      // Load the first page
-      this.candidateJobExperienceForm.patchValue({pageNumber: 0});
-    }
-    // todo do we need paged job experiences under occupations? The page size is 10, how likely is it for a candidate to have more than 10 job experiences under a single occupation?
-    // /* GET CANDIDATE EXPERIENCE */
-    // this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
-    //   results => {
-    //     if (more) {
-    //       this.experiences = this.experiences.concat(results.content);
-    //     } else {
-    //       this.experiences = results.content;
-    //     }
-    //     this.hasMore = results.totalPages > results.number + 1;
-    //     this._loading.experience = false;
-    //   },
-    //   error => {
-    //     this.error = error;
-    //     this._loading.experience = false;
-    //   });
   }
 
   createCandidateOccupation() {
@@ -123,7 +86,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     createCandidateOccupationModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateOccupationModal.result
-      .then(() => this.doSearch())
+      .then(() => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */
       });
   }
@@ -132,7 +95,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
   deleteCandidateOccupation(candidateOccupation: CandidateOccupation) {
     this.candidateOccupationService.delete(candidateOccupation.id).subscribe(
       (results) => {
-        this.doSearch();
+        this.candidateService.updateCandidate()
       },
       (error) => {
         this.error = error;
