@@ -220,8 +220,11 @@ export class CandidateService implements IntakeService {
     );
   }
 
-  updateCandidate(candidate: Candidate) {
-    this.candidateUpdatedSource.next(candidate);
+  // In the candidate-search-card we pass in the updated candidate object to merge with the extended candidate DTO,
+  // this reduces an additional API call to fetch the updated extended candidate object. But in candidate profile we fetch
+  // the updated object so we don't need the updated object, just need to refetch the current candidate.
+  updateCandidate(candidate?: Candidate) {
+    candidate ? this.candidateUpdatedSource.next(candidate) : this.candidateUpdatedSource.next();
   }
 
 }

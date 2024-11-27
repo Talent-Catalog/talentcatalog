@@ -6,6 +6,7 @@ import {
 } from "./edit/edit-candidate-destinations/edit-candidate-destinations.component";
 import {CandidateDestinationService} from "../../../../services/candidate-destination.service";
 import {CandidateDestination} from "../../../../model/candidate-destination";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-destinations',
@@ -23,6 +24,7 @@ export class ViewCandidateDestinationsComponent implements OnInit {
   emptyDestinations: boolean;
 
   constructor(private candidateDestinationService: CandidateDestinationService,
+              private candidateService: CandidateService,
               private modalService: NgbModal) { }
 
   ngOnInit() {
@@ -62,10 +64,7 @@ export class ViewCandidateDestinationsComponent implements OnInit {
     editCandidateDestinationsModal.componentInstance.candidateDestination = destination;
 
     editCandidateDestinationsModal.result
-      .then((candidateDestination) => {
-        let i = this.candidateDestinations.findIndex(cd => cd.id === candidateDestination.id);
-        this.candidateDestinations[i] = candidateDestination;
-      } )
+      .then((candidateDestination) => {this.candidateService.updateCandidate()} )
       .catch(() => { /* Isn't possible */ });
 
   }

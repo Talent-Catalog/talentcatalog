@@ -57,7 +57,7 @@ export class ViewCandidateLanguageComponent implements OnInit {
     editCandidateLanguageModal.componentInstance.candidateLanguage = candidateLanguage;
 
     editCandidateLanguageModal.result
-      .then((candidateLanguage) => this.candidateService.updateCandidate(candidateLanguage.candidate))
+      .then((candidateLanguage) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -71,7 +71,7 @@ export class ViewCandidateLanguageComponent implements OnInit {
     createCandidateLanguageModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateLanguageModal.result
-      .then((candidateLanguage) => this.candidateService.updateCandidate(candidateLanguage.candidate))
+      .then((candidateLanguage) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -90,7 +90,7 @@ export class ViewCandidateLanguageComponent implements OnInit {
           this.candidateLanguageService.delete(candidateLanguage.id).subscribe(
             (user) => {
               this.loading = false;
-              this.candidateService.updateCandidate(candidateLanguage.candidate)
+              this.candidateService.updateCandidate()
             },
             (error) => {
               this.error = error;
