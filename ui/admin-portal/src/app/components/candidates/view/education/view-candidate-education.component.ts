@@ -22,6 +22,7 @@ import {CandidateEducationService} from "../../../../services/candidate-educatio
 import {EditCandidateEducationComponent} from "./edit/edit-candidate-education.component";
 import {CreateCandidateEducationComponent} from "./create/create-candidate-education.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-education',
@@ -39,6 +40,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
   error;
 
   constructor(private candidateEducationService: CandidateEducationService,
+              private candidateService: CandidateService,
               private modalService: NgbModal ) {
   }
 
@@ -47,20 +49,6 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
 
-  }
-
-  search(){
-    this.loading = true;
-    this.candidateEducationService.list(this.candidate.id).subscribe(
-      candidateEducations => {
-        this.candidateEducations = candidateEducations;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
   }
 
   editCandidateEducation(candidateEducation: CandidateEducation) {
@@ -72,7 +60,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
     editCandidateEducationModal.componentInstance.candidateEducation = candidateEducation;
 
     editCandidateEducationModal.result
-      .then((candidateEducation) => this.search())
+      .then((candidateEducation) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -86,7 +74,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
     createCandidateEducationModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateEducationModal.result
-      .then((candidateEducation) => this.search())
+      .then((candidateEducation) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -105,13 +93,12 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
           this.candidateEducationService.delete(candidateEducation.id).subscribe(
             (user) => {
               this.loading = false;
-              this.search();
+              this.candidateService.updateCandidate();
             },
             (error) => {
               this.error = error;
               this.loading = false;
             });
-          this.search();
         }
       })
       .catch(() => { /* Isn't possible */ });
