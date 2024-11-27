@@ -119,6 +119,7 @@ public class DtoBuilder {
         if (page != null) {
             result.put("totalElements", page.getTotalElements());
             result.put("totalPages", page.getTotalPages());
+            result.put("size", page.getSize());
             result.put("number", page.getNumber());
             result.put("numberOfElements", page.getNumberOfElements());
             result.put("hasNext", page.hasNext());
