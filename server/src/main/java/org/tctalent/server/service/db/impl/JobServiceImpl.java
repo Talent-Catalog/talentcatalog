@@ -40,12 +40,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -1141,11 +1139,6 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.save(job);
     }
 
-    //TODO JC Do we need to stop doing this?
-    @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
-    @SchedulerLock(name = "JobService_updateOpenJobs", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
-    @Async
-    @Override
     public void updateOpenJobs() {
         try {
             //Find all open Salesforce jobs
