@@ -481,4 +481,9 @@ export class AuthorizationService {
     }
     return editable
   }
+
+  canSeeJobDetails() {
+      return this.isSourcePartner() || this.isJobCreatorPartner() || this.isEmployerPartner();
+  }
+
 }

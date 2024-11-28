@@ -347,4 +347,9 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   onIntakeChanged(joi: JobOppIntake) {
     this.job.jobOppIntake = joi;
   }
+
+  protected canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
 }

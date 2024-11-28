@@ -29,4 +29,9 @@ export class ListHomeComponent extends HomeComponent {
     //Employers are not interested in public lists
     return !this.authorizationService.isEmployerPartner();
   }
+
+  canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
 }

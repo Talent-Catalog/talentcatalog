@@ -152,4 +152,9 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     //Employers with direct access know that all jobs are coming to their destination.
     return !this.authorizationService.isEmployerPartner();
   }
+
+  protected canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
 }
