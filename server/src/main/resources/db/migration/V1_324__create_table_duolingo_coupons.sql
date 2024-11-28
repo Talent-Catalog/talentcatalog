@@ -16,13 +16,10 @@
 
 -- Create the coupon table
 CREATE TABLE duolingo_coupon (
-                         id BIGINT DEFAULT nextval('coupon_id_seq') PRIMARY KEY,
+                         id BIGSERIAL NOT NULL PRIMARY KEY,
                          coupon_code VARCHAR(255) UNIQUE NOT NULL,
                          candidate_id BIGINT,
                          expiration_date TIMESTAMP NOT NULL,
                          date_sent TIMESTAMP,
                          coupon_status VARCHAR(50) NOT NULL
                          );
-
-
-SELECT setval('coupon_id_seq', COALESCE((SELECT MAX(id) FROM duolingo_coupon), 1), false);
