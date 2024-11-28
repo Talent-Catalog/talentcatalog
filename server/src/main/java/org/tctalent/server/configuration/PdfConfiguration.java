@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
@@ -30,7 +31,7 @@ public class PdfConfiguration {
 
     @Bean
     public TemplateEngine pdfTemplateEngine() {
-        final TemplateEngine templateEngine = new TemplateEngine();
+        final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(pdfTemplateResolver());
         return templateEngine;
     }
