@@ -121,4 +121,5 @@ describe('ListHomeComponent', () => {
     authorizationServiceSpy.canSeeJobDetails.and.returnValue(false);
     expect(component.canSeeJobDetails()).toBeFalse();
   });
+
 });
