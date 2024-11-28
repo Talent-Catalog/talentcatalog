@@ -32,7 +32,7 @@ import {
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
-import {CandidateService} from '../../../services/candidate.service';
+import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {SavedSearchService} from '../../../services/saved-search.service';
@@ -723,21 +723,40 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   /**
    * Lightly adapted version of {@link ViewCandidateComponent.downloadGeneratedCV}.
-   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candidate profile.
    */
-  downloadGeneratedCV(candidate) {
-    // Modal
-    const downloadCVModal = this.modalService.open(DownloadCvComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
+  downloadGeneratedCV(candidate: Candidate) {
+    if (this.canViewCandidateName()) {
+        // Modal
+        const downloadCVModal = this.modalService.open(DownloadCvComponent, {
+          centered: true,
+          backdrop: 'static'
+        });
 
-    downloadCVModal.componentInstance.candidateId = candidate.id;
+        downloadCVModal.componentInstance.candidateId = candidate.id;
 
-    downloadCVModal.result
-    .then((result) => {
-    })
-    .catch(() => { /* Isn't possible */ });
+        downloadCVModal.result
+        .then((result) => {
+        })
+        .catch(() => { /* Isn't possible */ });
+
+    } else {
+      // No modal giving option to view name and contact details - straight to anonymised DL
+      const request: DownloadCVRequest = {
+        candidateId: candidate.id,
+        showName: false,
+        showContact: false
+      }
+      const tab = window.open();
+      this.candidateService.downloadCv(request).subscribe(
+        result => {
+          tab.location.href = URL.createObjectURL(result);
+        },
+        error => {
+          this.error = error;
+        }
+      );
+    }
   }
 
   getBreadcrumb(): string {
@@ -1764,4 +1783,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       err => {this.error = err; this.closing = false; }
     );
   }
+
+  protected canViewCandidateName() {
+    return this.authorizationService.canViewCandidateName();
+  }
+
 }

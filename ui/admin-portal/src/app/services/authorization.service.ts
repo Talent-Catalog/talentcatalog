@@ -483,7 +483,16 @@ export class AuthorizationService {
   }
 
   canSeeJobDetails() {
-      return this.isSourcePartner() || this.isJobCreatorPartner() || this.isEmployerPartner();
+    let result: boolean = false;
+    if (this.isSourcePartner() || this.isJobCreatorPartner()) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.partneradmin:
+          result = true;
+      }
+    }
+    return result;
   }
 
 }
