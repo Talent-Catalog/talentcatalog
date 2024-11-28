@@ -253,6 +253,7 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                .add("isoCode")
                 ;
     }
 
