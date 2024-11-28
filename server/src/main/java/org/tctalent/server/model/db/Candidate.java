@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -757,7 +758,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Column(name = "full_intake_completed_date")
     private OffsetDateTime fullIntakeCompletedDate;
 
-
+    @Nullable
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DuolingoCoupon> coupons = new ArrayList<>();
     public Candidate() {
     }
 
