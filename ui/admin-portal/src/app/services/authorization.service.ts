@@ -481,4 +481,18 @@ export class AuthorizationService {
     }
     return editable
   }
+
+  canSeeJobDetails() {
+    let result: boolean = false;
+    if (this.isSourcePartner() || this.isJobCreatorPartner()) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.partneradmin:
+          result = true;
+      }
+    }
+    return result;
+  }
+
 }
