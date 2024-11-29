@@ -1784,7 +1784,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     );
   }
 
-  protected canViewCandidateName() {
+  public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
   }
 

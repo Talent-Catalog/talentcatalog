@@ -69,7 +69,7 @@ export class ViewJobInfoComponent implements OnInit {
     return this.job.contactUser ? this.job.contactUser : this.job.createdBy;
   }
 
-  protected canSeeJobDetails() {
+  public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
 
