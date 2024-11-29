@@ -1064,8 +1064,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         // Check for and replace partner if it has a redirectPartner assigned — typically when it is
         // no longer active and another org has assumed responsibility for candidates in its
-        // jurisdiction.
-        // Set by SystemAdminApi.redirectInactivePartnerUrl.
+        // jurisdiction. Set by SystemAdminApi.redirectInactivePartnerUrl.
         if (sourcePartner != null) {
             while (sourcePartner.getRedirectPartner() != null) {
                 LogBuilder.builder(log) // Log the reassignment

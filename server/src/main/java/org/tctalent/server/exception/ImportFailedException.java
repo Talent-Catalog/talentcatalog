@@ -14,4 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table partner add column redirect_partner_id bigint references partner;
+package org.tctalent.server.exception;
+
+public class ImportFailedException extends ServiceException {
+  public ImportFailedException() {
+    super("import_failed", "Data could not be imported");
+  }
+
+  public ImportFailedException(Throwable cause) {
+    super("import_failed", "Data could not be imported", cause);
+  }
+}
