@@ -30,7 +30,7 @@ export class ListHomeComponent extends HomeComponent {
     return !this.authorizationService.isEmployerPartner();
   }
 
-  canSeeJobDetails() {
+  public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
 

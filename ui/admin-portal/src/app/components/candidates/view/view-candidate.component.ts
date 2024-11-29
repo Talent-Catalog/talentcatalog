@@ -442,11 +442,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     return this.authorizationService.isReadOnly();
   }
 
-  protected canSeeJobDetails() {
+  public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
 
-  protected canViewCandidateName() {
+  public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
   }
 
