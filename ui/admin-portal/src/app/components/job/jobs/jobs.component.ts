@@ -153,7 +153,7 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     return !this.authorizationService.isEmployerPartner();
   }
 
-  protected canSeeJobDetails() {
+  public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
 
