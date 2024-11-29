@@ -421,7 +421,7 @@ export class CandidateFieldService {
     const opp = candidate.candidateOpportunities.find(
       opp => opp.jobOpp.submissionList.id == source.id
     );
-    if (opp === null) {
+    if (opp == null) {
       console.warn('No matching opp found for this candidate and source');
       return null;
     } else {
