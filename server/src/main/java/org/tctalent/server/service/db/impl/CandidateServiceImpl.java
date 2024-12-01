@@ -1050,13 +1050,6 @@ public class CandidateServiceImpl implements CandidateService {
                 partnerAbbreviation = rootRequest.getPartnerAbbreviation();
             }
         }
-        if (partnerAbbreviation != null) {
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("Register Candidate")
-                .message("Registration with partner abbreviation: " + partnerAbbreviation)
-                .logInfo();
-        }
 
         //Pick up query parameters from request if they are passed in
         HasTcQueryParameters queryParameters;
@@ -1068,6 +1061,26 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Assign partner based on the partner abbreviation, if any
         Partner sourcePartner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+
+        // Check for and replace partner if it has a redirectPartner assigned — typically when it is
+        // no longer active and another org has assumed responsibility for candidates in its
+        // jurisdiction. Set by SystemAdminApi.redirectInactivePartnerUrl.
+        if (sourcePartner != null) {
+            while (sourcePartner.getRedirectPartner() != null) {
+                LogBuilder.builder(log) // Log the reassignment
+                    .user(authService.getLoggedInUser())
+                    .action("Register Candidate")
+                    .message(sourcePartner.getName() + " has a redirectPartner assigned - registration "
+                        + "redirected to " + sourcePartner.getRedirectPartner().getName() + ".")
+                    .logInfo();
+
+                sourcePartner = sourcePartner.getRedirectPartner();
+            }
+
+            // This is a failsafe: we never want to assign candidates to an inactive partner.
+            sourcePartner = sourcePartner.getStatus() == Status.active ? sourcePartner : null;
+        }
+
         if (sourcePartner == null || !sourcePartner.isSourcePartner()) {
             //No source partner found based on partner query param.
 
@@ -1090,6 +1103,12 @@ public class CandidateServiceImpl implements CandidateService {
                 sourcePartner = partnerService.getDefaultSourcePartner();
             }
         }
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Register Candidate")
+            .message("Registration with partner: " + sourcePartner.getName())
+            .logInfo();
 
         /* Validate that the candidate has marked email consent partners as true in order to continue registration */
         if (!request.getContactConsentRegistration()) {

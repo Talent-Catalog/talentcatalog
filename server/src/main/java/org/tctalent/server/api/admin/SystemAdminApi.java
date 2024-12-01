@@ -85,6 +85,7 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
@@ -97,6 +98,7 @@ import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.repository.db.JobChatUserRepository;
+import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
@@ -112,6 +114,7 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.NotificationService;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -167,6 +170,8 @@ public class SystemAdminApi {
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
     private final BackgroundProcessingService backgroundProcessingService;
+    private final PartnerService partnerService;
+    private final PartnerRepository partnerRepository;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -215,7 +220,8 @@ public class SystemAdminApi {
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService) {
+        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
+        PartnerService partnerService, PartnerRepository partnerRepository) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -243,8 +249,10 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         this.taskScheduler = taskScheduler;
-      this.backgroundProcessingService = backgroundProcessingService;
-      countryForGeneralCountry = getExtraCountryMappings();
+        this.backgroundProcessingService = backgroundProcessingService;
+        countryForGeneralCountry = getExtraCountryMappings();
+        this.partnerService = partnerService;
+        this.partnerRepository = partnerRepository;
     }
 
     /**
@@ -2988,6 +2996,69 @@ public class SystemAdminApi {
                 .action("Reassign candidates")
                 .message("Reassignment of candidates from list with ID " + listId +
                     " to partner with ID " + partnerId + " failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Provides a utility for system admins to redirect an outgoing partner's 'hard-coded' URLs
+     * (used in promo material e.g. flyers, online QR codes) to a new partner.
+     * <p><strong>NB: will set new partner to active and old to inactive if not already done </strong>
+     * — CP registration and branding info will only utilise active partners.</p>
+     * @param inactivePartnerId the ID of the inactive partner to redirect away from
+     * @param newPartnerId the ID of the active partner to direct to
+     * @return response details
+     */
+    @GetMapping("redirect-inactive-partner-url/from-{inactivePartnerId}-to-{newPartnerId}")
+    public ResponseEntity<?> redirectInactivePartnerUrl(
+        @PathVariable("inactivePartnerId") long inactivePartnerId,
+        @PathVariable("newPartnerId") long newPartnerId
+    ) {
+        try {
+            // Get the new partner that URLs will redirect to
+            PartnerImpl newPartner = (PartnerImpl) partnerService.getPartner(newPartnerId);
+
+            // Get the inactive partner that URLs will redirect away from
+            PartnerImpl inactivePartner = (PartnerImpl) partnerService.getPartner(inactivePartnerId);
+
+            // The partner we're redirecting to could itself have been deactivated in the past and
+            // therefore have had a redirectPartner assigned to it that we now wish to ignore -
+            // not only for operational reasons but also to avoid getting stuck in a recursive loop!
+            if (newPartner.getRedirectPartner() != null) {
+                newPartner.setRedirectPartner(null);
+                newPartner = partnerRepository.save(newPartner);
+            }
+
+            // Failsafe: the new partner should always be active, admin user may have forgotten!
+            if (newPartner.getStatus() != Status.active) {
+                newPartner.setStatus(Status.active);
+                newPartner = partnerRepository.save(newPartner);
+            }
+
+            inactivePartner.setRedirectPartner(newPartner); // Add the redirect partner
+
+            // In case the admin user has forgotten, set the old partner to inactive
+            if (inactivePartner.getStatus() != Status.inactive) {
+                inactivePartner.setStatus(Status.inactive);
+            }
+
+            partnerRepository.save(inactivePartner);
+
+            LogBuilder.builder(log)
+                .action("redirectInactivePartnerUrl")
+                .message("URLs identifying inactive partner " + inactivePartner.getName() +
+                    " will now redirect to " + newPartner.getName() + ".")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("redirectInactivePartnerUrl")
+                .message("Redirection failed.")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend
