@@ -797,6 +797,7 @@ import {
   FindCandidateSourceComponent
 } from './components/candidates/find-candidate-source/find-candidate-source.component';
 import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
+import {ImportDuolingoCouponsComponent} from './components/settings/import-duolingo-coupons/import-duolingo-coupons.component';
 
 @NgModule({
   declarations: [
@@ -1117,7 +1118,8 @@ import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
     CreateCandidateExamComponent,
     EditCandidateExamComponent,
     JoiDataComponent,
-    FindCandidateSourceComponent
+    FindCandidateSourceComponent,
+    ImportDuolingoCouponsComponent
   ],
   imports: [
     BrowserModule,
