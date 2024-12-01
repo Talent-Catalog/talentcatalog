@@ -1,0 +1,66 @@
+<div class="modal-header">
+  <h4 class="modal-title">Import Duolingo Coupons</h4>
+</div>
+<div class="text-muted mb-2 align-middle">
+
+  <ngb-pagination
+      class="float-end"
+      [boundaryLinks]="true"
+      [pageSize]="30"
+      [collectionSize]="csvData?.length || 0"
+      [(page)]="currentPage"
+      [maxSize]="5"
+      [ellipses]="true"
+      [rotate]="true"
+      (pageChange)="onPageChange($event)"
+  ></ngb-pagination>
+
+  Found {{csvData?.length}} Coupons
+</div>
+<div class="modal-body">
+  <div class="alert alert-danger" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="mb-3">
+    <label for="fileInput" class="form-label">Upload CSV File *</label>
+    <input
+      type="file"
+      id="fileInput"
+      class="form-control"
+      (change)="onFileChange($event)"
+      accept=".csv"
+    />
+  </div>
+
+  <div class="mb-3" *ngIf="csvData.length">
+    <h5>Preview</h5>
+    <div class="table-responsive">
+
+      <table  class="table align-middle">
+        <thead class="table-primary">
+        <tr>
+          <th *ngFor="let header of csvHeaders">{{ header }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let row of paginatedData">
+          <td *ngFor="let cell of row">{{ cell }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-primary mb-2"
+    (click)="importCSV()"
+    [disabled]="!csvData.length || working"
+  >
+    <i class="fas fa-spinner fa-spin" *ngIf="working"></i>
+    Import
+  </button>
+</div>
