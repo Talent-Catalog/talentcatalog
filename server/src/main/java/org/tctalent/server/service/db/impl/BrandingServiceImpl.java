@@ -23,7 +23,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.BrandingInfo;
-import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.security.AuthService;
@@ -84,9 +83,6 @@ public class BrandingServiceImpl implements BrandingService {
 
                 partner = partner.getRedirectPartner();
             }
-
-            // This is a failsafe: we never want to serve branding info from an inactive partner.
-            partner = partner.getStatus() == Status.active ? partner : null;
         }
 
         if (partner == null) {
