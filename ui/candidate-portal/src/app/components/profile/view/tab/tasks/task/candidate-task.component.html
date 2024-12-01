@@ -33,6 +33,12 @@
   </div>
 </div>
 
+<ng-container *ngIf="selectedTask.task.name === 'duolingoTest'">
+  <h5>You are receiving an invitation to take the Duolingo English Test for free! Accept the coupon below to get started.</h5>
+  <p>Your certified results will be sent to Talent Beyond Boundaries (TBB) after you complete the test.</p>
+  <a class="btn btn-sm btn-primary" target="_blank" [href]="'https://example.com/' + candidate.id">Accept Offer</a>
+</ng-container>
+
 <!-- DISPLAY DOC IF PRESENT -->
 <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
   <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
