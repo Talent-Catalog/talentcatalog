@@ -48,7 +48,6 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   error;
   results: SearchResults<CandidateJobExperience>;
   experiences: CandidateJobExperience[];
-  hasMore: boolean;
 
   constructor(private candidateJobExperienceService: CandidateJobExperienceService,
               private modalService: NgbModal,
@@ -60,7 +59,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.expanded = false;
-    this.experiences = this.candidate?.candidateJobExperiences.filter(je => je.candidateOccupation.id == this.candidateOccupation.id);
+    this.experiences = this.candidate?.candidateJobExperiences.filter(je => je.candidateOccupation?.id == this.candidateOccupation?.id);
   }
 
   editOccupation() {

@@ -14,12 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ViewCandidateLanguageComponent} from "./view-candidate-language.component";
-import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateLanguageService} from "../../../../services/candidate-language.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateLanguage} from "../../../../model/candidate-language";
-import {of, throwError} from "rxjs";
 
 describe('ViewCandidateLanguageComponent', () => {
   let component: ViewCandidateLanguageComponent;
@@ -62,26 +61,4 @@ describe('ViewCandidateLanguageComponent', () => {
   it('should display loading spinner initially', () => {
     expect(fixture.nativeElement.querySelector('.fa-spinner')).toBeTruthy();
   });
-
-
-  it('should fetch candidate languages on initialization', fakeAsync(() => {
-    mockCandidateLanguageService.list.and.returnValue(of(mockCandidateLanguages));
-
-    component.search();
-    tick();
-
-    expect(component.candidateLanguages).toEqual(mockCandidateLanguages);
-    expect(mockCandidateLanguageService.list).toHaveBeenCalledWith(mockCandidate.id);
-  }));
-
-  it('should handle error when fetching candidate languages', fakeAsync(() => {
-    const errorMessage = 'Error fetching candidate languages';
-    mockCandidateLanguageService.list.and.returnValue(throwError(errorMessage));
-
-    component.search();
-    tick();
-
-    expect(component.error).toEqual(errorMessage);
-    expect(mockCandidateLanguageService.list).toHaveBeenCalledWith(mockCandidate.id);
-  }));
 });

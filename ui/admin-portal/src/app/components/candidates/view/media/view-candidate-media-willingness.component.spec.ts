@@ -15,13 +15,13 @@
  */
 import {ViewCandidateMediaWillingnessComponent} from "./view-candidate-media-willingness.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbModalRef, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {Candidate} from "../../../../model/candidate";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {By} from "@angular/platform-browser";
-import {
-  EditCandidateMediaWillingnessComponent
-} from "./edit/edit-candidate-media-willingness.component";
+import {EditCandidateMediaWillingnessComponent} from "./edit/edit-candidate-media-willingness.component";
+import {CandidateService} from "../../../../services/candidate.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('ViewCandidateMediaWillingnessComponent', () => {
   let component: ViewCandidateMediaWillingnessComponent;
@@ -29,15 +29,18 @@ describe('ViewCandidateMediaWillingnessComponent', () => {
   let mockModalService: jasmine.SpyObj<NgbModal>;
   let candidate: Candidate;
   const mockCandidate = new MockCandidate();
+  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
   beforeEach(async () => {
-
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
+    candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateMediaWillingnessComponent],
       providers: [
         { provide: NgbModal, useValue: mockModalService },
-      ]
+        { provide: CandidateService, userValue: candidateServiceSpy }
+      ],
+      imports: [NgbNavModule, HttpClientTestingModule],
     })
     .compileComponents();
   });
@@ -84,9 +87,7 @@ describe('ViewCandidateMediaWillingnessComponent', () => {
       backdrop: 'static'
     });
     expect(mockModalRef.componentInstance.candidateId).toBe(1);
+    expect(candidateServiceSpy.updateCandidate).toHaveBeenCalledWith();
 
-    mockModalRef.result.then(updatedCandidate => {
-      expect(component.candidate).toEqual(candidate);
-    });
   });
 });

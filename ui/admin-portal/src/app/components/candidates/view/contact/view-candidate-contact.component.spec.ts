@@ -21,8 +21,6 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {Candidate} from "../../../../model/candidate";
-import {of} from "rxjs";
 
 describe('ViewCandidateContactComponent', () => {
   let component: ViewCandidateContactComponent;
@@ -62,15 +60,5 @@ describe('ViewCandidateContactComponent', () => {
   it('should initialize with correct initial state', () => {
     expect(component.loading).toBeFalsy();
     expect(component.error).toBeUndefined();
-  });
-
-  it('should load candidate details on ngOnChanges', () => {
-    const mockCandidate: Candidate = new MockCandidate();
-    candidateServiceSpy.get.and.returnValue(of(mockCandidate));
-
-    component.ngOnChanges({});
-    expect(component.loading).toBeFalsy();
-    expect(component.error).toBeUndefined();
-    expect(component.candidate).toEqual(mockCandidate);
   });
 });

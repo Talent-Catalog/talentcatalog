@@ -5,21 +5,24 @@ import {NgbActiveModal, NgbModal, NgbModalModule} from "@ng-bootstrap/ng-bootstr
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {of, throwError} from "rxjs";
+import {of} from "rxjs";
 import {CreateCandidateExamComponent} from "./create/create-candidate-exam.component";
 import {EditCandidateExamComponent} from "./edit/edit-candidate-exam.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 describe('ViewCandidateExamComponent', () => {
   let component: ViewCandidateExamComponent;
   let fixture: ComponentFixture<ViewCandidateExamComponent>;
   let mockCandidateExamService: jasmine.SpyObj<CandidateExamService>;
   let mockModalService: jasmine.SpyObj<NgbModal>;
+  let mockCandidateService: jasmine.SpyObj<CandidateService>;
 
   beforeEach(async () => {
     // Mock CandidateExamService and NgbModal
     mockCandidateExamService = jasmine.createSpyObj('CandidateExamService', ['list', 'delete']);
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
+    mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateExamComponent],
@@ -46,39 +49,15 @@ describe('ViewCandidateExamComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('doSearch', () => {
-    it('should load candidate exams successfully', () => {
-      const mockExams = new MockCandidate().candidateExams;
-      mockCandidateExamService.list.and.returnValue(of(mockExams));
-
-      component.doSearch();
-
-      expect(component.loading).toBeFalse();
-      expect(component.candidateExams).toEqual(mockExams);
-      expect(mockCandidateExamService.list).toHaveBeenCalledWith(component.candidate.id);
-    });
-
-    it('should handle error when loading exams fails', () => {
-      const error = 'Error loading exams';
-      mockCandidateExamService.list.and.returnValue(throwError(error));
-
-      component.doSearch();
-
-      expect(component.loading).toBeFalse();
-      expect(component.error).toBe(error);
-      expect(mockCandidateExamService.list).toHaveBeenCalledWith(component.candidate.id);
-    });
-  });
-
   describe('createCandidateExam', () => {
-    it('should open the create candidate exam modal and reload exams after closing', async () => {
+    it('should open the create candidate exam modal and update candidate service after returning successfully', async () => {
       const mockModalRef = {
         result: Promise.resolve('some data'),
         componentInstance: {}
       };
       mockModalService.open.and.returnValue(mockModalRef as any);
 
-      spyOn(component, 'doSearch'); // Spy on the doSearch method
+      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
 
       component.createCandidateExam();
 
@@ -89,7 +68,7 @@ describe('ViewCandidateExamComponent', () => {
 
       await mockModalRef.result; // Wait for the promise to resolve
 
-      expect(component.doSearch).toHaveBeenCalled();
+      expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
     });
 
     it('should handle modal dismissal', async () => {
@@ -99,7 +78,7 @@ describe('ViewCandidateExamComponent', () => {
       };
       mockModalService.open.and.returnValue(mockModalRef as any);
 
-      spyOn(component, 'doSearch');
+      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
 
       component.createCandidateExam();
 
@@ -110,7 +89,7 @@ describe('ViewCandidateExamComponent', () => {
 
       await mockModalRef.result.catch(() => {}); // Wait for the promise to reject
 
-      expect(component.doSearch).not.toHaveBeenCalled(); // Shouldn't reload on dismissal
+      expect(mockCandidateService.updateCandidate).not.toHaveBeenCalled(); // Shouldn't reload on dismissal
     });
   });
 
@@ -122,7 +101,7 @@ describe('ViewCandidateExamComponent', () => {
       };
       mockModalService.open.and.returnValue(mockModalRef as any);
 
-      spyOn(component, 'doSearch');
+      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
 
       component.editCandidateExam(new MockCandidate().candidateExams[0]);
 
@@ -133,7 +112,7 @@ describe('ViewCandidateExamComponent', () => {
 
       await mockModalRef.result;
 
-      expect(component.doSearch).toHaveBeenCalled();
+      expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
     });
   });
 
@@ -147,7 +126,7 @@ describe('ViewCandidateExamComponent', () => {
       mockModalService.open.and.returnValue(mockModalRef as any);
       mockCandidateExamService.delete.and.returnValue(of(null));
 
-      spyOn(component, 'doSearch');
+      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
 
       component.deleteCandidateExam(examToDelete);
 
@@ -159,7 +138,7 @@ describe('ViewCandidateExamComponent', () => {
       await mockModalRef.result;
 
       expect(mockCandidateExamService.delete).toHaveBeenCalledWith(examToDelete.id);
-      expect(component.doSearch).toHaveBeenCalled();
+      expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
     });
 
     it('should not delete the exam if confirmation is canceled', async () => {
@@ -169,14 +148,14 @@ describe('ViewCandidateExamComponent', () => {
       };
       mockModalService.open.and.returnValue(mockModalRef as any);
 
-      spyOn(component, 'doSearch');
+      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
 
       component.deleteCandidateExam(new MockCandidate().candidateExams[0]);
 
       await mockModalRef.result;
 
       expect(mockCandidateExamService.delete).not.toHaveBeenCalled();
-      expect(component.doSearch).not.toHaveBeenCalled();
+      expect(mockCandidateService.updateCandidate).not.toHaveBeenCalled();
     });
   });
 });

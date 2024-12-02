@@ -53,7 +53,7 @@ export class ViewCandidateAccountComponent implements OnInit {
     updatePasswordModal.componentInstance.user = user;
 
     updatePasswordModal.result
-      .then((user) => this.user = user)
+      .then((user) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }

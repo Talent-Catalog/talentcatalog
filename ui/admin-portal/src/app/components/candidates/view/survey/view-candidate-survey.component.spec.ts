@@ -17,17 +17,30 @@ import {ViewCandidateSurveyComponent} from "./view-candidate-survey.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {By} from "@angular/platform-browser";
-import {DebugElement} from "@angular/core";
+import {CUSTOM_ELEMENTS_SCHEMA, DebugElement} from "@angular/core";
+import {CandidateService} from "../../../../services/candidate.service";
+import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+
 describe('ViewCandidateSurveyComponent', () => {
   let component: ViewCandidateSurveyComponent;
   let fixture: ComponentFixture<ViewCandidateSurveyComponent>;
 
   const candidate = new MockCandidate();
+  let candidateService: jasmine.SpyObj<CandidateService>;
 
   beforeEach(async () => {
+    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
     await TestBed.configureTestingModule({
       declarations: [ ViewCandidateSurveyComponent ],
+      providers: [
+        { provide: CandidateService, userValue: candidateServiceSpy }
+      ],
+      imports: [NgbNavModule, HttpClientTestingModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+
+    candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
   });
 
   beforeEach(() => {

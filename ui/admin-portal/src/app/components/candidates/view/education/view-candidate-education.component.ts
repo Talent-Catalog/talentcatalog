@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateEducation} from "../../../../model/candidate-education";
@@ -29,7 +29,7 @@ import {CandidateService} from "../../../../services/candidate.service";
   templateUrl: './view-candidate-education.component.html',
   styleUrls: ['./view-candidate-education.component.scss']
 })
-export class ViewCandidateEducationComponent implements OnInit, OnChanges {
+export class ViewCandidateEducationComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -45,10 +45,6 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-
   }
 
   editCandidateEducation(candidateEducation: CandidateEducation) {

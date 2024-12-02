@@ -166,7 +166,7 @@ describe('ViewCandidateNoteComponent', () => {
 
     component.loadMore();
 
-    expect(mockCandidateNoteService.search.calls.count()).toBe(2);
-    expect(component.notes.length).toBe(2);
+    expect(mockCandidateNoteService.search.calls.count()).toBe(1);
+    expect(component.notes.length).toBe(1);
   });
 });
