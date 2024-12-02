@@ -9,6 +9,7 @@ import {
   JobPrepItem,
   JobPrepSuggestedCandidates
 } from "../../../../../model/job-prep-item";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-view-job-info',
@@ -21,7 +22,10 @@ export class ViewJobInfoComponent implements OnInit {
   @Input() highlightItem: JobPrepItem;
   @Output() jobUpdated = new EventEmitter<Job>();
 
-  constructor(private modalService: NgbModal) { }
+  constructor(
+    private modalService: NgbModal,
+    private authorizationService: AuthorizationService
+  ) { }
 
   ngOnInit(): void {
   }
@@ -64,4 +68,9 @@ export class ViewJobInfoComponent implements OnInit {
   getContactUser(): User {
     return this.job.contactUser ? this.job.contactUser : this.job.createdBy;
   }
+
+  public canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
 }

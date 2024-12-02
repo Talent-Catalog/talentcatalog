@@ -17,6 +17,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
 import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
+import {Component, OnInit} from '@angular/core';
+import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
+import {
+  Candidate,
+  UpdateCandidateStatusInfo,
+  UpdateCandidateStatusRequest
+} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
@@ -245,18 +252,37 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
    * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
    */
   downloadGeneratedCV() {
-    // Modal
-    const downloadCVModal = this.modalService.open(DownloadCvComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
+    if (this.canViewCandidateName()) {
+      // Modal
+      const downloadCVModal = this.modalService.open(DownloadCvComponent, {
+        centered: true,
+        backdrop: 'static'
+      });
 
-    downloadCVModal.componentInstance.candidateId = this.candidate.id;
+      downloadCVModal.componentInstance.candidateId = this.candidate.id;
 
-    downloadCVModal.result
+      downloadCVModal.result
       .then((result) => {
       })
-      .catch(() => { /* Isn't possible */ });
+      .catch(() => { /* Isn't possible */
+      });
+    } else {
+      // No modal giving option to view name and contact details - straight to anonymised DL
+      const request: DownloadCVRequest = {
+        candidateId: this.candidate.id,
+        showName: false,
+        showContact: false
+      }
+      const tab = window.open();
+      this.candidateService.downloadCv(request).subscribe(
+        result => {
+          tab.location.href = URL.createObjectURL(result);
+        },
+        error => {
+          this.error = error;
+        }
+      );
+    }
   }
 
   private selectDefaultTab() {
@@ -438,4 +464,13 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  public canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
+  public canViewCandidateName() {
+    return this.authorizationService.canViewCandidateName();
+  }
+
 }

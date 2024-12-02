@@ -149,7 +149,7 @@
             <a [routerLink]="['/job',opp.id]">
               <i class="fa-solid fa-briefcase" title="Job"></i>
             </a>
-            <a *ngIf="opp.submissionList" [routerLink]="['/list',opp.submissionList.id]">
+            <a *ngIf="opp.submissionList && canSeeJobDetails()" [routerLink]="['/list',opp.submissionList.id]">
               <i class="fa-solid fa-rectangle-list" title="Submission list"></i>
             </a>
           </td>

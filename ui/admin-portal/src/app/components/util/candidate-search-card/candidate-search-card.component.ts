@@ -207,4 +207,8 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
     this.destroy$.complete();
   }
 
+  public canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
 }

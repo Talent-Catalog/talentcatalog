@@ -262,6 +262,7 @@ public class CandidateBuilderSelector {
             .add("email")
             .add("firstName")
             .add("lastName")
+            .add("partner", partnerDto())
             ;
     }
 
