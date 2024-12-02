@@ -88,7 +88,7 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
     // to these fields are sent to the parent just by updating the object in the child. Selected shareable attachments
     // are handled differently as shareable attachments are nested deeper and not parent/child.
     // Using the candidateUpdated observable is best for this case.
-    this.candidateService.candidateUpdated$.pipe(takeUntil(this.destroy$)).subscribe(updatedCandidate => {
+    this.candidateService.candidateUpdated().pipe(takeUntil(this.destroy$)).subscribe(updatedCandidate => {
       // To avoid an API call to fetch the updated candidate object we can use the existing extended candidate object
       // and the Spread operator to merge in the updated candidate object from the observable. See doc about Spread:
       // https://www.typescriptlang.org/docs/handbook/variable-declarations.html#spread

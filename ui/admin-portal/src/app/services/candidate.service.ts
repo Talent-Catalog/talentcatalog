@@ -50,7 +50,6 @@ export interface IntakeAuditRequest {
 export class CandidateService implements IntakeService {
 
   private candidateUpdatedSource = new Subject<Candidate>();
-  candidateUpdated$ = this.candidateUpdatedSource.asObservable();
 
   private apiUrl = environment.apiUrl + '/candidate';
 
@@ -225,6 +224,10 @@ export class CandidateService implements IntakeService {
   // the updated object so we don't need the updated object, just need to refetch the current candidate.
   updateCandidate(candidate?: Candidate) {
     candidate ? this.candidateUpdatedSource.next(candidate) : this.candidateUpdatedSource.next();
+  }
+
+  candidateUpdated() {
+    return this.candidateUpdatedSource.asObservable();
   }
 
 }

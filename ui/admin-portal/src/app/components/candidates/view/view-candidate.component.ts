@@ -87,7 +87,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
-    this.candidateService.candidateUpdated$.pipe(
+    this.candidateService.candidateUpdated().pipe(
       takeUntil(this.destroy$),
       concatMap(() => {
         return this.candidateService.getByNumber(this.candidate.candidateNumber)
