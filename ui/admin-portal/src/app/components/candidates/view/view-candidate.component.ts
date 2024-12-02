@@ -15,15 +15,8 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {CandidateService} from '../../../services/candidate.service';
 import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
-import {Component, OnInit} from '@angular/core';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
-import {
-  Candidate,
-  UpdateCandidateStatusInfo,
-  UpdateCandidateStatusRequest
-} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
