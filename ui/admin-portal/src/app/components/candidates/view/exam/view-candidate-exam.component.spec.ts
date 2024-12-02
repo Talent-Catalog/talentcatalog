@@ -29,6 +29,7 @@ describe('ViewCandidateExamComponent', () => {
       imports: [HttpClientTestingModule, NgbModalModule],
       providers: [
         { provide: CandidateExamService, useValue: mockCandidateExamService },
+        { provide: CandidateService, useValue: mockCandidateService },
         { provide: NgbModal, useValue: mockModalService },
         NgbActiveModal,
       ],
@@ -57,8 +58,6 @@ describe('ViewCandidateExamComponent', () => {
       };
       mockModalService.open.and.returnValue(mockModalRef as any);
 
-      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
-
       component.createCandidateExam();
 
       expect(mockModalService.open).toHaveBeenCalledWith(CreateCandidateExamComponent, {
@@ -77,8 +76,6 @@ describe('ViewCandidateExamComponent', () => {
         componentInstance: {}
       };
       mockModalService.open.and.returnValue(mockModalRef as any);
-
-      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
 
       component.createCandidateExam();
 
@@ -100,8 +97,6 @@ describe('ViewCandidateExamComponent', () => {
         componentInstance: {}
       };
       mockModalService.open.and.returnValue(mockModalRef as any);
-
-      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
 
       component.editCandidateExam(new MockCandidate().candidateExams[0]);
 
@@ -126,8 +121,6 @@ describe('ViewCandidateExamComponent', () => {
       mockModalService.open.and.returnValue(mockModalRef as any);
       mockCandidateExamService.delete.and.returnValue(of(null));
 
-      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
-
       component.deleteCandidateExam(examToDelete);
 
       expect(mockModalService.open).toHaveBeenCalledWith(ConfirmationComponent, {
@@ -147,8 +140,6 @@ describe('ViewCandidateExamComponent', () => {
         componentInstance: {}
       };
       mockModalService.open.and.returnValue(mockModalRef as any);
-
-      spyOn(mockCandidateService, 'updateCandidate'); // Spy on the updateCandidate method
 
       component.deleteCandidateExam(new MockCandidate().candidateExams[0]);
 

@@ -19,6 +19,8 @@ import {CandidateLanguageService} from "../../../../services/candidate-language.
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateLanguage} from "../../../../model/candidate-language";
+import {CandidateService} from "../../../../services/candidate.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('ViewCandidateLanguageComponent', () => {
   let component: ViewCandidateLanguageComponent;
@@ -31,12 +33,15 @@ describe('ViewCandidateLanguageComponent', () => {
 
   beforeEach(async () => {
     const candidateLanguageServiceSpy = jasmine.createSpyObj('CandidateLanguageService', ['list', 'delete']);
+    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
     const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateLanguageComponent],
+      imports: [HttpClientTestingModule],
       providers: [
         { provide: CandidateLanguageService, useValue: candidateLanguageServiceSpy },
+        { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: NgbModal, useValue: modalServiceSpy }
       ]
     }).compileComponents();

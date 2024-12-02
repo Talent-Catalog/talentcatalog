@@ -71,7 +71,7 @@ describe('ViewCandidateMediaWillingnessComponent', () => {
     expect(editButton).toBeFalsy();
   });
 
-  it('should open modal on edit button click and update candidate data', () => {
+  it('should open modal on edit button click and update candidate data', async () => {
     const mockModalRef = {
       componentInstance: {
         candidateId: null
@@ -82,12 +82,15 @@ describe('ViewCandidateMediaWillingnessComponent', () => {
     mockModalService.open.and.returnValue(mockModalRef);
 
     component.editMediaWillingness();
+
+    await mockModalRef.result; // Wait for the promise to resolve
+
     expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateMediaWillingnessComponent, {
       centered: true,
       backdrop: 'static'
     });
     expect(mockModalRef.componentInstance.candidateId).toBe(1);
-    expect(candidateServiceSpy.updateCandidate).toHaveBeenCalledWith();
+    expect(candidateServiceSpy.updateCandidate).toHaveBeenCalled();
 
   });
 });

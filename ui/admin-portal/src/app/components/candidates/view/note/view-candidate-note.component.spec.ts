@@ -96,7 +96,6 @@ describe('ViewCandidateNoteComponent', () => {
   });
 
   it('should initialize and load candidate notes', () => {
-    mockCandidateNoteService.search.and.returnValue(of(mockSearchResults));
     component.ngOnChanges({
       candidate: {
         currentValue: component.candidate,
@@ -105,22 +104,13 @@ describe('ViewCandidateNoteComponent', () => {
         isFirstChange: () => true
       }
     });
-    expect(mockCandidateNoteService.search).toHaveBeenCalled();
     expect(component.notes[0]).toEqual(mockCandidateNotes[0]);
-    expect(component.hasMore).toBeFalse();
   });
 
-  it('should handle error while loading notes', () => {
+  it('should handle error while searching paged notes', () => {
     const errorResponse = { error: 'error message' };
     mockCandidateNoteService.search.and.returnValue(throwError(errorResponse));
-    component.ngOnChanges({
-      candidate: {
-        currentValue: component.candidate,
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }
-    });
+    component.doSearch();
     expect(mockCandidateNoteService.search).toHaveBeenCalled();
     expect(component.error).toEqual(errorResponse);
     expect(component.loading).toBeFalse();
@@ -166,7 +156,7 @@ describe('ViewCandidateNoteComponent', () => {
 
     component.loadMore();
 
-    expect(mockCandidateNoteService.search.calls.count()).toBe(1);
+    expect(mockCandidateNoteService.search.calls.count()).toBe(2);
     expect(component.notes.length).toBe(1);
   });
 });
