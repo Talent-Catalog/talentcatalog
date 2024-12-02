@@ -139,6 +139,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
 
   private loadLists() {
     /*load all our non-fixed lists */
+    //todo Employer partners should not see global lists
     this.loading = true;
     const request: SearchSavedListRequest = {
       dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
@@ -442,6 +443,16 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     return this.authorizationService.isReadOnly();
   }
 
+  public canSeeCandidateShareableNotes() {
+    //todo Who can't
+    return null;
+  }
+
+  public canSeeGlobalLists() {
+    //todo Employer's can't
+    return null;
+  }
+
   public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
@@ -449,5 +460,4 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
   }
-
 }
