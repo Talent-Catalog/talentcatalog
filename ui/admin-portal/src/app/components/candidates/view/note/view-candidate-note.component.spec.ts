@@ -22,7 +22,6 @@ import {CandidateNoteService} from "../../../../services/candidate-note.service"
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateNote} from "../../../../model/candidate-note";
-import {of, Subject} from "rxjs";
 import {CreateCandidateNoteComponent} from "./create/create-candidate-note.component";
 import {EditCandidateNoteComponent} from "./edit/edit-candidate-note.component";
 import {MockUser} from "../../../../MockData/MockUser";
@@ -61,19 +60,12 @@ describe('ViewCandidateNoteComponent', () => {
 
 
   beforeEach(async () => {
-    const candidateNoteServiceSpy = jasmine.createSpyObj('CandidateNoteService', {
-      search: of({}),
-    }, {
-      newNote$: new Subject<void>(),
-      updatedNote$: new Subject<void>(),
-    });
     const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [ViewCandidateNoteComponent, UpdatedByComponent, UserPipe],
       providers: [
-        { provide: CandidateNoteService, useValue: candidateNoteServiceSpy },
         { provide: NgbModal, useValue: modalServiceSpy }
       ]
     })
