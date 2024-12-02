@@ -29,7 +29,7 @@ export class ViewCandidateMediaWillingnessComponent implements OnInit {
     editMediaWillingnessModal.componentInstance.candidateId = this.candidate.id;
 
     editMediaWillingnessModal.result
-      .then((candidate) => this.candidateService.updateCandidate())
+      .then(() => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
