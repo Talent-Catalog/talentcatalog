@@ -29,16 +29,16 @@ describe('ViewCandidateMediaWillingnessComponent', () => {
   let mockModalService: jasmine.SpyObj<NgbModal>;
   let candidate: Candidate;
   const mockCandidate = new MockCandidate();
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
+  let mockCandidateService: jasmine.SpyObj<CandidateService>;
   beforeEach(async () => {
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
-    candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
+    mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateMediaWillingnessComponent],
       providers: [
         { provide: NgbModal, useValue: mockModalService },
-        { provide: CandidateService, userValue: candidateServiceSpy }
+        { provide: CandidateService, userValue: mockCandidateService }
       ],
       imports: [NgbNavModule, HttpClientTestingModule],
     })
@@ -82,15 +82,15 @@ describe('ViewCandidateMediaWillingnessComponent', () => {
     mockModalService.open.and.returnValue(mockModalRef);
 
     component.editMediaWillingness();
-
-    await mockModalRef.result; // Wait for the promise to resolve
-
+    expect(mockModalRef.componentInstance.candidateId).toBe(1);
     expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateMediaWillingnessComponent, {
       centered: true,
       backdrop: 'static'
     });
-    expect(mockModalRef.componentInstance.candidateId).toBe(1);
-    expect(candidateServiceSpy.updateCandidate).toHaveBeenCalled();
+
+    await mockModalRef.result; // Wait for the promise to resolve
+
+    expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
 
   });
 });

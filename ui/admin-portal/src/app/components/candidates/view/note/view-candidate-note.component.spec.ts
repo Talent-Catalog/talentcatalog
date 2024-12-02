@@ -22,7 +22,7 @@ import {CandidateNoteService} from "../../../../services/candidate-note.service"
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateNote} from "../../../../model/candidate-note";
-import {of, Subject, throwError} from "rxjs";
+import {of, Subject} from "rxjs";
 import {CreateCandidateNoteComponent} from "./create/create-candidate-note.component";
 import {EditCandidateNoteComponent} from "./edit/edit-candidate-note.component";
 import {MockUser} from "../../../../MockData/MockUser";
@@ -95,27 +95,6 @@ describe('ViewCandidateNoteComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize and load candidate notes', () => {
-    component.ngOnChanges({
-      candidate: {
-        currentValue: component.candidate,
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }
-    });
-    expect(component.notes[0]).toEqual(mockCandidateNotes[0]);
-  });
-
-  it('should handle error while searching paged notes', () => {
-    const errorResponse = { error: 'error message' };
-    mockCandidateNoteService.search.and.returnValue(throwError(errorResponse));
-    component.doSearch();
-    expect(mockCandidateNoteService.search).toHaveBeenCalled();
-    expect(component.error).toEqual(errorResponse);
-    expect(component.loading).toBeFalse();
-  });
-
   it('should open create note modal', () => {
     const mockModalRef = { componentInstance: { candidateId: null } };
     mockModalService.open.and.returnValue(mockModalRef as any);
@@ -140,23 +119,5 @@ describe('ViewCandidateNoteComponent', () => {
       backdrop: 'static'
     });
     expect(mockModalRef.componentInstance.candidateNote).toEqual(mockCandidateNotes[0]);
-  });
-
-  it('should load more notes', () => {
-    mockCandidateNoteService.search.and.returnValue(of(mockSearchResults));
-
-    component.ngOnChanges({
-      candidate: {
-        currentValue: component.candidate,
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }
-    });
-
-    component.loadMore();
-
-    expect(mockCandidateNoteService.search.calls.count()).toBe(2);
-    expect(component.notes.length).toBe(1);
   });
 });

@@ -21,7 +21,6 @@ import {CandidateNote} from '../../../../model/candidate-note';
 import {CandidateNoteService} from '../../../../services/candidate-note.service';
 import {EditCandidateNoteComponent} from './edit/edit-candidate-note.component';
 import {CreateCandidateNoteComponent} from './create/create-candidate-note.component';
-import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-view-candidate-note',
@@ -35,80 +34,23 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   @Input() characterLimit: number;
   @Output() onResize = new EventEmitter();
 
-  candidateNoteForm: UntypedFormGroup;
   loading: boolean;
   expanded: boolean;
   error;
   notes: CandidateNote[];
-  hasMore: boolean;
   fullPanel: boolean = false;
 
   constructor(private candidateNoteService: CandidateNoteService,
-              private modalService: NgbModal,
-              private fb: UntypedFormBuilder) {
+              private modalService: NgbModal) {
   }
 
   ngOnInit() {
-    // Subscribe when a new note is made
-    this.candidateNoteService.newNote$.subscribe(
-      () => this.reload()
-    );
-    // Subscribe when a note is updated
-    this.candidateNoteService.updatedNote$.subscribe(
-      () => this.reload()
-    );
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.characterLimit = this.characterLimit ? this.characterLimit : 100;
     this.expanded = false;
-    this.notes = [];
-
-    this.candidateNoteForm = this.fb.group({
-      candidateId: [this.candidate.id],
-      pageSize: 10,
-      pageNumber: 0,
-      sortDirection: 'DESC',
-      sortFields: [['createdDate']]
-    });
-
-  }
-
-  doSearch() {
-    this.loading = true;
-    this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
-      results => {
-        this.notes.push(...results.content);
-        this.hasMore = results.totalPages > results.number+1;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
-
-  }
-
-  reload() {
-    this.loading = true;
-    this.candidateNoteForm.controls['pageNumber'].patchValue(0);
-    this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
-      results => {
-        this.notes = results.content;
-        this.hasMore = results.totalPages > results.number + 1;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
-  }
-
-  loadMore() {
-    this.candidateNoteForm.controls['pageNumber'].patchValue(this.candidateNoteForm.value.pageNumber+1);
-    this.doSearch();
   }
 
   editCandidateNote(candidateNote: CandidateNote) {
