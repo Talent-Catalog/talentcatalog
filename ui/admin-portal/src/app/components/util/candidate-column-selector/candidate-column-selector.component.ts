@@ -36,7 +36,7 @@ export class CandidateColumnSelectorComponent implements OnInit {
   dragulaGroupName: string = "FIELDS";
   error: string;
   private _selectedFields: CandidateFieldInfo[] = [];
-  private candidateSource: CandidateSource;
+  protected candidateSource: CandidateSource;
   private longFormat: boolean;
   updating: boolean;
 
@@ -71,7 +71,7 @@ export class CandidateColumnSelectorComponent implements OnInit {
     //Calculate remaining available fields.
     //Start by taking local copy of all displayable fields
     const availableFieldsMap = new Map<string, CandidateFieldInfo>(
-      this.candidateFieldService.displayableFieldsMap);
+      this.candidateFieldService.getDisplayableFieldsMap(this.candidateSource));
 
     //Now pull out the ones that are already selected
     for (const field of fields) {
@@ -125,9 +125,9 @@ export class CandidateColumnSelectorComponent implements OnInit {
     );
   }
 
-  default() {
+  default(source: CandidateSource) {
     this.selectedFields = this.longFormat
-      ? this.candidateFieldService.defaultDisplayableFieldsLong
-      : this.candidateFieldService.defaultDisplayableFieldsShort;
+      ? this.candidateFieldService.getDefaultDisplayableFieldsLong(source)
+      : this.candidateFieldService.getDefaultDisplayableFieldsShort(source);
   }
 }

@@ -4,16 +4,22 @@ import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 describe('ViewJobInfoComponent', () => {
   let component: ViewJobInfoComponent;
   let fixture: ComponentFixture<ViewJobInfoComponent>;
   let modalService: NgbModal;
    beforeEach(async () => {
+     let authServiceSpy =
+       jasmine.createSpyObj('AuthorizationService', ['canSeeJobDetails']);
+     authServiceSpy.canSeeJobDetails.and.returnValue(true);
+
      await TestBed.configureTestingModule({
       declarations: [ ViewJobInfoComponent,RouterLinkStubDirective ],
       providers: [
         { provide: NgbModal  },
+        { provide: AuthorizationService, useValue: authServiceSpy  },
       ]
     })
     .compileComponents();

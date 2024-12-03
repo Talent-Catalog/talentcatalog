@@ -16,13 +16,13 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,7 +157,7 @@ public class CandidateAdminApi {
     @GetMapping("number/{number}")
     public Map<String, Object> get(@PathVariable("number") String number) {
         Candidate candidate = candidateService.findByCandidateNumberRestricted(number);
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.EXTENDED);
         return builder.build(candidate);
     }
 
@@ -224,6 +224,10 @@ public class CandidateAdminApi {
     public Map<String, Object> updateShareableDocs(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateShareableDocsRequest request) {
         Candidate candidate = candidateSavedListService.updateShareableDocs(id, request);
+        // Set the context saved list id so that the returned object contains the list specific docs.
+        if (request.getSavedListId() != null) {
+            candidate.setContextSavedListId(request.getSavedListId());
+        }
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
