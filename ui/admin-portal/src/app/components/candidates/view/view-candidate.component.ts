@@ -15,7 +15,11 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
+import {
+  Candidate,
+  UpdateCandidateStatusInfo,
+  UpdateCandidateStatusRequest
+} from '../../../model/candidate';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
@@ -155,7 +159,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
       owned: true,
       shared: true,
-      global: true,
+      global: this.canSeeGlobalLists(),
       fixed: false
     };
 
@@ -241,8 +245,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   /**
-   * Very similar to {@link ShowCandidatesComponent.downloadGeneratedCV}.
-   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   * Very similar to ShowCandidatesComponent.downloadGeneratedCV.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candidate profile.
    */
   downloadGeneratedCV() {
     if (this.canViewCandidateName()) {
@@ -458,6 +462,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     this.destroy$.complete();
   }
 
+  private canSeeGlobalLists() {
+    return this.authorizationService.canSeeGlobalLists();
+  }
+
   public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
@@ -465,5 +473,4 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
   }
-
 }
