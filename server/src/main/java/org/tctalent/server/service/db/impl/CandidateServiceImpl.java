@@ -3047,4 +3047,54 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    @Transactional
+    public void identifyPotentialDuplicateCandidates() {
+        List<Long> potentialDupeIds = this.candidateRepository.findIdsOfPotentialDuplicateCandidates();
+        cleanUpResolvedDuplicates(potentialDupeIds);
+        markPotentialDuplicates(potentialDupeIds);
+    }
+
+    private void cleanUpResolvedDuplicates(List<Long> newQueryCandidateIds) {
+        // Find all candidates where potentialDuplicate already set to true
+        List<Long> previousCandidateIds =
+            this.candidateRepository.findIdsOfCandidatesMarkedPotentialDuplicates();
+        // If not in newly generated list, set potentialDuplicate to false on candidate matching ID
+        for (Long id: previousCandidateIds) {
+            if (!newQueryCandidateIds.contains(id)) {
+                Candidate candidate = getCandidate(id);
+                candidate.setPotentialDuplicate(false);
+                candidateRepository.save(candidate);
+                persistenceContextHelper.flushAndClearEntityManager();
+            }
+        }
+    }
+
+    private void markPotentialDuplicates(List<Long> potentialDupeIds) {
+        // Set potentialDuplicate field on all included candidates to true, if not already
+        for (Long potentialDupeId: potentialDupeIds) {
+            Candidate candidate = getCandidate(potentialDupeId);
+            candidate.setPotentialDuplicate(true);
+            save(candidate, false);
+            persistenceContextHelper.flushAndClearEntityManager();
+        }
+    }
+
+    public Page<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId) {
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Candidate candidate = getCandidate(candidateId);
+
+        Page<Candidate> candidatePage =
+            this.candidateRepository.findPotentialDuplicatesOfGivenCandidate(
+                candidate.getDob(),
+                candidate.getUser().getLastName(),
+                candidate.getUser().getLastName(),
+                candidate.getId(),
+                PageRequest.of(0, 200, Sort.unsorted())
+            );
+
+        return candidatePage;
+    }
+
 }

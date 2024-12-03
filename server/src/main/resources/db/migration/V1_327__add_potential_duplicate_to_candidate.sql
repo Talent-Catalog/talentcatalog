@@ -14,4 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table candidate add column potential_duplicate boolean;
+alter table candidate add column potential_duplicate boolean default false not null;

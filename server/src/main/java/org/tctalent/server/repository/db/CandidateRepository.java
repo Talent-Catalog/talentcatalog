@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -917,5 +918,54 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
      * @return paged search result of candidates who match the criteria
      */
     Page<Candidate> findByIdIn(Collection<Long> candidateIds, Pageable pageable);
+
+    @Query(
+        value =
+            """
+                WITH Duplicates AS (
+                SELECT
+                    c.id AS candidate_id,
+                    u.first_name,
+                    u.last_name,
+                    c.dob,
+                    COUNT(*) OVER (PARTITION BY u.first_name, u.last_name, c.dob) AS dup_count
+                FROM candidate c
+                    INNER JOIN users u ON c.user_id = u.id
+                WHERE c.status IN ('active', 'unreachable', 'incomplete', 'pending')
+                    AND u.first_name IS NOT NULL
+                    AND u.last_name IS NOT NULL
+                    AND c.dob IS NOT NULL
+            )
+            SELECT
+                candidate_id
+            FROM Duplicates
+            WHERE dup_count > 1
+            ORDER BY first_name, last_name, dob;
+            """, nativeQuery = true
+    )
+    List<Long> findIdsOfPotentialDuplicateCandidates();
+
+    @Query("SELECT c.id FROM Candidate c WHERE c.potentialDuplicate = true")
+    List<Long> findIdsOfCandidatesMarkedPotentialDuplicates();
+
+    @Query(
+        value =
+            """
+              SELECT DISTINCT c FROM Candidate c
+               JOIN c.user u
+               WHERE c.dob = :dob
+               AND LOWER(u.lastName) LIKE :lastName
+               AND LOWER(u.firstName) LIKE :firstName
+               AND c.id != :id
+               AND c.id != :id
+            """
+    )
+    Page<Candidate> findPotentialDuplicatesOfGivenCandidate(
+        @Param("dob") LocalDate dob,
+        @Param("lastName") String lastName,
+        @Param("firstName") String firstName,
+        @Param("id") long id,
+        Pageable pageable
+    );
 
 }

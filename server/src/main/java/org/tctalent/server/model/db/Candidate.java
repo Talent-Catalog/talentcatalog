@@ -764,6 +764,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public Candidate() {
     }
 
+    private Boolean potentialDuplicate;
+
     //todo The "caller" is the user used to set the createdBy and updatedBy fields
     //Seems to always be the same as user - so not sure if it has any point.
 
@@ -2141,6 +2143,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMediaWillingness(@Nullable String mediaWillingness) {
         this.mediaWillingness = mediaWillingness;
+    }
+
+    public Boolean getPotentialDuplicate() {return potentialDuplicate;}
+
+    public void setPotentialDuplicate(Boolean potentialDuplicate) {
+        this.potentialDuplicate = potentialDuplicate;
     }
 
     public Boolean getContactConsentRegistration() {

@@ -2995,4 +2995,14 @@ public class SystemAdminApi {
         }
     }
 
+    @GetMapping("identifyPotentialDuplicateCandidates")
+    void fetchIdsOfPotentialDuplicateCandidates() {
+        this.candidateService.identifyPotentialDuplicateCandidates();
+    }
+
+    @GetMapping("fetchPotentialDupesOfCandidateWithGivenId")
+    void fetchPotentialDupesOfCandidateWithGivenId() {
+        this.candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(29681L);
+    }
+
 }
