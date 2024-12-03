@@ -71,7 +71,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
     //Replace the form value with the new candidates context notes when
     //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
+      this.form.controls['contextNote'].patchValue(this.candidate.contextNote, {emitEvent: false});
     }
   }
 

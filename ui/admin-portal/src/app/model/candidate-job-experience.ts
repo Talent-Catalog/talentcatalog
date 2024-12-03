@@ -15,6 +15,7 @@
  */
 
 import {Country} from "./country";
+import {CandidateOccupation} from "./candidate-occupation";
 
 export interface CandidateJobExperience {
   id: number;
@@ -26,6 +27,7 @@ export interface CandidateJobExperience {
   fullTime: string;
   paid: string;
   description: string;
+  candidateOccupation?: CandidateOccupation;
 
   // RENDERING HELPERS
   expanded?: boolean;

@@ -216,6 +216,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateOccupation> candidateOccupations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("updatedDate DESC")
     private List<CandidateNote> candidateNotes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
