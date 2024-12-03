@@ -3085,8 +3085,8 @@ public class CandidateServiceImpl implements CandidateService {
         List<Long> candidateIds =
             this.candidateRepository.findPotentialDuplicatesOfGivenCandidate(
                 candidate.getDob(),
-                candidate.getUser().getLastName(),
-                candidate.getUser().getLastName(),
+                candidate.getUser().getLastName().toLowerCase(),
+                candidate.getUser().getFirstName().toLowerCase(),
                 candidate.getId()
             );
 

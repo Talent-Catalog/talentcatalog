@@ -396,8 +396,8 @@ public class CandidateAdminApi {
         return builder.buildPage(candidates);
     }
 
-    @GetMapping("{id}/fetch-potential-dupes")
-        public List<Long> fetchPotentialDupes(
+    @GetMapping("{id}/fetch-potential-duplicates")
+        public List<Long> fetchPotentialDuplicates  (
         @PathVariable("id") long id
     ) {
         return candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(id);

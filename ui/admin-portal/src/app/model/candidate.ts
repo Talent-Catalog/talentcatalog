@@ -110,6 +110,7 @@ export interface Candidate extends HasId {
   miniIntakeCompletedDate: number;
   fullIntakeCompletedBy: User;
   fullIntakeCompletedDate: number;
+  potentialDuplicate: boolean;
 
   //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];

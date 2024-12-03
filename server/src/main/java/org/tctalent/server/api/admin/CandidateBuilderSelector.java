@@ -199,6 +199,7 @@ public class CandidateBuilderSelector {
             .add("candidateOpportunities", candidateOpportunityDto(type))
             .add("miniIntakeCompletedDate")
             .add("fullIntakeCompletedDate")
+            .add("potentialDuplicate")
             ;
 
             if (!DtoType.PREVIEW.equals(type)) {
