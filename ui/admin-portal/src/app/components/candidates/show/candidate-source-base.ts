@@ -84,6 +84,7 @@ export class CandidateSourceBaseComponent {
   }
 
   protected loadSelectedFields() {
+
     this.selectedFields = this.candidateFieldService
     .getCandidateSourceFields(this.candidateSource, this.longFormat);
   }
@@ -132,7 +133,7 @@ export class CandidateSourceBaseComponent {
 
   protected performSearch(
     defaultPageSize: number = 12,
-    dtoType: DtoType = DtoType.FULL,
+    dtoType: DtoType = DtoType.EXTENDED,
     keyword: string = null,
     showClosedOpps: boolean = false
   ): Observable<SearchResults<Candidate>> {

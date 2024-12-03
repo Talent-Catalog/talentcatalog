@@ -4,14 +4,22 @@ import {MockJob} from "../../../../../MockData/MockJob";
 import {ViewJobInfoComponent} from "../../info/view-job-info/view-job-info.component";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 import {Job} from "../../../../../model/job";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 describe('JobGeneralTabComponent', () => {
   let component: JobGeneralTabComponent;
   let fixture: ComponentFixture<JobGeneralTabComponent>;
 
   beforeEach(async () => {
+    let authServiceSpy =
+      jasmine.createSpyObj('AuthorizationService', ['canSeeJobDetails']);
+    authServiceSpy.canSeeJobDetails.and.returnValue(true);
+
     await TestBed.configureTestingModule({
       declarations: [JobGeneralTabComponent,ViewJobInfoComponent,RouterLinkStubDirective],
+      providers: [
+        { provide: AuthorizationService, useValue: authServiceSpy },
+      ]
     }).compileComponents();
   });
 

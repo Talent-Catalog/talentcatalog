@@ -30,7 +30,11 @@ describe('BrowseCandidateSourcesComponent', () => {
     mockCandidateSourceService = jasmine.createSpyObj('CandidateSourceService', ['searchPaged']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
     mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    mockCandidateFieldService = jasmine.createSpyObj('CandidateFieldService', ['getCandidateSourceFields']);
+    mockCandidateFieldService = jasmine.createSpyObj(
+      'CandidateFieldService',
+      ['setCandidateSource', 'getCandidateSourceFields']
+    );
+    mockCandidateFieldService.setCandidateSource.and.callThrough();
     mockCandidateFieldService.getCandidateSourceFields.and.returnValue(of());
     mockCandidateSourceService.searchPaged.and.returnValue(of(new MockSearchResults()));
     await TestBed.configureTestingModule({

@@ -41,17 +41,8 @@ import org.springframework.lang.Nullable;
 @Setter
 @Entity
 @Table(name = "duolingo_coupon")
-@SequenceGenerator(name = "seq_gen", sequenceName = "coupon_id_seq", allocationSize = 1)
-public class DuolingoCoupon {
-
-  /**
-   * Unique identifier for the coupon.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_gen")
-  @Column(name = "id")
-  private Long id;
-
+@SequenceGenerator(name = "seq_gen", sequenceName = "duolingo_coupon_id_seq", allocationSize = 1)
+public class DuolingoCoupon extends AbstractDomainObject<Long> {
   /**
    * Unique code representing the Duolingo coupon. This code is used by candidates to redeem the
    * coupon.
