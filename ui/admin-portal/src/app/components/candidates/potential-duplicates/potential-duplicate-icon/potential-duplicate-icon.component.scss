@@ -1,3 +1,7 @@
+@import 'src/scss/_variables.scss';
+
+// TODO icon highlight behaviour, sizing etc
+
 i {
-  color: #9b6a0d;
+  color: $info;
 }

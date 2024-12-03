@@ -36,4 +36,9 @@ export class DuplicatesDetailComponent {
   public closeModal(): void {
     this.activeModal.close();
   }
+
+  //TODO:
+  public resolveButtonClicked() {
+
+  }
 }

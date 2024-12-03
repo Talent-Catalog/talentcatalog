@@ -24,6 +24,7 @@ export class PotentialDuplicateIconComponent {
 
     duplicateDetailModal.result
     .then((result) => {
+      // TODO: refresh if resolve clicked?
     })
     .catch(() => { /* Isn't possible */ });
   }
