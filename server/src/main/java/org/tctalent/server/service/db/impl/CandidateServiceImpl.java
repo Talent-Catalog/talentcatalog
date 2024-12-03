@@ -3079,22 +3079,18 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    public Page<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId) {
-        User loggedInUser = authService.getLoggedInUser()
-            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
+    public List<Long> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId) {
         Candidate candidate = getCandidate(candidateId);
 
-        Page<Candidate> candidatePage =
+        List<Long> candidateIds =
             this.candidateRepository.findPotentialDuplicatesOfGivenCandidate(
                 candidate.getDob(),
                 candidate.getUser().getLastName(),
                 candidate.getUser().getLastName(),
-                candidate.getId(),
-                PageRequest.of(0, 200, Sort.unsorted())
+                candidate.getId()
             );
 
-        return candidatePage;
+        return candidateIds;
     }
 
 }

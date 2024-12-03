@@ -3002,7 +3002,7 @@ public class SystemAdminApi {
 
     @GetMapping("fetchPotentialDupesOfCandidateWithGivenId")
     void fetchPotentialDupesOfCandidateWithGivenId() {
-        this.candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(29681L);
+        this.candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(26335L);
     }
 
 }

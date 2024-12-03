@@ -951,7 +951,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(
         value =
             """
-              SELECT DISTINCT c FROM Candidate c
+              SELECT c.id FROM Candidate c
                JOIN c.user u
                WHERE c.dob = :dob
                AND LOWER(u.lastName) LIKE :lastName
@@ -960,12 +960,11 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                AND c.id != :id
             """
     )
-    Page<Candidate> findPotentialDuplicatesOfGivenCandidate(
+    List<Long> findPotentialDuplicatesOfGivenCandidate(
         @Param("dob") LocalDate dob,
         @Param("lastName") String lastName,
         @Param("firstName") String firstName,
-        @Param("id") long id,
-        Pageable pageable
+        @Param("id") long id
     );
 
 }

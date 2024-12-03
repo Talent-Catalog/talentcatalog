@@ -631,7 +631,5 @@ public interface CandidateService {
 
     void identifyPotentialDuplicateCandidates();
 
-    // TODO doc and remember to handle potential for none found - also, candidates need to be
-    //  anonymised if not viewable by logged in user (does the DTO builder handle that???)
-    Page<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
+    List<Long> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
 }

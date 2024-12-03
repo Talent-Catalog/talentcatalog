@@ -397,13 +397,12 @@ public class CandidateAdminApi {
     }
 
     @GetMapping("{id}/fetch-potential-dupes")
-        public Map<String, Object> fetchPotentialDupes(
+        public List<Long> fetchPotentialDupes(
         @PathVariable("id") long id
     ) {
-        Page<Candidate> candidates =
+        List<Long> candidates =
             candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(id);
-        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
-        return builder.buildPage(candidates);
+        return candidates;
     }
 
 }
