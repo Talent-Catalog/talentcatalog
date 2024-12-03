@@ -400,9 +400,7 @@ public class CandidateAdminApi {
         public List<Long> fetchPotentialDupes(
         @PathVariable("id") long id
     ) {
-        List<Long> candidates =
-            candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(id);
-        return candidates;
+        return candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(id);
     }
 
 }
