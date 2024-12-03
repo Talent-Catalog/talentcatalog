@@ -16,11 +16,11 @@
 
 package org.tctalent.server.api.admin;
 
-import java.io.IOException;
-import java.util.Map;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +37,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -58,10 +59,12 @@ public class SavedSearchCandidateAdminApi implements
 
     @Autowired
     public SavedSearchCandidateAdminApi(
-        CandidateOpportunityService candidateOpportunityService, SavedSearchService savedSearchService,
-            UserService userService) {
+        CandidateOpportunityService candidateOpportunityService,
+        OccupationService occupationService,
+        SavedSearchService savedSearchService,
+        UserService userService) {
         this.savedSearchService = savedSearchService;
-        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
+        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, occupationService, userService);
     }
 
     @Override

@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import jakarta.validation.constraints.NotNull;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -26,8 +27,10 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * @author John Cameron
  */
 public class CandidateIntakeDataBuilderSelector {
+    private final OccupationService occupationService;
 
-    public CandidateIntakeDataBuilderSelector() {
+    public CandidateIntakeDataBuilderSelector(OccupationService occupationService) {
+        this.occupationService = occupationService;
     }
 
     public @NotNull DtoBuilder selectBuilder() {
@@ -112,7 +115,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", educationLevelDto())
                 .add("partnerEduLevelNotes")
-                .add("partnerOccupation", occupationDto())
+                .add("partnerOccupation", occupationService.selectBuilder())
                 .add("partnerOccupationNotes")
                 .add("partnerEnglish")
                 .add("partnerEnglishLevel", languageLevelDto())
@@ -258,7 +261,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("putForward")
                 .add("tbbEligibility")
                 .add("notes")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("occupationNotes")
                 .add("qualificationNotes")
                 .add("relevantWorkExp")
@@ -280,12 +283,6 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("firstName")
                 .add("lastName")
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
                 ;
     }
 

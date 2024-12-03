@@ -16,10 +16,8 @@
 
 package org.tctalent.server.api.portal;
 
-import java.util.Map;
-
 import jakarta.validation.Valid;
-
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,16 +30,19 @@ import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/portal/job-experience")
 public class CandidateJobExperiencePortalApi {
-
+    private final OccupationService occupationService;
     private final CandidateJobExperienceService candidateJobExperienceService;
 
     @Autowired
-    public CandidateJobExperiencePortalApi(CandidateJobExperienceService candidateJobExperienceService) {
+    public CandidateJobExperiencePortalApi(OccupationService occupationService,
+        CandidateJobExperienceService candidateJobExperienceService) {
+        this.occupationService = occupationService;
         this.candidateJobExperienceService = candidateJobExperienceService;
     }
 
@@ -81,13 +82,7 @@ public class CandidateJobExperiencePortalApi {
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("occupation", occupationDto())
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
+                .add("occupation", occupationService.selectBuilder())
                 ;
     }
 

@@ -61,6 +61,7 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
@@ -113,6 +114,9 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     CandidateService candidateService;
     @MockBean
     UserService userService;
+    @MockBean
+    OccupationService occupationService;
+
 
     @BeforeEach
     void setUp() {

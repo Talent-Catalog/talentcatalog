@@ -16,10 +16,10 @@
 
 package org.tctalent.server.api.admin;
 
-import java.util.List;
-import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -40,10 +41,12 @@ public class CandidateVisaCheckAdminApi
         implements IJoinedTableApi<CreateCandidateVisaCheckRequest,
         CreateCandidateVisaCheckRequest, CreateCandidateVisaCheckRequest> {
     private final CandidateVisaService candidateVisaService;
+    private final OccupationService occupationService;
 
     public CandidateVisaCheckAdminApi(
-            CandidateVisaService candidateVisaService) {
+            CandidateVisaService candidateVisaService, OccupationService occupationService) {
         this.candidateVisaService = candidateVisaService;
+        this.occupationService = occupationService;
     }
 
     /**
@@ -166,7 +169,7 @@ public class CandidateVisaCheckAdminApi
                 .add("putForward")
                 .add("tbbEligibility")
                 .add("notes")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("occupationNotes")
                 .add("qualificationNotes")
                 .add("relevantWorkExp")
@@ -195,12 +198,6 @@ public class CandidateVisaCheckAdminApi
                 .add("id")
                 .add("firstName")
                 .add("lastName")
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
                 ;
     }
 

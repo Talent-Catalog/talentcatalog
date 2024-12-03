@@ -16,11 +16,11 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -38,16 +38,19 @@ import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/portal/candidate")
 public class CandidatePortalApi {
 
+    private final OccupationService occupationService;
     private final CandidateService candidateService;
 
     @Autowired
-    public CandidatePortalApi(CandidateService candidateService) {
+    public CandidatePortalApi(OccupationService occupationService, CandidateService candidateService) {
+        this.occupationService = occupationService;
         this.candidateService = candidateService;
     }
 
@@ -269,7 +272,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
                 .add("migrationOccupation")
                 ;
@@ -307,13 +310,6 @@ public class CandidatePortalApi {
     }
 
     private DtoBuilder majorDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")

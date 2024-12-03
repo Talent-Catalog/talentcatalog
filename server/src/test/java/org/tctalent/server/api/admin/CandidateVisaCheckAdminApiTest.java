@@ -49,6 +49,7 @@ import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaService;
+import org.tctalent.server.service.db.OccupationService;
 
 /**
  *  Unit tests for Candidate Visa Check Admin Api endpoints.
@@ -68,6 +69,8 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
 
     @MockBean
     CandidateVisaService candidateVisaService;
+    @MockBean
+    OccupationService occupationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

@@ -18,6 +18,10 @@ package org.tctalent.server.api.pub;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import lombok.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,12 +34,9 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.dto.DtoCollectionItemFilter;
-
-import lombok.NonNull;
-
-import java.util.*;
 
 /**
  * Public API - accessible without a login
@@ -45,11 +46,13 @@ import java.util.*;
 public class CvPublicApi {
     private final CandidateService candidateService;
     private final CandidateTokenProvider candidateTokenProvider;
+    private final OccupationService occupationService;
 
     public CvPublicApi(CandidateService candidateService,
-        CandidateTokenProvider candidateTokenProvider) {
+        CandidateTokenProvider candidateTokenProvider, OccupationService occupationService) {
         this.candidateService = candidateService;
         this.candidateTokenProvider = candidateTokenProvider;
+        this.occupationService = occupationService;
     }
 
     @GetMapping("{token}")
@@ -128,15 +131,8 @@ public class CvPublicApi {
         private DtoBuilder candidateOccupationDto() {
             return new DtoBuilder(this.candidateOccupationFilter)
                     .add("id")
-                    .add("occupation", occupationDto())
+                    .add("occupation", occupationService.selectBuilder())
                     .add("yearsExperience")
-                    ;
-        }
-
-        private DtoBuilder occupationDto() {
-            return new DtoBuilder()
-                    .add("id")
-                    .add("name")
                     ;
         }
 
