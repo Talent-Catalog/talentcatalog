@@ -482,6 +482,10 @@ export class AuthorizationService {
     return editable
   }
 
+  canSeeGlobalLists() {
+      return !this.isEmployerPartner();
+  }
+
   canSeeJobDetails() {
     let result: boolean = false;
     if (this.isSourcePartner() || this.isJobCreatorPartner()) {
