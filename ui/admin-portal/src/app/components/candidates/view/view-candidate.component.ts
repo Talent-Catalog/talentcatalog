@@ -15,7 +15,11 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
+import {
+  Candidate,
+  UpdateCandidateStatusInfo,
+  UpdateCandidateStatusRequest
+} from '../../../model/candidate';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
@@ -241,8 +245,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   /**
-   * Very similar to {@link ShowCandidatesComponent.downloadGeneratedCV}.
-   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   * Very similar to ShowCandidatesComponent.downloadGeneratedCV.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candidate profile.
    */
   downloadGeneratedCV() {
     if (this.canViewCandidateName()) {
