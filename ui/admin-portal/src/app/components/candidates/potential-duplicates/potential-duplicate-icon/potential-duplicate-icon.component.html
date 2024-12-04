@@ -1,5 +1,12 @@
-<i
-  class="fa-solid fa-person-circle-exclamation"
-  title="Potential duplicate profile - click for details"
-  (click)="openDuplicateDetailModal()"
-></i>
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+<span *ngIf="loading; else icon">
+  <i class="fas fa-spinner fa-spin"></i> Loading...
+</span>
+<ng-template #icon>
+  <i class="fa-solid fa-person-circle-exclamation"
+     title="Potential duplicate profile - click for details"
+     (click)="openDuplicateDetailModal()"
+  ></i>
+</ng-template>

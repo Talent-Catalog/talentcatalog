@@ -1,7 +1,8 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {DuplicatesDetailComponent} from "../duplicates-detail/duplicates-detail.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-potential-duplicate-icon',
@@ -10,8 +11,14 @@ import {DuplicatesDetailComponent} from "../duplicates-detail/duplicates-detail.
 })
 export class PotentialDuplicateIconComponent {
   @Input('candidate') candidate: Candidate;
+  @Output() refresh: EventEmitter<void> = new EventEmitter();
+  error = null;
+  loading = null;
 
-  constructor(protected modalService: NgbModal) { }
+  constructor(
+    protected modalService: NgbModal,
+    private candidateService: CandidateService
+  ) { }
 
   public openDuplicateDetailModal(): void {
     // Modal
@@ -20,12 +27,27 @@ export class PotentialDuplicateIconComponent {
       backdrop: 'static'
     });
 
-    duplicateDetailModal.componentInstance.candidateId = this.candidate.id;
+    duplicateDetailModal.componentInstance.selectedCandidate = this.candidate;
 
-    duplicateDetailModal.result
-    .then((result) => {
-      // TODO: refresh if resolve clicked?
-    })
-    .catch(() => { /* Isn't possible */ });
+    // When the modal is closed or dismissed, refresh the parent view with updated data.
+    duplicateDetailModal.result.then(() => {
+      this.updateCandidate();
+    }).catch(() => {
+      this.updateCandidate();
+    });
   }
+
+  private updateCandidate(): void {
+    this.loading = true;
+    this.candidateService.fetchPotentialDuplicates(this.candidate.id).subscribe(
+      result => {
+        this.refresh.emit();
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+  }
+
 }

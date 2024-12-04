@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../services/candidate.service";
+import {Candidate} from "../../../../model/candidate";
 
 @Component({
   selector: 'app-duplicates-detail',
@@ -10,7 +11,8 @@ import {CandidateService} from "../../../../services/candidate.service";
 export class DuplicatesDetailComponent {
   error = null;
   loading = null;
-  candidateId: number;
+  selectedCandidate: Candidate;
+  potentialDuplicates: Candidate[];
 
   constructor(
     private activeModal: NgbActiveModal,
@@ -18,28 +20,30 @@ export class DuplicatesDetailComponent {
   ) { }
 
   ngOnInit(): void {
-    this.fetchPotentialDuplicates(this.candidateId);
+    this.fetchPotentialDuplicates(this.selectedCandidate.id);
   }
 
   private fetchPotentialDuplicates(candidateId: number) {
     this.loading = true;
     this.candidateService.fetchPotentialDuplicates(candidateId).subscribe(
       result => {
-        // display results
-        console.log(result);
+        this.potentialDuplicates = result;
+        this.loading = false;
       },
       error => {
         this.error = error;
+        this.loading = false;
       }
     );
   }
 
-  public closeModal(): void {
-    this.activeModal.close();
+  public refresh(): void {
+    this.fetchPotentialDuplicates(this.selectedCandidate.id);
   }
 
-  //TODO:
-  public resolveButtonClicked() {
-
+  // Emit event when modal is closed
+  closeModal() {
+    this.activeModal.close()
   }
+
 }

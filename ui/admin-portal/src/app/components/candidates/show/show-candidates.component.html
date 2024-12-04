@@ -530,8 +530,9 @@
                 </app-tasks-monitor>
                 <app-potential-duplicate-icon
                   *ngIf="candidate.potentialDuplicate"
-                  [candidate]="candidate">
-                </app-potential-duplicate-icon>
+                  [candidate]="candidate"
+                  (refresh)="doSearch(true)"
+                ></app-potential-duplicate-icon>
               </td>
               <td *ngIf="isShowStage()">
                 <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"

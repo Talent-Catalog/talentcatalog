@@ -635,5 +635,6 @@ public interface CandidateService {
     void processPotentialDuplicatePage(Page<Candidate> candidatePage);
 
     // TODO doc incl explanation of @Transactional requirement (rollback of incomplete)
+    //  and: some candidates' potential duplicates may have been marked deleted, but they've not been updated
     void cleanUpResolvedDuplicates(List<Long> newCandidateIds);
 }
