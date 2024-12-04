@@ -14,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   Candidate,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
+import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
@@ -32,7 +32,7 @@ import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../m
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
@@ -43,6 +43,7 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {concatMap, takeUntil} from "rxjs/operators";
 
 
 @Component({
@@ -50,7 +51,7 @@ import {LocalStorageService} from "../../../services/local-storage.service";
   templateUrl: './view-candidate.component.html',
   styleUrls: ['./view-candidate.component.scss']
 })
-export class ViewCandidateComponent extends MainSidePanelBase implements OnInit {
+export class ViewCandidateComponent extends MainSidePanelBase implements OnInit, OnDestroy {
 
   private lastTabKey: string = 'CandidateLastTab';
 
@@ -68,6 +69,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
   token: string;
+
+  private destroy$ = new Subject<void>();
 
   constructor(private candidateService: CandidateService,
               private chatService: ChatService,
@@ -88,7 +91,19 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
+    this.candidateService.candidateUpdated().pipe(
+      takeUntil(this.destroy$),
+      concatMap(() => {
+        return this.candidateService.getByNumber(this.candidate.candidateNumber)
+      })
+      ).subscribe(candidate => {
+      // We aren't able to merge two candidate objects (e.g. using Spread operator like in the candidate-search-card)
+      // if a value is changed to null. Null values aren't returned via the updated object DTO and therefore there is nothing
+      // to replace the old value with the new null value. So in this case, it is best to fetch the new object.
+      this.candidate = candidate;
+    })
   }
+
   private setChatAccess() {
     const candidatePartner = this.candidate.user?.partner;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
@@ -144,7 +159,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
       dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
       owned: true,
       shared: true,
-      global: true,
+      global: this.canSeeGlobalLists(),
       fixed: false
     };
 
@@ -230,8 +245,8 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   /**
-   * Very similar to {@link ShowCandidatesComponent.downloadGeneratedCV}.
-   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   * Very similar to ShowCandidatesComponent.downloadGeneratedCV.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candidate profile.
    */
   downloadGeneratedCV() {
     if (this.canViewCandidateName()) {
@@ -442,6 +457,15 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     return this.authorizationService.isReadOnly();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private canSeeGlobalLists() {
+    return this.authorizationService.canSeeGlobalLists();
+  }
+
   public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
   }
@@ -449,5 +473,4 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
   }
-
 }

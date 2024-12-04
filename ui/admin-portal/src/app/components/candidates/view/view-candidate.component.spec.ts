@@ -29,24 +29,18 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {RouterTestingModule} from "@angular/router/testing";
 import {MockUser} from "../../../MockData/MockUser";
-import {
-  CandidateGeneralTabComponent
-} from "./tab/candidate-general-tab/candidate-general-tab.component";
+import {CandidateGeneralTabComponent} from "./tab/candidate-general-tab/candidate-general-tab.component";
 import {ViewCandidateLanguageComponent} from "./language/view-candidate-language.component";
-import {
-  ViewCandidateRegistrationComponent
-} from "./registration/view-candidate-registration.component";
+import {ViewCandidateRegistrationComponent} from "./registration/view-candidate-registration.component";
 import {
   CandidateShareableNotesComponent
 } from "../../util/candidate-shareable-notes/candidate-shareable-notes.component";
 import {ViewCandidateContactComponent} from "./contact/view-candidate-contact.component";
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
-import {User} from "../../../model/user";
 import {ViewCandidateNoteComponent} from "./note/view-candidate-note.component";
 import {Candidate} from "../../../model/candidate";
 import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
-import {MockPartner} from "../../../MockData/MockPartner";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {LocalStorageService} from "../../../services/local-storage.service";
 
@@ -62,7 +56,7 @@ describe('ViewCandidateComponent', () => {
   const mockCandidate = new MockCandidate();
 
   beforeEach(waitForAsync(() => {
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['get','getByNumber', 'generateToken']);
+    const mockCandidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get','getByNumber', 'generateToken','updateCandidate', 'candidateUpdated']);
     mockSavedListService = jasmine.createSpyObj('SavedListService', ['search']);
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
@@ -72,7 +66,7 @@ describe('ViewCandidateComponent', () => {
       declarations: [ViewCandidateComponent,ViewCandidateNoteComponent,CandidateGeneralTabComponent,CandidateShareableNotesComponent,ViewCandidateContactComponent,AutosaveStatusComponent,ViewCandidateLanguageComponent,ViewCandidateRegistrationComponent],
       imports: [HttpClientTestingModule,FormsModule,NgbNavModule,RouterTestingModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        { provide: CandidateService, useValue: mockCandidateService },
+        { provide: CandidateService, useValue: mockCandidateServiceSpy },
         { provide: SavedListService, useValue: mockSavedListService },
         { provide: ActivatedRoute, useValue: {
             paramMap: of(convertToParamMap({ candidateNumber: '123' }))
@@ -84,6 +78,7 @@ describe('ViewCandidateComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     mockActivatedRoute = TestBed.inject(ActivatedRoute);
+    mockCandidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
   }));
 
   beforeEach(() => {
@@ -94,6 +89,8 @@ describe('ViewCandidateComponent', () => {
     component.candidate = mockCandidate;
     mockCandidateService.getByNumber.and.returnValue(of(mockCandidate));
     mockCandidateService.generateToken.and.returnValue(of('Token'));
+    mockCandidateService.candidateUpdated.and.returnValue(of(mockCandidate));
+
     fixture.detectChanges();
   });
 

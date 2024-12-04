@@ -125,7 +125,7 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         if (request.getOwned() != null && request.getOwned()) {
             if (loggedInUser != null) {
                 disjunction = cb.or(disjunction,
-                        cb.equal(savedList.get("createdBy"), loggedInUser)
+                        cb.equal(savedList.get("createdBy").get("id"), loggedInUser.getId())
                 );
             }
         }

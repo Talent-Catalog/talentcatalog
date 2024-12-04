@@ -42,35 +42,25 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.getCandidate();
+      this.filterTasks();
     }
   }
 
-  getCandidate() {
-    this.candidateService.get(this.candidate.id).subscribe(
-      candidate => {
-        this.candidate = candidate;
-        if (this.candidate.taskAssignments) {
-          this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
-            t.completedDate == null &&
-            t.abandonedDate == null &&
-            t.status === Status.active).sort(taskAssignmentSort);
-          this.completedTasks = this.candidate.taskAssignments.filter(t =>
-            t.completedDate != null ||
-            t.abandonedDate != null).sort(taskAssignmentSort);
-          this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
-            t.status === Status.inactive);
-        } else {
-          this.ongoingTasks = [];
-          this.completedTasks = [];
-        }
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      });
+  filterTasks() {
+    if (this.candidate.taskAssignments) {
+      this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
+        t.completedDate == null &&
+        t.abandonedDate == null &&
+        t.status === Status.active).sort(taskAssignmentSort);
+      this.completedTasks = this.candidate.taskAssignments.filter(t =>
+        t.completedDate != null ||
+        t.abandonedDate != null).sort(taskAssignmentSort);
+      this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
+        t.status === Status.inactive);
+    } else {
+      this.ongoingTasks = [];
+      this.completedTasks = [];
+    }
   }
 
   isOverdue(ta: TaskAssignment) {
@@ -86,7 +76,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     assignTaskCandidateModal.componentInstance.candidateId = this.candidate.id;
 
     assignTaskCandidateModal.result
-      .then((taskAssignment: TaskAssignment) => this.getCandidate())
+      .then((taskAssignment: TaskAssignment) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -100,7 +90,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     editTaskAssignmentModal.componentInstance.taskAssignment = ta;
 
     editTaskAssignmentModal.result
-      .then((taskAssignment) => this.getCandidate())
+      .then((taskAssignment) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -120,7 +110,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
         if (result === true) {
           this.taskAssignmentService.removeTaskAssignment(ta.id).subscribe(
             () => {
-              this.getCandidate();
+              this.candidateService.updateCandidate();
               this.saving = false;
             },
             error => {

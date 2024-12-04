@@ -22,6 +22,7 @@ import {CandidateCertificationService} from "../../../../services/candidate-cert
 import {EditCandidateCertificationComponent} from "./edit/edit-candidate-certification.component";
 import {CreateCandidateCertificationComponent} from "./create/create-candidate-certification.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-certification',
@@ -40,6 +41,7 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
   error;
 
   constructor(private candidateCertificationService: CandidateCertificationService,
+              private candidateService: CandidateService,
               private modalService: NgbModal) {
   }
 
@@ -48,23 +50,7 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doSearch();
-    }
-  }
 
-  doSearch() {
-    this.loading = true;
-    this.candidateCertificationService.list(this.candidate.id).subscribe(
-      candidateCertifications => {
-        this.candidateCertifications = candidateCertifications;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
   }
 
   editCandidateCertification(candidateCertification: CandidateCertification) {
@@ -76,7 +62,7 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
     editCandidateCertificationModal.componentInstance.candidateCertification = candidateCertification;
 
     editCandidateCertificationModal.result
-      .then(() => this.doSearch())
+      .then(() => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -90,7 +76,7 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
     createCandidateCertificationModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateCertificationModal.result
-      .then((candidateCertification) => this.doSearch())
+      .then((candidateCertification) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -109,13 +95,12 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
           this.candidateCertificationService.delete(candidateCertification.id).subscribe(
             (user) => {
               this.loading = false;
-              this.doSearch();
+              this.candidateService.updateCandidate();
             },
             (error) => {
               this.error = error;
               this.loading = false;
             });
-          this.doSearch();
         }
       })
       .catch(() => { /* Isn't possible */ });
