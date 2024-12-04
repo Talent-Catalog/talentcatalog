@@ -629,7 +629,7 @@ public interface CandidateService {
      */
     void reassignSavedListCandidates(SavedList savedList, int partnerId);
 
-    List<Long> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
+    List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
 
     // TODO doc incl explanation of @Transactional requirement (rollback of incomplete)
     void processPotentialDuplicatePage(Page<Candidate> candidatePage);

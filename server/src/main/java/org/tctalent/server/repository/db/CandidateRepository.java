@@ -949,16 +949,16 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(
         value =
             """
-               SELECT c.id FROM candidate c
-                    INNER JOIN users u ON c.user_id = u.id
-                WHERE c.status IN ('active', 'unreachable', 'incomplete', 'pending')
-                    AND LOWER(u.last_name) like :lastName
-                    AND LOWER(u.first_name) like :firstName
-                    AND c.dob = :dob
-                    AND c.id != :id
-            """, nativeQuery = true
-    )
-    List<Long> findPotentialDuplicatesOfGivenCandidate(
+               SELECT c FROM Candidate c
+                  JOIN c.user u
+               WHERE c.status IN :statuses
+                  AND LOWER(u.lastName) LIKE :lastName
+                  AND LOWER(u.firstName) LIKE :firstName
+                  AND c.dob = :dob
+                  AND c.id != :id
+            """)
+    List<Candidate> findPotentialDuplicatesOfGivenCandidate(
+        @Param("statuses") List<CandidateStatus> statuses,
         @Param("dob") LocalDate dob,
         @Param("lastName") String lastName,
         @Param("firstName") String firstName,

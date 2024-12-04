@@ -217,8 +217,8 @@ export class CandidateService implements IntakeService {
     );
   }
 
-  fetchPotentialDuplicates(id: number): Observable<number[]> {
-    return this.http.get<number[]>(`${this.apiUrl}/${id}/fetch-potential-duplicates`);
+  fetchPotentialDuplicates(id: number): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(`${this.apiUrl}/${id}/fetch-potential-duplicates`);
   }
 
 }

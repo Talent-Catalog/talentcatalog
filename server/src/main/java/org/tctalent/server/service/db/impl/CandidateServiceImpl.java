@@ -35,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -3058,7 +3059,7 @@ public class CandidateServiceImpl implements CandidateService {
             if (!newCandidateIds.contains(id)) {
                 Candidate candidate = getCandidate(id);
                 candidate.setPotentialDuplicate(false);
-                candidateRepository.save(candidate);
+                save(candidate, false);
             }
         }
     }
@@ -3092,18 +3093,23 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    public List<Long> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId) {
+    public List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId) {
         Candidate candidate = getCandidate(candidateId);
 
-        List<Long> candidateIds =
+        final List<CandidateStatus> statuses = new ArrayList<>(
+            EnumSet.of(CandidateStatus.active, CandidateStatus.unreachable,
+                CandidateStatus.incomplete, CandidateStatus.pending));
+
+        List<Candidate> candidates =
             this.candidateRepository.findPotentialDuplicatesOfGivenCandidate(
+                statuses,
                 candidate.getDob(),
                 candidate.getUser().getLastName().toLowerCase(),
                 candidate.getUser().getFirstName().toLowerCase(),
                 candidate.getId()
             );
 
-        return candidateIds;
+        return candidates;
     }
 
 }

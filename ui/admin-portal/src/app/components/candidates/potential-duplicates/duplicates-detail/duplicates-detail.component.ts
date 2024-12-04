@@ -26,6 +26,7 @@ export class DuplicatesDetailComponent {
     this.candidateService.fetchPotentialDuplicates(candidateId).subscribe(
       result => {
         // display results
+        console.log(result);
       },
       error => {
         this.error = error;
