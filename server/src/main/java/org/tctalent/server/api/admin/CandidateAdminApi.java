@@ -365,8 +365,10 @@ public class CandidateAdminApi {
 
     @GetMapping(value = "/token/{cn}", produces = MediaType.TEXT_PLAIN_VALUE)
     public String generateToken(@PathVariable("cn") String candidateNumber,
-                                @RequestParam(defaultValue = "false") boolean restrictCandidateOccupations,
-                                @RequestParam(defaultValue = "") List<Long> candidateOccupationIds) {
+                                @RequestParam(name="restrictCandidateOccupations", defaultValue = "false")
+                                boolean restrictCandidateOccupations,
+                                @RequestParam(name="candidateOccupationIds", defaultValue = "")
+                                List<Long> candidateOccupationIds) {
          CvClaims cvClaims = new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupationIds);
          String token = candidateTokenProvider.generateCvToken(cvClaims, 365L);
          return token;
