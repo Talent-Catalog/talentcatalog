@@ -2997,7 +2997,7 @@ public class SystemAdminApi {
 
     @GetMapping("identifyPotentialDuplicateCandidates")
     void fetchIdsOfPotentialDuplicateCandidates() {
-        this.candidateService.identifyPotentialDuplicateCandidates();
+        this.backgroundProcessingService.processPotentialDuplicates();
     }
 
     @GetMapping("fetchPotentialDupesOfCandidateWithGivenId")

@@ -3048,34 +3048,47 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Transactional
-    public void identifyPotentialDuplicateCandidates() {
-        List<Long> potentialDupeIds = this.candidateRepository.findIdsOfPotentialDuplicateCandidates();
-        cleanUpResolvedDuplicates(potentialDupeIds);
-        markPotentialDuplicates(potentialDupeIds);
-    }
-
-    private void cleanUpResolvedDuplicates(List<Long> newQueryCandidateIds) {
+    @Override
+    public void cleanUpResolvedDuplicates(List<Long> newCandidateIds) {
         // Find all candidates where potentialDuplicate already set to true
         List<Long> previousCandidateIds =
             this.candidateRepository.findIdsOfCandidatesMarkedPotentialDuplicates();
         // If not in newly generated list, set potentialDuplicate to false on candidate matching ID
         for (Long id: previousCandidateIds) {
-            if (!newQueryCandidateIds.contains(id)) {
+            if (!newCandidateIds.contains(id)) {
                 Candidate candidate = getCandidate(id);
                 candidate.setPotentialDuplicate(false);
                 candidateRepository.save(candidate);
-                persistenceContextHelper.flushAndClearEntityManager();
             }
         }
     }
 
-    private void markPotentialDuplicates(List<Long> potentialDupeIds) {
-        // Set potentialDuplicate field on all included candidates to true, if not already
-        for (Long potentialDupeId: potentialDupeIds) {
-            Candidate candidate = getCandidate(potentialDupeId);
-            candidate.setPotentialDuplicate(true);
-            save(candidate, false);
-            persistenceContextHelper.flushAndClearEntityManager();
+    @Transactional
+    @Override
+    public void processPotentialDuplicatePage(Page<Candidate> candidatePage) {
+
+        List<Candidate> candidateList = candidatePage.getContent();
+
+        for (Candidate candidate : candidateList) {
+            if (!candidate.getPotentialDuplicate()) {
+                candidate.setPotentialDuplicate(true);
+                save(candidate, false);
+            }
+        }
+
+        // Log completed page
+        LogBuilder.builder(log)
+            .action("Process potential duplicates")
+            .message("Processed page " + (candidatePage.getNumber() + 1) + " of " +
+                candidatePage.getTotalPages())
+            .logInfo();
+
+        // Log if processing complete
+        if (candidatePage.getNumber() + 1 >= candidatePage.getTotalPages()) {
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Background duplicate processing complete!")
+                .logInfo();
         }
     }
 

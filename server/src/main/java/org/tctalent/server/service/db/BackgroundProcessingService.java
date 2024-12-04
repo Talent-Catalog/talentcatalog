@@ -17,8 +17,6 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-import org.springframework.web.reactive.function.client.WebClientException;
-import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.PageContext;
@@ -37,5 +35,16 @@ public interface BackgroundProcessingService {
   BackProcessor<PageContext> createSfSyncBackProcessor(
       List<CandidateStatus> statuses, long totalNoOfPages
   );
+
+  /**
+   * Creates a back processor to handle processing of potential duplicate candidates.
+   */
+  BackProcessor<PageContext> createPotentialDuplicatesBackProcessor(List<Long> candidateIds);
+
+  // TODO doc
+  void processPotentialDuplicates();
+
+  // TODO doc
+  void initiateDuplicateProcessing(List<Long> potentialDupeIds);
 
 }

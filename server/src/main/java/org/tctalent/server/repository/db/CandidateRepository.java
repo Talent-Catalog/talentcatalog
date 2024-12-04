@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -911,8 +910,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     );
 
     /**
-     * Takes a collection of candidate IDs and returns their corresponding candidates. Used here to
-     * get around SQL limitations.
+     * Takes a collection of candidate IDs and returns their corresponding candidates.
      * @param candidateIds any Collection of candidate IDs
      * @param pageable details of requested pagination
      * @return paged search result of candidates who match the criteria
