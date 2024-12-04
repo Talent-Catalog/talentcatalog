@@ -222,7 +222,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       listAllIds: [[]],
       listAllSearchType: ['and'],
       unhcrStatusesDisplay: [[]],
-      includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
+      includeUploadedFiles: [false],
+      potentialDuplicate: [null]
+    }, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
   ngOnInit() {

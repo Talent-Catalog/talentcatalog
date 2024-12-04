@@ -561,6 +561,18 @@
                 </div>
               </div>
             </div>
+
+            <!-- POTENTIAL DUPLICATE -->
+            <div class="col-md-2">
+              <label class="form-label" for="potentialDuplicate">Potential Duplicate</label>
+              <ng-select id="potentialDuplicate"
+                         placeholder="Select"
+                         [formControlName]="'potentialDuplicate'"
+              >
+                <ng-option [value]="true">Yes</ng-option>
+                <ng-option [value]="false">No</ng-option>
+              </ng-select>
+            </div>
           </div>
         </div>
 

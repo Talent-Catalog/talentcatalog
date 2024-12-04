@@ -146,6 +146,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
+    private Boolean potentialDuplicate;
     private String regoReferrerParam;
     private List<ReviewStatus> reviewStatusFilter;
 
@@ -318,6 +319,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         if (getFullIntakeCompleted() != null) {
             boolean completed = getFullIntakeCompleted();
             ands.add("full_intake_completed_date " + (completed ? "is not null" : "is null"));
+        }
+
+        // POTENTIAL DUPLICATE
+        if (getPotentialDuplicate() != null) {
+            boolean potentialDuplicate = getPotentialDuplicate();
+            ands.add("potentialDuplicate is " + potentialDuplicate);
         }
 
         // MAJOR SEARCH
