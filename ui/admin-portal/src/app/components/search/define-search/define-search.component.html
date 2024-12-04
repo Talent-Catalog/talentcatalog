@@ -563,7 +563,7 @@
             </div>
 
             <!-- POTENTIAL DUPLICATE -->
-            <div *ngIf="!searchIsElastic" class="col-md-2">
+            <div *ngIf="!searchIsElastic && canViewCandidateName()" class="col-md-2">
               <label class="form-label" for="potentialDuplicate">Potential Duplicate</label>
               <ng-select id="potentialDuplicate"
                          placeholder="Select"

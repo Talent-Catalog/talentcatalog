@@ -74,6 +74,11 @@
           <a (click)="createTailoredCv()" class="link-info">
             <i class="fas fa-users-gear"  title="View tailored candidate's public CV"></i>
           </a>
+          <app-potential-duplicate-icon
+            *ngIf="candidate.potentialDuplicate && canViewCandidateName()"
+            [candidate]="candidate"
+            (refresh)="refreshCandidateProfile()"
+          ></app-potential-duplicate-icon>
         </span>
       </h1>
 

@@ -3000,9 +3000,4 @@ public class SystemAdminApi {
         this.backgroundProcessingService.processPotentialDuplicates();
     }
 
-    @GetMapping("fetchPotentialDupesOfCandidateWithGivenId")
-    void fetchPotentialDupesOfCandidateWithGivenId() {
-        this.candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(26335L);
-    }
-
 }
