@@ -26,6 +26,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.request.country.SearchCountryRequest;
 import org.tctalent.server.request.country.UpdateCountryRequest;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface CountryService {
 
@@ -57,6 +58,8 @@ public interface CountryService {
     boolean deleteCountry(long id) throws EntityReferencedException;
 
     List<Country> getTCDestinations();
+
+    DtoBuilder selectBuilder();
 
     /**
      * Sets the country ISO codes of all countries with names matching the English country names

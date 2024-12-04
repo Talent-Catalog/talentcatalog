@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -41,11 +42,13 @@ public class CandidateVisaCheckAdminApi
         implements IJoinedTableApi<CreateCandidateVisaCheckRequest,
         CreateCandidateVisaCheckRequest, CreateCandidateVisaCheckRequest> {
     private final CandidateVisaService candidateVisaService;
+    private final CountryService countryService;
     private final OccupationService occupationService;
 
     public CandidateVisaCheckAdminApi(
-            CandidateVisaService candidateVisaService, OccupationService occupationService) {
+            CandidateVisaService candidateVisaService, CountryService countryService, OccupationService occupationService) {
         this.candidateVisaService = candidateVisaService;
+        this.countryService = countryService;
         this.occupationService = occupationService;
     }
 
@@ -123,7 +126,7 @@ public class CandidateVisaCheckAdminApi
         return new DtoBuilder()
                 .add("id")
                 .add("candidateVisaJobChecks", visaJobCheckDto())
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("protection")
                 .add("protectionGrounds")
                 .add("englishThreshold")
@@ -183,13 +186,6 @@ public class CandidateVisaCheckAdminApi
                 .add("languagesRequired")
                 .add("languagesThresholdMet")
                 .add("languagesThresholdNotes")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
                 ;
     }
 

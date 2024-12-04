@@ -50,6 +50,7 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -90,6 +91,7 @@ public class SavedListCandidateAdminApi implements
     public SavedListCandidateAdminApi(
         CandidateService candidateService, CandidateOpportunityService candidateOpportunityService,
         CandidateSavedListService candidateSavedListService,
+        CountryService countryService,
         OccupationService occupationService,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
@@ -98,7 +100,8 @@ public class SavedListCandidateAdminApi implements
         this.candidateSavedListService = candidateSavedListService;
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
-        candidateBuilderSelector = new CandidateBuilderSelector(candidateOpportunityService, occupationService, userService);
+        candidateBuilderSelector = new CandidateBuilderSelector(
+            candidateOpportunityService, countryService, occupationService, userService);
     }
 
     @GetMapping(value = "{id}/is-empty")

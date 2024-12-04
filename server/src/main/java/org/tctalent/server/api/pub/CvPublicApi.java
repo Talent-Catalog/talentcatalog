@@ -34,6 +34,7 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.dto.DtoCollectionItemFilter;
@@ -46,12 +47,14 @@ import org.tctalent.server.util.dto.DtoCollectionItemFilter;
 public class CvPublicApi {
     private final CandidateService candidateService;
     private final CandidateTokenProvider candidateTokenProvider;
+    private final CountryService countryService;
     private final OccupationService occupationService;
 
     public CvPublicApi(CandidateService candidateService,
-        CandidateTokenProvider candidateTokenProvider, OccupationService occupationService) {
+        CandidateTokenProvider candidateTokenProvider, CountryService countryService, OccupationService occupationService) {
         this.candidateService = candidateService;
         this.candidateTokenProvider = candidateTokenProvider;
+        this.countryService = countryService;
         this.occupationService = occupationService;
     }
 
@@ -98,19 +101,13 @@ public class CvPublicApi {
             return new DtoBuilder()
                     .add("id")
                     .add("candidateNumber")
-                    .add("country", countryDto())
+                    .add("country", countryService.selectBuilder())
                     .add("candidateOccupations", candidateOccupationDto())
                     .add("candidateJobExperiences", candidateJobExperienceDto())
                     .add("candidateEducations", candidateEducationDto())
                     .add("candidateLanguages", candidateLanguageDto())
                     .add("candidateCertifications", candidateCertificationDto())
                     ;
-        }
-
-        private DtoBuilder countryDto() {
-            return new DtoBuilder()
-                    .add("id")
-                    .add("name");
         }
 
         private DtoBuilder candidateJobExperienceDto() {
@@ -123,7 +120,7 @@ public class CvPublicApi {
                     .add("fullTime")
                     .add("paid")
                     .add("description")
-                    .add("country", countryDto())
+                    .add("country", countryService.selectBuilder())
                     .add("candidateOccupation", candidateOccupationDto())
                     ;
         }
@@ -140,7 +137,7 @@ public class CvPublicApi {
             return new DtoBuilder()
                     .add("id")
                     .add("educationType")
-                    .add("country", countryDto())
+                    .add("country", countryService.selectBuilder())
                     .add("educationMajor", majorDto())
                     .add("lengthOfCourseYears")
                     .add("institution")

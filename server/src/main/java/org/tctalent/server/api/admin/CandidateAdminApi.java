@@ -71,6 +71,7 @@ import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -95,6 +96,7 @@ public class CandidateAdminApi {
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
         CandidateOpportunityService candidateOpportunityService, CandidateSavedListService candidateSavedListService,
+        CountryService countryService,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
         UserService userService,
@@ -102,9 +104,9 @@ public class CandidateAdminApi {
         this.candidateService = candidateService;
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
-        builderSelector = new CandidateBuilderSelector(candidateOpportunityService,
+        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, countryService,
             occupationService, userService);
-        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(occupationService);
+        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(countryService, occupationService);
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
         this.candidateTokenProvider = candidateTokenProvider;

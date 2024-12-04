@@ -37,6 +37,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
@@ -60,11 +61,13 @@ public class SavedSearchCandidateAdminApi implements
     @Autowired
     public SavedSearchCandidateAdminApi(
         CandidateOpportunityService candidateOpportunityService,
+        CountryService countryService,
         OccupationService occupationService,
         SavedSearchService savedSearchService,
         UserService userService) {
         this.savedSearchService = savedSearchService;
-        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, occupationService, userService);
+        builderSelector = new CandidateBuilderSelector(
+            candidateOpportunityService, countryService, occupationService, userService);
     }
 
     @Override

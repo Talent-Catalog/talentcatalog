@@ -30,20 +30,23 @@ import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/portal/job-experience")
 public class CandidateJobExperiencePortalApi {
-    private final OccupationService occupationService;
     private final CandidateJobExperienceService candidateJobExperienceService;
+    private final CountryService countryService;
+    private final OccupationService occupationService;
 
     @Autowired
     public CandidateJobExperiencePortalApi(OccupationService occupationService,
-        CandidateJobExperienceService candidateJobExperienceService) {
+        CandidateJobExperienceService candidateJobExperienceService, CountryService countryService) {
         this.occupationService = occupationService;
         this.candidateJobExperienceService = candidateJobExperienceService;
+        this.countryService = countryService;
     }
 
     @PostMapping()
@@ -67,7 +70,7 @@ public class CandidateJobExperiencePortalApi {
     private DtoBuilder jobExperienceDto() {
         return new DtoBuilder()
             .add("id")
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             .add("candidateOccupation", candidateOccupationDto())
             .add("companyName")
             .add("role")
@@ -85,12 +88,4 @@ public class CandidateJobExperiencePortalApi {
                 .add("occupation", occupationService.selectBuilder())
                 ;
     }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("name")
-            ;
-    }
-
 }

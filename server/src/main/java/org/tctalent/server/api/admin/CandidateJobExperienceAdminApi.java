@@ -34,6 +34,7 @@ import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -42,8 +43,9 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RequiredArgsConstructor
 public class CandidateJobExperienceAdminApi {
 
-    private final OccupationService occupationService;
     private final CandidateJobExperienceService candidateJobExperienceService;
+    private final CountryService countryService;
+    private final OccupationService occupationService;
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchJobExperienceRequest request) {
@@ -85,16 +87,8 @@ public class CandidateJobExperienceAdminApi {
                 .add("fullTime")
                 .add("paid")
                 .add("description")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("candidateOccupation", candidateOccupationDto())
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                .add("status")
                 ;
     }
 
@@ -105,5 +99,4 @@ public class CandidateJobExperienceAdminApi {
                 .add("yearsExperience")
                 ;
     }
-
 }

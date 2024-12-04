@@ -38,6 +38,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -45,13 +46,16 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RequestMapping("/api/portal/candidate")
 public class CandidatePortalApi {
 
-    private final OccupationService occupationService;
     private final CandidateService candidateService;
+    private final CountryService countryService;
+    private final OccupationService occupationService;
 
     @Autowired
-    public CandidatePortalApi(OccupationService occupationService, CandidateService candidateService) {
+    public CandidatePortalApi(OccupationService occupationService, CandidateService candidateService,
+        CountryService countryService) {
         this.occupationService = occupationService;
         this.candidateService = candidateService;
+        this.countryService = countryService;
     }
 
     @GetMapping("contact")
@@ -238,11 +242,11 @@ public class CandidatePortalApi {
                 .add("candidateNumber")
                 .add("gender")
                 .add("dob")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("city")
                 .add("state")
                 .add("yearOfArrival")
-                .add("nationality", countryDto())
+                .add("nationality", countryService.selectBuilder())
                 .add("candidateCitizenships", candidateCitizenshipDto())
                 .add("externalId")
                 .add("unhcrRegistered")
@@ -253,7 +257,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
-                .add("nationality", countryDto())
+                .add("nationality", countryService.selectBuilder())
                 ;
     }
 
@@ -304,7 +308,7 @@ public class CandidatePortalApi {
                 .add("courseName")
                 .add("yearCompleted")
                 .add("incomplete")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("educationMajor", majorDto())
                 ;
     }
@@ -362,7 +366,7 @@ public class CandidatePortalApi {
     private DtoBuilder jobExperienceDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("candidateOccupation", candidateOccupationDto())
                 .add("companyName")
                 .add("role")
@@ -371,13 +375,6 @@ public class CandidatePortalApi {
                 .add("fullTime")
                 .add("paid")
                 .add("description")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
                 ;
     }
 
@@ -406,7 +403,7 @@ public class CandidatePortalApi {
     private DtoBuilder destinationsDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("interest")
                 .add("notes")
                 ;
@@ -466,8 +463,8 @@ public class CandidatePortalApi {
                 .add("city")
                 .add("state")
                 .add("yearOfArrival")
-                .add("nationality", countryDto())
-                .add("country", countryDto())
+                .add("nationality", countryService.selectBuilder())
+                .add("country", countryService.selectBuilder())
                 .add("externalId")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")

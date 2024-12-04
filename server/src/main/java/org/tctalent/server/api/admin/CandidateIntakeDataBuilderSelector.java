@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import jakarta.validation.constraints.NotNull;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -27,9 +28,11 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * @author John Cameron
  */
 public class CandidateIntakeDataBuilderSelector {
+    private final CountryService countryService;
     private final OccupationService occupationService;
 
-    public CandidateIntakeDataBuilderSelector(OccupationService occupationService) {
+    public CandidateIntakeDataBuilderSelector(CountryService countryService, OccupationService occupationService) {
+        this.countryService = countryService;
         this.occupationService = occupationService;
     }
 
@@ -48,7 +51,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("availImmediateJobOps")
                 .add("availImmediateReason")
                 .add("availImmediateNotes")
-                .add("birthCountry", countryDto())
+                .add("birthCountry", countryService.selectBuilder())
 
                 .add("candidateCitizenships", candidateCitizenshipDto())
 
@@ -78,7 +81,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("drivingLicense")
                 .add("drivingLicenseExp")
-                .add("drivingLicenseCountry", countryDto())
+                .add("drivingLicenseCountry", countryService.selectBuilder())
 
                 .add("familyMove")
                 .add("familyMoveNotes")
@@ -171,7 +174,7 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("nationality", countryDto())
+                .add("nationality", countryService.selectBuilder())
                 .add("hasPassport")
                 .add("passportExp")
                 .add("notes")
@@ -207,7 +210,7 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder candidateDestinationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("interest")
                 .add("notes")
                 ;
@@ -217,7 +220,7 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("candidateVisaJobChecks", visaJobCheckDto())
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("protection")
                 .add("protectionGrounds")
                 .add("englishThreshold")
@@ -296,13 +299,6 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder languageLevelDto() {
         return new DtoBuilder()
                 .add("id")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
                 ;
     }
 
