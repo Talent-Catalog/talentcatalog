@@ -312,6 +312,10 @@ export class AuthorizationService {
     return this.authenticationService.getLoggedInUser() != null;
   }
 
+  /**
+   * ReadOnly users can create their own lists and searches. But they can't change any shared
+   * information.
+   */
   isReadOnly(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? true : loggedInUser.readOnly;
