@@ -35,7 +35,12 @@ import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {
+  AbstractControl,
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormGroup
+} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
@@ -60,8 +65,7 @@ import {
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
-import {ActivatedRoute, Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
 import {
   ClearSelectionRequest,
   getCandidateSourceNavigation,
@@ -83,7 +87,6 @@ import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {first} from "rxjs/operators";
-import {LocalStorageService} from "../../../services/local-storage.service";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -217,11 +220,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],
-      // todo Maybe this needs to be SavedList objects - or as well as, like countries
       listAnyIds: [[]],
-      listAnySearchType: ['or'],
+      listAnySearchType: [null],
       listAllIds: [[]],
-      listAllSearchType: ['and'],
+      listAllSearchType: [null],
       unhcrStatusesDisplay: [[]],
       includeUploadedFiles: [false],
       potentialDuplicate: [null]
@@ -447,8 +449,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
-    this.searchForm.controls['listAllSearchType'].patchValue('or');
-    this.searchForm.controls['listAnySearchType'].patchValue('and');
+    this.searchForm.controls['listAllSearchType'].patchValue(null);
+    this.searchForm.controls['listAnySearchType'].patchValue(null);
 
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array

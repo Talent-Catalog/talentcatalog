@@ -215,6 +215,21 @@ public class CandidateBuilderSelector {
                     .add("shareableNotes")
                     .add("additionalInfo")
                     .add("candidateMessage")
+                    .add("additionalInfo")
+                ;
+            }
+            
+            // Extended DTO used for candidate search card information
+            if (DtoType.EXTENDED.equals(type)) {
+                builder
+                    .add("candidateLanguages", candidateLanguageDto())
+                    .add("candidateDestinations", candidateDestinationDto())
+                    .add("candidateOccupations", candidateOccupationDto())
+                    .add("candidateJobExperiences", candidateJobExperienceDto())
+                    .add("candidateSkills", candidateSkillDto())
+                    .add("candidateEducations", candidateEducationDto())
+                    .add("candidateCertifications", candidateCertificationDto())
+                    .add("candidateNotes", candidateNoteDto())
                 ;
             }
 
@@ -229,6 +244,7 @@ public class CandidateBuilderSelector {
                 .add("email")
                 .add("createdDate")
                 .add("updatedDate")
+                .add("lastLogin")
                 .add("partner", partnerDto())
                 ;
     }
@@ -389,5 +405,125 @@ public class CandidateBuilderSelector {
         }
 
         return builder;
+    }
+    private DtoBuilder candidateLanguageDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("migrationLanguage")
+            .add("language", languageDto())
+            .add("writtenLevel", languageLevelDto())
+            .add("spokenLevel",languageLevelDto())
+            ;
+    }
+
+    private DtoBuilder languageDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
+    }
+
+    private DtoBuilder languageLevelDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("level")
+            ;
+    }
+    
+    private DtoBuilder candidateDestinationDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("country", countryDto())
+            .add("interest")
+            .add("notes")
+            ;
+    }
+    
+    private DtoBuilder candidateOccupationDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("migrationOccupation")
+            .add("occupation", occupationDto())
+            .add("yearsExperience")
+            .add("createdBy", userDto())
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
+            ;
+    }
+
+    private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
+    }
+
+    private DtoBuilder candidateJobExperienceDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("companyName")
+            .add("role")
+            .add("startDate")
+            .add("endDate")
+            .add("fullTime")
+            .add("paid")
+            .add("description")
+            .add("country", countryDto())
+            .add("candidateOccupation", candidateOccupationDto())
+            ;
+    }
+
+    private DtoBuilder candidateSkillDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("skill")
+            .add("timePeriod")
+            ;
+    }
+
+    private DtoBuilder candidateEducationDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("educationType")
+            .add("country", countryDto())
+            .add("educationMajor", majorDto())
+            .add("lengthOfCourseYears")
+            .add("institution")
+            .add("courseName")
+            .add("yearCompleted")
+            .add("incomplete")
+            ;
+    }
+
+    private DtoBuilder majorDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("status")
+            ;
+    }
+
+    private DtoBuilder candidateCertificationDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("institution")
+            .add("dateCompleted")
+            ;
+    }
+
+    private DtoBuilder candidateNoteDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("noteType")
+            .add("title")
+            .add("comment")
+            .add("createdBy", userDto())
+            .add("createdDate")
+            .add("updatedBy", userDto())
+            .add("updatedDate")
+            ;
     }
 }

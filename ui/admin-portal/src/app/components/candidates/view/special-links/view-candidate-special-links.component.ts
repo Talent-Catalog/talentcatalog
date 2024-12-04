@@ -49,7 +49,7 @@ export class ViewCandidateSpecialLinksComponent implements OnInit {
     editCandidateModal.componentInstance.candidateId = this.candidate.id;
 
     editCandidateModal.result
-      .then((candidate) => this.candidate = candidate)
+      .then((candidate) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -59,7 +59,7 @@ export class ViewCandidateSpecialLinksComponent implements OnInit {
     this.loading = true;
     this.candidateService.createCandidateFolder(this.candidate.id).subscribe(
       candidate => {
-        this.candidate = candidate;
+        this.candidateService.updateCandidate();
         this.loading = false;
       },
       error => {
@@ -73,7 +73,7 @@ export class ViewCandidateSpecialLinksComponent implements OnInit {
     this.loading = true;
     this.candidateService.createUpdateLiveCandidate(this.candidate.id).subscribe(
       candidate => {
-        this.candidate = candidate;
+        this.candidateService.updateCandidate();
         this.loading = false;
       },
       error => {

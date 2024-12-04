@@ -31,7 +31,7 @@
       No destination data has been entered by this candidate.
     </p>
     <ng-template #hasDestinations>
-      <div *ngFor="let destination of candidateDestinations; let i = index;">
+      <div *ngFor="let destination of candidate.candidateDestinations; let i = index;">
         <div class="row align-items-center">
           <div class="d-flex" [ngClass]="editable ? 'col-md-3': 'col-md-4'">
             <label>{{destination.country.name}}</label>
@@ -52,7 +52,7 @@
             </button>
           </div>
         </div>
-        <hr *ngIf="i < candidateDestinations?.length - 1">
+        <hr *ngIf="i < candidate.candidateDestinations?.length - 1">
       </div>
     </ng-template>
   </div>

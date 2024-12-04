@@ -393,7 +393,7 @@ public class CandidateSpecification {
 
                 //Compute the predicate depending on whether it is negated
                 conjunction = cb.and(conjunction,
-                    listAnySearchType == SearchType.not
+                     SearchType.not.equals(listAnySearchType)
                         ? cb.in(candidate).value(sq).not()
                         : cb.in(candidate).value(sq)
                 );
@@ -418,8 +418,9 @@ public class CandidateSpecification {
                     );
 
                     //Compute the predicate depending on whether it is negated
+                    //TODO JC If NOT then shouldn't the cb.and be a cb or else apply the NOT at the end.
                     conjunction = cb.and(conjunction,
-                        listAllSearchType == SearchType.not
+                        SearchType.not.equals(listAllSearchType)
                             ? cb.in(candidate).value(sq).not()
                             : cb.in(candidate).value(sq)
                     );

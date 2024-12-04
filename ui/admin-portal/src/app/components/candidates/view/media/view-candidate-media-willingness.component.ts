@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditCandidateMediaWillingnessComponent} from "./edit/edit-candidate-media-willingness.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-media-willingness',
@@ -13,7 +14,8 @@ export class ViewCandidateMediaWillingnessComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal,
+              private candidateService: CandidateService) { }
 
   ngOnInit() {
   }
@@ -27,7 +29,7 @@ export class ViewCandidateMediaWillingnessComponent implements OnInit {
     editMediaWillingnessModal.componentInstance.candidateId = this.candidate.id;
 
     editMediaWillingnessModal.result
-      .then((candidate) => this.candidate = candidate)
+      .then(() => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
