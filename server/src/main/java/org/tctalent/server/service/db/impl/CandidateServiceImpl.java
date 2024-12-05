@@ -3071,10 +3071,8 @@ public class CandidateServiceImpl implements CandidateService {
         List<Candidate> candidateList = candidatePage.getContent();
 
         for (Candidate candidate : candidateList) {
-            if (!candidate.getPotentialDuplicate()) {
-                candidate.setPotentialDuplicate(true);
-                save(candidate, false);
-            }
+            candidate.setPotentialDuplicate(true);
+            save(candidate, false);
         }
 
         // Log completed page

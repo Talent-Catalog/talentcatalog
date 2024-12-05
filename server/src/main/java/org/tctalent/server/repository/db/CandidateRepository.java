@@ -920,19 +920,20 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(
         value =
             """
-                WITH Duplicates AS (
-                SELECT
-                    c.id AS candidate_id,
-                    u.first_name,
-                    u.last_name,
-                    c.dob,
-                    COUNT(*) OVER (PARTITION BY u.first_name, u.last_name, c.dob) AS dup_count
-                FROM candidate c
-                    INNER JOIN users u ON c.user_id = u.id
-                WHERE c.status IN ('active', 'unreachable', 'incomplete', 'pending')
-                    AND u.first_name IS NOT NULL
-                    AND u.last_name IS NOT NULL
-                    AND c.dob IS NOT NULL
+            WITH Duplicates AS (
+            SELECT
+                c.id AS candidate_id,
+                u.first_name,
+                u.last_name,
+                c.dob,
+                COUNT(*) OVER (PARTITION BY u.first_name, u.last_name, c.dob) AS dup_count
+            FROM candidate c
+                INNER JOIN users u ON c.user_id = u.id
+            WHERE c.status IN ('active', 'unreachable', 'incomplete', 'pending')
+                AND u.first_name IS NOT NULL
+                AND u.last_name IS NOT NULL
+                AND c.dob IS NOT NULL
+                AND c.potential_duplicate = false
             )
             SELECT
                 candidate_id
