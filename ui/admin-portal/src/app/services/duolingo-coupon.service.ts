@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-insert into task (admin, created_by, created_date, days_to_complete, description, name, optional, task_type,
-                  display_name)
-values (false, 25043, now(), 14, 'We are offering you a free Duolingo Test.', 'duolingoTest', false, 'Task',
-        'Take the Duolingo English Test for free!');
+import {Observable} from "rxjs";
+import {Injectable} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
+import {environment} from "../../environments/environment";
+import {DuolingoCouponResponse} from '../model/duolingo-coupon';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DuolingoCouponService {
+
+  private apiUrl: string = environment.apiUrl + '/coupon';
+
+  constructor(private http: HttpClient) { }
+
+  create(canadidateId: number): Observable<DuolingoCouponResponse>  {
+    return this.http.post<DuolingoCouponResponse>(`${this.apiUrl}/${canadidateId}/assign`, null);
+  }
+}

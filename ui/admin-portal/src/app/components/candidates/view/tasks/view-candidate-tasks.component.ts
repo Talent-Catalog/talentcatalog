@@ -1,17 +1,21 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import * as moment from 'moment';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
 import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {TaskAssignmentService} from "../../../../services/task-assignment.service";
+import {CreateTaskAssignmentRequest, TaskAssignmentService} from "../../../../services/task-assignment.service";
 import {TaskAssignment, taskAssignmentSort} from "../../../../model/task-assignment";
 import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
+import {TaskService} from 'src/app/services/task.service';
+import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
+import {DuolingoCouponResponse} from 'src/app/model/duolingo-coupon';
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -34,6 +38,8 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   constructor(private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService,
               private taskAssignmentService: TaskAssignmentService,
+              private taskService: TaskService,
+              private duolingoCouponService: DuolingoCouponService,
               private modalService: NgbModal) { }
 
   ngOnInit(): void {
@@ -79,6 +85,39 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       .then((taskAssignment: TaskAssignment) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  async sendDuolingoCoupon() {
+
+    const duolingoTask = await this.taskService.listTasks().toPromise();
+    const duolingoTaskId = duolingoTask.find(task => task.name === 'duolingoTest')?.id;
+
+    if (!duolingoTaskId) {
+      this.error = 'Duolingo English Test task not found';
+      return;
+    }
+
+    const request: CreateTaskAssignmentRequest = {
+      candidateId: this.candidate.id,
+      taskId: duolingoTaskId,
+      dueDate: moment().add(2, 'weeks').toDate()
+    }
+
+    const duolingoCoupon : DuolingoCouponResponse  = await this.duolingoCouponService.create(this.candidate.id).toPromise();
+
+    if(duolingoCoupon.status === 'failure') {
+      this.error = duolingoCoupon.message;
+      return;
+    }
+
+    this.taskAssignmentService.createTaskAssignment(request).subscribe(
+      (taskAssignment: TaskAssignment) => {
+        this.candidateService.updateCandidate();
+      },
+      error => {
+        this.error = error;
+      }
+    )
   }
 
   editTaskAssignment(ta: TaskAssignment) {
