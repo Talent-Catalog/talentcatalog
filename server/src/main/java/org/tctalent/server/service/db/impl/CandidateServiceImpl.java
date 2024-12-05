@@ -3050,37 +3050,52 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Transactional
     @Override
-    public void cleanUpResolvedDuplicates(List<Long> newCandidateIds) {
-        // Find all candidates where potentialDuplicate already set to true
+    public void cleanUpResolvedDuplicates() {
+        // Obtain list of IDs of all candidates currently potential duplicates
+        List<Long> newCandidateIds =
+            this.candidateRepository.findIdsOfPotentialDuplicateCandidates(null);
+
+        // Obtain list of IDs of all candidates where potentialDuplicate already set to true
         List<Long> previousCandidateIds =
             this.candidateRepository.findIdsOfCandidatesMarkedPotentialDuplicates();
+
+        int resolvedDuplicates = 0;
+
         // If not in newly generated list, set potentialDuplicate to false on candidate matching ID
         for (Long id: previousCandidateIds) {
             if (!newCandidateIds.contains(id)) {
                 Candidate candidate = getCandidate(id);
                 candidate.setPotentialDuplicate(false);
                 save(candidate, false);
+                resolvedDuplicates++;
             }
         }
+
+        LogBuilder.builder(log)
+            .action("Clean up resolved duplicates")
+            .message("Cleaned up " + resolvedDuplicates + " resolved duplicate(s)!")
+            .logInfo();
     }
 
     @Transactional
     @Override
     public void processPotentialDuplicatePage(Page<Candidate> candidatePage) {
 
-        List<Candidate> candidateList = candidatePage.getContent();
+        if (!candidatePage.isEmpty()) {
+            List<Candidate> candidateList = candidatePage.getContent();
 
-        for (Candidate candidate : candidateList) {
-            candidate.setPotentialDuplicate(true);
-            save(candidate, false);
+            for (Candidate candidate : candidateList) {
+                candidate.setPotentialDuplicate(true);
+                save(candidate, false);
+            }
+
+            // Log completed page
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Processed page " + (candidatePage.getNumber() + 1) + " of " +
+                    candidatePage.getTotalPages())
+                .logInfo();
         }
-
-        // Log completed page
-        LogBuilder.builder(log)
-            .action("Process potential duplicates")
-            .message("Processed page " + (candidatePage.getNumber() + 1) + " of " +
-                candidatePage.getTotalPages())
-            .logInfo();
 
         // Log if processing complete
         if (candidatePage.getNumber() + 1 >= candidatePage.getTotalPages()) {

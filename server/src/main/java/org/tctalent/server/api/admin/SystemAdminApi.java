@@ -3002,7 +3002,7 @@ public class SystemAdminApi {
 
             LogBuilder.builder(log)
                 .action("Process potential duplicates")
-                .message("Manual trigger of potentially duplicated candidate profiles")
+                .message("Manually triggered")
                 .logInfo();
 
             return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
@@ -3010,7 +3010,7 @@ public class SystemAdminApi {
         } catch(Exception e) {
             LogBuilder.builder(log)
                 .action("Process potential duplicates")
-                .message("Manual trigger of potentially duplicated candidate profiles failed.")
+                .message("Manual triggered operation failed")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend

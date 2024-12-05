@@ -647,8 +647,6 @@ public interface CandidateService {
      * have been marked deleted, their potentialDuplicates value would remain true - this component
      * of the duplicate processing fixes that by comparing with previously flagged candidates.
      * Again, annotated @Transactional to rollback incomplete confusing results.
-     * @param newCandidateIds the list of new candidates to be compared with the previously flagged
-     *                        candidates
      */
-    void cleanUpResolvedDuplicates(List<Long> newCandidateIds);
+    void cleanUpResolvedDuplicates();
 }

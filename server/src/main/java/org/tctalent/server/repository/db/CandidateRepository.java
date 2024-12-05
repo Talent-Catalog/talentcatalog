@@ -29,6 +29,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -933,7 +934,10 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                 AND u.first_name IS NOT NULL
                 AND u.last_name IS NOT NULL
                 AND c.dob IS NOT NULL
-                AND c.potential_duplicate = false
+                AND (
+                    :potentialDuplicate IS NULL
+                    OR c.potential_duplicate = :potentialDuplicate
+                    )
             )
             SELECT
                 candidate_id
@@ -942,7 +946,9 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
             ORDER BY first_name, last_name, dob;
             """, nativeQuery = true
     )
-    List<Long> findIdsOfPotentialDuplicateCandidates();
+    List<Long> findIdsOfPotentialDuplicateCandidates(
+        @Nullable @Param("potentialDuplicate") Boolean potentialDuplicate
+    );
 
     @Query("SELECT c.id FROM Candidate c WHERE c.potentialDuplicate = true")
     List<Long> findIdsOfCandidatesMarkedPotentialDuplicates();

@@ -119,18 +119,20 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   }
 
   @Override
-  @Scheduled(cron = "0 0 21 * * ?", zone = "GMT")
+  @Scheduled(cron = "00 35 10 * * ?")
   @SchedulerLock(name = "BackgroundProcessingService_processPotentialDuplicateCandidates",
-      lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+      lockAtLeastFor = "PT2H", lockAtMostFor = "PT2H")
   public void processPotentialDuplicateCandidates() {
-    List<Long> potentialDupeIds = this.candidateRepository.findIdsOfPotentialDuplicateCandidates();
-    // Delegate to the service which will open a transaction
-    this.candidateService.cleanUpResolvedDuplicates(potentialDupeIds);
-    initiateDuplicateProcessing(potentialDupeIds);
+    this.candidateService.cleanUpResolvedDuplicates();
+    initiateDuplicateProcessing();
   }
 
   @Override
-  public void initiateDuplicateProcessing(List<Long> potentialDupeIds) {
+  public void initiateDuplicateProcessing() {
+    // Obtain list of IDs of candidates who meet potential duplicate criteria but not yet identified
+    List<Long> potentialDupeIds =
+        this.candidateRepository.findIdsOfPotentialDuplicateCandidates(false);
+
     // Implement background processing
     BackProcessor<PageContext> backProcessor =
         createPotentialDuplicatesBackProcessor(potentialDupeIds);
