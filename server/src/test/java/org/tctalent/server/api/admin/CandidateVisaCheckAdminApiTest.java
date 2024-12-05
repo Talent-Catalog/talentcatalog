@@ -49,6 +49,7 @@ import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 
 /**
@@ -69,6 +70,8 @@ public class CandidateVisaCheckAdminApiTest extends ApiTestBase {
 
     @MockBean
     CandidateVisaService candidateVisaService;
+    @MockBean
+    CountryService countryService;
     @MockBean
     OccupationService occupationService;
 

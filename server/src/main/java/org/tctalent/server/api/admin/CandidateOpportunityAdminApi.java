@@ -82,7 +82,7 @@ public class CandidateOpportunityAdminApi implements ITableApi<SearchCandidateOp
 
     @Override
     @PutMapping("{id}")
-    public @NotNull Map<String, Object> update(@PathVariable long id, CandidateOpportunityParams request)
+    public @NotNull Map<String, Object> update(@PathVariable("id") long id, CandidateOpportunityParams request)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         CandidateOpportunity opp = candidateOpportunityService.updateCandidateOpportunity(id, request);
         return candidateOpportunityDto().build(opp);

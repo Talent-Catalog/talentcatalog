@@ -53,6 +53,7 @@ import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 
 /**
@@ -77,9 +78,9 @@ class CandidateJobExperienceAdminApiTest extends ApiTestBase {
                     1
             );
 
-    @MockBean
-    OccupationService occupationService;
     @MockBean CandidateJobExperienceService candidateJobExperienceService;
+    @MockBean CountryService countryService;
+    @MockBean OccupationService occupationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

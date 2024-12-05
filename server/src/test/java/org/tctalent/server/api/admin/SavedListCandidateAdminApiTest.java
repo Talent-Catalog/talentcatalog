@@ -61,6 +61,7 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -104,6 +105,8 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
 
     @MockBean
     CandidateOpportunityService candidateOpportunityService;
+    @MockBean
+    CountryService countryService;
     @MockBean
     SavedListService savedListService;
     @MockBean
