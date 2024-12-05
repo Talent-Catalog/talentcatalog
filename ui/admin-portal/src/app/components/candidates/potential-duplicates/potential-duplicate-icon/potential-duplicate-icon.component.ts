@@ -51,7 +51,8 @@ export class PotentialDuplicateIconComponent {
     this.loading = true;
     this.candidateService.fetchPotentialDuplicates(this.candidate.id).subscribe(
       result => {
-        this.refresh.emit();
+        if (result.length === 0) this.refresh.emit();
+        this.loading = false;
       },
       error => {
         this.error = error;
