@@ -561,8 +561,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     //Load search parameters.
     // Convert ids as we do for searches
     const request = this.searchForm.value;
-    const displayRequestWithIds = this.getIdsMultiSelect(request);
-    showSaveModal.componentInstance.searchCandidateRequest = displayRequestWithIds
+    showSaveModal.componentInstance.searchCandidateRequest =
+      this.getIdsMultiSelect(request);
 
     showSaveModal.result
       .then((savedSearch) => {
@@ -574,7 +574,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         }
         // After updating we want to reset the form so it's no longer dirty, this will allow users to bypass the
         // unsaved changes guard.
-        this.populateFormWithSavedSearch(displayRequestWithIds);
+        this.populateFormWithSavedSearch(this.searchForm.value);
         this.searchForm.markAsPristine();
       })
       .catch(() => {
