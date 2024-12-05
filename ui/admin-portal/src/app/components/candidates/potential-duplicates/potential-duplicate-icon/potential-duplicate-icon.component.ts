@@ -3,9 +3,11 @@ import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {DuplicatesDetailComponent} from "../duplicates-detail/duplicates-detail.component";
 import {CandidateService} from "../../../../services/candidate.service";
+import {AuthorizationService} from "../../../../services/authorization.service";
 
 /**
- * Icon indicating candidate may be a duplicate profile, for displaying on candidate rows.
+ * Provides an icon indicating candidate may be a duplicate profile, for displaying on candidate rows.
+ * Opens {@link DuplicatesDetailComponent} modal for reviewing results.
  */
 @Component({
   selector: 'app-potential-duplicate-icon',
@@ -20,7 +22,8 @@ export class PotentialDuplicateIconComponent {
 
   constructor(
     protected modalService: NgbModal,
-    private candidateService: CandidateService
+    private candidateService: CandidateService,
+    private authorizationService: AuthorizationService,
   ) { }
 
   public openDuplicateDetailModal(): void {
@@ -55,6 +58,10 @@ export class PotentialDuplicateIconComponent {
         this.loading = false;
       }
     );
+  }
+
+  public canViewCandidateName() {
+    return this.authorizationService.canViewCandidateName();
   }
 
 }

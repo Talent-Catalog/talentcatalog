@@ -529,7 +529,6 @@
                   [totalTasks]="getTotalMonitoredTasks(candidate)">
                 </app-tasks-monitor>
                 <app-potential-duplicate-icon
-                  *ngIf="candidate.potentialDuplicate && canViewCandidateName()"
                   [candidate]="candidate"
                   (refresh)="doSearch(true)"
                 ></app-potential-duplicate-icon>
