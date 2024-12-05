@@ -120,8 +120,8 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
   @Override
   @Scheduled(cron = "0 0 21 * * ?", zone = "GMT")
-  @SchedulerLock(name = "BackgroundProcessingService_processPotentialDuplicates", lockAtLeastFor = "PT23H",
-      lockAtMostFor = "PT23H")
+  @SchedulerLock(name = "BackgroundProcessingService_processPotentialDuplicateCandidates",
+      lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
   public void processPotentialDuplicateCandidates() {
     List<Long> potentialDupeIds = this.candidateRepository.findIdsOfPotentialDuplicateCandidates();
     // Delegate to the service which will open a transaction
