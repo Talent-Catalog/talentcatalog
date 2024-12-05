@@ -35,12 +35,7 @@ import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {
-  AbstractControl,
-  UntypedFormArray,
-  UntypedFormBuilder,
-  UntypedFormGroup
-} from '@angular/forms';
+import {AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
@@ -59,9 +54,7 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {
-  DateRangePickerComponent
-} from '../../util/form/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -581,7 +574,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         }
         // After updating we want to reset the form so it's no longer dirty, this will allow users to bypass the
         // unsaved changes guard.
-        this.searchForm.reset(this.searchForm.value)
+        this.populateFormWithSavedSearch(this.searchForm.value);
+        this.searchForm.markAsPristine();
       })
       .catch(() => {
       });
