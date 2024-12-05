@@ -191,10 +191,10 @@ public class JobSpecification {
             if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
                 if (loggedInUser != null) {
                     ors = cb.or(ors,
-                        cb.equal(job.get("createdBy"), loggedInUser.getId())
+                        cb.equal(job.get("createdBy").get("id"), loggedInUser.getId())
                     );
                     ors = cb.or(ors,
-                        cb.equal(job.get("contactUser"), loggedInUser.getId())
+                        cb.equal(job.get("contactUser").get("id"), loggedInUser.getId())
                     );
                 }
             }

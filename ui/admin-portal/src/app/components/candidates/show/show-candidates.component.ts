@@ -33,7 +33,6 @@ import {
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
-import {SearchResults} from '../../../model/search-results';
 import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
@@ -470,11 +469,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         //Run the saved list or saved search as stored on the server.
         this.performSearch(
           this.pageSize,
-          DtoType.FULL,
+          DtoType.EXTENDED,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
-            // Restore the selection prior to the search
-            this.setCurrentCandidate(saveCurrentCandidate);
+          // Restore the selection prior to the search using the updated results (otherwise updated fields won't appear)
+          const updatedCurrentCandidate = this.results.content.find(c => c.id == saveCurrentCandidate?.id);
+          this.setCurrentCandidate(updatedCurrentCandidate);
           }, error => {
             // Error is already displayed in the UI
           }
@@ -1770,6 +1770,11 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       },
       err => {this.error = err; this.closing = false; }
     );
+  }
+
+  updatedCandidate(candidate: Candidate) {
+    let index = this.results.content.findIndex(c => c.id == candidate.id)
+    this.results.content[index] = candidate;
   }
 
   public canViewCandidateName() {

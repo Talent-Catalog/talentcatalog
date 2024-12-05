@@ -134,7 +134,7 @@ public class SavedSearchSpecification {
             if (request.getOwned() != null && request.getOwned()) {
                 if (loggedInUser != null) {
                     disjunction = cb.or(disjunction,
-                         cb.equal(savedSearch.get("createdBy"), loggedInUser)
+                         cb.equal(savedSearch.get("createdBy").get("id"), loggedInUser.getId())
                     );
                 }
             }
