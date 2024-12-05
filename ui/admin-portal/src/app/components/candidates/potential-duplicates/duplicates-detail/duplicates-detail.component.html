@@ -57,6 +57,7 @@
 </div>
 
 <div class="modal-footer">
+
   <button type="button" class="btn btn-primary" (click)="refresh()">
     Refresh
     <span *ngIf="loading; else regularIcon">
@@ -66,4 +67,5 @@
       <i class="fas fa-sync" title="Refresh data"></i>
     </ng-template>
   </button>
+
 </div>

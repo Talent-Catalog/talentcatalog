@@ -949,13 +949,13 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(
         value =
             """
-               SELECT c FROM Candidate c
-                  JOIN c.user u
-               WHERE c.status IN :statuses
-                  AND LOWER(u.lastName) LIKE :lastName
-                  AND LOWER(u.firstName) LIKE :firstName
-                  AND c.dob = :dob
-                  AND c.id != :id
+            SELECT c FROM Candidate c
+              JOIN c.user u
+            WHERE c.status IN :statuses
+              AND LOWER(u.lastName) LIKE :lastName
+              AND LOWER(u.firstName) LIKE :firstName
+              AND c.dob = :dob
+              AND c.id != :id
             """)
     List<Candidate> findPotentialDuplicatesOfGivenCandidate(
         @Param("statuses") List<CandidateStatus> statuses,

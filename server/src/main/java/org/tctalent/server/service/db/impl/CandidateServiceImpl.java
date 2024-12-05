@@ -3109,8 +3109,8 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.getId()
             );
 
-        // Candidate no longer matches other profiles (usually because admin has changed their
-        // status to deleted)
+        // Candidate no longer matches other profiles (usually because admin has changed the others'
+        // status to 'Deleted')
         if (candidates.isEmpty()) {
             candidate.setPotentialDuplicate(false);
             save(candidate, false);

@@ -52,8 +52,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
 
@@ -765,6 +767,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public Candidate() {
     }
 
+    /**
+     * Candidate has been identified as a potential duplicate of another - monitored by daily
+     * scheduled call to {@link BackgroundProcessingService#processPotentialDuplicateCandidates()},
+     * which can also be manually triggered from {@link SystemAdminApi}.
+     */
     private Boolean potentialDuplicate;
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields

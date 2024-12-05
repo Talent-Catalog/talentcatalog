@@ -631,10 +631,24 @@ public interface CandidateService {
 
     List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
 
-    // TODO doc incl explanation of @Transactional requirement (rollback of incomplete)
+    /**
+     * Takes a page of potentially duplicated candidates and if not already true, sets their
+     * potentialDuplicate property to true and saves them to DB. annotated @Transactional to
+     * rollback incomplete confusing results.
+     * <p>
+     *   NB: currently not saving to ES - would need to be amended if we decide to index this property.
+     * </p>
+     * @param candidatePage page of potential duplicate candidates to be processed
+     */
     void processPotentialDuplicatePage(Page<Candidate> candidatePage);
 
-    // TODO doc incl explanation of @Transactional requirement (rollback of incomplete)
-    //  and: some candidates' potential duplicates may have been marked deleted, but they've not been updated
+    /**
+     * If admins have not deliberately refreshed results for a candidate whose duplicated versions
+     * have been marked deleted, their potentialDuplicates value would remain true - this component
+     * of the duplicate processing fixes that by comparing with previously flagged candidates.
+     * Again, annotated @Transactional to rollback incomplete confusing results.
+     * @param newCandidateIds the list of new candidates to be compared with the previously flagged
+     *                        candidates
+     */
     void cleanUpResolvedDuplicates(List<Long> newCandidateIds);
 }

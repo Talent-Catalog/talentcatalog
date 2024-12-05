@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
+import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.PageContext;
@@ -41,10 +42,21 @@ public interface BackgroundProcessingService {
    */
   BackProcessor<PageContext> createPotentialDuplicatesBackProcessor(List<Long> candidateIds);
 
-  // TODO doc
-  void processPotentialDuplicates();
+  /**
+   * Daily check for candidates who may have more than one profile based on identical first name AND
+   * last name AND DOB - sets potentialDuplicate to true. Can also be triggered manually from
+   * {@link SystemAdminApi}.
+   * <p>
+   *   Calls {@link CandidateService#cleanUpResolvedDuplicates(List)} which sets same property to
+   *   false if previously flagged candidates no longer meet the criteria.
+   * </p>
+   */
+  void processPotentialDuplicateCandidates();
 
-  // TODO doc
+  /**
+   * Creates a background processor and sets parameters for its scheduled operations.
+   * @param potentialDupeIds IDs of candidates identified as potential duplicates by caller.
+   */
   void initiateDuplicateProcessing(List<Long> potentialDupeIds);
 
 }

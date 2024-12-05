@@ -1,8 +1,11 @@
-import {Component, HostListener} from '@angular/core';
+import {Component} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../services/candidate.service";
 import {Candidate} from "../../../../model/candidate";
 
+/**
+ * Provides a modal for reviewing potential duplicates of selected candidate.
+ */
 @Component({
   selector: 'app-duplicates-detail',
   templateUrl: './duplicates-detail.component.html',
@@ -37,11 +40,13 @@ export class DuplicatesDetailComponent {
     );
   }
 
+  /**
+   * User can display new results — changes help text if there are no longer any potential duplicates.
+   */
   public refresh(): void {
     this.fetchPotentialDuplicates(this.selectedCandidate.id);
   }
 
-  // Emit event when modal is closed
   closeModal() {
     this.activeModal.close()
   }

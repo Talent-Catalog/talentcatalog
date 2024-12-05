@@ -156,6 +156,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   selectedBaseJoin;
   storedBaseJoin;
+  /**
+   * Will be true whenever there is any text in the Keyword Search input - can be used to hide filter
+   * that doesn't have ES capability, though the practice should generally be avoided.
+   */
   searchIsElastic: boolean = false;
 
   constructor(private fb: UntypedFormBuilder,
@@ -231,7 +235,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
     // Subscribe to changes in Keyword Search
     this.searchForm.get('simpleQueryString')?.statusChanges.subscribe(() => {
-
       this.searchIsElastic = this.searchForm.get('simpleQueryString')?.dirty &&
         this.searchForm.get('simpleQueryString')?.getRawValue() !== '';
     });

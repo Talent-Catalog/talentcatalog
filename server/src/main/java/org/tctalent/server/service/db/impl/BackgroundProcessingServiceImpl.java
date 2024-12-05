@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -87,7 +88,9 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     return backProcessor;
   }
 
-  public BackProcessor<PageContext> createPotentialDuplicatesBackProcessor(List<Long> candidateIds) {
+  public BackProcessor<PageContext> createPotentialDuplicatesBackProcessor(
+      List<Long> candidateIds
+  ) {
     BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
       @Override
       public boolean process(PageContext ctx) {
@@ -116,12 +119,10 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   }
 
   @Override
-//  @Scheduled(cron = "0 0 21 * * ?", zone = "GMT")
-//  @SchedulerLock(name = "BackgroundProcessingService_processPotentialDuplicates", lockAtLeastFor = "PT23H",
-//      lockAtMostFor = "PT23H")
-  // TODO: remove temporary scheduling for test and instate above
-  @Scheduled(cron = "0 13 11 * * ?")
-  public void processPotentialDuplicates() {
+  @Scheduled(cron = "0 0 21 * * ?", zone = "GMT")
+  @SchedulerLock(name = "BackgroundProcessingService_processPotentialDuplicates", lockAtLeastFor = "PT23H",
+      lockAtMostFor = "PT23H")
+  public void processPotentialDuplicateCandidates() {
     List<Long> potentialDupeIds = this.candidateRepository.findIdsOfPotentialDuplicateCandidates();
     // Delegate to the service which will open a transaction
     this.candidateService.cleanUpResolvedDuplicates(potentialDupeIds);
@@ -130,7 +131,6 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
   @Override
   public void initiateDuplicateProcessing(List<Long> potentialDupeIds) {
-
     // Implement background processing
     BackProcessor<PageContext> backProcessor =
         createPotentialDuplicatesBackProcessor(potentialDupeIds);
