@@ -45,6 +45,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
 import org.tctalent.server.service.db.CandidateDestinationService;
+import org.tctalent.server.service.db.CountryService;
 
 /**
  * Unit tests for Candidate Destination Admin Api endpoints.
@@ -60,6 +61,8 @@ class CandidateDestinationAdminApiTest extends ApiTestBase {
     private final CandidateDestination candidateDestination = AdminApiTestUtil.getCandidateDestination();
 
     @MockBean CandidateDestinationService candidateDestinationService;
+    @MockBean
+    CountryService countryService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

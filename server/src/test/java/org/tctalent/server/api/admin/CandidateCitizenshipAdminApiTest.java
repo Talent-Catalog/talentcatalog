@@ -17,20 +17,6 @@
 package org.tctalent.server.api.admin;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateCitizenship;
-import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
-import org.tctalent.server.service.db.CandidateCitizenshipService;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -45,6 +31,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateCitizenship;
+import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
+import org.tctalent.server.service.db.CandidateCitizenshipService;
+import org.tctalent.server.service.db.CountryService;
 
 /**
  * Unit tests for Candidate Citizenship Admin Api endpoints.
@@ -63,6 +64,8 @@ class CandidateCitizenshipAdminApiTest extends ApiTestBase {
 
     @MockBean
     CandidateCitizenshipService candidateCitizenshipService;
+    @MockBean
+    CountryService countryService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

@@ -54,6 +54,7 @@ import org.tctalent.server.model.db.Status;
 import org.tctalent.server.request.country.SearchCountryRequest;
 import org.tctalent.server.request.country.UpdateCountryRequest;
 import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Country Admin Api endpoints.
@@ -89,6 +90,9 @@ class CountryAdminApiTest extends ApiTestBase {
   @BeforeEach
   void setUp() {
     configureAuthentication();
+    given(countryService
+        .selectBuilder())
+        .willReturn(new DtoBuilder().add("name").add("status"));
   }
 
   @Test
