@@ -151,6 +151,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   selectedBaseJoin;
   storedBaseJoin;
+  /**
+   * Will be true whenever there is any text in the Keyword Search input - can be used to hide filter
+   * that doesn't have ES capability, though the practice should generally be avoided.
+   */
+  searchIsElastic: boolean = false;
 
   constructor(private fb: FormBuilder,
               private countryService: CountryService,
@@ -220,7 +225,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       listAllIds: [[]],
       listAllSearchType: ['and'],
       unhcrStatusesDisplay: [[]],
-      includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
+      includeUploadedFiles: [false],
+      potentialDuplicate: [null]
+    }, {validator: this.validateDuplicateSearches('savedSearchId')});
+
+    // Subscribe to changes in Keyword Search
+    this.searchForm.get('simpleQueryString')?.statusChanges.subscribe(() => {
+      this.searchIsElastic = this.searchForm.get('simpleQueryString')?.dirty &&
+        this.searchForm.get('simpleQueryString')?.value() !== '';
+    });
   }
 
   ngOnInit() {
@@ -899,6 +912,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     return s;
+  }
+
+  public canViewCandidateName() {
+    return this.authorizationService.canViewCandidateName();
   }
 
   public readonly CandidateSourceType = CandidateSourceType;

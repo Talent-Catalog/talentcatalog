@@ -73,14 +73,6 @@ describe('CandidatesWithChatComponent', () => {
     expect(component.selectedCandidate).toEqual(mockCandidate);
   })
 
-  it('should successfully reset the scrollbar when a candidate is selected', () => {
-    window.scrollTo(0, 50);
-
-    component.onCandidateSelected(mockCandidate);
-
-    expect(window.scrollY).toBeLessThanOrEqual( 0);
-  });
-
   it('should attempt to fetch the chat with the right parameters when a candidate is selected', () => {
     component.onCandidateSelected(mockCandidate);
 

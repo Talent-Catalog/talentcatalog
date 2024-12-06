@@ -217,4 +217,10 @@ export class CandidateService implements IntakeService {
     );
   }
 
+  fetchPotentialDuplicates(id: number): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(
+      `${this.apiUrl}/${id}/fetch-potential-duplicates-of-given-candidate`
+    );
+  }
+
 }

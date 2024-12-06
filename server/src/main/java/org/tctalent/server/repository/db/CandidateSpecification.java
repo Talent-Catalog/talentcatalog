@@ -366,6 +366,19 @@ public class CandidateSpecification {
                 }
             }
 
+            // POTENTIAL DUPLICATE
+            if (request.getPotentialDuplicate() != null) {
+                if (request.getPotentialDuplicate()) {
+                    conjunction.getExpressions().add(
+                        builder.isTrue(candidate.get("potentialDuplicate"))
+                    );
+                } else {
+                    conjunction.getExpressions().add(
+                        builder.isFalse(candidate.get("potentialDuplicate"))
+                    );
+                }
+            }
+
             // MAJOR SEARCH
             if (!Collections.isEmpty(request.getEducationMajorIds())) {
                 candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;

@@ -1685,6 +1685,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     getListAsString(request.getEducationMajorIds()));
             savedSearch.setMiniIntakeCompleted(request.getMiniIntakeCompleted());
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
+            savedSearch.setPotentialDuplicate(request.getPotentialDuplicate());
 
             //Save Boolean filters corresponding to enum name
             // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
@@ -1762,6 +1763,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
+        searchCandidateRequest.setPotentialDuplicate(search.getPotentialDuplicate());
 
         // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
         CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(

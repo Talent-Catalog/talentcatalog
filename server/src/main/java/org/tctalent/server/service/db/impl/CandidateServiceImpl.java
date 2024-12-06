@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -3045,6 +3046,97 @@ public class CandidateServiceImpl implements CandidateService {
                 .message("Partner with ID " + newPartner.getId() + " is not a valid implementation of Partner.")
                 .logError();
         }
+    }
+
+    @Transactional
+    @Override
+    public void cleanUpResolvedDuplicates() {
+        // Obtain list of IDs of all candidates currently potential duplicates
+        List<Long> newCandidateIds =
+            this.candidateRepository.findIdsOfPotentialDuplicateCandidates(null);
+
+        // Obtain list of IDs of all candidates where potentialDuplicate already set to true
+        List<Long> previousCandidateIds =
+            this.candidateRepository.findIdsOfCandidatesMarkedPotentialDuplicates();
+
+        int resolvedDuplicates = 0;
+
+        // If not in newly generated list, set potentialDuplicate to false on candidate matching ID
+        for (Long id: previousCandidateIds) {
+            if (!newCandidateIds.contains(id)) {
+                Candidate candidate = getCandidate(id);
+                candidate.setPotentialDuplicate(false);
+                save(candidate, false);
+                resolvedDuplicates++;
+            }
+        }
+
+        LogBuilder.builder(log)
+            .action("Clean up resolved duplicates")
+            .message("Cleaned up " + resolvedDuplicates + " resolved duplicate(s)!")
+            .logInfo();
+    }
+
+    @Transactional
+    @Override
+    public void processPotentialDuplicatePage(Page<Candidate> candidatePage) {
+
+        if (!candidatePage.isEmpty()) {
+            List<Candidate> candidateList = candidatePage.getContent();
+
+            for (Candidate candidate : candidateList) {
+                candidate.setPotentialDuplicate(true);
+                save(candidate, false);
+            }
+
+            // Log completed page
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Processed page " + (candidatePage.getNumber() + 1) + " of " +
+                    candidatePage.getTotalPages())
+                .logInfo();
+        }
+
+        // Log if processing complete
+        if (candidatePage.getNumber() + 1 >= candidatePage.getTotalPages()) {
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Background duplicate processing complete!")
+                .logInfo();
+        }
+    }
+
+    /**
+     * For a candidate with given ID will return a list containing any other profiles with same
+     * first name AND last name and DOB, or an empty list if there are none, in which case it will
+     * also set the candidate's potentialDuplicate property to false.
+     * @param candidateId ID of candidate being queried
+     * @return List of candidates, empty if there are no potential duplicates
+     */
+    public List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId) {
+        Candidate candidate = getCandidate(candidateId);
+
+        final List<CandidateStatus> statuses = new ArrayList<>(
+            EnumSet.of(CandidateStatus.active, CandidateStatus.unreachable,
+                CandidateStatus.incomplete, CandidateStatus.pending));
+
+        List<Candidate> candidates =
+            this.candidateRepository.findPotentialDuplicatesOfGivenCandidate(
+                statuses,
+                candidate.getDob(),
+                candidate.getUser().getLastName().toLowerCase(),
+                candidate.getUser().getFirstName().toLowerCase(),
+                candidate.getId()
+            );
+
+        // Candidate no longer matches other profiles (usually because admin has changed the others'
+        // status to 'Deleted')
+        if (candidates.isEmpty()) {
+            candidate.setPotentialDuplicate(false);
+            save(candidate, false);
+        }
+
+        return candidates;
     }
 
 }
