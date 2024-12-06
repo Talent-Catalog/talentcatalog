@@ -772,7 +772,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * scheduled call to {@link BackgroundProcessingService#processPotentialDuplicateCandidates()},
      * which can also be manually triggered from {@link SystemAdminApi}.
      */
-    private Boolean potentialDuplicate;
+    private boolean potentialDuplicate;
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields
     //Seems to always be the same as user - so not sure if it has any point.
@@ -2153,9 +2153,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.mediaWillingness = mediaWillingness;
     }
 
-    public Boolean getPotentialDuplicate() {return potentialDuplicate;}
+    public boolean getPotentialDuplicate() {return potentialDuplicate;}
 
-    public void setPotentialDuplicate(Boolean potentialDuplicate) {
+    public void setPotentialDuplicate(boolean potentialDuplicate) {
         this.potentialDuplicate = potentialDuplicate;
     }
 

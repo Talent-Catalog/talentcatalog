@@ -324,7 +324,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         // POTENTIAL DUPLICATE
         if (getPotentialDuplicate() != null) {
             boolean potentialDuplicate = getPotentialDuplicate();
-            ands.add("potentialDuplicate is " + potentialDuplicate);
+            ands.add("potentialDuplicate = " + potentialDuplicate);
         }
 
         // MAJOR SEARCH
