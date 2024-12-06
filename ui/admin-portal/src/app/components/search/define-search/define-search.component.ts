@@ -236,7 +236,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     // Subscribe to changes in Keyword Search
     this.searchForm.get('simpleQueryString')?.statusChanges.subscribe(() => {
       this.searchIsElastic = this.searchForm.get('simpleQueryString')?.dirty &&
-        this.searchForm.get('simpleQueryString')?.getRawValue() !== '';
+        this.searchForm.get('simpleQueryString')?.value !== '';
     });
   }
 
