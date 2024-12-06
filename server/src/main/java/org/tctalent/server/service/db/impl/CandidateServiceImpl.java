@@ -3106,6 +3106,13 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    /**
+     * For a candidate with given ID will return a list containing any other profiles with same
+     * first name AND last name and DOB, or an empty list if there are none, in which case it will
+     * also set the candidate's potentialDuplicate property to false.
+     * @param candidateId ID of candidate being queried
+     * @return List of candidates, empty if there are no potential duplicates
+     */
     public List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId) {
         Candidate candidate = getCandidate(candidateId);
 

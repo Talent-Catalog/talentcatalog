@@ -119,7 +119,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   }
 
   @Override
-  @Scheduled(cron = "00 35 10 * * ?")
+  @Scheduled(cron = "0 0 21 * * ?", zone = "GMT")
   @SchedulerLock(name = "BackgroundProcessingService_processPotentialDuplicateCandidates",
       lockAtLeastFor = "PT2H", lockAtMostFor = "PT2H")
   public void processPotentialDuplicateCandidates() {
