@@ -207,6 +207,7 @@ export class MockCandidate implements Candidate {
   miniIntakeCompletedDate: number = 19900101;
   fullIntakeCompletedBy: any = { id: 1, username: "admin", email: "admin@example.com" };
   fullIntakeCompletedDate: number = 19900101;
+  potentialDuplicate: boolean = false;
   candidateCertifications?: any[];
   candidateEducations?: CandidateEducation[] = [
     {

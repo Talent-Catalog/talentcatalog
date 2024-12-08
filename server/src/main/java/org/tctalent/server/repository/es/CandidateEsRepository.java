@@ -51,4 +51,10 @@ public interface CandidateEsRepository
      */
     @Query("{\"simple_query_string\": {\"query\": \"?0\"}}")
     Page<CandidateEs> simpleQueryString(String searchQuery, Pageable pageable);
+
+    /**
+     * Deletes candidate with given candidate number
+     * @param candidateNumber Candidate number
+     */
+    void deleteByCandidateNumber(String candidateNumber);
 }

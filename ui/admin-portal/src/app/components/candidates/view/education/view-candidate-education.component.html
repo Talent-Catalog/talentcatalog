@@ -41,12 +41,12 @@
   <!-- BODY -->
   <div class="card-body">
     <!-- EMPTY STATE -->
-    <p class="m-0" *ngIf="!candidateEducations || candidateEducations.length == 0">
+    <p class="m-0" *ngIf="!candidate.candidateEducations || candidate.candidateEducations.length == 0">
       No education data has been entered by this candidate.
     </p>
 
     <!-- EDUCATION CARDS -->
-    <div *ngFor="let edu of candidateEducations">
+    <div *ngFor="let edu of candidate.candidateEducations">
 
       <div class="row">
 
