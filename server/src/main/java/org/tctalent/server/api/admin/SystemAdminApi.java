@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,6 +70,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
@@ -102,6 +104,8 @@ import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.response.DuolingoDashboardResponse;
+import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
@@ -117,6 +121,7 @@ import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.service.db.impl.DuolingoApiServiceImpl;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.IdContext;
@@ -125,6 +130,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.textExtract.TextExtractHelper;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -194,6 +200,8 @@ public class SystemAdminApi {
 
     @Value("${environment}")
     private String environment;
+    private final DuolingoApiServiceImpl duolingoApiService;
+
 
     @Autowired
     public SystemAdminApi(
@@ -215,7 +223,8 @@ public class SystemAdminApi {
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService) {
+        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
+        DuolingoApiServiceImpl duolingoApiService ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -245,6 +254,7 @@ public class SystemAdminApi {
         this.taskScheduler = taskScheduler;
       this.backgroundProcessingService = backgroundProcessingService;
       countryForGeneralCountry = getExtraCountryMappings();
+        this.duolingoApiService = duolingoApiService;
     }
 
     /**
@@ -271,6 +281,38 @@ public class SystemAdminApi {
                 20);
     }
 
+    /**
+     * Fetches Duolingo dashboard results based on optional date filters.
+     *
+     * @param minDateTime Optional start date and time in 'yyyy-MM-ddTHH:mm:ss' format.
+     * @param maxDateTime Optional end date and time in 'yyyy-MM-ddTHH:mm:ss' format.
+     * @return A list of duolingo dashboard results within the specified date range.
+     */
+    @GetMapping("duolingo/dashboard-results")
+    public List<DuolingoDashboardResponse> fetchDashboardResults(
+        @RequestParam(required = false) String minDateTime,
+        @RequestParam(required = false) String maxDateTime) {
+
+        // Parse the minDateTime and maxDateTime only if they are provided
+        LocalDateTime min = (minDateTime != null) ? LocalDateTime.parse(minDateTime) : null;
+        LocalDateTime max = (maxDateTime != null) ? LocalDateTime.parse(maxDateTime) : null;
+
+        // Pass the parsed min and max values to the service method
+        return duolingoApiService.getDashboardResults(min, max);
+    }
+    /**
+     * Verifies a Duolingo score using the provided certificate ID and birthdate.
+     *
+     * @param certificateId The ID of the certificate to verify.
+     * @param birthdate The birthdate of the certificate holder in 'yyyy-MM-dd' format.
+     * @return A response containing the score verification details.
+     */
+    @GetMapping("duolingo/verify-score")
+    public DuolingoVerifyScoreResponse verifyScore(
+        @RequestParam String certificateId,
+        @RequestParam String birthdate) {
+        return duolingoApiService.verifyScore(certificateId, birthdate);
+    }
     @GetMapping("fix_null_case_sfids")
     public void fixNullCaseSfids() {
         List<CandidateOpportunity> opps = candidateOpportunityRepository.findAllBySfIdIsNull();
