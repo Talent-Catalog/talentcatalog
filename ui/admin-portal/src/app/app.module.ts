@@ -799,6 +799,9 @@ import {
 import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
 import { PotentialDuplicateIconComponent } from './components/candidates/potential-duplicates/potential-duplicate-icon/potential-duplicate-icon.component';
 import { DuplicatesDetailComponent } from './components/candidates/potential-duplicates/duplicates-detail/duplicates-detail.component';
+import {
+  ImportDuolingoCouponsComponent
+} from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
 
 @NgModule({
   declarations: [
@@ -1121,7 +1124,8 @@ import { DuplicatesDetailComponent } from './components/candidates/potential-dup
     JoiDataComponent,
     FindCandidateSourceComponent,
     PotentialDuplicateIconComponent,
-    DuplicatesDetailComponent
+    DuplicatesDetailComponent,
+    ImportDuolingoCouponsComponent
   ],
   imports: [
     BrowserModule,
