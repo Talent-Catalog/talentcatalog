@@ -112,6 +112,7 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
+    private Boolean potentialDuplicate;
 
     private String regoReferrerParam;
 
@@ -444,6 +445,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setFullIntakeCompleted(Boolean fullIntakeCompleted) {
         this.fullIntakeCompleted = fullIntakeCompleted;
+    }
+
+    public Boolean getPotentialDuplicate() {
+        return potentialDuplicate;
+    }
+
+    public void setPotentialDuplicate(Boolean potentialDuplicate) {
+        this.potentialDuplicate = potentialDuplicate;
     }
 
     public Set<SearchJoin> getSearchJoins() {

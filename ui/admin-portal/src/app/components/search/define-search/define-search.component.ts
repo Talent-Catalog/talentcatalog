@@ -35,12 +35,7 @@ import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {
-  AbstractControl,
-  UntypedFormArray,
-  UntypedFormBuilder,
-  UntypedFormGroup
-} from '@angular/forms';
+import {AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
@@ -59,9 +54,7 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {
-  DateRangePickerComponent
-} from '../../util/form/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
@@ -156,6 +149,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   selectedBaseJoin;
   storedBaseJoin;
+  /**
+   * Will be true whenever there is any text in the Keyword Search input - can be used to hide filter
+   * that doesn't have ES capability, though the practice should generally be avoided.
+   */
+  searchIsElastic: boolean = false;
 
   constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
@@ -224,7 +222,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       listAllIds: [[]],
       listAllSearchType: [null],
       unhcrStatusesDisplay: [[]],
-      includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
+      includeUploadedFiles: [false],
+      potentialDuplicate: [null]
+    }, {validator: this.validateDuplicateSearches('savedSearchId')});
+
+    // Subscribe to changes in Keyword Search
+    this.searchForm.get('simpleQueryString')?.statusChanges.subscribe(() => {
+      this.searchIsElastic = this.searchForm.get('simpleQueryString')?.dirty &&
+        this.searchForm.get('simpleQueryString')?.value !== '';
+    });
   }
 
   ngOnInit() {
@@ -581,7 +587,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         }
         // After updating we want to reset the form so it's no longer dirty, this will allow users to bypass the
         // unsaved changes guard.
-        this.searchForm.reset(this.searchForm.value)
+        this.populateFormWithSavedSearch(this.searchForm.value);
+        this.searchForm.markAsPristine();
       })
       .catch(() => {
       });
@@ -903,6 +910,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     return s;
+  }
+
+  public canViewCandidateName() {
+    return this.authorizationService.canViewCandidateName();
   }
 
   public readonly CandidateSourceType = CandidateSourceType;

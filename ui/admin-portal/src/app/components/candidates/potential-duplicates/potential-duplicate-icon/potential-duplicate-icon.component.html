@@ -1,0 +1,14 @@
+<span *ngIf="candidate.potentialDuplicate && canViewCandidateName()">
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+  <span *ngIf="loading; else icon">
+    <i class="fa fa-spinner fa-spin"></i>
+  </span>
+  <ng-template #icon>
+    <i class="fa-solid fa-person-circle-exclamation link-warning"
+       title="Potential duplicate profile - click for details"
+       (click)="openDuplicateDetailModal()"
+    ></i>
+  </ng-template>
+</span>

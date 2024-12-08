@@ -59,6 +59,7 @@ export interface SearchCandidateRequest {
   exclusionListId?: number;
   miniIntakeCompleted?: boolean;
   fullIntakeCompleted?: boolean;
+  potentialDuplicate?: boolean;
   unhcrStatuses?: string[];
   listAnyIds?: number[];
   listAnySearchType?: string;
