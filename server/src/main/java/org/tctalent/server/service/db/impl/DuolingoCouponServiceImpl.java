@@ -104,7 +104,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
   public Optional<DuolingoCoupon> assignCouponToCandidate(Long candidateId) {
     return candidateRepository.findById(candidateId).flatMap(candidate -> {
       Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatus(
-          String.valueOf(DuolingoCouponStatus.AVAILABLE));
+              DuolingoCouponStatus.AVAILABLE);
       availableCoupon.ifPresent(coupon -> {
         coupon.setCandidate(candidate);
         coupon.setDateSent(LocalDateTime.now());

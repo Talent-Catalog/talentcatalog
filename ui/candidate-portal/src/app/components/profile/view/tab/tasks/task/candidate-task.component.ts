@@ -27,6 +27,8 @@ import {
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {TaskAssignment} from "../../../../../../model/task-assignment";
 import {TaskType} from "../../../../../../model/task";
+import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
+import {DuolingoCoupon, Status} from 'src/app/model/duolingo-coupon';
 
 @Component({
   selector: 'app-candidate-task',
@@ -41,10 +43,12 @@ export class CandidateTaskComponent implements OnInit {
   url: SafeResourceUrl;
   loading: boolean;
   saving: boolean;
+  coupons: DuolingoCoupon[];
   error;
 
   constructor(private fb: UntypedFormBuilder,
               private taskAssignmentService: TaskAssignmentService,
+              private duolingoCouponService: DuolingoCouponService,
               public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
@@ -82,6 +86,15 @@ export class CandidateTaskComponent implements OnInit {
       this.form.controls['response']?.updateValueAndValidity()
       this.form.controls['completed']?.updateValueAndValidity()
     });
+
+    if(this.selectedTask.task.name === 'duolingoTest') {
+    this.duolingoCouponService.get(this.candidate.id).subscribe(
+      (coupons) => {
+        const validCoupons = coupons.filter(coupon => coupon.duolingoCouponStatus === Status.SENT);
+        this.coupons = validCoupons;
+      }
+    );
+  }
   }
 
   addRequiredFormControls() {
