@@ -178,6 +178,12 @@ public class SecurityConfiguration {
                 // DELETE: DELETE CANDIDATE LANGUAGE
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-language/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
 
+                // DELETE: DELETE CANDIDATE OCCUPATION
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-occupation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
+
+                // DELETE: DELETE TASK ASSIGNMENT
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/task-assignment/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
+
                 // DELETE: DELETE USER (ADDED AUTHORISATION ON SERVER FOR SOURCE PARTNER ADMINS)
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/user/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
 
