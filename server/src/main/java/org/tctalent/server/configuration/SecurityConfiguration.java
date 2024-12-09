@@ -157,6 +157,9 @@ public class SecurityConfiguration {
                 // DELETE: DELETE ATTACHMENT
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-attachment/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
+                // DELETE: DELETE CANDIDATE CERTIFICATION
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-certification/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
+
                 // DELETE: DELETE EDUCATION
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-education/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
