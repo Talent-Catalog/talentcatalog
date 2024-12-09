@@ -158,7 +158,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-attachment/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                 // DELETE: DELETE CANDIDATE CERTIFICATION
-                .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-certification/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-certification/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                 // DELETE: DELETE EDUCATION
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-education/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
@@ -179,10 +179,10 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-language/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
 
                 // DELETE: DELETE CANDIDATE OCCUPATION
-                .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-occupation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-occupation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                 // DELETE: DELETE TASK ASSIGNMENT
-                .requestMatchers(HttpMethod.DELETE, "/api/admin/task-assignment/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/task-assignment/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                 // DELETE: DELETE USER (ADDED AUTHORISATION ON SERVER FOR SOURCE PARTNER ADMINS)
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/user/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN")
