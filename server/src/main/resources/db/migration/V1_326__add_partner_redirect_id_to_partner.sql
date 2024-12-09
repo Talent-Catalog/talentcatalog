@@ -14,4 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table candidate_visa_job_check drop column relocating_dependant_ids;
+alter table partner add column redirect_partner_id bigint references partner;
