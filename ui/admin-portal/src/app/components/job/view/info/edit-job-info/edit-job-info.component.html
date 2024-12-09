@@ -42,6 +42,13 @@
                for="evergreen">Evergreen job?</label>
       </div>
 
+      <div class="form-check">
+        <input [title]="skipCandidateSearchTip" type="checkbox"
+               formControlName="skipCandidateSearch" id="skipCandidateSearch" class="form-check-input">
+        <label class="form-check-label" [title]="skipCandidateSearchTip"
+               for="skipCandidateSearch">Skip candidate search?</label>
+      </div>
+
       <!-- SUBMISSION DUE DATE -->
       <div class="mb-3">
         <label class="form-label" for="submissionDueDate">Submission Due Date</label>

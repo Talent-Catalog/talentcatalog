@@ -179,6 +179,12 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private PartnerImpl jobCreator;
 
     /**
+     * True if no candidate search is required. The candidates to be considered have already
+     * been added to the submission list.
+     */
+    private boolean skipCandidateSearch;
+
+    /**
      * Stage of job opportunity
      */
     @Enumerated(EnumType.STRING)
