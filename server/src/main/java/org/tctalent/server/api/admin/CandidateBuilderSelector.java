@@ -219,7 +219,7 @@ public class CandidateBuilderSelector {
                 ;
             }
             
-            // Extended DTO used for candidate search card information
+            // Extended DTO used for candidate profile/search card information
             if (DtoType.EXTENDED.equals(type)) {
                 builder
                     .add("candidateLanguages", candidateLanguageDto())
@@ -230,6 +230,10 @@ public class CandidateBuilderSelector {
                     .add("candidateEducations", candidateEducationDto())
                     .add("candidateCertifications", candidateCertificationDto())
                     .add("candidateNotes", candidateNoteDto())
+                    .add("relocatedAddress")
+                    .add("relocatedCity")
+                    .add("relocatedState")
+                    .add("relocatedCountry", countryDto())
                 ;
             }
 

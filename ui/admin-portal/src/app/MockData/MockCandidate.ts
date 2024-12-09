@@ -329,6 +329,10 @@ export class MockCandidate implements Candidate {
       notes: "I do not like Toronto."
     },
   ];
+  relocatedAddress: "123 Sesame Street"
+  relocatedCity: "Melbourne"
+  relocatedState: "Victoria"
+  relocatedCountry: { id: 1, name: "Australia", status: "active", translatedName: "Australia" }
 
 
   constructor() {}

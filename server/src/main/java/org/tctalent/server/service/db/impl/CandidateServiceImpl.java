@@ -905,6 +905,18 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
+
+        // Set relocated details
+        candidate.setRelocatedAddress(request.getRelocatedAddress());
+        candidate.setRelocatedCity(request.getRelocatedCity());
+        candidate.setRelocatedState(request.getRelocatedState());
+        Country relocatedCountry = null;
+        if (request.getRelocatedCountryId() != null) {
+            relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
+        }
+        candidate.setRelocatedCountry(relocatedCountry);
+
         return save(candidate, true);
     }
 

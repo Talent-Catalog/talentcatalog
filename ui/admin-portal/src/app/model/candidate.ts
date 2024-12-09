@@ -123,6 +123,12 @@ export interface Candidate extends HasId {
   candidateSkills?: CandidateSkill[];
   candidateNotes?: CandidateNote[];
 
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
+
 }
 
 export interface CandidateProperty {
