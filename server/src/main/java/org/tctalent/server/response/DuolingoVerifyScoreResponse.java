@@ -23,6 +23,9 @@ import lombok.Data;
  * returned by the Duolingo API when verifying a test score. It contains
  * various details about the applicant's test, including their name, test
  * scores, subscore details, and a URL to the certificate.
+ *
+ * For more details, see the Duolingo API documentation:
+ * [https://englishtest.duolingo.com/dashboard/resources/api]
  */
 @Data
 public class DuolingoVerifyScoreResponse {
