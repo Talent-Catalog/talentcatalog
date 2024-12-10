@@ -3004,34 +3004,13 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Override
-    public void reassignSavedListCandidates(SavedList savedList, int partnerId) {
-        Partner newPartner = partnerService.getPartner(partnerId);
-
-        SavedListGetRequest request = new SavedListGetRequest();
-
-        Page<Candidate> candidatePage = getSavedListCandidates(savedList, request);
-
-        int totalPagesToProcess = candidatePage.getTotalPages();
-        int pagesProcessed = 0;
-
-        while (pagesProcessed < totalPagesToProcess) {
-            request.setPageNumber(pagesProcessed);
-            candidatePage = getSavedListCandidates(savedList, request);
-            List<Candidate> candidates = candidatePage.getContent();
-            processCandidateReassignment(candidates, newPartner);
-            persistenceContextHelper.flushAndClearEntityManager();
-            pagesProcessed++;
-        }
-    }
-
     /**
      * For each candidate on given list, sets partnerId on associated user object, saves to DB and
      * updates the corresponding elasticsearch index entry.
      * @param candidateList list of candidates
      * @param newPartner the new partner to which they will be assigned
      */
-    private void processCandidateReassignment(
+    public void reassignCandidatesOnList(
         List<Candidate> candidateList, Partner newPartner
     ) {
         if (newPartner instanceof PartnerImpl) {
@@ -3043,9 +3022,14 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             LogBuilder.builder(log)
                 .action("Process candidate reassignment")
-                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation of Partner.")
+                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation "
+                    + "of Partner.")
                 .logError();
+
+            return;
         }
+
+        persistenceContextHelper.flushAndClearEntityManager();
     }
 
     @Transactional

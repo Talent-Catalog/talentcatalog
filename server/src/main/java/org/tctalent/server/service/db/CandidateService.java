@@ -46,6 +46,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.LoginRequest;
@@ -620,14 +621,12 @@ public interface CandidateService {
     Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
 
     /**
-     * Reassigns all candidates on given saved list to partner organisation with given ID.
-     * Previously done by direct DB edit which necessitated additional manual steps of flushing the
-     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
-     * ES index update proceed as usual with this in-code implementation.
-     * @param savedList saved list containing all the candidates to be reassigned
-     * @param partnerId id of the partner org to which the candidates will be reassigned
+     * For each candidate on given list, sets partnerId on associated user object, saves to DB and
+     * updates the corresponding elasticsearch index entry.
+     * @param candidateList list of candidates
+     * @param newPartner the new partner to which they will be assigned
      */
-    void reassignSavedListCandidates(SavedList savedList, int partnerId);
+    void reassignCandidatesOnList(List<Candidate> candidateList, Partner newPartner);
 
     List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
 
