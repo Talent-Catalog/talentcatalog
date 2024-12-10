@@ -16,24 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateOccupation;
-import org.tctalent.server.model.db.Occupation;
-import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
-import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
-import org.tctalent.server.service.db.CandidateOccupationService;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -51,9 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getCandidateOccupation;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getListOfCandidateOccupations;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getListOfOccupations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -66,6 +45,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
+import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
+import org.tctalent.server.service.db.CandidateOccupationService;
+import org.tctalent.server.service.db.OccupationService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Candidate Occupation Admin Api endpoints.
@@ -86,6 +72,7 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
     private static final CandidateOccupation candidateOccupation = AdminApiTestUtil.getCandidateOccupation();
     private static final List<CandidateOccupation> candidateOccupationsList = AdminApiTestUtil.getListOfCandidateOccupations();
 
+    @MockBean OccupationService occupationService;
     @MockBean CandidateOccupationService candidateOccupationService;
 
     @Autowired MockMvc mockMvc;
@@ -109,6 +96,9 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
         given(candidateOccupationService
                 .listOccupations())
                 .willReturn(occupationsList);
+        given(occupationService
+                .selectBuilder())
+                .willReturn(new DtoBuilder().add("name"));
 
         mockMvc.perform(get(BASE_PATH + GET_ALL_OCCUPATIONS_PATH)
                         .header("Authorization", "Bearer " + "jwt-token")
