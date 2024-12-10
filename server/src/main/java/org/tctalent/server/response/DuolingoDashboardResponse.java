@@ -22,6 +22,9 @@ import lombok.Data;
  * Represents the response object for the Duolingo Dashboard API. It contains various fields
  * that store the details of a Duolingo test result, such as personal information, test scores,
  * certificate URL, and other related metadata.
+ *
+ * For more details, see the Duolingo API documentation:
+ * [https://englishtest.duolingo.com/dashboard/resources/api]
  */
 @Data
 public class DuolingoDashboardResponse {
