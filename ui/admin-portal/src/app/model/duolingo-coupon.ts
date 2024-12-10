@@ -31,7 +31,7 @@ export interface DuolingoCouponResponse {
   couponCode: string;
   expirationDate: string;
   dateSent: string;
-  couponStatus: string;
+  duolingoCouponStatus: DuolingoCouponStatus;
 }
 
 export interface UpdateCouponStatusRequest {
