@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import org.tctalent.server.model.db.DuolingoCoupon;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 
 /**
  * Repository interface for managing Coupon entities in the database.
@@ -56,7 +57,8 @@ public interface DuolingoCouponRepository extends JpaRepository<DuolingoCoupon, 
    * @param couponStatus the status of the coupon (e.g., "ACTIVE").
    * @return an Optional containing the first unassigned Coupon matching the status if found, or empty otherwise.
    */
-  Optional<DuolingoCoupon> findTop1ByCandidateIsNullAndCouponStatus(String couponStatus);
+  Optional<DuolingoCoupon> findTop1ByCandidateIsNullAndCouponStatus(
+      DuolingoCouponStatus couponStatus);
 
   /**
    * Finds all available coupons that are not assigned to any candidate and match
@@ -67,5 +69,5 @@ public interface DuolingoCouponRepository extends JpaRepository<DuolingoCoupon, 
    * @param couponStatus the status of the coupons to retrieve (e.g., "ACTIVE").
    * @return a List of Coupons that are unassigned and match the specified status.
    */
-  List<DuolingoCoupon> findByCandidateIsNullAndCouponStatus(String couponStatus);
+  List<DuolingoCoupon> findByCandidateIsNullAndCouponStatus(DuolingoCouponStatus couponStatus);
 }

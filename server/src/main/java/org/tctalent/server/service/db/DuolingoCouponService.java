@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.response.DuolingoCouponResponse;
@@ -36,8 +37,7 @@ public interface DuolingoCouponService {
    * @param candidateId the ID of the candidate to whom the coupon will be assigned.
    * @return an Optional containing the assigned Coupon if successful, or empty if no coupons are available.
    */
-  Optional<DuolingoCoupon> assignCouponToCandidate(Long candidateId);
-
+  DuolingoCoupon assignCouponToCandidate(Long candidateId) throws NoSuchObjectException;
   /**
    * Retrieves all coupons assigned to a specific candidate.
    * <p/>
@@ -77,7 +77,9 @@ public interface DuolingoCouponService {
    * wrapped in a CouponResponse object if found.
    *
    * @param couponCode the unique code identifying the coupon to retrieve.
-   * @return an Optional containing the CouponResponse if found, otherwise empty.
+   * @return a CouponResponse containing the coupon details.
+   * @throws NoSuchObjectException if no coupon is found with the provided code.
    */
-  Optional<DuolingoCouponResponse> findByCouponCode(String couponCode);
+  DuolingoCoupon findByCouponCode(String couponCode) throws NoSuchObjectException;
+
 }
