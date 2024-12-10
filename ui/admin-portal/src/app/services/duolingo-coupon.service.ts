@@ -30,9 +30,10 @@ export class DuolingoCouponService {
    * Assign an available coupon to a candidate
    * @param candidateId - ID of the candidate
    */
-  assignCouponToCandidate(candidateId: number): Observable<any> {
-    return this.http.post<any>(`${this.apiBaseUrl}/${candidateId}/assign`, {});
+  assignCouponToCandidate(candidateId: number): Observable<DuolingoCouponResponse> {
+    return this.http.post<DuolingoCouponResponse>(`${this.apiBaseUrl}/${candidateId}/assign`, {});
   }
+
 
   /**
    * Retrieve all coupons assigned to a candidate
@@ -58,10 +59,11 @@ export class DuolingoCouponService {
   }
 
   /**
-   * Get a single coupon by its code
-   * @param couponCode - Coupon code to search for
+   * Get a single coupon by its code.
+   * @param couponCode - Coupon code to search for.
    */
-  getCouponByCode(couponCode: string): Observable<any> {
-    return this.http.get<any>(`${this.apiBaseUrl}/find/${couponCode}`);
+  getCouponByCode(couponCode: string): Observable<DuolingoCouponResponse> {
+    return this.http.get<DuolingoCouponResponse>(`${this.apiBaseUrl}/find/${couponCode}`);
   }
+
 }
