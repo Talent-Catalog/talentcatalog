@@ -4,8 +4,7 @@ import { DuolingoCouponService } from './duolingo-coupon.service';
 import { environment } from '../../environments/environment';
 import {
   DuolingoCouponResponse,
-  DuolingoCouponStatus,
-  UpdateCouponStatusRequest
+  DuolingoCouponStatus
 } from '../model/duolingo-coupon';
 
 describe('DuolingoCouponService', () => {
@@ -46,7 +45,7 @@ describe('DuolingoCouponService', () => {
 
   it('should assign a coupon to a candidate', () => {
     const candidateId = 123;
-    const mockResponse = { success: true };
+    const mockResponse:DuolingoCouponResponse = { id: 1, couponCode: 'COUPON123', dateSent: '11/02/2022', expirationDate:'11/02/2023',duolingoCouponStatus: DuolingoCouponStatus.AVAILABLE };
 
     service.assignCouponToCandidate(candidateId).subscribe(response => {
       expect(response).toEqual(mockResponse);
@@ -60,8 +59,8 @@ describe('DuolingoCouponService', () => {
   it('should retrieve coupons for a candidate', () => {
     const candidateId = 123;
     const mockCoupons: DuolingoCouponResponse[] = [
-      { id: 1, couponCode: 'COUPON123', couponStatus:DuolingoCouponStatus.ASSIGNED,expirationDate:'01/12/2024',dateSent:'01/10/2020' },
-      { id: 2, couponCode: 'COUPON456', couponStatus:DuolingoCouponStatus.AVAILABLE,expirationDate:'01/12/2024',dateSent:'01/10/2020'},
+      { id: 1, couponCode: 'COUPON123', duolingoCouponStatus:DuolingoCouponStatus.ASSIGNED,expirationDate:'01/12/2024',dateSent:'01/10/2020' },
+      { id: 2, couponCode: 'COUPON456', duolingoCouponStatus:DuolingoCouponStatus.AVAILABLE,expirationDate:'01/12/2024',dateSent:'01/10/2020'},
     ];
 
     service.getCouponsForCandidate(candidateId).subscribe(coupons => {
@@ -75,8 +74,8 @@ describe('DuolingoCouponService', () => {
 
   it('should retrieve available coupons', () => {
     const mockCoupons: DuolingoCouponResponse[] = [
-      { id: 1, couponCode: 'COUPON123', couponStatus:DuolingoCouponStatus.ASSIGNED,expirationDate:'01/12/2024',dateSent:'01/10/2020' },
-      { id: 2, couponCode: 'COUPON456', couponStatus:DuolingoCouponStatus.AVAILABLE,expirationDate:'01/12/2024',dateSent:'01/10/2020'},
+      { id: 1, couponCode: 'COUPON123', duolingoCouponStatus:DuolingoCouponStatus.ASSIGNED,expirationDate:'01/12/2024',dateSent:'01/10/2020' },
+      { id: 2, couponCode: 'COUPON456', duolingoCouponStatus:DuolingoCouponStatus.AVAILABLE,expirationDate:'01/12/2024',dateSent:'01/10/2020'},
     ];
 
     service.getAvailableCoupons().subscribe(coupons => {
@@ -90,7 +89,7 @@ describe('DuolingoCouponService', () => {
 
   it('should retrieve a coupon by code', () => {
     const couponCode = 'COUPON123';
-    const mockCoupon = { id: 1, code: 'COUPON123', status: 'available' };
+    const mockCoupon:DuolingoCouponResponse = { id: 1, couponCode: 'COUPON123', dateSent: '11/02/2022', expirationDate:'11/02/2023',duolingoCouponStatus: DuolingoCouponStatus.AVAILABLE };
 
     service.getCouponByCode(couponCode).subscribe(coupon => {
       expect(coupon).toEqual(mockCoupon);
