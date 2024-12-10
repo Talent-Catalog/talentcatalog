@@ -230,4 +230,10 @@ export class CandidateService implements IntakeService {
     return this.candidateUpdatedSource.asObservable();
   }
 
+  fetchPotentialDuplicates(id: number): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(
+      `${this.apiUrl}/${id}/fetch-potential-duplicates-of-given-candidate`
+    );
+  }
+
 }

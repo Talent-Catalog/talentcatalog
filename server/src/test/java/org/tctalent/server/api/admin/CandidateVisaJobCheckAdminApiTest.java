@@ -46,6 +46,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SalesforceService;
 
 /**
@@ -63,6 +64,8 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
 
     @MockBean
     CandidateVisaJobCheckService candidateVisaJobCheckService;
+    @MockBean
+    OccupationService occupationService;
 
     @MockBean
     SalesforceService salesforceService;

@@ -77,6 +77,8 @@ public class PartnerDtoHelper {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            .add("isoCode")
+            .add("status")
             ;
     }
 

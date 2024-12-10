@@ -22,6 +22,7 @@ import {MockSavedSearch} from "./MockSavedSearch";
 
 export const MockJob: Job = {
   evergreen: false,
+  skipCandidateSearch: false,
   closed: false,
   name: "XYZ",
   submissionList: {

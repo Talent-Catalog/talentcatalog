@@ -52,6 +52,7 @@ import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependant
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.SalesforceService;
 
 /**
@@ -79,6 +80,7 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
             );
 
     @MockBean CandidateOpportunityService candidateOpportunityService;
+    @MockBean CountryService countryService;
     @MockBean SalesforceService salesforceService;
 
     @Autowired MockMvc mockMvc;

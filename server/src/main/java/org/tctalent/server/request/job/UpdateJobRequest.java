@@ -59,6 +59,12 @@ public class UpdateJobRequest extends OpportunityParams {
     @Nullable
     private String sfJoblink;
 
+    /**
+     * If present indicates whether candidate search can be skipped
+     */
+    @Nullable
+    private Boolean skipCandidateSearch;
+
     @Nullable
     private JobOpportunityStage stage;
 

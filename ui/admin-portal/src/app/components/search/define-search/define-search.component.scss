@@ -23,10 +23,7 @@
 }
 
 p {
-  font-style: italic;
   font-size: small;
-  padding-bottom: 0;
-  margin-bottom: 0;
 }
 
 .elasticized {
@@ -167,9 +164,13 @@ $candidate-card-width: 375px;
 ::ng-deep .search-tips .tooltip-inner {
   text-align: left;
   font-size: small;
-  max-width: 50%;
-  background-color: #212529;
-  padding: 1em
+  background-color: #000000;
+  padding: 1em;
+  max-width: 200px;
+}
+
+::ng-deep .search-tips.keyword .tooltip-inner {
+  max-width: 300px;
 }
 
 // To make example search queries more visible

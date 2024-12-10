@@ -58,6 +58,8 @@ public class VisaPathwayApi {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            .add("isoCode")
+            .add("status")
             ;
     }
 

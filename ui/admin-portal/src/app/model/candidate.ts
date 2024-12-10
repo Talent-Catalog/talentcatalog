@@ -112,6 +112,7 @@ export interface Candidate extends HasId {
   miniIntakeCompletedDate: number;
   fullIntakeCompletedBy: User;
   fullIntakeCompletedDate: number;
+  potentialDuplicate: boolean;
 
   candidateCertifications?: CandidateCertification[];
   candidateEducations?: CandidateEducation[];
