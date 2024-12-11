@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,7 +24,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +37,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.DuolingoCoupon;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.response.DuolingoCouponResponse;

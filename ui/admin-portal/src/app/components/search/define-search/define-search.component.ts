@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -35,7 +35,12 @@ import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {
+  AbstractControl,
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormGroup
+} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
@@ -54,7 +59,9 @@ import {
 import * as moment from 'moment-timezone';
 import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
+import {
+  DateRangePickerComponent
+} from '../../util/form/date-range-picker/date-range-picker.component';
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';

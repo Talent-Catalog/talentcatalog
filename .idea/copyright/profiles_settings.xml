@@ -1,7 +1,7 @@
 <component name="CopyrightManager">
-  <settings default="TBB">
+  <settings default="TalentCatalog">
     <module2copyright>
-      <element module="Project Files" copyright="TBB" />
+      <element module="Project Files" copyright="TalentCatalog" />
     </module2copyright>
     <LanguageOptions name="JAVA" />
   </settings>

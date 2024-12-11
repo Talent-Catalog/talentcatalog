@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,11 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {catchError, map} from "rxjs/operators";
-import {AttachmentType, CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
+import {
+  AttachmentType,
+  CandidateAttachment,
+  CandidateAttachmentRequest
+} from '../model/candidate-attachment';
 import {saveBlob} from "../util/file";
 import {Candidate} from "../model/candidate";
 
