@@ -70,6 +70,7 @@ public class PartnerDtoHelper {
             .add("registrationLandingPage")
             .add("sflink")
             .add("sourceCountries", countryDto())
+            .add("redirectPartner", shortPartnerDto())
             ;
     }
 
@@ -97,6 +98,15 @@ public class PartnerDtoHelper {
             .add("firstName")
             .add("lastName")
             .add("email")
+            ;
+    }
+
+    private static DtoBuilder shortPartnerDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("abbreviation")
+            .add("websiteUrl")
             ;
     }
 

@@ -144,6 +144,30 @@
         </div>
       </div>
 
+      <!-- REDIRECT PARTNER  -->
+      <div *ngIf="!create" class="mb-3">
+        <label class="form-label">Redirect Partner</label>
+        <button class="tool-tip-button"
+                [ngbTooltip]="'Candidate with URL that would otherwise set CP branding ' +
+                (isSourcePartner() ? 'and assign them' : '') +
+                ' to ' + partner.name + ' will instead be redirected to chosen partner.'"
+                triggers="click"
+                tooltipClass="search-tips"
+                placement="top"
+        ><i class="fa-regular fa-circle-question fa-xs"></i>
+        </button>
+        <ng-select
+          id="redirectPartner"
+          [items]="partners"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          bindValue="id"
+          [formControlName]="'redirectPartnerId'">
+        </ng-select>
+      </div>
     </div>
     <hr/>
   </form>
