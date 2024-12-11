@@ -528,6 +528,10 @@
                   [completedTasks]="getCompletedMonitoredTasks(candidate)"
                   [totalTasks]="getTotalMonitoredTasks(candidate)">
                 </app-tasks-monitor>
+                <app-potential-duplicate-icon
+                  [candidate]="candidate"
+                  (refresh)="doSearch(true)"
+                ></app-potential-duplicate-icon>
               </td>
               <td *ngIf="isShowStage()">
                 <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"
@@ -571,7 +575,8 @@ arrays with more than one value display in drop down
                                  [loggedInUser]="loggedInUser"
                                  [savedSearchSelectionChange]="savedSearchSelectionChange"
                                  (onSearchCardRendered)="setSearchCardScrollTop()"
-                                 (closeEvent)="setCurrentCandidate(null)">
+                                 (closeEvent)="setCurrentCandidate(null)"
+                                 (candidateUpdated)="updatedCandidate($event)">
       </app-candidate-search-card>
 
     </div>

@@ -46,6 +46,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.LoginRequest;
@@ -620,13 +621,32 @@ public interface CandidateService {
     Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
 
     /**
-     * Reassigns all candidates on given saved list to partner organisation with given ID.
-     * Previously done by direct DB edit which necessitated additional manual steps of flushing the
-     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
-     * ES index update proceed as usual with this in-code implementation.
-     * @param savedList saved list containing all the candidates to be reassigned
-     * @param partnerId id of the partner org to which the candidates will be reassigned
+     * Extracts to a list the candidates on given page, iterates over list, setting partnerId on
+     * associated user object, saves to DB and updates the corresponding elasticsearch index entry.
+     * @param candidatePage page of candidates
+     * @param newPartner the new partner to which they will be assigned
      */
-    void reassignSavedListCandidates(SavedList savedList, int partnerId);
+    void reassignCandidatesOnPage(Page<Candidate> candidatePage, Partner newPartner)
+        throws IllegalArgumentException;
 
+    List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
+
+    /**
+     * Takes a page of potentially duplicated candidates and if not already true, sets their
+     * potentialDuplicate property to true and saves them to DB. annotated @Transactional to
+     * rollback incomplete confusing results.
+     * <p>
+     *   NB: currently not saving to ES - would need to be amended if we decide to index this property.
+     * </p>
+     * @param candidatePage page of potential duplicate candidates to be processed
+     */
+    void processPotentialDuplicatePage(Page<Candidate> candidatePage);
+
+    /**
+     * If admins have not deliberately refreshed results for a candidate whose duplicated versions
+     * have been marked deleted, their potentialDuplicates value would remain true - this component
+     * of the duplicate processing fixes that by comparing with previously flagged candidates.
+     * Again, annotated @Transactional to rollback incomplete confusing results.
+     */
+    void cleanUpResolvedDuplicates();
 }

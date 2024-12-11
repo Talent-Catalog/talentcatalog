@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import jakarta.validation.constraints.NotNull;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -25,8 +26,10 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * @author John Cameron
  */
 public class JobIntakeDataBuilderSelector {
+    private final CountryService countryService;
 
-    public JobIntakeDataBuilderSelector() {
+    public JobIntakeDataBuilderSelector(CountryService countryService) {
+        this.countryService = countryService;
     }
 
     public @NotNull DtoBuilder selectBuilder() {
@@ -56,16 +59,9 @@ public class JobIntakeDataBuilderSelector {
             .add("id")
             .add("sfId")
             .add("contactUser", shortUserDto())
-            .add("countryObject", countryDto())
+            .add("countryObject", countryService.selectBuilder())
             .add("createdDate")
             .add("employer")
-            .add("name")
-            ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-            .add("id")
             .add("name")
             ;
     }

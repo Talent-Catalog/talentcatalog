@@ -14,7 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-insert into task (admin, created_by, created_date, days_to_complete, description, name, optional, task_type,
-                  display_name)
-values (false, 25043, now(), 14, 'We are offering you a free Duolingo Test.', 'duolingoTest', false, 'Task',
-        'Take the Duolingo English Test for free!');
+alter table salesforce_job_opp add column skip_candidate_search boolean default false not null;

@@ -35,6 +35,13 @@
         </div>
       </div>
 
+      <div class="mb-3 col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-eye-slash"></i>Skip candidate search</label>
+        <div class="form-control-plaintext">
+          {{job.skipCandidateSearch ? "Yes" : "No"}}
+        </div>
+      </div>
+
       <div *ngIf="job.submissionList && canSeeJobDetails()" class="mb-3 col-sm-12 col-md-4">
         <label title="Potential candidates should be added to this list" class="col-form-label"
                [ngClass]="{'alert alert-danger': highlightCandidates()}">

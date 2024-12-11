@@ -90,6 +90,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
@@ -102,6 +103,8 @@ import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.security.AuthService;
@@ -118,6 +121,7 @@ import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
+import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
 import org.tctalent.server.util.background.BackProcessor;
@@ -170,6 +174,7 @@ public class SystemAdminApi {
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
     private final BackgroundProcessingService backgroundProcessingService;
+    private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
     private final PartnerRepository partnerRepository;
 
@@ -221,7 +226,8 @@ public class SystemAdminApi {
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-        PartnerService partnerService, PartnerRepository partnerRepository) {
+        SavedSearchService savedSearchService, PartnerService partnerService,
+        PartnerRepository partnerRepository) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -249,10 +255,11 @@ public class SystemAdminApi {
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
         this.taskScheduler = taskScheduler;
-        this.backgroundProcessingService = backgroundProcessingService;
-        countryForGeneralCountry = getExtraCountryMappings();
-        this.partnerService = partnerService;
-        this.partnerRepository = partnerRepository;
+      this.backgroundProcessingService = backgroundProcessingService;
+      this.savedSearchService = savedSearchService;
+      this.partnerService = partnerService;
+      this.partnerRepository = partnerRepository;
+      countryForGeneralCountry = getExtraCountryMappings();
     }
 
     /**
@@ -2962,31 +2969,86 @@ public class SystemAdminApi {
     }
 
     /**
-     * Reassigns all candidates on saved list with given ID to partner organisation with given ID.
-     * Previously done by direct DB edit but this necessitated additional steps of flushing the
-     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
-     * ES index update proceed as usual with this in-code implementation.
-     * <p>Here's an example of how to call this method from the Settings > System Admin API input:
-     * <br><code>reassign-candidates/list-393-to-partner-16</code></p>
-     * @param listId id of saved list containing all the candidates to be reassigned
+     * Reassigns all candidates on saved list or search with given ID to partner organisation with
+     * given ID. Previously done by direct DB edit but this necessitated additional steps of
+     * flushing the Redis cache and updating the corresponding elasticsearch index entry. Cache
+     * evictions and ES index update proceed as usual with this in-code implementation.
+     * <p><strong>Check and double-check param for candidateSource — specifying the wrong one could
+     * be very problematic! Also be certain to 'Update' your saved search (i.e. save the current
+     * version, which is what this method will use).</strong></p>
+     * <p>
+     *   Examples of how to call this method from the Settings > System Admin API input:
+     *      <br><code>reassign-candidates/list-393-to-partner-16</code>
+     *      <br><code>reassign-candidates/search-211-to-partner-16</code>
+     * </p>
+     * @param candidateSource 'list' or 'search', depending on the source you're using
+     * @param sourceId id of source containing candidates to be reassigned
      * @param partnerId id of the partner org to which the candidates will be reassigned
      */
     @Transactional
-    @GetMapping("reassign-candidates/list-{listId}-to-partner-{partnerId}")
+    @GetMapping("reassign-candidates/{candidateSource}-{sourceId}-to-partner-{partnerId}")
     public ResponseEntity<?> reassignCandidates(
-        @PathVariable("listId") int listId,
+        @PathVariable("candidateSource") String candidateSource,
+        @PathVariable("sourceId") int sourceId,
         @PathVariable("partnerId") int partnerId
     ) {
         try {
-            // SavedListService can't be injected into CandidateService due to circular dependency, so
-            // we're obtaining the Saved List from the given ID here.
-            SavedList savedList = savedListService.get(listId);
-            candidateService.reassignSavedListCandidates(savedList, partnerId);
+            Partner newPartner = partnerService.getPartner(partnerId);
+            if (!newPartner.isSourcePartner() || !newPartner.getStatus().equals(Status.active)) {
+                throw new IllegalArgumentException("New partner must be an active source partner.");
+            }
+
+            int pagesProcessed = 0;
+            long totalPages;
+            long totalCandidates;
+
+            if (candidateSource.equals("list")) {
+                // Prepare first page and get metrics for logging and looping
+                SavedList savedList = savedListService.get(sourceId);
+                SavedListGetRequest request = new SavedListGetRequest();
+                Page<Candidate> candidatePage = candidateService.getSavedListCandidates(savedList, request);
+                totalPages = candidatePage.getTotalPages();
+                totalCandidates = candidatePage.getTotalElements();
+
+                while (pagesProcessed < totalPages) {
+                    candidateService.reassignCandidatesOnPage(candidatePage, newPartner);
+                    pagesProcessed++;
+                    request.setPageNumber(pagesProcessed);
+                    candidatePage = candidateService.getSavedListCandidates(savedList, request);
+                    totalPages = candidatePage.getTotalElements(); // In case list changing
+                }
+
+            } else if (candidateSource.equals("search")) {
+                SearchCandidateRequest request = savedSearchService.loadSavedSearch(sourceId);
+                Page<Candidate> candidatePage = savedSearchService.searchCandidates(request);
+                totalPages = candidatePage.getTotalPages();
+                totalCandidates = candidatePage.getTotalElements();
+
+                while (pagesProcessed < totalPages) {
+                    candidateService.reassignCandidatesOnPage(candidatePage, newPartner);
+                    pagesProcessed++;
+                    request.setPageNumber(pagesProcessed);
+                    candidatePage = savedSearchService.searchCandidates(request);
+                    totalPages = candidatePage.getTotalElements(); // In case results changing
+                }
+
+            } else {
+                LogBuilder.builder(log)
+                    .action("Reassign candidates")
+                    .message("Invalid parameter for candidateSource: " + candidateSource)
+                    .logInfo();
+
+                throw new IllegalArgumentException(
+                    "Parameter candidateSource must be \"search\" or \"list\"."
+                );
+            }
 
             LogBuilder.builder(log)
                 .action("Reassign candidates")
-                .message("Reassignment of candidates from list with ID " + listId +
-                    " to partner with ID " + partnerId + " complete.")
+                .message(
+                    "Reassignment of " + totalCandidates + " candidates from " + candidateSource +
+                        " with ID " + sourceId + " to " + newPartner.getName() + " complete."
+                )
                 .logInfo();
 
             return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
@@ -2994,8 +3056,31 @@ public class SystemAdminApi {
         } catch(Exception e) {
             LogBuilder.builder(log)
                 .action("Reassign candidates")
-                .message("Reassignment of candidates from list with ID " + listId +
-                    " to partner with ID " + partnerId + " failed.")
+                .message("Reassignment of candidates from " + candidateSource + " with ID " +
+                    sourceId + " to partner with ID " + partnerId + " failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    @GetMapping("processPotentialDuplicateCandidates")
+    ResponseEntity<?> processPotentialDuplicateCandidates() {
+        try {
+            this.backgroundProcessingService.processPotentialDuplicateCandidates();
+
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Manually triggered")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Manual triggered operation failed")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend
