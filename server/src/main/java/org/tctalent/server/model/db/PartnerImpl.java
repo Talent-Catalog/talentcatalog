@@ -170,4 +170,5 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "redirect_partner_id")
     private PartnerImpl redirectPartner;
+
 }
