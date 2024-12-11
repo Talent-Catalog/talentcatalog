@@ -1,3 +1,4 @@
+
 alter table candidate drop column unhcr_not_reg_notes;
 
 alter table candidate add column unrwa_file integer;

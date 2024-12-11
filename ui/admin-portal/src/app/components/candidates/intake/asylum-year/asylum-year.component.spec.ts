@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule, UntypedFormBuilder, FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {AsylumYearComponent} from './asylum-year.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";

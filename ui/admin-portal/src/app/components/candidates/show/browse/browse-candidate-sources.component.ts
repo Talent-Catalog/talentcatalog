@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -41,11 +41,7 @@ import {
 import {Router} from '@angular/router';
 import {AuthorizationService} from '../../../../services/authorization.service';
 import {User} from '../../../../model/user';
-import {
-  CandidateSource,
-  CandidateSourceType, DtoType,
-  SearchBy
-} from '../../../../model/base';
+import {CandidateSource, CandidateSourceType, DtoType, SearchBy} from '../../../../model/base';
 import {
   ContentUpdateType,
   CopySourceContentsRequest,

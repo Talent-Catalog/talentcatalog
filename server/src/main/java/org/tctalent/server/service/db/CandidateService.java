@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -46,6 +46,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.LoginRequest;
@@ -193,19 +194,19 @@ public interface CandidateService {
      * Initially (step 0) they provide email and accept our conditions - then click Register
      *     </li>
      *     <li>
-     * They then proceed to step 1 (contact )where the email can be changed and they also can 
+     * They then proceed to step 1 (contact )where the email can be changed and they also can
      * supply phone and whatsapp.
-     * When they click Next, the user is actually created using p= branding, or defaulting to TBB 
+     * When they click Next, the user is actually created using p= branding, or defaulting to TBB
      * - in this method.
      *     </li>
      *     <li>
-     * Arriving at step 2 (tell us about yourself - registration personal) they say where they are 
+     * Arriving at step 2 (tell us about yourself - registration personal) they say where they are
      * located.
-     * When they click Next, the user is updated with the supplied info 
-     * (in private method CandidateServiceImpl.checkForChangedPartner). 
+     * When they click Next, the user is updated with the supplied info
+     * (in private method CandidateServiceImpl.checkForChangedPartner).
      * The partner can be changed here if the currently defined partner is the DefaultSourcePartner
-     * and there is a partner set up as auto-assignable from the country where the candidate is 
-     * located. 
+     * and there is a partner set up as auto-assignable from the country where the candidate is
+     * located.
      *     </li>
      * </ul>
      *
@@ -620,14 +621,13 @@ public interface CandidateService {
     Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
 
     /**
-     * Reassigns all candidates on given saved list to partner organisation with given ID.
-     * Previously done by direct DB edit which necessitated additional manual steps of flushing the
-     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
-     * ES index update proceed as usual with this in-code implementation.
-     * @param savedList saved list containing all the candidates to be reassigned
-     * @param partnerId id of the partner org to which the candidates will be reassigned
+     * Extracts to a list the candidates on given page, iterates over list, setting partnerId on
+     * associated user object, saves to DB and updates the corresponding elasticsearch index entry.
+     * @param candidatePage page of candidates
+     * @param newPartner the new partner to which they will be assigned
      */
-    void reassignSavedListCandidates(SavedList savedList, int partnerId);
+    void reassignCandidatesOnPage(Page<Candidate> candidatePage, Partner newPartner)
+        throws IllegalArgumentException;
 
     List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
 

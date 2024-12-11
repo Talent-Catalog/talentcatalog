@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2021 Talent Beyond Boundaries.
- *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see https://www.gnu.org/licenses/.
- */
 
 -- Tc_job_id should be unique
 alter table salesforce_job_opp add constraint uq_tc_job_id unique (tc_job_id);
@@ -45,6 +30,7 @@ alter table saved_list
     drop constraint saved_list_sf_job_opp_id_fkey;
 alter table saved_search
     drop constraint saved_search_sf_job_opp_id_fkey;
+
 
 -- Now remove the old primary key id
 alter table salesforce_job_opp
