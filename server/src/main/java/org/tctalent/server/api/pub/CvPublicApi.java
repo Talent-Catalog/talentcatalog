@@ -101,6 +101,7 @@ public class CvPublicApi {
             return new DtoBuilder()
                     .add("id")
                     .add("candidateNumber")
+                    .add("publicId")
                     .add("country", countryService.selectBuilder())
                     .add("candidateOccupations", candidateOccupationDto())
                     .add("candidateJobExperiences", candidateJobExperienceDto())

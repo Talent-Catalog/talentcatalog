@@ -167,6 +167,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.RootRequestService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -251,7 +252,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final PartnerService partnerService;
     private final LanguageLevelRepository languageLevelRepository;
     private final CandidateExamRepository candidateExamRepository;
-
+    private final PublicIDService publicIDService;
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
@@ -706,6 +707,12 @@ public class CandidateServiceImpl implements CandidateService {
         user = userRepository.save(user);
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
+
+        candidate.setPublicId(publicIDService.generatePublicID());
+
+        //We are eventually going to create the candidate number from its id on the database, but
+        //we will only have that id after it has been added to the database.
+        //For now generate a random candidate number so that it is not null.
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
         /* Set the email consent fields */

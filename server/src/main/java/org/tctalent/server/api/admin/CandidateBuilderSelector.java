@@ -53,6 +53,7 @@ public class CandidateBuilderSelector {
             "id",
             "status",
             "candidateNumber",
+            "publicId",
             "gender",
             "dob",
             "yearOfArrival",
@@ -156,6 +157,7 @@ public class CandidateBuilderSelector {
             .add("id")
             .add("status")
             .add("candidateNumber")
+            .add("publicId")
             .add("gender")
             .add("dob")
             .add("phone")
@@ -260,6 +262,7 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
             .add("id")
             .add("candidateNumber")
+            .add("publicId")
             .add("user", userDto())
             ;
     }
@@ -306,6 +309,7 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
             .add("id")
             .add("candidateNumber")
+            .add("publicId")
             ;
     }
 
