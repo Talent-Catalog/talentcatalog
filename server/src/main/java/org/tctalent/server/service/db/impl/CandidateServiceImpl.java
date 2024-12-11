@@ -3004,15 +3004,11 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    /**
-     * For each candidate on given list, sets partnerId on associated user object, saves to DB and
-     * updates the corresponding elasticsearch index entry.
-     * @param candidateList list of candidates
-     * @param newPartner the new partner to which they will be assigned
-     */
-    public void reassignCandidatesOnList(
-        List<Candidate> candidateList, Partner newPartner
-    ) {
+    public void reassignCandidatesOnPage(
+        Page<Candidate> candidatePage, Partner newPartner
+    ) throws IllegalArgumentException {
+        List<Candidate> candidateList = candidatePage.getContent();
+
         if (newPartner instanceof PartnerImpl) {
             for (Candidate candidate : candidateList) {
                 User candidateUser = candidate.getUser();
@@ -3020,13 +3016,7 @@ public class CandidateServiceImpl implements CandidateService {
                 save(candidate, true);
             }
         } else {
-            LogBuilder.builder(log)
-                .action("Process candidate reassignment")
-                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation "
-                    + "of Partner.")
-                .logError();
-
-            return;
+            throw new IllegalArgumentException("newPartner must be valid implementation of Partner.");
         }
 
         persistenceContextHelper.flushAndClearEntityManager();

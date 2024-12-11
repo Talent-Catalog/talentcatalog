@@ -621,12 +621,13 @@ public interface CandidateService {
     Page<Candidate> fetchCandidatesWithChat(FetchCandidatesWithChatRequest request);
 
     /**
-     * For each candidate on given list, sets partnerId on associated user object, saves to DB and
-     * updates the corresponding elasticsearch index entry.
-     * @param candidateList list of candidates
+     * Extracts to a list the candidates on given page, iterates over list, setting partnerId on
+     * associated user object, saves to DB and updates the corresponding elasticsearch index entry.
+     * @param candidatePage page of candidates
      * @param newPartner the new partner to which they will be assigned
      */
-    void reassignCandidatesOnList(List<Candidate> candidateList, Partner newPartner);
+    void reassignCandidatesOnPage(Page<Candidate> candidatePage, Partner newPartner)
+        throws IllegalArgumentException;
 
     List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId);
 

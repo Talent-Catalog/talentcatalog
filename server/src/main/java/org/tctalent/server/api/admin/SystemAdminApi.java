@@ -102,7 +102,7 @@ import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
-import org.tctalent.server.request.candidate.SavedSearchGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.security.AuthService;
@@ -2968,11 +2968,15 @@ public class SystemAdminApi {
      * given ID. Previously done by direct DB edit but this necessitated additional steps of
      * flushing the Redis cache and updating the corresponding elasticsearch index entry. Cache
      * evictions and ES index update proceed as usual with this in-code implementation.
-     * <p><strong>Check and double-check param for candidateSource — choosing the wrong one could be
-     * very problematic!</strong></p>
-     * <p>Example of how to call this method from the Settings > System Admin API input:
-     * <br><code>reassign-candidates/list-393-to-partner-16</code></p>
-     * @param candidateSource replace with 'list' or 'search', depending on the source you're using
+     * <p><strong>Check and double-check param for candidateSource — specifying the wrong one could
+     * be very problematic! Also be certain to 'Update' your saved search (i.e. save the current
+     * version, which is what this method will use).</strong></p>
+     * <p>
+     *   Examples of how to call this method from the Settings > System Admin API input:
+     *      <br><code>reassign-candidates/list-393-to-partner-16</code>
+     *      <br><code>reassign-candidates/search-211-to-partner-16</code>
+     * </p>
+     * @param candidateSource 'list' or 'search', depending on the source you're using
      * @param sourceId id of source containing candidates to be reassigned
      * @param partnerId id of the partner org to which the candidates will be reassigned
      */
@@ -2985,46 +2989,53 @@ public class SystemAdminApi {
     ) {
         try {
             Partner newPartner = partnerService.getPartner(partnerId);
-            Page<Candidate> candidatePage;
+            if (!newPartner.isSourcePartner() || !newPartner.getStatus().equals(Status.active)) {
+                throw new IllegalArgumentException("New partner must be an active source partner.");
+            }
+
             int pagesProcessed = 0;
             long totalPages;
             long totalCandidates;
 
             if (candidateSource.equals("list")) {
+                // Prepare first page and get metrics for logging and looping
                 SavedList savedList = savedListService.get(sourceId);
                 SavedListGetRequest request = new SavedListGetRequest();
-                candidatePage = candidateService.getSavedListCandidates(savedList, request);
+                Page<Candidate> candidatePage = candidateService.getSavedListCandidates(savedList, request);
                 totalPages = candidatePage.getTotalPages();
                 totalCandidates = candidatePage.getTotalElements();
+
                 while (pagesProcessed < totalPages) {
-                    List<Candidate> candidateList = candidatePage.getContent();
-                    candidateService.reassignCandidatesOnList(candidateList, newPartner);
+                    candidateService.reassignCandidatesOnPage(candidatePage, newPartner);
                     pagesProcessed++;
                     request.setPageNumber(pagesProcessed);
                     candidatePage = candidateService.getSavedListCandidates(savedList, request);
+                    totalPages = candidatePage.getTotalElements(); // In case list changing
                 }
 
             } else if (candidateSource.equals("search")) {
-                SavedSearchGetRequest request = new SavedSearchGetRequest();
-                candidatePage = savedSearchService.searchCandidates(sourceId, request);
+                SearchCandidateRequest request = savedSearchService.loadSavedSearch(sourceId);
+                Page<Candidate> candidatePage = savedSearchService.searchCandidates(request);
                 totalPages = candidatePage.getTotalPages();
                 totalCandidates = candidatePage.getTotalElements();
+
                 while (pagesProcessed < totalPages) {
-                    List<Candidate> candidateList = candidatePage.getContent();
-                    candidateService.reassignCandidatesOnList(candidateList, newPartner);
+                    candidateService.reassignCandidatesOnPage(candidatePage, newPartner);
                     pagesProcessed++;
                     request.setPageNumber(pagesProcessed);
-                    candidatePage = savedSearchService.searchCandidates(sourceId, request);
+                    candidatePage = savedSearchService.searchCandidates(request);
+                    totalPages = candidatePage.getTotalElements(); // In case results changing
                 }
+
             } else {
                 LogBuilder.builder(log)
                     .action("Reassign candidates")
                     .message("Invalid parameter for candidateSource: " + candidateSource)
                     .logInfo();
 
-                // Return 400 Bad Request with an error message
-                return ResponseEntity.badRequest()
-                    .body("Parameter candidateSource must be \"search\" or \"list\".");
+                throw new IllegalArgumentException(
+                    "Parameter candidateSource must be \"search\" or \"list\"."
+                );
             }
 
             LogBuilder.builder(log)
