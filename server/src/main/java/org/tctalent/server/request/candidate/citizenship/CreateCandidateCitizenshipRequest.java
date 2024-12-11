@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,12 @@
 
 package org.tctalent.server.request.candidate.citizenship;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.HasPassport;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { CandidateService } from '../../../../services/candidate.service';
-import { Candidate } from '../../../../model/candidate';
+import {Component, OnInit} from '@angular/core';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {CandidateService} from '../../../../services/candidate.service';
+import {Candidate} from '../../../../model/candidate';
 
 @Component({
   selector: 'app-delete-candidate',

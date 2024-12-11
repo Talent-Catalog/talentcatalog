@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {CandidateNote} from '../../../../model/candidate-note';

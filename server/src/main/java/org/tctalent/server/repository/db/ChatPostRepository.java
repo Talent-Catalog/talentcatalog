@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,7 +36,7 @@ public interface ChatPostRepository extends JpaRepository<ChatPost, Long>,
     @Modifying
     @Query("DELETE FROM ChatPost cp WHERE cp.jobChat.id = :jobChatId")
     void deleteByJobChatId(@Param("jobChatId") Long jobChatId);
-   
+
     Optional<List<ChatPost>> findByJobChatIdOrderByIdAsc(Long chatId);
 
     @Query(

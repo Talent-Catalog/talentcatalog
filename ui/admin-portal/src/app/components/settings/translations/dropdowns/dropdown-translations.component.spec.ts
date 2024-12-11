@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular
 import {LanguageService} from "../../../../services/language.service";
 import {CountryService} from "../../../../services/country.service";
 import {TranslationService} from "../../../../services/translation.service";
-import {UntypedFormArray, UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";

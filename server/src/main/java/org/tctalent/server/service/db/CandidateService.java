@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -194,19 +194,19 @@ public interface CandidateService {
      * Initially (step 0) they provide email and accept our conditions - then click Register
      *     </li>
      *     <li>
-     * They then proceed to step 1 (contact )where the email can be changed and they also can 
+     * They then proceed to step 1 (contact )where the email can be changed and they also can
      * supply phone and whatsapp.
-     * When they click Next, the user is actually created using p= branding, or defaulting to TBB 
+     * When they click Next, the user is actually created using p= branding, or defaulting to TBB
      * - in this method.
      *     </li>
      *     <li>
-     * Arriving at step 2 (tell us about yourself - registration personal) they say where they are 
+     * Arriving at step 2 (tell us about yourself - registration personal) they say where they are
      * located.
-     * When they click Next, the user is updated with the supplied info 
-     * (in private method CandidateServiceImpl.checkForChangedPartner). 
+     * When they click Next, the user is updated with the supplied info
+     * (in private method CandidateServiceImpl.checkForChangedPartner).
      * The partner can be changed here if the currently defined partner is the DefaultSourcePartner
-     * and there is a partner set up as auto-assignable from the country where the candidate is 
-     * located. 
+     * and there is a partner set up as auto-assignable from the country where the candidate is
+     * located.
      *     </li>
      * </ul>
      *

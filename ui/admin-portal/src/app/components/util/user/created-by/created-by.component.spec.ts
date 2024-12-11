@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,6 +21,7 @@ import {UserPipe} from "../user.pipe";
 import {DatePipe} from "@angular/common";
 import {MockUser} from "../../../../MockData/MockUser";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+
 describe('CreatedByComponent', () => {
   let component: CreatedByComponent;
   let fixture: ComponentFixture<CreatedByComponent>;
