@@ -75,20 +75,17 @@ public class DuolingoCouponAdminApi {
 
   // Endpoint to assign an available coupon to a candidate
   @PostMapping("{candidateId}/assign")
-  public Map<String, Object> assignCouponToCandidate(
-      @PathVariable("candidateId") Long candidateId) {
-    Optional<DuolingoCoupon> assignedCoupon = couponService.assignCouponToCandidate(candidateId);
-
-    return assignedCoupon
-        .map(coupon -> {
-          DuolingoCouponResponse response = new DuolingoCouponResponse(coupon.getId(),
-              coupon.getCouponCode(), coupon.getExpirationDate(),
-              coupon.getDateSent(), coupon.getCouponStatus());
-          return Map.of("status", "success", "coupon", response);
-        })
-        .orElse(Map.of("status", "failure", "message", "No available coupons"));
+  public DuolingoCouponResponse assignCouponToCandidate(@PathVariable("candidateId") Long candidateId) {
+    DuolingoCoupon coupon = couponService.assignCouponToCandidate(candidateId);
+    return new DuolingoCouponResponse(
+        coupon.getId(),
+        coupon.getCouponCode(),
+        coupon.getExpirationDate(),
+        coupon.getDateSent(),
+        coupon.getCouponStatus()
+    );
   }
-
+  
   // Endpoint to retrieve all coupons assigned to a candidate
   @GetMapping("{candidateId}")
   public List<DuolingoCouponResponse> getCouponsForCandidate(
@@ -110,12 +107,16 @@ public class DuolingoCouponAdminApi {
 
   // Endpoint to get a single coupon by code
   @GetMapping("find/{couponCode}")
-  public Map<String, Object> getCouponByCode(@PathVariable("couponCode") String couponCode) {
-    Optional<DuolingoCouponResponse> couponResponse = couponService.findByCouponCode(couponCode);
-
-    return couponResponse
-        .map(response -> Map.of("status", "success", "coupon", response))
-        .orElse(Map.of("status", "failure", "message", "Coupon not found"));
+  public DuolingoCouponResponse getCouponByCode(@PathVariable("couponCode") String couponCode) {
+    DuolingoCoupon coupon = couponService.findByCouponCode(couponCode);
+    return new DuolingoCouponResponse(
+        coupon.getId(),
+        coupon.getCouponCode(),
+        coupon.getExpirationDate(),
+        coupon.getDateSent(),
+        coupon.getCouponStatus()
+    );
   }
+
 
 }
