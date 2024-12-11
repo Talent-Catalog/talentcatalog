@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 
-import {browser, by, element, ElementFinder, ExpectedConditions} from 'protractor';
+import {browser, by, element, ExpectedConditions} from 'protractor';
 import {config_test} from "../../src/config-test";
 
 describe('AppComponent', () => {

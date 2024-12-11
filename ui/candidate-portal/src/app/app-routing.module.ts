@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,9 @@ import {RouterModule, Routes} from '@angular/router';
 import {LandingComponent} from './components/landing/landing.component';
 import {HomeComponent} from './components/home/home.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
-import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
+import {
+  ChangePasswordComponent
+} from './components/account/change-password/change-password.component';
 import {RegisterComponent} from './components/register/register.component';
 import {AuthGuard} from './services/auth.guard';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';

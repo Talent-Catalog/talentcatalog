@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.candidate.dependant;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,8 +24,6 @@ import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.Registration;
 import org.tctalent.server.model.db.YesNo;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
