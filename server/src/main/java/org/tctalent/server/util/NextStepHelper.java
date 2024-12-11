@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -48,7 +48,7 @@ public class NextStepHelper {
      *     <li> the audit name to the end of the stripped nextStep.</li>
      *     <li> the audit date to the start of the stripped nextStep. </li>
      * </ul>
-     * This indicates who has made this change to the next step, and when. 
+     * This indicates who has made this change to the next step, and when.
      * This is useful for auditing purposes.
      * <p/>
      * This method performs this logic, returning the processed next step which is what should be
