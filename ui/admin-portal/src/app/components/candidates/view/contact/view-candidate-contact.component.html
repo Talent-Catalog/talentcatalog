@@ -36,8 +36,8 @@
 
       <div *ngIf="candidate.address1 || candidate.city || candidate.state || candidate.country" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label">
-          <i class="fas fa-map-marker"></i>
-          Address
+          <i class="fas fa-map-marker-alt"></i>
+          Address (Origin)
         </label>
 
         <div class="form-control-plaintext address">
@@ -135,6 +135,42 @@
           <span [innerHtml]="candidate.user.email"
                 appHighlightSearch>
           </span>
+        </div>
+      </div>
+
+      <div class="mb-3 col-sm-12 col-md-4"
+           *ngIf="(candidate.relocatedAddress || candidate.relocatedCity
+           || candidate.relocatedState || candidate.relocatedCountry)" >
+        <label class="col-form-label"><i class="fa-solid fa-house-circle-check"></i>Address (Relocated)</label>
+
+        <div class="form-control-plaintext address">
+
+          <span class="field" *ngIf="candidate.relocatedAddress"
+                [innerHtml]="candidate.relocatedAddress"
+                appHighlightSearch>
+          </span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.relocatedCity"
+                [innerHtml]="candidate.relocatedCity"
+                appHighlightSearch>
+          </span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.relocatedState"
+                [innerHtml]="candidate.relocatedState"
+                appHighlightSearch>
+          </span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.relocatedCountry"
+                [innerHtml]="candidate.relocatedCountry?.name"
+                appHighlightSearch>
+          </span>
+
         </div>
       </div>
 

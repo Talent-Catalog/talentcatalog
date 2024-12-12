@@ -765,6 +765,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private OffsetDateTime fullIntakeCompletedDate;
 
     @Nullable
+    private String relocatedAddress;
+
+    @Nullable
+    private String relocatedCity;
+
+    @Nullable
+    private String relocatedState;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "relocated_country_id")
+    private Country relocatedCountry;
+
+    @Nullable
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DuolingoCoupon> coupons = new ArrayList<>();
     public Candidate() {
@@ -2317,5 +2331,43 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                 new CandidateSavedList(this, savedList);
         candidateSavedLists.add(csl);
         savedList.getCandidateSavedLists().add(csl);
+    }
+
+    // RELOCATED FIELDS - keep track of a relocated candidate's location
+
+    @Nullable
+    public String getRelocatedAddress() {
+        return relocatedAddress;
+    }
+
+    public void setRelocatedAddress(@Nullable String relocatedAddress) {
+        this.relocatedAddress = relocatedAddress;
+    }
+
+    @Nullable
+    public String getRelocatedCity() {
+        return relocatedCity;
+    }
+
+    public void setRelocatedCity(@Nullable String relocatedCity) {
+        this.relocatedCity = relocatedCity;
+    }
+
+    @Nullable
+    public String getRelocatedState() {
+        return relocatedState;
+    }
+
+    public void setRelocatedState(@Nullable String relocatedState) {
+        this.relocatedState = relocatedState;
+    }
+
+    @Nullable
+    public Country getRelocatedCountry() {
+        return relocatedCountry;
+    }
+
+    public void setRelocatedCountry(Country relocatedCountry) {
+        this.relocatedCountry = relocatedCountry;
     }
 }

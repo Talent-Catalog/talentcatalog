@@ -236,6 +236,12 @@ email:
   defaultEmail: ${EMAIL_DEFAULTEMAIL:noreply@talentcatalog.net}
   testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:}
 
+  # Duolingo API Configuration:
+  # Contains the API secret and base URL for interacting with the Duolingo English test API.
+duolingo:
+  api:
+    apiSecret: ${DUOLINGO_SECRET:}
+    baseUrl: https://englishtest.duolingo.com/api/partner/2
 
 #Support for in context language translation
 translation:

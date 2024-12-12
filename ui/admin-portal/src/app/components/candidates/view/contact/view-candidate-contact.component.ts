@@ -43,10 +43,11 @@ export class ViewCandidateContactComponent implements OnInit {
   editContactDetails() {
     const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
+      size: "xl"
     });
 
-    editCandidateModal.componentInstance.candidateId = this.candidate.id;
+    editCandidateModal.componentInstance.candidate = this.candidate;
 
     editCandidateModal.result
       .then((candidate) => this.candidateService.updateCandidate(candidate))

@@ -237,6 +237,10 @@ public class CandidateBuilderSelector {
                     .add("candidateEducations", candidateEducationDto())
                     .add("candidateCertifications", candidateCertificationDto())
                     .add("candidateNotes", candidateNoteDto())
+                    .add("relocatedAddress")
+                    .add("relocatedCity")
+                    .add("relocatedState")
+                    .add("relocatedCountry", countryService.selectBuilder())
                 ;
             }
 

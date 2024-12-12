@@ -139,6 +139,14 @@
     </ng-template>
   </ng-container>
 
+  <!-- Duolingo Coupons -->
+  <ng-container ngbNavItem="duolingo-coupons" *ngIf="systemAdminOnly()">
+    <a ngbNavLink>Duolingo Coupons</a>
+    <ng-template ngbNavContent>
+      <app-import-duolingo-coupons [loggedInUser]="loggedInUser">
+      </app-import-duolingo-coupons>
+    </ng-template>
+  </ng-container>
 </nav>
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
 

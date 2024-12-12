@@ -23,7 +23,6 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {Candidate} from "../../../../../model/candidate";
 
 describe('EditCandidateContactComponent', () => {
   let component: EditCandidateContactComponent;
@@ -58,7 +57,7 @@ describe('EditCandidateContactComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EditCandidateContactComponent);
     component = fixture.componentInstance;
-    component.candidateId = 1; // Mock candidate ID
+    component.candidate = new MockCandidate(); // Mock candidate ID
     countryServiceSpy.listCountries.and.returnValue(of([]));
     candidateServiceSpy.get.and.returnValue(of());
     // component.candidateForm = formBuilder.group(new MockCandidate());
@@ -70,29 +69,28 @@ describe('EditCandidateContactComponent', () => {
   });
 
   it('should initialize form with candidate details', () => {
-    // Mock candidate data
-    const mockCandidate: Candidate = new MockCandidate();
-    // Mock the candidate service to return the mock candidate
-    candidateServiceSpy.get.and.returnValue(of(mockCandidate));
-
     // Trigger ngOnInit
     component.ngOnInit();
     // Expect the form controls to be initialized with the candidate details
     expect(component.loading).toBeFalsy();
     expect(component.error).toBeUndefined();
     expect(component.candidateForm.value).toEqual({
-      firstName: mockCandidate.user.firstName,
-      lastName: mockCandidate.user.lastName,
-      gender: mockCandidate.gender,
-      address1: mockCandidate.address1,
-      city: mockCandidate.city,
-      state: mockCandidate.state,
-      countryId: mockCandidate.country.id,
-      yearOfArrival: mockCandidate.yearOfArrival,
-      phone: mockCandidate.phone,
-      whatsapp: mockCandidate.whatsapp,
-      email: mockCandidate.user.email,
-      dob: mockCandidate.dob,
-      nationalityId: mockCandidate.nationality.id,
+      firstName: component.candidate.user.firstName,
+      lastName: component.candidate.user.lastName,
+      gender: component.candidate.gender,
+      address1: component.candidate.address1,
+      city: component.candidate.city,
+      state: component.candidate.state,
+      countryId: component.candidate.country.id,
+      yearOfArrival: component.candidate.yearOfArrival,
+      phone: component.candidate.phone,
+      whatsapp: component.candidate.whatsapp,
+      email: component.candidate.user.email,
+      dob: component.candidate.dob,
+      nationalityId: component.candidate.nationality.id,
+      relocatedAddress: component.candidate.relocatedAddress,
+      relocatedCity: component.candidate.relocatedCity,
+      relocatedState: component.candidate.relocatedState,
+      relocatedCountryId: component.candidate.relocatedCountry.id,
     });  });
 });
