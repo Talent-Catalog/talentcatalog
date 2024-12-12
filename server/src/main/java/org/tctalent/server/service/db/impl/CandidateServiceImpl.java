@@ -2614,6 +2614,15 @@ public class CandidateServiceImpl implements CandidateService {
             }
             computeIeltsScore(candidate);
         }
+        if (data.getEnglishAssessmentScoreDet() != null) {
+            // If the EnglishAssessmentScoreDet is 0 (used here as a numerical equivalent to
+            // 'NoResponse', enabling previous answers to be deleted), set to null in database.
+            if (data.getEnglishAssessmentScoreDet() == 0) {
+                candidate.setEnglishAssessmentScoreDet(null);
+            } else {
+                candidate.setEnglishAssessmentScoreDet(data.getEnglishAssessmentScoreDet());
+            }
+        }
         if (data.getFrenchAssessment() != null) {
             candidate.setFrenchAssessment(data.getFrenchAssessment());
         }
