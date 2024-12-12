@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,10 @@
 
 package org.tctalent.server.api.admin;
 
-import java.util.List;
-import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +33,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.request.helplink.SearchHelpLinkRequest;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.HelpLinkService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -42,6 +43,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class HelpLinkAdminApi implements
         ITableApi<SearchHelpLinkRequest, UpdateHelpLinkRequest, UpdateHelpLinkRequest> {
 
+    private final CountryService countryService;
     private final HelpLinkService helpLinkService;
 
     @Override
@@ -89,19 +91,14 @@ public class HelpLinkAdminApi implements
             .add("id")
             .add("caseStage")
             .add("focus")
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             .add("jobStage")
             .add("label")
             .add("link")
             .add("nextStepInfo", nextStepInfoDto())
             ;
     }
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("name")
-            ;
-    }
+
     private DtoBuilder nextStepInfoDto() {
         return new DtoBuilder()
             .add("nextStepDays")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,9 +18,15 @@ import {CandidateService} from "../../../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {ViewCandidateSurveyComponent} from "../../survey/view-candidate-survey.component";
-import {ViewCandidateMediaWillingnessComponent} from "../../media/view-candidate-media-willingness.component";
-import {ViewCandidateSpecialLinksComponent} from "../../special-links/view-candidate-special-links.component";
-import {ViewCandidateAttachmentComponent} from "../../attachment/view-candidate-attachment.component";
+import {
+  ViewCandidateMediaWillingnessComponent
+} from "../../media/view-candidate-media-willingness.component";
+import {
+  ViewCandidateSpecialLinksComponent
+} from "../../special-links/view-candidate-special-links.component";
+import {
+  ViewCandidateAttachmentComponent
+} from "../../attachment/view-candidate-attachment.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('CandidateAdditionalInfoTabComponent', () => {

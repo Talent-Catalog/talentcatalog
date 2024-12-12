@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -30,6 +30,8 @@ import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.dto.DtoPropertyFilter;
@@ -42,6 +44,8 @@ import org.tctalent.server.util.dto.DtoPropertyFilter;
  */
 public class CandidateBuilderSelector {
     private final CandidateOpportunityService candidateOpportunityService;
+    private final CountryService countryService;
+    private final OccupationService occupationService;
     private final UserService userService;
 
     private final Set<String> candidatePublicProperties =
@@ -91,8 +95,11 @@ public class CandidateBuilderSelector {
         ));
 
     public CandidateBuilderSelector(
-        CandidateOpportunityService candidateOpportunityService, UserService userService) {
+        CandidateOpportunityService candidateOpportunityService, CountryService countryService,
+        OccupationService occupationService, UserService userService) {
         this.candidateOpportunityService = candidateOpportunityService;
+        this.countryService = countryService;
+        this.occupationService = occupationService;
         this.userService = userService;
     }
 
@@ -189,8 +196,8 @@ public class CandidateBuilderSelector {
             .add("regoUtmTerm")
             .add("maxEducationLevel", educationLevelDto())
             .add("surveyType", surveyTypeDto())
-            .add("country", countryDto())
-            .add("nationality", countryDto())
+            .add("country", countryService.selectBuilder())
+            .add("nationality", countryService.selectBuilder())
             .add("user", userDto(userPropertyFilter))
             .add("candidateReviewStatusItems", reviewDto())
             .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter, type))
@@ -218,8 +225,8 @@ public class CandidateBuilderSelector {
                     .add("additionalInfo")
                 ;
             }
-            
-            // Extended DTO used for candidate profile/search card information
+
+            // Extended DTO used for candidate search card information
             if (DtoType.EXTENDED.equals(type)) {
                 builder
                     .add("candidateLanguages", candidateLanguageDto())
@@ -271,13 +278,6 @@ public class CandidateBuilderSelector {
             ;
     }
 
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
     private DtoBuilder candidateOpportunityDto(DtoType type) {
         final DtoBuilder builder = new DtoBuilder()
             .add("id")
@@ -318,7 +318,7 @@ public class CandidateBuilderSelector {
             .add("id")
             .add("name")
             .add("submissionList", savedListDto())
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             ;
     }
 
@@ -434,33 +434,26 @@ public class CandidateBuilderSelector {
             .add("level")
             ;
     }
-    
+
     private DtoBuilder candidateDestinationDto() {
         return new DtoBuilder()
             .add("id")
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             .add("interest")
             .add("notes")
             ;
     }
-    
+
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
             .add("id")
             .add("migrationOccupation")
-            .add("occupation", occupationDto())
+            .add("occupation", occupationService.selectBuilder())
             .add("yearsExperience")
             .add("createdBy", userDto())
             .add("createdDate")
             .add("updatedBy", userDto())
             .add("updatedDate")
-            ;
-    }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("name")
             ;
     }
 
@@ -474,7 +467,7 @@ public class CandidateBuilderSelector {
             .add("fullTime")
             .add("paid")
             .add("description")
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             .add("candidateOccupation", candidateOccupationDto())
             ;
     }
@@ -491,7 +484,7 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
             .add("id")
             .add("educationType")
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             .add("educationMajor", majorDto())
             .add("lengthOfCourseYears")
             .add("institution")

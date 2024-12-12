@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -3016,36 +3016,11 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Override
-    public void reassignSavedListCandidates(SavedList savedList, int partnerId) {
-        Partner newPartner = partnerService.getPartner(partnerId);
+    public void reassignCandidatesOnPage(
+        Page<Candidate> candidatePage, Partner newPartner
+    ) throws IllegalArgumentException {
+        List<Candidate> candidateList = candidatePage.getContent();
 
-        SavedListGetRequest request = new SavedListGetRequest();
-
-        Page<Candidate> candidatePage = getSavedListCandidates(savedList, request);
-
-        int totalPagesToProcess = candidatePage.getTotalPages();
-        int pagesProcessed = 0;
-
-        while (pagesProcessed < totalPagesToProcess) {
-            request.setPageNumber(pagesProcessed);
-            candidatePage = getSavedListCandidates(savedList, request);
-            List<Candidate> candidates = candidatePage.getContent();
-            processCandidateReassignment(candidates, newPartner);
-            persistenceContextHelper.flushAndClearEntityManager();
-            pagesProcessed++;
-        }
-    }
-
-    /**
-     * For each candidate on given list, sets partnerId on associated user object, saves to DB and
-     * updates the corresponding elasticsearch index entry.
-     * @param candidateList list of candidates
-     * @param newPartner the new partner to which they will be assigned
-     */
-    private void processCandidateReassignment(
-        List<Candidate> candidateList, Partner newPartner
-    ) {
         if (newPartner instanceof PartnerImpl) {
             for (Candidate candidate : candidateList) {
                 User candidateUser = candidate.getUser();
@@ -3053,11 +3028,10 @@ public class CandidateServiceImpl implements CandidateService {
                 save(candidate, true);
             }
         } else {
-            LogBuilder.builder(log)
-                .action("Process candidate reassignment")
-                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation of Partner.")
-                .logError();
+            throw new IllegalArgumentException("newPartner must be valid implementation of Partner.");
         }
+
+        persistenceContextHelper.flushAndClearEntityManager();
     }
 
     @Transactional

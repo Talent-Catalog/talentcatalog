@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,11 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -38,6 +38,8 @@ import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -45,10 +47,15 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class CandidatePortalApi {
 
     private final CandidateService candidateService;
+    private final CountryService countryService;
+    private final OccupationService occupationService;
 
     @Autowired
-    public CandidatePortalApi(CandidateService candidateService) {
+    public CandidatePortalApi(OccupationService occupationService, CandidateService candidateService,
+        CountryService countryService) {
+        this.occupationService = occupationService;
         this.candidateService = candidateService;
+        this.countryService = countryService;
     }
 
     @GetMapping("contact")
@@ -235,11 +242,11 @@ public class CandidatePortalApi {
                 .add("candidateNumber")
                 .add("gender")
                 .add("dob")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("city")
                 .add("state")
                 .add("yearOfArrival")
-                .add("nationality", countryDto())
+                .add("nationality", countryService.selectBuilder())
                 .add("candidateCitizenships", candidateCitizenshipDto())
                 .add("externalId")
                 .add("unhcrRegistered")
@@ -250,7 +257,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
-                .add("nationality", countryDto())
+                .add("nationality", countryService.selectBuilder())
                 ;
     }
 
@@ -269,7 +276,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
                 .add("migrationOccupation")
                 ;
@@ -301,19 +308,12 @@ public class CandidatePortalApi {
                 .add("courseName")
                 .add("yearCompleted")
                 .add("incomplete")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("educationMajor", majorDto())
                 ;
     }
 
     private DtoBuilder majorDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
@@ -366,7 +366,7 @@ public class CandidatePortalApi {
     private DtoBuilder jobExperienceDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("candidateOccupation", candidateOccupationDto())
                 .add("companyName")
                 .add("role")
@@ -375,13 +375,6 @@ public class CandidatePortalApi {
                 .add("fullTime")
                 .add("paid")
                 .add("description")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
                 ;
     }
 
@@ -410,7 +403,7 @@ public class CandidatePortalApi {
     private DtoBuilder destinationsDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("interest")
                 .add("notes")
                 ;
@@ -470,8 +463,8 @@ public class CandidatePortalApi {
                 .add("city")
                 .add("state")
                 .add("yearOfArrival")
-                .add("nationality", countryDto())
-                .add("country", countryDto())
+                .add("nationality", countryService.selectBuilder())
+                .add("country", countryService.selectBuilder())
                 .add("externalId")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")

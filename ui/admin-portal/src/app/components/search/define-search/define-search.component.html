@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -111,9 +111,12 @@
               <!-- providing 'placement' as an empty string makes the tooltip appear over the
               element in a suitable direction for the viewport -->
               <label class="form-label" for="simpleQueryString">Keyword Search</label>
-              <button class="tool-tip-button" [ngbTooltip]="keywordSearchTip" placement=""
-                      triggers="click" tooltipClass="search-tips">
-                <i class="fa-regular fa-circle-question fa-xs"></i>
+              <button class="tool-tip-button"
+                      [ngbTooltip]="keywordSearchTip"
+                      placement="bottom top"
+                      triggers="click"
+                      tooltipClass="search-tips keyword"
+              ><i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <input id="simpleQueryString" type="text" class="form-control"
                      placeholder="E.g. 'welder diesel+mechanic'" aria-label="Keyword Search"
@@ -122,7 +125,15 @@
 
             <!-- STATUS -->
             <div class="mb-3 col-md-3">
-              <label class="form-label">Status</label><button class="tool-tip-button" ngbTooltip="If nothing is specified here, the default is to exclude inactive statuses - e.g. 'draft', 'deleted' or 'ineligible'." placement="" triggers="click" tooltipClass="search-tips"><i class="fa-regular fa-circle-question fa-xs"></i></button>
+              <label class="form-label">Status</label>
+              <button class="tool-tip-button"
+                      ngbTooltip="If nothing is specified here, the default is to exclude inactive
+                      statuses - e.g. 'draft', 'deleted' or 'ineligible'."
+                      triggers="click"
+                      tooltipClass="search-tips"
+                      placement="bottom top"
+              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              </button>
               <ng-select
                 id="statuses"
                 [items]="candidateStatusOptions"
@@ -473,21 +484,24 @@
             <!-- REFERRER -->
             <div class="col-md-4">
               <label class="form-label" for="referrer">Referrer</label>
-              <button class="tool-tip-button" [ngbTooltip]="referrerTooltip"
-                      placement="" triggers="click" tooltipClass="search-tips">
-                <i class="fa-regular fa-circle-question fa-xs"></i>
+              <button class="tool-tip-button"
+                      [ngbTooltip]="referrerTooltip"
+                      triggers="click"
+                      tooltipClass="search-tips"
+                      placement="bottom top"
+              ><i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
+              <ng-template #referrerTooltip>
+                <span class="search-tips-content">
+                  Search ignores upper or lower case so don't worry about case.
+                  Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
+                  referrers beginning with <code>ab</code>. Or <code>%irc%</code> will find any referrers
+                  with <code>irc</code> appearing anywhere in the name.
+                </span>
+              </ng-template>
               <input id="referrer" class="form-control"
                      name="referrer" [formControlName]="'regoReferrerParam'" appLowercase>
             </div>
-            <ng-template #referrerTooltip>
-              <span class="search-tips-content">
-                Search ignores upper or lower case so don't worry about case.
-                Also <code>%</code> can be used as a wild card. So <code>ab%</code> will find any
-                referrers beginning with <code>ab</code>. Or <code>%irc%</code> will find any referrers
-                with <code>irc</code> appearing anywhere in the name.
-              </span>
-            </ng-template>
 
             <!-- EXCLUSION LIST -->
             <!-- Don't display component until loading has completed - including any existing
@@ -497,8 +511,10 @@
               <button class="tool-tip-button"
                       ngbTooltip="Select from lists you created, global lists (e.g. job lists) or
                       lists that you have starred."
-                      placement="" triggers="click" tooltipClass="search-tips">
-                <i class="fa-regular fa-circle-question fa-xs"></i>
+                      placement="bottom top"
+                      triggers="click"
+                      tooltipClass="search-tips"
+              ><i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <app-find-candidate-source id="exclusion"
                 [single] = true
@@ -513,7 +529,14 @@
 
             <!-- PARTNERS  -->
             <div class="col-md-4">
-              <label class="form-label">Partners</label><button class="tool-tip-button" ngbTooltip="{{getPartnerDefaultMessage()}}" placement="" triggers="click" tooltipClass="search-tips"><i class="fa-regular fa-circle-question fa-xs"></i></button>
+              <label class="form-label">Partners</label>
+              <button class="tool-tip-button"
+                      ngbTooltip="{{getPartnerDefaultMessage()}}"
+                      placement="bottom top"
+                      triggers="click"
+                      tooltipClass="search-tips"
+              ><i class="fa-regular fa-circle-question fa-xs"></i>
+              </button>
               <ng-select
                 id="partner"
                 [items]="partners"
@@ -596,8 +619,10 @@
               </div>
               <button class="tool-tip-button"
                       [ngbTooltip]="helpListAnyTooltip"
-                      placement="" triggers="click" tooltipClass="search-tips">
-                <i class="fa-regular fa-circle-question fa-xs"></i>
+                      placement="bottom top"
+                      triggers="click"
+                      tooltipClass="search-tips"
+              ><i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <ng-template #helpListAnyTooltip>
                 <span class="search-tips-content">
@@ -637,8 +662,10 @@
               </div>
               <button class="tool-tip-button"
                       [ngbTooltip]="helpListAllTooltip"
-                      placement="" triggers="click" tooltipClass="search-tips">
-                <i class="fa-regular fa-circle-question fa-xs"></i>
+                      placement="bottom top"
+                      triggers="click"
+                      tooltipClass="search-tips"
+              ><i class="fa-regular fa-circle-question fa-xs"></i>
               </button>
               <ng-template #helpListAllTooltip>
                 <span class="search-tips-content">

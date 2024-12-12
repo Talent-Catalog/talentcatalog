@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
-import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.Map;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -27,6 +27,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tctalent.server.service.db.CandidateVisaJobCheckService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -35,10 +36,12 @@ public class CandidateVisaJobCheckAdminApi
         implements IJoinedTableApi<CreateCandidateVisaJobCheckRequest,
         CreateCandidateVisaJobCheckRequest, CreateCandidateVisaJobCheckRequest> {
     private final CandidateVisaJobCheckService candidateVisaJobCheckService;
+    private final OccupationService occupationService;
 
-
-    public CandidateVisaJobCheckAdminApi(CandidateVisaJobCheckService candidateVisaJobCheckService) {
+    public CandidateVisaJobCheckAdminApi(CandidateVisaJobCheckService candidateVisaJobCheckService,
+        OccupationService occupationService) {
         this.candidateVisaJobCheckService = candidateVisaJobCheckService;
+        this.occupationService = occupationService;
     }
 
     /**
@@ -105,7 +108,7 @@ public class CandidateVisaJobCheckAdminApi
                 .add("putForward")
                 .add("tbbEligibility")
                 .add("notes")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("occupationNotes")
                 .add("qualificationNotes")
                 .add("relevantWorkExp")
@@ -136,12 +139,6 @@ public class CandidateVisaJobCheckAdminApi
                 .add("id")
                 .add("location")
                 .add("locationDetails")
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
                 ;
     }
 

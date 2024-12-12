@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -60,6 +60,7 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.JobService;
 
 /**
@@ -96,6 +97,7 @@ class JobAdminApiTest extends ApiTestBase {
                     1
             );
 
+    @MockBean CountryService countryService;
     @MockBean JobService jobService;
 
     @Autowired MockMvc mockMvc;
@@ -517,7 +519,7 @@ class JobAdminApiTest extends ApiTestBase {
 
         verify(jobService).updateJoiLink(anyLong(), any(UpdateLinkRequest.class));
     }
-    
+
     @Test
     @DisplayName("update interview guidance link succeeds")
     void updateInterviewGuidanceLinkSucceeds() throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -606,8 +606,13 @@ public class JobServiceImpl implements JobService {
 
         final JobOpportunityStage stage = job.getStage();
         if (stage.compareTo(JobOpportunityStage.candidateSearch) < 0 )  {
-            //Current stage is before CandidateSearch so update it to CandidateSearch here
-            job.setStage(JobOpportunityStage.candidateSearch);
+            //Current stage is before CandidateSearch so update it
+
+            //New stage will depend on skipCandidateSearch
+            JobOpportunityStage nextStage =
+                job.isSkipCandidateSearch() ? JobOpportunityStage.visaEligibility :
+                    JobOpportunityStage.candidateSearch;
+            job.setStage(nextStage);
 
             //Update Salesforce stage to match - setting Next Step and Due date
             final LocalDate submissionDueDate = job.getSubmissionDueDate();
@@ -806,6 +811,11 @@ public class JobServiceImpl implements JobService {
         final Boolean evergreen = request.getEvergreen();
         if (evergreen != null) {
             job.setEvergreen(evergreen);
+        }
+
+        final Boolean skipCandidateSearch = request.getSkipCandidateSearch();
+        if (skipCandidateSearch != null) {
+            job.setSkipCandidateSearch(skipCandidateSearch);
         }
 
         final String nextStep = request.getNextStep();

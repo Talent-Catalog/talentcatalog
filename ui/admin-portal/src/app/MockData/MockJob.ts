@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,6 +22,7 @@ import {MockSavedSearch} from "./MockSavedSearch";
 
 export const MockJob: Job = {
   evergreen: false,
+  skipCandidateSearch: false,
   closed: false,
   name: "XYZ",
   submissionList: {

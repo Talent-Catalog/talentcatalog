@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,22 +16,26 @@
 
 package org.tctalent.server.api.admin;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.service.db.DuolingoCouponService;
-import org.tctalent.server.logging.LogBuilder;
 
 @RestController
 @RequestMapping("/api/admin/coupon")
@@ -71,20 +75,17 @@ public class DuolingoCouponAdminApi {
 
   // Endpoint to assign an available coupon to a candidate
   @PostMapping("{candidateId}/assign")
-  public Map<String, Object> assignCouponToCandidate(
-      @PathVariable("candidateId") Long candidateId) {
-    Optional<DuolingoCoupon> assignedCoupon = couponService.assignCouponToCandidate(candidateId);
-
-    return assignedCoupon
-        .map(coupon -> {
-          DuolingoCouponResponse response = new DuolingoCouponResponse(coupon.getId(),
-              coupon.getCouponCode(), coupon.getExpirationDate(),
-              coupon.getDateSent(), coupon.getCouponStatus());
-          return Map.of("status", "success", "coupon", response);
-        })
-        .orElse(Map.of("status", "failure", "message", "No available coupons"));
+  public DuolingoCouponResponse assignCouponToCandidate(@PathVariable("candidateId") Long candidateId) {
+    DuolingoCoupon coupon = couponService.assignCouponToCandidate(candidateId);
+    return new DuolingoCouponResponse(
+        coupon.getId(),
+        coupon.getCouponCode(),
+        coupon.getExpirationDate(),
+        coupon.getDateSent(),
+        coupon.getCouponStatus()
+    );
   }
-
+  
   // Endpoint to retrieve all coupons assigned to a candidate
   @GetMapping("{candidateId}")
   public List<DuolingoCouponResponse> getCouponsForCandidate(
@@ -106,12 +107,16 @@ public class DuolingoCouponAdminApi {
 
   // Endpoint to get a single coupon by code
   @GetMapping("find/{couponCode}")
-  public Map<String, Object> getCouponByCode(@PathVariable("couponCode") String couponCode) {
-    Optional<DuolingoCouponResponse> couponResponse = couponService.findByCouponCode(couponCode);
-
-    return couponResponse
-        .map(response -> Map.of("status", "success", "coupon", response))
-        .orElse(Map.of("status", "failure", "message", "Coupon not found"));
+  public DuolingoCouponResponse getCouponByCode(@PathVariable("couponCode") String couponCode) {
+    DuolingoCoupon coupon = couponService.findByCouponCode(couponCode);
+    return new DuolingoCouponResponse(
+        coupon.getId(),
+        coupon.getCouponCode(),
+        coupon.getExpirationDate(),
+        coupon.getDateSent(),
+        coupon.getCouponStatus()
+    );
   }
+
 
 }

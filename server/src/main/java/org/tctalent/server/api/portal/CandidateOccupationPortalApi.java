@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,27 +16,36 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
 import org.tctalent.server.service.db.CandidateOccupationService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/portal/candidate-occupation")
 public class CandidateOccupationPortalApi {
 
+    private final OccupationService occupationService;
     private final CandidateOccupationService candidateOccupationService;
 
     @Autowired
-    public CandidateOccupationPortalApi(CandidateOccupationService candidateOccupationService) {
+    public CandidateOccupationPortalApi(OccupationService occupationService,
+        CandidateOccupationService candidateOccupationService) {
+        this.occupationService = occupationService;
         this.candidateOccupationService = candidateOccupationService;
     }
 
@@ -69,16 +78,9 @@ public class CandidateOccupationPortalApi {
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
                 .add("migrationOccupation")
-                ;
-    }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
                 ;
     }
 
