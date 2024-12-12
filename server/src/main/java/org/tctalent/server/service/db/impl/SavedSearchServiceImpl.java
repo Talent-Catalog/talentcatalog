@@ -126,6 +126,7 @@ import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.EducationMajorService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -150,6 +151,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final PartnerService partnerService;
     private final ElasticsearchService esService;
     private final EmailHelper emailHelper;
+    private final PublicIDService publicIDService;
     private final UserRepository userRepository;
     private final UserService userService;
     private final SalesforceJobOppService salesforceJobOppService;
@@ -556,6 +558,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private SavedSearch createSavedSearchBase(
         UpdateSavedSearchRequest request, @Nullable SavedSearch template) {
         SavedSearch savedSearch = convertToSavedSearch(template, request);
+
+        //Set PublicId
+        savedSearch.setPublicId(publicIDService.generatePublicID());
+
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
