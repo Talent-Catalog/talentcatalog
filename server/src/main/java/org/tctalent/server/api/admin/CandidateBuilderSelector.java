@@ -240,7 +240,7 @@ public class CandidateBuilderSelector {
                     .add("relocatedAddress")
                     .add("relocatedCity")
                     .add("relocatedState")
-                    .add("relocatedCountry", countryDto())
+                    .add("relocatedCountry", countryService.selectBuilder())
                 ;
             }
 

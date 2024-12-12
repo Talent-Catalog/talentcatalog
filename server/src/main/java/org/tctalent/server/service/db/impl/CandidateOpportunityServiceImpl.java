@@ -651,6 +651,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             if (newStage != null) {
                 // Stage is changing
                 if (!newStage.equals(opp.getStage())) {
+                    // todo if new stage is relocated then set relocated address
                     // If stage is changing to CLOSED (e.g. removed from submission list) publish posts
                     if (newStage.isClosed()) {
                         publishRemovedFromSubmissionListPosts(opp, newStage);
