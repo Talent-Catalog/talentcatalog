@@ -651,7 +651,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             if (newStage != null) {
                 // Stage is changing
                 if (!newStage.equals(opp.getStage())) {
-                    // todo if new stage is relocated then set relocated address
                     // If stage is changing to CLOSED (e.g. removed from submission list) publish posts
                     if (newStage.isClosed()) {
                         publishRemovedFromSubmissionListPosts(opp, newStage);
@@ -661,6 +660,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     } else {
                         // If non closing stage change, publish posts
                         publishStageChangePosts(opp, newStage);
+                    }
+
+                    // If new stage is relocated then set relocated address
+                    if (newStage.equals(CandidateOpportunityStage.relocated)) {
+                        updateCandidateRelocatedCountry(opp);
                     }
                 }
 
@@ -982,6 +986,18 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 autoPostAcceptedJobOffer, jcspChat, userService.getSystemAdminUser());
         // Publish chat post
         chatPostService.publishChatPost(jcspChatPostAccepted);
+    }
+
+    /**
+     * If the job opportunity has a country associated, set that as the relocated country for the candidate.
+     * @param opp Candidate Opportunity which we get the job opp and the candidate from
+     */
+    private void updateCandidateRelocatedCountry(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        SalesforceJobOpp jobOpp = opp.getJobOpp();
+        if (jobOpp.getCountry() != null) {
+            candidate.setRelocatedCountry(jobOpp.getCountry());
+        }
     }
 
     /**
