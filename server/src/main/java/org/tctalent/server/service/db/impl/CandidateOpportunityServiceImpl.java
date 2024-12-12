@@ -997,6 +997,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         SalesforceJobOpp jobOpp = opp.getJobOpp();
         if (jobOpp.getCountry() != null) {
             candidate.setRelocatedCountry(jobOpp.getCountry());
+            this.candidateService.save(candidate, false);
         }
     }
 
