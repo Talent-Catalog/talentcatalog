@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@ import {DefineSearchComponent} from "./define-search.component";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {
   NgbDatepickerModule,

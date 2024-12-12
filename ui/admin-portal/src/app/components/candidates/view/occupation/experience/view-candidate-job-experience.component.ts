@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,14 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../../model/candidate';
 import {CandidateOccupation} from '../../../../../model/candidate-occupation';
 import {CandidateJobExperience} from '../../../../../model/candidate-job-experience';
-import {CandidateJobExperienceService} from '../../../../../services/candidate-job-experience.service';
+import {
+  CandidateJobExperienceService
+} from '../../../../../services/candidate-job-experience.service';
 import {EditCandidateJobExperienceComponent} from './edit/edit-candidate-job-experience.component';
-import {CreateCandidateJobExperienceComponent} from './create/create-candidate-job-experience.component';
+import {
+  CreateCandidateJobExperienceComponent
+} from './create/create-candidate-job-experience.component';
 import {UntypedFormGroup} from '@angular/forms';
 import {SearchResults} from '../../../../../model/search-results';
 import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupation.component';

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -122,6 +122,12 @@ export interface Candidate extends HasId {
   candidateDestinations?: CandidateDestination[];
   candidateSkills?: CandidateSkill[];
   candidateNotes?: CandidateNote[];
+
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
 
 }
 

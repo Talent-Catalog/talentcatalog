@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
@@ -22,7 +38,6 @@ import {enumOptions} from "../../../../util/enum";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
 import {User} from "../../../../model/user";
 import {UserService} from "../../../../services/user.service";
-import {AuthorizationService} from "../../../../services/authorization.service";
 
 /* MODEL - Cross field validation in a form.
    See crossFieldValidator function.
@@ -101,6 +116,7 @@ export const crossFieldValidator: ValidatorFn = (
 export class CreateUpdatePartnerComponent extends FormComponentBase implements OnInit {
 
   countries: Country[];
+  partners: Partner[];
   error = null;
   form: UntypedFormGroup;
   partner: Partner;
@@ -111,7 +127,6 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
 
   constructor(fb: UntypedFormBuilder,
               private activeModal: NgbActiveModal,
-              private authorizationService: AuthorizationService,
               private countryService: CountryService,
               private partnerService: PartnerService,
               private userService: UserService,
@@ -151,11 +166,23 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       //the user).
       status: [this.partner?.status, Validators.required],
       websiteUrl: [this.partner?.websiteUrl],
+      redirectPartnerId: [this.partner?.redirectPartner?.id],
     },{validators: crossFieldValidator});
 
     this.countryService.listCountriesRestricted().subscribe(
       (response) => {
         this.countries = response;
+        this.working = false
+      },
+      (error) => {
+        this.error = error;
+        this.working = false
+      }
+    );
+
+    this.partnerService.listPartners().subscribe(
+      (response) => {
+        this.partners = response;
         this.working = false
       },
       (error) => {
@@ -224,7 +251,7 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       status: this.form.value.status,
 
       websiteUrl: this.form.value.websiteUrl,
-
+      redirectPartnerId: this.form.value.redirectPartnerId
     };
 
     if (this.create) {

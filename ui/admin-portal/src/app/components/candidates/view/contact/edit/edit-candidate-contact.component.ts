@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -31,7 +31,7 @@ import {EMAIL_REGEX} from "../../../../../model/base";
 })
 export class EditCandidateContactComponent implements OnInit {
 
-  candidateId: number;
+  candidate: Candidate;
 
 
   candidateForm: UntypedFormGroup;
@@ -53,8 +53,6 @@ export class EditCandidateContactComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
-
     this.years = generateYearArray(1950, true);
 
     /*load the countries */
@@ -64,7 +62,6 @@ export class EditCandidateContactComponent implements OnInit {
       },
       (error) => {
         this.error = error;
-        this.loading = false;
       }
     );
 
@@ -75,33 +72,34 @@ export class EditCandidateContactComponent implements OnInit {
       },
       (error) => {
         this.error = error;
-        this.loading = false;
       }
     );
 
-    this.candidateService.get(this.candidateId).subscribe(candidate => {
-      this.candidateForm = this.fb.group({
-        firstName: [candidate.user.firstName],
-        lastName: [candidate.user.lastName],
-        gender: [candidate.gender],
-        address1: [candidate.address1],
-        city: [candidate.city],
-        state: [candidate.state],
-        countryId: [candidate.country ? candidate.country.id : null, Validators.required],
-        yearOfArrival: [candidate.yearOfArrival],
-        phone: [candidate.phone],
-        whatsapp: [candidate.whatsapp],
-        email: [candidate.user.email],
-        dob: [candidate.dob],
-        nationalityId: [candidate.nationality ? candidate.nationality.id : null, Validators.required],
-      });
-      this.loading = false;
+
+    this.candidateForm = this.fb.group({
+      firstName: [this.candidate.user.firstName],
+      lastName: [this.candidate.user.lastName],
+      gender: [this.candidate.gender],
+      address1: [this.candidate.address1],
+      city: [this.candidate.city],
+      state: [this.candidate.state],
+      countryId: [this.candidate.country ? this.candidate.country.id : null, Validators.required],
+      yearOfArrival: [this.candidate.yearOfArrival],
+      phone: [this.candidate.phone],
+      whatsapp: [this.candidate.whatsapp],
+      email: [this.candidate.user.email],
+      dob: [this.candidate.dob],
+      nationalityId: [this.candidate.nationality ? this.candidate.nationality.id : null, Validators.required],
+      relocatedAddress: [this.candidate.relocatedAddress],
+      relocatedCity: [this.candidate.relocatedCity],
+      relocatedState: [this.candidate.relocatedState],
+      relocatedCountryId: [this.candidate.relocatedCountry ? this.candidate.relocatedCountry.id : null],
     });
   }
 
   onSave() {
     this.saving = true;
-    this.candidateService.update(this.candidateId, this.candidateForm.value).subscribe(
+    this.candidateService.update(this.candidate.id, this.candidateForm.value).subscribe(
       (candidate) => {
         this.closeModal(candidate);
         this.saving = false;

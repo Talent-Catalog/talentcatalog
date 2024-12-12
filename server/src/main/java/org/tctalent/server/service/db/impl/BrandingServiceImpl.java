@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,13 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -27,14 +30,13 @@ import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 
-import jakarta.validation.constraints.NotNull;
-
 /**
  * Implements BrandingService
  *
  * @author John Cameron
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class BrandingServiceImpl implements BrandingService {
     private final PartnerService partnerService;
@@ -60,6 +62,22 @@ public class BrandingServiceImpl implements BrandingService {
             //Not logged in - try and determine partner
             //Look up any partnerAbbreviation
             partner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+        }
+
+        // Check for and replace partner if it has a redirectPartner assigned — typically because
+        // it is no longer active and another org has assumed responsibility for candidates in its
+        // jurisdiction, in which case we want to serve the new partner's branding info.
+        if (partner != null) {
+            while (partner.getRedirectPartner() != null) {
+                LogBuilder.builder(log) // Log the reassignment
+                    .action("Get Branding Info")
+                    .message(partner.getName() + " has a redirectPartner assigned - serving "
+                        + "branding info from " + partner.getRedirectPartner().getName()
+                        + " instead.")
+                    .logInfo();
+
+                partner = partner.getRedirectPartner();
+            }
         }
 
         if (partner == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,9 @@
 import {ViewCandidateJobExperienceComponent} from "./view-candidate-job-experience.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateJobExperienceService} from "../../../../../services/candidate-job-experience.service";
+import {
+  CandidateJobExperienceService
+} from "../../../../../services/candidate-job-experience.service";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";

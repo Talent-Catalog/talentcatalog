@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -43,10 +43,11 @@ export class ViewCandidateContactComponent implements OnInit {
   editContactDetails() {
     const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
+      size: "xl"
     });
 
-    editCandidateModal.componentInstance.candidateId = this.candidate.id;
+    editCandidateModal.componentInstance.candidate = this.candidate;
 
     editCandidateModal.result
       .then((candidate) => this.candidateService.updateCandidate(candidate))

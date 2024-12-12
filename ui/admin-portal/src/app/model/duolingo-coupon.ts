@@ -14,24 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export interface DuolingoCoupon {
-  id: number;
-  couponCode: string;
-  expirationDate: Date;
-  dateSent: Date;
-  duolingoCouponStatus: Status;
-}
 
-export enum Status {
-  AVAILABLE = "AVAILABLE",
-  ASSIGNED = "ASSIGNED",
-  SENT = "SENT",
-  REDEEMED = "REDEEMED",
-  EXPIRED = "EXPIRED"
+/**
+ * Enum to represent the various statuses a coupon can have.
+ */
+export enum DuolingoCouponStatus {
+  AVAILABLE = 'AVAILABLE',
+  ASSIGNED = 'ASSIGNED',
+  REDEEMED = 'REDEEMED',
+  EXPIRED = 'EXPIRED',
+  SENT = 'SENT',
 }
 
 export interface DuolingoCouponResponse {
+  id: number;
+  couponCode: string;
+  expirationDate: string;
+  dateSent: string;
+  duolingoCouponStatus: DuolingoCouponStatus;
+}
+
+export interface UpdateCouponStatusRequest {
+  couponCode: string;
   status: string;
-  coupon: DuolingoCoupon;
-  message?: string;
 }

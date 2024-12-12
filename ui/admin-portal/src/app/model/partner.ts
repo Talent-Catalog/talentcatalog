@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -44,6 +44,7 @@ export interface PartnerSimpleAttributes {
   //value in a type safe way. See other MODEL's for details.
   status: string;
   websiteUrl: string;
+  redirectPartner?: ShortPartner;
 }
 
 export interface Employer {
@@ -88,6 +89,7 @@ export function sourceCountriesAsString(partner: Partner): string {
 export interface UpdatePartnerRequest extends PartnerSimpleAttributes {
   defaultContactId?: number,
   sourceCountryIds: number[];
+  redirectPartnerId?: number;
 }
 
 export interface UpdatePartnerJobContactRequest {

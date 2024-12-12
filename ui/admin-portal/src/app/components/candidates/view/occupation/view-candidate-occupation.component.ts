@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,7 +21,9 @@ import {CandidateOccupation} from "../../../../model/candidate-occupation";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperience} from "../../../../model/candidate-job-experience";
-import {EditCandidateJobExperienceComponent} from "./experience/edit/edit-candidate-job-experience.component";
+import {
+  EditCandidateJobExperienceComponent
+} from "./experience/edit/edit-candidate-job-experience.component";
 import {CreateCandidateOccupationComponent} from "./create/create-candidate-occupation.component";
 
 @Component({

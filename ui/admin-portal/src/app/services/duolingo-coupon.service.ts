@@ -1,35 +1,69 @@
-/*
- * Copyright (c) 2021 Talent Beyond Boundaries.
- *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see https://www.gnu.org/licenses/.
- */
-
-import {Observable} from "rxjs";
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Observable} from "rxjs";
+import {DuolingoCouponResponse, UpdateCouponStatusRequest} from "../model/duolingo-coupon";
 import {environment} from "../../environments/environment";
-import {DuolingoCouponResponse} from '../model/duolingo-coupon';
+
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DuolingoCouponService {
+  private apiBaseUrl = environment.apiUrl+'/coupon';
 
-  private apiUrl: string = environment.apiUrl + '/coupon';
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
+  /**
+   * Import coupons from a CSV file
+   * @param file - CSV file containing coupons
+   */
+  importCoupons(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
 
-  create(canadidateId: number): Observable<DuolingoCouponResponse>  {
-    return this.http.post<DuolingoCouponResponse>(`${this.apiUrl}/${canadidateId}/assign`, null);
+    return this.http.post<any>(`${this.apiBaseUrl}/import`, formData, {
+      headers: new HttpHeaders({ 'enctype': 'multipart/form-data' }),
+    });
   }
+
+  /**
+   * Assign an available coupon to a candidate
+   * @param candidateId - ID of the candidate
+   */
+  assignCouponToCandidate(candidateId: number): Observable<DuolingoCouponResponse> {
+    return this.http.post<DuolingoCouponResponse>(`${this.apiBaseUrl}/${candidateId}/assign`, {});
+  }
+
+
+  /**
+   * Retrieve all coupons assigned to a candidate
+   * @param candidateId - ID of the candidate
+   */
+  getCouponsForCandidate(candidateId: number): Observable<DuolingoCouponResponse[]> {
+    return this.http.get<DuolingoCouponResponse[]>(`${this.apiBaseUrl}/${candidateId}`);
+  }
+
+  /**
+   * Update the status of a specific coupon
+   * @param request - Object containing coupon code and new status
+   */
+  updateCouponStatus(request: UpdateCouponStatusRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiBaseUrl}/status`, request);
+  }
+
+  /**
+   * List all available coupons
+   */
+  getAvailableCoupons(): Observable<DuolingoCouponResponse[]> {
+    return this.http.get<DuolingoCouponResponse[]>(`${this.apiBaseUrl}/available`);
+  }
+
+  /**
+   * Get a single coupon by its code.
+   * @param couponCode - Coupon code to search for.
+   */
+  getCouponByCode(couponCode: string): Observable<DuolingoCouponResponse> {
+    return this.http.get<DuolingoCouponResponse>(`${this.apiBaseUrl}/find/${couponCode}`);
+  }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,9 +29,13 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {RouterTestingModule} from "@angular/router/testing";
 import {MockUser} from "../../../MockData/MockUser";
-import {CandidateGeneralTabComponent} from "./tab/candidate-general-tab/candidate-general-tab.component";
+import {
+  CandidateGeneralTabComponent
+} from "./tab/candidate-general-tab/candidate-general-tab.component";
 import {ViewCandidateLanguageComponent} from "./language/view-candidate-language.component";
-import {ViewCandidateRegistrationComponent} from "./registration/view-candidate-registration.component";
+import {
+  ViewCandidateRegistrationComponent
+} from "./registration/view-candidate-registration.component";
 import {
   CandidateShareableNotesComponent
 } from "../../util/candidate-shareable-notes/candidate-shareable-notes.component";

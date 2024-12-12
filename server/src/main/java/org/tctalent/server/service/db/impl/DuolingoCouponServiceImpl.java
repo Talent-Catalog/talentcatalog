@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,16 +24,21 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.DuolingoCoupon;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.response.DuolingoCouponResponse;
@@ -101,19 +106,28 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional
-  public Optional<DuolingoCoupon> assignCouponToCandidate(Long candidateId) {
-    return candidateRepository.findById(candidateId).flatMap(candidate -> {
+  public DuolingoCoupon assignCouponToCandidate(Long candidateId) throws NoSuchObjectException {
+    return candidateRepository.findById(candidateId).map(candidate -> {
+      // Find the first available coupon
       Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatus(
-              DuolingoCouponStatus.AVAILABLE);
-      availableCoupon.ifPresent(coupon -> {
-        coupon.setCandidate(candidate);
-        coupon.setDateSent(LocalDateTime.now());
-        coupon.setCouponStatus(DuolingoCouponStatus.SENT);
-        couponRepository.save(coupon);
-      });
-      return availableCoupon;
-    });
+          DuolingoCouponStatus.AVAILABLE);
+
+      if (availableCoupon.isEmpty()) {
+        // Throw exception if no coupon is available
+        throw new NoSuchObjectException("No available coupons for candidate ID " + candidateId);
+      }
+
+      // Assign the coupon to the candidate and update its status
+      DuolingoCoupon coupon = availableCoupon.get();
+      coupon.setCandidate(candidate);
+      coupon.setDateSent(LocalDateTime.now());
+      coupon.setCouponStatus(DuolingoCouponStatus.SENT);
+      couponRepository.save(coupon);
+
+      return coupon;
+    }).orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + candidateId + " not found"));
   }
+
 
 
   @Override
@@ -141,14 +155,16 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
   @Override
   @Transactional(readOnly = true)
   public List<DuolingoCoupon> getAvailableCoupons() {
-    return couponRepository.findByCandidateIsNullAndCouponStatus("AVAILABLE");
+    return couponRepository.findByCandidateIsNullAndCouponStatus(DuolingoCouponStatus.AVAILABLE);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<DuolingoCouponResponse> findByCouponCode(String couponCode) {
-    return couponRepository.findByCouponCode(couponCode).map(this::mapToCouponResponse);
+  public DuolingoCoupon findByCouponCode(String couponCode) throws NoSuchObjectException {
+    return couponRepository.findByCouponCode(couponCode)
+        .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + couponCode + " not found"));
   }
+
 
   // Utility Methods
 

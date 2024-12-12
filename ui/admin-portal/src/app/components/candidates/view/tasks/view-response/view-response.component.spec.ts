@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,6 +20,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
+
 describe('ViewResponseComponent', () => {
   let component: ViewResponseComponent;
   let fixture: ComponentFixture<ViewResponseComponent>;
