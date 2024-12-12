@@ -221,7 +221,9 @@ public class PartnerServiceImpl implements PartnerService {
                 .message("URLs identifying inactive partner " + partner.getName() +
                     " will now redirect to " + newPartner.getName() + ".")
                 .logInfo();
-        } else partner.setRedirectPartner(null);
+        } else {
+          partner.setRedirectPartner(null);
+        }
 
         return partnerRepository.save((PartnerImpl) partner);
     }
