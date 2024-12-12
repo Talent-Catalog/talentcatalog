@@ -94,6 +94,10 @@ export class MockCandidate implements Candidate {
   unhcrStatus: UnhcrStatus = UnhcrStatus.RegisteredAsylum;
   ieltsScore: string = "7.5";
   numberDependants: number = 2;
+  relocatedAddress: string = "123 Sesame Street"
+  relocatedCity: string = "Melbourne"
+  relocatedState: string = "Victoria"
+  relocatedCountry: any = { id: 1, name: "Australia", status: "active", translatedName: "Australia" }
   candidateExams: any[] = [
     { id: 1, exam: Exam.IELTSGen, score: "7.5", year: 2020 }
   ];
@@ -329,10 +333,6 @@ export class MockCandidate implements Candidate {
       notes: "I do not like Toronto."
     },
   ];
-  relocatedAddress: "123 Sesame Street"
-  relocatedCity: "Melbourne"
-  relocatedState: "Victoria"
-  relocatedCountry: { id: 1, name: "Australia", status: "active", translatedName: "Australia" }
 
 
   constructor() {}
