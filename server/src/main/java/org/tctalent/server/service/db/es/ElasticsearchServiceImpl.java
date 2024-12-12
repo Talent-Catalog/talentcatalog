@@ -202,7 +202,8 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     // Create wildcard query for email
     WildcardQueryBuilder emailQuery = QueryBuilders
-        .wildcardQuery(EMAIL_FIELD, wildcardInput);
+        .wildcardQuery(EMAIL_FIELD, wildcardInput)
+        .caseInsensitive(true);
 
     // Construct the boolean query with should clause
     BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
