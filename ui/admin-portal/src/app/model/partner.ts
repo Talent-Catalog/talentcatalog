@@ -44,6 +44,7 @@ export interface PartnerSimpleAttributes {
   //value in a type safe way. See other MODEL's for details.
   status: string;
   websiteUrl: string;
+  redirectPartner?: ShortPartner;
 }
 
 export interface Employer {
@@ -88,6 +89,7 @@ export function sourceCountriesAsString(partner: Partner): string {
 export interface UpdatePartnerRequest extends PartnerSimpleAttributes {
   defaultContactId?: number,
   sourceCountryIds: number[];
+  redirectPartnerId?: number;
 }
 
 export interface UpdatePartnerJobContactRequest {

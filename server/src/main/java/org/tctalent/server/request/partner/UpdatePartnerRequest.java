@@ -72,4 +72,6 @@ public class UpdatePartnerRequest {
 
     private Set<Long> sourceCountryIds;
 
+    private Long redirectPartnerId;
+
 }

@@ -212,6 +212,19 @@ public class PartnerServiceImpl implements PartnerService {
         partner.setAutoAssignable(request.isAutoAssignable());
         partner.setSourceCountries(sourceCountries);
 
+        if (request.getRedirectPartnerId() != null) {
+            PartnerImpl newPartner = manageRedirectPartnerAssignment(request.getRedirectPartnerId());
+            partner.setRedirectPartner(newPartner);
+
+            LogBuilder.builder(log)
+                .action("redirectInactivePartnerUrl")
+                .message("URLs identifying inactive partner " + partner.getName() +
+                    " will now redirect to " + newPartner.getName() + ".")
+                .logInfo();
+        } else {
+          partner.setRedirectPartner(null);
+        }
+
         return partnerRepository.save((PartnerImpl) partner);
     }
 
@@ -227,5 +240,20 @@ public class PartnerServiceImpl implements PartnerService {
         }
         pjr.setContact(contactUser);
         partnerJobRelationRepository.save(pjr);
+    }
+
+    private PartnerImpl manageRedirectPartnerAssignment(long redirectPartnerId) {
+        // Get the new partner that URLs will redirect to
+        PartnerImpl newPartner = (PartnerImpl) getPartner(redirectPartnerId);
+
+        // The partner we're redirecting to could itself have been deactivated in the past and
+        // therefore have had a redirectPartner assigned to it that we now wish to ignore -
+        // not only for operational reasons but also to avoid getting stuck in a recursive loop!
+        if (newPartner.getRedirectPartner() != null) {
+            newPartner.setRedirectPartner(null);
+            newPartner = partnerRepository.save(newPartner);
+        }
+
+        return newPartner;
     }
 }
