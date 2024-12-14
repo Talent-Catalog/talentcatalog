@@ -2879,7 +2879,7 @@ public class SystemAdminApi {
         BackRunner<PageContext> backRunner = new BackRunner<>();
 
         ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-            new PageContext(null, 1), 20);
+            new PageContext(null), 20);
     }
 
     /**

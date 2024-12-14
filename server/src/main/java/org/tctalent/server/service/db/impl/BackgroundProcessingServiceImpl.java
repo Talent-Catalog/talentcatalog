@@ -56,24 +56,23 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
       @Override
       public boolean process(PageContext ctx) throws SalesforceException, WebClientException {
-        long startPage =
+        int page =
             ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
         // Delegate page processing to the service, which will open a transaction
-        candidateService.processSfCandidateSyncPage(startPage, statuses);
+        candidateService.processSfCandidateSyncPage(page, statuses);
 
         // Log completed page
         LogBuilder.builder(log)
             .action("processSfCandidateSyncPage")
-            .message("Processed page " + (startPage + 1) + " of " + totalNoOfPages)
+            .message("Processed page " + (page + 1) + " of " + totalNoOfPages)
             .logInfo();
 
         // Set last processed page
-        long lastProcessed = startPage + ctx.getNumToProcess() - 1;
-        ctx.setLastProcessedPage(lastProcessed);
+        ctx.setLastProcessedPage(page);
 
         // Log if processing complete
-        if (startPage + ctx.getNumToProcess() >= totalNoOfPages) {
+        if (page + 1 >= totalNoOfPages) {
           LogBuilder.builder(log)
               .action("Sync Candidates to Salesforce")
               .message("SF candidate sync complete!")
@@ -81,7 +80,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
         }
 
         // Return true if complete - ends processing
-        return startPage + ctx.getNumToProcess() >= totalNoOfPages;
+        return page + 1 >= totalNoOfPages;
       }
     };
 
@@ -94,24 +93,23 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
       @Override
       public boolean process(PageContext ctx) {
-        long startPage =
+        int page =
             ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
         // Fetch new page of candidates
         Page<Candidate> candidatePage = candidateRepository.findByIdIn(
             candidateIds,
-            PageRequest.of((int) startPage, 200, Sort.by("id").ascending())
+            PageRequest.of(page, 200, Sort.by("id").ascending())
         );
 
         // Delegate page processing to the service, which will open a transaction
         candidateService.processPotentialDuplicatePage(candidatePage);
 
         // Set last processed page
-        long lastProcessed = startPage + ctx.getNumToProcess() - 1;
-        ctx.setLastProcessedPage(lastProcessed);
+        ctx.setLastProcessedPage(page);
 
         // Return true if complete - ends processing
-        return startPage + ctx.getNumToProcess() >= candidatePage.getTotalPages();
+        return page + 1 >= candidatePage.getTotalPages();
       }
     };
 
@@ -141,7 +139,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     BackRunner<PageContext> backRunner = new BackRunner<>();
 
     ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-        new PageContext(null, 1), 20);
+        new PageContext(null), 20);
   }
 
 }
