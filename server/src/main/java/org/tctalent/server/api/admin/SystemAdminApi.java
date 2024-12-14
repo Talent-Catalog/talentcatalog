@@ -264,30 +264,6 @@ public class SystemAdminApi {
       this.duolingoApiService = duolingoApiService;
     }
 
-    /**
-     * todo The intention is that this can be used to implement a operations which do not
-     * max out the TC's CPU.
-     * @see BackRunner
-     */
-    @GetMapping("export_search/{id}")
-    public void exportSearch() {
-        BackRunner<IdContext> backRunner = new BackRunner<>();
-        BackProcessor<IdContext> backProcessor = new BackProcessor<>() {
-            @Override
-            public boolean process(IdContext ctx) {
-                long startId = ctx.getLastProcessedId() == null ? 0 : ctx.getLastProcessedId()+1;
-                System.out.println("Processing " + ctx.getNumToProcess() + " ids starting from "
-                    + (startId == 0 ? "beginning " : startId) );
-                long lastProcessed = startId + ctx.getNumToProcess() - 1;
-                ctx.setLastProcessedId(lastProcessed);
-                return lastProcessed+1 >= 50;
-            }
-        };
-        ScheduledFuture<?> scheduledFuture =
-            backRunner.start(taskScheduler, backProcessor, new IdContext(0L, 10),
-                20);
-    }
-
     @GetMapping("fix_null_case_sfids")
     public void fixNullCaseSfids() {
         List<CandidateOpportunity> opps = candidateOpportunityRepository.findAllBySfIdIsNull();
