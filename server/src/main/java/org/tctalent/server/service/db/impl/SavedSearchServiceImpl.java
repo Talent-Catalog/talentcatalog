@@ -410,6 +410,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
+    @Transactional
+    @Override
+    public void setPublicIds(List<SavedSearch> savedSearches) {
+        for (SavedSearch savedSearch : savedSearches) {
+            if (savedSearch.getPublicId() == null) {
+                savedSearch.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!savedSearches.isEmpty()) {
+            savedSearchRepository.saveAll(savedSearches);
+        }
+    }
+
     @Override
     public SearchCandidateRequest loadSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(id)

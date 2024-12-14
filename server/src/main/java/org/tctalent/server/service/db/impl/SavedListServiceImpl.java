@@ -655,6 +655,19 @@ public class SavedListServiceImpl implements SavedListService {
         }
     }
 
+    @Transactional
+    @Override
+    public void setPublicIds(List<SavedList> savedLists) {
+        for (SavedList savedList : savedLists) {
+            if (savedList.getPublicId() == null) {
+                savedList.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!savedLists.isEmpty()) {
+            savedListRepository.saveAll(savedLists);
+        }
+    }
+
     @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request)
             throws NoSuchObjectException, EntityExistsException {

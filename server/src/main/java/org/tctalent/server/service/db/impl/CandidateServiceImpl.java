@@ -2265,6 +2265,19 @@ public class CandidateServiceImpl implements CandidateService {
       }
     }
 
+    @Transactional
+    @Override
+    public void setPublicIds(List<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            if (candidate.getPublicId() == null) {
+                candidate.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!candidates.isEmpty()) {
+            candidateRepository.saveAll(candidates);
+        }
+    }
+
     @Override
     public Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException {

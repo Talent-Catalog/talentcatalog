@@ -264,6 +264,13 @@ public class SystemAdminApi {
       this.duolingoApiService = duolingoApiService;
     }
 
+    @GetMapping("set_public_ids")
+    public void setPublicIds() {
+        backgroundProcessingService.setCandidatePublicIds();
+        backgroundProcessingService.setSavedListPublicIds();
+        backgroundProcessingService.setSavedSearchPublicIds();
+    }
+
     @GetMapping("fix_null_case_sfids")
     public void fixNullCaseSfids() {
         List<CandidateOpportunity> opps = candidateOpportunityRepository.findAllBySfIdIsNull();

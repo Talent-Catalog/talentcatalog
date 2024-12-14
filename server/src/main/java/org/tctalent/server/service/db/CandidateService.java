@@ -376,6 +376,8 @@ public interface CandidateService {
     void setCandidateSubfolderlink(Candidate candidate, CandidateSubfolderType type,
         @Nullable String link);
 
+    void setPublicIds(List<Candidate> candidates);
+
     void exportToCsv(SavedList savedList, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException;
 

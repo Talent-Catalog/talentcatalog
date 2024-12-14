@@ -333,6 +333,8 @@ public interface SavedListService {
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 
+    void setPublicIds(List<SavedList> savedLists);
+
     /**
      * Update the info associated with the SavedList with the given id
      * - for example changing its name.
