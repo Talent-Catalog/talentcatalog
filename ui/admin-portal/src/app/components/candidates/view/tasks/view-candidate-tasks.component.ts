@@ -109,7 +109,6 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   }
 
   async sendDuolingoCoupon() {
-
     const duolingoTask = await this.taskService.listTasks().toPromise();
     const duolingoTaskId = duolingoTask.find(task => task.name === 'duolingoTest')?.id;
 
@@ -122,13 +121,6 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       candidateId: this.candidate.id,
       taskId: duolingoTaskId,
       dueDate: moment().add(2, 'weeks').toDate()
-    }
-
-    const duolingoCoupon : DuolingoCouponResponse  = await this.duolingoCouponService.create(this.candidate.id).toPromise();
-
-    if(duolingoCoupon.status === 'failure') {
-      this.error = duolingoCoupon.message;
-      return;
     }
 
     this.taskAssignmentService.createTaskAssignment(request).subscribe(

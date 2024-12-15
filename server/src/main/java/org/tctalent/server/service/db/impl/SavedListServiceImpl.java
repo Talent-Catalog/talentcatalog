@@ -52,15 +52,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateSavedList;
-import org.tctalent.server.model.db.ExportColumn;
-import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.TaskAssignmentImpl;
-import org.tctalent.server.model.db.TaskImpl;
-import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.*;
 import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -88,15 +80,7 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
-import org.tctalent.server.service.db.DocPublisherService;
-import org.tctalent.server.service.db.ExportColumnsService;
-import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.SalesforceJobOppService;
-import org.tctalent.server.service.db.SalesforceService;
-import org.tctalent.server.service.db.SavedListService;
-import org.tctalent.server.service.db.TaskAssignmentService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.*;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -125,22 +109,23 @@ public class SavedListServiceImpl implements SavedListService {
     private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final DuolingoCouponService couponService;
 
     private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
 
     @Autowired
     public SavedListServiceImpl(
-        CandidateRepository candidateRepository,
-        CandidateSavedListRepository candidateSavedListRepository,
-        CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
-        SavedListRepository savedListRepository,
-        DocPublisherService docPublisherService,
-        FileSystemService fileSystemService,
-        GoogleDriveConfig googleDriveConfig,
-        SalesforceService salesforceService,
-        SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
-        UserRepository userRepository,
-        UserService userService) {
+            CandidateRepository candidateRepository,
+            CandidateSavedListRepository candidateSavedListRepository,
+            CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
+            SavedListRepository savedListRepository,
+            DocPublisherService docPublisherService,
+            FileSystemService fileSystemService,
+            GoogleDriveConfig googleDriveConfig,
+            SalesforceService salesforceService,
+            SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
+            UserRepository userRepository,
+            UserService userService, DuolingoCouponService couponService) {
         this.candidateRepository = candidateRepository;
         this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateOpportunityService = candidateOpportunityService;
@@ -154,6 +139,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.couponService = couponService;
     }
 
     @Override
@@ -727,6 +713,13 @@ public class SavedListServiceImpl implements SavedListService {
 
         //Now assign tasks to candidates in list (if they do not already have the task actively assigned)
         Set<Candidate> candidates = list.getCandidates();
+        if (task.getName().equals("duolingoTest")) {
+            List<DuolingoCoupon> availableCoupons = couponService.getAvailableCoupons();
+            if (candidates.size() > availableCoupons.size()) {
+                throw new NoSuchObjectException(availableCoupons.size() + " coupons available, but you need " + candidates.size() + " coupons for your candidates list.");
+            }
+        }
+
         for (Candidate candidate : candidates) {
             //Assign task if candidate does not already have this task active
             Set<? extends Task> activeCandidateTasks = findActiveCandidateTasks(candidate);
