@@ -25,5 +25,6 @@ public enum Exam {
     IELTSGen,
     IELTSAca,
     TOEFL,
+    DuolingoOfficial,
     Other
 }
