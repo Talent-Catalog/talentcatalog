@@ -73,6 +73,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.Environment;
@@ -115,6 +116,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.DuolingoApiService;
+import org.tctalent.server.service.db.DuolingoExamService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
@@ -207,6 +209,7 @@ public class SystemAdminApi {
     @Value("${environment}")
     private String environment;
     private final DuolingoApiService duolingoApiService;
+    private final DuolingoExamService duolingoExamService;
 
     @Autowired
     public SystemAdminApi(
@@ -229,7 +232,7 @@ public class SystemAdminApi {
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-        SavedSearchService savedSearchService, PartnerService partnerService, DuolingoApiService duolingoApiService) {
+        SavedSearchService savedSearchService, PartnerService partnerService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -262,6 +265,7 @@ public class SystemAdminApi {
       this.partnerService = partnerService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
+      this.duolingoExamService = duolingoExamService;
     }
 
     /**
@@ -345,6 +349,28 @@ public class SystemAdminApi {
         @RequestParam String birthdate) {
         return duolingoApiService.verifyScore(certificateId, birthdate);
     }
+
+  /**
+   * Scheduled task that updates candidate exams for Duolingo on a daily basis.
+   *
+   * This method is executed once a day at midnight GMT (00:00:00), and is locked using the
+   * SchedulerLock annotation to ensure that only one instance of the task is running at any
+   * given time. The lock is held for at least 23 hours and at most 23 hours to prevent overlapping
+   * executions if the task takes longer than expected.
+   *
+   * The task executes the updateCandidateExams method from the duolingoExamService to perform
+   * the necessary updates on candidate exams.
+   *
+   * @throws NoSuchObjectException if there is an issue with updating the exams, such as a missing
+   *         candidate or an invalid exam.
+   */
+  @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
+  @SchedulerLock(name = "DuolingoSchedulerTask_updateCandidateExams", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+  @Transactional
+  public void updateCandidateExams() throws NoSuchObjectException {
+    duolingoExamService.updateCandidateExams();
+  }
+
     @GetMapping("flush_user_cache")
     public void flushUserCache() {
         cacheService.flushUserCache();
