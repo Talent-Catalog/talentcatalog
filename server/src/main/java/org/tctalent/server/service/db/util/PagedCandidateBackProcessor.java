@@ -39,12 +39,13 @@ public abstract class PagedCandidateBackProcessor implements BackProcessor<PageC
         try {
             pageOfCandidates = savedSearchService.searchCandidates(searchCandidateRequest);
 
-            processCandidates(candidateService, pageOfCandidates.getContent());
+            final List<Candidate> content = pageOfCandidates.getContent();
+            processCandidates(candidateService, content);
 
             // Log completed page
             LogBuilder.builder(log)
                 .action(action)
-                .message("Processed page " + page + " of " + (pageOfCandidates.getTotalPages() - 1))
+                .message("Processed " + content.size() + " items in page " + page + " of " + (pageOfCandidates.getTotalPages()-1))
                 .logInfo();
         } catch (Exception e) {
             LogBuilder.builder(log)

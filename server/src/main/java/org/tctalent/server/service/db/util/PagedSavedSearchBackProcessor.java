@@ -37,12 +37,13 @@ public abstract class PagedSavedSearchBackProcessor implements BackProcessor<Pag
         try {
             pageOfSavedSearches = savedSearchService.searchPaged(searchSavedSearchRequest);
 
-            processSavedSearches(savedSearchService, pageOfSavedSearches.getContent());
+            final List<SavedSearch> content = pageOfSavedSearches.getContent();
+            processSavedSearches(savedSearchService, content);
 
             // Log completed page
             LogBuilder.builder(log)
                 .action(action)
-                .message("Processed page " + page + " of " + (pageOfSavedSearches.getTotalPages()-1))
+                .message("Processed " + content.size() + " items in page " + page + " of " + (pageOfSavedSearches.getTotalPages()-1))
                 .logInfo();
         } catch (Exception e) {
             LogBuilder.builder(log)
