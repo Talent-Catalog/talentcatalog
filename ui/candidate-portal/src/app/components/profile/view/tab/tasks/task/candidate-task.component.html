@@ -22,7 +22,7 @@
         <span class="fw-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span>
         <span class="fw-bolder font-italic" *ngIf="selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.OPTIONAL' | translate }}</span>
       </h4>
-      <div *ngIf="selectedTask.task.taskType !== 'Question'">{{selectedTask?.task?.description}}</div>
+      <div *ngIf="selectedTask.task.taskType !== 'Question'" class="e2e-inner-html-bound" [innerHTML]="selectedTask?.task?.description"></div>
     </div>
 
     <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">
@@ -48,24 +48,6 @@
     </button>
   </div>
 </div>
-
-<ng-container *ngIf="selectedTask.task.name === 'duolingoTest' && coupons">
-  <h5>You are receiving an invitation to take the Duolingo English Test for free! Accept the coupon below to get started.</h5>
-  <p>Your certified results will be sent to Talent Beyond Boundaries (TBB) after you complete the test.</p>
-  <div *ngIf="coupons.length > 0; else noCoupons">
-    <ul>
-      <li *ngFor="let coupon of coupons">
-        <a [href]="'https://englishtest.duolingo.com/pay/' + coupon.couponCode + '?login_view=register&cta=Accept%20Coupon&show_bundle=false'" target="_blank">
-      Click to activate your coupon code: {{ coupon.couponCode }}
-      </a>
-      </li>
-    </ul>
-  </div>
-
-  <ng-template #noCoupons>
-    <p>No coupons available.</p>
-  </ng-template>
-</ng-container>
 
 <!-- DISPLAY DOC IF PRESENT -->
 <ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.helpLink != null">
