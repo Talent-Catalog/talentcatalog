@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="card">
 
   <div class="card-header">
@@ -35,7 +51,14 @@
         </div>
       </div>
 
-      <div *ngIf="job.submissionList" class="mb-3 col-sm-12 col-md-4">
+      <div class="mb-3 col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-eye-slash"></i>Skip candidate search</label>
+        <div class="form-control-plaintext">
+          {{job.skipCandidateSearch ? "Yes" : "No"}}
+        </div>
+      </div>
+
+      <div *ngIf="job.submissionList && canSeeJobDetails()" class="mb-3 col-sm-12 col-md-4">
         <label title="Potential candidates should be added to this list" class="col-form-label"
                [ngClass]="{'alert alert-danger': highlightCandidates()}">
           <i class="fas fa-rectangle-list"></i>Submission List</label>
@@ -45,7 +68,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.suggestedList" class="mb-3 col-sm-12 col-md-4">
+      <div *ngIf="job.suggestedList && canSeeJobDetails()" class="mb-3 col-sm-12 col-md-4">
         <label title="Potential candidates should be added to this list" class="col-form-label">
           <i class="fas fa-list"></i>Suggested List</label>
 
@@ -54,7 +77,7 @@
         </div>
       </div>
 
-      <div *ngIf="job.exclusionList" class="mb-3 col-sm-12 col-md-4">
+      <div *ngIf="job.exclusionList && canSeeJobDetails()" class="mb-3 col-sm-12 col-md-4">
         <label title="Candidates who have already been considered and rejected for this job should be added to this list" class="col-form-label">
           <i class="fas fa-list"></i>Exclusion List</label>
 
@@ -79,12 +102,12 @@
         <div *ngIf="getContactUser()" class="form-control-plaintext">
           <div>{{showUser(getContactUser())}}</div>
           <div>
-            <a target="_blank" href="{{showEmailUrl(getContactUser().email)}}">{{getContactUser().email}}</a>
+            <a *ngIf="canSeeJobDetails()" target="_blank" href="{{showEmailUrl(getContactUser().email)}}">{{getContactUser().email}}</a>
           </div>
         </div>
       </div>
 
-      <div class="mb-3 col-sm-12 col-md-4">
+      <div *ngIf="canSeeJobDetails()" class="mb-3 col-sm-12 col-md-4">
         <label class="col-form-label" [ngClass]="{'alert alert-danger': highlightSubmissionDate()}">
           <i class="fa-regular fa-calendar-days"></i>Submission Due</label>
 
@@ -101,7 +124,7 @@
           <span *ngIf="job.createdBy" >
             <div>{{showUser(job.createdBy)}}</div>
             <div>
-            <a target="_blank" href="{{showEmailUrl(job.createdBy.email)}}">{{job.createdBy.email}}</a>
+            <a *ngIf="canSeeJobDetails()" target="_blank" href="{{showEmailUrl(job.createdBy.email)}}">{{job.createdBy.email}}</a>
             </div>
           </span>
         </div>
@@ -115,7 +138,7 @@
           <span *ngIf="job.updatedBy" >
             <div>{{showUser(job.updatedBy)}}</div>
             <div>
-            <a target="_blank" href="{{showEmailUrl(job.updatedBy.email)}}">{{job.updatedBy.email}}</a>
+            <a *ngIf="canSeeJobDetails()" target="_blank" href="{{showEmailUrl(job.updatedBy.email)}}">{{job.updatedBy.email}}</a>
             </div>
           </span>
         </div>
@@ -129,7 +152,7 @@
           <span *ngIf="job.publishedBy" >
             <div>{{showUser(job.publishedBy)}}</div>
             <div>
-            <a target="_blank" href="{{showEmailUrl(job.publishedBy.email)}}">{{job.publishedBy.email}}</a>
+            <a *ngIf="canSeeJobDetails()" target="_blank" href="{{showEmailUrl(job.publishedBy.email)}}">{{job.publishedBy.email}}</a>
             </div>
           </span>
         </div>

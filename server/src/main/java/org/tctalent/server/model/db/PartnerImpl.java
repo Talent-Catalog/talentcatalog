@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,6 +26,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -160,4 +161,14 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     public String toString() {
         return name;
     }
+
+    /**
+     * If this partner is inactive and a registering candidate uses a URL that would otherwise
+     * assign them to it, this field can redirect them to a new one.
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "redirect_partner_id")
+    private PartnerImpl redirectPartner;
+
 }

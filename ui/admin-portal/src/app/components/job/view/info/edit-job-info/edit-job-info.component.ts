@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -42,6 +42,7 @@ export class EditJobInfoComponent implements OnInit {
   saving: boolean;
 
   evergreenTip = "An evergreen job is always looking for candidates";
+  skipCandidateSearchTip = "If 'Yes' partners will not search for candidates";
 
   constructor(private activeModal: NgbActiveModal,
               private fb: UntypedFormBuilder,
@@ -73,7 +74,8 @@ export class EditJobInfoComponent implements OnInit {
     this.jobForm = this.fb.group({
       submissionDueDate: [this.job.submissionDueDate],
       contactUser: [this.job.contactUser?.id],
-      evergreen: [this.job.evergreen]
+      evergreen: [this.job.evergreen],
+      skipCandidateSearch: [this.job.skipCandidateSearch]
     });
   }
 
@@ -83,6 +85,10 @@ export class EditJobInfoComponent implements OnInit {
 
   get evergreen(): boolean {
     return this.jobForm?.value.evergreen;
+  }
+
+  get skipCandidateSearch(): boolean {
+    return this.jobForm?.value.skipCandidateSearch;
   }
 
   get submissionDueDate(): Date {
@@ -96,6 +102,7 @@ export class EditJobInfoComponent implements OnInit {
       sfId: this.job.sfId,
       contactUserId: this.contactUser,
       evergreen: this.evergreen,
+      skipCandidateSearch: this.skipCandidateSearch,
       submissionDueDate: this.submissionDueDate
     }
 

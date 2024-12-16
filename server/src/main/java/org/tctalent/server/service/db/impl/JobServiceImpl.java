@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -40,12 +40,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -608,8 +606,13 @@ public class JobServiceImpl implements JobService {
 
         final JobOpportunityStage stage = job.getStage();
         if (stage.compareTo(JobOpportunityStage.candidateSearch) < 0 )  {
-            //Current stage is before CandidateSearch so update it to CandidateSearch here
-            job.setStage(JobOpportunityStage.candidateSearch);
+            //Current stage is before CandidateSearch so update it
+
+            //New stage will depend on skipCandidateSearch
+            JobOpportunityStage nextStage =
+                job.isSkipCandidateSearch() ? JobOpportunityStage.visaEligibility :
+                    JobOpportunityStage.candidateSearch;
+            job.setStage(nextStage);
 
             //Update Salesforce stage to match - setting Next Step and Due date
             final LocalDate submissionDueDate = job.getSubmissionDueDate();
@@ -808,6 +811,11 @@ public class JobServiceImpl implements JobService {
         final Boolean evergreen = request.getEvergreen();
         if (evergreen != null) {
             job.setEvergreen(evergreen);
+        }
+
+        final Boolean skipCandidateSearch = request.getSkipCandidateSearch();
+        if (skipCandidateSearch != null) {
+            job.setSkipCandidateSearch(skipCandidateSearch);
         }
 
         final String nextStep = request.getNextStep();
@@ -1141,11 +1149,6 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.save(job);
     }
 
-    //TODO JC Do we need to stop doing this?
-    @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
-    @SchedulerLock(name = "JobService_updateOpenJobs", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
-    @Async
-    @Override
     public void updateOpenJobs() {
         try {
             //Find all open Salesforce jobs

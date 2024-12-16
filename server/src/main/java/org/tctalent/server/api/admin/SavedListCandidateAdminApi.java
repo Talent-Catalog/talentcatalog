@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,14 +16,14 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -50,6 +50,8 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
@@ -89,6 +91,8 @@ public class SavedListCandidateAdminApi implements
     public SavedListCandidateAdminApi(
         CandidateService candidateService, CandidateOpportunityService candidateOpportunityService,
         CandidateSavedListService candidateSavedListService,
+        CountryService countryService,
+        OccupationService occupationService,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
         UserService userService) {
@@ -96,7 +100,8 @@ public class SavedListCandidateAdminApi implements
         this.candidateSavedListService = candidateSavedListService;
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
-        candidateBuilderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
+        candidateBuilderSelector = new CandidateBuilderSelector(
+            candidateOpportunityService, countryService, occupationService, userService);
     }
 
     @GetMapping(value = "{id}/is-empty")

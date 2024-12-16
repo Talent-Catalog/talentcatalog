@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,6 +17,7 @@
 package org.tctalent.server.model.db.partner;
 
 import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.User;
 
 /**
@@ -79,5 +80,13 @@ public interface Partner extends SourcePartner, RecruiterPartner, EmployerPartne
     @Nullable
     String getSflink();
     void setSflink(@Nullable String sflink);
+
+    /**
+     * If this partner is inactive and a registering candidate uses a URL that points to it,
+     * this field can redirect said candidate to a new given partner org.
+     */
+    @Nullable
+    PartnerImpl getRedirectPartner();
+    void setRedirectPartner(@Nullable PartnerImpl redirectPartner);
 
 }

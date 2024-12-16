@@ -1,19 +1,41 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ViewJobInfoComponent } from './view-job-info.component';
+import {ViewJobInfoComponent} from './view-job-info.component';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 describe('ViewJobInfoComponent', () => {
   let component: ViewJobInfoComponent;
   let fixture: ComponentFixture<ViewJobInfoComponent>;
   let modalService: NgbModal;
    beforeEach(async () => {
+     let authServiceSpy =
+       jasmine.createSpyObj('AuthorizationService', ['canSeeJobDetails']);
+     authServiceSpy.canSeeJobDetails.and.returnValue(true);
+
      await TestBed.configureTestingModule({
       declarations: [ ViewJobInfoComponent,RouterLinkStubDirective ],
       providers: [
         { provide: NgbModal  },
+        { provide: AuthorizationService, useValue: authServiceSpy  },
       ]
     })
     .compileComponents();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,7 +25,7 @@ import {
   UpdateCandidateShareableNotesRequest,
   UpdateCandidateStatusRequest
 } from '../model/candidate';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
@@ -48,6 +48,8 @@ export interface IntakeAuditRequest {
 
 @Injectable({providedIn: 'root'})
 export class CandidateService implements IntakeService {
+
+  private candidateUpdatedSource = new Subject<Candidate>();
 
   private apiUrl = environment.apiUrl + '/candidate';
 
@@ -214,6 +216,23 @@ export class CandidateService implements IntakeService {
     Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(
       `${this.apiUrl}/fetch-candidates-with-chat`, request
+    );
+  }
+
+  // In the candidate-search-card we pass in the updated candidate object to merge with the extended candidate DTO,
+  // this reduces an additional API call to fetch the updated extended candidate object. But in candidate profile we fetch
+  // the updated object so we don't need the updated object, just need to refetch the current candidate.
+  updateCandidate(candidate?: Candidate) {
+    candidate ? this.candidateUpdatedSource.next(candidate) : this.candidateUpdatedSource.next();
+  }
+
+  candidateUpdated() {
+    return this.candidateUpdatedSource.asObservable();
+  }
+
+  fetchPotentialDuplicates(id: number): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(
+      `${this.apiUrl}/${id}/fetch-potential-duplicates-of-given-candidate`
     );
   }
 

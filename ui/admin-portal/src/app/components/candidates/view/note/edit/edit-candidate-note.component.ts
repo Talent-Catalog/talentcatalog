@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateNoteService} from '../../../../../services/candidate-note.service';
 import {CandidateNote} from '../../../../../model/candidate-note';
-import {CountryService} from '../../../../../services/country.service';
+import {CandidateService} from "../../../../../services/candidate.service";
 
 @Component({
   selector: 'app-edit-candidate-note',
@@ -41,22 +41,11 @@ export class EditCandidateNoteComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: UntypedFormBuilder,
               private candidateNoteService: CandidateNoteService,
-              private countryService: CountryService ) {
+              private candidateService: CandidateService ) {
   }
 
   ngOnInit() {
     this.loading = true;
-
-    // /*load the countries */
-    // this.countryService.listCountries().subscribe(
-    //   (response) => {
-    //     this.countries = response;
-    //   },
-    //   (error) => {
-    //     this.error = error;
-    //     this.loading = false;
-    //   }
-    // );
 
     this.candidateForm = this.fb.group({
       title: [this.candidateNote.title],
@@ -69,6 +58,7 @@ export class EditCandidateNoteComponent implements OnInit {
     this.saving = true;
     this.candidateNoteService.update(this.candidateNote.id, this.candidateForm.value).subscribe(
       (candidateNote) => {
+        this.candidateService.updateCandidate();
         this.closeModal(candidateNote);
         this.saving = false;
       },

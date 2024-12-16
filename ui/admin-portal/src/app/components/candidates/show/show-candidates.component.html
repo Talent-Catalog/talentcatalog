@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -528,6 +528,10 @@
                   [completedTasks]="getCompletedMonitoredTasks(candidate)"
                   [totalTasks]="getTotalMonitoredTasks(candidate)">
                 </app-tasks-monitor>
+                <app-potential-duplicate-icon
+                  [candidate]="candidate"
+                  (refresh)="doSearch(true)"
+                ></app-potential-duplicate-icon>
               </td>
               <td *ngIf="isShowStage()">
                 <a *ngIf="getStage(candidate)" [routerLink]="getCandidateOpportunityLink(candidate)"
@@ -543,16 +547,16 @@
               </td>
               <td *ngFor="let field of selectedFields">
 
-                <span [ngbTooltip]="field.getTooltip(candidate)"  [ngClass]="{
-                'text-danger': field.getValue(candidate) === 'Overdue',
-                'text-success' : field.getValue(candidate) == 'Completed',
-                'text-warning' : field.getValue(candidate) == 'Abandoned'}">
+                <span [ngbTooltip]="field.getTooltip(candidate, candidateSource)"  [ngClass]="{
+                'text-danger': field.getValue(candidate, candidateSource) === 'Overdue',
+                'text-success' : field.getValue(candidate, candidateSource) == 'Completed',
+                'text-warning' : field.getValue(candidate, candidateSource) == 'Abandoned'}">
 <!--                  todo Have switch on display of arrays vs non arrays.
 Non arrays or single value arrays, just display value
 
 arrays with more than one value display in drop down
 -->
-                  {{field.getValue(candidate)}}
+                  {{field.getValue(candidate, candidateSource)}}
                 </span>
               </td>
             </tr>
@@ -571,7 +575,8 @@ arrays with more than one value display in drop down
                                  [loggedInUser]="loggedInUser"
                                  [savedSearchSelectionChange]="savedSearchSelectionChange"
                                  (onSearchCardRendered)="setSearchCardScrollTop()"
-                                 (closeEvent)="setCurrentCandidate(null)">
+                                 (closeEvent)="setCurrentCandidate(null)"
+                                 (candidateUpdated)="updatedCandidate($event)">
       </app-candidate-search-card>
 
     </div>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -322,6 +322,14 @@ public class CandidateSpecification {
                 }
             }
 
+            // POTENTIAL DUPLICATE
+            if (request.getPotentialDuplicate() != null) {
+                conjunction = cb.and(
+                    conjunction,
+                    cb.equal(candidate.get("potentialDuplicate"), request.getPotentialDuplicate())
+                );
+            }
+
             // MAJOR SEARCH
             if (!Collections.isEmpty(request.getEducationMajorIds())) {
                 candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
@@ -385,7 +393,7 @@ public class CandidateSpecification {
 
                 //Compute the predicate depending on whether it is negated
                 conjunction = cb.and(conjunction,
-                    listAnySearchType == SearchType.not
+                     SearchType.not.equals(listAnySearchType)
                         ? cb.in(candidate).value(sq).not()
                         : cb.in(candidate).value(sq)
                 );
@@ -410,8 +418,9 @@ public class CandidateSpecification {
                     );
 
                     //Compute the predicate depending on whether it is negated
+                    //TODO JC If NOT then shouldn't the cb.and be a cb or else apply the NOT at the end.
                     conjunction = cb.and(conjunction,
-                        listAllSearchType == SearchType.not
+                        SearchType.not.equals(listAllSearchType)
                             ? cb.in(candidate).value(sq).not()
                             : cb.in(candidate).value(sq)
                     );

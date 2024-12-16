@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -46,10 +46,12 @@ describe('ListHomeComponent', () => {
   beforeEach(async () => {
     const savedSearchServiceSpyObj = jasmine.createSpyObj('SavedSearchService', ['getSavedSearchTypeInfos']);
     const localStorageServiceSpyObj = jasmine.createSpyObj('LocalStorageService', ['get','set']);
-    const authorizationServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEmployerPartner']);
+    const authorizationServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEmployerPartner', 'canSeeJobDetails']);
     const authenticationServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
     const salesforceServiceSpyObj = jasmine.createSpyObj('SalesforceService', ['fetchJob']);
+
+    authorizationServiceSpyObj.canSeeJobDetails.and.returnValue(true);
 
     await TestBed.configureTestingModule({
       declarations: [ListHomeComponent,BrowseCandidateSourcesComponent,RouterLinkStubDirective],
@@ -114,4 +116,10 @@ describe('ListHomeComponent', () => {
     authorizationServiceSpy.isEmployerPartner.and.returnValue(true);
     expect(component.seesPublicLists()).toBeFalse();
   });
+
+  it('should not show public lists to partners who are not source, destination or employer', () => {
+    authorizationServiceSpy.canSeeJobDetails.and.returnValue(false);
+    expect(component.canSeeJobDetails()).toBeFalse();
+  });
+
 });

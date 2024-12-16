@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2022 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -40,6 +40,13 @@
                formControlName="evergreen" id="evergreen" class="form-check-input">
         <label class="form-check-label" [title]="evergreenTip"
                for="evergreen">Evergreen job?</label>
+      </div>
+
+      <div class="form-check">
+        <input [title]="skipCandidateSearchTip" type="checkbox"
+               formControlName="skipCandidateSearch" id="skipCandidateSearch" class="form-check-input">
+        <label class="form-check-label" [title]="skipCandidateSearchTip"
+               for="skipCandidateSearch">Skip candidate search?</label>
       </div>
 
       <!-- SUBMISSION DUE DATE -->

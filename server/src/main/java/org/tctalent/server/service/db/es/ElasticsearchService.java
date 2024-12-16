@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,108 +19,128 @@ package org.tctalent.server.service.db.es;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import java.util.Collection;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.es.CandidateEs;
 
-
+/**
+ * Service for applying boolean queries to an Elasticsearch server.
+ */
 public interface ElasticsearchService {
 
   /**
-   * Adds a nested query to the Boolean query builder.
-   * @param builder Elastic Java API BoolQuery builder
-   * @param path Path to the nested query
-   * @param nestedQueryBuilder Allows a boolean nested query - represented as another builder -
-   *                           to be added to the given Boolean builder. The nested query is built,
-   *                           and its result is used to construct the nested filter.
-   * @return Updated builder
+   * Adds the given query to the given builder by adding it with a boolean "and".
+   * @param builder Builder of a boolean query
+   * @param nq Query to add
    */
-  @NonNull
-  BoolQuery.Builder addElasticNestedFilter(
-      BoolQuery.Builder builder, String path, BoolQuery.Builder nestedQueryBuilder);
+  void addAnd(BoolQuery.Builder builder, NativeQuery nq);
 
   /**
-   * Adds a terms filter to the Boolean query builder. The terms are combined according
-   * to the searchType
-   * @param builder Elastic Java API BoolQuery builder
-   * @param searchType Type of search - default is SearchType.and if null.
-   * @param field Field to check against
-   * @param values comparison values
-   * @return Updated builder - with filter added according to searchType
+   * Adds the given query to the given builder by adding it with a boolean "or".
+   * @param builder Builder of a boolean query
+   * @param nq Query to add
    */
-  @NonNull
-  BoolQuery.Builder addElasticTermsFilter(
-      BoolQuery.Builder builder, @Nullable SearchType searchType, String field,
-      Collection<Object> values);
+  void addOr(BoolQuery.Builder builder, NativeQuery nq);
 
   /**
-   * Adds a boolean query to the Boolean query builder.
-   * @param builder Elastic Java API BoolQuery builder
-   * @param searchType May be null, in which case default is SearchType.and which translates to
-   *                   "filter", but it can also be SearchType.or which translates to "should".
-   *                   SearchType.not is not supported - it is ignored and default is used.
-   * @param subQueryBuilder Allows a boolean subquery - represented as another builder - to be added
-   *                        to the given Boolean builder. The subquery is built, and its result
-   *                        added to the filter.
-   * @return Updated builder - with filter added according to searchType
+   * Make a query using the given builder.
+   * <p/>
+   * The builder is built (build is called) and its result is used to construct the query.
+   * @param builder Builder used to create query
+   * @return Native query
    */
   @NonNull
-  BoolQuery.Builder addElasticBooleanFilter(
-      BoolQuery.Builder builder, @Nullable SearchType searchType, BoolQuery.Builder subQueryBuilder);
+  NativeQuery makeCompoundQuery(BoolQuery.Builder builder);
 
   /**
-   * Adds a single term filter to the Boolean query builder.
-   * @param builder Elastic Java API BoolQuery builder
-   * @param field Field to check against
-   * @param value comparison value
-   * @return Updated builder
+   * Make a query using the given builder and optional PageRequest.
+   * <p/>
+   * The builder is built (build is called) and its result is used to construct the query.
+   * @param builder Builder used to create query
+   * @param pageRequest Optional PageRequest used to create query
+   * @return Native query
    */
   @NonNull
-  BoolQuery.Builder addElasticTermFilter(BoolQuery.Builder builder, String field, Object value);
+  NativeQuery makeCompoundQueryWithPaging(BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
 
   /**
-   * Adds a simple query string filter to the Boolean query builder.
-   * @param builder Elastic Java API BoolQuery builder
-   * @param simpleQueryString Query string which defines the query filter
-   * @return Updated builder
-   */
-  @NonNull
-  BoolQuery.Builder addElasticSimpleQueryStringFilter(
-      BoolQuery.Builder builder, @NonNull String simpleQueryString);
-
-  /**
-   * Adds an exists filter to the Boolean query builder.
-   * @param builder Elastic Java API BoolQuery builder
-   * @param searchType Type of search - default is "SearchType.and" if null.
+   * Make an exists query.
    * @param field Field to check whether it exists
-   * @return Updated builder - with filter added according to searchType
+   * @return Native query
    */
   @NonNull
-  BoolQuery.Builder addElasticExistsFilter(
-      BoolQuery.Builder builder, @Nullable SearchType searchType, @NonNull String field);
+  NativeQuery makeExistsQuery(@NonNull String field);
 
   /**
-   * Adds a range filter to the Boolean query builder.
-   * @param builder Elastic Java API BoolQuery builder
+   * Make a nested query.
+   * @param path Path to the nested query
+   * @param nestedQueryBuilder The nested query is created from this builder. This builder is built
+   *                           (build is called) and its result is used to construct the nested
+   *                           query.
+   * @return Native query
+   */
+  @NonNull
+  NativeQuery makeNestedQuery(@NonNull String path, @NonNull BoolQuery.Builder nestedQueryBuilder);
+
+  /**
+   * Make a range query.
    * @param field Field to check against
    * @param min Minimum value (inclusive)
    * @param max Maximum value (inclusive)
-   * @return Updated builder
+   * @return Native query
    */
   @NonNull
-  BoolQuery.Builder addElasticRangeFilter(
-      BoolQuery.Builder builder, String field, @Nullable Object min, @Nullable Object max);
+  NativeQuery makeRangeQuery(@NonNull String field, @Nullable Object min, @Nullable Object max);
 
   /**
-   * Searches for CandidateEs objects matching the given query
-   * @param builder BoolQuery builder containing query to execute
-   * @param pageRequest Optional page request containing sort and and paging info
+   * Make a simple string query.
+   * @param simpleQueryString Query string which defines the query
+   * @return Native query
+   */
+  @NonNull
+  NativeQuery makeSimpleStringQuery(@NonNull String simpleQueryString);
+
+  /**
+   * Make a term query.
+   * @param field Field to check against
+   * @param value comparison value
+   * @return Native query
+   */
+  @NonNull
+  NativeQuery makeTermQuery(String field, Object value);
+
+  /**
+   * Make a terms query.
+   * @param field Field to check against
+   * @param values comparison values
+   * @return Native query
+   */
+  @NonNull
+  NativeQuery makeTermsQuery(String field, Collection<Object> values);
+
+  /**
+   * Extracts the JSON query (if any) from the given native query.
+   * @param nativeQuery Native query
+   * @return JSON corresponding to underlying query - null if no query found
+   */
+  @Nullable
+  String nativeQueryToJson(@Nullable NativeQuery nativeQuery);
+
+  /**
+   * Creates a query which is the negation of the given query.
+   * ie "not" the result of the given query
+   * @param nq a query
+   * @return Native query which is "not" the given query.
+   */
+  NativeQuery not(NativeQuery nq);
+
+  /**
+   * Searches for CandidateEs objects matching the given native query
+   * @param nativeQuery Native query to be executed
    * @return Results
    */
   @NonNull
-  SearchHits<CandidateEs> searchCandidateEs(
-      BoolQuery.Builder builder, @Nullable PageRequest pageRequest);
-
+  SearchHits<CandidateEs> searchCandidateEs(NativeQuery nativeQuery);
 }

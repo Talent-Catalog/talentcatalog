@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -35,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -904,6 +905,18 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
+
+        // Set relocated details
+        candidate.setRelocatedAddress(request.getRelocatedAddress());
+        candidate.setRelocatedCity(request.getRelocatedCity());
+        candidate.setRelocatedState(request.getRelocatedState());
+        Country relocatedCountry = null;
+        if (request.getRelocatedCountryId() != null) {
+            relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
+        }
+        candidate.setRelocatedCountry(relocatedCountry);
+
         return save(candidate, true);
     }
 
@@ -1050,13 +1063,6 @@ public class CandidateServiceImpl implements CandidateService {
                 partnerAbbreviation = rootRequest.getPartnerAbbreviation();
             }
         }
-        if (partnerAbbreviation != null) {
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("Register Candidate")
-                .message("Registration with partner abbreviation: " + partnerAbbreviation)
-                .logInfo();
-        }
 
         //Pick up query parameters from request if they are passed in
         HasTcQueryParameters queryParameters;
@@ -1068,6 +1074,26 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Assign partner based on the partner abbreviation, if any
         Partner sourcePartner = partnerService.getPartnerFromAbbreviation(partnerAbbreviation);
+
+        // Check for and replace partner if it has a redirectPartner assigned — typically when it is
+        // no longer active and another org has assumed responsibility for candidates in its
+        // jurisdiction.
+        if (sourcePartner != null) {
+            while (sourcePartner.getRedirectPartner() != null) {
+                LogBuilder.builder(log) // Log the reassignment
+                    .user(authService.getLoggedInUser())
+                    .action("Register Candidate")
+                    .message(sourcePartner.getName() + " has a redirectPartner assigned - registration "
+                        + "redirected to " + sourcePartner.getRedirectPartner().getName() + ".")
+                    .logInfo();
+
+                sourcePartner = sourcePartner.getRedirectPartner();
+            }
+
+            // This is a failsafe: we never want to assign candidates to an inactive partner.
+            sourcePartner = sourcePartner.getStatus() == Status.active ? sourcePartner : null;
+        }
+
         if (sourcePartner == null || !sourcePartner.isSourcePartner()) {
             //No source partner found based on partner query param.
 
@@ -1090,6 +1116,12 @@ public class CandidateServiceImpl implements CandidateService {
                 sourcePartner = partnerService.getDefaultSourcePartner();
             }
         }
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Register Candidate")
+            .message("Registration with partner: " + sourcePartner.getName())
+            .logInfo();
 
         /* Validate that the candidate has marked email consent partners as true in order to continue registration */
         if (!request.getContactConsentRegistration()) {
@@ -3003,36 +3035,11 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Override
-    public void reassignSavedListCandidates(SavedList savedList, int partnerId) {
-        Partner newPartner = partnerService.getPartner(partnerId);
+    public void reassignCandidatesOnPage(
+        Page<Candidate> candidatePage, Partner newPartner
+    ) throws IllegalArgumentException {
+        List<Candidate> candidateList = candidatePage.getContent();
 
-        SavedListGetRequest request = new SavedListGetRequest();
-
-        Page<Candidate> candidatePage = getSavedListCandidates(savedList, request);
-
-        int totalPagesToProcess = candidatePage.getTotalPages();
-        int pagesProcessed = 0;
-
-        while (pagesProcessed < totalPagesToProcess) {
-            request.setPageNumber(pagesProcessed);
-            candidatePage = getSavedListCandidates(savedList, request);
-            List<Candidate> candidates = candidatePage.getContent();
-            processCandidateReassignment(candidates, newPartner);
-            persistenceContextHelper.flushAndClearEntityManager();
-            pagesProcessed++;
-        }
-    }
-
-    /**
-     * For each candidate on given list, sets partnerId on associated user object, saves to DB and
-     * updates the corresponding elasticsearch index entry.
-     * @param candidateList list of candidates
-     * @param newPartner the new partner to which they will be assigned
-     */
-    private void processCandidateReassignment(
-        List<Candidate> candidateList, Partner newPartner
-    ) {
         if (newPartner instanceof PartnerImpl) {
             for (Candidate candidate : candidateList) {
                 User candidateUser = candidate.getUser();
@@ -3040,11 +3047,101 @@ public class CandidateServiceImpl implements CandidateService {
                 save(candidate, true);
             }
         } else {
-            LogBuilder.builder(log)
-                .action("Process candidate reassignment")
-                .message("Partner with ID " + newPartner.getId() + " is not a valid implementation of Partner.")
-                .logError();
+            throw new IllegalArgumentException("newPartner must be valid implementation of Partner.");
         }
+
+        persistenceContextHelper.flushAndClearEntityManager();
+    }
+
+    @Transactional
+    @Override
+    public void cleanUpResolvedDuplicates() {
+        // Obtain list of IDs of all candidates currently potential duplicates
+        List<Long> newCandidateIds =
+            this.candidateRepository.findIdsOfPotentialDuplicateCandidates(null);
+
+        // Obtain list of IDs of all candidates where potentialDuplicate already set to true
+        List<Long> previousCandidateIds =
+            this.candidateRepository.findIdsOfCandidatesMarkedPotentialDuplicates();
+
+        int resolvedDuplicates = 0;
+
+        // If not in newly generated list, set potentialDuplicate to false on candidate matching ID
+        for (Long id: previousCandidateIds) {
+            if (!newCandidateIds.contains(id)) {
+                Candidate candidate = getCandidate(id);
+                candidate.setPotentialDuplicate(false);
+                save(candidate, false);
+                resolvedDuplicates++;
+            }
+        }
+
+        LogBuilder.builder(log)
+            .action("Clean up resolved duplicates")
+            .message("Cleaned up " + resolvedDuplicates + " resolved duplicate(s)!")
+            .logInfo();
+    }
+
+    @Transactional
+    @Override
+    public void processPotentialDuplicatePage(Page<Candidate> candidatePage) {
+
+        if (!candidatePage.isEmpty()) {
+            List<Candidate> candidateList = candidatePage.getContent();
+
+            for (Candidate candidate : candidateList) {
+                candidate.setPotentialDuplicate(true);
+                save(candidate, false);
+            }
+
+            // Log completed page
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Processed page " + (candidatePage.getNumber() + 1) + " of " +
+                    candidatePage.getTotalPages())
+                .logInfo();
+        }
+
+        // Log if processing complete
+        if (candidatePage.getNumber() + 1 >= candidatePage.getTotalPages()) {
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Background duplicate processing complete!")
+                .logInfo();
+        }
+    }
+
+    /**
+     * For a candidate with given ID will return a list containing any other profiles with same
+     * first name AND last name and DOB, or an empty list if there are none, in which case it will
+     * also set the candidate's potentialDuplicate property to false.
+     * @param candidateId ID of candidate being queried
+     * @return List of candidates, empty if there are no potential duplicates
+     */
+    public List<Candidate> fetchPotentialDuplicatesOfCandidateWithGivenId(@NotNull Long candidateId) {
+        Candidate candidate = getCandidate(candidateId);
+
+        final List<CandidateStatus> statuses = new ArrayList<>(
+            EnumSet.of(CandidateStatus.active, CandidateStatus.unreachable,
+                CandidateStatus.incomplete, CandidateStatus.pending));
+
+        List<Candidate> candidates =
+            this.candidateRepository.findPotentialDuplicatesOfGivenCandidate(
+                statuses,
+                candidate.getDob(),
+                candidate.getUser().getLastName().toLowerCase(),
+                candidate.getUser().getFirstName().toLowerCase(),
+                candidate.getId()
+            );
+
+        // Candidate no longer matches other profiles (usually because admin has changed the others'
+        // status to 'Deleted')
+        if (candidates.isEmpty()) {
+            candidate.setPotentialDuplicate(false);
+            save(candidate, false);
+        }
+
+        return candidates;
     }
 
 }

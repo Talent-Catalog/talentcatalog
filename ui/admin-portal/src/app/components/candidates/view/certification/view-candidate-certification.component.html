@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -32,14 +32,14 @@
   </div>
 
   <div class="card-body">
-    <div *ngIf="!candidateCertifications || candidateCertifications.length == 0">
+    <div *ngIf="!candidate.candidateCertifications || candidate.candidateCertifications?.length == 0">
       <div class="row">
         <div class="col-sm-12">
           No certifications entered
         </div>
       </div>
     </div>
-    <div *ngFor="let candidateCertification of candidateCertifications">
+    <div *ngFor="let candidateCertification of candidate.candidateCertifications">
       <div class="row">
         <div class="col-6">
           <span class="card-title"

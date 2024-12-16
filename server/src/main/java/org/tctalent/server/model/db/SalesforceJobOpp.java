@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -177,6 +177,12 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_partner_id")
     private PartnerImpl jobCreator;
+
+    /**
+     * True if no candidate search is required. The candidates to be considered have already
+     * been added to the submission list.
+     */
+    private boolean skipCandidateSearch;
 
     /**
      * Stage of job opportunity

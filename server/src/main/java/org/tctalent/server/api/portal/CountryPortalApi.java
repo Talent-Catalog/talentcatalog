@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,16 +16,15 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/portal/country")
@@ -41,20 +40,12 @@ public class CountryPortalApi {
     @GetMapping()
     public List<Map<String, Object>> listAllCountries() {
         List<Country> countries = countryService.listCountries(false);
-        return countryDto().buildList(countries);
+        return countryService.selectBuilder().buildList(countries);
     }
 
     @GetMapping("destinations")
     public @NotNull List<Map<String, Object>> listTCDestinations() {
         List<Country> countries = countryService.getTCDestinations();
-        return countryDto().buildList(countries);
+        return countryService.selectBuilder().buildList(countries);
     }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
 }

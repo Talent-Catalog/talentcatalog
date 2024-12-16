@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -87,7 +87,7 @@
           <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
         </a>
       </h3>
-      <button (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-info me-1">
+      <button *ngIf="canSeeJobDetails()" (click)="toggleNotes()" id="bt2" class="btn btn-sm btn-info me-1">
         General Notes
         <i *ngIf="!showNotes" class="fas fa-eye"></i>
         <i *ngIf="showNotes" class="fas fa-eye-slash"></i>
@@ -95,7 +95,7 @@
     </div>
 
     <!-- AUTO UPDATING SHAREABLE NOTES -->
-    <ng-container *ngIf="showNotes">
+    <ng-container *ngIf="showNotes && canSeeJobDetails()">
       <app-candidate-shareable-notes
         [candidate]="candidate"
         [editable] = "isEditable()"
@@ -113,7 +113,7 @@
           <app-candidate-general-tab
             [candidate]="candidate"
             [editable]="false"
-            [adminUser]="isAnAdmin()">>
+            [adminUser]="isAnAdmin()">
           </app-candidate-general-tab>
         </ng-template>
       </ng-container>
@@ -178,7 +178,7 @@
       </ng-container>
 
       <!-- JOBS -->
-      <ng-container ngbNavItem="jobs">
+      <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="jobs">
         <a ngbNavLink>Jobs</a>
         <ng-template ngbNavContent>
           <app-candidate-jobs-tab

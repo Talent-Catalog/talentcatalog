@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -71,7 +71,7 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
     //Replace the form value with the new candidates context notes when
     //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
+      this.form.controls['contextNote'].patchValue(this.candidate.contextNote, {emitEvent: false});
     }
   }
 

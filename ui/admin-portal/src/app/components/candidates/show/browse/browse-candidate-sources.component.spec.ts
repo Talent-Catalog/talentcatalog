@@ -1,5 +1,26 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ReactiveFormsModule} from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup
+} from '@angular/forms';
 import {NgbModal, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 import {Router} from '@angular/router';
 import {BrowseCandidateSourcesComponent} from './browse-candidate-sources.component';
@@ -30,7 +51,11 @@ describe('BrowseCandidateSourcesComponent', () => {
     mockCandidateSourceService = jasmine.createSpyObj('CandidateSourceService', ['searchPaged']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
     mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    mockCandidateFieldService = jasmine.createSpyObj('CandidateFieldService', ['getCandidateSourceFields']);
+    mockCandidateFieldService = jasmine.createSpyObj(
+      'CandidateFieldService',
+      ['setCandidateSource', 'getCandidateSourceFields']
+    );
+    mockCandidateFieldService.setCandidateSource.and.callThrough();
     mockCandidateFieldService.getCandidateSourceFields.and.returnValue(of());
     mockCandidateSourceService.searchPaged.and.returnValue(of(new MockSearchResults()));
     await TestBed.configureTestingModule({

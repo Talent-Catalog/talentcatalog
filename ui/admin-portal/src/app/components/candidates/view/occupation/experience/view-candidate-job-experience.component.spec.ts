@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,20 +19,20 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   CandidateJobExperienceService
 } from "../../../../../services/candidate-job-experience.service";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {of, throwError} from "rxjs";
 import {CandidateJobExperience} from "../../../../../model/candidate-job-experience";
-import {SearchResults} from "../../../../../model/search-results";
+import {CandidateService} from "../../../../../services/candidate.service";
 
 describe('ViewCandidateJobExperienceComponent', () => {
   let component: ViewCandidateJobExperienceComponent;
   let fixture: ComponentFixture<ViewCandidateJobExperienceComponent>;
   let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;
+  let mockCandidateService: jasmine.SpyObj<CandidateService>;
   let mockNgbModal: jasmine.SpyObj<NgbModal>;
   let formBuilder: UntypedFormBuilder;
 
@@ -42,7 +42,8 @@ describe('ViewCandidateJobExperienceComponent', () => {
   const candidateOccupation = mockCandidate.candidateOccupations;
 
   beforeEach(async () => {
-    const candidateJobExperienceServiceSpy = jasmine.createSpyObj('CandidateJobExperienceService', ['search']);
+    const candidateJobExperienceServiceSpy = jasmine.createSpyObj('CandidateJobExperienceService', ['delete']);
+    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
     const ngbModalSpy = jasmine.createSpyObj('NgbModal', ['open']);
 
     await TestBed.configureTestingModule({
@@ -51,12 +52,14 @@ describe('ViewCandidateJobExperienceComponent', () => {
       providers: [
         UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
+        { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: NgbModal, useValue: ngbModalSpy }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     mockCandidateJobExperienceService = TestBed.inject(CandidateJobExperienceService) as jasmine.SpyObj<CandidateJobExperienceService>;
+    mockCandidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
     mockNgbModal = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
     formBuilder = TestBed.inject(UntypedFormBuilder);
 
@@ -72,14 +75,6 @@ describe('ViewCandidateJobExperienceComponent', () => {
     component.editable = true;
     component.adminUser = true;
 
-    const mockResults = {
-      content: mockExperiences,
-      totalPages: 1,
-      number: 0
-    } as SearchResults<CandidateJobExperience>;
-
-    mockCandidateJobExperienceService.search.and.returnValue(of(mockResults));
-
     component.ngOnChanges({
       candidate: {
         previousValue: null,
@@ -92,48 +87,5 @@ describe('ViewCandidateJobExperienceComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with default values', () => {
-    expect(component.candidateJobExperienceForm.value).toEqual({
-      candidateOccupationId: component.candidateOccupation.id,
-      pageSize: 10,
-      pageNumber: 0,
-      sortDirection: 'DESC',
-      sortFields: ['endDate']
-    });
-  });
-
-  it('should retrieve and display candidate job experiences', () => {
-
-    const mockResults = {
-      content: mockExperiences,
-      totalPages: 1,
-      number: 0
-    } as SearchResults<CandidateJobExperience>;
-
-    mockCandidateJobExperienceService.search.and.returnValue(of(mockResults));
-
-    component.doSearch();
-
-    fixture.detectChanges();
-
-    expect(component.experiences).toEqual(mockExperiences);
-    expect(component.hasMore).toBe(false);
-    expect(component.loading).toBe(false);
-
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('div.col-sm-12').textContent).toContain('Software Developer');
-  });
-
-  it('should handle search error', () => {
-    mockCandidateJobExperienceService.search.and.returnValue(throwError('Error'));
-
-    component.doSearch();
-
-    fixture.detectChanges();
-
-    expect(component.error).toBe('Error');
-    expect(component.loading).toBe(false);
   });
 });

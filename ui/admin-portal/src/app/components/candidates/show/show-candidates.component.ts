@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -32,8 +32,7 @@ import {
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
-import {CandidateService} from '../../../services/candidate.service';
-import {SearchResults} from '../../../model/search-results';
+import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {NgbModal, NgbOffcanvasRef} from '@ng-bootstrap/ng-bootstrap';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
@@ -470,11 +469,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         //Run the saved list or saved search as stored on the server.
         this.performSearch(
           this.pageSize,
-          DtoType.FULL,
+          DtoType.EXTENDED,
           this.keyword,
           this.showClosedOpps).subscribe(() => {
-            // Restore the selection prior to the search
-            this.setCurrentCandidate(saveCurrentCandidate);
+          // Restore the selection prior to the search using the updated results (otherwise updated fields won't appear)
+          const updatedCurrentCandidate = this.results.content.find(c => c.id == saveCurrentCandidate?.id);
+          this.setCurrentCandidate(updatedCurrentCandidate);
           }, error => {
             // Error is already displayed in the UI
           }
@@ -711,21 +711,40 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   /**
    * Lightly adapted version of {@link ViewCandidateComponent.downloadGeneratedCV}.
-   * Opens {@link DownloadCvComponent} modal that returns CV generated from candiate profile.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candidate profile.
    */
-  downloadGeneratedCV(candidate) {
-    // Modal
-    const downloadCVModal = this.modalService.open(DownloadCvComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
+  downloadGeneratedCV(candidate: Candidate) {
+    if (this.canViewCandidateName()) {
+        // Modal
+        const downloadCVModal = this.modalService.open(DownloadCvComponent, {
+          centered: true,
+          backdrop: 'static'
+        });
 
-    downloadCVModal.componentInstance.candidateId = candidate.id;
+        downloadCVModal.componentInstance.candidateId = candidate.id;
 
-    downloadCVModal.result
-    .then((result) => {
-    })
-    .catch(() => { /* Isn't possible */ });
+        downloadCVModal.result
+        .then((result) => {
+        })
+        .catch(() => { /* Isn't possible */ });
+
+    } else {
+      // No modal giving option to view name and contact details - straight to anonymised DL
+      const request: DownloadCVRequest = {
+        candidateId: candidate.id,
+        showName: false,
+        showContact: false
+      }
+      const tab = window.open();
+      this.candidateService.downloadCv(request).subscribe(
+        result => {
+          tab.location.href = URL.createObjectURL(result);
+        },
+        error => {
+          this.error = error;
+        }
+      );
+    }
   }
 
   getBreadcrumb(): string {
@@ -1752,4 +1771,14 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       err => {this.error = err; this.closing = false; }
     );
   }
+
+  updatedCandidate(candidate: Candidate) {
+    let index = this.results.content.findIndex(c => c.id == candidate.id)
+    this.results.content[index] = candidate;
+  }
+
+  public canViewCandidateName() {
+    return this.authorizationService.canViewCandidateName();
+  }
+
 }

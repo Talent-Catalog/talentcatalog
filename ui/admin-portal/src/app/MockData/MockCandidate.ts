@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -94,6 +94,10 @@ export class MockCandidate implements Candidate {
   unhcrStatus: UnhcrStatus = UnhcrStatus.RegisteredAsylum;
   ieltsScore: string = "7.5";
   numberDependants: number = 2;
+  relocatedAddress: string = "123 Sesame Street"
+  relocatedCity: string = "Melbourne"
+  relocatedState: string = "Victoria"
+  relocatedCountry: any = { id: 1, name: "Australia", status: "active", translatedName: "Australia" }
   candidateExams: any[] = [
     { id: 1, exam: Exam.IELTSGen, score: "7.5", year: 2020 }
   ];
@@ -207,6 +211,7 @@ export class MockCandidate implements Candidate {
   miniIntakeCompletedDate: number = 19900101;
   fullIntakeCompletedBy: any = { id: 1, username: "admin", email: "admin@example.com" };
   fullIntakeCompletedDate: number = 19900101;
+  potentialDuplicate: boolean = false;
   candidateCertifications?: any[];
   candidateEducations?: CandidateEducation[] = [
     {

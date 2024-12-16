@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,6 +36,8 @@ import {CandidateEducation} from "./candidate-education";
 import {CandidateJobExperience} from "./candidate-job-experience";
 import {CandidateLanguage} from "./candidate-language";
 import {CandidateOccupation} from "./candidate-occupation";
+import {CandidateSkill} from "./candidate-skill";
+import {CandidateNote} from "./candidate-note";
 
 export interface ShortCandidate {
   id: number;
@@ -110,13 +112,22 @@ export interface Candidate extends HasId {
   miniIntakeCompletedDate: number;
   fullIntakeCompletedBy: User;
   fullIntakeCompletedDate: number;
+  potentialDuplicate: boolean;
 
-  //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];
   candidateEducations?: CandidateEducation[];
   candidateJobExperiences?: CandidateJobExperience[];
   candidateLanguages?: CandidateLanguage[];
   candidateOccupations?: CandidateOccupation[];
+  candidateDestinations?: CandidateDestination[];
+  candidateSkills?: CandidateSkill[];
+  candidateNotes?: CandidateNote[];
+
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
 
 }
 

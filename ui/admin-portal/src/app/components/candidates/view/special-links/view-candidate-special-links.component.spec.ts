@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 import {ViewCandidateSpecialLinksComponent} from "./view-candidate-special-links.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AuthorizationService} from "../../../../services/authorization.service";
-import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -33,7 +33,7 @@ describe('ViewCandidateSpecialLinksComponent', () => {
   let modalService: jasmine.SpyObj<NgbModal>;
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
-    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['createCandidateFolder', 'createUpdateLiveCandidate']);
+    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['createCandidateFolder', 'createUpdateLiveCandidate', 'updateCandidate']);
     const authServiceSpy = jasmine.createSpyObj('AuthorizationService', ['canAccessSalesforce']);
     const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
 
@@ -85,7 +85,7 @@ describe('ViewCandidateSpecialLinksComponent', () => {
 
     fixture.detectChanges();
     expect(component.loading).toBe(false);
-    expect(component.candidate).toEqual(updatedCandidate);
+    expect(candidateService.updateCandidate).toHaveBeenCalled()
   });
 
   it('should handle createCandidateFolder error', () => {
@@ -113,7 +113,7 @@ describe('ViewCandidateSpecialLinksComponent', () => {
 
     fixture.detectChanges();
     expect(component.loading).toBe(false);
-    expect(component.candidate).toEqual(updatedCandidate);
+    expect(candidateService.updateCandidate).toHaveBeenCalled()
   });
 
   it('should handle createUpdateSalesforce error', () => {

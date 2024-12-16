@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -9,6 +25,7 @@ import {
   JobPrepItem,
   JobPrepSuggestedCandidates
 } from "../../../../../model/job-prep-item";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-view-job-info',
@@ -21,7 +38,10 @@ export class ViewJobInfoComponent implements OnInit {
   @Input() highlightItem: JobPrepItem;
   @Output() jobUpdated = new EventEmitter<Job>();
 
-  constructor(private modalService: NgbModal) { }
+  constructor(
+    private modalService: NgbModal,
+    private authorizationService: AuthorizationService
+  ) { }
 
   ngOnInit(): void {
   }
@@ -64,4 +84,9 @@ export class ViewJobInfoComponent implements OnInit {
   getContactUser(): User {
     return this.job.contactUser ? this.job.contactUser : this.job.createdBy;
   }
+
+  public canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
 }

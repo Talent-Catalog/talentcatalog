@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 import {VisaCheckAuComponent} from "./visa-check-au.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
+import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";

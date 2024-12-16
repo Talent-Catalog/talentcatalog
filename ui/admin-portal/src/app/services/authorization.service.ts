@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -312,6 +312,10 @@ export class AuthorizationService {
     return this.authenticationService.getLoggedInUser() != null;
   }
 
+  /**
+   * ReadOnly users can create their own lists and searches. But they can't change any shared
+   * information.
+   */
   isReadOnly(): boolean {
     const loggedInUser = this.authenticationService.getLoggedInUser();
     return loggedInUser == null ? true : loggedInUser.readOnly;
@@ -481,4 +485,22 @@ export class AuthorizationService {
     }
     return editable
   }
+
+  canSeeGlobalLists() {
+      return !this.isEmployerPartner();
+  }
+
+  canSeeJobDetails() {
+    let result: boolean = false;
+    if (this.isSourcePartner() || this.isJobCreatorPartner()) {
+      switch (this.getLoggedInRole()) {
+        case Role.systemadmin:
+        case Role.admin:
+        case Role.partneradmin:
+          result = true;
+      }
+    }
+    return result;
+  }
+
 }

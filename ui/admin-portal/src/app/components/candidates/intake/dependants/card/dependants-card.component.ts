@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,13 @@
 
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateDependant, DependantRelations, Gender, Registrations, YesNo} from '../../../../../model/candidate';
+import {
+  CandidateDependant,
+  DependantRelations,
+  Gender,
+  Registrations,
+  YesNo
+} from '../../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';

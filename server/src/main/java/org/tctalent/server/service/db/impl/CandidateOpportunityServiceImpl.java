@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -661,6 +661,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                         // If non closing stage change, publish posts
                         publishStageChangePosts(opp, newStage);
                     }
+
+                    // If new stage is relocated then set relocated address
+                    if (newStage.equals(CandidateOpportunityStage.relocated)) {
+                        updateCandidateRelocatedCountry(opp);
+                    }
                 }
 
                 opp.setStage(newStage);
@@ -981,6 +986,19 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 autoPostAcceptedJobOffer, jcspChat, userService.getSystemAdminUser());
         // Publish chat post
         chatPostService.publishChatPost(jcspChatPostAccepted);
+    }
+
+    /**
+     * If the job opportunity has a country associated, set that as the relocated country for the candidate.
+     * @param opp Candidate Opportunity which we get the job opp and the candidate from
+     */
+    private void updateCandidateRelocatedCountry(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        SalesforceJobOpp jobOpp = opp.getJobOpp();
+        if (jobOpp.getCountry() != null) {
+            candidate.setRelocatedCountry(jobOpp.getCountry());
+            candidateService.save(candidate, false);
+        }
     }
 
     /**

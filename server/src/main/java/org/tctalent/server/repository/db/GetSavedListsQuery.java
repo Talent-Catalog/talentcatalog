@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -125,7 +125,7 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         if (request.getOwned() != null && request.getOwned()) {
             if (loggedInUser != null) {
                 disjunction = cb.or(disjunction,
-                        cb.equal(savedList.get("createdBy"), loggedInUser)
+                        cb.equal(savedList.get("createdBy").get("id"), loggedInUser.getId())
                 );
             }
         }

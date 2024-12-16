@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -51,4 +51,10 @@ public interface CandidateEsRepository
      */
     @Query("{\"simple_query_string\": {\"query\": \"?0\"}}")
     Page<CandidateEs> simpleQueryString(String searchQuery, Pageable pageable);
+
+    /**
+     * Deletes candidate with given candidate number
+     * @param candidateNumber Candidate number
+     */
+    void deleteByCandidateNumber(String candidateNumber);
 }

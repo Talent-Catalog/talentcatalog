@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -25,6 +24,7 @@ import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.request.occupation.CreateOccupationRequest;
 import org.tctalent.server.request.occupation.SearchOccupationRequest;
 import org.tctalent.server.request.occupation.UpdateOccupationRequest;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface OccupationService {
 
@@ -39,5 +39,7 @@ public interface OccupationService {
     Occupation updateOccupation(long id, UpdateOccupationRequest request) throws EntityExistsException ;
 
     boolean deleteOccupation(long id) throws EntityReferencedException;
+
+    DtoBuilder selectBuilder();
 
 }

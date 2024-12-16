@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,8 +17,6 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-import org.springframework.web.reactive.function.client.WebClientException;
-import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.PageContext;
@@ -37,5 +35,27 @@ public interface BackgroundProcessingService {
   BackProcessor<PageContext> createSfSyncBackProcessor(
       List<CandidateStatus> statuses, long totalNoOfPages
   );
+
+  /**
+   * Creates a back processor to handle processing of potential duplicate candidates.
+   */
+  BackProcessor<PageContext> createPotentialDuplicatesBackProcessor(List<Long> candidateIds);
+
+  /**
+   * Daily check for candidates who may have more than one profile based on identical first name AND
+   * last name AND DOB - sets potentialDuplicate to true. Can also be triggered manually from
+   * SystemAdminApi stub.
+   * <p>
+   *   Calls {@link CandidateService#cleanUpResolvedDuplicates()} which sets same property to
+   *   false if previously flagged candidates no longer meet the criteria.
+   * </p>
+   */
+  void processPotentialDuplicateCandidates();
+
+  /**
+   * Creates a background processor and obtains candidate list and sets parameters for its
+   * scheduled operations.
+   */
+  void initiateDuplicateProcessing();
 
 }

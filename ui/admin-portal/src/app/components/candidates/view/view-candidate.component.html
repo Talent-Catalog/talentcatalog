@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -74,6 +74,10 @@
           <a (click)="createTailoredCv()" class="link-info">
             <i class="fas fa-users-gear"  title="View tailored candidate's public CV"></i>
           </a>
+          <app-potential-duplicate-icon
+            [candidate]="candidate"
+            (refresh)="refreshCandidateProfile()"
+          ></app-potential-duplicate-icon>
         </span>
       </h1>
 
@@ -126,11 +130,9 @@
       </p>
     </div>
 
-    <div *ngIf="isEditable()" class="ps-2 flex-shrink-0">
-      <button class="btn btn-sm btn-primary" type="button"
-              (click)="onNewList()">+ New List
-      </button>
-    </div>
+    <button class="btn btn-sm btn-primary" type="button"
+            (click)="onNewList()">+ New List
+    </button>
   </div>
 
   <div class="row">
@@ -229,7 +231,7 @@
           </ng-container>
 
           <!-- JOBS -->
-          <ng-container ngbNavItem="Jobs">
+          <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Jobs">
             <a ngbNavLink>Jobs</a>
             <ng-template ngbNavContent>
               <app-candidate-jobs-tab

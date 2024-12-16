@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -29,6 +29,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -910,12 +911,65 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     );
 
     /**
-     * Takes a collection of candidate IDs and returns their corresponding candidates. Used here to
-     * get around SQL limitations.
+     * Takes a collection of candidate IDs and returns their corresponding candidates.
      * @param candidateIds any Collection of candidate IDs
      * @param pageable details of requested pagination
      * @return paged search result of candidates who match the criteria
      */
     Page<Candidate> findByIdIn(Collection<Long> candidateIds, Pageable pageable);
+
+    @Query(
+        value =
+            """
+            WITH Duplicates AS (
+            SELECT
+                c.id AS candidate_id,
+                u.first_name,
+                u.last_name,
+                c.dob,
+                COUNT(*) OVER (PARTITION BY u.first_name, u.last_name, c.dob) AS dup_count
+            FROM candidate c
+                INNER JOIN users u ON c.user_id = u.id
+            WHERE c.status IN ('active', 'unreachable', 'incomplete', 'pending')
+                AND u.first_name IS NOT NULL
+                AND u.last_name IS NOT NULL
+                AND c.dob IS NOT NULL
+                AND (
+                    :potentialDuplicate IS NULL
+                    OR c.potential_duplicate = :potentialDuplicate
+                    )
+            )
+            SELECT
+                candidate_id
+            FROM Duplicates
+            WHERE dup_count > 1
+            ORDER BY first_name, last_name, dob;
+            """, nativeQuery = true
+    )
+    List<Long> findIdsOfPotentialDuplicateCandidates(
+        @Nullable @Param("potentialDuplicate") Boolean potentialDuplicate
+    );
+
+    @Query("SELECT c.id FROM Candidate c WHERE c.potentialDuplicate = true")
+    List<Long> findIdsOfCandidatesMarkedPotentialDuplicates();
+
+    @Query(
+        value =
+            """
+            SELECT c FROM Candidate c
+              JOIN c.user u
+            WHERE c.status IN :statuses
+              AND LOWER(u.lastName) LIKE :lastName
+              AND LOWER(u.firstName) LIKE :firstName
+              AND c.dob = :dob
+              AND c.id != :id
+            """)
+    List<Candidate> findPotentialDuplicatesOfGivenCandidate(
+        @Param("statuses") List<CandidateStatus> statuses,
+        @Param("dob") LocalDate dob,
+        @Param("lastName") String lastName,
+        @Param("firstName") String firstName,
+        @Param("id") long id
+    );
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -191,10 +191,10 @@ public class JobSpecification {
             if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
                 if (loggedInUser != null) {
                     ors = cb.or(ors,
-                        cb.equal(job.get("createdBy"), loggedInUser.getId())
+                        cb.equal(job.get("createdBy").get("id"), loggedInUser.getId())
                     );
                     ors = cb.or(ors,
-                        cb.equal(job.get("contactUser"), loggedInUser.getId())
+                        cb.equal(job.get("contactUser").get("id"), loggedInUser.getId())
                     );
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -84,6 +84,7 @@ export class CandidateSourceBaseComponent {
   }
 
   protected loadSelectedFields() {
+
     this.selectedFields = this.candidateFieldService
     .getCandidateSourceFields(this.candidateSource, this.longFormat);
   }
@@ -132,7 +133,7 @@ export class CandidateSourceBaseComponent {
 
   protected performSearch(
     defaultPageSize: number = 12,
-    dtoType: DtoType = DtoType.FULL,
+    dtoType: DtoType = DtoType.EXTENDED,
     keyword: string = null,
     showClosedOpps: boolean = false
   ): Observable<SearchResults<Candidate>> {

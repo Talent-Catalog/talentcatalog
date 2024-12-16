@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -47,6 +47,7 @@ import org.tctalent.server.request.country.UpdateCountryRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.TranslationService;
+import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.locale.LocaleHelper;
 
 @Service
@@ -205,6 +206,16 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public DtoBuilder selectBuilder() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("isoCode")
+            .add("status")
+            ;
     }
 
     @Override

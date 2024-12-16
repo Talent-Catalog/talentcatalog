@@ -1,0 +1,87 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="modal-header">
+  <h4 class="modal-title">Potential Duplicate Candidate</h4>
+  <button type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="closeModal()"
+  ></button>
+</div>
+
+<div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+  <p>
+    You have selected the following candidate:
+    <a class="fw-bold"
+       target="_blank"
+       [routerLink]="['/candidate', selectedCandidate.candidateNumber]"
+       title="Show candidate in new tab"
+    >
+      {{selectedCandidate.candidateNumber}}
+      <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+    </a>
+  </p>
+  <span *ngIf="potentialDuplicates.length > 0; else noDuplicates">
+  <p>
+    They may be a duplicate of the following candidate(s) with the same full name and date of birth:
+  </p>
+  <ul>
+    <li *ngFor="let candidate of potentialDuplicates">
+      <a class="fw-bold"
+         target="_blank"
+         [routerLink]="['/candidate', candidate.candidateNumber]"
+         title="Show candidate in new tab"
+      >
+        {{candidate.candidateNumber}}
+        <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+      </a>
+    </li>
+  </ul>
+  <p>
+    Review each profile carefully. If you're certain that it's an unused duplicate, change the
+    status to 'Deleted'. Clicking 'Refresh' at any time will update the information displayed in
+    this modal.
+  </p>
+  </span>
+  <ng-template #noDuplicates>
+    <p>
+      Candidate data have been updated and there are currently no suspected duplicates of this
+      profile.
+    </p>
+  </ng-template>
+
+</div>
+
+<div class="modal-footer">
+
+  <button type="button" class="btn btn-primary" (click)="refresh()">
+    Refresh
+    <span *ngIf="loading; else regularIcon">
+      <i class="fas fa-spinner fa-spin"></i>
+    </span>
+    <ng-template #regularIcon>
+      <i class="fas fa-sync" title="Refresh data"></i>
+    </ng-template>
+  </button>
+
+</div>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -673,7 +673,7 @@ public class UserServiceImpl implements UserService {
         QrData data = totpQrDataFactory.newBuilder()
             .label(user.getEmail())
             .secret(secret)
-            .issuer("TBB")
+            .issuer("TalentCatalog")
             .build();
 
         // Generate the QR code image data as a base64 string which
@@ -699,7 +699,7 @@ public class UserServiceImpl implements UserService {
                 throw new InvalidCredentialsException("You need to enter an authentication code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
-                throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a TBB administrator.");
+                throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a Talent Catalog administrator.");
             }
         }
     }

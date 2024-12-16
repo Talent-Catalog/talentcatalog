@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 import {ShareableDocsComponent} from "./shareable-docs.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
@@ -31,7 +31,7 @@ describe('ShareableDocsComponent', () => {
   let mockCandidateService: jasmine.SpyObj<CandidateService>;
 
   beforeEach(async () => {
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateShareableDocs']);
+    mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateShareableDocs', 'updateCandidate']);
 
     await TestBed.configureTestingModule({
       declarations: [ShareableDocsComponent],
@@ -82,6 +82,7 @@ describe('ShareableDocsComponent', () => {
     component.doSave(component.form.value);
 
     expect(mockCandidateService.updateShareableDocs).toHaveBeenCalledWith(1, component.form.value);
+    expect(mockCandidateService.updateCandidate).toHaveBeenCalledWith(updatedCandidate);
     expect(component.saving).toBe(false);
   });
 });

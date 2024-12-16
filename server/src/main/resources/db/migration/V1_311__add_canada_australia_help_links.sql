@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2021 Talent Beyond Boundaries.
- *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
- * for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see https://www.gnu.org/licenses/.
- */
-
 -- Canada
 INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'Create Salesforce account and employer opportunity','briefing',null,'https://tchelp.tettra.site/canada-1/operations-manual-1#create-salesforce-account-and-employer-opportunity');
 INSERT INTO help_link(country_id,label,job_stage,case_stage,link) VALUES (6216,'Schedule call with employer','briefing',null,'https://tchelp.tettra.site/canada-1/operations-manual-1#schedule-call-with-employer');

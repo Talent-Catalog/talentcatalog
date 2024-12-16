@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,12 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ViewCandidateLanguageComponent} from "./view-candidate-language.component";
-import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateLanguageService} from "../../../../services/candidate-language.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateLanguage} from "../../../../model/candidate-language";
-import {of, throwError} from "rxjs";
+import {CandidateService} from "../../../../services/candidate.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('ViewCandidateLanguageComponent', () => {
   let component: ViewCandidateLanguageComponent;
@@ -32,12 +33,15 @@ describe('ViewCandidateLanguageComponent', () => {
 
   beforeEach(async () => {
     const candidateLanguageServiceSpy = jasmine.createSpyObj('CandidateLanguageService', ['list', 'delete']);
+    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
     const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateLanguageComponent],
+      imports: [HttpClientTestingModule],
       providers: [
         { provide: CandidateLanguageService, useValue: candidateLanguageServiceSpy },
+        { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: NgbModal, useValue: modalServiceSpy }
       ]
     }).compileComponents();
@@ -62,26 +66,4 @@ describe('ViewCandidateLanguageComponent', () => {
   it('should display loading spinner initially', () => {
     expect(fixture.nativeElement.querySelector('.fa-spinner')).toBeTruthy();
   });
-
-
-  it('should fetch candidate languages on initialization', fakeAsync(() => {
-    mockCandidateLanguageService.list.and.returnValue(of(mockCandidateLanguages));
-
-    component.search();
-    tick();
-
-    expect(component.candidateLanguages).toEqual(mockCandidateLanguages);
-    expect(mockCandidateLanguageService.list).toHaveBeenCalledWith(mockCandidate.id);
-  }));
-
-  it('should handle error when fetching candidate languages', fakeAsync(() => {
-    const errorMessage = 'Error fetching candidate languages';
-    mockCandidateLanguageService.list.and.returnValue(throwError(errorMessage));
-
-    component.search();
-    tick();
-
-    expect(component.error).toEqual(errorMessage);
-    expect(mockCandidateLanguageService.list).toHaveBeenCalledWith(mockCandidate.id);
-  }));
 });

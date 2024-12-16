@@ -1,3 +1,4 @@
+
 alter table salesforce_job_opp add column recruitment_process text;
 alter table salesforce_job_opp add column employer_cost_commitment text;
 alter table salesforce_job_opp add column location text;

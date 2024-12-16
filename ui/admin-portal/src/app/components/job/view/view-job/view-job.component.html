@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="job">
 
   <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
@@ -22,7 +38,7 @@
           <a *ngIf="!showBreadcrumb" [routerLink]="['/job',job.id]">
             <i class="fa-solid fa-briefcase link-info" title="Job (Same as Open)"></i>
           </a>
-          <a *ngIf="job.submissionList" [routerLink]="['/list',job.submissionList.id]">
+          <a *ngIf="job.submissionList && canSeeJobDetails()" [routerLink]="['/list',job.submissionList.id]">
             <i class="fas fa-rectangle-list link-info" title="Submission list"></i>
           </a>
           <a *ngIf="job.sfId && canAccessSalesforce()" [href]="getSalesforceJobLink(job.sfId)" target="_blank">
@@ -51,7 +67,7 @@
       <i *ngIf="publishing" class="fas fa-spinner fa-spin"></i>
     </div>
 
-    <div class="col-sm-4">
+    <div *ngIf="canSeeJobDetails()" class="col-sm-4">
       <app-view-job-summary
         [job]="job"
         [editable]="isEditable()"
@@ -102,7 +118,7 @@
         </ng-container>
 
         <!-- UPLOADS -->
-        <ng-container ngbNavItem="Uploads">
+        <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Uploads">
           <a ngbNavLink>Job Uploads</a>
           <ng-template ngbNavContent>
             <app-job-upload-tab
@@ -116,7 +132,7 @@
         </ng-container>
 
         <!-- JOB INTAKE -->
-        <ng-container ngbNavItem="Intake">
+        <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Intake">
           <a ngbNavLink>Job Intake (JOI)</a>
           <ng-template ngbNavContent>
             <app-job-intake-tab
@@ -128,7 +144,7 @@
         </ng-container>
 
         <!-- Source Partners -->
-        <ng-container ngbNavItem="Source">
+        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Source">
           <a ngbNavLink [ngbTooltip]="'View partner details & start a chat'">Partners/Chats
             <app-chat-read-status
               [chats]="partnerChats"
@@ -143,7 +159,7 @@
         </ng-container>
 
         <!-- Group chats -->
-        <ng-container ngbNavItem="GroupChats" *ngIf="visible">
+        <ng-container ngbNavItem="GroupChats" *ngIf="visible && canSeeJobDetails()">
           <a ngbNavLink [ngbTooltip]="'Chats that involve more than one partner or candidate/s'">
             Group Chats
             <app-chat-read-status
@@ -159,7 +175,7 @@
         </ng-container>
 
         <!-- PROGRESS -->
-        <ng-container ngbNavItem="Progress">
+        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Progress">
           <a ngbNavLink>Progress</a>
           <ng-template ngbNavContent>
             <app-opportunity-stage-next-step
@@ -171,7 +187,7 @@
         </ng-container>
 
         <!-- Submission List -->
-        <ng-container ngbNavItem="Submission List">
+        <ng-container *ngIf="canSeeJobDetails()" ngbNavItem="Submission List">
           <a ngbNavLink>Submission List</a>
           <ng-template ngbNavContent>
             <div *ngIf= "job.submissionList">

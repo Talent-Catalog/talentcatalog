@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.portal;
 
-import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
 import org.tctalent.server.request.candidate.destination.UpdateCandidateDestinationRequest;
 import org.tctalent.server.service.db.CandidateDestinationService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -41,6 +42,7 @@ public class CandidateDestinationPortalApi implements IJoinedTableApi<CreateCand
         CreateCandidateDestinationRequest, UpdateCandidateDestinationRequest> {
 
     private final CandidateDestinationService candidateDestinationService;
+    private final CountryService countryService;
 
     /**
      * Creates a new candidate destination record from the data in the given
@@ -69,18 +71,9 @@ public class CandidateDestinationPortalApi implements IJoinedTableApi<CreateCand
     private DtoBuilder candidateDestinationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("interest")
                 .add("notes")
                 ;
     }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                .add("status")
-                ;
-    }
-
 }

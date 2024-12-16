@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,10 @@
 
 package org.tctalent.server.request.candidate;
 
-import org.tctalent.server.model.db.Gender;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import org.tctalent.server.model.db.Gender;
 
 public class UpdateCandidateRequest extends BaseCandidateContactRequest {
 
@@ -39,6 +38,10 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
     private String city;
     private String state;
     private LocalDate dob;
+    private String relocatedAddress;
+    private String relocatedCity;
+    private String relocatedState;
+    private Long relocatedCountryId;
 
     public String getFirstName() {
         return firstName;
@@ -114,5 +117,37 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public String getRelocatedAddress() {
+        return relocatedAddress;
+    }
+
+    public void setRelocatedAddress(String relocatedAddress) {
+        this.relocatedAddress = relocatedAddress;
+    }
+
+    public String getRelocatedCity() {
+        return relocatedCity;
+    }
+
+    public void setRelocatedCity(String relocatedCity) {
+        this.relocatedCity = relocatedCity;
+    }
+
+    public String getRelocatedState() {
+        return relocatedState;
+    }
+
+    public void setRelocatedState(String relocatedState) {
+        this.relocatedState = relocatedState;
+    }
+
+    public Long getRelocatedCountryId() {
+        return relocatedCountryId;
+    }
+
+    public void setRelocatedCountryId(Long relocatedCountryId) {
+        this.relocatedCountryId = relocatedCountryId;
     }
 }

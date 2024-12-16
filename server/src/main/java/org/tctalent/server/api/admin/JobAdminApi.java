@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,11 +18,11 @@ package org.tctalent.server.api.admin;
 
 import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +41,7 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -49,11 +50,13 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class JobAdminApi implements
     ITableApi<SearchJobRequest, UpdateJobRequest, UpdateJobRequest> {
 
+    private final CountryService countryService;
     private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
 
     private final JobService jobService;
 
-    public JobAdminApi(JobService jobService) {
+    public JobAdminApi(CountryService countryService, JobService jobService) {
+        this.countryService = countryService;
         this.jobService = jobService;
     }
 
@@ -227,7 +230,7 @@ public class JobAdminApi implements
             .add("id")
             .add("sfId")
             .add("contactUser", shortUserDto())
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             .add("createdBy", shortUserDto())
             .add("createdDate")
             .add("employerEntity", employerDto())
@@ -242,6 +245,7 @@ public class JobAdminApi implements
             .add("publishedBy", shortUserDto())
             .add("publishedDate")
             .add("jobCreator", shortPartnerDto())
+            .add("skipCandidateSearch")
             .add("stage")
             .add("starringUsers", shortUserDto())
             .add("submissionDueDate")
@@ -251,13 +255,6 @@ public class JobAdminApi implements
             .add("updatedBy", shortUserDto())
             .add("updatedDate")
             .add("jobOppIntake", joiDto())
-            ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("name")
             ;
     }
 

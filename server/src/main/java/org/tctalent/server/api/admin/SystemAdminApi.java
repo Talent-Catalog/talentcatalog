@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,6 +90,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
@@ -100,23 +102,31 @@ import org.tctalent.server.repository.db.JobChatUserRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.response.DuolingoDashboardResponse;
+import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
+import org.tctalent.server.service.db.DuolingoApiService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.NotificationService;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
+import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.service.db.impl.DuolingoApiServiceImpl;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.IdContext;
@@ -167,6 +177,8 @@ public class SystemAdminApi {
     private final GoogleDriveConfig googleDriveConfig;
     private final TaskScheduler taskScheduler;
     private final BackgroundProcessingService backgroundProcessingService;
+    private final SavedSearchService savedSearchService;
+    private final PartnerService partnerService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -194,6 +206,7 @@ public class SystemAdminApi {
 
     @Value("${environment}")
     private String environment;
+    private final DuolingoApiService duolingoApiService;
 
     @Autowired
     public SystemAdminApi(
@@ -215,7 +228,8 @@ public class SystemAdminApi {
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService) {
+        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
+        SavedSearchService savedSearchService, PartnerService partnerService, DuolingoApiService duolingoApiService) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -244,7 +258,10 @@ public class SystemAdminApi {
         this.cacheService = cacheService;
         this.taskScheduler = taskScheduler;
       this.backgroundProcessingService = backgroundProcessingService;
+      this.savedSearchService = savedSearchService;
+      this.partnerService = partnerService;
       countryForGeneralCountry = getExtraCountryMappings();
+      this.duolingoApiService = duolingoApiService;
     }
 
     /**
@@ -295,7 +312,39 @@ public class SystemAdminApi {
             }
         }
     }
+    /**
+     * Fetches Duolingo dashboard results based on optional date filters.
+     *
+     * @param minDateTime Optional start date and time in 'yyyy-MM-ddTHH:mm:ss' format.
+     * @param maxDateTime Optional end date and time in 'yyyy-MM-ddTHH:mm:ss' format.
+     * @return A list of duolingo dashboard results within the specified date range.
+     */
+    @GetMapping("duolingo/dashboard-results")
+    public List<DuolingoDashboardResponse> fetchDashboardResults(
+        @RequestParam(required = false) String minDateTime,
+        @RequestParam(required = false) String maxDateTime) {
 
+        // Parse the minDateTime and maxDateTime only if they are provided
+        LocalDateTime min = (minDateTime != null) ? LocalDateTime.parse(minDateTime) : null;
+        LocalDateTime max = (maxDateTime != null) ? LocalDateTime.parse(maxDateTime) : null;
+
+        // Pass the parsed min and max values to the service method
+        return duolingoApiService.getDashboardResults(min, max);
+    }
+
+    /**
+     * Verifies a Duolingo score using the provided certificate ID and birthdate.
+     *
+     * @param certificateId The ID of the certificate to verify.
+     * @param birthdate The birthdate of the certificate holder in 'yyyy-MM-dd' format.
+     * @return A response containing the score verification details.
+     */
+    @GetMapping("duolingo/verify-score")
+    public DuolingoVerifyScoreResponse verifyScore(
+        @RequestParam String certificateId,
+        @RequestParam String birthdate) {
+        return duolingoApiService.verifyScore(certificateId, birthdate);
+    }
     @GetMapping("flush_user_cache")
     public void flushUserCache() {
         cacheService.flushUserCache();
@@ -2954,31 +3003,86 @@ public class SystemAdminApi {
     }
 
     /**
-     * Reassigns all candidates on saved list with given ID to partner organisation with given ID.
-     * Previously done by direct DB edit but this necessitated additional steps of flushing the
-     * Redis cache and updating the corresponding elasticsearch index entry. Cache evictions and
-     * ES index update proceed as usual with this in-code implementation.
-     * <p>Here's an example of how to call this method from the Settings > System Admin API input:
-     * <br><code>reassign-candidates/list-393-to-partner-16</code></p>
-     * @param listId id of saved list containing all the candidates to be reassigned
+     * Reassigns all candidates on saved list or search with given ID to partner organisation with
+     * given ID. Previously done by direct DB edit but this necessitated additional steps of
+     * flushing the Redis cache and updating the corresponding elasticsearch index entry. Cache
+     * evictions and ES index update proceed as usual with this in-code implementation.
+     * <p><strong>Check and double-check param for candidateSource — specifying the wrong one could
+     * be very problematic! Also be certain to 'Update' your saved search (i.e. save the current
+     * version, which is what this method will use).</strong></p>
+     * <p>
+     *   Examples of how to call this method from the Settings > System Admin API input:
+     *      <br><code>reassign-candidates/list-393-to-partner-16</code>
+     *      <br><code>reassign-candidates/search-211-to-partner-16</code>
+     * </p>
+     * @param candidateSource 'list' or 'search', depending on the source you're using
+     * @param sourceId id of source containing candidates to be reassigned
      * @param partnerId id of the partner org to which the candidates will be reassigned
      */
     @Transactional
-    @GetMapping("reassign-candidates/list-{listId}-to-partner-{partnerId}")
+    @GetMapping("reassign-candidates/{candidateSource}-{sourceId}-to-partner-{partnerId}")
     public ResponseEntity<?> reassignCandidates(
-        @PathVariable("listId") int listId,
+        @PathVariable("candidateSource") String candidateSource,
+        @PathVariable("sourceId") int sourceId,
         @PathVariable("partnerId") int partnerId
     ) {
         try {
-            // SavedListService can't be injected into CandidateService due to circular dependency, so
-            // we're obtaining the Saved List from the given ID here.
-            SavedList savedList = savedListService.get(listId);
-            candidateService.reassignSavedListCandidates(savedList, partnerId);
+            Partner newPartner = partnerService.getPartner(partnerId);
+            if (!newPartner.isSourcePartner() || !newPartner.getStatus().equals(Status.active)) {
+                throw new IllegalArgumentException("New partner must be an active source partner.");
+            }
+
+            int pagesProcessed = 0;
+            long totalPages;
+            long totalCandidates;
+
+            if (candidateSource.equals("list")) {
+                // Prepare first page and get metrics for logging and looping
+                SavedList savedList = savedListService.get(sourceId);
+                SavedListGetRequest request = new SavedListGetRequest();
+                Page<Candidate> candidatePage = candidateService.getSavedListCandidates(savedList, request);
+                totalPages = candidatePage.getTotalPages();
+                totalCandidates = candidatePage.getTotalElements();
+
+                while (pagesProcessed < totalPages) {
+                    candidateService.reassignCandidatesOnPage(candidatePage, newPartner);
+                    pagesProcessed++;
+                    request.setPageNumber(pagesProcessed);
+                    candidatePage = candidateService.getSavedListCandidates(savedList, request);
+                    totalPages = candidatePage.getTotalElements(); // In case list changing
+                }
+
+            } else if (candidateSource.equals("search")) {
+                SearchCandidateRequest request = savedSearchService.loadSavedSearch(sourceId);
+                Page<Candidate> candidatePage = savedSearchService.searchCandidates(request);
+                totalPages = candidatePage.getTotalPages();
+                totalCandidates = candidatePage.getTotalElements();
+
+                while (pagesProcessed < totalPages) {
+                    candidateService.reassignCandidatesOnPage(candidatePage, newPartner);
+                    pagesProcessed++;
+                    request.setPageNumber(pagesProcessed);
+                    candidatePage = savedSearchService.searchCandidates(request);
+                    totalPages = candidatePage.getTotalElements(); // In case results changing
+                }
+
+            } else {
+                LogBuilder.builder(log)
+                    .action("Reassign candidates")
+                    .message("Invalid parameter for candidateSource: " + candidateSource)
+                    .logInfo();
+
+                throw new IllegalArgumentException(
+                    "Parameter candidateSource must be \"search\" or \"list\"."
+                );
+            }
 
             LogBuilder.builder(log)
                 .action("Reassign candidates")
-                .message("Reassignment of candidates from list with ID " + listId +
-                    " to partner with ID " + partnerId + " complete.")
+                .message(
+                    "Reassignment of " + totalCandidates + " candidates from " + candidateSource +
+                        " with ID " + sourceId + " to " + newPartner.getName() + " complete."
+                )
                 .logInfo();
 
             return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
@@ -2986,8 +3090,31 @@ public class SystemAdminApi {
         } catch(Exception e) {
             LogBuilder.builder(log)
                 .action("Reassign candidates")
-                .message("Reassignment of candidates from list with ID " + listId +
-                    " to partner with ID " + partnerId + " failed.")
+                .message("Reassignment of candidates from " + candidateSource + " with ID " +
+                    sourceId + " to partner with ID " + partnerId + " failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    @GetMapping("processPotentialDuplicateCandidates")
+    ResponseEntity<?> processPotentialDuplicateCandidates() {
+        try {
+            this.backgroundProcessingService.processPotentialDuplicateCandidates();
+
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Manually triggered")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Manual triggered operation failed")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -41,12 +41,12 @@
   <!-- BODY -->
   <div class="card-body">
     <!-- EMPTY STATE -->
-    <p class="m-0" *ngIf="!candidateEducations || candidateEducations.length == 0">
+    <p class="m-0" *ngIf="!candidate.candidateEducations || candidate.candidateEducations.length == 0">
       No education data has been entered by this candidate.
     </p>
 
     <!-- EDUCATION CARDS -->
-    <div *ngFor="let edu of candidateEducations">
+    <div *ngFor="let edu of candidate.candidateEducations">
 
       <div class="row">
 

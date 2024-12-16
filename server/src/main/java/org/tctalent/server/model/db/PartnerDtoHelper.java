@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -70,6 +70,7 @@ public class PartnerDtoHelper {
             .add("registrationLandingPage")
             .add("sflink")
             .add("sourceCountries", countryDto())
+            .add("redirectPartner", shortPartnerDto())
             ;
     }
 
@@ -77,6 +78,8 @@ public class PartnerDtoHelper {
         return new DtoBuilder()
             .add("id")
             .add("name")
+            .add("isoCode")
+            .add("status")
             ;
     }
 
@@ -95,6 +98,15 @@ public class PartnerDtoHelper {
             .add("firstName")
             .add("lastName")
             .add("email")
+            ;
+    }
+
+    private static DtoBuilder shortPartnerDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("abbreviation")
+            .add("websiteUrl")
             ;
     }
 

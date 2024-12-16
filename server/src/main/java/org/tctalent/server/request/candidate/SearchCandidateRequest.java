@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,6 +19,9 @@ package org.tctalent.server.request.candidate;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -28,9 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -146,6 +146,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
 
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
+    private Boolean potentialDuplicate;
     private String regoReferrerParam;
     private List<ReviewStatus> reviewStatusFilter;
 
@@ -318,6 +319,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         if (getFullIntakeCompleted() != null) {
             boolean completed = getFullIntakeCompleted();
             ands.add("full_intake_completed_date " + (completed ? "is not null" : "is null"));
+        }
+
+        // POTENTIAL DUPLICATE
+        if (getPotentialDuplicate() != null) {
+            boolean potentialDuplicate = getPotentialDuplicate();
+            ands.add("potentialDuplicate = " + potentialDuplicate);
         }
 
         // MAJOR SEARCH

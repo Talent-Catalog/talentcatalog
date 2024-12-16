@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,56 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
-import {CandidateSkill} from "../../../../model/candidate-skill";
-import {CandidateSkillService} from "../../../../services/candidate-skill.service";
 
 @Component({
   selector: 'app-view-candidate-skill',
   templateUrl: './view-candidate-skill.component.html',
   styleUrls: ['./view-candidate-skill.component.scss']
 })
-export class ViewCandidateSkillComponent implements OnInit, OnChanges {
+export class ViewCandidateSkillComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
-  candidateSkills: CandidateSkill[];
-  loading: boolean;
-  error;
-
-  constructor(private candidateSkillService: CandidateSkillService) {
+  constructor() {
   }
 
   ngOnInit() {
 
   }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.doSearch();
-    }
-  }
-
-  doSearch() {
-    this.loading = true;
-    let request = {
-      candidateId: this.candidate.id,
-      pageNumber: 0,
-      pageSize: 20
-    };
-    this.candidateSkillService.search(request).subscribe(
-      candidateSkills => {
-        this.candidateSkills = candidateSkills.content;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
-  }
-
-
 }

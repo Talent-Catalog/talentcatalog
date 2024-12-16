@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,11 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -195,7 +195,7 @@ public class SavedSearchAdminApi implements
      * @param request Request containing details of the list to be saved to,
      *                the associated user and whether or not the save should
      *                add to or replace existing contents.
-     * @return List which selection was saved to
+     * @return Representation of List which selection was saved to
      * @throws EntityExistsException If a new list needs to be created but the
      * list name already exists.
      * @throws InvalidRequestException if not authorized.
@@ -393,6 +393,7 @@ public class SavedSearchAdminApi implements
             .add("displayedFieldsShort")
             .add("users", userDto())
             .add("watcherUserIds")
+            .add("createdBy", userDto())
             ;
     }
 

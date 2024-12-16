@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -61,6 +61,8 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
@@ -104,6 +106,8 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     @MockBean
     CandidateOpportunityService candidateOpportunityService;
     @MockBean
+    CountryService countryService;
+    @MockBean
     SavedListService savedListService;
     @MockBean
     SavedSearchService savedSearchService;
@@ -113,6 +117,9 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     CandidateService candidateService;
     @MockBean
     UserService userService;
+    @MockBean
+    OccupationService occupationService;
+
 
     @BeforeEach
     void setUp() {

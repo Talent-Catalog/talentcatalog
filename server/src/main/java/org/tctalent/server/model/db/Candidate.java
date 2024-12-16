@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,18 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -44,6 +32,19 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -51,8 +52,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
+import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.es.CandidateEs;
+import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
 
@@ -215,6 +218,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateOccupation> candidateOccupations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @OrderBy("updatedDate DESC")
     private List<CandidateNote> candidateNotes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -757,9 +761,32 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Column(name = "full_intake_completed_date")
     private OffsetDateTime fullIntakeCompletedDate;
 
+    @Nullable
+    private String relocatedAddress;
 
+    @Nullable
+    private String relocatedCity;
+
+    @Nullable
+    private String relocatedState;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "relocated_country_id")
+    private Country relocatedCountry;
+
+    @Nullable
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DuolingoCoupon> coupons = new ArrayList<>();
     public Candidate() {
     }
+
+    /**
+     * Candidate has been identified as a potential duplicate of another - monitored by daily
+     * scheduled call to {@link BackgroundProcessingService#processPotentialDuplicateCandidates()},
+     * which can also be manually triggered from {@link SystemAdminApi}.
+     */
+    private boolean potentialDuplicate;
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields
     //Seems to always be the same as user - so not sure if it has any point.
@@ -2140,6 +2167,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.mediaWillingness = mediaWillingness;
     }
 
+    public boolean getPotentialDuplicate() {return potentialDuplicate;}
+
+    public void setPotentialDuplicate(boolean potentialDuplicate) {
+        this.potentialDuplicate = potentialDuplicate;
+    }
+
     public Boolean getContactConsentRegistration() {
         return contactConsentRegistration;
     }
@@ -2286,5 +2319,43 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                 new CandidateSavedList(this, savedList);
         candidateSavedLists.add(csl);
         savedList.getCandidateSavedLists().add(csl);
+    }
+
+    // RELOCATED FIELDS - keep track of a relocated candidate's location
+
+    @Nullable
+    public String getRelocatedAddress() {
+        return relocatedAddress;
+    }
+
+    public void setRelocatedAddress(@Nullable String relocatedAddress) {
+        this.relocatedAddress = relocatedAddress;
+    }
+
+    @Nullable
+    public String getRelocatedCity() {
+        return relocatedCity;
+    }
+
+    public void setRelocatedCity(@Nullable String relocatedCity) {
+        this.relocatedCity = relocatedCity;
+    }
+
+    @Nullable
+    public String getRelocatedState() {
+        return relocatedState;
+    }
+
+    public void setRelocatedState(@Nullable String relocatedState) {
+        this.relocatedState = relocatedState;
+    }
+
+    @Nullable
+    public Country getRelocatedCountry() {
+        return relocatedCountry;
+    }
+
+    public void setRelocatedCountry(Country relocatedCountry) {
+        this.relocatedCountry = relocatedCountry;
     }
 }

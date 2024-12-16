@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -40,9 +40,12 @@ describe('CreateUpdatePartnerComponent', () => {
   let fb: UntypedFormBuilder;
   const mockCountries: Country[] = [MockJob.country];
   const mockUsers = [new MockUser()];
+  const mockPartners = [new MockPartner()];
 
   beforeEach(async () => {
-    const partnerSpy = jasmine.createSpyObj('PartnerService', ['create', 'update']);
+    const partnerSpy = jasmine.createSpyObj(
+      'PartnerService', ['create', 'update', 'listPartners']
+    );
     const countrySpy = jasmine.createSpyObj('CountryService', ['listCountriesRestricted']);
     const userSpy = jasmine.createSpyObj('UserService', ['search']);
     const modalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
@@ -71,6 +74,7 @@ describe('CreateUpdatePartnerComponent', () => {
     component.partner = new MockPartner();
     countryServiceSpy.listCountriesRestricted.and.returnValue(of(mockCountries));
     userServiceSpy.search.and.returnValue(of(mockUsers));
+    partnerServiceSpy.listPartners.and.returnValue(of(mockPartners));
     fixture.detectChanges();
   });
 

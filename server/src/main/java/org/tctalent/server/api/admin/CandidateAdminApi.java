@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,13 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +71,8 @@ import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
@@ -90,18 +92,21 @@ public class CandidateAdminApi {
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
 
+
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
         CandidateOpportunityService candidateOpportunityService, CandidateSavedListService candidateSavedListService,
+        CountryService countryService,
         SavedListService savedListService,
         SavedSearchService savedSearchService,
         UserService userService,
-        CandidateTokenProvider candidateTokenProvider) {
+        CandidateTokenProvider candidateTokenProvider, OccupationService occupationService) {
         this.candidateService = candidateService;
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateSavedListService = candidateSavedListService;
-        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, userService);
-        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector();
+        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, countryService,
+            occupationService, userService);
+        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(countryService, occupationService);
         this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
         this.candidateTokenProvider = candidateTokenProvider;
@@ -157,7 +162,7 @@ public class CandidateAdminApi {
     @GetMapping("number/{number}")
     public Map<String, Object> get(@PathVariable("number") String number) {
         Candidate candidate = candidateService.findByCandidateNumberRestricted(number);
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.EXTENDED);
         return builder.build(candidate);
     }
 
@@ -224,6 +229,10 @@ public class CandidateAdminApi {
     public Map<String, Object> updateShareableDocs(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateShareableDocsRequest request) {
         Candidate candidate = candidateSavedListService.updateShareableDocs(id, request);
+        // Set the context saved list id so that the returned object contains the list specific docs.
+        if (request.getSavedListId() != null) {
+            candidate.setContextSavedListId(request.getSavedListId());
+        }
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -358,8 +367,10 @@ public class CandidateAdminApi {
 
     @GetMapping(value = "/token/{cn}", produces = MediaType.TEXT_PLAIN_VALUE)
     public String generateToken(@PathVariable("cn") String candidateNumber,
-                                @RequestParam(defaultValue = "false") boolean restrictCandidateOccupations,
-                                @RequestParam(defaultValue = "") List<Long> candidateOccupationIds) {
+                                @RequestParam(name="restrictCandidateOccupations", defaultValue = "false")
+                                boolean restrictCandidateOccupations,
+                                @RequestParam(name="candidateOccupationIds", defaultValue = "")
+                                List<Long> candidateOccupationIds) {
          CvClaims cvClaims = new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupationIds);
          String token = candidateTokenProvider.generateCvToken(cvClaims, 365L);
          return token;
@@ -394,6 +405,16 @@ public class CandidateAdminApi {
         Page<Candidate> candidates = candidateService.fetchCandidatesWithChat(request);
         DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildPage(candidates);
+    }
+
+    @GetMapping("{id}/fetch-potential-duplicates-of-given-candidate")
+        public List<Map<String, Object>> fetchPotentialDuplicatesOfGivenCandidate  (
+        @PathVariable("id") long id
+    ) {
+        List<Candidate> candidateList =
+            candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(id);
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
+        return builder.buildList(candidateList);
     }
 
 }

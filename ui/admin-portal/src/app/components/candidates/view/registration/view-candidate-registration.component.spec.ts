@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,7 +18,6 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {of} from "rxjs";
 
 describe('ViewCandidateRegistrationComponent', () => {
   let component: ViewCandidateRegistrationComponent;
@@ -51,32 +50,5 @@ describe('ViewCandidateRegistrationComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should initialize component correctly and load data', () => {
-
-    // Simulate candidateService.get() returning mock data
-    candidateService.get.and.returnValue(of(mockCandidate));
-
-    // Set input properties
-    component.candidate = mockCandidate;
-    component.editable = true;
-
-    // Trigger ngOnChanges manually
-    component.ngOnChanges({  candidate: {
-        currentValue: component.candidate,
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }} );
-
-    // Expect candidateService.get() to have been called with the correct candidate ID
-    expect(candidateService.get).toHaveBeenCalledWith(mockCandidate.id);
-
-    // Simulate candidateService.get() completing and emitting mock response data
-    fixture.detectChanges();
-
-    // Expect component's candidate property to be set with the response data
-    expect(component.candidate).toEqual(mockCandidate);
   });
 });
