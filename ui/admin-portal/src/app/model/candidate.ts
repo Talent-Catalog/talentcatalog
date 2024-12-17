@@ -102,6 +102,7 @@ export interface Candidate extends HasId {
   ieltsScore: string;
   numberDependants: number;
   englishAssessmentScoreIelts?: string;
+  englishAssessmentScoreDet?: number;
   frenchAssessmentScoreNclc?: number;
   candidateExams: CandidateExam[];
   candidateAttachments?: CandidateAttachment[];
@@ -191,6 +192,7 @@ export interface CandidateIntakeData {
 
   englishAssessment?: string;
   englishAssessmentScoreIelts?: string;
+  englishAssessmentScoreDet?: number;
 
   frenchAssessment?: string;
   frenchAssessmentScoreNclc?: number;

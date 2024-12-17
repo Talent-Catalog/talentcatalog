@@ -689,6 +689,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String englishAssessmentScoreIelts;
 
     @Nullable
+    private Long englishAssessmentScoreDet;
+
+    @Nullable
     private String frenchAssessment;
 
     @Nullable
@@ -2094,6 +2097,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setEnglishAssessmentScoreIelts(@Nullable String englishAssessmentScoreIelts) {
         this.englishAssessmentScoreIelts = englishAssessmentScoreIelts;
+    }
+
+    @Nullable
+    public Long getEnglishAssessmentScoreDet() {
+        return englishAssessmentScoreDet;
+    }
+
+    public void setEnglishAssessmentScoreDet(@Nullable Long englishAssessmentScoreDet) {
+        this.englishAssessmentScoreDet = englishAssessmentScoreDet;
     }
 
     @Nullable
