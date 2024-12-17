@@ -91,16 +91,12 @@ export class CandidateAttachmentService {
       if (cv.type === AttachmentType.googlefile) {
         downloads.push(this.downloadAttachment(cv.id, cv.name))
       } else {
-        try {
-          const newTab = window.open();
-          if (newTab) {
-            const url = cv.url;
-            newTab.location.href = url;  // Open the URL in the new tab
-          } else {
-            return throwError(`Failed to open new tab for ${cv.url}`);
-          }
-        } catch (error) {
-          return throwError(`Error opening tab for ${cv.url}: ${error.message}`);
+        const newTab = window.open();
+        if (newTab) {
+          const url = cv.url;
+          newTab.location.href = url;  // Open URL in new tab
+        } else {
+          console.error(`Failed to open new tab for ${cv.url}`)
         }
       }
     })
