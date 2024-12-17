@@ -19,6 +19,8 @@ package org.tctalent.server.service.db;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.response.DuolingoCouponResponse;
@@ -95,4 +97,12 @@ public interface DuolingoCouponService {
    * @return an Optional containing the CouponResponse if found, otherwise empty.
    */
   DuolingoCoupon findByCouponCode(String couponCode);
+
+  /**
+   * Finds the candidate associated with a given coupon code.
+   *
+   * @param couponCode the unique code of the coupon.
+   * @return an Optional containing the Candidate if found, otherwise empty.
+   */
+  Candidate findCandidateByCouponCode(String couponCode) throws NoSuchObjectException;
 }
