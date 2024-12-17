@@ -618,8 +618,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     public String generateCandidateOppName(
         @NonNull Candidate candidate, @NonNull SalesforceJobOpp jobOpp) {
-        return candidate.getUser().getFirstName()  +
+        String provisionalName = candidate.getUser().getFirstName()  +
             "(" + candidate.getCandidateNumber() + ")-" + jobOpp.getName();
+        // SF character limit for opportunity titles = 120
+        return provisionalName.length() > 120 ?
+            provisionalName.substring(0, 117) + "..." : provisionalName;
     }
 
     static class ContactQueryResult extends QueryResult {
