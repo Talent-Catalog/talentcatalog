@@ -25,7 +25,6 @@ describe('DetScoreValidationComponent', () => {
 
   it('should initialize regex and value correctly', () => {
     component.ngOnInit();
-    expect(component.regex).toEqual(new RegExp('^(1[0-9]|[2-9][0-9]|1[0-5][0-9]|160)$'));
     expect(component.value).toBeNull();
   });
 

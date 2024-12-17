@@ -10,19 +10,17 @@ export class DetScoreValidationComponent implements OnInit{
   @Input() control: UntypedFormControl;
 
   error: string;
-  regex: RegExp;
   value: string;
 
   constructor() { }
 
   ngOnInit(): void {
     this.value = this.control.value;
-    this.regex = new RegExp('^(1[0-9]|[2-9][0-9]|1[0-5][0-9]|160)$');
   }
 
   update() {
     if (this.value !== null) {
-      if (!this.regex.test(this.value)) {
+      if (parseInt(this.value) > 160 || parseInt(this.value) < 10) {
       // If user has entered non-null value outside allowed range, display error and delete input.
         this.error = "DET grades are always a whole number between 10 and 160."
         this.control.patchValue(0);
