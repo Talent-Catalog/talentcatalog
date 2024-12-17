@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {forkJoin, Observable, Subject, throwError} from 'rxjs';
+import {forkJoin, Observable, of, Subject, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
@@ -104,8 +104,7 @@ export class CandidateAttachmentService {
     //This will automatically unsubscribe any subscribers, avoiding memory leaks.
     //See https://stackoverflow.com/questions/55893962/do-i-need-to-unsubscribe-from-observable-of
     if (downloads.length === 0) {
-      downloadComplete.next();
-      downloadComplete.complete();
+      return of('Complete'); // Already resolved above, nothing to subscribe to
     } else {
       forkJoin(...downloads).subscribe(
         (results: CandidateAttachment[]) => {
