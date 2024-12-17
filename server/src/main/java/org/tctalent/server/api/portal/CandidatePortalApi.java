@@ -216,6 +216,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidateNumberDto() {
         return new DtoBuilder()
                 .add("candidateNumber")
+                .add("publicId")
                 ;
     }
 
@@ -240,6 +241,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("user", userDto())
                 .add("candidateNumber")
+                .add("publicId")
                 .add("gender")
                 .add("dob")
                 .add("country", countryService.selectBuilder())
@@ -453,6 +455,7 @@ public class CandidatePortalApi {
                 .add("user", userDto())
                 /* CONTACT */
                 .add("candidateNumber")
+                .add("publicId")
                 .add("phone")
                 .add("whatsapp")
                 /* STATUS */
@@ -536,6 +539,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
             .add("id")
             .add("candidateNumber")
+            .add("publicId")
             ;
     }
 

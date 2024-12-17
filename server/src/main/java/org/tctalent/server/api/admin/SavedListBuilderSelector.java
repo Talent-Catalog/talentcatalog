@@ -47,6 +47,7 @@ public class SavedListBuilderSelector {
     private DtoBuilder minimalSavedListDto() {
         return new DtoBuilder()
             .add("id")
+            .add("publicId")
             .add("name")
             .add("sfJobOpp", jobOppIdsDto())
             .add("displayedFieldsLong")
@@ -58,6 +59,7 @@ public class SavedListBuilderSelector {
     private DtoBuilder savedListDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("publicId")
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")

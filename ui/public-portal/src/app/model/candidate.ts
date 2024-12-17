@@ -28,6 +28,7 @@ export interface Candidate {
   id: number;
   user: User;
   candidateNumber: string;
+  publicId: string;
   phone: string;
   whatsapp: string;
   gender: string;

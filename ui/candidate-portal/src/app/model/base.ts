@@ -166,6 +166,7 @@ export interface Auditable extends HasId {
 }
 
 export interface CandidateSource extends Auditable {
+  publicId?: string;
   name: string;
   description?: string;
   displayedFieldsLong?: string[];

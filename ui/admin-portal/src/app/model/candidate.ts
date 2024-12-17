@@ -48,6 +48,7 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  publicId?: string;
   status: string;
   gender: string;
   dob: Date;
@@ -101,6 +102,7 @@ export interface Candidate extends HasId {
   ieltsScore: string;
   numberDependants: number;
   englishAssessmentScoreIelts?: string;
+  englishAssessmentScoreDet?: number;
   frenchAssessmentScoreNclc?: number;
   candidateExams: CandidateExam[];
   candidateAttachments?: CandidateAttachment[];
@@ -190,6 +192,7 @@ export interface CandidateIntakeData {
 
   englishAssessment?: string;
   englishAssessmentScoreIelts?: string;
+  englishAssessmentScoreDet?: number;
 
   frenchAssessment?: string;
   frenchAssessmentScoreNclc?: number;
