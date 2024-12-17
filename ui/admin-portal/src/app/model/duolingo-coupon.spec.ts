@@ -14,21 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {DuolingoCoupon, Status} from "./duolingo-coupon";
+import {DuolingoCouponResponse, DuolingoCouponStatus} from "./duolingo-coupon";
 
-describe('DuolingoCoupon Interface', () => {
-  it('should create a valid DuolingoCoupon object', () => {
+describe('DuolingoCouponResponse Interface', () => {
+  it('should create a valid DuolingoCouponResponse object', () => {
 
-    const expirationDate = new Date();
-    const dateSent = new Date();
+    const expirationDate = (new Date()).toString();
+    const dateSent = (new Date()).toString();
 
     // Mock data
-    const duolingoCoupon: DuolingoCoupon = {
+    const duolingoCoupon: DuolingoCouponResponse = {
       id: 1,
       couponCode: '123456',
       expirationDate: expirationDate,
       dateSent: dateSent,
-      duolingoCouponStatus: Status.SENT
+      duolingoCouponStatus: DuolingoCouponStatus.SENT
     };
 
     // Assertions
@@ -36,6 +36,6 @@ describe('DuolingoCoupon Interface', () => {
     expect(duolingoCoupon.couponCode).toEqual('123456');
     expect(duolingoCoupon.expirationDate).toEqual(expirationDate);
     expect(duolingoCoupon.dateSent).toEqual(dateSent);
-    expect(duolingoCoupon.duolingoCouponStatus).toEqual(Status.SENT);
+    expect(duolingoCoupon.duolingoCouponStatus).toEqual(DuolingoCouponStatus.SENT);
   });
 });
