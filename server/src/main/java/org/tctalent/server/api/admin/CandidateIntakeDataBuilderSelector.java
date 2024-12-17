@@ -306,6 +306,7 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("candidateNumber")
+                .add("publicId")
                 .add("user", userDto())
                 ;
     }

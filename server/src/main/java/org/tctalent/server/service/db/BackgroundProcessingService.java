@@ -58,4 +58,18 @@ public interface BackgroundProcessingService {
    */
   void initiateDuplicateProcessing();
 
+  /**
+   * Adds publicID to any candidate that doesn't have one
+   */
+  void setCandidatePublicIds();
+
+  /**
+   * Adds publicID to any saved list that doesn't have one
+   */
+  void setSavedListPublicIds();
+
+  /**
+   * Adds publicID to any saved search that doesn't have one
+   */
+  void setSavedSearchPublicIds();
 }

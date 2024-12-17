@@ -63,9 +63,10 @@ import org.tctalent.server.util.SalesforceHelper;
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
 @Slf4j
-public class Candidate extends AbstractAuditableDomainObject<Long> {
+public class Candidate extends AbstractAuditableDomainObject<Long> implements HasPublicId {
 
     private String candidateNumber;
+    private String publicId;
 
     @Transient
     private Long contextSavedListId;
@@ -833,6 +834,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateNumber(String candidateNumber) {
         this.candidateNumber = candidateNumber;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 
     /**

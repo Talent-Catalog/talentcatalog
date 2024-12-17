@@ -48,6 +48,7 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  publicId?: string;
   status: string;
   gender: string;
   dob: Date;
