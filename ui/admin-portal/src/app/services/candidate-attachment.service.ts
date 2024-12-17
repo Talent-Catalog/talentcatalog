@@ -91,9 +91,17 @@ export class CandidateAttachmentService {
       if (cv.type === AttachmentType.googlefile) {
         downloads.push(this.downloadAttachment(cv.id, cv.name))
       } else {
-        const newTab = window.open();
-        const url = cv.url;
-        newTab.location.href = url;
+        try {
+          const newTab = window.open();
+          if (newTab) {
+            const url = cv.url;
+            newTab.location.href = url;  // Open the URL in the new tab
+          } else {
+            return throwError(`Failed to open new tab for ${cv.url}`);
+          }
+        } catch (error) {
+          return throwError(`Error opening tab for ${cv.url}: ${error.message}`);
+        }
       }
     })
 
@@ -104,7 +112,7 @@ export class CandidateAttachmentService {
     //This will automatically unsubscribe any subscribers, avoiding memory leaks.
     //See https://stackoverflow.com/questions/55893962/do-i-need-to-unsubscribe-from-observable-of
     if (downloads.length === 0) {
-      return of('Complete'); // Already resolved above, nothing to subscribe to
+      return of('Complete'); // Nothing left to manage in this case
     } else {
       forkJoin(...downloads).subscribe(
         (results: CandidateAttachment[]) => {
