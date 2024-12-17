@@ -23,6 +23,8 @@ import {CandidateAttachmentService} from '../../../../services/candidate-attachm
 import {of} from 'rxjs';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {TaskService} from 'src/app/services/task.service';
+import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
 
 describe('ViewCandidateTasksComponent', () => {
   let component: ViewCandidateTasksComponent;
@@ -30,6 +32,8 @@ describe('ViewCandidateTasksComponent', () => {
   let candidateService: jasmine.SpyObj<CandidateService>;
   let taskAssignmentService: jasmine.SpyObj<TaskAssignmentService>;
   let candidateAttachmentService: jasmine.SpyObj<CandidateAttachmentService>;
+  let candidateTaskService: jasmine.SpyObj<TaskService>;
+  let candidateDuolingoCouponService: jasmine.SpyObj<DuolingoCouponService>;
 
   const candidate  = new MockCandidate();
 
@@ -37,6 +41,8 @@ describe('ViewCandidateTasksComponent', () => {
     const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get']);
     const taskAssignmentServiceSpy = jasmine.createSpyObj('TaskAssignmentService', ['removeTaskAssignment']);
     const candidateAttachmentServiceSpy = jasmine.createSpyObj('CandidateAttachmentService', ['listByType']);
+    const taskServiceSpy = jasmine.createSpyObj('TaskService', ['get']);
+    const duolingoCouponServiceSpy = jasmine.createSpyObj('DuolingoCouponService', ['create']);
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateTasksComponent],
@@ -44,6 +50,8 @@ describe('ViewCandidateTasksComponent', () => {
         {provide: CandidateService, useValue: candidateServiceSpy},
         {provide: TaskAssignmentService, useValue: taskAssignmentServiceSpy},
         {provide: CandidateAttachmentService, useValue: candidateAttachmentServiceSpy},
+        {provide: TaskService, useValue: taskServiceSpy},
+        {provide: DuolingoCouponService, useValue: duolingoCouponServiceSpy},
         NgbModal
       ],
       schemas: [NO_ERRORS_SCHEMA]
@@ -52,6 +60,8 @@ describe('ViewCandidateTasksComponent', () => {
     candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
     taskAssignmentService = TestBed.inject(TaskAssignmentService) as jasmine.SpyObj<TaskAssignmentService>;
     candidateAttachmentService = TestBed.inject(CandidateAttachmentService) as jasmine.SpyObj<CandidateAttachmentService>;
+    candidateTaskService = TestBed.inject(TaskService) as jasmine.SpyObj<TaskService>;
+    candidateDuolingoCouponService = TestBed.inject(DuolingoCouponService) as jasmine.SpyObj<DuolingoCouponService>;
   });
 
   beforeEach(() => {

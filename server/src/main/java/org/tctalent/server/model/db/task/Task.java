@@ -51,6 +51,13 @@ public interface Task extends Auditable {
     String getDescription();
 
     /**
+     * Set the task description
+     *
+     * @param description task description
+     */
+    void setDescription(@Nullable String description);
+
+    /**
      * Displayed name describing the task. For Question tasks, this is the question to be answered.
      * @return Displayed name of task (question for Question tasks).
      */

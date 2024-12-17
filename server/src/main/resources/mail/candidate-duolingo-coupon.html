@@ -1,0 +1,108 @@
+<div>
+    <h4>Steps to take the Duolingo English Test (DET)</h4>
+    <p>Dear candidate,</p>
+    <b>
+        We hope you are doing well. You are receiving this email because we need you to take the Duolingo English Test
+        (DET).
+    </b>
+    <p>What is the <a href="https://youtu.be/avhEAqbccus">Duolingo English Test?</a></p>
+    <ul>
+        <li>You will take the test for free through TBB's partnership with Duolingo</li>
+        <li>An online test that you take at-home with a laptop or desktop computer. You cannot take the test on a tablet
+            or a smartphone.
+        </li>
+        <li>To take the DET you will need to download the Duolingo English Test application on your computer and follow
+            specific rules (explained below).
+        </li>
+        <li>The DET takes 1 hour to complete. It also takes around 30 minutes to set-up.
+        </li>
+        <li>DET questions become easier or harder depending on how you answer them.
+        </li>
+        <li>The DET uses AI technology to monitor you and people who review the video to make sure no rules are
+            broken.
+        </li>
+        <li>You and TBB will receive the results by email after 48 hours.</li>
+    </ul>
+    <p>
+        Steps to take the DET (also see the attached guide to taking the DET it has more information and important
+        links):
+    </p>
+
+    <ol>
+        <li>Block out 2 hours in your calendar. The deadline to take the test is <span th:text="${deadline}"></span>.
+        </li>
+        <li><b>Sign up for an account on the <a href="https://englishtest.duolingo.com/applicants">DET website</a> using
+            the email you have in your Talent Catalog profile.</b> Check
+            your account dashboard to make sure you have 1 credit available for the test. Reach out to us if you do not.
+        </li>
+        <li><a href="https://englishtest.duolingo.com/test/download">Download the DET desktop application</a>. You need
+            a computer with either Windows or MacOS and
+            300MB of free space. Log-in to your account on the application.
+        </li>
+        <li>
+            <b>Check your inbox</b> for an email from Duolingo with the subject: TBB has invited you to take the
+            Duolingo
+            English Test for free! Click <b>[Accept Offer]</b>.
+        </li>
+        <li>
+            <b>Learn about the DET</b> by <a href="https://youtu.be/avhEAqbccus">watching this video</a> and reading the
+            <a href="https://englishtest.duolingo.com/readiness?show_walkthrough">Readiness Page</a>.
+            <ul>
+                <li>Read the <a
+                        href="https://testcenter.zendesk.com/hc/en-us/articles/360052828331-Test-Policies-Rules-and-Requirements">test
+                    policies, rules and requirements.</a>
+                    <ul>
+                        <li>
+                            Note: You may wear a religious head covering that covers your ears while taking the test.
+                            Your eyes and mouth must be uncovered and visible.
+                        </li>
+                        <li>
+                            It is important that you follow all the rules when taking the test. This <a
+                                href="https://www.youtube.com/watch?v=ndC3gcPl8ZY&list=PLwQlrl0jmxnjgfTeqWIAfjXDdsL0xaXrW&ab_channel=DuolingoEnglishTest">video
+                            series</a> also
+                            goes over the rules & requirements, and common rules broken. Watch the videos so you know
+                            the rules and do not break them.
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <b>Take a practice test</b> on the desktop application. Take it at least once, so you become familiar with
+            the test
+            instructions.
+        </li>
+        <li>
+            <b>Prepare your ID</b> - see an explanation in the attached guide
+        </li>
+        <li>
+            Take the test! You need a stable internet connection with <a href="https://www.speedtest.net/">minimum 2mbps
+            download, 1mbps upload.</a> Avoid using
+            a mobile hotspot, and Duolingo even recommends using an ethernet cable.
+        </li>
+        <li>
+            <b>You will receive your score after 2 days.</b> You can understand how your score compares to other tests
+            like the
+            IELTS by checking out <a href="https://englishtest.duolingo.com/scores">this page.</a>
+        </li>
+    </ol>
+
+    <b>
+        **IMPORTANT: If you face technical problems, email us and wait for a reply. DO NOT purchase a test. We will send
+        you another free coupon.**
+    </b>
+
+    <p>If you have any questions, please reply to this email.
+    </p>
+
+    <p>Good luck!
+    </p>
+    <ul>
+        <li th:each="coupon : ${coupons}">
+            <a th:href="'https://englishtest.duolingo.com/pay/' + ${coupon.couponCode} + '?login_view=register&cta=Accept%20Coupon&show_bundle=false'"
+               th:text="${coupon.couponCode}" target="_blank"></a>
+        </li>
+    </ul>
+</div>
+
+

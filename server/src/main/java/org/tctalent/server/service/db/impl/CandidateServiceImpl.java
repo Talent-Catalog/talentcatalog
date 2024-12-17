@@ -78,37 +78,7 @@ import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateCitizenship;
-import org.tctalent.server.model.db.CandidateDestination;
-import org.tctalent.server.model.db.CandidateEducation;
-import org.tctalent.server.model.db.CandidateExam;
-import org.tctalent.server.model.db.CandidateLanguage;
-import org.tctalent.server.model.db.CandidateOccupation;
-import org.tctalent.server.model.db.CandidateProperty;
-import org.tctalent.server.model.db.CandidateStatus;
-import org.tctalent.server.model.db.CandidateSubfolderType;
-import org.tctalent.server.model.db.Country;
-import org.tctalent.server.model.db.DataRow;
-import org.tctalent.server.model.db.DependantRelations;
-import org.tctalent.server.model.db.EducationLevel;
-import org.tctalent.server.model.db.Exam;
-import org.tctalent.server.model.db.Gender;
-import org.tctalent.server.model.db.HasTcQueryParameters;
-import org.tctalent.server.model.db.LanguageLevel;
-import org.tctalent.server.model.db.Occupation;
-import org.tctalent.server.model.db.PartnerImpl;
-import org.tctalent.server.model.db.QuestionTaskAssignmentImpl;
-import org.tctalent.server.model.db.Role;
-import org.tctalent.server.model.db.RootRequest;
-import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.SurveyType;
-import org.tctalent.server.model.db.TaskAssignmentImpl;
-import org.tctalent.server.model.db.UnhcrStatus;
-import org.tctalent.server.model.db.UploadTaskImpl;
-import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.model.db.*;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
@@ -116,16 +86,7 @@ import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskAssignment;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.sf.Contact;
-import org.tctalent.server.repository.db.CandidateExamRepository;
-import org.tctalent.server.repository.db.CandidateRepository;
-import org.tctalent.server.repository.db.CountryRepository;
-import org.tctalent.server.repository.db.EducationLevelRepository;
-import org.tctalent.server.repository.db.GetSavedListCandidatesQuery;
-import org.tctalent.server.repository.db.LanguageLevelRepository;
-import org.tctalent.server.repository.db.OccupationRepository;
-import org.tctalent.server.repository.db.SurveyTypeRepository;
-import org.tctalent.server.repository.db.TaskAssignmentRepository;
-import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.*;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -157,22 +118,7 @@ import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
-import org.tctalent.server.service.db.CandidateCitizenshipService;
-import org.tctalent.server.service.db.CandidateDependantService;
-import org.tctalent.server.service.db.CandidateDestinationService;
-import org.tctalent.server.service.db.CandidateNoteService;
-import org.tctalent.server.service.db.CandidatePropertyService;
-import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.PartnerService;
-import org.tctalent.server.service.db.RootRequestService;
-import org.tctalent.server.service.db.SalesforceService;
-import org.tctalent.server.service.db.SavedListService;
-import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.TaskService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.*;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
@@ -180,6 +126,8 @@ import org.tctalent.server.util.PersistenceContextHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 /**
  * This is the lowest level service relating to managing candidates.
@@ -251,6 +199,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final PartnerService partnerService;
     private final LanguageLevelRepository languageLevelRepository;
     private final CandidateExamRepository candidateExamRepository;
+    private final DuolingoCouponRepository couponRepository;
 
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
@@ -260,6 +209,8 @@ public class CandidateServiceImpl implements CandidateService {
     private final TextExtracter textExtracter;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
+    private final TemplateEngine htmlTemplateEngine;
+
 
     @Transactional
     @Override
@@ -587,6 +538,21 @@ public class CandidateServiceImpl implements CandidateService {
     private void populateTransientTaskAssignmentFields(TaskAssignment taskAssignment) {
 
         taskService.populateTransientFields(taskAssignment.getTask());
+        if (taskAssignment.getTask().getName().equals("duolingoTest")) {
+            List<DuolingoCoupon> candidateCoupons = couponRepository.findAllByCandidateId(taskAssignment.getCandidate().getId());
+            List<DuolingoCoupon> sentCoupons = candidateCoupons.stream()
+                    .filter(c -> c.getCouponStatus() == DuolingoCouponStatus.SENT)
+                    .toList();
+            Task task = taskAssignment.getTask();
+            if (sentCoupons.isEmpty()) {
+                task.setDescription("You have not been sent a Duolingo coupon yet.");
+                return;
+            }
+            Context ctx = new Context();
+            ctx.setVariable("coupons", sentCoupons);
+            String taskDescription = htmlTemplateEngine.process("candidate-duolingo-coupon", ctx);
+            task.setDescription(taskDescription);
+        }
 
         //If task is completed, see if there is any transient data to be populated - eg the
         //answer on a question task
