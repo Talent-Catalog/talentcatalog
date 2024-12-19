@@ -166,7 +166,7 @@ describe('SavedListService', () => {
   });
 
   it('should update the short name of a saved list', () => {
-    const request: UpdateShortNameRequest = { tbbShortName: 'Short Name' } as UpdateShortNameRequest;
+    const request: UpdateShortNameRequest = { tcShortName: 'Short Name' } as UpdateShortNameRequest;
     const mockResponse: SavedList =MockSavedList;
 
     service.updateShortName(request).subscribe(response => {

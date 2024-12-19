@@ -398,7 +398,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.folderjdlink", is("http://folder.jd.link")))
         .andExpect(jsonPath("$.publishedDocLink", is("http://published.doc.link")))
         .andExpect(jsonPath("$.registeredJob", is(true)))
-        .andExpect(jsonPath("$.tbbShortName", is("Saved list Tbb short name")))
+        .andExpect(jsonPath("$.tcShortName", is("Saved list Tc short name")))
         .andExpect(jsonPath("$.createdBy.firstName", is("test")))
         .andExpect(jsonPath("$.createdBy.lastName", is("user")))
         .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))

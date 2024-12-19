@@ -32,7 +32,7 @@ export const MockSavedList: SavedList = {
   folderlink: 'example.com/folder',
   folderjdlink: 'example.com/folder/jd',
   publishedDocLink: 'example.com/published',
-  tbbShortName: 'TBB',
+  tcShortName: 'TC',
   sfJobCountry: 'USA',
   sfJobStage: 'Prospect',
   fixed: true,

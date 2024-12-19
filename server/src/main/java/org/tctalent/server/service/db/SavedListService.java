@@ -389,7 +389,7 @@ public interface SavedListService {
      * @param request Request containing the updated short name and the saved list id which it belongs to.
      * @throws NoSuchObjectException  if there is no saved list with this id
      */
-    SavedList updateTbbShortName(UpdateShortNameRequest request)
+    SavedList updateTcShortName(UpdateShortNameRequest request)
         throws  NoSuchObjectException;
 
     /**

@@ -79,9 +79,9 @@ public class SavedListLinkServiceImpl implements SavedListLinkService {
 //        SavedListLink link = this.savedListLinkRepository.findById(id)
 //                .orElseThrow(() -> new NoSuchObjectException(Occupation.class, id));
 //
-//        checkDuplicates(id, request.getSavedListId(), request.getTbbShortName());
+//        checkDuplicates(id, request.getSavedListId(), request.getTcShortName());
 //
-//        link.setLink(request.getTbbShortName());
+//        link.setLink(request.getTcShortName());
 //        return savedListLinkRepository.save(link);
 //    }
 //

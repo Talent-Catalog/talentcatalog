@@ -128,7 +128,7 @@ export class SearchExternalLinksComponent implements OnInit {
     deleteCountryModal.componentInstance.message = 'Are you sure you want to delete the external link for ' + savedList.name;
     const request: UpdateShortNameRequest = {
       savedListId: savedList.id,
-      tbbShortName: null,
+      tcShortName: null,
     }
     deleteCountryModal.result
       .then((result) => {

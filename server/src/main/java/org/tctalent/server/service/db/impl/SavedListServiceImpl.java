@@ -698,17 +698,17 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public SavedList updateTbbShortName(UpdateShortNameRequest request) throws  NoSuchObjectException {
+    public SavedList updateTcShortName(UpdateShortNameRequest request) throws  NoSuchObjectException {
         SavedList savedList = get(request.getSavedListId());
         // Check for duplicate short names if not null, can't have same short name.
         SavedList existingShortName = null;
-        if (request.getTbbShortName() != null) {
-            existingShortName = this.savedListRepository.findByShortNameIgnoreCase(request.getTbbShortName()).orElse(null);
+        if (request.getTcShortName() != null) {
+            existingShortName = this.savedListRepository.findByShortNameIgnoreCase(request.getTcShortName()).orElse(null);
         }
         if (existingShortName != null && !existingShortName.getId().equals(request.getSavedListId())) {
             throw new EntityExistsException("external link");
         }
-        savedList.setTbbShortName(request.getTbbShortName());
+        savedList.setTcShortName(request.getTcShortName());
         return saveIt(savedList);
     }
 

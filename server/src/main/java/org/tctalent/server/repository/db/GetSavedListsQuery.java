@@ -90,11 +90,11 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         if (request.getShortName() != null) {
             if (request.getShortName()) {
                 conjunction = cb.and(conjunction,
-                    cb.isNotNull(savedList.get("tbbShortName"))
+                    cb.isNotNull(savedList.get("tcShortName"))
                 );
             } else {
                 conjunction = cb.and(conjunction,
-                    cb.isNull(savedList.get("tbbShortName"))
+                    cb.isNull(savedList.get("tcShortName"))
                 );
             }
         }

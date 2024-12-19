@@ -67,7 +67,7 @@ describe('EditExternalLinkComponent', () => {
 
   it('should initialize form with saved list details', () => {
     expect(component.form).toBeDefined();
-    expect(component.form.get('tbbShortName').value).toEqual('TBB');
+    expect(component.form.get('tcShortName').value).toEqual('TC');
   });
 
   it('should load saved lists on initialization', fakeAsync(() => {
@@ -88,12 +88,12 @@ describe('EditExternalLinkComponent', () => {
   it('should call onSave and close modal when external link is successfully updated', fakeAsync(() => {
     const shortName = 'updated-link';
     const link: SavedList = mockSavedList;
-    component.form.patchValue({ tbbShortName: shortName });
+    component.form.patchValue({ tcShortName: shortName });
 
     component.onSave();
     tick(); // Waiting for async operation to complete
 
-    expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId: 1, tbbShortName: shortName });
+    expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId: 1, tcShortName: shortName });
     expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(link);
     expect(component.saving).toBeFalse();
   }));

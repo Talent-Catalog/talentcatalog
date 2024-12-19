@@ -161,7 +161,7 @@ public class SavedList extends AbstractCandidateSource {
      * probably associated with a list of physiotherapists, the short name is "physios"
      */
     @Nullable
-    private String tbbShortName;
+    private String tcShortName;
 
     /**
      * If true defines the list as the "submission list" for a job.
