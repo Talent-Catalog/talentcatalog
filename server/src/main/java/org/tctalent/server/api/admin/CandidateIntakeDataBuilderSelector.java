@@ -101,6 +101,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("englishAssessment")
                 .add("englishAssessmentScoreIelts")
+                .add("englishAssessmentScoreDet")
                 .add("frenchAssessment")
                 .add("frenchAssessmentScoreNclc")
                 .add("leftHomeReasons")
@@ -306,6 +307,7 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("candidateNumber")
+                .add("publicId")
                 .add("user", userDto())
                 ;
     }

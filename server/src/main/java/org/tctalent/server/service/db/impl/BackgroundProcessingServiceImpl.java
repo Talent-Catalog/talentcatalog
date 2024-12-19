@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +34,23 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
+import org.tctalent.server.request.list.SearchSavedListRequest;
+import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.SavedListService;
+import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.util.PagedCandidateBackProcessor;
+import org.tctalent.server.service.db.util.PagedSavedListBackProcessor;
+import org.tctalent.server.service.db.util.PagedSavedSearchBackProcessor;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
+import org.tctalent.server.util.background.PageContextBackRunner;
 
 /**
  * Service for background processing methods
@@ -48,6 +61,8 @@ import org.tctalent.server.util.background.PageContext;
 public class BackgroundProcessingServiceImpl implements BackgroundProcessingService {
   private final CandidateService candidateService;
   private final CandidateRepository candidateRepository;
+  private final SavedListService savedListService;
+  private final SavedSearchService savedSearchService;
   private final TaskScheduler taskScheduler;
 
   public BackProcessor<PageContext> createSfSyncBackProcessor(
@@ -56,24 +71,23 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
       @Override
       public boolean process(PageContext ctx) throws SalesforceException, WebClientException {
-        long startPage =
+        int page =
             ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
         // Delegate page processing to the service, which will open a transaction
-        candidateService.processSfCandidateSyncPage(startPage, statuses);
+        candidateService.processSfCandidateSyncPage(page, statuses);
 
         // Log completed page
         LogBuilder.builder(log)
             .action("processSfCandidateSyncPage")
-            .message("Processed page " + (startPage + 1) + " of " + totalNoOfPages)
+            .message("Processed page " + (page + 1) + " of " + totalNoOfPages)
             .logInfo();
 
         // Set last processed page
-        long lastProcessed = startPage + ctx.getNumToProcess() - 1;
-        ctx.setLastProcessedPage(lastProcessed);
+        ctx.setLastProcessedPage(page);
 
         // Log if processing complete
-        if (startPage + ctx.getNumToProcess() >= totalNoOfPages) {
+        if (page + 1 >= totalNoOfPages) {
           LogBuilder.builder(log)
               .action("Sync Candidates to Salesforce")
               .message("SF candidate sync complete!")
@@ -81,7 +95,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
         }
 
         // Return true if complete - ends processing
-        return startPage + ctx.getNumToProcess() >= totalNoOfPages;
+        return page + 1 >= totalNoOfPages;
       }
     };
 
@@ -94,24 +108,23 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     BackProcessor<PageContext> backProcessor = new BackProcessor<>() {
       @Override
       public boolean process(PageContext ctx) {
-        long startPage =
+        int page =
             ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
         // Fetch new page of candidates
         Page<Candidate> candidatePage = candidateRepository.findByIdIn(
             candidateIds,
-            PageRequest.of((int) startPage, 200, Sort.by("id").ascending())
+            PageRequest.of(page, 200, Sort.by("id").ascending())
         );
 
         // Delegate page processing to the service, which will open a transaction
         candidateService.processPotentialDuplicatePage(candidatePage);
 
         // Set last processed page
-        long lastProcessed = startPage + ctx.getNumToProcess() - 1;
-        ctx.setLastProcessedPage(lastProcessed);
+        ctx.setLastProcessedPage(page);
 
         // Return true if complete - ends processing
-        return startPage + ctx.getNumToProcess() >= candidatePage.getTotalPages();
+        return page + 1 >= candidatePage.getTotalPages();
       }
     };
 
@@ -141,7 +154,86 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     BackRunner<PageContext> backRunner = new BackRunner<>();
 
     ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-        new PageContext(null, 1), 20);
+        new PageContext(null), 20);
   }
 
+  @Override
+  public void setCandidatePublicIds() {
+
+    //Process all candidates except deleted or withdrawn
+    SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
+    EnumSet<CandidateStatus> includedStatuses = EnumSet.complementOf(
+        EnumSet.of(CandidateStatus.deleted, CandidateStatus.withdrawn));
+    searchCandidateRequest.setStatuses(new ArrayList<>(includedStatuses));
+
+    //Set page size
+    searchCandidateRequest.setPageSize(100);
+
+    //Create the processor, passing in the request and services it needs
+    PagedCandidateBackProcessor backProcessor =
+        new PagedCandidateBackProcessor( "setCandidatePublicIds",
+            searchCandidateRequest, candidateService, savedSearchService) {
+          @Override
+          protected void processCandidates(
+              CandidateService candidateService, List<Candidate> candidates) {
+            //The actual processing of the candidates happens in the candidate service.
+            candidateService.setPublicIds(candidates);
+          }
+        };
+
+    //Start the processing - only consuming 20% of the CPU
+    PageContextBackRunner runner = new PageContextBackRunner();
+    runner.start(taskScheduler, backProcessor, 20);
+  }
+
+  @Override
+  public void setSavedListPublicIds() {
+
+    //Process all - so empty search
+    SearchSavedListRequest searchSavedListRequest = new SearchSavedListRequest();
+
+    //Set page size
+    searchSavedListRequest.setPageSize(100);
+
+    //Create the processor, passing in the request and services it needs
+    PagedSavedListBackProcessor backProcessor =
+        new PagedSavedListBackProcessor( "setSavedListPublicIds",
+            searchSavedListRequest, savedListService) {
+          @Override
+          protected void processSavedLists(
+              SavedListService savedListService, List<SavedList> savedLists) {
+            //The actual processing of the savedLists happens in the saved list service.
+            savedListService.setPublicIds(savedLists);
+          }
+        };
+
+    //Start the processing - only consuming 20% of the CPU
+    PageContextBackRunner runner = new PageContextBackRunner();
+    runner.start(taskScheduler, backProcessor, 20);
+  }
+
+  @Override
+  public void setSavedSearchPublicIds() {
+
+    //Process all - so empty search
+    SearchSavedSearchRequest searchSavedSearchRequest = new SearchSavedSearchRequest();
+
+    //Set page size
+    searchSavedSearchRequest.setPageSize(100);
+
+    //Create the processor, passing in the request and services it needs
+    PagedSavedSearchBackProcessor backProcessor =
+        new PagedSavedSearchBackProcessor( "setSavedSearchPublicIds",
+            searchSavedSearchRequest, savedSearchService) {
+          @Override
+          protected void processSavedSearches(
+              SavedSearchService savedSearchService, List<SavedSearch> savedSearches) {
+            savedSearchService.setPublicIds(savedSearches);
+          }
+        };
+
+    //Start the processing - only consuming 20% of the CPU
+    PageContextBackRunner runner = new PageContextBackRunner();
+    runner.start(taskScheduler, backProcessor, 20);
+  }
 }
