@@ -35,8 +35,6 @@ import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
 import {TaskService} from 'src/app/services/task.service';
-import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
-import {DuolingoCouponResponse} from 'src/app/model/duolingo-coupon';
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -60,7 +58,6 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
               private candidateAttachmentService: CandidateAttachmentService,
               private taskAssignmentService: TaskAssignmentService,
               private taskService: TaskService,
-              private duolingoCouponService: DuolingoCouponService,
               private modalService: NgbModal) { }
 
   ngOnInit(): void {
@@ -108,7 +105,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   }
 
-  async sendDuolingoCoupon() {
+  async assignDuolingoCouponTask() {
     const duolingoTask = await this.taskService.listTasks().toPromise();
     const duolingoTaskId = duolingoTask.find(task => task.name === 'duolingoTest')?.id;
 
