@@ -151,7 +151,7 @@ class UserCacheEvictionTest {
 
   private void createSharedLists() {
     SavedList savedList = new SavedList();
-    savedList.setTbbShortName("TestList");
+    savedList.setTcShortName("TestList");
     savedList.setName("TestList");
     savedList.setDescription("TestDescription");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -159,7 +159,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(savedList);
 
     savedList = new SavedList();
-    savedList.setTbbShortName("TestList2");
+    savedList.setTcShortName("TestList2");
     savedList.setName("TestList2");
     savedList.setDescription("TestDescription2");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -167,7 +167,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(savedList);
 
     savedList = new SavedList();
-    savedList.setTbbShortName("TestList3");
+    savedList.setTcShortName("TestList3");
     savedList.setName("TestList3");
     savedList.setDescription("TestDescription3");
     savedList.setCreatedBy(userRepository.findByEmailIgnoreCase("test@admin.com"));
@@ -977,7 +977,7 @@ class UserCacheEvictionTest {
     savedListRepository.save(list);
 
     // Verify that the saved list updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -995,7 +995,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAll(List.of(list));
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -1013,7 +1013,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAndFlush(list);
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 
@@ -1031,7 +1031,7 @@ class UserCacheEvictionTest {
     savedListRepository.saveAllAndFlush(List.of(list));
 
     // Verify that the savedList updated and the user cache evicted
-    verifyListDescriptionUpdated(list.getTbbShortName(), "UpdatedDescription");
+    verifyListDescriptionUpdated(list.getTcShortName(), "UpdatedDescription");
     verifyCacheIsEmpty();
   }
 

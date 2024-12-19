@@ -61,8 +61,8 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
     Optional<SavedList> findRegisteredJobList(@Param("sfId") String sfJoblink);
 
     @Query(" select distinct s from SavedList s "
-            + " where lower(s.tbbShortName) = lower(:tbbShortName)")
-    Optional<SavedList> findByShortNameIgnoreCase(@Param("tbbShortName") String tbbShortName);
+            + " where lower(s.tcShortName) = lower(:tcShortName)")
+    Optional<SavedList> findByShortNameIgnoreCase(@Param("tcShortName") String tcShortName);
 
     @Query(" select s from SavedList s where s.sfJobOpp is not null and s.status != 'deleted'")
     List<SavedList> findListsWithJobs();
