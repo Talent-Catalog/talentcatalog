@@ -22,6 +22,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.security.JwtAuthenticationEntryPoint;
 import org.tctalent.server.security.JwtAuthenticationFilter;
 import org.tctalent.server.security.JwtTokenProvider;
@@ -93,8 +95,9 @@ import org.tctalent.server.security.TcUserDetailsService;
  *     </li>
  * </ul>
  */
+@Slf4j
 @Configuration
-@EnableWebSecurity()
+@EnableWebSecurity
 @EnableMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
@@ -149,7 +152,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/status**", "/status/**").permitAll()
 
 
-                // DELETE: DELETE SAVE SEARCHES
+            // DELETE: DELETE SAVE SEARCHES
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // DELETE: DELETE LIST
@@ -435,10 +438,17 @@ public class SecurityConfiguration {
         if (StringUtils.isNotBlank(urls)) {
             Collections.addAll(corsUrls, urls.split(","));
         }
-        configuration.setAllowedOrigins(corsUrls);
+        if (corsUrls.isEmpty()) {
+            LogBuilder.builder(log)
+                .message("No CORS URLs specified. Defaulting to empty list, which may block cross-origin requests.")
+                .logWarn();
+        }
+        configuration.setAllowedOriginPatterns(corsUrls);
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setMaxAge(3600L); // Cache preflight responses for 1 hour
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
