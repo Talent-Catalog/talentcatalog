@@ -17,9 +17,7 @@
 <form [formGroup]="loginForm" (submit)="login()">
 <!--  <h1>{{ 'LOGIN.TITLE' | translate }}</h1>-->
 
-  <app-error
-    [error]="error">
-  </app-error>
+  <app-error [error]="error"></app-error>
 
   <div class="mb-3">
     <label class="form-label" for="username">{{ 'LOGIN.LABEL.USERNAME' | translate }}</label>
