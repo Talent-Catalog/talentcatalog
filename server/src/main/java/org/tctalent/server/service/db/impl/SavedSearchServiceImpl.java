@@ -313,12 +313,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             searchRequest.setPageNumber(pageNum++);
             pageOfCandidates = doSearchCandidates(searchRequest);
 
-            int limit = 32000;
-            if (pageOfCandidates.getTotalElements() > limit) {
-                throw new InvalidRequestException(
-                    "Sorry, but there is currently a limit on doing stats on searches returning more than "
-                        + limit + " candidates. We are working to remove this limit.");
-            }
+            // TODO: Removing this for now just to test new stats method
+//            int limit = 32000;
+//            if (pageOfCandidates.getTotalElements() > limit) {
+//                throw new InvalidRequestException(
+//                    "Sorry, but there is currently a limit on doing stats on searches returning more than "
+//                        + limit + " candidates. We are working to remove this limit.");
+//            }
 
             count += pageOfCandidates.getNumberOfElements();
 

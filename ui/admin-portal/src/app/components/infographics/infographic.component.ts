@@ -25,6 +25,7 @@ import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
 import {SavedSearchService} from "../../services/saved-search.service";
 import {saveBlob} from "../../util/file";
+import {SupersetService} from "../../services/superset-embed.service";
 
 @Component({
   selector: 'app-infographic',
@@ -42,9 +43,10 @@ export class InfographicComponent implements OnInit {
   statsFilter: UntypedFormGroup;
   statsName: string;
   listFromUrl: boolean = false;
+  source: string;
+  sourceId: number;
 
   constructor(private route: ActivatedRoute,
-              private statService: CandidateStatService,
               private savedListService: SavedListService,
               private savedSearchService: SavedSearchService,
               private fb: UntypedFormBuilder) {
@@ -56,15 +58,11 @@ export class InfographicComponent implements OnInit {
     this.statsFilter = this.fb.group({
       savedList: [null],
       savedSearch: [null],
-      dateFrom: ['', [Validators.required]],
-      dateTo: ['', [Validators.required]]
     });
 
     this.loadListsAndSearches();
   }
 
-  get dateFrom(): string { return this.statsFilter.value.dateFrom; }
-  get dateTo(): string { return this.statsFilter.value.dateTo; }
   get savedList(): SavedList {
     const savedList: SavedList = this.statsFilter.value.savedList;
     //Control always returns an object
@@ -120,7 +118,8 @@ export class InfographicComponent implements OnInit {
           this.savedSearchService.get(id).subscribe(
             (savedSearch) => {
               this.statsFilter.controls['savedSearch'].patchValue(savedSearch);
-              this.submitStatsRequest(false);
+              this.source = 'search'
+              this.sourceId = savedSearch.id;
             }, error => {
               this.error = error;
             });
@@ -129,7 +128,8 @@ export class InfographicComponent implements OnInit {
           this.savedListService.get(id).subscribe(
             (savedList) => {
               this.statsFilter.controls['savedList'].patchValue(savedList);
-              this.submitStatsRequest(false);
+              this.source = 'savedList';
+              this.sourceId = savedList.id;
             }, error => {
               this.error = error;
           });
@@ -138,69 +138,69 @@ export class InfographicComponent implements OnInit {
     });
   }
 
-  submitStatsRequest(runOldStats: boolean){
+  submitStatsRequest(){
     this.loading = true;
     this.error = null;
 
-    const request: CandidateStatsRequest = {
-      runOldStats: runOldStats,
-      listId: this.savedList == null ? null : this.savedList.id,
-      searchId: this.savedSearch == null ? null : this.savedSearch.id,
-      dateFrom: this.dateFrom,
-      dateTo: this.dateTo
-    }
-
     if (this.savedList) {
       this.statsName = 'list ' + this.savedList?.name;
+      this.source = 'list';
+      this.sourceId = this.savedList.id;
     } else if (this.savedSearch) {
       this.statsName = 'search ' + this.savedSearch?.name;
+      this.source = 'search'
+      this.sourceId = this.savedSearch.id;
     } else {
-      this.statsName = 'all data'
+      this.statsName = 'all data';
+      this.source = null;
+      this.sourceId = null;
     }
 
-    this.statService.getAllStats(request).subscribe(result => {
-        this.loading = false;
-        this.statReports = result;
-        this.dataLoaded = true;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      }
-    )
+    console.log('bypassing old getAllStats()')
+
+    // this.statService.getAllStats(request).subscribe(result => {
+    //     this.loading = false;
+    //     this.statReports = result;
+    //     this.dataLoaded = true;
+    //   },
+    //   error => {
+    //     this.error = error;
+    //     this.loading = false;
+    //   }
+    // )
 
   }
 
-  exportStats() {
-      const options = {type: 'text/csv;charset=utf-8;'};
-      const filename = 'stats.csv';
-
-      const csv: string[] = [];
-
-      // Add date filter to export csv
-      csv.push('"' + 'Exported Date' + '","' + new Date().toUTCString() + '"\n');
-      csv.push('"' + 'Date From' + '","' + this.statsFilter.value.dateFrom + '"\n')
-      csv.push('"' + 'Date To' + '","' + this.statsFilter.value.dateTo + '"\n')
-      if (this.savedList) {
-        csv.push('"' + 'List' + '","' + this.savedList.name + '(' + this.savedList.id + ')"\n')
-      }
-      if (this.savedSearch) {
-        csv.push('"' + 'Search' + '","' + this.savedSearch.name + '(' + this.savedSearch.id + ')"\n')
-      }
-      csv.push('\n');
-
-      // Add data to export csv
-      for (const statReport of this.statReports) {
-        csv.push(statReport.name + '\n');
-        for (const row of statReport.rows) {
-          csv.push('"' + row.label + '","' + row.value.toString() + '"\n')
-        }
-        csv.push('\n');
-      }
-
-      const blob = new Blob(csv, options);
-      saveBlob(blob, filename);
-  }
+  // exportStats() {
+  //     const options = {type: 'text/csv;charset=utf-8;'};
+  //     const filename = 'stats.csv';
+  //
+  //     const csv: string[] = [];
+  //
+  //     // Add date filter to export csv
+  //     csv.push('"' + 'Exported Date' + '","' + new Date().toUTCString() + '"\n');
+  //     csv.push('"' + 'Date From' + '","' + this.statsFilter.value.dateFrom + '"\n')
+  //     csv.push('"' + 'Date To' + '","' + this.statsFilter.value.dateTo + '"\n')
+  //     if (this.savedList) {
+  //       csv.push('"' + 'List' + '","' + this.savedList.name + '(' + this.savedList.id + ')"\n')
+  //     }
+  //     if (this.savedSearch) {
+  //       csv.push('"' + 'Search' + '","' + this.savedSearch.name + '(' + this.savedSearch.id + ')"\n')
+  //     }
+  //     csv.push('\n');
+  //
+  //     // Add data to export csv
+  //     for (const statReport of this.statReports) {
+  //       csv.push(statReport.name + '\n');
+  //       for (const row of statReport.rows) {
+  //         csv.push('"' + row.label + '","' + row.value.toString() + '"\n')
+  //       }
+  //       csv.push('\n');
+  //     }
+  //
+  //     const blob = new Blob(csv, options);
+  //     saveBlob(blob, filename);
+  // }
 
   scroll(id){
     const elmnt = document.getElementById(id);

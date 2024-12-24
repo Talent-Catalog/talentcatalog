@@ -46,6 +46,7 @@
           formControlName="savedList">
         </ng-select>
       </div>
+
       <div class="col-12 col-lg-3">
         <label class="form-label">Search</label>
         <!-- Disabled if saved list is entered -->
@@ -60,78 +61,41 @@
           formControlName="savedSearch">
         </ng-select>
       </div>
-      <div class="col-12 col-lg-3">
-        <label class="form-label" for="dateFrom">Date From:</label>
-        <app-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
-      </div>
-      <div class="col-12 col-lg-3">
-          <label class="form-label" for="dateTo">Date To:</label>
-          <app-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
-      </div>
-    </div>
 
     <div class="row my-4">
       <div class="col">
-        <button class="btn btn-success float-end" (click)="submitStatsRequest(true)">
-          <i class="fas fa-calendar-alt"></i> Old Run stats
-        </button>
-      </div>
-      <div class="col">
-        <button class="btn btn-success float-end" (click)="submitStatsRequest(false)">
+        <button class="btn btn-success float-end" (click)="submitStatsRequest()">
           <i class="fas fa-calendar-alt"></i> Run stats
         </button>
       </div>
     </div>
+
+  </div>
   </div>
 </form>
 
-<ng-container *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i>
-</ng-container>
+<!--    <nav class="navbar sticky-top navbar-expand-md second-nav">-->
+<!--      <span class="navbar-brand">Stats for {{statsName}}</span>-->
+<!--        <ul class="navbar-nav ms-auto">-->
+<!--          <div ngbDropdown display="dynamic" placement="bottom-end">-->
+<!--            <button type="button" class="btn btn-info float-end" id="jumpToStats" ngbDropdownToggle>Go to stat <i class="fa-solid fa-hand-point-down"></i></button>-->
+<!--            <div ngbDropdownMenu aria-labelledby="jumpToStats" class="scroll-dropdown">-->
+<!--              <ng-container *ngFor="let statReport of statReports; let i = index">-->
+<!--                <a ngbDropdownItem (click)="scroll(i)">{{statReport.name}}</a>-->
+<!--              </ng-container>-->
+<!--            </div>-->
+<!--          </div>-->
 
-<ng-container *ngIf="!loading">
-  <!--Loop through reports data, displaying each report-->
-  <div *ngIf="statReports">
+<!--          <button class="btn btn-secondary float-end  ms-2" [disabled]="!dataLoaded" (click)="exportStats()">-->
+<!--            Export <i class="fas fa-file-excel"></i>-->
+<!--          </button>-->
 
-    <nav class="navbar sticky-top navbar-expand-md second-nav">
-      <span class="navbar-brand">Stats for {{statsName}}</span>
-        <ul class="navbar-nav ms-auto">
-          <div ngbDropdown display="dynamic" placement="bottom-end">
-            <button type="button" class="btn btn-info float-end" id="jumpToStats" ngbDropdownToggle>Go to stat <i class="fa-solid fa-hand-point-down"></i></button>
-            <div ngbDropdownMenu aria-labelledby="jumpToStats" class="scroll-dropdown">
-              <ng-container *ngFor="let statReport of statReports; let i = index">
-                <a ngbDropdownItem (click)="scroll(i)">{{statReport.name}}</a>
-              </ng-container>
-            </div>
-          </div>
+<!--        </ul>-->
+<!--    </nav>-->
 
-          <button class="btn btn-secondary float-end  ms-2" [disabled]="!dataLoaded" (click)="exportStats()">
-            Export <i class="fas fa-file-excel"></i>
-          </button>
-
-        </ul>
-    </nav>
-
-    <ng-container *ngFor="let statReport of statReports; let i = index">
-      <div [id]="i">
-        <div class="row ">
-          <div class="col-sm-4">
-            <div class="section">
-              <h6 class="mb-3">{{statReport.name}}</h6>
-              <app-chart *ngIf="statReport.rows.length <= 15 || statReport.chartType == 'bar'"
-                         [chartData]="statReport.rows" [chartType]="statReport.chartType"
-                         [chartLegend]="statReport.chartType != 'bar'"
-              ></app-chart>
-              <p *ngIf="statReport.rows.length > 15 && statReport.chartType != 'bar'">
-                {{statReport.rows.length}} different values.
-                Too many to display here. See the exported data for details.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ng-container>
-  </div>
-</ng-container>
+<app-superset
+  [source]="source"
+  [sourceId]="sourceId"
+></app-superset>
 
 
