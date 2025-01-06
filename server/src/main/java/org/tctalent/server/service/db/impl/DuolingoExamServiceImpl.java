@@ -78,7 +78,7 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
 
   private boolean isIdenticalExamExists(List<CandidateExam> existingExams, String newScore, String newYear, String newNotes) {
     return existingExams.stream().anyMatch(existingExam ->
-        Exam.DuolingoOfficial.equals(existingExam.getExam()) &&
+        Exam.DETOfficial.equals(existingExam.getExam()) &&
             Objects.equals(newScore, existingExam.getScore().trim()) &&
             Objects.equals(newYear, String.valueOf(existingExam.getYear()).trim()) &&
             Objects.equals(newNotes, existingExam.getNotes())
@@ -87,7 +87,7 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
 
   private void createAndSaveNewExam(Candidate candidate, String newScore, String newYear, String newNotes) {
     CreateCandidateExamRequest candidateExamRequest = new CreateCandidateExamRequest();
-    candidateExamRequest.setExam(Exam.DuolingoOfficial);
+    candidateExamRequest.setExam(Exam.DETOfficial);
     candidateExamRequest.setScore(newScore);
     candidateExamRequest.setYear(Long.valueOf(newYear));
     candidateExamRequest.setNotes(newNotes);
