@@ -73,7 +73,7 @@
 
         <div *ngIf="showRelocatedAddress()" class="row">
           <div>
-            <h6>Relocated Address</h6>
+            <h6>{{ 'PROFILE.CONTACT.RELOCATEDADDRESS' | translate }}</h6>
             <p>
               <span>{{candidate?.relocatedAddress || '' }} </span>
               <span>{{candidate?.relocatedCity || '' }} </span>
