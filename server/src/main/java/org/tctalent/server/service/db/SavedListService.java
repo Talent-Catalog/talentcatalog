@@ -165,6 +165,20 @@ public interface SavedListService {
             throws EntityExistsException, RegisteredListException;
 
     /**
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
+     * @param user User to be recorded as creator of saved list
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * @return Created saved list
+     * @throws EntityExistsException if a list with this name already exists.
+     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
+     */
+    SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
+        throws EntityExistsException, RegisteredListException;
+
+    /**
      * Creates/updates Salesforce records corresponding to candidates in a given list
      * <p/>
      * This could involve creating or updating contact records and/or
@@ -181,20 +195,6 @@ public interface SavedListService {
      */
     void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
         throws NoSuchObjectException, SalesforceException, WebClientException;
-
-    /**
-     * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
-     * nothing new is created, and the existing list is returned.
-     * @param user User to be recorded as creator of saved list
-     * @param request Request defining new list (including whether it is a registered list
-     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
-     * @return Created saved list
-     * @throws EntityExistsException if a list with this name already exists.
-     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
-     */
-    SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
-            throws EntityExistsException, RegisteredListException;
 
     /**
      * Fetches the candidates specified in the given request.
@@ -332,6 +332,8 @@ public interface SavedListService {
      *                   stored in the database).
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
+
+    void setPublicIds(List<SavedList> savedLists);
 
     /**
      * Update the info associated with the SavedList with the given id

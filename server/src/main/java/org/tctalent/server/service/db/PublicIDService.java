@@ -14,23 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.util.background;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+package org.tctalent.server.service.db;
 
 /**
- * Provides context for processing paged data, including the last processed page and total number of
- * pages to be processed.
+ * Generates unique public IDS
+ *
+ * @author John Cameron
  */
-@Getter
-@Setter
-@AllArgsConstructor
-public class PageContext {
+public interface PublicIDService {
 
     /**
-     * The last processed page — set to null if none processed yet
+     * Generates a random unique, url friendly public ID
+     * @return id
      */
-    private Integer lastProcessedPage;
+    String generatePublicID();
 }

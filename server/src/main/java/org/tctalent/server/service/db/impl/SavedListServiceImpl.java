@@ -92,6 +92,7 @@ import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DocPublisherService;
 import org.tctalent.server.service.db.ExportColumnsService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -120,6 +121,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final DocPublisherService docPublisherService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
+    private final PublicIDService publicIDService;
     private final SalesforceService salesforceService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final TaskAssignmentService taskAssignmentService;
@@ -136,7 +138,7 @@ public class SavedListServiceImpl implements SavedListService {
         SavedListRepository savedListRepository,
         DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
-        GoogleDriveConfig googleDriveConfig,
+        GoogleDriveConfig googleDriveConfig, PublicIDService publicIDService,
         SalesforceService salesforceService,
         SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
         UserRepository userRepository,
@@ -149,6 +151,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.docPublisherService = docPublisherService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
+        this.publicIDService = publicIDService;
         this.salesforceService = salesforceService;
         this.salesforceJobOppService = salesforceJobOppService;
         this.taskAssignmentService = taskAssignmentService;
@@ -491,6 +494,9 @@ public class SavedListServiceImpl implements SavedListService {
         request.populateFromRequest(savedList);
         savedList.setSfJobOpp(sfJobOpp);
 
+        //Populate publicID
+        savedList.setPublicId(publicIDService.generatePublicID());
+
         //Save created list so that we get its id from the database
         savedList.setAuditFields(user);
         return savedListRepository.save(savedList);
@@ -646,6 +652,19 @@ public class SavedListServiceImpl implements SavedListService {
     public void setCandidateContext(long savedListId, Iterable<Candidate> candidates) {
         for (Candidate candidate : candidates) {
             candidate.setContextSavedListId(savedListId);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void setPublicIds(List<SavedList> savedLists) {
+        for (SavedList savedList : savedLists) {
+            if (savedList.getPublicId() == null) {
+                savedList.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!savedLists.isEmpty()) {
+            savedListRepository.saveAll(savedLists);
         }
     }
 
