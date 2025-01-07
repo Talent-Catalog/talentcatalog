@@ -46,6 +46,29 @@
              [formControlName]="'whatsapp'">
     </div>
 
+    <!-- EDIT ONLY: Relocated Address -->
+    <div *ngIf="edit">
+      <hr>
+      <div class="mb-3">
+        <label class="form-label" for="relocatedAddress">RELOCATED ADDRESS</label>
+        <input type="text" class="form-control" id="relocatedAddress" placeholder="" [formControlName]="'relocatedAddress'">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="relocatedAddress">RELOCATED CITY</label>
+        <input type="text" class="form-control" id="relocatedCity" placeholder="" [formControlName]="'relocatedCity'">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="relocatedState">RELOCATED STATE</label>
+        <input type="text" class="form-control" id="relocatedState" placeholder="" [formControlName]="'relocatedState'">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="relocatedCountryId">RELOCATED COUNTRY</label>
+        <ng-select id="relocatedCountryId" [formControlName]="'relocatedCountryId'" [items]="countries" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindValue="id" bindLabel="name">
+        </ng-select>
+      </div>
+    </div>
+
   </form>
 
   <app-error [error]="error"></app-error>
