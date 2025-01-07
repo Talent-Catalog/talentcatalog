@@ -49,13 +49,13 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
     List<DuolingoDashboardResponse> dashboardResults = duolingoApiService.getDashboardResults(null, null);
 
     for (DuolingoDashboardResponse result : dashboardResults) {
-      String couponCode = result.getCoupon_id();
+      String couponCode = result.getCouponId();
 
       // Retrieve candidate based on coupon code
       Candidate candidateOpt = duolingoCouponService.findCandidateByCouponCode(couponCode);
       if (candidateOpt != null) {
-        String newScore = String.valueOf(result.getOverall_score()).trim();
-        String newYear = String.valueOf(extractYear(result.getTest_date())).trim();
+        String newScore = String.valueOf(result.getOverallScore()).trim();
+        String newYear = String.valueOf(extractYear(result.getTestDate())).trim();
         String newNotes = buildNotes(result);
 
         // Fetch all exams for the candidate in one go
@@ -103,10 +103,10 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
     return String.format(
         "Generated from Duolingo dashboard | Certificate URL: %s | Interview URL: %s | Verification Date: %s | Percent Score: %s | "
             + "Scale: %s | Literacy Subscore: %s | Conversation Subscore: %s | Comprehension Subscore: %s | Production Subscore: %s",
-        result.getCertificate_url(), result.getInterview_url(), result.getVerification_date(),
-        result.getPercent_score(), result.getScale(), result.getLiteracy_subscore(),
-        result.getConversation_subscore(), result.getComprehension_subscore(),
-        result.getProduction_subscore());
+        result.getCertificateUrl(), result.getInterviewUrl(), result.getVerificationDate(),
+        result.getPercentScore(), result.getScale(), result.getLiteracySubscore(),
+        result.getConversationSubscore(), result.getComprehensionSubscore(),
+        result.getProductionSubscore());
   }
 
   /**
@@ -124,7 +124,7 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
       LogBuilder.builder(log)
           .action("extractYear")
           .message(String.format("Invalid date format: %s", dateStr))
-          .logError();
+          .logError(e);
       return null;
     }
   }
