@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {EditCandidateContactComponent} from "./edit-candidate-contact.component";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
@@ -23,6 +23,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
 
 describe('EditCandidateContactComponent', () => {
   let component: EditCandidateContactComponent;
@@ -38,8 +39,8 @@ describe('EditCandidateContactComponent', () => {
     const countryServiceSpyObj = jasmine.createSpyObj('CountryService', ['listCountries']);
 
     TestBed.configureTestingModule({
-      declarations: [EditCandidateContactComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      declarations: [EditCandidateContactComponent, DatePickerComponent],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
       providers: [
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: CandidateService, useValue: candidateServiceSpyObj },

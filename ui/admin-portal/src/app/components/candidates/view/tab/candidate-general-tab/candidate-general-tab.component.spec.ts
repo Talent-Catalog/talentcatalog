@@ -26,6 +26,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {ViewCandidateAccountComponent} from "../../account/view-candidate-account.component";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('CandidateGeneralTabComponent', () => {
   let component: CandidateGeneralTabComponent;
@@ -33,7 +34,7 @@ describe('CandidateGeneralTabComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,RouterTestingModule],
       declarations: [ CandidateGeneralTabComponent,ViewCandidateLanguageComponent,ViewCandidateAccountComponent,ViewCandidateRegistrationComponent,ViewCandidateContactComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

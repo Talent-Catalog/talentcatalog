@@ -101,6 +101,9 @@ import {
 import {
   IeltsScoreValidationComponent
 } from "../../../../util/ielts-score-validation/ielts-score-validation.component";
+import {
+  DetScoreValidationComponent
+} from "../../../../util/det-score-validation/det-score-validation.component";
 
 const mockCitizenship: CandidateCitizenship = {
   id: 1,
@@ -178,7 +181,7 @@ describe('CandidateIntakeTabComponent', () => {
         DrivingLicenseComponent,VisaIssuesComponent,VisaRejectComponent,
         MilitaryServiceComponent,FamilyComponent,MaritalStatusComponent,RegistrationUnhcrComponent,HostChallengesComponent,
         HomeLocationComponent,ResettlementThirdComponent,HostEntryComponent,
-        DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,
+        DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,DetScoreValidationComponent,
         AutosaveStatusComponent,FixedInputComponent,ExportPdfComponent],
       imports: [HttpClientTestingModule,NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule],
       providers: [
