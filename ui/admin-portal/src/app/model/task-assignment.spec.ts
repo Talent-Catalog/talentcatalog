@@ -126,7 +126,7 @@ describe('Check For Overdue Function', () => {
       abandonedDate: null,
       candidateNotes: '',
       completedDate: null,
-      dueDate: new Date('2024-01-01'),
+      dueDate: new Date('2025-01-01'),
       status: Status.active,
       task: { optional: true } as Task,
       answer: '',
