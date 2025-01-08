@@ -283,6 +283,13 @@ export class AuthorizationService {
   }
 
   /**
+   * Can they see and click on links to take them to candidate Google Drive folders
+   */
+  canAccessGoogleDrive(): boolean {
+    return this.isDefaultSourcePartner();
+  }
+
+  /**
    * True if the currently logged in user is permitted to change a candidate's status.
    */
   canUpdateCandidateStatus(): boolean {
