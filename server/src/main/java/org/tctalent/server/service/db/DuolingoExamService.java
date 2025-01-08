@@ -14,17 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.service.db;
 
-public enum Exam {
-    NoResponse,
-    OET,
-    OETRead,
-    OETList,
-    OETLang,
-    IELTSGen,
-    IELTSAca,
-    TOEFL,
-    DETOfficial,
-    Other
+import org.tctalent.server.exception.NoSuchObjectException;
+
+/**
+ * Service interface for handling Duolingo exam related operations.
+ */
+public interface DuolingoExamService {
+
+  /**
+   * Updates the candidate exams based on results from the Duolingo dashboard.
+   *
+   * @throws NoSuchObjectException if no candidate is found or any other related errors occur
+   */
+  void updateCandidateExams() throws NoSuchObjectException;
 }

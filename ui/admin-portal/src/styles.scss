@@ -230,3 +230,7 @@ ngx-wig {
 .link-info, .link-warning {
   cursor: pointer;
 }
+
+.sortable-column-header:hover {
+  cursor: pointer;
+}

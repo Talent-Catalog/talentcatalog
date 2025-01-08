@@ -20,7 +20,6 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FixedInputComponent} from "../../../util/intake/fixed-input/fixed-input.component";
-
 describe('ConfirmContactComponent', () => {
   let component: ConfirmContactComponent;
   let fixture: ComponentFixture<ConfirmContactComponent>;
@@ -45,15 +44,21 @@ describe('ConfirmContactComponent', () => {
   });
 
   it('should display correct candidate information', () => {
+    const dob = new Date('1990-01-01'); // Candidate's date of birth
+    const currentYear = new Date().getFullYear();
+    const birthYear = dob.getFullYear();
+    const age = currentYear - birthYear;
+
     const fullNameElement = component.candidate.user.firstName + ' ' + component.candidate.user.lastName;
     expect(component.candidate.user.firstName).toEqual('John');
     expect(component.candidate.user.lastName).toEqual('Doe');
     expect(fullNameElement).toContain('John Doe');
+
     const talentCatalogElement = component.candidate.candidateNumber;
     expect(talentCatalogElement).toEqual('123456');
 
     const dobElement = component.date;
-    expect(dobElement).toContain('01 Jan 90 (Age 35)');
+    expect(dobElement).toContain(`01 Jan 90 (Age ${age})`); // Use dynamic age calculation
 
     const emailElement = component.candidate.user.email;
     expect(emailElement).toEqual('john.doe@example.com');

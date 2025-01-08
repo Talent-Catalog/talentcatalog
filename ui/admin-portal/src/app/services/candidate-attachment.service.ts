@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {forkJoin, Observable, Subject, throwError} from 'rxjs';
+import {forkJoin, Observable, of, Subject, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
@@ -92,8 +92,12 @@ export class CandidateAttachmentService {
         downloads.push(this.downloadAttachment(cv.id, cv.name))
       } else {
         const newTab = window.open();
-        const url = cv.url;
-        newTab.location.href = url;
+        if (newTab) {
+          const url = cv.url;
+          newTab.location.href = url;  // Open URL in new tab
+        } else {
+          console.error(`Failed to open new tab for ${cv.url}`)
+        }
       }
     })
 
@@ -104,8 +108,7 @@ export class CandidateAttachmentService {
     //This will automatically unsubscribe any subscribers, avoiding memory leaks.
     //See https://stackoverflow.com/questions/55893962/do-i-need-to-unsubscribe-from-observable-of
     if (downloads.length === 0) {
-      downloadComplete.next();
-      downloadComplete.complete();
+      return of('Complete'); // Nothing left to manage in this case
     } else {
       forkJoin(...downloads).subscribe(
         (results: CandidateAttachment[]) => {

@@ -294,7 +294,7 @@ describe('Check For Ongoing Function', () => {
       abandonedDate: null,
       candidateNotes: '',
       completedDate: null,
-      dueDate: new Date('2026-01-01'),
+      dueDate: new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
       status: Status.active,
       task: {} as Task,
       answer: '',
