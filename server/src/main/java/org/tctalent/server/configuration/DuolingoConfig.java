@@ -41,16 +41,16 @@ public class DuolingoConfig {
 
   // The API secret used for authentication with the Duolingo API
   private final DuolingoProperties properties;
-
+  private final WebClient.Builder builder;
   /**
    * Constructor that accepts a {@link DuolingoProperties} instance containing configuration values.
    *
    * @param properties the Duolingo properties containing the API secret and base URL
    */
-  public DuolingoConfig(DuolingoProperties properties) {
+  public DuolingoConfig(DuolingoProperties properties, WebClient.Builder builder) {
     this.properties = properties;
+    this.builder = builder;
   }
-
   /**
    * Creates and configures a {@link WebClient} to interact with the Duolingo API.
    * <p>
@@ -61,8 +61,8 @@ public class DuolingoConfig {
    * @return the configured WebClient instance
    */
   @Bean
-  public WebClient duolingoWebClient() {
-    return WebClient.builder()
+  public WebClient duolingoWebClient(WebClient.Builder builder) {
+    return builder
         .baseUrl(this.properties.getBaseUrl())
         .filter(authenticationFilter())
         .build();
