@@ -28,6 +28,9 @@ import {
 import {
   IeltsScoreValidationComponent
 } from "../../../util/ielts-score-validation/ielts-score-validation.component";
+import {
+  DetScoreValidationComponent
+} from "../../../util/det-score-validation/det-score-validation.component";
 
 describe('LangAssessmentComponent', () => {
   let component: LangAssessmentComponent;
@@ -44,7 +47,7 @@ describe('LangAssessmentComponent', () => {
   };
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LangAssessmentComponent, AutosaveStatusComponent, NclcScoreValidationComponent, IeltsScoreValidationComponent],
+      declarations: [LangAssessmentComponent, AutosaveStatusComponent,DetScoreValidationComponent, NclcScoreValidationComponent, IeltsScoreValidationComponent],
       imports: [HttpClientTestingModule,NgbTooltipModule,NgSelectModule,FormsModule,ReactiveFormsModule],
     })
     .compileComponents();

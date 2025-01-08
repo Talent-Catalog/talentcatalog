@@ -20,6 +20,7 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {NgbPopoverModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('CandidateTaskTabComponent', () => {
   let component: CandidateTaskTabComponent;
@@ -27,7 +28,7 @@ describe('CandidateTaskTabComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule, NgbPopoverModule],
       declarations: [
         CandidateTaskTabComponent,
         ViewCandidateTasksComponent

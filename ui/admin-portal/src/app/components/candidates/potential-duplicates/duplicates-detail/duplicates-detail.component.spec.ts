@@ -21,6 +21,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {of} from "rxjs";
 import {By} from "@angular/platform-browser";
+import {RouterTestingModule} from "@angular/router/testing";
 
 
 describe('DuplicatesDetailComponent', () => {
@@ -44,6 +45,7 @@ describe('DuplicatesDetailComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [DuplicatesDetailComponent],
+      imports: [RouterTestingModule],
       providers: [
         {provide: CandidateService, useValue: candidateService},
         {provide: NgbActiveModal, useValue: activeModal}

@@ -24,6 +24,10 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {
+  ViewCandidateJobExperienceComponent
+} from "./experience/view-candidate-job-experience.component";
 
 describe('ViewCandidateOccupationComponent', () => {
   let component: ViewCandidateOccupationComponent;
@@ -40,8 +44,9 @@ describe('ViewCandidateOccupationComponent', () => {
     mockCandidateJobExperienceService = jasmine.createSpyObj('CandidateJobExperienceService', ['search']);
 
     TestBed.configureTestingModule({
-      declarations: [ ViewCandidateOccupationComponent ],
+      declarations: [ ViewCandidateOccupationComponent, ViewCandidateJobExperienceComponent ],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      // schemas: [NO_ERRORS_SCHEMA],
       providers: [
         UntypedFormBuilder,
         { provide: NgbModal, useValue: mockModalService },
