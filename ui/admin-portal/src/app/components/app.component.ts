@@ -22,6 +22,8 @@ import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
+import Clarity from '@microsoft/clarity';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -51,6 +53,18 @@ export class AppComponent implements OnInit {
     )
 
     this.subscribeForTitleChanges()
+
+    // Initialize Clarity with your Project ID
+    Clarity.init(environment.clarityProjectId);
+
+    // Track page views on router changes
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // Track page views manually
+        Clarity.event('PageView');
+        console.log('Clarity tracked page view for:', event.urlAfterRedirects);
+      }
+    });
   }
 
   private onChangedLogin(user: User) {
