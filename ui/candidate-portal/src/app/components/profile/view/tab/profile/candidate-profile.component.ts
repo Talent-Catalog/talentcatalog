@@ -191,7 +191,7 @@ export class CandidateProfileComponent implements OnInit {
       showRelocated = true;
     } else if (this.candidate?.candidateOpportunities.length > 0) {
       showRelocated = this.candidate.candidateOpportunities.some(co => {
-        return isOppStageGreaterThanOrEqualTo(co?.stage, "acceptance");
+        return isOppStageGreaterThanOrEqualTo(co?.lastActiveStage, "acceptance");
       })
     }
     return showRelocated;
