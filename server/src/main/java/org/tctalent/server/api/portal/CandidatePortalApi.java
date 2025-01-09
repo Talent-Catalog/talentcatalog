@@ -225,6 +225,11 @@ public class CandidatePortalApi {
                 .add("user", userDto())
                 .add("phone")
                 .add("whatsapp")
+                /* RELOCATED ADDRESS */
+                .add("relocatedAddress")
+                .add("relocatedCity")
+                .add("relocatedState")
+                .add("relocatedCountry", countryService.selectBuilder())
                 ;
     }
 
@@ -472,6 +477,11 @@ public class CandidatePortalApi {
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
                 .add("unhcrConsent")
+                /* RELOCATED ADDRESS */
+                .add("relocatedAddress")
+                .add("relocatedCity")
+                .add("relocatedState")
+                .add("relocatedCountry", countryService.selectBuilder())
                 /* OCCUPATIONS */
                 .add("candidateOccupations", candidateOccupationDto())
                 /* JOB EXPERIENCE */

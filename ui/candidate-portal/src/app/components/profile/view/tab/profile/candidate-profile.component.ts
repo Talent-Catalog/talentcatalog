@@ -31,6 +31,7 @@ import {Language} from "../../../../../model/language";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {LanguageLevel} from "../../../../../model/language-level";
 import {SurveyTypeService} from "../../../../../services/survey-type.service";
+import {isOppStageGreaterThanOrEqualTo} from "../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-candidate-profile',
@@ -178,6 +179,22 @@ export class CandidateProfileComponent implements OnInit {
 
   getCountryName(country: Country) {
     return this.countries?.find(c => c.id === country?.id)?.name;
+  }
+
+  showRelocatedAddress(): boolean {
+    let showRelocated = false;
+    // If candidate has any relocated address fields
+    // Or if candidate has candidate opportunities of which some are past the job offer stage
+    // THEN show relocated address
+    if (this.candidate?.relocatedAddress || this.candidate?.relocatedCity
+      || this.candidate?.relocatedState || this.candidate?.relocatedCountry) {
+      showRelocated = true;
+    } else if (this.candidate?.candidateOpportunities.length > 0) {
+      showRelocated = this.candidate.candidateOpportunities.some(co => {
+        return isOppStageGreaterThanOrEqualTo(co?.stage, "acceptance");
+      })
+    }
+    return showRelocated;
   }
 
 }

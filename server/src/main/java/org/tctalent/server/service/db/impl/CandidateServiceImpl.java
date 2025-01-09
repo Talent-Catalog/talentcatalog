@@ -1182,6 +1182,18 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = user.getCandidate();
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
+
+        // Relocated address fields if candidate has employed status
+        candidate.setRelocatedAddress(request.getRelocatedAddress());
+        candidate.setRelocatedCity(request.getRelocatedCity());
+        candidate.setRelocatedState(request.getRelocatedState());
+        Country relocatedCountry = null;
+        if (request.getRelocatedCountryId() != null) {
+            relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
+        }
+        candidate.setRelocatedCountry(relocatedCountry);
+
         candidate.setAuditFields(user);
         candidate.setUser(user);
         candidate = save(candidate, true);
