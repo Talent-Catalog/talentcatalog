@@ -64,7 +64,7 @@
       </div>
       <div class="mb-3">
         <label class="form-label" for="relocatedCountryId">{{ 'REGISTRATION.CONTACT.LABEL.RELOCATEDCOUNTRY' | translate }}</label>
-        <ng-select id="relocatedCountryId" [formControlName]="'relocatedCountryId'" [items]="countries" [clearable]="false"
+        <ng-select id="relocatedCountryId" [formControlName]="'relocatedCountryId'" [items]="countries" [clearable]="true"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindValue="id" bindLabel="name">
         </ng-select>
       </div>

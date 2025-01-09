@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateService} from "../../../../../services/candidate.service";
-import {Candidate, CandidateStatus} from "../../../../../model/candidate";
+import {Candidate} from "../../../../../model/candidate";
 import {ActivatedRoute} from "@angular/router";
 import {SurveyType} from "../../../../../model/survey-type";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
@@ -31,6 +31,7 @@ import {Language} from "../../../../../model/language";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 import {LanguageLevel} from "../../../../../model/language-level";
 import {SurveyTypeService} from "../../../../../services/survey-type.service";
+import {isOppStageGreaterThanOrEqualTo} from "../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-candidate-profile',
@@ -183,13 +184,15 @@ export class CandidateProfileComponent implements OnInit {
   showRelocatedAddress(): boolean {
     let showRelocated = false;
     // If candidate has any relocated address fields
-    // Or if candidate has an employed status
+    // Or if candidate has candidate opportunities of which some are past the job offer stage
     // THEN show relocated address
-    if (this.candidate.relocatedAddress || this.candidate.relocatedCity
-      || this.candidate.relocatedState || this.candidate.relocatedCountry) {
+    if (this.candidate?.relocatedAddress || this.candidate?.relocatedCity
+      || this.candidate?.relocatedState || this.candidate?.relocatedCountry) {
       showRelocated = true;
-    } else if (CandidateStatus[this.candidate.status] === (CandidateStatus.employed || CandidateStatus.autonomousEmployment)) {
-      showRelocated = true;
+    } else if (this.candidate?.candidateOpportunities.length > 0) {
+      showRelocated = this.candidate.candidateOpportunities.some(co => {
+        return isOppStageGreaterThanOrEqualTo(co?.stage, "acceptance");
+      })
     }
     return showRelocated;
   }
