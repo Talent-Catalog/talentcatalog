@@ -75,4 +75,9 @@ public class HasJobRelatedLinksImpl {
    * TC id of Job entity
    */
   private Long jobId;
+
+  /**
+   * Name of job - normally taken from name of job's related Salesforce Employer job opportunity.
+   */
+  private String jobName;
 }

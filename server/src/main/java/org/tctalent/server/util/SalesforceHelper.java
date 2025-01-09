@@ -38,6 +38,8 @@ public class SalesforceHelper {
     /**
      * Converts a Salesforce record id to the opportunity link (url) for that record.
      * @param sfId Salesforce record id.
+     * @param baseLightningUrl whether url prefix is for SF sandbox or prod depends on running
+     *                         environment; obtained from {@link org.tctalent.server.configuration.SalesforceConfig}
      * @return Url (ie link) to opportunity record with that id - null if sfId is null
      */
     @Nullable

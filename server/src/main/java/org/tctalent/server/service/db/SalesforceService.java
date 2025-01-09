@@ -340,6 +340,17 @@ public interface SalesforceService {
         throws SalesforceException, WebClientException;
 
     /**
+     * Updates the name on the SF Employer Opportunity record corresponding to given SF ID.
+     *
+     * @param sfId SF ID of opportunity
+     * @param jobName the desired name for the Job
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    void updateEmployerOpportunityName(String sfId, String jobName)
+        throws SalesforceException, WebClientException;
+
+    /**
      * Updates a SF candidate opportunity's relocation information based on info from the
      * candidate opportunity. This section on the SF record reports the age and gender
      * breakdown of all individuals relocating as a result of that opportunity, including
