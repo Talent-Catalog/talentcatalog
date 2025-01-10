@@ -55,6 +55,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.*;
 import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskAssignment;
+import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CandidateSavedListRepository;
 import org.tctalent.server.repository.db.GetCandidateSavedListsQuery;
@@ -731,7 +732,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         //Now assign tasks to candidates in list (if they do not already have the task actively assigned)
         Set<Candidate> candidates = list.getCandidates();
-        if (task.getName().equals("duolingoTest")) {
+        if (task.getTaskType().equals(TaskType.DuolingoCoupon)) {
             List<DuolingoCoupon> availableCoupons = couponService.getAvailableCoupons();
             if (candidates.size() > availableCoupons.size()) {
                 throw new NoSuchObjectException(availableCoupons.size() + " coupons available, but you need " + candidates.size() + " coupons for your candidates list.");
