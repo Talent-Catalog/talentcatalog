@@ -100,6 +100,9 @@ export class EditJobInfoComponent implements OnInit {
     return this.jobForm?.value.submissionDueDate;
   }
 
+  /**
+   * Returns null unless changed in form.
+   */
   get jobName(): string {
     return this.jobForm?.value.name === this.job.name ? null : this.jobForm.value.name;
   }

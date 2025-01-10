@@ -341,9 +341,8 @@ public interface SalesforceService {
 
     /**
      * Updates the name on the SF Employer Opportunity record corresponding to given SF ID.
-     *
      * @param sfId SF ID of opportunity
-     * @param jobName the desired name for the Job
+     * @param jobName the new name for the Job
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data
      */

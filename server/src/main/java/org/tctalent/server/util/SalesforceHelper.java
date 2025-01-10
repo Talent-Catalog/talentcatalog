@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.configuration.SalesforceConfig;
 
 /**
  * Some useful Salesforce utilities.
@@ -39,7 +40,7 @@ public class SalesforceHelper {
      * Converts a Salesforce record id to the opportunity link (url) for that record.
      * @param sfId Salesforce record id.
      * @param baseLightningUrl whether url prefix is for SF sandbox or prod depends on running
-     *                         environment; obtained from {@link org.tctalent.server.configuration.SalesforceConfig}
+     *                         environment; obtained from {@link SalesforceConfig}
      * @return Url (ie link) to opportunity record with that id - null if sfId is null
      */
     @Nullable

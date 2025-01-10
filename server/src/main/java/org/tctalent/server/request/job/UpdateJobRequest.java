@@ -78,7 +78,7 @@ public class UpdateJobRequest extends OpportunityParams {
     private Long jobToCopyId;
 
     /**
-     * If present, the job name has been edited by the user who created it, or a System Admin.
+     * If present, the name has been edited by the user who created the Job, or a System Admin.
      */
     @Nullable
     private String jobName;
