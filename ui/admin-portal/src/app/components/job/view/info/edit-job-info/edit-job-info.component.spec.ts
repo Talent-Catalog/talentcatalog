@@ -16,7 +16,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
+import {EditJobInfoComponent} from "./edit-job-info.component";
 import {UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockJob} from "../../../../../MockData/MockJob";
@@ -60,10 +60,11 @@ describe('EditJobInfoComponent', () => {
   it('should initialize jobForm with correct values', () => {
     component.jobForm = new UntypedFormBuilder().group(MockJob);
     // Access the form controls
+    const name = component.jobForm.get('name');
     const submissionDueDateControl = component.jobForm.get('submissionDueDate');
     const contactUserControl = component.jobForm.get('contactUser');
+    expect(name.value).toEqual(component.job.name);
     expect(submissionDueDateControl.value.toDateString()).toEqual(component.job.submissionDueDate.toDateString());
     expect(contactUserControl.value).toEqual(component.job.contactUser);
-
    });
 });

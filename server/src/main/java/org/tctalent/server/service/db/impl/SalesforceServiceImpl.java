@@ -961,7 +961,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         executeUpdate(sfId, sfRequest);
     }
 
-    // TODO could perhaps be refactored to combine w above?
     @Override
     public void updateEmployerOpportunityName(String sfId, String jobName)
         throws SalesforceException, WebClientException {
