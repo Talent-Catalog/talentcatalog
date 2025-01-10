@@ -233,10 +233,15 @@
               </div>
               <div class="col">
                 <div class="tag-light">
-                  <span *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
+                  <span class="me-4" *ngIf="candidateIntakeData.englishAssessmentScoreIelts"
                         [class]="'fw-600'">
                     Est IELTS
                     <span class="text-info">{{candidateIntakeData.englishAssessmentScoreIelts}}</span>
+                  </span>
+                  <span class="me-4" *ngIf="candidateIntakeData.englishAssessmentScoreDet"
+                        [class]="'fw-600'">
+                    DET
+                    <span class="text-info">{{candidateIntakeData.englishAssessmentScoreDet}}</span>
                   </span>
                 </div>
               </div>

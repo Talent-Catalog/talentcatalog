@@ -46,6 +46,7 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  publicId: string;
   status: string;
   gender: string;
   dob: Date;
@@ -107,6 +108,11 @@ export interface Candidate extends HasId {
   candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
 
   //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];

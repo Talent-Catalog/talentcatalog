@@ -806,6 +806,7 @@ import {
 import {
   ImportDuolingoCouponsComponent
 } from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
+import {DetScoreValidationComponent} from './components/util/det-score-validation/det-score-validation.component';
 
 @NgModule({
   declarations: [
@@ -1129,7 +1130,8 @@ import {
     FindCandidateSourceComponent,
     PotentialDuplicateIconComponent,
     DuplicatesDetailComponent,
-    ImportDuolingoCouponsComponent
+    ImportDuolingoCouponsComponent,
+    DetScoreValidationComponent
   ],
   imports: [
     BrowserModule,

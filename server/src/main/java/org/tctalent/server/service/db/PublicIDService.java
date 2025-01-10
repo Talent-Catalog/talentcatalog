@@ -14,16 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.candidate;
+package org.tctalent.server.service.db;
 
-import lombok.Getter;
-import lombok.Setter;
+/**
+ * Generates unique public IDS
+ *
+ * @author John Cameron
+ */
+public interface PublicIDService {
 
-@Getter
-@Setter
-public class UpdateCandidateContactRequest extends BaseCandidateContactRequest {
-    private String relocatedAddress;
-    private String relocatedCity;
-    private String relocatedState;
-    private Long relocatedCountryId;
+    /**
+     * Generates a random unique, url friendly public ID
+     * @return id
+     */
+    String generatePublicID();
 }

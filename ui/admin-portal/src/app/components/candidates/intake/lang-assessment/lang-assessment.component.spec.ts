@@ -28,6 +28,9 @@ import {
 import {
   IeltsScoreValidationComponent
 } from "../../../util/ielts-score-validation/ielts-score-validation.component";
+import {
+  DetScoreValidationComponent
+} from "../../../util/det-score-validation/det-score-validation.component";
 
 describe('LangAssessmentComponent', () => {
   let component: LangAssessmentComponent;
@@ -36,6 +39,7 @@ describe('LangAssessmentComponent', () => {
     // Fill in mock data for the CandidateIntakeData interface properties
     englishAssessment: 'English assessment text',
     englishAssessmentScoreIelts: '7.5',
+    englishAssessmentScoreDet: 100,
     frenchAssessment: 'French assessment text',
     frenchAssessmentScoreNclc: 9,
     intRecruitReasons: [IntRecruitReason.Other],
@@ -43,7 +47,7 @@ describe('LangAssessmentComponent', () => {
   };
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LangAssessmentComponent, AutosaveStatusComponent, NclcScoreValidationComponent, IeltsScoreValidationComponent],
+      declarations: [LangAssessmentComponent, AutosaveStatusComponent,DetScoreValidationComponent, NclcScoreValidationComponent, IeltsScoreValidationComponent],
       imports: [HttpClientTestingModule,NgbTooltipModule,NgSelectModule,FormsModule,ReactiveFormsModule],
     })
     .compileComponents();
@@ -64,6 +68,7 @@ describe('LangAssessmentComponent', () => {
     const mockCandidateIntakeData = {
       englishAssessment: 'Some English assessment',
       englishAssessmentScoreIelts: null,
+      englishAssessmentScoreDet: null,
       frenchAssessment: 'Some French assessment',
       frenchAssessmentScoreNclc: null
     };
@@ -72,6 +77,7 @@ describe('LangAssessmentComponent', () => {
     const expectedFormData = {
       englishAssessment: 'Some English assessment',
       englishAssessmentScoreIelts: null,
+      englishAssessmentScoreDet: null,
       frenchAssessment: 'Some French assessment',
       frenchAssessmentScoreNclc: null
     };
@@ -83,6 +89,15 @@ describe('LangAssessmentComponent', () => {
     const validScores = [7, 7.5, 8, 8.5, 9];
     validScores.forEach(score => {
       component.form.get('englishAssessmentScoreIelts').setValue(score);
+      expect(component.form.valid).toBeTruthy();
+    });
+  });
+
+  it('should validate the DET score with provided regex pattern', () => {
+    // Test valid DET scores
+    const validScores = [10, 50, 100, 160];
+    validScores.forEach(score => {
+      component.form.get('englishAssessmentScoreDet').setValue(score);
       expect(component.form.valid).toBeTruthy();
     });
   });

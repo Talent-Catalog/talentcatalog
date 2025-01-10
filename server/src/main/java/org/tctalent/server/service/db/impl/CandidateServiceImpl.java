@@ -116,6 +116,23 @@ import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.*;
+import org.tctalent.server.service.db.CandidateCitizenshipService;
+import org.tctalent.server.service.db.CandidateDependantService;
+import org.tctalent.server.service.db.CandidateDestinationService;
+import org.tctalent.server.service.db.CandidateNoteService;
+import org.tctalent.server.service.db.CandidatePropertyService;
+import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.PublicIDService;
+import org.tctalent.server.service.db.RootRequestService;
+import org.tctalent.server.service.db.SalesforceService;
+import org.tctalent.server.service.db.SavedListService;
+import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.TaskService;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
@@ -197,7 +214,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final LanguageLevelRepository languageLevelRepository;
     private final CandidateExamRepository candidateExamRepository;
     private final DuolingoCouponRepository couponRepository;
-
+    private final PublicIDService publicIDService;
     private final RootRequestService rootRequestService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
@@ -681,6 +698,12 @@ public class CandidateServiceImpl implements CandidateService {
         user = userRepository.save(user);
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
+
+        candidate.setPublicId(publicIDService.generatePublicID());
+
+        //We are eventually going to create the candidate number from its id on the database, but
+        //we will only have that id after it has been added to the database.
+        //For now generate a random candidate number so that it is not null.
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
         /* Set the email consent fields */
@@ -1150,6 +1173,18 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = user.getCandidate();
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
+
+        // Relocated address fields if candidate has employed status
+        candidate.setRelocatedAddress(request.getRelocatedAddress());
+        candidate.setRelocatedCity(request.getRelocatedCity());
+        candidate.setRelocatedState(request.getRelocatedState());
+        Country relocatedCountry = null;
+        if (request.getRelocatedCountryId() != null) {
+            relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
+        }
+        candidate.setRelocatedCountry(relocatedCountry);
+
         candidate.setAuditFields(user);
         candidate.setUser(user);
         candidate = save(candidate, true);
@@ -2233,6 +2268,19 @@ public class CandidateServiceImpl implements CandidateService {
       }
     }
 
+    @Transactional
+    @Override
+    public void setPublicIds(List<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            if (candidate.getPublicId() == null) {
+                candidate.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!candidates.isEmpty()) {
+            candidateRepository.saveAll(candidates);
+        }
+    }
+
     @Override
     public Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException {
@@ -2619,6 +2667,15 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.setEnglishAssessmentScoreIelts(data.getEnglishAssessmentScoreIelts());
             }
             computeIeltsScore(candidate);
+        }
+        if (data.getEnglishAssessmentScoreDet() != null) {
+            // If the EnglishAssessmentScoreDet is 0 (used here as a numerical equivalent to
+            // 'NoResponse', enabling previous answers to be deleted), set to null in database.
+            if (data.getEnglishAssessmentScoreDet() == 0) {
+                candidate.setEnglishAssessmentScoreDet(null);
+            } else {
+                candidate.setEnglishAssessmentScoreDet(data.getEnglishAssessmentScoreDet());
+            }
         }
         if (data.getFrenchAssessment() != null) {
             candidate.setFrenchAssessment(data.getFrenchAssessment());

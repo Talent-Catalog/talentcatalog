@@ -148,6 +148,8 @@ public interface SavedSearchService {
             CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException;
 
+    void setPublicIds(List<SavedSearch> savedSearches);
+
     SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException;
 
     boolean deleteSavedSearch(long id);

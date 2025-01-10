@@ -36,6 +36,7 @@ export class LangAssessmentComponent extends IntakeComponentBase implements OnIn
   ngOnInit(): void {
     this.form = this.fb.group({
       englishAssessment: [this.candidateIntakeData?.englishAssessment],
+      englishAssessmentScoreDet: [this.candidateIntakeData?.englishAssessmentScoreDet],
       englishAssessmentScoreIelts: [this.candidateIntakeData?.englishAssessmentScoreIelts],
       frenchAssessment: [this.candidateIntakeData?.frenchAssessment],
       frenchAssessmentScoreNclc: [this.candidateIntakeData?.frenchAssessmentScoreNclc],

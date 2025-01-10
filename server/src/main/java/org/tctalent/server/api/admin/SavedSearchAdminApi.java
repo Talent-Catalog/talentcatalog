@@ -386,6 +386,7 @@ public class SavedSearchAdminApi implements
     private DtoBuilder minimalSavedSearchDto() {
         return new DtoBuilder()
             .add("id")
+            .add("publicId")
             .add("name")
             .add("savedSearchType")
             .add("savedSearchSubtype")
@@ -400,6 +401,7 @@ public class SavedSearchAdminApi implements
     private DtoBuilder savedSearchDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("publicId")
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")

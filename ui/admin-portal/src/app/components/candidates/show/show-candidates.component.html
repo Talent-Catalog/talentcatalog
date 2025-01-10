@@ -399,7 +399,7 @@
             <th *ngIf="isReviewable()">
               <i class="fa-solid fa-magnifying-glass" title="Review status"></i>
             </th>
-            <th class="candidate-number-row" (click)="toggleSort('id')">
+            <th class="candidate-number-row sortable-column-header" (click)="toggleSort('id')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
@@ -411,7 +411,7 @@
             </th>
             <th *ngFor="let field of selectedFields">
               <ng-container *ngIf="field.sortable; else nonSortableFields" (click)="toggleSort(field.fieldPath)">
-                <div (click)="toggleSort(field.fieldPath)">
+                <div (click)="toggleSort(field.fieldPath)" class="sortable-column-header">
                   <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
                                  [sortDirection]="sortDirection"></app-sorted-by>
                   {{field.displayName}}

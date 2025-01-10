@@ -1,0 +1,10 @@
+<input type="number"
+       class="form-control"
+       [(ngModel)]="this.value"
+       (ngModelChange)="update()"
+       placeholder="10-160"
+       min="10" max="160"
+>
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>

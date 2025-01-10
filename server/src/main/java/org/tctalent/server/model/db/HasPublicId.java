@@ -14,16 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.candidate;
+package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
+/**
+ * Objects which have a PublicId
+ *
+ * @author John Cameron
+ */
+public interface HasPublicId {
 
-@Getter
-@Setter
-public class UpdateCandidateContactRequest extends BaseCandidateContactRequest {
-    private String relocatedAddress;
-    private String relocatedCity;
-    private String relocatedState;
-    private Long relocatedCountryId;
+    /**
+     * Get public id
+     * @return id
+     */
+    String getPublicId();
+
+    /**
+     * Set public id
+     * @param publicId new id
+     */
+    void setPublicId(String publicId);
 }

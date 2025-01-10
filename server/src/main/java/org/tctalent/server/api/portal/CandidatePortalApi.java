@@ -216,6 +216,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidateNumberDto() {
         return new DtoBuilder()
                 .add("candidateNumber")
+                .add("publicId")
                 ;
     }
 
@@ -224,6 +225,11 @@ public class CandidatePortalApi {
                 .add("user", userDto())
                 .add("phone")
                 .add("whatsapp")
+                /* RELOCATED ADDRESS */
+                .add("relocatedAddress")
+                .add("relocatedCity")
+                .add("relocatedState")
+                .add("relocatedCountry", countryService.selectBuilder())
                 ;
     }
 
@@ -240,6 +246,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("user", userDto())
                 .add("candidateNumber")
+                .add("publicId")
                 .add("gender")
                 .add("dob")
                 .add("country", countryService.selectBuilder())
@@ -453,6 +460,7 @@ public class CandidatePortalApi {
                 .add("user", userDto())
                 /* CONTACT */
                 .add("candidateNumber")
+                .add("publicId")
                 .add("phone")
                 .add("whatsapp")
                 /* STATUS */
@@ -469,6 +477,11 @@ public class CandidatePortalApi {
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
                 .add("unhcrConsent")
+                /* RELOCATED ADDRESS */
+                .add("relocatedAddress")
+                .add("relocatedCity")
+                .add("relocatedState")
+                .add("relocatedCountry", countryService.selectBuilder())
                 /* OCCUPATIONS */
                 .add("candidateOccupations", candidateOccupationDto())
                 /* JOB EXPERIENCE */
@@ -536,6 +549,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
             .add("id")
             .add("candidateNumber")
+            .add("publicId")
             ;
     }
 
