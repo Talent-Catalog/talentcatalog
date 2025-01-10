@@ -14,20 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db.task;
+package org.tctalent.server.model.db;
 
-import org.tctalent.server.model.db.TaskImpl;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.model.db.task.DuolingoCouponTaskAssignment;
 
-/**
- * Different kind of tasks.
- * <p/>
- * See {@link TaskImpl#getTaskType()} for explanation of the need for this enum.
- *
- * @author John Cameron
- */
-public enum TaskType {
-    Question,
-    Simple,
-    Upload,
-    DuolingoCoupon
+@Entity(name = "DuolingoCouponTaskAssignment")
+@DiscriminatorValue("DuolingoCouponTask")
+@Getter
+@Setter
+public class DuolingoCouponTaskAssignmentImpl extends TaskAssignmentImpl implements
+        DuolingoCouponTaskAssignment {
+
+    @Transient
+    @Nullable
+    String content;
 }

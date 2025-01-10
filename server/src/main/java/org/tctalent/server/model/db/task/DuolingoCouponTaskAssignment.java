@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,18 +16,24 @@
 
 package org.tctalent.server.model.db.task;
 
-import org.tctalent.server.model.db.TaskImpl;
+import org.springframework.lang.Nullable;
 
 /**
- * Different kind of tasks.
- * <p/>
- * See {@link TaskImpl#getTaskType()} for explanation of the need for this enum.
- *
- * @author John Cameron
+ * Task assignment associated with a Duolingo Coupon Task.
  */
-public enum TaskType {
-    Question,
-    Simple,
-    Upload,
-    DuolingoCoupon
+public interface DuolingoCouponTaskAssignment extends TaskAssignment {
+
+    /**
+     * Content of the task containing instructions about Duolingo Coupon.
+     */
+    @Nullable
+    String getContent();
+
+    /**
+     * Set the content.
+     *
+     * @param content content of the task
+     */
+    void setContent(@Nullable String content);
+
 }

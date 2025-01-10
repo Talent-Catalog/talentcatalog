@@ -42,7 +42,8 @@ export enum TaskType {
   Question = "Question",
   Simple = "Simple",
   Upload = "Upload",
-  YesNoQuestion = "YesNoQuestion"
+  YesNoQuestion = "YesNoQuestion",
+  DuolingoCoupon = "DuolingoCoupon"
 }
 
 export enum UploadType {

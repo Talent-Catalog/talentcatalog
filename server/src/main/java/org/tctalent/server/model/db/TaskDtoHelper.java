@@ -18,12 +18,10 @@ package org.tctalent.server.model.db;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.tctalent.server.api.admin.DtoType;
-import org.tctalent.server.model.db.task.QuestionTask;
-import org.tctalent.server.model.db.task.QuestionTaskAssignment;
-import org.tctalent.server.model.db.task.UploadTask;
-import org.tctalent.server.model.db.task.UploadTaskAssignment;
+import org.tctalent.server.model.db.task.*;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.dto.DtoPropertyFilter;
 
@@ -43,6 +41,9 @@ public class TaskDtoHelper {
         private final Set<String> questionOnlyProperties =
             new HashSet<>(Arrays.asList("answer", "candidateAnswerField", "allowedAnswers"));
 
+        //These properties should only be extracted for DuolingoCouponTask's
+        private final Set<String> duolingoCouponOnlyProperties = new HashSet<>(List.of("content"));
+
         //These properties should only be extracted for UploadTask's
         private final Set<String> uploadOnlyProperties =
             new HashSet<>(Arrays.asList("uploadType", "uploadSubfolderName", "uploadableFileTypes"));
@@ -53,7 +54,9 @@ public class TaskDtoHelper {
                 questionOnlyProperties.contains(property) &&
                     ! (o instanceof QuestionTask || o instanceof QuestionTaskAssignment) ||
                 uploadOnlyProperties.contains(property) &&
-                    ! (o instanceof UploadTask || o instanceof UploadTaskAssignment);
+                        !(o instanceof UploadTask || o instanceof UploadTaskAssignment) ||
+                        duolingoCouponOnlyProperties.contains(property) &&
+                                !(o instanceof DuolingoCouponTask || o instanceof DuolingoCouponTaskAssignment);
 
             return ignore;
         }
@@ -73,6 +76,7 @@ public class TaskDtoHelper {
             .add("status")
             .add("task", getTaskDto(dtoType))
             .add("answer")
+                .add("content")
             ;
     }
 

@@ -27,6 +27,7 @@ export interface TaskAssignment {
   status: Status;
   task: Task;
   answer: string;
+  content: string;
 }
 
 /**

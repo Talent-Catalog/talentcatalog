@@ -21,6 +21,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.*;
 import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.request.task.TaskListRequest;
 import org.tctalent.server.service.db.CandidateAttachmentService;
@@ -32,14 +33,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.QuestionTaskAssignmentImpl;
-import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.TaskAssignmentImpl;
-import org.tctalent.server.model.db.TaskImpl;
-import org.tctalent.server.model.db.UploadTaskAssignmentImpl;
-import org.tctalent.server.model.db.User;
+
 import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskAssignment;
 import org.tctalent.server.model.db.task.TaskType;
@@ -85,10 +79,12 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
                 taskAssignment = new UploadTaskAssignmentImpl();
                 break;
 
+            case DuolingoCoupon:
+                couponService.assignCouponToCandidate(candidate.getId());
+                taskAssignment = new DuolingoCouponTaskAssignmentImpl();
+                break;
+
             default:
-                if (task.getName().equals("duolingoTest")) {
-                    couponService.assignCouponToCandidate(candidate.getId());
-                }
                 taskAssignment = new TaskAssignmentImpl();
                 break;
         }

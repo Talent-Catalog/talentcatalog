@@ -80,10 +80,7 @@ import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.*;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.model.db.task.QuestionTask;
-import org.tctalent.server.model.db.task.QuestionTaskAssignment;
-import org.tctalent.server.model.db.task.Task;
-import org.tctalent.server.model.db.task.TaskAssignment;
+import org.tctalent.server.model.db.task.*;
 import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.*;
@@ -538,21 +535,14 @@ public class CandidateServiceImpl implements CandidateService {
     private void populateTransientTaskAssignmentFields(TaskAssignment taskAssignment) {
 
         taskService.populateTransientFields(taskAssignment.getTask());
-        if (taskAssignment.getTask().getName().equals("duolingoTest")) {
-            List<DuolingoCoupon> candidateCoupons = couponRepository.findAllByCandidateId(taskAssignment.getCandidate().getId());
-            List<DuolingoCoupon> sentCoupons = candidateCoupons.stream()
-                    .filter(c -> c.getCouponStatus() == DuolingoCouponStatus.SENT)
-                    .toList();
-            Task task = taskAssignment.getTask();
-            if (sentCoupons.isEmpty()) {
-                task.setDescription("You have not been sent a Duolingo coupon yet.");
-                return;
-            }
-            Context ctx = new Context();
-            ctx.setVariable("coupons", sentCoupons);
-            String taskDescription = htmlTemplateEngine.process("candidate-duolingo-coupon", ctx);
-            task.setDescription(taskDescription);
+
+        // If the task is a Duolingo coupon task, fetch the coupon content
+        if (taskAssignment instanceof DuolingoCouponTaskAssignmentImpl) {
+            DuolingoCouponTaskAssignment duolingoCouponTaskAssignment = (DuolingoCouponTaskAssignmentImpl) taskAssignment;
+            String content = fetchCandidateDuolingoCoupon(duolingoCouponTaskAssignment);
+            duolingoCouponTaskAssignment.setContent(content);
         }
+
 
         //If task is completed, see if there is any transient data to be populated - eg the
         //answer on a question task
@@ -564,6 +554,25 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
+    }
+
+    /**
+     * Retrieves the coupon and add it to the instructions template
+     *
+     * @param taskAssignment duolingo task assignment
+     * @return instructions content including the duolingo coupon
+     */
+    private String fetchCandidateDuolingoCoupon(DuolingoCouponTaskAssignment taskAssignment) {
+        List<DuolingoCoupon> candidateCoupons = couponRepository.findAllByCandidateId(taskAssignment.getCandidate().getId());
+        List<DuolingoCoupon> sentCoupons = candidateCoupons.stream()
+                .filter(c -> c.getCouponStatus() == DuolingoCouponStatus.SENT)
+                .toList();
+        if (sentCoupons.isEmpty()) {
+            return "You have not been sent a Duolingo coupon yet.";
+        }
+        Context ctx = new Context();
+        ctx.setVariable("coupons", sentCoupons);
+        return htmlTemplateEngine.process("candidate-duolingo-coupon", ctx);
     }
 
     /**

@@ -59,6 +59,10 @@ export class CandidateTaskComponent implements OnInit {
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.helpLink);
     }
 
+    if (this.selectedTask.task.taskType === TaskType.DuolingoCoupon) {
+      this.selectedTask.task.description = this.selectedTask.content
+    }
+
     // todo this validation seems very messy! May be a better way to handle this. Perhaps use seperate forms?
     // Validation requiring comment if abandoned, and resetting the required validation on the answer/completed fields.
     this.form.get('abandoned').valueChanges.subscribe(abandoned => {

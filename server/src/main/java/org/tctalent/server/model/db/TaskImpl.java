@@ -17,10 +17,15 @@
 package org.tctalent.server.model.db;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskType;
 
@@ -54,8 +59,4 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
     public TaskType getTaskType() {
         return Task.super.getTaskType();
     }
-
-    @Nullable
-    @Transient
-    String setDescription;
 }

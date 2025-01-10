@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,18 +16,13 @@
 
 package org.tctalent.server.model.db.task;
 
-import org.tctalent.server.model.db.TaskImpl;
 
 /**
- * Different kind of tasks.
- * <p/>
- * See {@link TaskImpl#getTaskType()} for explanation of the need for this enum.
- *
- * @author John Cameron
+ * Particular kind of task which sends a duolingo coupon to the candidate.
  */
-public enum TaskType {
-    Question,
-    Simple,
-    Upload,
-    DuolingoCoupon
+public interface DuolingoCouponTask extends Task {
+
+    default TaskType getTaskType() {
+        return TaskType.DuolingoCoupon;
+    }
 }
