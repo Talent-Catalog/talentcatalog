@@ -463,8 +463,8 @@ public interface SavedListService {
     SavedList fetchSourceList(UpdateSavedListContentsRequest request) throws NoSuchObjectException;
 
     /**
-     * Updates the names of registered lists associated with the given Job, to reflect its current name.
+     * Updates the names of formally associated lists for the given Job, to reflect its current name.
      * @param job Job whose lists are to be renamed
      */
-    void updateRegisteredListNames(SalesforceJobOpp job);
+    void updateAssociatedListNames(SalesforceJobOpp job);
 }

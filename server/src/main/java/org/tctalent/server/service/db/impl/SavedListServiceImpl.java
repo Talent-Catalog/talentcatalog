@@ -1111,7 +1111,7 @@ public class SavedListServiceImpl implements SavedListService {
         return savedListRepository.save(savedList);
     }
 
-    public void updateRegisteredListNames(SalesforceJobOpp job) {
+    public void updateAssociatedListNames(SalesforceJobOpp job) {
         SavedList subList = job.getSubmissionList();
         SavedList excList = job.getExclusionList();
 
