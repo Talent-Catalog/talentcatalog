@@ -910,6 +910,7 @@ public class JobServiceImpl implements JobService {
         final String jobName = request.getJobName();
         if (jobName != null) {
             job.setName(jobName);
+            savedListService.updateRegisteredListNames(job);
         }
     }
 
