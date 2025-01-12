@@ -15,12 +15,14 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {CandidateService} from "../../../services/candidate.service";
 import {Candidate} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {EMAIL_REGEX} from "../../../model/base";
+import {CountryService} from "../../../services/country.service";
+import {Country} from "../../../model/country";
 
 @Component({
   selector: 'app-registration-contact',
@@ -42,6 +44,7 @@ export class RegistrationContactComponent implements OnInit {
   // Candidate data
   authenticated: boolean;
   candidate: Candidate;
+  countries: Country[];
 
   usAfghan: boolean;
 
@@ -49,6 +52,7 @@ export class RegistrationContactComponent implements OnInit {
 
   constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
+              private countryService: CountryService,
               private authenticationService: AuthenticationService,
               private registrationService: RegistrationService) { }
 
@@ -64,6 +68,13 @@ export class RegistrationContactComponent implements OnInit {
 
     if (this.authenticationService.isAuthenticated()) {
       this.authenticated = true;
+      this.countryService.listCountries().subscribe(
+        (results) => {
+          this.countries = results;
+        }, (error) => {
+          this.error = error;
+        }
+      )
       this.candidateService.getCandidateContact().subscribe(
         (candidate) => {
           this.candidate = candidate;
@@ -72,6 +83,11 @@ export class RegistrationContactComponent implements OnInit {
             phone: candidate.phone,
             whatsapp: candidate.whatsapp,
           });
+          this.form.addControl('relocatedAddress', new UntypedFormControl(candidate.relocatedAddress));
+          this.form.addControl('relocatedCity', new UntypedFormControl(candidate.relocatedCity));
+          this.form.addControl('relocatedState', new UntypedFormControl(candidate.relocatedState));
+          this.form.addControl('relocatedCountryId',
+            new UntypedFormControl(candidate.relocatedCountry ? candidate.relocatedCountry.id : null));
           this.loading = false;
         },
         (error) => {

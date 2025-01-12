@@ -62,7 +62,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         }
 
         registry.addEndpoint("/jobchat")
-            .setAllowedOrigins(corsUrls)
+            .setAllowedOriginPatterns(corsUrls)
             .withSockJS();
     }
 
