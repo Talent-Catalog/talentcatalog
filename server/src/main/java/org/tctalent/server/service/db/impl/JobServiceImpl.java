@@ -907,10 +907,12 @@ public class JobServiceImpl implements JobService {
             changeJobStage(job, stage);
         }
 
-        final String jobName = request.getJobName();
-        if (jobName != null) {
-            job.setName(jobName);
-            savedListService.updateAssociatedListNames(job);
+        final String newJobName = request.getJobName();
+        if (newJobName != null) {
+            String oldJobName = job.getName();
+            job.setName(newJobName);
+            savedSearchService.updateSuggestedSearchesNames(job, oldJobName);
+            savedListService.updateAssociatedListsNames(job);
         }
     }
 

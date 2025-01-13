@@ -1971,4 +1971,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         return boolQueryBuilder;
     }
+
+    public void updateSuggestedSearchesNames(SalesforceJobOpp job, String oldJobName) {
+        Set<SavedSearch> suggestedSearches = job.getSuggestedSearches();
+
+        for (SavedSearch search : suggestedSearches) {
+            String oldSearchName = search.getName();
+            String newSearchName = oldSearchName.replace(oldJobName, job.getName());
+            search.setName(newSearchName);
+            savedSearchRepository.save(search);
+        }
+    }
+
 }
