@@ -915,18 +915,18 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setNationality(nationality);
 
         // RELOCATED DETAILS
-        Country newRelocatedCountry = null;
+        Country relocatedCountry = null;
         if (request.getRelocatedCountryId() != null) {
-            newRelocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
+            relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
                     .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
         }
         auditNoteIfRelocatedAddressChange(candidate, request.getRelocatedAddress(), request.getRelocatedCity(),
-                request.getRelocatedState(), newRelocatedCountry != null ? newRelocatedCountry.getName() : null);
+                request.getRelocatedState(), relocatedCountry != null ? relocatedCountry.getName() : null);
 
         candidate.setRelocatedAddress(request.getRelocatedAddress());
         candidate.setRelocatedCity(request.getRelocatedCity());
         candidate.setRelocatedState(request.getRelocatedState());
-        candidate.setRelocatedCountry(newRelocatedCountry);
+        candidate.setRelocatedCountry(relocatedCountry);
 
         return save(candidate, true);
     }
