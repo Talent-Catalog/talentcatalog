@@ -31,8 +31,10 @@
     </thead>
 
     <tbody>
-    <tr *ngFor="let partner of sourcePartners" (click)="selectCurrent(partner)"
-        [ngClass]="{'current': currentSourcePartner?.id == partner.id && selectable}">
+    <tr *ngFor="let partner of sourcePartners"
+        (click)="selectCurrent(partner)"
+        [ngClass]="{'current': currentSourcePartner?.id == partner.id && selectable}"
+        class="clickable">
       <td>
         <div class="btn-group" *ngIf="isEditable(partner)">
           <button type="button" class="btn btn-default" (click)="editPartnerContact(partner)"><i

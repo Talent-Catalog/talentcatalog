@@ -830,6 +830,13 @@ const ALL_FIELDS = {
         "PARTICIPANTS": null,
         "PURPOSE": null,
       },
+      "HEADING": {
+        "CANDIDATE_PROSPECT": null,
+        "ALL_JOB_CANDIDATES": null,
+        "JOB_CREATOR_SOURCE_PARTNER": null,
+        "CANDIDATE_RECRUITING": null,
+        "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
+      },
       "PARTICIPANTS": {
         "CANDIDATE_PROSPECT": null,
         "ALL_JOB_CANDIDATES": null,
