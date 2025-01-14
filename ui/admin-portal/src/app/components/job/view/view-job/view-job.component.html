@@ -133,7 +133,10 @@
 
         <!-- JOB INTAKE -->
         <ng-container  *ngIf="canSeeJobDetails()" ngbNavItem="Intake">
-          <a ngbNavLink>Job Intake (JOI)</a>
+          <a ngbNavLink
+             ngbTooltip="Provides key info for source partners to liaise with candidates">
+            Job Intake (JOI)
+          </a>
           <ng-template ngbNavContent>
             <app-job-intake-tab
               [job]="job"
