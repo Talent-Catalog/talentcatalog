@@ -37,14 +37,24 @@
   <div *ngIf="isEmployerPartner()">
     <div class="me-4">
       <h5>Job Name</h5>
-      <p>Enter a job name - describing the role. For example, "Full stack software engineer"</p>
+      <p>
+        Enter a job name describing the role. For example, "Full stack software engineer."
+        It will be prepended with additional identifying information.
+        You can edit the full version later.
+      </p>
 
       <form [formGroup]="jobForm">
         <div>
-          <input #role type="text" class="form-control" placeholder="Role..." formControlName="role"
-                 id="role">
+          <input #role
+                 type="text"
+                 class="form-control"
+                 placeholder="Role..."
+                 formControlName="role"
+                 id="role"
+                 maxlength="50">
         </div>
       </form>
+      <small class="text-muted">{{remainingChars}} characters remaining</small>
     </div>
   </div>
 
