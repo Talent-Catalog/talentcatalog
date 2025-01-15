@@ -369,6 +369,11 @@ const ALL_FIELDS = {
           "EMAIL": null,
           "PHONE": null,
           "WHATSAPP": null,
+          "RELOCATEDFIELDS": null,
+          "RELOCATEDADDRESS": null,
+          "RELOCATEDCITY": null,
+          "RELOCATEDSTATE": null,
+          "RELOCATEDCOUNTRY": null,
           "USERNAME": null,
           "PASSWORD": null,
           "PASSWORDCONFIRMATION": null,
@@ -526,7 +531,8 @@ const ALL_FIELDS = {
         "TITLE": null,
         "EMAIL": null,
         "PHONE": null,
-        "WHATSAPP": null
+        "WHATSAPP": null,
+        "RELOCATEDADDRESS": null
       },
       "PERSONAL": {
         "TITLE": null,

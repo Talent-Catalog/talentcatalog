@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -165,7 +166,12 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
         .orElseThrow(() -> new NoSuchObjectException("Coupon with code " + couponCode + " not found"));
   }
 
-
+  @Override
+  public Candidate findCandidateByCouponCode(String couponCode) throws NoSuchObjectException{
+    return couponRepository.findByCouponCode(couponCode)
+        .map(DuolingoCoupon::getCandidate)
+        .orElse(null);
+  }
   // Utility Methods
 
   /**
