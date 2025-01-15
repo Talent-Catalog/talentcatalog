@@ -79,7 +79,7 @@ export class JobPrepDueDate extends JobPrepItem {
 
 export class JobPrepJD extends JobPrepItem {
   constructor() {
-    super("Provide job description (JD)", "Uploads");
+    super("Provide job description (Job Uploads Tab)", "Uploads");
   }
 
   isCompleted(): boolean {
