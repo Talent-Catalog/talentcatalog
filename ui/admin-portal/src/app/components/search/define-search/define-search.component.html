@@ -262,7 +262,7 @@
                 </div>
 
                 <!-- UNHCR STATUS -->
-                <div *ngIf="!isEmployerPartner()" class="col-md-6">
+                <div *ngIf="!isEmployerPartner()" class="col-md-6" id="uncrStatusFilter">
                   <label class="form-label">UNHCR Status</label>
                   <ng-select
                     id="unhcrStatusOptions"
@@ -482,7 +482,7 @@
             </div>
 
             <!-- REFERRER -->
-            <div *ngIf="!isEmployerPartner()" class="col-md-4">
+            <div *ngIf="!isEmployerPartner()" class="col-md-4" id="referrerFilter">
               <label class="form-label" for="referrer">Referrer</label>
               <button class="tool-tip-button"
                       [ngbTooltip]="referrerTooltip"
