@@ -1551,6 +1551,26 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             final boolean monitoringEvaluationConsent = getMonitoringEvaluationConsentBoolean(candidate);
             setMonitoringEvaluationConsent(monitoringEvaluationConsent);
+
+            if (candidate.getRelocatedAddress() != null) {
+                final String relocatedAddress = candidate.getRelocatedAddress();
+                setRelocatedAddress(relocatedAddress);
+            }
+
+            if (candidate.getRelocatedCity() != null) {
+                final String relocatedCity = candidate.getRelocatedCity();
+                setRelocatedCity(relocatedCity);
+            }
+
+            if (candidate.getRelocatedState() != null) {
+                final String relocatedState = candidate.getRelocatedState();
+                setRelocatedState(relocatedState);
+            }
+
+            if (candidate.getRelocatedCountry() != null) {
+                final String relocatedCountry = candidate.getRelocatedCountry().getName();
+                setRelocatedCountry(relocatedCountry);
+            }
         }
 
         private String getSpecificLanguageSpeakingLevel(List<CandidateLanguage> candidateLanguagesList, String languageToFind) {
@@ -1662,6 +1682,22 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public void setPartnerContactConsent(boolean partnerContactConsent) { super.put("Partner_Contact_Consent__c", partnerContactConsent); }
 
         public void setMonitoringEvaluationConsent(boolean monitoringEvaluationConsent) { super.put("Monitoring_Evaluation_Consent__c", monitoringEvaluationConsent); }
+
+        public void setRelocatedAddress(String relocatedAddress) {
+            super.put("Relocated_Street__c", relocatedAddress);
+        }
+
+        public void setRelocatedCity(String relocatedCity) {
+            super.put("Relocated_City__c", relocatedCity);
+        }
+
+        public void setRelocatedState(String relocatedState) {
+            super.put("Relocated_State_Province__c", relocatedState);
+        }
+
+        public void setRelocatedCountry(String relocatedCountry) {
+            super.put("Relocated_Country__c", relocatedCountry);
+        }
     }
 
     /**
