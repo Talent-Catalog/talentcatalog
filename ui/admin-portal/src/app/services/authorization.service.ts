@@ -362,12 +362,18 @@ export class AuthorizationService {
   /**
    * Return true if currently logged-in user is viewing the TC as a source person.
    * <p/>
+   * <p>
    * This is more complicated that just asking whether the user works for a source partner because
    * of TBB special status where it is both a source partner and a destination partner.
+   * </p>
+   * <p>
+   * With the third condition check we also allow for a user who is not themselves designated a job
+   * creator, but who works for an employer partner. Otherwise, they would be designated source by
+   * this check.
    */
   isViewingAsSource(): boolean {
-    //View as source partner as long as user is not a job creator.
-    return this.isSourcePartner() && !this.isJobCreatorUser();
+    //View as source partner as long as user is not a job creator or belonging to an employer org.
+    return this.isSourcePartner() && !this.isJobCreatorUser() && !this.isEmployerPartner();
   }
 
   /**
