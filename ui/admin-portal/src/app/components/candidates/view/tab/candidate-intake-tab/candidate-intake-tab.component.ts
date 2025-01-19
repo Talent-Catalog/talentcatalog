@@ -44,6 +44,8 @@ import {calculateAge} from "../../../../../model/candidate";
   styleUrls: ['./candidate-intake-tab.component.scss']
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
+// Class properties to memoize labels and tooltips
+  examLabels: { [key: string]: string } = {};
 
   constructor(candidateService: CandidateService,
               countryService: CountryService,
@@ -93,6 +95,46 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
         this.error = error;
         this.saving = false;
       });
+  }
+  getExamInfo(score: string) {
+    let className = 'text-mute';
+    let tooltip = 'Pending. Score is not provided or invalid.';
+
+    if (score === null || score === undefined || isNaN(parseFloat(score))) {
+      // Handle null, undefined, or non-numeric scores
+      return { className, tooltip };
+    }
+
+    const numericScore = parseFloat(score);
+
+    if (numericScore < 60) {
+      className = 'text-danger';
+      tooltip = 'Below requirement. Score is < 60.';
+    } else if (numericScore >= 60 && numericScore < 90) {
+      className = 'text-warning';
+      tooltip = 'Needs verification against the language requirement. Score is between 60 and 89.';
+    } else {
+      className = 'text-success';
+      tooltip = 'Meets language requirements. Score is 90 or higher.';
+    }
+
+    return { className, tooltip };
+  }
+
+  getExamLabel(exam: any): string {
+    const mostRecent = this.getMostRecentDetOfficialExam(this.candidateIntakeData?.candidateExams);
+    const highestScore = this.getHighestScoreDetOfficialExam(this.candidateIntakeData?.candidateExams);
+
+    if (exam === mostRecent && exam === highestScore) {
+      this.examLabels[exam.id] = 'Best & Newest Score';
+    } else if (exam === mostRecent) {
+      this.examLabels[exam.id] = 'Newest Score';
+    } else if (exam === highestScore) {
+      this.examLabels[exam.id] = 'Best Score';
+    } else {
+      this.examLabels[exam.id] = 'DET Official';
+    }
+    return this.examLabels[exam.id];
   }
 
   addExamRecord(e: MouseEvent) {
