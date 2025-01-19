@@ -168,6 +168,9 @@ export abstract class IntakeComponentTabBase implements OnInit {
       this.occupations = results['occupations'];
       this.languageLevels = results['languageLevels'];
       this.candidateIntakeData = results['intakeData'];
+
+      // handle exam processing
+      this.candidateIntakeData.candidateExams = this.processExams(this.candidateIntakeData.candidateExams);
       this.candidate = results['candidate'];
       this.onDataLoaded(init);
     }, error => {
@@ -175,6 +178,118 @@ export abstract class IntakeComponentTabBase implements OnInit {
       this.error = error;
     });
   }
+
+  /**
+   * Processes a list of candidate exams, identifying the most recent and highest scoring DETOfficial exams,
+   * and removes duplicate DETOfficial exams.
+   *
+   * @param candidateExams The list of candidate exams to process.
+   * @returns The processed list of exams with flags indicating the most recent and highest score exams.
+   */
+
+  private processExams(candidateExams: any[]): any[] {
+    const {
+      mostRecentDetOfficialExam,
+      highestScoreDetOfficialExam,
+      otherExams,
+    } = candidateExams.reduce(
+      (acc, exam) => {
+        if (exam.exam === 'DETOfficial') {
+          const { verificationDate, score } = this.extractExamDetails(exam.notes);
+
+          if (verificationDate) {
+            // Update most recent DETOfficial exam
+            if (!acc.mostRecentDetOfficialExam || verificationDate > acc.mostRecentDetOfficialExam.verificationDate) {
+              acc.mostRecentDetOfficialExam = { ...exam, verificationDate };
+            }
+          }
+
+          if (score !== null && !isNaN(score)) {
+            // Update highest score DETOfficial exam
+            if (!acc.highestScoreDetOfficialExam || score > acc.highestScoreDetOfficialExam.score) {
+              acc.highestScoreDetOfficialExam = { ...exam, score };
+            }
+          }
+        } else {
+          // Collect non-DETOfficial exams
+          acc.otherExams.push(exam);
+        }
+
+        return acc;
+      },
+      { mostRecentDetOfficialExam: null, highestScoreDetOfficialExam: null, otherExams: [] }
+    );
+
+    // Combine results, ensuring no duplicates
+    const finalExams = [
+      mostRecentDetOfficialExam,
+      highestScoreDetOfficialExam,
+      ...otherExams,
+    ].filter(
+      (exam, index, self) =>
+        exam !== null &&
+        self.findIndex((e) => e === exam || e.id === exam.id) === index // Remove duplicates by ID
+    );
+    // Mark highest and most recent exams
+    const markedExams = finalExams.map(exam => {
+      return {
+        ...exam,
+        isMostRecent: mostRecentDetOfficialExam && exam.id === mostRecentDetOfficialExam.id,
+        isHighestScore: highestScoreDetOfficialExam && exam.id === highestScoreDetOfficialExam.id,
+      };
+    });
+    return markedExams;
+  }
+  /**
+   * Finds the most recent DETOfficial exam from the list of exams.
+   *
+   * @param exams The list of exams to search through.
+   * @returns The most recent DETOfficial exam, or null if not found.
+   */
+
+  public getMostRecentDetOfficialExam(exams: any[]): any | null {
+    return exams
+    .filter(exam => exam.exam === 'DETOfficial' && exam.verificationDate)
+    .reduce((mostRecent, current) =>
+        !mostRecent || current.verificationDate > mostRecent.verificationDate
+          ? current
+          : mostRecent,
+      null
+    );
+  }
+  /**
+   * Finds the highest scoring DETOfficial exam from the list of exams.
+   *
+   * @param exams The list of exams to search through.
+   * @returns The highest scoring DETOfficial exam, or null if not found.
+   */
+
+  public getHighestScoreDetOfficialExam(exams: any[]): any | null {
+    return exams
+    .filter(exam => exam.exam === 'DETOfficial' && exam.score !== null && !isNaN(exam.score))
+    .reduce((highest, current) =>
+        !highest || current.score > highest.score
+          ? current
+          : highest,
+      null
+    );
+  }
+  /**
+   * Extracts the verification date and score from the notes string of an exam.
+   *
+   * @param notes The notes string containing "Score" and "Verification Date".
+   * @returns An object containing the extracted score and verification date.
+   */
+  private extractExamDetails(notes: string) {
+    const scoreMatch = notes.match(/Score:\s*([0-9\.]+)/); // Assume score is a number
+    const dateMatch = notes.match(/Verification Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/);
+
+    return {
+      verificationDate: dateMatch ? new Date(dateMatch[1]) : null,
+      score: scoreMatch ? parseFloat(scoreMatch[1]) : null, // Ensure score is a number
+    };
+  }
+
 
   /**
    * Called when all intake data has been loaded (by refreshIntakeData).
