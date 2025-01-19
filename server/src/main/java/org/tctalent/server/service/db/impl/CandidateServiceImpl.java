@@ -553,13 +553,11 @@ public class CandidateServiceImpl implements CandidateService {
 
         taskService.populateTransientFields(taskAssignment.getTask());
 
-        // If the task is a Duolingo coupon task, fetch the coupon content
-        if (taskAssignment instanceof DuolingoCouponTaskAssignmentImpl) {
-            DuolingoCouponTaskAssignment duolingoCouponTaskAssignment = (DuolingoCouponTaskAssignmentImpl) taskAssignment;
-            String content = fetchCandidateDuolingoCoupon(duolingoCouponTaskAssignment);
-            duolingoCouponTaskAssignment.setContent(content);
+        // If task is a duolingoTest task, fetch the coupon and add it to the instructions template
+        if (taskAssignment.getTask().getName().equals("duolingoTest")) {
+            String content = fetchCandidateDuolingoCoupon(taskAssignment);
+            taskAssignment.getTask().setContent(content);
         }
-
 
         //If task is completed, see if there is any transient data to be populated - eg the
         //answer on a question task
@@ -579,7 +577,7 @@ public class CandidateServiceImpl implements CandidateService {
      * @param taskAssignment duolingo task assignment
      * @return instructions content including the duolingo coupon
      */
-    private String fetchCandidateDuolingoCoupon(DuolingoCouponTaskAssignment taskAssignment) {
+    private String fetchCandidateDuolingoCoupon(TaskAssignment taskAssignment) {
         List<DuolingoCoupon> candidateCoupons = couponRepository.findAllByCandidateId(taskAssignment.getCandidate().getId());
         List<DuolingoCoupon> sentCoupons = candidateCoupons.stream()
                 .filter(c -> c.getCouponStatus() == DuolingoCouponStatus.SENT)

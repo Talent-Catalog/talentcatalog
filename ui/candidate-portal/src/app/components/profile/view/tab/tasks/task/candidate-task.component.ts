@@ -59,8 +59,8 @@ export class CandidateTaskComponent implements OnInit {
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.helpLink);
     }
 
-    if (this.selectedTask.task.taskType === TaskType.DuolingoCoupon) {
-      this.selectedTask.task.description = this.selectedTask.content
+    if (this.selectedTask.task.name === "duolingoTest") {
+      this.selectedTask.task.description = this.selectedTask.task.content;
     }
 
     // todo this validation seems very messy! May be a better way to handle this. Perhaps use seperate forms?

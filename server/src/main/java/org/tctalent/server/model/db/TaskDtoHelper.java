@@ -41,9 +41,6 @@ public class TaskDtoHelper {
         private final Set<String> questionOnlyProperties =
             new HashSet<>(Arrays.asList("answer", "candidateAnswerField", "allowedAnswers"));
 
-        //These properties should only be extracted for DuolingoCouponTask's
-        private final Set<String> duolingoCouponOnlyProperties = new HashSet<>(List.of("content"));
-
         //These properties should only be extracted for UploadTask's
         private final Set<String> uploadOnlyProperties =
             new HashSet<>(Arrays.asList("uploadType", "uploadSubfolderName", "uploadableFileTypes"));
@@ -54,10 +51,7 @@ public class TaskDtoHelper {
                 questionOnlyProperties.contains(property) &&
                     ! (o instanceof QuestionTask || o instanceof QuestionTaskAssignment) ||
                 uploadOnlyProperties.contains(property) &&
-                        !(o instanceof UploadTask || o instanceof UploadTaskAssignment) ||
-                        duolingoCouponOnlyProperties.contains(property) &&
-                                !(o instanceof DuolingoCouponTask || o instanceof DuolingoCouponTaskAssignment);
-
+                        !(o instanceof UploadTask || o instanceof UploadTaskAssignment);
             return ignore;
         }
     };
@@ -76,7 +70,6 @@ public class TaskDtoHelper {
             .add("status")
             .add("task", getTaskDto(dtoType))
             .add("answer")
-                .add("content")
             ;
     }
 
@@ -90,6 +83,7 @@ public class TaskDtoHelper {
             .add("name")
             .add("daysToComplete")
             .add("description")
+                .add("content")
             .add("displayName")
             .add("optional")
             .add("helpLink")

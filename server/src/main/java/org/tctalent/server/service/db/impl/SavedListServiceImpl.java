@@ -732,7 +732,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         //Now assign tasks to candidates in list (if they do not already have the task actively assigned)
         Set<Candidate> candidates = list.getCandidates();
-        if (task.getTaskType().equals(TaskType.DuolingoCoupon)) {
+        if (task.getName().equals("duolingoTest")) {
             List<DuolingoCoupon> availableCoupons = couponService.getAvailableCoupons();
             if (candidates.size() > availableCoupons.size()) {
                 throw new NoSuchObjectException(availableCoupons.size() + " coupons available, but you need " + candidates.size() + " coupons for your candidates list.");

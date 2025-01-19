@@ -26,6 +26,7 @@ export interface Task extends Auditable {
   name: string;
   daysToComplete: number;
   description: string;
+  content: string;
   displayName: string;
   optional: boolean;
   helpLink: string;
@@ -42,8 +43,7 @@ export enum TaskType {
   Question = "Question",
   Simple = "Simple",
   Upload = "Upload",
-  YesNoQuestion = "YesNoQuestion",
-  DuolingoCoupon = "DuolingoCoupon"
+  YesNoQuestion = "YesNoQuestion"
 }
 
 export enum UploadType {

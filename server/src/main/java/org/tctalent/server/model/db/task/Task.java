@@ -87,6 +87,11 @@ public interface Task extends Auditable {
      */
     boolean isOptional();
 
+    @Nullable
+    String getContent();
+
+    void setContent(String content);
+
     /**
      * Type of task - this encodes the class type - so {@link TaskType#Simple} for a simple task,
      * {@link TaskType#Upload} for an UploadTask etc.

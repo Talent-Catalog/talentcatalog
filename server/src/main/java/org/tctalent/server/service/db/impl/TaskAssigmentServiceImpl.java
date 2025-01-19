@@ -79,13 +79,11 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
                 taskAssignment = new UploadTaskAssignmentImpl();
                 break;
 
-            case DuolingoCoupon:
-                couponService.assignCouponToCandidate(candidate.getId());
-                taskAssignment = new DuolingoCouponTaskAssignmentImpl();
-                break;
-
             default:
                 taskAssignment = new TaskAssignmentImpl();
+                if (task.getName().equals("duolingoTest")) {
+                    couponService.assignCouponToCandidate(candidate.getId());
+                }
                 break;
         }
 

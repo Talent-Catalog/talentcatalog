@@ -28,6 +28,5 @@ import org.tctalent.server.model.db.TaskImpl;
 public enum TaskType {
     Question,
     Simple,
-    Upload,
-    DuolingoCoupon
+    Upload
 }
