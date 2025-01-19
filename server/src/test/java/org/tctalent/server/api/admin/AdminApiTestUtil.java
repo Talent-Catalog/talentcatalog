@@ -18,6 +18,7 @@ package org.tctalent.server.api.admin;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +47,8 @@ import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
+import org.tctalent.server.model.db.DuolingoCoupon;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
@@ -831,4 +834,14 @@ public class AdminApiTestUtil {
         Set<CandidateSavedList> scsl = Set.of(getCandidateSavedList());
         return scsl;
   }
+  static DuolingoCoupon getDuolingoCoupon() {
+        DuolingoCoupon coupon = new DuolingoCoupon();
+        coupon.setId(1L);
+        coupon.setCouponCode("COUPON123");
+        coupon.setExpirationDate(LocalDateTime.now().plusDays(30));
+        coupon.setDateSent(LocalDateTime.now().minusDays(1));
+        coupon.setCouponStatus(DuolingoCouponStatus.AVAILABLE);
+
+        return coupon;
+    }
 }

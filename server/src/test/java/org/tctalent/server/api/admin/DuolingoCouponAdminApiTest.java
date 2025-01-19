@@ -1,0 +1,174 @@
+package org.tctalent.server.api.admin;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.DuolingoCoupon;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.response.DuolingoCouponResponse;
+import org.tctalent.server.service.db.DuolingoCouponService;
+import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
+
+/**
+ * Unit tests for Duolingo Coupon Admin Api endpoints.
+ *
+ * @author Ehsan Ehrari
+ */
+@WebMvcTest(DuolingoCouponAdminApi.class)
+@AutoConfigureMockMvc
+class DuolingoCouponAdminApiTest extends ApiTestBase {
+
+  private static final long CANDIDATE_ID = 99L;
+  private static final String COUPON_CODE = "COUPON123";
+  private static final String BASE_PATH = "/api/admin/coupon";
+  private static final String ASSIGN_COUPON_PATH = "/{candidateId}/assign";
+  private static final String FIND_COUPON_PATH = "find/{couponCode}";
+  private static final String UPDATE_STATUS_PATH = "status";
+
+  private final DuolingoCoupon coupon = AdminApiTestUtil.getDuolingoCoupon();
+
+  @MockBean
+  DuolingoCouponService couponService;
+
+  @Autowired
+  MockMvc mockMvc;
+
+  @Autowired
+  ObjectMapper objectMapper;
+
+  @BeforeEach
+  void setUp() {
+    configureAuthentication();
+  }
+
+  @Test
+  @DisplayName("Import coupons from CSV succeeds")
+  void importCouponsFromCsvSucceeds() throws Exception {
+    willDoNothing().given(couponService).importCoupons(any());
+
+    // Create a mock file for testing
+    MockMultipartFile file = new MockMultipartFile(
+        "file",
+        "test-coupons.csv",
+        "text/csv",
+        "couponCode1,expirationDate,dateSent,couponStatus\nCOUPON123,2025-01-01,2024-12-01,AVAILABLE".getBytes()
+    );
+
+    mockMvc.perform(multipart(BASE_PATH + "/import")
+            .file(file)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.status", is("success")))
+        .andExpect(jsonPath("$.message", is("Coupons imported successfully.")));
+
+    // Verify that the importCoupons method was called once
+    verify(couponService).importCoupons(any());
+  }
+
+
+
+  @Test
+  @DisplayName("Assign coupon to candidate succeeds")
+  void assignCouponToCandidateSucceeds() throws Exception {
+    given(couponService.assignCouponToCandidate(anyLong())).willReturn(coupon);
+
+    mockMvc.perform(post(BASE_PATH + ASSIGN_COUPON_PATH, CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.couponCode", is(COUPON_CODE)))
+        .andExpect(jsonPath("$.duolingoCouponStatus", is("AVAILABLE")));
+
+    verify(couponService).assignCouponToCandidate(anyLong());
+  }
+
+  @Test
+  @DisplayName("Get coupons for candidate succeeds")
+  void getCouponsForCandidateSucceeds() throws Exception {
+    given(couponService.getCouponsForCandidate(anyLong())).willReturn(List.of(new DuolingoCouponResponse(
+        coupon.getId(),
+        coupon.getCouponCode(),
+        coupon.getExpirationDate(),
+        coupon.getDateSent(),
+        coupon.getCouponStatus()
+    )));
+
+    mockMvc.perform(get(BASE_PATH + "/{candidateId}", CANDIDATE_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$[0].couponCode", is(COUPON_CODE)))
+        .andExpect(jsonPath("$[0].duolingoCouponStatus", is("AVAILABLE")));
+
+    verify(couponService).getCouponsForCandidate(anyLong());
+  }
+
+  @Test
+  @DisplayName("Update coupon status succeeds")
+  void updateCouponStatusSucceeds() throws Exception {
+    UpdateDuolingoCouponStatusRequest request = new UpdateDuolingoCouponStatusRequest();
+    request.setCouponCode(COUPON_CODE);
+    request.setStatus(DuolingoCouponStatus.REDEEMED);
+
+    mockMvc.perform(put(BASE_PATH + "/" + UPDATE_STATUS_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(couponService).updateCouponStatus(COUPON_CODE, DuolingoCouponStatus.REDEEMED);
+  }
+
+  @Test
+  @DisplayName("Get coupon by code succeeds")
+  void getCouponByCodeSucceeds() throws Exception {
+    given(couponService.findByCouponCode(any(String.class))).willReturn(coupon);
+    System.out.println(BASE_PATH + "/" +  FIND_COUPON_PATH);
+    mockMvc.perform(get(BASE_PATH + "/" +  FIND_COUPON_PATH, COUPON_CODE)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.couponCode", is(COUPON_CODE)))
+        .andExpect(jsonPath("$.duolingoCouponStatus", is("AVAILABLE")));
+
+    verify(couponService).findByCouponCode(COUPON_CODE);
+  }
+}

@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -913,15 +914,18 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
 
-        // Set relocated details
-        candidate.setRelocatedAddress(request.getRelocatedAddress());
-        candidate.setRelocatedCity(request.getRelocatedCity());
-        candidate.setRelocatedState(request.getRelocatedState());
+        // RELOCATED DETAILS
         Country relocatedCountry = null;
         if (request.getRelocatedCountryId() != null) {
             relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
                     .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
         }
+        auditNoteIfRelocatedAddressChange(candidate, request.getRelocatedAddress(), request.getRelocatedCity(),
+                request.getRelocatedState(), relocatedCountry != null ? relocatedCountry.getName() : null);
+
+        candidate.setRelocatedAddress(request.getRelocatedAddress());
+        candidate.setRelocatedCity(request.getRelocatedCity());
+        candidate.setRelocatedState(request.getRelocatedState());
         candidate.setRelocatedCountry(relocatedCountry);
 
         return save(candidate, true);
@@ -1184,14 +1188,17 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setWhatsapp(request.getWhatsapp());
 
         // Relocated address fields if candidate has employed status
-        candidate.setRelocatedAddress(request.getRelocatedAddress());
-        candidate.setRelocatedCity(request.getRelocatedCity());
-        candidate.setRelocatedState(request.getRelocatedState());
         Country relocatedCountry = null;
         if (request.getRelocatedCountryId() != null) {
             relocatedCountry = countryRepository.findById(request.getRelocatedCountryId())
                     .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getRelocatedCountryId()));
         }
+        auditNoteIfRelocatedAddressChange(candidate, request.getRelocatedAddress(), request.getRelocatedCity(),
+                request.getRelocatedState(), relocatedCountry != null ? relocatedCountry.getName() : null);
+
+        candidate.setRelocatedAddress(request.getRelocatedAddress());
+        candidate.setRelocatedCity(request.getRelocatedCity());
+        candidate.setRelocatedState(request.getRelocatedState());
         candidate.setRelocatedCountry(relocatedCountry);
 
         candidate.setAuditFields(user);
@@ -3185,4 +3192,60 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
+    /**
+     * Forms an address string that can be used for display purposes and to compare changes in multiple location fields
+     * (address, city, state and country).
+     * @param relocatedAddress the relocated address field from the candidate or the request
+     * @param relocatedCity the relocated city field from the candidate or the request
+     * @param relocatedState the relocated state field from the candidate or the request
+     * @param relocatedCountryName the relocated country name from the country object from the candidate or the request
+     * @return a comma separated string that ignores nulls or empty strings in the format (Address, City, State, Country)
+     */
+    private String formRelocatedAddressString(@Nullable String relocatedAddress, @Nullable String relocatedCity,
+                                       @Nullable String relocatedState, @Nullable String relocatedCountryName) {
+        return Stream.of(relocatedAddress, relocatedCity, relocatedState, relocatedCountryName) // Create a stream from the fields
+                .filter(str -> str != null && !str.isEmpty()) // Filter out empty string values// Filter out null values
+                .reduce((field1Str, field2Str) -> field1Str + ", " + field2Str) // Concatenate fields
+                .orElse("");
+    }
+
+    /**
+     * Compares the current and requested values of the relocated location fields (address, city, state, country) and
+     * if they differ creates a candidate note for audit purposes. This helps to know how recent and relevant this
+     * relocated data is. We can't pass in the full request object, as depending on which portal the update comes from
+     * it will have a different request object. So each request field is passed in individually.
+     * @param candidate the candidate whose relocated data we are check if it's changed
+     * @param requestRelocatedAddress the relocated address field that comes from the request
+     * @param requestRelocatedCity the relocated city field that comes from the request
+     * @param requestRelocatedState the relocated state field that comes from the request
+     * @param requestRelocatedCountryName the relocated country name field that comes from the request
+     */
+    private void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
+                                             @Nullable String requestRelocatedCity, @Nullable String requestRelocatedState,
+                                             @Nullable String requestRelocatedCountryName) {
+
+        String currentRelocatedAddressFull = formRelocatedAddressString(candidate.getRelocatedAddress(),
+                candidate.getRelocatedCity(), candidate.getRelocatedState(),
+                candidate.getRelocatedCountry() != null ? candidate.getRelocatedCountry().getName() : null);
+
+        String requestRelocatedAddressFull = formRelocatedAddressString(requestRelocatedAddress,
+                requestRelocatedCity, requestRelocatedState, requestRelocatedCountryName);
+
+        if (!currentRelocatedAddressFull.equalsIgnoreCase(requestRelocatedAddressFull)) {
+            // If there is no previous relocated address then create note as location added
+            if (currentRelocatedAddressFull.isEmpty()) {
+                candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+                        "Relocated location added", requestRelocatedAddressFull));
+            } else if (requestRelocatedAddressFull.isEmpty()) {
+                // If there is no requested relocated address then create note as location removed
+                candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+                        "Relocated location removed", requestRelocatedAddressFull));
+            } else {
+                // Otherwise if there is a change in relocation address then create note as location changed
+                candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+                        "Relocated location changed",
+                        currentRelocatedAddressFull + " to " + requestRelocatedAddressFull));
+            }
+        }
+    }
 }
