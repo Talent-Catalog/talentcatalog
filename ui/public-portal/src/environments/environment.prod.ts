@@ -16,5 +16,6 @@
 
 export const environment = {
   production: true,
-  apiUrl: '/api/public'
+  apiUrl: '/api/public',
+  environmentName: 'prod'
 };
