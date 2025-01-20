@@ -3209,17 +3209,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElse("");
     }
 
-    /**
-     * Compares the current and requested values of the relocated location fields (address, city, state, country) and
-     * if they differ creates a candidate note for audit purposes. This helps to know how recent and relevant this
-     * relocated data is. We can't pass in the full request object, as depending on which portal the update comes from
-     * it will have a different request object. So each request field is passed in individually.
-     * @param candidate the candidate whose relocated data we are check if it's changed
-     * @param requestRelocatedAddress the relocated address field that comes from the request
-     * @param requestRelocatedCity the relocated city field that comes from the request
-     * @param requestRelocatedState the relocated state field that comes from the request
-     * @param requestRelocatedCountryName the relocated country name field that comes from the request
-     */
+
+    @Override
     public void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
                                              @Nullable String requestRelocatedCity, @Nullable String requestRelocatedState,
                                              @Nullable String requestRelocatedCountryName) {
