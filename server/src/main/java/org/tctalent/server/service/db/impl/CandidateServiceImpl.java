@@ -3220,7 +3220,7 @@ public class CandidateServiceImpl implements CandidateService {
      * @param requestRelocatedState the relocated state field that comes from the request
      * @param requestRelocatedCountryName the relocated country name field that comes from the request
      */
-    private void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
+    public void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
                                              @Nullable String requestRelocatedCity, @Nullable String requestRelocatedState,
                                              @Nullable String requestRelocatedCountryName) {
 

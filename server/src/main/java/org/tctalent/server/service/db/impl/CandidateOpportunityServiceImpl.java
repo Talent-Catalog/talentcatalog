@@ -663,6 +663,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     }
 
                     // If new stage is relocated then set relocated address
+                    // todo what about stages above relocated if relocated gets skipped (e.g. settled)
                     if (newStage.equals(CandidateOpportunityStage.relocated)) {
                         updateCandidateRelocatedCountry(opp);
                     }
@@ -996,6 +997,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         Candidate candidate = opp.getCandidate();
         SalesforceJobOpp jobOpp = opp.getJobOpp();
         if (jobOpp.getCountry() != null) {
+            // set note
+
+
             candidate.setRelocatedCountry(jobOpp.getCountry());
             candidateService.save(candidate, false);
         }
