@@ -18,10 +18,12 @@ package org.tctalent.server.model.db;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import org.tctalent.server.api.admin.DtoType;
-import org.tctalent.server.model.db.task.*;
+import org.tctalent.server.model.db.task.QuestionTask;
+import org.tctalent.server.model.db.task.QuestionTaskAssignment;
+import org.tctalent.server.model.db.task.UploadTask;
+import org.tctalent.server.model.db.task.UploadTaskAssignment;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.dto.DtoPropertyFilter;
 
@@ -51,7 +53,8 @@ public class TaskDtoHelper {
                 questionOnlyProperties.contains(property) &&
                     ! (o instanceof QuestionTask || o instanceof QuestionTaskAssignment) ||
                 uploadOnlyProperties.contains(property) &&
-                        !(o instanceof UploadTask || o instanceof UploadTaskAssignment);
+                    ! (o instanceof UploadTask || o instanceof UploadTaskAssignment);
+
             return ignore;
         }
     };
@@ -83,7 +86,7 @@ public class TaskDtoHelper {
             .add("name")
             .add("daysToComplete")
             .add("description")
-                .add("content")
+            .add("content")
             .add("displayName")
             .add("optional")
             .add("helpLink")

@@ -55,7 +55,6 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.*;
 import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskAssignment;
-import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CandidateSavedListRepository;
 import org.tctalent.server.repository.db.GetCandidateSavedListsQuery;
@@ -117,17 +116,20 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Autowired
     public SavedListServiceImpl(
-            CandidateRepository candidateRepository,
-            CandidateSavedListRepository candidateSavedListRepository,
-            CandidateOpportunityService candidateOpportunityService, ExportColumnsService exportColumnsService,
-            SavedListRepository savedListRepository,
-            DocPublisherService docPublisherService,
-            FileSystemService fileSystemService,
-            GoogleDriveConfig googleDriveConfig, PublicIDService publicIDService,
-            SalesforceService salesforceService,
-            SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
-            UserRepository userRepository,
-            UserService userService, DuolingoCouponService couponService) {
+        CandidateRepository candidateRepository,
+        CandidateSavedListRepository candidateSavedListRepository,
+        CandidateOpportunityService candidateOpportunityService,
+        ExportColumnsService exportColumnsService,
+        SavedListRepository savedListRepository,
+        DocPublisherService docPublisherService,
+        FileSystemService fileSystemService,
+        GoogleDriveConfig googleDriveConfig, PublicIDService publicIDService,
+        SalesforceService salesforceService,
+        SalesforceJobOppService salesforceJobOppService,
+        TaskAssignmentService taskAssignmentService,
+        UserRepository userRepository,
+        UserService userService,
+        DuolingoCouponService couponService) {
         this.candidateRepository = candidateRepository;
         this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateOpportunityService = candidateOpportunityService;

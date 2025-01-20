@@ -53,9 +53,10 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final DuolingoCouponService couponService;
 
     public TaskAssigmentServiceImpl(
-            CandidateAttachmentService candidateAttachmentService,
-            TaskAssignmentRepository taskAssignmentRepository,
-            TaskService taskService, DuolingoCouponService couponService) {
+        CandidateAttachmentService candidateAttachmentService,
+        TaskAssignmentRepository taskAssignmentRepository,
+        TaskService taskService,
+        DuolingoCouponService couponService) {
         this.candidateAttachmentService = candidateAttachmentService;
         this.taskAssignmentRepository = taskAssignmentRepository;
         this.taskService = taskService;
