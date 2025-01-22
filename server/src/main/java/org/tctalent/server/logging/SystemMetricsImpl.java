@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 public class SystemMetricsImpl implements SystemMetrics {
   private final MeterRegistry meterRegistry;
   private final AtomicReference<String> lastCpuValue = new AtomicReference<>("N/A");
+  private final AtomicReference<String> lastMemValue = new AtomicReference<>("N/A");
 
   public SystemMetricsImpl(MeterRegistry meterRegistry) {
     this.meterRegistry = meterRegistry;
@@ -56,12 +57,32 @@ public class SystemMetricsImpl implements SystemMetrics {
     } catch (Exception e) {
       System.err.println("Error fetching CPU utilization: " + e.getMessage());
     }
-    return lastCpuValue.get(); // Return last valid value if no current value available
+    return lastCpuValue.get(); // Return last valid value if no metric or an error occurs
   }
 
   @Override
   public String getMemoryUtilization() {
-    return "N/A";
+    try {
+      // Get used memory
+      RequiredSearch usedMemorySearch = meterRegistry.get("jvm.memory.used");
+      Gauge usedMemoryGauge = usedMemorySearch.gauge();
+      double usedMemory = usedMemoryGauge.value();
+
+      // Get max memory
+      RequiredSearch maxMemorySearch = meterRegistry.get("jvm.memory.max");
+      Gauge maxMemoryGauge = maxMemorySearch.gauge();
+      double maxMemory = maxMemoryGauge.value();
+
+      if (!Double.isNaN(usedMemory) && !Double.isNaN(maxMemory) && maxMemory > 0) {
+        double memoryUtilization = (usedMemory / maxMemory) * 100;
+        String formattedValue = String.format("%.2f%%", memoryUtilization);
+        lastMemValue.set(formattedValue);
+        return formattedValue;
+      }
+    } catch (Exception e) {
+      System.err.println("Error fetching memory utilization: " + e.getMessage());
+    }
+    return lastCpuValue.get(); // Return last valid value if no metric or an error occurs
   }
 
 }
