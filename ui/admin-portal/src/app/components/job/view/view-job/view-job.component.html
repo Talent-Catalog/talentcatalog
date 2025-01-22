@@ -62,8 +62,10 @@
     <div *ngIf="!job.publishedDate">
       <button type="button" class="btn btn-success me-2"
               (click)="publishJob()"
-              title="Publish job so that others can see it">
-      Publish Job</button>
+              ngbTooltip=
+                "Publish the job so other TC users can see it and begin the recruitment process.">
+        Publish Job
+      </button>
       <i *ngIf="publishing" class="fas fa-spinner fa-spin"></i>
     </div>
 
