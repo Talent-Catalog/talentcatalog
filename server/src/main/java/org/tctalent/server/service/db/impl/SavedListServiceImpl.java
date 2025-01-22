@@ -113,6 +113,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
     private final static String REGISTERED_NAME_SUFFIX = "*";
+    private final static String EXCLUSION_LIST_SUFFIX = "Exclude";
     private final CandidateRepository candidateRepository;
     private final CandidateSavedListRepository candidateSavedListRepository;
     private final CandidateOpportunityService candidateOpportunityService;
@@ -1109,4 +1110,20 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.setAuditFields(userService.getLoggedInUser());
         return savedListRepository.save(savedList);
     }
+
+    public void updateAssociatedListsNames(SalesforceJobOpp job) {
+        SavedList subList = job.getSubmissionList();
+        SavedList excList = job.getExclusionList();
+
+        if (subList != null) {
+            subList.setName(job.getName() + REGISTERED_NAME_SUFFIX);
+            saveIt(subList);
+        }
+
+        if (excList != null) {
+            excList.setName(job.getName() + REGISTERED_NAME_SUFFIX + EXCLUSION_LIST_SUFFIX);
+            saveIt(excList);
+        }
+    }
+
 }

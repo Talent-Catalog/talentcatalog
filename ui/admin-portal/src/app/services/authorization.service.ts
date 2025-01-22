@@ -509,4 +509,17 @@ export class AuthorizationService {
     return result;
   }
 
+  /**
+   * Only a System Admin or the user who created a Job can change its name.
+   * @param job
+   */
+  canChangeJobName(job: Job) {
+      let result: boolean = false;
+      const loggedInUser = this.authenticationService.getLoggedInUser();
+      if ((loggedInUser.id === job.createdBy.id) || this.isSystemAdminOnly()) {
+        result = true;
+      }
+      return result;
+  }
+
 }

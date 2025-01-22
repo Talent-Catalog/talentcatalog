@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
+import jakarta.validation.constraints.NotBlank;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -221,6 +222,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
         classSfPathMap.put(EmployerOppStageUpdateRequest.class, "Opportunity");
         classSfPathMap.put(JobOpportunityRequest.class, "Opportunity");
+        classSfPathMap.put(EmployerOppNameUpdateRequest.class, "Opportunity");
         classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
         classSfCompositePathMap.put(OpportunityRequestComposite.class, "Opportunity");
 
@@ -955,6 +957,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         EmployerOppStageUpdateRequest sfRequest =
             new EmployerOppStageUpdateRequest(stage, nextStep, dueDate);
+
+        executeUpdate(sfId, sfRequest);
+    }
+
+    @Override
+    public void updateEmployerOpportunityName(String sfId, String jobName)
+        throws SalesforceException, WebClientException {
+        EmployerOppNameUpdateRequest sfRequest =
+            new EmployerOppNameUpdateRequest(jobName);
 
         executeUpdate(sfId, sfRequest);
     }
@@ -1793,6 +1804,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             if (dueDate != null) {
                 put("Next_Step_Due_Date__c", dueDate.toString());
             }
+        }
+    }
+
+    class EmployerOppNameUpdateRequest extends HashMap<String, String> {
+
+        public EmployerOppNameUpdateRequest(@NotBlank String jobName) {
+            put("Name", jobName);
         }
     }
 
