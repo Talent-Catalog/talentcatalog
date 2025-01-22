@@ -436,19 +436,22 @@ public class SystemAdminApi {
             .logInfo();
     }
 
-    @GetMapping("load_candidate_ops")
-    public void loadCandidateOpportunities() {
-        //Get all job opps known to TC
-        List<SavedList> listsWithJobs = savedListService.findListsAssociatedWithJobs();
-
-        //Extract their distinct ids
-        String[] jobIds = listsWithJobs.stream()
-            .filter(sl -> sl.getSfJobOpp() != null)
-            .map(sl -> sl.getSfJobOpp().getSfId())
-            .distinct()
-            .toArray(String[]::new);
-        candidateOpportunityService.loadCandidateOpportunities(jobIds);
-    }
+  // This method was written for the initial migration of opps from SF to the TC. It may have some
+  // future utility so is only commented out for the time being, but it should only be used again
+  // advisedly and probably with some modification for the current purpose.
+//    @GetMapping("load_candidate_ops")
+//    public void loadCandidateOpportunities() {
+//        //Get all job opps known to TC
+//        List<SavedList> listsWithJobs = savedListService.findListsAssociatedWithJobs();
+//
+//        //Extract their distinct ids
+//        String[] jobIds = listsWithJobs.stream()
+//            .filter(sl -> sl.getSfJobOpp() != null)
+//            .map(sl -> sl.getSfJobOpp().getSfId())
+//            .distinct()
+//            .toArray(String[]::new);
+//        candidateOpportunityService.loadCandidateOpportunities(jobIds);
+//    }
 
     @GetMapping("sf-sync-open-jobs")
     public String sfSyncOpenJobs() {
