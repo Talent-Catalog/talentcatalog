@@ -27,4 +27,5 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "logbuilder")
 public class LogBuilderProperties {
   private boolean includeCpuUtilization;
+  private boolean includeMemoryUtilization;
 }

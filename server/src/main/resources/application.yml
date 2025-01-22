@@ -33,6 +33,7 @@ logging:
 logbuilder:
   # Set to true to enable cpu utilisation logging
   includeCpuUtilization: true
+  includeMemoryUtilization: true
 
 spring:
   autoconfigure:
