@@ -442,6 +442,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     return this.authorizationService.canAccessSalesforce();
   }
 
+  canAccessGoogleDrive(): boolean {
+    return this.authorizationService.canAccessGoogleDrive();
+  }
+
   createTailoredCv() {
     const createTailoredCvModal = this.modalService.open(TailoredCvComponent, {
       centered: true,
