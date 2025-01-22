@@ -16,15 +16,15 @@
 
 package org.tctalent.server.logging;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.annotation.Configuration;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-@Configuration
-public class LogBuilderConfig {
-
-  public LogBuilderConfig(ObjectProvider<SystemMetricsImpl> systemMetricsProvider,
-      LogBuilderProperties logBuilderProperties) {
-    LogBuilder.setSystemMetricsProvider(systemMetricsProvider);
-    LogBuilder.setLogCpu(logBuilderProperties.isIncludeCpuUtilization());
-  }
+@Getter
+@Setter
+@Component
+@ConfigurationProperties(prefix = "logbuilder")
+public class LogBuilderProperties {
+  private boolean includeCpuUtilization;
 }

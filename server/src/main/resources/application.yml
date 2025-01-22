@@ -30,6 +30,10 @@ logging:
             #See https://stackoverflow.com/questions/60001034/how-to-remove-spring-data-customconversions-warnings-from-application-startup
             CustomConversions: ERROR
 
+logbuilder:
+  # Set to true to enable cpu utilisation logging
+  includeCpuUtilization: true
+
 spring:
   autoconfigure:
     exclude:

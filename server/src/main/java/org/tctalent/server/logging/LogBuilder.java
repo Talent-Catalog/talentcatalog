@@ -54,6 +54,7 @@ import org.tctalent.server.model.db.User;
 public class LogBuilder {
 
   private static ObjectProvider<SystemMetricsImpl> systemMetricsProvider;
+  private static boolean logCpu;
 
   private final Logger logger;
   private final Map<LogField, String> logFields;
@@ -70,7 +71,12 @@ public class LogBuilder {
 
   // Static method to set the SystemMetrics provider for all LogBuilder instances
   public static void setSystemMetricsProvider(ObjectProvider<SystemMetricsImpl> provider) {
-    systemMetricsProvider = provider;
+    LogBuilder.systemMetricsProvider = provider;
+  }
+
+  // Static method to set the logCpu flag for all LogBuilder instances
+  public static void setLogCpu(boolean logCpu) {
+    LogBuilder.logCpu = logCpu;
   }
 
   /**
@@ -263,8 +269,10 @@ public class LogBuilder {
     if (systemMetricsProvider != null) {
       SystemMetricsImpl systemMetrics = systemMetricsProvider.getIfAvailable();
       if (systemMetrics != null) {
-        String cpuUsage = systemMetrics.getCpuUtilization();
-        logFields.put(LogField.CPU_UTILIZATION, cpuUsage);
+        if (logCpu) {
+          String cpuUsage = systemMetrics.getCpuUtilization();
+          logFields.put(LogField.CPU_UTILIZATION, cpuUsage);
+        }
       }
     }
 
