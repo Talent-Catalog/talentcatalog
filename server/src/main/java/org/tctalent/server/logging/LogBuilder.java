@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.tctalent.server.model.db.User;
 
 /**
@@ -50,6 +52,9 @@ import org.tctalent.server.model.db.User;
  * @author sadatmalik
  */
 public class LogBuilder {
+
+  private static ObjectProvider<SystemMetricsImpl> systemMetricsProvider;
+
   private final Logger logger;
   private final Map<LogField, String> logFields;
 
@@ -61,6 +66,11 @@ public class LogBuilder {
   private LogBuilder(Logger logger) {
     this.logger = logger;
     this.logFields = new EnumMap<>(LogField.class);
+  }
+
+  // Static method to set the SystemMetrics provider for all LogBuilder instances
+  public static void setSystemMetricsProvider(ObjectProvider<SystemMetricsImpl> provider) {
+    systemMetricsProvider = provider;
   }
 
   /**
@@ -249,6 +259,15 @@ public class LogBuilder {
    * @return the constructed log message
    */
   private String buildLogMessage() {
+
+    if (systemMetricsProvider != null) {
+      SystemMetricsImpl systemMetrics = systemMetricsProvider.getIfAvailable();
+      if (systemMetrics != null) {
+        String cpuUsage = systemMetrics.getCpuUtilization();
+        logFields.put(LogField.CPU_UTILIZATION, cpuUsage);
+      }
+    }
+
     return logFields.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
         .sorted(Map.Entry.comparingByKey(Comparator.comparingInt(LogField::getSortOrder)))
