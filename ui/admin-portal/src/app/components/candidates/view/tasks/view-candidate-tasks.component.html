@@ -26,10 +26,17 @@
     <span [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">Candidate Tasks: Ongoing</span>
     <div class="d-flex flex-fill justify-content-between align-items-center">
       <span class="small font-italic">Comment?</span>
-      <div *ngIf="editable">
-        <button class="btn btn-primary btn-sm" (click)="assignTask()">
-          <i class="fas fa-plus"></i> Assign task
-        </button>
+      <div class="d-flex">
+        <div *ngIf="editable" class="mx-2">
+          <button class="btn btn-primary btn-sm" (click)="assignDuolingoCouponTask()">
+             Send Duolingo coupon
+          </button>
+        </div>
+        <div *ngIf="editable">
+          <button class="btn btn-primary btn-sm" (click)="assignTask()">
+            <i class="fas fa-plus"></i> Assign task
+          </button>
+        </div>
       </div>
     </div>
   </div>

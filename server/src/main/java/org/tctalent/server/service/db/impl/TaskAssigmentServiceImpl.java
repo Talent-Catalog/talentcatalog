@@ -24,6 +24,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.request.task.TaskListRequest;
 import org.tctalent.server.service.db.CandidateAttachmentService;
+import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.TaskService;
 
@@ -55,14 +56,17 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
+    private final DuolingoCouponService couponService;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
         TaskAssignmentRepository taskAssignmentRepository,
-        TaskService taskService) {
+        TaskService taskService,
+        DuolingoCouponService couponService) {
         this.candidateAttachmentService = candidateAttachmentService;
         this.taskAssignmentRepository = taskAssignmentRepository;
         this.taskService = taskService;
+        this.couponService = couponService;
     }
 
     @Override
@@ -84,6 +88,9 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
 
             default:
                 taskAssignment = new TaskAssignmentImpl();
+                if (task.getName().equals("duolingoTest")) {
+                    couponService.assignCouponToCandidate(candidate.getId());
+                }
                 break;
         }
 
