@@ -16,6 +16,12 @@
 
 package org.tctalent.server.logging;
 
+/**
+ * Provides methods to retrieve formatted system metrics such as available metrics,
+ * CPU utilisation, and memory utilisation.
+ *
+ * @author sadatmalik
+ */
 public interface SystemMetrics {
 
   String getAvailableMetrics();

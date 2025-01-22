@@ -21,6 +21,11 @@ import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configures system metrics to be collected and registered with the {@link MeterRegistry}.
+ *
+ * @author sadatmalik
+ */
 @Configuration
 public class MetricsConfig {
 

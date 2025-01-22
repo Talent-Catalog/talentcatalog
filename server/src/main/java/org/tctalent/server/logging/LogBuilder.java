@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.tctalent.server.model.db.User;
 
 /**
@@ -48,6 +47,20 @@ import org.tctalent.server.model.db.User;
  * <p>
  * In this example, a log message is constructed with the user ID, job ID, action, and a custom
  * message, and then logged at the INFO level using SLF4J.
+ *
+ * <p>
+ * This class also integrates with system metrics to optionally include CPU and memory utilisation
+ * in log messages. These metrics are configurable using the following properties:
+ * <ul>
+ *   <li>{@code logbuilder.includeCpuUtilisation}: When enabled, includes CPU utilisation in the
+ *   log messages.</li>
+ *   <li>{@code logbuilder.includeMemoryUtilization}: When enabled, includes memory utilisation in
+ *   the log messages.</li>
+ * </ul>
+ *
+ * If {@code logCpu} or {@code logMemory} is enabled, the log message may also include system metrics:
+ * <p>
+ * // cpu: 50.00% | mem: 25.00% | uid: 12345 | jid: 200 | action: CreateJob | msg: Creating a new job entry
  *
  * @author sadatmalik
  */
@@ -265,8 +278,15 @@ public class LogBuilder {
   }
 
   /**
-   * Constructs the log message by sorting the log fields based on their sort order
-   * and concatenating them into a single string.
+   * Constructs the log message by populating the log fields with CPU and memory utilization
+   * metrics (if enabled) and sorting them based on their sort order. The log fields are then
+   * concatenated into a single string with each key-value pair separated by a delimiter.
+   * <p>
+   * If the {@code systemMetricsProvider} is available, the method retrieves the system metrics
+   * (CPU and memory utilization) and includes them in the log message if the corresponding flags
+   * {@code logCpu} or {@code logMemory} are enabled.
+   * <p>
+   * Log fields with null values are excluded from the final log message.
    *
    * @return the constructed log message
    */

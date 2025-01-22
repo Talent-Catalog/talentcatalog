@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
  * The following are the available log fields:
  *
  * <ul>
+ *     <li>CPU_UTILIZATION - CPU Utilization field</li>
+ *     <li>MEMORY_UTILIZATION - Memory Utilization field</li>
  *     <li>USER_ID - User ID field</li>
  *     <li>CANDIDATE_ID - Candidate ID field</li>
  *     <li>JOB_ID - Job ID field</li>

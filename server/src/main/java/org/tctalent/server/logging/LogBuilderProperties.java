@@ -21,6 +21,13 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * Configuration properties for the {@code LogBuilder}.
+ * <p>
+ * These properties control whether CPU and memory utilisation metrics are included in log messages.
+ *
+ * @author sadatmalik
+ */
 @Getter
 @Setter
 @Component

@@ -23,6 +23,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation of {@link SystemMetrics} providing method implementations to retrieve formatted
+ * system metrics such as CPU utilisation, memory utilisation, and available metrics using the
+ * {@link MeterRegistry}.
+ *
+ * @author sadatmalik
+ */
 @Component
 public class SystemMetricsImpl implements SystemMetrics {
   private final MeterRegistry meterRegistry;
@@ -82,7 +89,7 @@ public class SystemMetricsImpl implements SystemMetrics {
     } catch (Exception e) {
       System.err.println("Error fetching memory utilization: " + e.getMessage());
     }
-    return lastCpuValue.get(); // Return last valid value if no metric or an error occurs
+    return lastMemValue.get(); // Return last valid value if no metric or an error occurs
   }
 
 }

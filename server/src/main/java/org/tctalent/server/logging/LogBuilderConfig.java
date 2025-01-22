@@ -19,6 +19,13 @@ package org.tctalent.server.logging;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class for the {@code LogBuilder}.
+ * <p>
+ * The configuration properties are sourced from {@link LogBuilderProperties}.
+ *
+ * @author sadatmalik
+ */
 @Configuration
 public class LogBuilderConfig {
 
