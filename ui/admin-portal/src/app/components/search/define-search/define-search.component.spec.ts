@@ -35,18 +35,29 @@ import {
   DateRangePickerComponent
 } from "../../util/form/date-range-picker/date-range-picker.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
-describe('DefineSearchComponent', () => {
+fdescribe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
   let fixture: ComponentFixture<DefineSearchComponent>;
   let searchQueryServiceSpy: jasmine.SpyObj<SearchQueryService>;
   let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
   let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
+  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
 
   beforeEach(waitForAsync(() => {
     const searchQuerySpy = jasmine.createSpyObj('SearchQueryService', ['changeSearchQuery']);
     const savedSearchSpy = jasmine.createSpyObj('SavedSearchService', ['getSavedSearchTypeInfos','load']);
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser','isSourcePartner', 'isDefaultPartner']);
+    const authenticationSpy = jasmine.createSpyObj('AuthenticationService',
+      ['getLoggedInUser']);
+    const authorizationSpy =
+      jasmine.createSpyObj<AuthorizationService>('AuthorizationService', [
+        'isSourcePartner',
+        'isDefaultPartner',
+        'canViewCandidateName',
+        'isEmployerPartner',
+        'canEditCandidateSource'
+    ]);
 
     TestBed.configureTestingModule({
       declarations: [DefineSearchComponent,LanguageLevelFormControlComponent,JoinSavedSearchComponent,DateRangePickerComponent],
@@ -55,8 +66,9 @@ describe('DefineSearchComponent', () => {
         UntypedFormBuilder,
         NgbModal,
         { provide: SearchQueryService, useValue: searchQuerySpy },
-        { provide: AuthenticationService, useValue: authSpy },
-        { provide: SavedSearchService, useValue: savedSearchSpy }
+        { provide: AuthenticationService, useValue: authenticationSpy },
+        { provide: SavedSearchService, useValue: savedSearchSpy },
+        { provide: AuthorizationService, useValue: authorizationSpy }
       ]
     }).compileComponents();
   }));
@@ -67,6 +79,7 @@ describe('DefineSearchComponent', () => {
     searchQueryServiceSpy = TestBed.inject(SearchQueryService) as jasmine.SpyObj<SearchQueryService>;
     authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
     savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;
+    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
     fixture.detectChanges();
   });
 
@@ -105,5 +118,26 @@ describe('DefineSearchComponent', () => {
     expect(component.selectedBaseJoin).toBeNull();
   });
 
+  it('should call isEmployerPartner() method', () => {
+    expect(authorizationServiceSpy.isEmployerPartner).toHaveBeenCalled();
+  })
+
+  it('should call isSourcePartner() method', () => {
+    expect(authorizationServiceSpy.isSourcePartner).toHaveBeenCalled();
+  })
+
+  it('should hide the UNHCR status filter if isEmployerPartner returns true', () => {
+    authorizationServiceSpy.isEmployerPartner.and.returnValue(true);
+    fixture.detectChanges();
+    const unhcrFilter = fixture.nativeElement.querySelector('#unhcrStatusFilter');
+    expect(unhcrFilter).toBeNull();
+  })
+
+  it('should show the referrer filter if isEmployerPartner returns false', () => {
+    authorizationServiceSpy.isEmployerPartner.and.returnValue(false);
+    fixture.detectChanges();
+    const referrerFilter = fixture.nativeElement.querySelector('#referrerFilter');
+    expect(referrerFilter).toBeTruthy();
+  })
 });
 
