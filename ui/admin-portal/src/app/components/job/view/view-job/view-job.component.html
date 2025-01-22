@@ -106,7 +106,10 @@
 
         <!-- SEARCHES -->
         <ng-container ngbNavItem="Searches">
-          <a ngbNavLink>Suggested search(es)</a>
+          <a ngbNavLink
+             ngbTooltip="Create a search to help partners find suitable candidates">
+            Suggested search(es)
+          </a>
           <ng-template ngbNavContent>
             <app-job-suggested-searches-tab
               [job]="job"
