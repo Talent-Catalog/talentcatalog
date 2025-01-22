@@ -52,6 +52,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum LogField {
 
+  CPU_UTILIZATION("cpu", 99),
   USER_ID("uid", 100),
   CANDIDATE_ID("cid", 101),
   JOB_ID("jid", 102),
