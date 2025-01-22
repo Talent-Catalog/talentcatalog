@@ -26,5 +26,6 @@ public class LogBuilderConfig {
       LogBuilderProperties logBuilderProperties) {
     LogBuilder.setSystemMetricsProvider(systemMetricsProvider);
     LogBuilder.setLogCpu(logBuilderProperties.isIncludeCpuUtilization());
+    LogBuilder.setLogMemory(logBuilderProperties.isIncludeMemoryUtilization());
   }
 }

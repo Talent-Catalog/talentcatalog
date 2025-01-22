@@ -55,6 +55,7 @@ public class LogBuilder {
 
   private static ObjectProvider<SystemMetricsImpl> systemMetricsProvider;
   private static boolean logCpu;
+  private static boolean logMemory;
 
   private final Logger logger;
   private final Map<LogField, String> logFields;
@@ -77,6 +78,11 @@ public class LogBuilder {
   // Static method to set the logCpu flag for all LogBuilder instances
   public static void setLogCpu(boolean logCpu) {
     LogBuilder.logCpu = logCpu;
+  }
+
+  // Static method to set the logMemory flag for all LogBuilder instances
+  public static void setLogMemory(boolean logMemory) {
+    LogBuilder.logMemory = logMemory;
   }
 
   /**
@@ -272,6 +278,10 @@ public class LogBuilder {
         if (logCpu) {
           String cpuUsage = systemMetrics.getCpuUtilization();
           logFields.put(LogField.CPU_UTILIZATION, cpuUsage);
+        }
+        if (logMemory) {
+          String memoryUsage = systemMetrics.getMemoryUtilization();
+          logFields.put(LogField.MEMORY_UTILIZATION, memoryUsage);
         }
       }
     }

@@ -74,7 +74,7 @@ public class SystemMetricsImpl implements SystemMetrics {
       double maxMemory = maxMemoryGauge.value();
 
       if (!Double.isNaN(usedMemory) && !Double.isNaN(maxMemory) && maxMemory > 0) {
-        double memoryUtilization = (usedMemory / maxMemory) * 100;
+        double memoryUtilization = Math.min((usedMemory / maxMemory) * 100, 100);
         String formattedValue = String.format("%.2f%%", memoryUtilization);
         lastMemValue.set(formattedValue);
         return formattedValue;
