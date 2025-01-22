@@ -31,7 +31,7 @@ class LogBuilderPropertiesTest {
   void shouldBindIncludeCpuUtilizationProperty() {
     // Define properties for testing
     Map<String, String> properties = Map.of(
-        "logbuilder.include-cpu-utilization", "true"
+        "logbuilder.includeCpuUtilization", "true"
     );
     MapConfigurationPropertySource propertySource = new MapConfigurationPropertySource(properties);
     Binder binder = new Binder(propertySource);
