@@ -100,12 +100,36 @@ class SystemMetricsImplTest {
 
   @Test
   void testGetMemoryUtilization() {
-    // Fetch memory utilization
+    // Arrange: Register memory metrics
+    Gauge.builder("jvm.memory.used", () -> 512.0).register(meterRegistry); // 512 MB used
+    Gauge.builder("jvm.memory.max", () -> 1024.0).register(meterRegistry); // 1024 MB max
+
+    // Act: Fetch memory utilization
     String memoryUtilization = systemMetrics.getMemoryUtilization();
 
-    // todo update this test when memory metrics are added
+    // Assert: Verify memory utilization is correctly calculated
+    assertEquals("50.00%", memoryUtilization, "Memory utilization should be 50.00% for 512/1024 MB");
+  }
 
-    // Verify default implementation returns "N/A"
-    assertEquals("N/A", memoryUtilization, "Memory utilization should default to 'N/A'");
+  @Test
+  void testGetMemoryUtilizationHandlesNaN() {
+    // Arrange: Register memory metrics with NaN values
+    Gauge.builder("jvm.memory.used", () -> Double.NaN).register(meterRegistry);
+    Gauge.builder("jvm.memory.max", () -> Double.NaN).register(meterRegistry);
+
+    // Act: Fetch memory utilization
+    String memoryUtilization = systemMetrics.getMemoryUtilization();
+
+    // Assert: Verify it returns "N/A" for NaN values
+    assertEquals("N/A", memoryUtilization, "Memory utilization should return 'N/A' when metrics are NaN");
+  }
+
+  @Test
+  void testGetMemoryUtilizationHandlesMissingMetrics() {
+    // Act: Fetch memory utilization without registering metrics
+    String memoryUtilization = systemMetrics.getMemoryUtilization();
+
+    // Assert: Verify it returns "N/A" when metrics are missing
+    assertEquals("N/A", memoryUtilization, "Memory utilization should return 'N/A' when metrics are missing");
   }
 }
