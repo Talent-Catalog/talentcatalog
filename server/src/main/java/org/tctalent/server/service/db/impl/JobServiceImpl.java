@@ -28,6 +28,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,10 +41,12 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -1149,6 +1152,22 @@ public class JobServiceImpl implements JobService {
         return salesforceJobOppRepository.save(job);
     }
 
+    /**
+     * Fetches all open SF Jobs on the TC DB and supplies them to
+     * {@link SalesforceJobOppService#updateJobs(Collection)} where they are combined with open jobs
+     * from SF whose stage has recently changed (click method link for further details). The
+     * resulting collection is used to update the TC opps with values from their SF equivalents.
+     *
+     * <p>While that would seem to favour changes made on SF, that is not the outcome: because the
+     * TC updates SF opps in real-time, in most cases the overwrites here are redundant, except when
+     * SF data has diverged because a user made changes to an opp on SF instead of the TC. That is
+     * not the preferred user behaviour, but until safeguards are put in place, this scheduled
+     * update (daily at 1am GMT) keeps TC data as accurate as possible.
+     */
+    @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
+    @SchedulerLock(name = "JobService_updateOpenJobs", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+    @Async
+    @Override
     public void updateOpenJobs() {
         try {
             //Find all open Salesforce jobs
