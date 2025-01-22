@@ -32,8 +32,8 @@ logging:
 
 logbuilder:
   # Set to true to enable cpu utilisation logging
-  includeCpuUtilization: true
-  includeMemoryUtilization: true
+  includeCpuUtilization: ${LOGBUILDER_INCLUDE_CPU_UTILIZATION:true}
+  includeMemoryUtilization: ${LOGBUILDER_INCLUDE_MEM_UTILIZATION:true}
 
 spring:
   autoconfigure:
