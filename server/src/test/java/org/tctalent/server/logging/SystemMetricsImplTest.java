@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.core.instrument.search.RequiredSearch;
@@ -104,10 +103,10 @@ class SystemMetricsImplTest {
     Gauge.builder("jvm.memory.used", () -> 512.0).register(meterRegistry); // 512 MB used
     Gauge.builder("jvm.memory.max", () -> 1024.0).register(meterRegistry); // 1024 MB max
 
-    // Act: Fetch memory utilization
+    // Fetch memory utilization
     String memoryUtilization = systemMetrics.getMemoryUtilization();
 
-    // Assert: Verify memory utilization is correctly calculated
+    // Verify memory utilization is correctly calculated
     assertEquals("50.00%", memoryUtilization, "Memory utilization should be 50.00% for 512/1024 MB");
   }
 
@@ -117,19 +116,19 @@ class SystemMetricsImplTest {
     Gauge.builder("jvm.memory.used", () -> Double.NaN).register(meterRegistry);
     Gauge.builder("jvm.memory.max", () -> Double.NaN).register(meterRegistry);
 
-    // Act: Fetch memory utilization
+    // Fetch memory utilization
     String memoryUtilization = systemMetrics.getMemoryUtilization();
 
-    // Assert: Verify it returns "N/A" for NaN values
+    // Verify it returns "N/A" for NaN values
     assertEquals("N/A", memoryUtilization, "Memory utilization should return 'N/A' when metrics are NaN");
   }
 
   @Test
   void testGetMemoryUtilizationHandlesMissingMetrics() {
-    // Act: Fetch memory utilization without registering metrics
+    // Fetch memory utilization without registering metrics
     String memoryUtilization = systemMetrics.getMemoryUtilization();
 
-    // Assert: Verify it returns "N/A" when metrics are missing
+    // Verify it returns "N/A" when metrics are missing
     assertEquals("N/A", memoryUtilization, "Memory utilization should return 'N/A' when metrics are missing");
   }
 }
