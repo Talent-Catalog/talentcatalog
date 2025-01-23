@@ -24,6 +24,7 @@ import {
 } from "../../../services/task-assignment.service";
 import {TaskAssignment} from "../../../model/task-assignment";
 import {Task} from "../../../model/task";
+import {DuolingoCouponService} from "../../../services/duolingo-coupon.service";
 
 @Component({
   selector: 'app-assign-tasks-candidate',
@@ -43,6 +44,7 @@ export class AssignTasksCandidateComponent implements OnInit {
               private fb: UntypedFormBuilder,
               private modalService: NgbModal,
               private taskService: TaskService,
+              private duolingoCouponService: DuolingoCouponService,
               private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
@@ -94,6 +96,23 @@ export class AssignTasksCandidateComponent implements OnInit {
       dueDate: this.assignForm.value.dueDate
     }
 
+    if(task.name === 'duolingoTest') {
+      this.duolingoCouponService.assignCouponToCandidate(this.candidateId).subscribe(
+        () => {
+          this.taskAssignment(request);
+        },
+        error => {
+          this.error = error;
+          this.saving = false;
+        }
+      );
+    } else {
+      this.taskAssignment(request);
+    }
+
+  }
+
+  taskAssignment(request: CreateTaskAssignmentRequest) {
     this.taskAssignmentService.createTaskAssignment(request).subscribe(
       (taskAssignment: TaskAssignment) => {
           this.activeModal.close(taskAssignment);

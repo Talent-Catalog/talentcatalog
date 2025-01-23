@@ -23,6 +23,7 @@ import {TaskService} from "../../../services/task.service";
 import {TaskAssignmentService, TaskListRequest} from "../../../services/task-assignment.service";
 import {Task} from "../../../model/task";
 import {SavedListService} from "../../../services/saved-list.service";
+import {DuolingoCouponService} from "../../../services/duolingo-coupon.service";
 
 @Component({
   selector: 'app-assign-tasks-list',
@@ -43,6 +44,7 @@ export class AssignTasksListComponent implements OnInit {
               private modalService: NgbModal,
               private savedListService: SavedListService,
               private taskService: TaskService,
+              private duolingoCouponService: DuolingoCouponService,
               private taskAssignmentService: TaskAssignmentService) { }
 
   ngOnInit(): void {
@@ -112,6 +114,22 @@ export class AssignTasksListComponent implements OnInit {
       savedListId: this.savedList.id,
       taskId: task.id,
     }
+    if(task.name === 'duolingoTest') {
+      this.duolingoCouponService.assignCouponToList(this.savedList.id).subscribe(
+        () => {
+          this.taskAssignment(request)
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        }
+      )
+    } else {
+      this.taskAssignment(request);
+    }
+  }
+
+  taskAssignment(request: TaskListRequest) {
     this.taskAssignmentService.assignTaskToList(request).subscribe(
       () => {
         this.refreshTaskAssociations();

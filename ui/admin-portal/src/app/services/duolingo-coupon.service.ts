@@ -66,4 +66,12 @@ export class DuolingoCouponService {
     return this.http.get<DuolingoCouponResponse>(`${this.apiBaseUrl}/find/${couponCode}`);
   }
 
+  /**
+   * Assign coupons to a list of candidates
+   * @param listId - Id of the list to assign coupons to
+   */
+  assignCouponToList(listId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiBaseUrl}/assign-to-list`, listId);
+  }
+
 }

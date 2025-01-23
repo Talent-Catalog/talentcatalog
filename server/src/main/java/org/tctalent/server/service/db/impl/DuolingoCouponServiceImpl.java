@@ -40,6 +40,8 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.response.DuolingoCouponResponse;
@@ -171,6 +173,28 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
     return couponRepository.findByCouponCode(couponCode)
         .map(DuolingoCoupon::getCandidate)
         .orElse(null);
+  }
+
+  @Override
+  @Transactional
+  public void assignCouponsToList(SavedList list) throws NoSuchObjectException {
+    Set<Candidate> candidates = list.getCandidates();
+
+    // Find if there is available coupons
+    List<DuolingoCoupon> availableCoupons = getAvailableCoupons();
+
+    if (availableCoupons.isEmpty() || candidates.size() > availableCoupons.size()) {
+      // Throw exception if no coupon are available, or if there are more candidates than coupons
+      throw new NoSuchObjectException("No available coupons for list ID " + list.getId());
+    }
+
+    for (Candidate candidate : candidates) {
+      //Assign coupon to candidate if they do not have one
+      List<DuolingoCoupon> coupons = couponRepository.findAllByCandidateId(candidate.getId());
+      if (coupons.isEmpty()) {
+        assignCouponToCandidate(candidate.getId());
+      }
+    }
   }
   // Utility Methods
 

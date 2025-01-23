@@ -16,6 +16,7 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,9 +34,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.DuolingoCoupon;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
+import org.tctalent.server.request.task.TaskListRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.service.db.DuolingoCouponService;
+import org.tctalent.server.service.db.SavedListService;
 
 @RestController
 @RequestMapping("/api/admin/coupon")
@@ -43,10 +47,13 @@ import org.tctalent.server.service.db.DuolingoCouponService;
 public class DuolingoCouponAdminApi {
 
   private final DuolingoCouponService couponService;
+  private final SavedListService savedListService;
 
   @Autowired
-  public DuolingoCouponAdminApi(DuolingoCouponService couponService) {
+  public DuolingoCouponAdminApi(DuolingoCouponService couponService,
+      SavedListService savedListService) {
     this.couponService = couponService;
+    this.savedListService = savedListService;
   }
 
   // Endpoint to import coupons from CSV data
@@ -118,5 +125,13 @@ public class DuolingoCouponAdminApi {
     );
   }
 
+  // Endpoint to assign available coupons to a saved list candidate
+  @PostMapping("assign-to-list")
+  public void assignCouponToList(@Valid @RequestBody Long listId) {
+
+    SavedList savedList = savedListService.get(listId);
+
+    couponService.assignCouponsToList(savedList);
+  }
 
 }

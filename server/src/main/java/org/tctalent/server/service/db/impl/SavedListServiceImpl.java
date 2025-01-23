@@ -91,7 +91,6 @@ import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DocPublisherService;
-import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.ExportColumnsService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.PublicIDService;
@@ -130,7 +129,6 @@ public class SavedListServiceImpl implements SavedListService {
     private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final DuolingoCouponService couponService;
 
     private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
 
@@ -146,8 +144,7 @@ public class SavedListServiceImpl implements SavedListService {
         SalesforceService salesforceService,
         SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
         UserRepository userRepository,
-        UserService userService,
-        DuolingoCouponService couponService) {
+        UserService userService) {
         this.candidateRepository = candidateRepository;
         this.candidateSavedListRepository = candidateSavedListRepository;
         this.candidateOpportunityService = candidateOpportunityService;
@@ -162,7 +159,6 @@ public class SavedListServiceImpl implements SavedListService {
         this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
         this.userService = userService;
-        this.couponService = couponService;
     }
 
     @Override
@@ -752,14 +748,6 @@ public class SavedListServiceImpl implements SavedListService {
 
         //Now assign tasks to candidates in list (if they do not already have the task actively assigned)
         Set<Candidate> candidates = list.getCandidates();
-        if (task.getName().equals("duolingoTest")) {
-            List<DuolingoCoupon> availableCoupons = couponService.getAvailableCoupons();
-            if (candidates.size() > availableCoupons.size()) {
-                throw new NoSuchObjectException(
-                    availableCoupons.size() + " coupons available, but you need "
-                        + candidates.size() + " coupons for your candidates list.");
-            }
-        }
         for (Candidate candidate : candidates) {
             //Assign task if candidate does not already have this task active
             Set<? extends Task> activeCandidateTasks = findActiveCandidateTasks(candidate);

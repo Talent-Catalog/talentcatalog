@@ -15,7 +15,6 @@
  */
 
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import * as moment from 'moment';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -35,6 +34,7 @@ import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
 import {TaskService} from 'src/app/services/task.service';
+import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -58,6 +58,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
               private candidateAttachmentService: CandidateAttachmentService,
               private taskAssignmentService: TaskAssignmentService,
               private taskService: TaskService,
+              private duolingoCouponService: DuolingoCouponService,
               private modalService: NgbModal) { }
 
   ngOnInit(): void {
@@ -106,34 +107,40 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   }
 
   assignDuolingoCouponTask() {
-    this.taskService.listTasks().subscribe(
-      tasks => {
-        const duolingoTaskId = tasks.find(task => task.name === 'duolingoTest')?.id;
+    this.duolingoCouponService.assignCouponToCandidate(this.candidate.id).subscribe(
+      () => {
+        this.taskService.listTasks().subscribe(
+          tasks => {
+            const duolingoTaskId = tasks.find(task => task.name === 'duolingoTest')?.id;
 
-        if (!duolingoTaskId) {
-          this.error = 'Duolingo English Test task not found';
-          return;
-        }
+            if (!duolingoTaskId) {
+              this.error = 'Duolingo English Test task not found';
+              return;
+            }
 
-        const request: CreateTaskAssignmentRequest = {
-          candidateId: this.candidate.id,
-          taskId: duolingoTaskId,
-          dueDate: moment().add(2, 'weeks').toDate()
-        }
+            const request: CreateTaskAssignmentRequest = {
+              candidateId: this.candidate.id,
+              taskId: duolingoTaskId,
+            }
 
-        this.taskAssignmentService.createTaskAssignment(request).subscribe(
-          (taskAssignment: TaskAssignment) => {
-            this.candidateService.updateCandidate();
+            this.taskAssignmentService.createTaskAssignment(request).subscribe(
+              (taskAssignment: TaskAssignment) => {
+                this.candidateService.updateCandidate();
+              },
+              error => {
+                this.error = error;
+              }
+            )
           },
           error => {
             this.error = error;
           }
-        )
+        );
       },
       error => {
         this.error = error;
       }
-    )
+    );
   }
 
   editTaskAssignment(ta: TaskAssignment) {
