@@ -54,7 +54,6 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSavedList;
-import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
