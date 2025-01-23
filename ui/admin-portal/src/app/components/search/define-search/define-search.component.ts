@@ -923,5 +923,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return this.authorizationService.canViewCandidateName();
   }
 
+  public isEmployerPartner() {
+    return this.authorizationService.isEmployerPartner();
+  }
+
   public readonly CandidateSourceType = CandidateSourceType;
 }

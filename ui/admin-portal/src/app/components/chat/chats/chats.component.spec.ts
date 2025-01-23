@@ -32,8 +32,8 @@ describe('ChatsComponent', () => {
   const mockJobChat = new MockJobChat();
   beforeEach(async () => {
     const chatServiceSpy = jasmine.createSpyObj('ChatService',
-      ['getChatInfoParticipantsKey','getChatInfoPurposeKey','getJobChatUserInfo',
-        'getChatIsRead$']);
+      ['getChatHeadingKey', 'getChatInfoParticipantsKey','getChatInfoPurposeKey',
+        'getJobChatUserInfo', 'getChatIsRead$']);
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsComponent,ViewChatComponent,ChatReadStatusComponent ],

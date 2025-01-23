@@ -19,7 +19,7 @@
   <div class="card-header d-flex justify-content-between align-items-center">
     <span>Suggested searches</span>
     <div *ngIf="editable" [ngClass]="{'alert alert-danger mb-0': highlightSearches()}">
-      <button title="Create a new suggested search"  class="btn btn-sm btn-primary"
+      <button ngbTooltip="Create new suggested search"  class="btn btn-sm btn-primary"
               (click)="addSearch()">
         <i class="fas fa-plus"></i> Search
       </button>
@@ -33,13 +33,16 @@
 
     <div>
       <p>
+        Use this tab to create search(es) that help partners know what is required for this opportunity.
+      </p>
+      <p>
         Created searches will always include the exclusion list associated with this job.
         You can change the search to remove the exclusion list if you don't want it.
       </p>
       <p>
         If you find candidates of interest, copy them into the submission list.
         <ng-container *ngIf="job.submissionList">
-          (<a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>).
+          (<a [routerLink]="['/list',job.submissionList.id]">{{job.submissionList.name}}</a>)
         </ng-container>
       </p>
     </div>
@@ -53,7 +56,7 @@
     <div *ngIf="searches.length > 0">
       <p>
         Click on a search to run or change it.
-        If you change the search don't forget to click on Update Search.
+        If you change the search, don't forget to click on 'Update Search' at the top of the search menu.
       </p>
       <hr/>
 

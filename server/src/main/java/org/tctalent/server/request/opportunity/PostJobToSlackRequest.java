@@ -27,10 +27,4 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class PostJobToSlackRequest extends HasJobRelatedLinksImpl {
-
-  /**
-   * Name of job - normally taken from name of job's related Salesforce Employer job opportunity.
-   */
-  private String jobName;
-}
+public class PostJobToSlackRequest extends HasJobRelatedLinksImpl { }

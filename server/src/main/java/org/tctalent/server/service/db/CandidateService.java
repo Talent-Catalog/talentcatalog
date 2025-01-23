@@ -16,6 +16,9 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.persistence.PersistenceException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -23,9 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import jakarta.persistence.PersistenceException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -651,4 +651,19 @@ public interface CandidateService {
      * Again, annotated @Transactional to rollback incomplete confusing results.
      */
     void cleanUpResolvedDuplicates();
+
+    /**
+     * Compares the current and requested values of the relocated location fields (address, city, state, country) and
+     * if they differ creates a candidate note for audit purposes. This helps to know how recent and relevant this
+     * relocated data is. We can't pass in the full request object, as depending on which portal the update comes from
+     * it will have a different request object. So each request field is passed in individually.
+     * @param candidate the candidate whose relocated data we are check if it's changed
+     * @param requestRelocatedAddress the relocated address field that comes from the request
+     * @param requestRelocatedCity the relocated city field that comes from the request
+     * @param requestRelocatedState the relocated state field that comes from the request
+     * @param requestRelocatedCountryName the relocated country name field that comes from the request
+     */
+    void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
+                                                  @Nullable String requestRelocatedCity, @Nullable String requestRelocatedState,
+                                                  @Nullable String requestRelocatedCountryName);
 }

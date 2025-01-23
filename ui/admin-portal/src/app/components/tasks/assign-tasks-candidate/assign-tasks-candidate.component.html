@@ -41,7 +41,7 @@
       <div *ngIf="selectedTask">
         <div class="mb-3">
           <div>Description:
-            <span class="fw-light">{{selectedTask.description}}</span>
+            <span class="fw-light" [innerHtml]="selectedTask.description"></span>
           </div>
         </div>
         <div class="mb-3">
@@ -57,7 +57,7 @@
             <label class="form-check-label" for="customDate">Do you want to set a custom due date?</label>
             <input class="form-check-input" id="customDate" [formControlName]="'customDate'" type="checkbox">
           </div>
-          <div *ngIf="this.assignForm.value.customDate">
+          <div *ngIf="assignForm.controls.customDate.value">
               <app-date-picker id="dueDate" [control]="assignForm.controls.dueDate" [allowPast]="false"></app-date-picker>
           </div>
         </div>
