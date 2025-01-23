@@ -70,7 +70,7 @@ describe('CreateExternalLinkComponent', () => {
   it('should initialize form with required fields', () => {
     expect(component.form).toBeDefined();
     expect(component.form.get('savedListId')).toBeTruthy();
-    expect(component.form.get('tbbShortName')).toBeTruthy();
+    expect(component.form.get('tcShortName')).toBeTruthy();
   });
 
   it('should load saved lists on initialization', fakeAsync(() => {
@@ -92,12 +92,12 @@ describe('CreateExternalLinkComponent', () => {
     const savedListId = 1;
     const shortName = 'test-link';
 
-    component.form.patchValue({ savedListId, tbbShortName: shortName });
+    component.form.patchValue({ savedListId, tcShortName: shortName });
 
     component.onSave();
     tick(); // Waiting for async operation to complete
 
-    expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId, tbbShortName: shortName });
+    expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId, tcShortName: shortName });
     expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(link);
     expect(component.saving).toBeFalse();
   }));

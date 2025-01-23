@@ -139,7 +139,7 @@ describe('SearchExternalLinksComponent', () => {
       centered: true,
       backdrop: 'static'
     });
-    expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId: 1, tbbShortName: null });
+    expect(savedListServiceSpy.updateShortName).toHaveBeenCalledWith({ savedListId: 1, tcShortName: null });
   }));
 
 });

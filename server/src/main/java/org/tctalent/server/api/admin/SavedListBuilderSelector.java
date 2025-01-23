@@ -84,7 +84,7 @@ public class SavedListBuilderSelector {
                 .add("registeredJob")
                 .add("sfJobCountry")
                 .add("sfJobStage")
-                .add("tbbShortName")
+                .add("tcShortName")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

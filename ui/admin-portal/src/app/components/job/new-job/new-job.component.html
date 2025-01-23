@@ -37,14 +37,26 @@
   <div *ngIf="isEmployerPartner()">
     <div class="me-4">
       <h5>Job Name</h5>
-      <p>Enter a job name - describing the role. For example, "Full stack software engineer"</p>
+      <p>
+        Enter the role name - e.g. 'Full stack software engineer' - which will be prepended with
+        additional identifying information to give the full job name.
+      </p>
+      <p>
+        You can edit this later in the job's 'General' tab.
+      </p>
 
       <form [formGroup]="jobForm">
         <div>
-          <input #role type="text" class="form-control" placeholder="Role..." formControlName="role"
-                 id="role">
+          <input #role
+                 type="text"
+                 class="form-control"
+                 placeholder="Role..."
+                 formControlName="role"
+                 id="role"
+                 maxlength="50">
         </div>
       </form>
+      <small class="text-muted">{{remainingChars}} characters remaining</small>
     </div>
   </div>
 
@@ -65,7 +77,10 @@
     <h5>{{jobName}}</h5>
       <ng-container>
         <div *ngIf="jobName && progressPercent != 100" class="float-end">
-          <button type="button" class="btn btn-primary" (click)="doPreparation()">
+          <button type="button"
+                  class="btn btn-primary"
+                  (click)="doPreparation()"
+                  ngbTooltip="Initiates creation of a new job for which you will provide details.">
             Create New Job
           </button>
           <button type="button" class="btn btn-secondary ms-3" (click)="selectJobCopy()"

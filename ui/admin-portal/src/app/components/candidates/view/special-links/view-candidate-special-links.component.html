@@ -29,7 +29,8 @@
               (click)="createUpdateSalesforce()">
         <i class="fab fa-salesforce"></i> Create/update Salesforce
       </button>
-      <button *ngIf="!candidate.folderlink" class="btn btn-primary me-2"
+      <button *ngIf="!candidate.folderlink && canAccessGoogleDrive()"
+              class="btn btn-primary me-2"
               (click)="createCandidateFolder()">
         <i class="fab fa-google-drive"></i> Create Google Docs Folder
       </button>

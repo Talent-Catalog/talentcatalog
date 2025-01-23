@@ -14,8 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="chat" class="d-flex align-items-center">
+<div *ngIf="chat" class="d-flex align-items-center chat-details">
   <div class="me-2">
+    <h5>{{ chatHeadingKey | translate }}</h5>
     <p><span>{{"CHAT_INFO.LABEL.PARTICIPANTS" | translate}}:</span>
       {{chatParticipantsKey | translate}}
     </p>
