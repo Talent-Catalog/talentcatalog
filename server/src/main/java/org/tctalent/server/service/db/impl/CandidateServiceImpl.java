@@ -371,6 +371,8 @@ public class CandidateServiceImpl implements CandidateService {
         Page<Candidate> candidatesPage = candidateRepository.findAll(
                 new GetSavedListCandidatesQuery(savedList, request), request.getPageRequestWithoutSort());
 
+        // todo fetch the candidate answer fields (populateTransientFields method) for each candidate on the page
+
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
             .listId(savedList.getId())
@@ -1660,8 +1662,10 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-        return candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
+        Candidate candidate = candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
                 .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
+        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        return candidate;
     }
 
     @Override

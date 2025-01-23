@@ -183,6 +183,7 @@ public class SavedListCandidateAdminApi implements
                 .getSavedListCandidates(savedList, request);
 
         savedListService.setCandidateContext(savedListId, candidates);
+        // todo could do something here like setCandidateAnswers
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);
