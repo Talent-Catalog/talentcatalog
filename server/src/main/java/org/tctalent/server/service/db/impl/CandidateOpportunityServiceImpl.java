@@ -662,9 +662,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                         publishStageChangePosts(opp, newStage);
                     }
 
-                    // If new stage is relocated then set relocated address
-                    // todo what about stages above relocated if relocated gets skipped (e.g. settled)
-                    if (newStage.equals(CandidateOpportunityStage.relocated)) {
+                    // If new stage is relocated or above AND not closed or won, then set relocated address
+                    if (newStage.compareTo(CandidateOpportunityStage.relocated) >= 0 && (!newStage.isClosed() || newStage.isWon())) {
                         updateCandidateRelocatedCountry(opp);
                     }
                 }
