@@ -51,6 +51,7 @@ public class SystemMetricsImpl implements SystemMetrics {
     return availableMetrics;
   }
 
+  @Override
   public String getCpuUtilization() {
     try {
       RequiredSearch cpuStats = meterRegistry.get("system.cpu.usage");
