@@ -27,15 +27,9 @@ import org.tctalent.server.util.background.IdContext;
 public interface CandidateOppBackgroundProcessingService {
 
   /**
-   * Update all open Cases from their corresponding records on Salesforce.
-   */
-  void updateOpenCasesFromSf();
-
-  /**
    * TODO
-   * @param sfIds
    */
-  void initiateBackgroundCaseUpdate(List<String> sfIds);
+  void initiateBackgroundCaseUpdate();
 
   /**
    * TODO

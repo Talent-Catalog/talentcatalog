@@ -1047,12 +1047,14 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
 
         // SIMPLE FIELDS
-        tcOpp.setClosed(sfOpp.isClosed());
+        if (sfOpp.getNextStep() != null) {
+            tcOpp.setNextStep(sfOpp.getNextStep());
+        }
         tcOpp.setWon(sfOpp.isWon());
+        tcOpp.setClosed(sfOpp.isClosed());
+        tcOpp.setClosingComments(sfOpp.getClosingComments());
         tcOpp.setClosingCommentsForCandidate(sfOpp.getClosingCommentsForCandidate());
         tcOpp.setEmployerFeedback(sfOpp.getEmployerFeedback());
-        tcOpp.setName(sfOpp.getName());
-        tcOpp.setNextStep(sfOpp.getNextStep());
     }
 
     @Override
