@@ -76,7 +76,7 @@
       <td class="text-center"> {{ta.id}}</td>
       <td>{{ta.name}}</td>
       <td>{{ta.displayName}}</td>
-      <td>{{ta.description}}</td>
+      <td [innerHtml]="ta.description"></td>
       <td class="text-center">{{ta.optional}}</td>
       <td class="text-center">{{ta.taskType}}</td>
       <td class="text-center">{{ta.daysToComplete}}</td>

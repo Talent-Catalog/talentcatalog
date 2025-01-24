@@ -283,6 +283,13 @@ export class AuthorizationService {
   }
 
   /**
+   * Can they see and click on links to take them to candidate Google Drive folders
+   */
+  canAccessGoogleDrive(): boolean {
+    return this.isDefaultSourcePartner();
+  }
+
+  /**
    * True if the currently logged in user is permitted to change a candidate's status.
    */
   canUpdateCandidateStatus(): boolean {
@@ -362,12 +369,18 @@ export class AuthorizationService {
   /**
    * Return true if currently logged-in user is viewing the TC as a source person.
    * <p/>
+   * <p>
    * This is more complicated that just asking whether the user works for a source partner because
    * of TBB special status where it is both a source partner and a destination partner.
+   * </p>
+   * <p>
+   * With the third condition check we also allow for a user who is not themselves designated a job
+   * creator, but who works for an employer partner. Otherwise, they would be designated source by
+   * this check.
    */
   isViewingAsSource(): boolean {
-    //View as source partner as long as user is not a job creator.
-    return this.isSourcePartner() && !this.isJobCreatorUser();
+    //View as source partner as long as user is not a job creator or belonging to an employer org.
+    return this.isSourcePartner() && !this.isJobCreatorUser() && !this.isEmployerPartner();
   }
 
   /**
@@ -501,6 +514,19 @@ export class AuthorizationService {
       }
     }
     return result;
+  }
+
+  /**
+   * Only a System Admin or the user who created a Job can change its name.
+   * @param job
+   */
+  canChangeJobName(job: Job) {
+      let result: boolean = false;
+      const loggedInUser = this.authenticationService.getLoggedInUser();
+      if ((loggedInUser.id === job.createdBy.id) || this.isSystemAdminOnly()) {
+        result = true;
+      }
+      return result;
   }
 
 }

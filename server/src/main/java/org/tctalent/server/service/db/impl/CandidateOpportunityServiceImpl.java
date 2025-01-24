@@ -618,8 +618,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                         publishStageChangePosts(opp, newStage);
                     }
 
-                    // If new stage is relocated then set relocated address
-                    if (newStage.equals(CandidateOpportunityStage.relocated)) {
+                    // If new stage is relocated or above AND not closed or won, then set relocated address
+                    if (newStage.compareTo(CandidateOpportunityStage.relocated) >= 0 && (!newStage.isClosed() || newStage.isWon())) {
                         updateCandidateRelocatedCountry(opp);
                     }
                 }
@@ -945,13 +945,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     }
 
     /**
-     * If the job opportunity has a country associated, set that as the relocated country for the candidate.
+     * If the job opportunity has a country associated, set that as the relocated country for the candidate and create
+     * candidate note to track change.
      * @param opp Candidate Opportunity which we get the job opp and the candidate from
      */
     private void updateCandidateRelocatedCountry(CandidateOpportunity opp) {
         Candidate candidate = opp.getCandidate();
         SalesforceJobOpp jobOpp = opp.getJobOpp();
         if (jobOpp.getCountry() != null) {
+            // create candidate note to track that the candidate's relocated country is updated
+            candidateService.auditNoteIfRelocatedAddressChange(candidate, null,
+                    null, null, opp.getJobOpp().getCountry().getName());
             candidate.setRelocatedCountry(jobOpp.getCountry());
             candidateService.save(candidate, false);
         }

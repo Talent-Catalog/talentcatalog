@@ -123,6 +123,16 @@ export class ChatService implements OnDestroy {
     }
     return key;
   }
+  /**
+   * Translation key for the heading of the given chat type
+   * <p/>
+   * This key appears in GeneralTranslationsComponent.
+   * @param type Chat type
+   */
+  getChatHeadingKey(type: JobChatType): string {
+    return "CHAT_INFO.HEADING." + this.getChatTypeKey(type);
+  }
+
 
   /**
    * Translation key for info about the participants of the given chat type

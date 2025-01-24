@@ -86,4 +86,8 @@ export class ViewCandidateSpecialLinksComponent implements OnInit {
     return this.authService.canAccessSalesforce();
   }
 
+  canAccessGoogleDrive(): boolean {
+    return this.authService.canAccessGoogleDrive();
+  }
+
 }

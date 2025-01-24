@@ -909,6 +909,14 @@ public class JobServiceImpl implements JobService {
         if (stage != null) {
             changeJobStage(job, stage);
         }
+
+        final String newJobName = request.getJobName();
+        if (newJobName != null) {
+            String oldJobName = job.getName();
+            job.setName(newJobName);
+            savedSearchService.updateSuggestedSearchesNames(job, oldJobName);
+            savedListService.updateAssociatedListsNames(job);
+        }
     }
 
     /**
@@ -1061,6 +1069,11 @@ public class JobServiceImpl implements JobService {
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
         salesforceService.updateEmployerOpportunityStage(
             job.getSfId(), stage, nextStep, nextStepDueDate);
+
+        final String jobName = request.getJobName();
+        if (jobName != null) {
+            salesforceService.updateEmployerOpportunityName(job.getSfId(), jobName);
+        }
 
         updateJobFromRequest(job, request);
         job.setAuditFields(loggedInUser);
