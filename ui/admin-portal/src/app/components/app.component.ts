@@ -71,10 +71,21 @@ export class AppComponent implements OnInit {
     //Only show standard header if logged on (ie loggedInUser is not null)
     this.showHeader = user != null
 
-    //If logged out...
-    if (user == null) {
+    if (user != null) {
+      // If user is logged in, identify them in Clarity
+      // Replace these fields with the actual user properties
+      Clarity.identify(
+        String(user.id),             // custom-id
+        'session-' + user.id,   // custom-session-id 
+        'page-' + user.id,      // custom-page-id 
+        user.username || 'NoName'   // friendly-name
+      );
+      console.log('Clarity.identify() called for user:', user.username, user.id);
+    } else {
+      // If logged out...
       this.onLogout();
     }
+   
   }
 
   private onLogout() {
