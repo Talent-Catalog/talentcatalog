@@ -983,8 +983,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             CandidateOpportunity tcOpp =
                 candidateOpportunityRepository.findBySfId(sfId).orElse(null);
 
-            if (tcOpp != null) { // We don't want to process cases created on SF
-                copyOpportunityToCandidateOpportunity(sfOpp, tcOpp, false);
+            if (tcOpp != null) { // We don't want to process cases created only on SF
+                updateExistingLinkedCandidateOppFromSf(sfOpp, tcOpp);
                 candidateOpportunityRepository.save(tcOpp);
                 updates++;
             }
