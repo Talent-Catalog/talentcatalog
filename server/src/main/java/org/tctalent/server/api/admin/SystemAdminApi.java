@@ -111,6 +111,7 @@ import org.tctalent.server.response.DuolingoDashboardResponse;
 import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
+import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
@@ -128,10 +129,8 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 import org.tctalent.server.service.db.cache.CacheService;
-import org.tctalent.server.service.db.impl.DuolingoApiServiceImpl;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
-import org.tctalent.server.util.background.IdContext;
 import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -181,6 +180,7 @@ public class SystemAdminApi {
     private final BackgroundProcessingService backgroundProcessingService;
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
+    private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -232,7 +232,8 @@ public class SystemAdminApi {
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-        SavedSearchService savedSearchService, PartnerService partnerService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService) {
+        SavedSearchService savedSearchService, PartnerService partnerService,
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -263,6 +264,7 @@ public class SystemAdminApi {
       this.backgroundProcessingService = backgroundProcessingService;
       this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
+      this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
       this.duolingoExamService = duolingoExamService;
@@ -458,6 +460,12 @@ public class SystemAdminApi {
         jobService.updateOpenJobs();
         return "started";
     }
+
+  @GetMapping("sf-sync-open-cases")
+  public String sfSyncOpenCases() {
+    candidateOppBackgroundProcessingService.updateOpenCasesFromSf();
+    return "started";
+  }
 
     /**
      * Move candidate to the current candidate data drive.

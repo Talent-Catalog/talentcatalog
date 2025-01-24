@@ -80,6 +80,7 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.request.candidate.EmployerCandidateDecision;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
@@ -631,20 +632,35 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds) {
+    public List<Opportunity> fetchOpportunitiesByIdOrOpenOnSF(
+        Collection<String> sfIds, OpportunityType type
+    ) {
         List<Opportunity> opps = new ArrayList<>();
-        if (sfIds.size() > 0) {
-            //Construct the String of ids for the WHERE clause
+        if (!sfIds.isEmpty()) {
+            //Construct the String of IDs for the WHERE clause
             final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
                 .collect(Collectors.joining(","));
 
-            String query =
-                "SELECT " + jobOpportunityRetrievalFields +
+            String query = switch (type) {
+                case JOB ->
+                    "SELECT " + jobOpportunityRetrievalFields +
                     " FROM Opportunity WHERE "
                     + "(Id IN (" + idsAsString + ")"
                     + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
                     + salesforceConfig.getDaysAgoRecent() + "))"
-                + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
+                    + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
+
+                case CANDIDATE ->
+                    "SELECT " + candidateOpportunityRetrievalFields +
+                    " FROM Opportunity WHERE "
+                    + "(Id IN (" + idsAsString + ")"
+                    + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
+                    + salesforceConfig.getDaysAgoRecent() + "))"
+                    + " AND (RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
+                    + " OR RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
+
+                default -> throw new IllegalArgumentException("Unsupported OpportunityType: " + type);
+            };
 
             ClientResponse response = executeQuery(query);
 

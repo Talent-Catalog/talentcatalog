@@ -34,6 +34,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -147,7 +148,9 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
                 .logInfo();
 
             //Get SF opportunities from SF that we will use to do the updates
-            List<Opportunity> ops = salesforceService.fetchJobOpportunitiesByIdOrOpenOnSF(sfIds);
+            List<Opportunity> ops = salesforceService.fetchOpportunitiesByIdOrOpenOnSF(
+                    sfIds, OpportunityType.JOB
+            );
 
             LogBuilder.builder(log)
                 .action("UpdateJobs")

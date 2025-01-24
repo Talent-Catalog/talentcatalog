@@ -40,6 +40,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -313,16 +314,17 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
     /**
      * Copies a Salesforce opportunity record to a CandidateOpportunity
-     * @param op Salesforce opportunity retrieved from Salesforce
-     * @param candidateOpportunity Cached job opp on our DB
+     * @param sfOpp Salesforce opportunity retrieved from Salesforce
+     * @param tcOpp Cached job opp on our DB
      */
     private void copyOpportunityToCandidateOpportunity(
-        @NonNull Opportunity op, @NonNull CandidateOpportunity candidateOpportunity, boolean createJobOpp) {
+        @NonNull Opportunity sfOpp, @NonNull CandidateOpportunity tcOpp, boolean createJobOpp) {
 
-        //Update DB with data from op
+        // For opps already linked to SF, only certain fields require update
+        updateExistingLinkedCandidateOppFromSf(sfOpp, tcOpp);
 
         //Look up job opp from parent
-        String jobOppSfid = op.getParentOpportunityId();
+        String jobOppSfid = sfOpp.getParentOpportunityId();
         SalesforceJobOpp jobOpp;
         if (createJobOpp) {
             jobOpp = salesforceJobOppService.getOrCreateJobOppFromId(jobOppSfid);
@@ -333,83 +335,37 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("LoadCandidateOpportunity")
-                .message("Could not find job opp: " + jobOppSfid + " parent of " + op.getName())
+                .message("Could not find job opp: " + jobOppSfid + " parent of " + sfOpp.getName())
                 .logError();
         }
-        candidateOpportunity.setJobOpp(jobOpp);
+        tcOpp.setJobOpp(jobOpp);
 
         //Look up candidate from id
-        String candidateNumber = op.getCandidateId();
+        String candidateNumber = sfOpp.getCandidateId();
         Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
         if (candidate == null) {
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("LoadCandidateOpportunity")
-                .message("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName())
+                .message("Could not find candidate number: " + candidateNumber + " in candidate op " + sfOpp.getName())
                 .logError();
         }
-        candidateOpportunity.setCandidate(candidate);
+        tcOpp.setCandidate(candidate);
 
-        candidateOpportunity.setClosed(op.isClosed());
-        candidateOpportunity.setWon(op.isWon());
-        candidateOpportunity.setClosingCommentsForCandidate(op.getClosingCommentsForCandidate());
-        candidateOpportunity.setEmployerFeedback(op.getEmployerFeedback());
-        candidateOpportunity.setName(op.getName());
-        candidateOpportunity.setNextStep(op.getNextStep());
-
-        final String nextStepDueDate = op.getNextStepDueDate();
-        if (nextStepDueDate != null) {
-            try {
-                candidateOpportunity.setNextStepDueDate(
-                    LocalDate.parse(nextStepDueDate));
-            } catch (DateTimeParseException ex) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("LoadCandidateOpportunity")
-                    .message("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName())
-                    .logError();
-            }
-        }
-
-        final String createdDate = op.getCreatedDate();
+        final String createdDate = sfOpp.getCreatedDate();
         if (createdDate != null) {
             try {
-                candidateOpportunity.setCreatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(createdDate));
+                tcOpp.setCreatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(createdDate));
             } catch (DateTimeParseException ex) {
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
                     .action("LoadCandidateOpportunity")
-                    .message("Error decoding createdDate from SF: " + createdDate + " in candidate op " + op.getName())
+                    .message("Error decoding createdDate from SF: " + createdDate + " in candidate op " + sfOpp.getName())
                     .logError();
             }
         }
 
-        final String lastModifiedDate = op.getLastModifiedDate();
-        if (lastModifiedDate != null) {
-            try {
-                candidateOpportunity.setUpdatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(lastModifiedDate));
-            } catch (DateTimeParseException ex) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("LoadCandidateOpportunity")
-                    .message("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + op.getName())
-                    .logError();
-            }
-        }
-        candidateOpportunity.setSfId(op.getId());
-        CandidateOpportunityStage stage;
-        try {
-            stage = CandidateOpportunityStage.textToEnum(op.getStageName());
-        } catch (IllegalArgumentException e) {
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("LoadCandidateOpportunity")
-                .message("Error decoding stage in load: " + op.getStageName() + " in candidate op " + op.getName())
-                .logError();
-
-            stage = CandidateOpportunityStage.prospect;
-        }
-        candidateOpportunity.setStage(stage);
+        tcOpp.setSfId(sfOpp.getId());
     }
 
     /**
@@ -1010,6 +966,94 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         return candidate.getUser().getFirstName() + " "
                 + candidate.getUser().getLastName()
                 + " (" + candidate.getCandidateNumber() + ")";
+    }
+
+    @Transactional
+    @Override
+    public void processCaseUpdateBatch(List<Opportunity> oppBatch) {
+        int count = 0;
+        int updates = 0;
+        for (Opportunity sfOpp : oppBatch) {
+            String sfId = sfOpp.getId();
+            // Fetch TC Opp with SF ID
+            CandidateOpportunity tcOpp =
+                candidateOpportunityRepository.findBySfId(sfId).orElse(null);
+
+            if (tcOpp != null) { // We don't want to process cases created on SF
+                copyOpportunityToCandidateOpportunity(sfOpp, tcOpp, false);
+                candidateOpportunityRepository.save(tcOpp);
+                updates++;
+            }
+            count++;
+            if (count%100 == 0) {
+                LogBuilder.builder(log)
+                    .action("UpdateCasesFromSf")
+                    .message("Processed " + count + " Candidate Opps from Salesforce, of which " +
+                        updates + " have TC equivalents that were found and updated.")
+                    .logInfo();
+            }
+        }
+    }
+
+    private void updateExistingLinkedCandidateOppFromSf(
+        @NonNull Opportunity sfOpp, @NonNull CandidateOpportunity tcOpp
+    ) {
+        // NEXT STEP DUE DATE
+        final String nextStepDueDate = sfOpp.getNextStepDueDate();
+        if (nextStepDueDate != null) {
+            try {
+                tcOpp.setNextStepDueDate(
+                    LocalDate.parse(nextStepDueDate));
+            } catch (DateTimeParseException ex) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + sfOpp.getName())
+                    .logError();
+            }
+        }
+
+        // STAGE
+        CandidateOpportunityStage stage;
+        try {
+            stage = CandidateOpportunityStage.textToEnum(sfOpp.getStageName());
+        } catch (IllegalArgumentException e) {
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadCandidateOpportunity")
+                .message("Error decoding stage in load: " + sfOpp.getStageName() + " in candidate op " + sfOpp.getName())
+                .logError();
+
+            stage = CandidateOpportunityStage.prospect;
+        }
+        tcOpp.setStage(stage);
+
+        // LAST MODIFIED DATE
+        final String lastModifiedDate = sfOpp.getLastModifiedDate();
+        if (lastModifiedDate != null) {
+            try {
+                tcOpp.setUpdatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(lastModifiedDate));
+            } catch (DateTimeParseException ex) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + sfOpp.getName())
+                    .logError();
+            }
+        }
+
+        // SIMPLE FIELDS
+        tcOpp.setClosed(sfOpp.isClosed());
+        tcOpp.setWon(sfOpp.isWon());
+        tcOpp.setClosingCommentsForCandidate(sfOpp.getClosingCommentsForCandidate());
+        tcOpp.setEmployerFeedback(sfOpp.getEmployerFeedback());
+        tcOpp.setName(sfOpp.getName());
+        tcOpp.setNextStep(sfOpp.getNextStep());
+    }
+
+    @Override
+    public List<String> findAllNonNullSfIdsByClosedFalse() {
+        return candidateOpportunityRepository.findAllNonNullSfIdsByClosedFalse();
     }
 
 }

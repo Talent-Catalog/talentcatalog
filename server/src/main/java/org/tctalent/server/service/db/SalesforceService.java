@@ -32,6 +32,7 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.model.sf.OpportunityHistory;
 import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
@@ -49,14 +50,13 @@ import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 public interface SalesforceService {
 
     /**
-     * Fetches opportunities from Salesforce with Job opportunity fields populated.
+     * Fetches opportunities with fields populated from Salesforce.
      * <p/>
-     * The opportunities fetched are those with the specified ids plus recently changed open
-     * job opportunities.
+     * The opportunities fetched are those with the specified ids plus recently changed open opps.
      * @param sfIds Ids of requested Salesforce records
      * @return Opportunities
      */
-    List<Opportunity> fetchJobOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds);
+    List<Opportunity> fetchOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds, OpportunityType type);
 
     /**
      * Fetches opportunity with the given id from Salesforce.

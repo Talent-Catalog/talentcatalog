@@ -42,8 +42,10 @@ public class PersistenceContextHelper {
   /**
    * Flushes and clears the persistence context.
    * <p>
-   * - Ensures all pending changes in the persistence context are written to the database.
-   * - Clears the persistence context, detaching all managed entities.
+   *   <ul>
+   *    <li>Ensures all pending changes in the persistence context are written to the database.</li>
+   *    <li>Clears the persistence context, detaching all managed entities.</li>
+   *  </ul>
    * <p>
    * Use this method when you need to explicitly synchronize changes with the database
    * and reset the persistence context to prevent memory overhead or side effects from managed entities.

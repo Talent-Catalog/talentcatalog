@@ -181,4 +181,15 @@ public interface CandidateOpportunityService {
      */
     CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request)
         throws NoSuchObjectException;
+
+    /**
+     * TODO
+     */
+    void processCaseUpdateBatch(List<Opportunity> oppBatch);
+
+    /**
+     * TODO
+     * @return
+     */
+    List<String> findAllNonNullSfIdsByClosedFalse();
 }
