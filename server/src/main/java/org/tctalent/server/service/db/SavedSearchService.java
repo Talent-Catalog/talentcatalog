@@ -27,6 +27,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.request.IdsRequest;
@@ -272,4 +273,13 @@ public interface SavedSearchService {
     void updateDisplayedFieldPaths(
             long id, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
+
+    /**
+     * Updates the names of suggested searches for the given Job, to reflect its new name.
+     * Job renaming happens first - if for any reason that failed, this method has the virtue of
+     * reproducing the old name.
+     * @param job Job whose suggested searches are to be renamed
+     * @param oldJobName the previous name of the Job, used for character replacement
+     */
+    void updateSuggestedSearchesNames(SalesforceJobOpp job, String oldJobName);
 }

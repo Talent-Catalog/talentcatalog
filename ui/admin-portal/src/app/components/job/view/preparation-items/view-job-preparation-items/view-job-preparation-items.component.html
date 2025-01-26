@@ -29,7 +29,7 @@
 <!-- Loop through job preparation items -->
     <div class="d-flex flex-column pt-4">
       <ul class="fa-ul">
-        <li *ngFor="let item of jobPrepItems" (click)="onItemSelected(item)"
+        <li class="prep-items" *ngFor="let item of jobPrepItems" (click)="onItemSelected(item)"
             [ngClass]="{'selected': isSelected(item)}"
         >
           <span class="fa-li text-secondary">

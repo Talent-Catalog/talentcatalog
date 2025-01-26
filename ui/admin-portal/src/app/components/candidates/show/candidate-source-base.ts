@@ -289,6 +289,10 @@ export class CandidateSourceBaseComponent {
     return this.authorizationService.canAccessSalesforce();
   }
 
+  canAccessGoogleDrive(): boolean {
+    return this.authorizationService.canAccessGoogleDrive();
+  }
+
   isSalesforceUpdatable(): boolean {
     //Employer partners can't update Salesforce from a candidate source - only from each
     //candidate's display (assuming that they authorized to).

@@ -55,7 +55,10 @@
           <a *ngIf="candidate.sflink && canAccessSalesforce()" [href]="candidate.sflink" target="_blank" class="link-info">
             <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
           </a>
-          <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank" class="link-info">
+          <a *ngIf="candidate.folderlink && canAccessGoogleDrive()"
+             [href]="candidate.folderlink"
+             target="_blank"
+             class="link-info">
             <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
           </a>
           <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank" class="link-info">

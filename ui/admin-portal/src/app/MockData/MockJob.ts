@@ -38,7 +38,7 @@ export const MockJob: Job = {
     folderlink: 'example.com/folder',
     folderjdlink: 'example.com/folder/jd',
     publishedDocLink: 'example.com/published',
-    tbbShortName: 'TBB',
+    tcShortName: 'TC',
     sfJobCountry: 'USA',
     sfJobStage: 'Prospect',
     fixed: true,
@@ -106,7 +106,7 @@ export const MockJob: Job = {
     folderlink: 'example.com/folder',
     folderjdlink: 'example.com/folder/jd',
     publishedDocLink: 'example.com/published',
-    tbbShortName: 'TBB',
+    tcShortName: 'TC',
     sfJobCountry: 'USA',
     sfJobStage: 'Prospect',
     fixed: true, // Adding fixed property

@@ -64,6 +64,7 @@ export class NewJobComponent implements OnInit {
   errorPostingToSlack: string = null;
   errorGettingJobsToCopySlack: string = null;
   jobForm: UntypedFormGroup;
+  remainingChars: number = 50;
 
   constructor(
     private authorizationService: AuthorizationService,
@@ -85,6 +86,9 @@ export class NewJobComponent implements OnInit {
         role: []
       });
       this.subscribeToJobFormChanges();
+      this.jobForm.get('role').valueChanges.subscribe((value: string) => {
+        this.remainingChars = 50 - (value?.length || 0);
+      });
     }
   }
 
