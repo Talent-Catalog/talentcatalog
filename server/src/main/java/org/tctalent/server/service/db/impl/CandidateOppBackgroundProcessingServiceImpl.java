@@ -35,7 +35,7 @@ import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.IdContext;
 
 /**
- * Service for background processing methods
+ * Service for background processing of Candidate Opportunities
  */
 @Service
 @Slf4j
@@ -48,7 +48,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
 
   /**
    * Scheduled daily at 2300 GMT to keep TC data accurate in cases where Candidate Opps have been
-   * updated from Salesforce. Can also be called from {@code SystemAdminApi.sfSyncOpenCases}
+   * updated from Salesforce. Can also be called from {@code SystemAdminApi.sfSyncOpenCases()}
    */
   @Scheduled(cron = "0 0 23 * * ?", zone = "GMT")
   @SchedulerLock(
@@ -76,7 +76,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
     LogBuilder.builder(log)
         .action("UpdateCasesFromSf")
         .message(
-            "Loaded " + sfOpps.size() + " Candidate Opps from Salesforce, including " +
+            "Fetched " + sfOpps.size() + " Candidate Opps from Salesforce, including " +
             (sfOpps.size() - sfIds.size()) + " that were closed on the TC but reopened by a user on "
                 + "Salesforce.")
         .logInfo();
@@ -93,7 +93,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
     }
   }
 
-  public BackProcessor<IdContext> createCaseUpdateBackProcessor(List<Opportunity> sfOpps) {
+  private BackProcessor<IdContext> createCaseUpdateBackProcessor(List<Opportunity> sfOpps) {
     BackProcessor<IdContext> backProcessor = new BackProcessor<>() {
       @Override
       public boolean process(IdContext ctx) {
@@ -103,23 +103,23 @@ public class CandidateOppBackgroundProcessingServiceImpl
             firstIndex + ctx.getNumToProcess() < sfOpps.size() ?
                 firstIndex + ctx.getNumToProcess() - 1 : sfOpps.size() - 1;
 
-        // sublist 2nd param toIndex is exclusive, so we add 1 to the last index we want to process.
+        // sublist method's 2nd param 'toIndex' is exclusive, so we add 1 to the last indexve.
         List<Opportunity> nextBatch = sfOpps.subList((int) firstIndex, (int) lastIndex + 1);
 
         // Delegate the actual processing to the appropriate service
         candidateOpportunityService.processCaseUpdateBatch(nextBatch);
 
+        // Log progress
+        LogBuilder.builder(log)
+            .action("UpdateCasesFromSf")
+            .message("Completed processing " + (lastIndex + 1) + " of " + sfOpps.size() +
+                " Candidate Opps from Salesforce")
+            .logInfo();
+
         ctx.setLastProcessedId(lastIndex);
 
         // Has the last element been processed?
         boolean isComplete = lastIndex == sfOpps.size() - 1;
-
-        if (isComplete) {
-          LogBuilder.builder(log)
-              .action("UpdateCasesFromSf")
-              .message("Completed processing " + sfOpps.size() + " Candidate Opps from Salesforce")
-              .logInfo();
-        }
 
         return isComplete;
       }

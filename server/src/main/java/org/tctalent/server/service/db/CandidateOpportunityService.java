@@ -183,13 +183,15 @@ public interface CandidateOpportunityService {
         throws NoSuchObjectException;
 
     /**
-     * TODO
+     * Processes a batch update of TC Opps from their Salesforce equivalents. Iterates through the
+     * provided Salesforce Opps, fetching the TC equivalent, updating some values and saving.
+     * @param oppBatch List of Opportunities fetched from Salesforce
      */
     void processCaseUpdateBatch(List<Opportunity> oppBatch);
 
     /**
-     * TODO
-     * @return
+     * Finds all open TC Candidate Opps with a linked SF Opp
+     * @return List of sfIds for all Candidate Opps matching the query criteria
      */
     List<String> findAllNonNullSfIdsByClosedFalse();
 }

@@ -115,4 +115,5 @@ public class Opportunity extends SalesforceObjectBase {
         JOB,
         CANDIDATE
     }
+
 }

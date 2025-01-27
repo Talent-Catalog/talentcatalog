@@ -78,4 +78,5 @@ public interface CandidateOpportunityRepository extends JpaRepository<CandidateO
         "AND co.sfId IS NOT NULL"
     )
     List<String> findAllNonNullSfIdsByClosedFalse();
+
 }

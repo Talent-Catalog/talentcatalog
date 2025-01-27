@@ -16,24 +16,20 @@
 
 package org.tctalent.server.service.db;
 
-import java.util.List;
-import org.tctalent.server.model.sf.Opportunity;
-import org.tctalent.server.util.background.BackProcessor;
-import org.tctalent.server.util.background.IdContext;
-
 /**
  * Service for background processing of candidate opportunities
  */
 public interface CandidateOppBackgroundProcessingService {
 
   /**
-   * TODO
+   * Initiates background processing of updates to all open TC Candidate Opps from their Salesforce
+   * equivalents, provided they have one. Will also update Opps that are closed on the TC but
+   * recently reopened on Salesforce.
+   *
+   * <p>The intent is to keep the TC up to date when users have updated Opps from Salesforce instead
+   * of the TC, as is preferred. Because the TC updates SF in real time, many updates will be
+   * redundant and the desired master-slave balance is maintained.
    */
   void initiateBackgroundCaseUpdate();
-
-  /**
-   * TODO
-   */
-  BackProcessor<IdContext> createCaseUpdateBackProcessor(List<Opportunity> sfOpps);
 
 }

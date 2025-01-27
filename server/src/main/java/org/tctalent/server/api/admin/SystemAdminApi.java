@@ -461,6 +461,11 @@ public class SystemAdminApi {
         return "started";
     }
 
+  /**
+   * Manual trigger for method that updates TC Candidate Opportunities from their Salesforce
+   * equivalents.
+   * @return ResponseEntity indicating success or failure
+   */
   @GetMapping("sf-sync-open-cases")
   ResponseEntity<?> sfSyncOpenCases() {
     try {

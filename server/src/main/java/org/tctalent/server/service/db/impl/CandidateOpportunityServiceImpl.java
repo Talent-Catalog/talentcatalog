@@ -320,8 +320,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private void copyOpportunityToCandidateOpportunity(
         @NonNull Opportunity sfOpp, @NonNull CandidateOpportunity tcOpp, boolean createJobOpp) {
 
-        // For opps already linked to SF, only certain fields require update
-        updateExistingLinkedCandidateOppFromSf(sfOpp, tcOpp);
+        partCopyFromSalesforce(sfOpp, tcOpp);
 
         //Look up job opp from parent
         String jobOppSfid = sfOpp.getParentOpportunityId();
@@ -360,7 +359,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
                     .action("LoadCandidateOpportunity")
-                    .message("Error decoding createdDate from SF: " + createdDate + " in candidate op " + sfOpp.getName())
+                    .message("Error decoding createdDate from SF: " + createdDate +
+                        " in candidate op " + sfOpp.getName())
                     .logError();
             }
         }
@@ -975,31 +975,27 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Transactional
     @Override
     public void processCaseUpdateBatch(List<Opportunity> oppBatch) {
-        int count = 0;
-        int updates = 0;
         for (Opportunity sfOpp : oppBatch) {
             String sfId = sfOpp.getId();
-            // Fetch TC Opp with SF ID
+            // Fetch SF equivalent of TC Opp
             CandidateOpportunity tcOpp =
                 candidateOpportunityRepository.findBySfId(sfId).orElse(null);
 
-            if (tcOpp != null) { // We don't want to process cases created only on SF
-                updateExistingLinkedCandidateOppFromSf(sfOpp, tcOpp);
+            if (tcOpp != null) {
+                partCopyFromSalesforce(sfOpp, tcOpp);
                 candidateOpportunityRepository.save(tcOpp);
-                updates++;
-            }
-            count++;
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .action("UpdateCasesFromSf")
-                    .message("Processed " + count + " Candidate Opps from Salesforce, of which " +
-                        updates + " have TC equivalents that were found and updated.")
-                    .logInfo();
             }
         }
     }
 
-    private void updateExistingLinkedCandidateOppFromSf(
+    /**
+     * Updates TC opp from its Saleforce equivalent - limited to fields having to do with
+     * opportunity progress. For creation of new TC Opps from Saleforce Opps, use
+     * {@link #copyOpportunityToCandidateOpportunity(Opportunity, CandidateOpportunity, boolean)}.
+     * @param sfOpp SF Opp from which updated values will be copied
+     * @param tcOpp TC Opp to which updated values will be copied
+     */
+    private void partCopyFromSalesforce(
         @NonNull Opportunity sfOpp, @NonNull CandidateOpportunity tcOpp
     ) {
         // NEXT STEP DUE DATE
@@ -1012,7 +1008,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
                     .action("LoadCandidateOpportunity")
-                    .message("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + sfOpp.getName())
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate +
+                        " in Candidate Opp " + sfOpp.getName())
                     .logError();
             }
         }
@@ -1025,7 +1022,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("LoadCandidateOpportunity")
-                .message("Error decoding stage in load: " + sfOpp.getStageName() + " in candidate op " + sfOpp.getName())
+                .message("Error decoding stage in load: " + sfOpp.getStageName() +
+                    " in Candidate Opp " + sfOpp.getName())
                 .logError();
 
             stage = CandidateOpportunityStage.prospect;
@@ -1046,15 +1044,29 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             }
         }
 
-        // SIMPLE FIELDS
+        // NEXT STEP
         if (sfOpp.getNextStep() != null) {
             tcOpp.setNextStep(sfOpp.getNextStep());
         }
+
+        // CLOSING COMMENTS
+        if (sfOpp.getClosingComments() != null) {
+            tcOpp.setClosingComments(sfOpp.getClosingComments());
+        }
+
+        // CLOSING COMMENTS FOR CANDIDATE
+        if (sfOpp.getClosingCommentsForCandidate() != null) {
+            tcOpp.setClosingCommentsForCandidate(sfOpp.getClosingCommentsForCandidate());
+        }
+
+        //  EMPLOYER FEEDBACK
+        if (sfOpp.getEmployerFeedback() != null) {
+            tcOpp.setEmployerFeedback(sfOpp.getEmployerFeedback());
+        }
+
+        //  WON/CLOSED
         tcOpp.setWon(sfOpp.isWon());
         tcOpp.setClosed(sfOpp.isClosed());
-        tcOpp.setClosingComments(sfOpp.getClosingComments());
-        tcOpp.setClosingCommentsForCandidate(sfOpp.getClosingCommentsForCandidate());
-        tcOpp.setEmployerFeedback(sfOpp.getEmployerFeedback());
     }
 
     @Override
