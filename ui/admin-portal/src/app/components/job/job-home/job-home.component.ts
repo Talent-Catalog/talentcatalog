@@ -174,7 +174,8 @@ export class JobHomeComponent extends HomeComponent {
      // Combine pageUrl and tabName into a single string for Clarity
   const clarityEventData = `VirtualPageView | PageUrl: /jobs/tab/${tabId}, TabName: ${tabName}`;
 
-  Clarity.setTag("tabName", tabName);
+  Clarity.setTag(tabName, tabName);
+  Clarity.setTag("test", "test");
   // Send a single-parameter event to Clarity
   Clarity.event(clarityEventData);
     // console.log(`Clarity.event('TabChange_${tabId}_${tabName}') tracked`);
