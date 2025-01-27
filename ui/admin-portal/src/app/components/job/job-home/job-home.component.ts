@@ -150,6 +150,7 @@ export class JobHomeComponent extends HomeComponent {
   }
 
   onTabChanged(event: any): void {
+    const loggedInUser = this.authenticationService.getLoggedInUser();
     const tabId = event.nextId; // Get the ID of the selected tab
   
     // Map tab IDs to meaningful names for tracking
@@ -178,6 +179,15 @@ export class JobHomeComponent extends HomeComponent {
   Clarity.event(clarityEventData);
     // console.log(`Clarity.event('TabChange_${tabId}_${tabName}') tracked`);
     console.log(tabName);
+    console.log(clarityEventData);
+
+    Clarity.identify(
+      String(loggedInUser.id),             // custom-id
+      'session-' + loggedInUser.id,   // custom-session-id 
+      'page-' + loggedInUser.id,      // custom-page-id 
+      loggedInUser.username || 'NoName'   // friendly-name
+    );
+    console.log('Clarity.identify() called for user:', loggedInUser.username, loggedInUser.id);
   }
   
 }
