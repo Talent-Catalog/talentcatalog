@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,9 +31,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.request.task.TaskListRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
+import org.tctalent.server.service.db.SavedListService;
 
 /**
  * Unit tests for Duolingo Coupon Admin Api endpoints.
@@ -49,11 +53,15 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
   private static final String ASSIGN_COUPON_PATH = "/{candidateId}/assign";
   private static final String FIND_COUPON_PATH = "find/{couponCode}";
   private static final String UPDATE_STATUS_PATH = "status";
+  private static final String ASSIGN_TO_LIST_PATH = "/assign-to-list";
 
   private final DuolingoCoupon coupon = AdminApiTestUtil.getDuolingoCoupon();
+  private static final SavedList savedList = AdminApiTestUtil.getSavedList();
 
   @MockBean
   DuolingoCouponService couponService;
+  @MockBean
+  SavedListService savedListService;
 
   @Autowired
   MockMvc mockMvc;
@@ -170,5 +178,25 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.duolingoCouponStatus", is("AVAILABLE")));
 
     verify(couponService).findByCouponCode(COUPON_CODE);
+  }
+
+  @Test
+  @DisplayName("Assign coupons to list succeeds")
+  void assignCouponToListSucceeds() throws Exception {
+    Long testListId = 1L;
+    given(savedListService.get(testListId)).willReturn(savedList);
+
+    mockMvc.perform(post(BASE_PATH + ASSIGN_TO_LIST_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(String.valueOf(testListId)))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(savedListService).get(testListId);
+    verify(couponService).assignCouponsToList(savedList);
+
   }
 }
