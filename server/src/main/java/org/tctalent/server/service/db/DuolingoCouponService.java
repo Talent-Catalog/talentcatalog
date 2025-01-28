@@ -114,6 +114,7 @@ public interface DuolingoCouponService {
    * This method assigns available coupons to candidates in a saved list.
    *
    * @param list the SavedList containing the candidates to whom coupons should be assigned.
+   * @throws NoSuchObjectException if there are not enough coupons available
    */
-  void assignCouponsToList(SavedList list);
+  void assignCouponsToList(SavedList list) throws NoSuchObjectException;
 }

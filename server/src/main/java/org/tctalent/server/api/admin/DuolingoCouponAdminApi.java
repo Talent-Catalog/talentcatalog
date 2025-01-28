@@ -19,7 +19,6 @@ package org.tctalent.server.api.admin;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -32,13 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
-import org.tctalent.server.request.task.TaskListRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.SavedListService;
@@ -129,7 +126,7 @@ public class DuolingoCouponAdminApi {
 
   // Endpoint to assign available coupons to a saved list candidate
   @PostMapping("assign-to-list")
-  public void assignCouponToList(@Valid @RequestBody Long listId)
+  public void assignCouponsToList(@Valid @RequestBody Long listId)
       throws NoSuchObjectException {
 
     SavedList savedList = savedListService.get(listId);

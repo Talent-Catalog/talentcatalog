@@ -109,33 +109,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   assignDuolingoCouponTask() {
     this.duolingoCouponService.assignCouponToCandidate(this.candidate.id).subscribe(
       () => {
-        this.taskService.listTasks().subscribe(
-          tasks => {
-            const duolingoTaskId = tasks.find(task => task.name === 'duolingoTest')?.id;
-
-            if (!duolingoTaskId) {
-              this.error = 'Duolingo English Test task not found';
-              return;
-            }
-
-            const request: CreateTaskAssignmentRequest = {
-              candidateId: this.candidate.id,
-              taskId: duolingoTaskId,
-            }
-
-            this.taskAssignmentService.createTaskAssignment(request).subscribe(
-              (taskAssignment: TaskAssignment) => {
-                this.candidateService.updateCandidate();
-              },
-              error => {
-                this.error = error;
-              }
-            )
-          },
-          error => {
-            this.error = error;
-          }
-        );
+        this.candidateService.updateCandidate();
       },
       error => {
         this.error = error;

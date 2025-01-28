@@ -182,7 +182,7 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
 
   @Test
   @DisplayName("Assign coupons to list succeeds")
-  void assignCouponToListSucceeds() throws Exception {
+  void assignCouponsToListSucceeds() throws Exception {
     Long testListId = 1L;
     given(savedListService.get(testListId)).willReturn(savedList);
 
