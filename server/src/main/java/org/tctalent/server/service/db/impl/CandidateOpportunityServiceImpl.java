@@ -79,6 +79,7 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.NextStepHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -314,16 +315,16 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
     /**
      * Copies a Salesforce opportunity record to a CandidateOpportunity
-     * @param sfOpp Salesforce opportunity retrieved from Salesforce
-     * @param tcOpp Cached job opp on our DB
+     * @param op Salesforce opportunity retrieved from Salesforce
+     * @param candidateOpportunity Cached job opp on our DB
      */
     private void copyOpportunityToCandidateOpportunity(
-        @NonNull Opportunity sfOpp, @NonNull CandidateOpportunity tcOpp, boolean createJobOpp) {
+        @NonNull Opportunity op, @NonNull CandidateOpportunity candidateOpportunity, boolean createJobOpp) {
 
-        partCopyFromSalesforce(sfOpp, tcOpp);
+        //Update DB with data from op
 
         //Look up job opp from parent
-        String jobOppSfid = sfOpp.getParentOpportunityId();
+        String jobOppSfid = op.getParentOpportunityId();
         SalesforceJobOpp jobOpp;
         if (createJobOpp) {
             jobOpp = salesforceJobOppService.getOrCreateJobOppFromId(jobOppSfid);
@@ -334,38 +335,83 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("LoadCandidateOpportunity")
-                .message("Could not find job opp: " + jobOppSfid + " parent of " + sfOpp.getName())
+                .message("Could not find job opp: " + jobOppSfid + " parent of " + op.getName())
                 .logError();
         }
-        tcOpp.setJobOpp(jobOpp);
+        candidateOpportunity.setJobOpp(jobOpp);
 
         //Look up candidate from id
-        String candidateNumber = sfOpp.getCandidateId();
+        String candidateNumber = op.getCandidateId();
         Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
         if (candidate == null) {
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
                 .action("LoadCandidateOpportunity")
-                .message("Could not find candidate number: " + candidateNumber + " in candidate op " + sfOpp.getName())
+                .message("Could not find candidate number: " + candidateNumber + " in candidate op " + op.getName())
                 .logError();
         }
-        tcOpp.setCandidate(candidate);
+        candidateOpportunity.setCandidate(candidate);
 
-        final String createdDate = sfOpp.getCreatedDate();
-        if (createdDate != null) {
+        candidateOpportunity.setClosed(op.isClosed());
+        candidateOpportunity.setWon(op.isWon());
+        candidateOpportunity.setClosingCommentsForCandidate(op.getClosingCommentsForCandidate());
+        candidateOpportunity.setEmployerFeedback(op.getEmployerFeedback());
+        candidateOpportunity.setName(op.getName());
+        candidateOpportunity.setNextStep(op.getNextStep());
+
+        final String nextStepDueDate = op.getNextStepDueDate();
+        if (nextStepDueDate != null) {
             try {
-                tcOpp.setCreatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(createdDate));
+                candidateOpportunity.setNextStepDueDate(
+                    LocalDate.parse(nextStepDueDate));
             } catch (DateTimeParseException ex) {
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
                     .action("LoadCandidateOpportunity")
-                    .message("Error decoding createdDate from SF: " + createdDate +
-                        " in candidate op " + sfOpp.getName())
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate + " in candidate op " + op.getName())
                     .logError();
             }
         }
 
-        tcOpp.setSfId(sfOpp.getId());
+        final String createdDate = op.getCreatedDate();
+        if (createdDate != null) {
+            try {
+                candidateOpportunity.setCreatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(createdDate));
+            } catch (DateTimeParseException ex) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding createdDate from SF: " + createdDate + " in candidate op " + op.getName())
+                    .logError();
+            }
+        }
+
+        final String lastModifiedDate = op.getLastModifiedDate();
+        if (lastModifiedDate != null) {
+            try {
+                candidateOpportunity.setUpdatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(lastModifiedDate));
+            } catch (DateTimeParseException ex) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + op.getName())
+                    .logError();
+            }
+        }
+        candidateOpportunity.setSfId(op.getId());
+        CandidateOpportunityStage stage;
+        try {
+            stage = CandidateOpportunityStage.textToEnum(op.getStageName());
+        } catch (IllegalArgumentException e) {
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("LoadCandidateOpportunity")
+                .message("Error decoding stage in load: " + op.getStageName() + " in candidate op " + op.getName())
+                .logError();
+
+            stage = CandidateOpportunityStage.prospect;
+        }
+        candidateOpportunity.setStage(stage);
     }
 
     /**
@@ -627,14 +673,14 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 opp.setStage(newStage);
             }
 
-            //Process next step
-            User loggedInUser = userService.getLoggedInUser();
-            if (loggedInUser == null) {
-                throw new InvalidSessionException("Not logged in");
+            // NEXT STEP PROCESSING
+            // Update may be automated, in which case attribute to System Admin
+            User userForAttribution = userService.getLoggedInUser();
+            if (userForAttribution == null) {
+                userForAttribution = userService.getSystemAdminUser();
             }
-
             final String processedNextStep = auditStampNextStep(
-                loggedInUser.getUsername(), LocalDate.now(),
+                userForAttribution.getUsername(), LocalDate.now(),
                 opp.getNextStep(), oppParams.getNextStep());
 
             // If next step details changing, send automated post to JobCreatorSourcePartner chat.
@@ -700,9 +746,15 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 opp.setNextStepDueDate(requestDueDate);
             }
 
-            opp.setClosingComments(oppParams.getClosingComments());
-            opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
-            opp.setEmployerFeedback(oppParams.getEmployerFeedback());
+            if (oppParams.getClosingComments() != null) {
+                opp.setClosingComments(oppParams.getClosingComments());
+            }
+            if (oppParams.getClosingCommentsForCandidate() != null) {
+                opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
+            }
+            if (oppParams.getEmployerFeedback() != null) {
+                opp.setEmployerFeedback(oppParams.getEmployerFeedback());
+            }
         }
 
         return candidateOpportunityRepository.save(opp);
@@ -982,27 +1034,33 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 candidateOpportunityRepository.findBySfId(sfId).orElse(null);
 
             if (tcOpp != null) {
-                partCopyFromSalesforce(sfOpp, tcOpp);
-                candidateOpportunityRepository.save(tcOpp);
+                CandidateOpportunityParams oppParams = extractParamsFromSalesforceOpp(sfOpp, tcOpp);
+                updateCandidateOpportunity(tcOpp, oppParams);
             }
         }
     }
 
     /**
-     * Updates TC opp from its Saleforce equivalent - limited to fields having to do with
-     * opportunity progress. For creation of new TC Opps from Saleforce Opps, use
-     * {@link #copyOpportunityToCandidateOpportunity(Opportunity, CandidateOpportunity, boolean)}.
-     * @param sfOpp SF Opp from which updated values will be copied
-     * @param tcOpp TC Opp to which updated values will be copied
+     * Creates {@link CandidateOpportunityParams} from a Salesforce Candidate Opportunity.
+     * @param sfOpp SF Opp from which oppParams will be extracted
      */
-    private void partCopyFromSalesforce(
-        @NonNull Opportunity sfOpp, @NonNull CandidateOpportunity tcOpp
-    ) {
+    private CandidateOpportunityParams extractParamsFromSalesforceOpp(@NonNull Opportunity sfOpp,
+        @NonNull CandidateOpportunity tcOpp) {
+        CandidateOpportunityParams oppParams = new CandidateOpportunityParams();
+
+        // NEXT STEP
+        // Change only if SF value is non-null and user-entered value different to TC version
+        if (sfOpp.getNextStep() != null) {
+            if (NextStepHelper.isNextStepDifferent(tcOpp.getNextStep(), sfOpp.getNextStep())) {
+                oppParams.setNextStep(sfOpp.getNextStep());
+            }
+        }
+
         // NEXT STEP DUE DATE
         final String nextStepDueDate = sfOpp.getNextStepDueDate();
         if (nextStepDueDate != null) {
             try {
-                tcOpp.setNextStepDueDate(
+                oppParams.setNextStepDueDate(
                     LocalDate.parse(nextStepDueDate));
             } catch (DateTimeParseException ex) {
                 LogBuilder.builder(log)
@@ -1015,7 +1073,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
 
         // STAGE
-        CandidateOpportunityStage stage;
+        CandidateOpportunityStage stage = null;
         try {
             stage = CandidateOpportunityStage.textToEnum(sfOpp.getStageName());
         } catch (IllegalArgumentException e) {
@@ -1025,48 +1083,14 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 .message("Error decoding stage in load: " + sfOpp.getStageName() +
                     " in Candidate Opp " + sfOpp.getName())
                 .logError();
-
-            stage = CandidateOpportunityStage.prospect;
         }
-        tcOpp.setStage(stage);
+        oppParams.setStage(stage);
 
-        // LAST MODIFIED DATE
-        final String lastModifiedDate = sfOpp.getLastModifiedDate();
-        if (lastModifiedDate != null) {
-            try {
-                tcOpp.setUpdatedDate(SalesforceHelper.parseSalesforceOffsetDateTime(lastModifiedDate));
-            } catch (DateTimeParseException ex) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("LoadCandidateOpportunity")
-                    .message("Error decoding lastModifiedDate from SF: " + lastModifiedDate + " in candidate op " + sfOpp.getName())
-                    .logError();
-            }
-        }
+        oppParams.setClosingComments(sfOpp.getClosingComments());
+        oppParams.setClosingCommentsForCandidate(sfOpp.getClosingCommentsForCandidate());
+        oppParams.setEmployerFeedback(sfOpp.getEmployerFeedback());
 
-        // NEXT STEP
-        if (sfOpp.getNextStep() != null) {
-            tcOpp.setNextStep(sfOpp.getNextStep());
-        }
-
-        // CLOSING COMMENTS
-        if (sfOpp.getClosingComments() != null) {
-            tcOpp.setClosingComments(sfOpp.getClosingComments());
-        }
-
-        // CLOSING COMMENTS FOR CANDIDATE
-        if (sfOpp.getClosingCommentsForCandidate() != null) {
-            tcOpp.setClosingCommentsForCandidate(sfOpp.getClosingCommentsForCandidate());
-        }
-
-        //  EMPLOYER FEEDBACK
-        if (sfOpp.getEmployerFeedback() != null) {
-            tcOpp.setEmployerFeedback(sfOpp.getEmployerFeedback());
-        }
-
-        //  WON/CLOSED
-        tcOpp.setWon(sfOpp.isWon());
-        tcOpp.setClosed(sfOpp.isClosed());
+        return oppParams;
     }
 
     @Override

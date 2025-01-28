@@ -184,7 +184,7 @@ public interface CandidateOpportunityService {
 
     /**
      * Processes a batch update of TC Opps from their Salesforce equivalents. Iterates through the
-     * provided Salesforce Opps, fetching the TC equivalent, updating some values and saving.
+     * provided Salesforce Opps, fetching the TC equivalent and updating accordingly.
      * @param oppBatch List of Opportunities fetched from Salesforce
      */
     void processCaseUpdateBatch(List<Opportunity> oppBatch);

@@ -16,6 +16,7 @@
 
 package org.tctalent.server.util;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.Nullable;
@@ -111,6 +112,24 @@ public class NextStepHelper {
     public static String constructNextStepAuditStamp(String name, LocalDate date, String strippedNextStep) {
         String dateStamp = nextStepDateFormatter.format(date);
         return dateStamp + nextStepAuditDateDelimiter + strippedNextStep + nextStepAuditNameDelimiter + name;
+    }
+
+    /**
+     * Checks if the user-entered value for Next Step (i.e. absent the audit stamp) is different
+     * between the current and requested Next Step.
+     * @param currentNextStep current value
+     * @param requestedNextStep requested value
+     * @return boolean - true if different
+     */
+    public static boolean isNextStepDifferent(String currentNextStep,
+        @NotNull String requestedNextStep) {
+        if (currentNextStep == null) {
+            // requestedNextStep is never null, so they must be different in this case.
+            return true;
+        }
+        String currentNextStepStripped = removeExistingStamp(currentNextStep);
+        String requestedNextStepStripped = removeExistingStamp(requestedNextStep);
+        return !currentNextStepStripped.equals(requestedNextStepStripped);
     }
 
 }
