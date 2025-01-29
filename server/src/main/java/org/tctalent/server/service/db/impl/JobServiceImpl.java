@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+import static org.tctalent.server.util.NextStepHelper.isNextStepDifferent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -76,6 +78,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Opportunity;
+import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.repository.db.JobSpecification;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -820,70 +823,67 @@ public class JobServiceImpl implements JobService {
             job.setSkipCandidateSearch(skipCandidateSearch);
         }
 
-        final String nextStep = request.getNextStep();
-        if (nextStep != null) {
-            //Process next Step
-            User loggedInUser = userService.getLoggedInUser();
-            if (loggedInUser == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
+        // NEXT STEP PROCESSING
+        // Update may be automated, in which case attribute to System Admin
+        User userForAttribution = userService.getLoggedInUser();
+        if (userForAttribution == null) {
+            userForAttribution = userService.getSystemAdminUser();
+        }
 
-            String processedNextStep = auditStampNextStep(
-                loggedInUser.getUsername(), LocalDate.now(), job.getNextStep(), nextStep);
+        String processedNextStep = auditStampNextStep(userForAttribution.getUsername(),
+            LocalDate.now(), job.getNextStep(), request.getNextStep());
 
+        job.setNextStep(processedNextStep);
+
+        if (request.getNextStep() != null) {
             // If next step details changing, send automated post to JobCreatorAllSourcePartners chat.
-            if (request.getNextStep() != null) {
-                // To compare previous next step to new one, need to ensure neither is null.
-                // Job opps are auto-populated with a value for next step when created, but this has
-                // not always been the case.
-                String currentNextStep = job.getNextStep() == null ? "" : job.getNextStep();
+            // To compare previous next step to new one, need to ensure neither is null.
+            // Job opps are auto-populated with a value for next step when created, but this has
+            // not always been the case.
+            String currentNextStep = job.getNextStep() == null ? "" : job.getNextStep();
 
-                // If only the due date has changed, we still want to send a message.
-                // As above, there are some old cases with null values that need to be dealt with.
-                LocalDate currentDueDate =
-                    job.getNextStepDueDate() == null ?
-                        LocalDate.of(1970, 1, 1) : job.getNextStepDueDate();
+            // If only the due date has changed, we still want to send a message.
+            // As above, there are some old cases with null values that need to be dealt with.
+            LocalDate currentDueDate =
+                job.getNextStepDueDate() == null ?
+                    LocalDate.of(1970, 1, 1) : job.getNextStepDueDate();
 
-                // If the request due date is null (user deletes the existing value in the form but
-                // doesn't set a new one, then submits) it will not be used (see below) — so, for
-                // purpose of comparison we give it the same value as the current due date (no
-                // message will be sent because they're the same).
-                // TODO: next step due date should be a required value in the form
-                LocalDate requestDueDate =
-                    request.getNextStepDueDate() == null ?
-                        currentDueDate : request.getNextStepDueDate();
+            // If the request due date is null (user deletes the existing value in the form but
+            // doesn't set a new one, then submits) it will not be used (see below) — so, for
+            // purpose of comparison we give it the same value as the current due date (no
+            // message will be sent because they're the same).
+            LocalDate requestDueDate =
+                request.getNextStepDueDate() == null ?
+                    currentDueDate : request.getNextStepDueDate();
 
-                if (!processedNextStep.equals(currentNextStep) || !requestDueDate.equals(
-                    currentDueDate)) {
-                    // Find the relevant job chat
-                    JobChat jcspChat = jobChatService.getOrCreateJobChat(
-                        JobChatType.JobCreatorAllSourcePartners,
-                        job,
-                        null,
-                        null
-                    );
+            if (!processedNextStep.equals(currentNextStep) || !requestDueDate.equals(
+                currentDueDate)) {
+                // Find the relevant job chat
+                JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                    JobChatType.JobCreatorAllSourcePartners,
+                    job,
+                    null,
+                    null
+                );
 
-                    // Set the chat post content
-                    Post autoPostNextStepChange = new Post();
-                    autoPostNextStepChange.setContent(
-                        "💼 <b>" + job.getName()
-                            + "</b> 🪜<br> The next step details for this job opportunity have changed:"
-                            + "<br><b>Next step:</b> " + processedNextStep
-                            + "<br><b>Due date:</b> "
-                            + (request.getNextStepDueDate() == null ?
-                            job.getNextStepDueDate() : request.getNextStepDueDate())
-                    );
+                // Set the chat post content
+                Post autoPostNextStepChange = new Post();
+                autoPostNextStepChange.setContent(
+                    "💼 <b>" + job.getName()
+                        + "</b> 🪜<br> The next step details for this job opportunity have changed:"
+                        + "<br><b>Next step:</b> " + processedNextStep
+                        + "<br><b>Due date:</b> "
+                        + (request.getNextStepDueDate() == null ?
+                        job.getNextStepDueDate() : request.getNextStepDueDate())
+                );
 
-                    // Create the chat post
-                    ChatPost nextStepChangeChatPost = chatPostService.createPost(
-                        autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
+                // Create the chat post
+                ChatPost nextStepChangeChatPost = chatPostService.createPost(
+                    autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
 
-                    // Publish the chat post
-                    chatPostService.publishChatPost(nextStepChangeChatPost);
-                }
+                // Publish the chat post
+                chatPostService.publishChatPost(nextStepChangeChatPost);
             }
-
-            job.setNextStep(processedNextStep);
         }
 
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
@@ -1165,9 +1165,8 @@ public class JobServiceImpl implements JobService {
     }
 
     /**
-     * Fetches all open SF Jobs on the TC DB and supplies them to
-     * {@link SalesforceJobOppService#updateJobs(List)} where they are combined with open jobs
-     * from SF whose stage has recently changed (click method link for further details). The
+     * Fetches all open SF Jobs on the TC DB and supplies them to {@link #syncOpenJobsFromSf(List)}
+     * where they are combined with open jobs from SF whose stage has recently changed. The
      * resulting collection is used to update the TC opps with values from their SF equivalents.
      *
      * <p>While that would seem to favour changes made on SF, that is not the outcome: because the
@@ -1177,10 +1176,11 @@ public class JobServiceImpl implements JobService {
      * update (daily at 1am GMT) keeps TC data as accurate as possible.
      */
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
-    @SchedulerLock(name = "JobService_updateOpenJobs", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+    @SchedulerLock(name = "JobService_initiateOpenJobSyncFromSf", lockAtLeastFor = "PT23H",
+        lockAtMostFor = "PT23H")
     @Async
     @Override
-    public void updateOpenJobs() {
+    public void initiateOpenJobSyncFromSf() {
         try {
             //Find all open Salesforce jobs
             SearchJobRequest request = new SearchJobRequest();
@@ -1194,13 +1194,132 @@ public class JobServiceImpl implements JobService {
                 .collect(Collectors.toList());
 
             //Now update them from Salesforce
-            salesforceJobOppService.updateJobs(sfIds);
+            syncOpenJobsFromSf(sfIds);
         } catch (Exception e) {
             LogBuilder.builder(log)
                 .action("JobService.updateOpenJobs")
                 .message("Failed to update open jobs")
                 .logError(e);
         }
+    }
+
+    /**
+     * Updates existing Salesforce cache records (SalesforceJobOpp's) corresponding to the given
+     * Salesforce ids.
+     * <p/>
+     * Will also update records for job opportunities which are open on SF
+     * and which are locally cached, even if their ids are not in the given list of ids.
+     * This is useful for job opportunities which have been closed and then are reopened on SF.
+     * Typically, we only pass in ids of local job opps that are open in order to limit the total
+     * number of ids. Otherwise, the total number of ids being passed in will grow infinitely
+     * over time (and might eventually crash the SF link by making the SF query too long).
+     * This way the id's can be limited to open job opps only - ignoring closed opps. This
+     * approach ensures that closed opps can be reopened as a result of this update.
+     *
+     * @param sfIds Salesforce ids of cache records to be updated from Salesforce
+     * @throws SalesforceException if there are issues contacting Salesforce
+     */
+    private void syncOpenJobsFromSf(List<String> sfIds) throws SalesforceException {
+        if (sfIds != null && !sfIds.isEmpty()) {
+            LogBuilder.builder(log)
+                .action("UpdateJobsFromSf")
+                .message("Updating job opportunities from Salesforce")
+                .logInfo();
+
+            // Fetch Salesforce equivalents in batches - because there's a 4,000-character limit on
+            // single strings in a SOQL WHERE clause, which the concatenated sfIds might exceed.
+            int totalItems = sfIds.size();
+            int batchSize = 100;
+            List<Opportunity> sfOpps = new ArrayList<>();
+
+            for (int i = 0; i < totalItems; i += batchSize) {
+                List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
+                sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.JOB));
+            }
+
+            // Add any opps that were reopened on Salesforce
+            sfOpps.addAll(salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.JOB));
+
+            LogBuilder.builder(log)
+                .action("UpdateJobs")
+                .message("Loaded " + sfOpps.size() + " job opportunities from Salesforce")
+                .logInfo();
+
+            int count = 0;
+
+            for (Opportunity sfOpp : sfOpps) {
+                String id = sfOpp.getId();
+                //Fetch DB with id
+                SalesforceJobOpp tcOpp = salesforceJobOppRepository.findBySfId(id)
+                    .orElse(null);
+                if (tcOpp != null) {
+                    UpdateJobRequest updateRequest = extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
+                    updateJobFromRequest(tcOpp, updateRequest);
+                    salesforceJobOppRepository.save(tcOpp);
+                }
+                count++;
+
+                if (count % 100 == 0) {
+                    LogBuilder.builder(log)
+                        .action("Sync Open Jobs From Salesforce")
+                        .message("Processed " + count + " Job Opportunities from Salesforce")
+                        .logInfo();
+                }
+            }
+            LogBuilder.builder(log)
+                .action("Sync Open Jobs From Salesforce")
+                .message("Successfully completed update of " + count +
+                    " Job Opportunities from Salesforce")
+                .logInfo();
+        }
+    }
+
+    private UpdateJobRequest extractUpdateJobRequestFromSalesforceOpp(
+        @NonNull Opportunity sfOpp,
+        @NonNull SalesforceJobOpp tcOpp
+    ) {
+        UpdateJobRequest request = new UpdateJobRequest();
+
+        // NEXT STEP
+        // Change only if SF value is non-null and user-entered value different to TC version
+        if (sfOpp.getNextStep() != null) {
+            if (isNextStepDifferent(tcOpp.getNextStep(), sfOpp.getNextStep())) {
+                request.setNextStep(sfOpp.getNextStep());
+            }
+        }
+
+        // NEXT STEP DUE DATE
+        final String nextStepDueDate = sfOpp.getNextStepDueDate();
+        if (nextStepDueDate != null) {
+            try {
+                request.setNextStepDueDate(
+                    LocalDate.parse(nextStepDueDate));
+            } catch (DateTimeParseException ex) {
+                LogBuilder.builder(log)
+                    .action("extractUpdateJobRequestFromSalesforceOpp")
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate +
+                        " in Job Opp from Salesforce: " + sfOpp.getName())
+                    .logError();
+            }
+        }
+
+        // STAGE
+        JobOpportunityStage stage = null;
+        try {
+            stage = JobOpportunityStage.textToEnum(sfOpp.getStageName());
+        } catch (IllegalArgumentException e) {
+            LogBuilder.builder(log)
+                .action("extractUpdateJobRequestFromSalesforceOpp")
+                .message("Error decoding stage: " + sfOpp.getStageName() +
+                    " in Job Opp from Salesforce: " + sfOpp.getName())
+                .logError();
+        }
+        request.setStage(stage);
+
+        // CLOSING COMMENTS
+        request.setClosingComments(sfOpp.getClosingComments());
+
+        return request;
     }
 
     @Override

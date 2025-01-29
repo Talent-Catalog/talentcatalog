@@ -20,8 +20,6 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -34,7 +32,6 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.sf.Opportunity;
-import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -137,60 +134,6 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
             copyOpportunityToJobOpp(op, sfJobOpp);
         }
         return salesforceJobOppRepository.save(sfJobOpp);
-    }
-
-    @Override
-    public void updateJobs(List<String> sfIds) throws SalesforceException {
-        if (sfIds != null && !sfIds.isEmpty()) {
-            LogBuilder.builder(log)
-                .action("UpdateJobs")
-                .message("Updating job opportunities from Salesforce")
-                .logInfo();
-
-            // Fetch Salesforce equivalents in batches - because there's a 4,000-character limit on
-            // single strings in a SOQL WHERE clause, which the concatenated sfIds might exceed.
-            int totalItems = sfIds.size();
-            int batchSize = 100;
-            List<Opportunity> sfOpps = new ArrayList<>();
-
-            for (int i = 0; i < totalItems; i += batchSize) {
-                List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
-                sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.JOB));
-            }
-
-            // Add any opps that were reopened on Salesforce
-            sfOpps.addAll(salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.JOB));
-
-            LogBuilder.builder(log)
-                .action("UpdateJobs")
-                .message("Loaded " + sfOpps.size() + " job opportunities from Salesforce")
-                .logInfo();
-
-            int count = 0;
-            int updates = 0;
-            for (Opportunity sfOpp : sfOpps) {
-                String id = sfOpp.getId();
-                //Fetch DB with id
-                SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findBySfId(id)
-                    .orElse(null);
-                if (salesforceJobOpp != null) {
-                    copyOpportunityToJobOpp(sfOpp, salesforceJobOpp);
-                    salesforceJobOppRepository.save(salesforceJobOpp);
-                    updates++;
-                }
-                count++;
-                if (count%100 == 0) {
-                    LogBuilder.builder(log)
-                        .action("UpdateJobs")
-                        .message("Processed " + count + " job opportunities from Salesforce")
-                        .logInfo();
-                }
-            }
-            LogBuilder.builder(log)
-                .action("UpdateJobs")
-                .message("Updated " + updates + " job opportunities from Salesforce")
-                .logInfo();
-        }
     }
 
     /**

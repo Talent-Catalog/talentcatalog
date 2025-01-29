@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+import static org.tctalent.server.util.NextStepHelper.isNextStepDifferent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -79,7 +80,6 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.util.NextStepHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
@@ -683,9 +683,10 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 userForAttribution.getUsername(), LocalDate.now(),
                 opp.getNextStep(), oppParams.getNextStep());
 
-            // If next step details changing, send automated post to JobCreatorSourcePartner chat.
-            if (oppParams.getNextStep() != null
-            ) {
+            opp.setNextStep(processedNextStep);
+
+            // If next step details changed, automate post to JobCreatorSourcePartner chat.
+            if (oppParams.getNextStep() != null) {
                 // To compare previous next step to new one, need to ensure neither is null.
                 // Cases are auto-populated with a value for next step when created, but this has
                 // not always been the case.
@@ -701,7 +702,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 // doesn't set a new one, then submits) it will not be used (see below) — so, for
                 // purpose of comparison we give it the same value as the current due date (no
                 // message will be sent because they're the same).
-                // TODO: next step due date should be a required value in the form
                 LocalDate requestDueDate =
                     oppParams.getNextStepDueDate() == null ?
                         currentDueDate : oppParams.getNextStepDueDate();
@@ -737,8 +737,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     chatPostService.publishChatPost(nextStepChangeChatPost);
                 }
             }
-
-            opp.setNextStep(processedNextStep);
 
             // A next step always needs a due date
             final LocalDate requestDueDate = oppParams.getNextStepDueDate();
@@ -1044,14 +1042,16 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
      * Creates {@link CandidateOpportunityParams} from a Salesforce Candidate Opportunity.
      * @param sfOpp SF Opp from which oppParams will be extracted
      */
-    private CandidateOpportunityParams extractParamsFromSalesforceOpp(@NonNull Opportunity sfOpp,
-        @NonNull CandidateOpportunity tcOpp) {
+    private CandidateOpportunityParams extractParamsFromSalesforceOpp(
+        @NonNull Opportunity sfOpp,
+        @NonNull CandidateOpportunity tcOpp
+    ) {
         CandidateOpportunityParams oppParams = new CandidateOpportunityParams();
 
         // NEXT STEP
         // Change only if SF value is non-null and user-entered value different to TC version
         if (sfOpp.getNextStep() != null) {
-            if (NextStepHelper.isNextStepDifferent(tcOpp.getNextStep(), sfOpp.getNextStep())) {
+            if (isNextStepDifferent(tcOpp.getNextStep(), sfOpp.getNextStep())) {
                 oppParams.setNextStep(sfOpp.getNextStep());
             }
         }
@@ -1064,10 +1064,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     LocalDate.parse(nextStepDueDate));
             } catch (DateTimeParseException ex) {
                 LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
                     .action("LoadCandidateOpportunity")
                     .message("Error decoding nextStepDueDate: " + nextStepDueDate +
-                        " in Candidate Opp " + sfOpp.getName())
+                        " in Candidate Opp from Salesforce: " + sfOpp.getName())
                     .logError();
             }
         }
@@ -1078,10 +1077,9 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             stage = CandidateOpportunityStage.textToEnum(sfOpp.getStageName());
         } catch (IllegalArgumentException e) {
             LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
                 .action("LoadCandidateOpportunity")
-                .message("Error decoding stage in load: " + sfOpp.getStageName() +
-                    " in Candidate Opp " + sfOpp.getName())
+                .message("Error decoding stage: " + sfOpp.getStageName() +
+                    " in Candidate Opp from Salesforce: " + sfOpp.getName())
                 .logError();
         }
         oppParams.setStage(stage);

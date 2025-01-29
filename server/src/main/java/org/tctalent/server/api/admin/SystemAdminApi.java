@@ -457,7 +457,7 @@ public class SystemAdminApi {
 
     @GetMapping("sf-sync-open-jobs")
     public String sfSyncOpenJobs() {
-        jobService.updateOpenJobs();
+        jobService.initiateOpenJobSyncFromSf();
         return "started";
     }
 
