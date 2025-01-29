@@ -22,6 +22,8 @@ import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
+import Clarity from '@microsoft/clarity';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -51,16 +53,39 @@ export class AppComponent implements OnInit {
     )
 
     this.subscribeForTitleChanges()
+
+    // Initialize Clarity with your Project ID
+    Clarity.init(environment.clarityProjectId);
+
+    // Track page views on router changes
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // Track page views manually
+        Clarity.event('PageView');
+        console.log('Clarity tracked page view for:', event.urlAfterRedirects);
+      }
+    });
   }
 
   private onChangedLogin(user: User) {
     //Only show standard header if logged on (ie loggedInUser is not null)
     this.showHeader = user != null
 
-    //If logged out...
-    if (user == null) {
+    if (user != null) {
+      // If user is logged in, identify them in Clarity
+      // Replace these fields with the actual user properties
+      Clarity.identify(
+        String(user.id),             // custom-id
+        'session-' + user.id,   // custom-session-id 
+        'page-' + user.id,      // custom-page-id 
+        user.username || 'NoName'   // friendly-name
+      );
+      console.log('Clarity.identify() called for user:', user.username, user.id);
+    } else {
+      // If logged out...
       this.onLogout();
     }
+   
   }
 
   private onLogout() {

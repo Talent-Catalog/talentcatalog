@@ -29,6 +29,7 @@ import {JobService} from "../../../services/job.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {SearchOppsBy} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import Clarity from '@microsoft/clarity';
 
 @Component({
   selector: 'app-job-home',
@@ -147,4 +148,47 @@ export class JobHomeComponent extends HomeComponent {
     //interested in their own jobs.
     return !this.authorizationService.isEmployerPartner();
   }
+
+  onTabChanged(event: any): void {
+    const loggedInUser = this.authenticationService.getLoggedInUser();
+    const tabId = event.nextId; // Get the ID of the selected tab
+  
+    // Map tab IDs to meaningful names for tracking
+    const tabNameMapping: { [key: string]: string } = {
+      LiveJobs: 'Live Jobs',
+      StarredJobs: 'Starred Jobs',
+      MyJobs: 'TBB Jobs',
+      MyCasesAsJobCreator: 'TBB Job cases',
+      MyCasesAsSourcePartner: 'TBB Source cases',
+      NewJob: 'New Job',
+      MyCandidateChatsAsSourcePartner: 'Candidate Chats'
+    };
+  
+    const tabName = tabNameMapping[tabId] || tabId; // Fallback to tabId if no mapping exists
+   
+     // Update the URL without reloading the page
+     // window.history.replaceState(null, '', `/jobs?tab=${tabId}`);
+ 
+    // Send a custom event to Clarity to track the tab change
+    // Clarity.event(`TabChange_${tabId}_${tabName}`);
+     // Combine pageUrl and tabName into a single string for Clarity
+  const clarityEventData = `VirtualPageView | PageUrl: /jobs/tab/${tabId}, TabName: ${tabName}`;
+
+  Clarity.setTag(tabName, tabName);
+  Clarity.setTag("test", "test");
+  // Send a single-parameter event to Clarity
+  Clarity.event(clarityEventData);
+    // console.log(`Clarity.event('TabChange_${tabId}_${tabName}') tracked`);
+    console.log(tabName);
+    console.log(clarityEventData);
+
+    Clarity.identify(
+      String(loggedInUser.id),             // custom-id
+      'session-' + loggedInUser.id,   // custom-session-id 
+      'page-' + loggedInUser.id,      // custom-page-id 
+      loggedInUser.username || 'NoName'   // friendly-name
+    );
+    console.log('Clarity.identify() called for user:', loggedInUser.username, loggedInUser.id);
+  }
+  
 }
