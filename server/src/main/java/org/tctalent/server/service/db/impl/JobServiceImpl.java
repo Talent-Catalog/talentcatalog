@@ -823,19 +823,19 @@ public class JobServiceImpl implements JobService {
             job.setSkipCandidateSearch(skipCandidateSearch);
         }
 
-        // NEXT STEP PROCESSING
-        // Update may be automated, in which case attribute to System Admin
-        User userForAttribution = userService.getLoggedInUser();
-        if (userForAttribution == null) {
-            userForAttribution = userService.getSystemAdminUser();
-        }
-
-        String processedNextStep = auditStampNextStep(userForAttribution.getUsername(),
-            LocalDate.now(), job.getNextStep(), request.getNextStep());
-
-        job.setNextStep(processedNextStep);
-
         if (request.getNextStep() != null) {
+            // NEXT STEP PROCESSING
+            // Update may be automated, in which case attribute to System Admin
+            User userForAttribution = userService.getLoggedInUser();
+            if (userForAttribution == null) {
+                userForAttribution = userService.getSystemAdminUser();
+            }
+
+            String processedNextStep = auditStampNextStep(userForAttribution.getUsername(),
+                LocalDate.now(), job.getNextStep(), request.getNextStep());
+
+            job.setNextStep(processedNextStep);
+
             // If next step details changing, send automated post to JobCreatorAllSourcePartners chat.
             // To compare previous next step to new one, need to ensure neither is null.
             // Job opps are auto-populated with a value for next step when created, but this has

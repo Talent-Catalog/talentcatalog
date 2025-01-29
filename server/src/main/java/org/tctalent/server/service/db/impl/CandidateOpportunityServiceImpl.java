@@ -673,20 +673,20 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 opp.setStage(newStage);
             }
 
-            // NEXT STEP PROCESSING
-            // Update may be automated, in which case attribute to System Admin
-            User userForAttribution = userService.getLoggedInUser();
-            if (userForAttribution == null) {
-                userForAttribution = userService.getSystemAdminUser();
-            }
-            final String processedNextStep = auditStampNextStep(
-                userForAttribution.getUsername(), LocalDate.now(),
-                opp.getNextStep(), oppParams.getNextStep());
-
-            opp.setNextStep(processedNextStep);
-
-            // If next step details changed, automate post to JobCreatorSourcePartner chat.
             if (oppParams.getNextStep() != null) {
+                // NEXT STEP PROCESSING
+                // Update may be automated, in which case attribute to System Admin
+                User userForAttribution = userService.getLoggedInUser();
+                if (userForAttribution == null) {
+                    userForAttribution = userService.getSystemAdminUser();
+                }
+                final String processedNextStep = auditStampNextStep(
+                    userForAttribution.getUsername(), LocalDate.now(),
+                    opp.getNextStep(), oppParams.getNextStep());
+
+                opp.setNextStep(processedNextStep);
+
+                // If next step details changed, automate post to JobCreatorSourcePartner chat.
                 // To compare previous next step to new one, need to ensure neither is null.
                 // Cases are auto-populated with a value for next step when created, but this has
                 // not always been the case.
@@ -738,7 +738,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 }
             }
 
-            // A next step always needs a due date
             final LocalDate requestDueDate = oppParams.getNextStepDueDate();
             if (requestDueDate != null) {
                 opp.setNextStepDueDate(requestDueDate);
