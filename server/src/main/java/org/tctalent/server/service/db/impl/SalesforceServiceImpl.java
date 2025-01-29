@@ -634,34 +634,30 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public List<Opportunity> fetchOpportunitiesByIdOrOpenOnSF(
-        Collection<String> sfIds, OpportunityType type
-    ) {
+    public List<Opportunity> fetchOpportunitiesByOpenOnSF(OpportunityType type)
+        throws SalesforceException {
         List<Opportunity> opps = new ArrayList<>();
-        if (!sfIds.isEmpty()) {
-            //Construct the String of IDs for the WHERE clause
-            final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
-                .collect(Collectors.joining(","));
 
             String query = switch (type) {
                 case JOB ->
-                    "SELECT " + jobOpportunityRetrievalFields +
-                    " FROM Opportunity WHERE "
-                    + "(Id IN (" + idsAsString + ")"
-                    + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
+                    "SELECT " + jobOpportunityRetrievalFields
+                    + " FROM Opportunity WHERE "
+                    + "(IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
                     + salesforceConfig.getDaysAgoRecent() + "))"
                     + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
 
                 case CANDIDATE ->
-                    "SELECT " + candidateOpportunityRetrievalFields +
-                    " FROM Opportunity WHERE "
-                    + "(Id IN (" + idsAsString + ")"
-                    + " OR (IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
+                    "SELECT " + candidateOpportunityRetrievalFields
+                    + " FROM Opportunity WHERE "
+                    + "(IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
                     + salesforceConfig.getDaysAgoRecent() + "))"
-                    + " AND (RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
-                    + " OR RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
+                    + " AND (RecordTypeId = '"
+                    + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
+                    + " OR RecordTypeId = '"
+                    + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
 
-                default -> throw new IllegalArgumentException("Unsupported OpportunityType: " + type);
+                default ->
+                    throw new IllegalArgumentException("Unsupported OpportunityType: " + type);
             };
 
             ClientResponse response = executeQuery(query);
@@ -669,10 +665,47 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             OpportunityQueryResult result =
                 response.bodyToMono(OpportunityQueryResult.class).block();
 
-            //Retrieve the contact from the response
+            // Retrieve the records from the response
             if (result != null) {
                 opps = result.records;
             }
+        return opps;
+    }
+
+    @Override
+    public List<Opportunity> fetchOpportunitiesById(
+        Collection<String> sfIds, OpportunityType type
+    ) throws SalesforceException {
+        List<Opportunity> opps = new ArrayList<>();
+        //Construct the String of IDs for the WHERE clause
+        final String idsAsString = sfIds.stream().map(s -> "'" + s + "'")
+            .collect(Collectors.joining(","));
+
+        String query = switch (type) {
+            case JOB ->
+                "SELECT " + jobOpportunityRetrievalFields +
+                " FROM Opportunity WHERE "
+                + "(Id IN (" + idsAsString + ")"
+                + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
+
+            case CANDIDATE ->
+                "SELECT " + candidateOpportunityRetrievalFields +
+                " FROM Opportunity WHERE "
+                + "(Id IN (" + idsAsString + ")"
+                + " AND (RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
+                + " OR RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
+
+            default -> throw new IllegalArgumentException("Unsupported OpportunityType: " + type);
+        };
+
+        ClientResponse response = executeQuery(query);
+
+        OpportunityQueryResult result =
+            response.bodyToMono(OpportunityQueryResult.class).block();
+
+        // Retrieve the records from the response
+        if (result != null) {
+            opps = result.records;
         }
         return opps;
     }

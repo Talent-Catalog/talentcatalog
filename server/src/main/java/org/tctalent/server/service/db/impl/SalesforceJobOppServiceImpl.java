@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -140,32 +140,41 @@ public class SalesforceJobOppServiceImpl implements SalesforceJobOppService {
     }
 
     @Override
-    public void updateJobs(Collection<String> sfIds) throws SalesforceException {
+    public void updateJobs(List<String> sfIds) throws SalesforceException {
         if (sfIds != null && !sfIds.isEmpty()) {
             LogBuilder.builder(log)
                 .action("UpdateJobs")
                 .message("Updating job opportunities from Salesforce")
                 .logInfo();
 
-            //Get SF opportunities from SF that we will use to do the updates
-            List<Opportunity> ops = salesforceService.fetchOpportunitiesByIdOrOpenOnSF(
-                    sfIds, OpportunityType.JOB
-            );
+            // Fetch Salesforce equivalents in batches - because there's a 4,000-character limit on
+            // single strings in a SOQL WHERE clause, which the concatenated sfIds might exceed.
+            int totalItems = sfIds.size();
+            int batchSize = 100;
+            List<Opportunity> sfOpps = new ArrayList<>();
+
+            for (int i = 0; i < totalItems; i += batchSize) {
+                List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
+                sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.JOB));
+            }
+
+            // Add any opps that were reopened on Salesforce
+            sfOpps.addAll(salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.JOB));
 
             LogBuilder.builder(log)
                 .action("UpdateJobs")
-                .message("Loaded " + ops.size() + " job opportunities from Salesforce")
+                .message("Loaded " + sfOpps.size() + " job opportunities from Salesforce")
                 .logInfo();
 
             int count = 0;
             int updates = 0;
-            for (Opportunity op : ops) {
-                String id = op.getId();
+            for (Opportunity sfOpp : sfOpps) {
+                String id = sfOpp.getId();
                 //Fetch DB with id
                 SalesforceJobOpp salesforceJobOpp = salesforceJobOppRepository.findBySfId(id)
                     .orElse(null);
                 if (salesforceJobOpp != null) {
-                    copyOpportunityToJobOpp(op, salesforceJobOpp);
+                    copyOpportunityToJobOpp(sfOpp, salesforceJobOpp);
                     salesforceJobOppRepository.save(salesforceJobOpp);
                     updates++;
                 }

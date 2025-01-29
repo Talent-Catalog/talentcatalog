@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import lombok.RequiredArgsConstructor;
@@ -52,44 +53,63 @@ public class CandidateOppBackgroundProcessingServiceImpl
    */
   @Scheduled(cron = "0 0 23 * * ?", zone = "GMT")
   @SchedulerLock(
-      name = "CandidateOpportunityService_updateOpenCases",
+      name = "CandidateOppBackgroundProcessingService_updateOpenCases",
       lockAtLeastFor = "PT23H",
       lockAtMostFor = "PT23H"
   )
   public void initiateBackgroundCaseUpdate() {
-    List<String> sfIds = candidateOpportunityService.findAllNonNullSfIdsByClosedFalse();
+    try {
+      List<String> sfIds = candidateOpportunityService.findAllNonNullSfIdsByClosedFalse();
 
-    if (!sfIds.isEmpty()) {
+      if (!sfIds.isEmpty()) {
+        LogBuilder.builder(log)
+            .action("UpdateCasesFromSf")
+            .message(
+                "Found " + sfIds.size() + " TC Candidate Opps which will be synced with their "
+                    + "Salesforce equivalents"
+            )
+            .logInfo();
+      }
+
+      // Fetch Salesforce equivalents in batches - necessary because there's a 4,000-character limit
+      // on single strings in a SOQL WHERE clause, which the concatenated sfIds might exceed.
+      int totalItems = sfIds.size();
+      int batchSize = 100;
+      List<Opportunity> sfOpps = new ArrayList<>();
+
+      for (int i = 0; i < totalItems; i += batchSize) {
+        List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
+        sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.CANDIDATE));
+      }
+
+      // Add any opps that were reopened on Salesforce
+      sfOpps.addAll(salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.CANDIDATE));
+
       LogBuilder.builder(log)
           .action("UpdateCasesFromSf")
           .message(
-              "Found " + sfIds.size() + " TC Candidate Opps which will be synced with their "
-              + "Salesforce equivalents"
-          )
+              "Fetched " + sfOpps.size() + " Candidate Opps from Salesforce, including " +
+                  (sfOpps.size() - sfIds.size())
+                  + " that were closed on the TC but reopened by a user on "
+                  + "Salesforce.")
           .logInfo();
-    }
 
-    List<Opportunity> sfOpps = salesforceService.fetchOpportunitiesByIdOrOpenOnSF(
-        sfIds, OpportunityType.CANDIDATE
-    );
+      if (!sfOpps.isEmpty()) {
+        // Create BackProcessor
+        BackProcessor<IdContext> backProcessor = createCaseUpdateBackProcessor(sfOpps);
 
-    LogBuilder.builder(log)
-        .action("UpdateCasesFromSf")
-        .message(
-            "Fetched " + sfOpps.size() + " Candidate Opps from Salesforce, including " +
-            (sfOpps.size() - sfIds.size()) + " that were closed on the TC but reopened by a user on "
-                + "Salesforce.")
-        .logInfo();
+        // Schedule background processing
+        BackRunner<IdContext> backRunner = new BackRunner<>();
 
-    if (!sfOpps.isEmpty()) {
-      // Create BackProcessor
-      BackProcessor<IdContext> backProcessor = createCaseUpdateBackProcessor(sfOpps);
+        ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
+            new IdContext(null, 200), 20);
+      }
 
-      // Schedule background processing
-      BackRunner<IdContext> backRunner = new BackRunner<>();
-
-      ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-          new IdContext(null, 200), 20);
+    } catch (Exception e) {
+      LogBuilder.builder(log)
+          .action("CandidateOppBackgroundProcessingService_updateOpenCases")
+          .message("Failed to update open cases")
+          .logError(e);
     }
   }
 
@@ -103,7 +123,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
             firstIndex + ctx.getNumToProcess() < sfOpps.size() ?
                 firstIndex + ctx.getNumToProcess() - 1 : sfOpps.size() - 1;
 
-        // sublist method's 2nd param 'toIndex' is exclusive, so we add 1 to the last indexve.
+        // sublist method's 2nd param 'toIndex' is exclusive, so we add 1 to the last index.
         List<Opportunity> nextBatch = sfOpps.subList((int) firstIndex, (int) lastIndex + 1);
 
         // Delegate the actual processing to the appropriate service

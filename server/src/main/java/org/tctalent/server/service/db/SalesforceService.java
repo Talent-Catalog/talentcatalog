@@ -50,15 +50,22 @@ import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 public interface SalesforceService {
 
     /**
-     * Fetches opportunities with fields populated from Salesforce.
-     *
-     * <p>The opportunities fetched are those with the specified ids plus recently changed open opps.
-     * @param sfIds Ids of requested Salesforce records
+     * Fetches opportunities matching the specified IDs with fields populated from Salesforce.
      * @param type the OpportunityType being processed - selects appropriate SQL query
      * @return Opportunities matching criteria from Salesforce
      */
-    List<Opportunity> fetchOpportunitiesByIdOrOpenOnSF(Collection<String> sfIds,
-        OpportunityType type);
+    List<Opportunity> fetchOpportunitiesByOpenOnSF(OpportunityType type)
+        throws SalesforceException;
+
+    /**
+     * Fetches open opportunities whose stage was recently changed, with fields populated from
+     * Salesforce.
+     * @param sfIds IDs of requested Salesforce records
+     * @param type the OpportunityType being processed - selects appropriate SQL query
+     * @return Opportunities matching criteria from Salesforce
+     */
+    List<Opportunity> fetchOpportunitiesById(Collection<String> sfIds, OpportunityType type)
+        throws SalesforceException;
 
     /**
      * Fetches opportunity with the given id from Salesforce.

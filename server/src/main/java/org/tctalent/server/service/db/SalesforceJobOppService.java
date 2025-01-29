@@ -16,7 +16,7 @@
 
 package org.tctalent.server.service.db;
 
-import java.util.Collection;
+import java.util.List;
 import javax.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
@@ -114,5 +114,5 @@ public interface SalesforceJobOppService {
      * @param sfIds Salesforce ids of cache records to be updated from Salesforce
      * @throws SalesforceException if there are issues contacting Salesforce
      */
-    void updateJobs(Collection<String> sfIds) throws SalesforceException;
+    void updateJobs(List<String> sfIds) throws SalesforceException;
 }

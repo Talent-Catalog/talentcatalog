@@ -28,7 +28,6 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1167,7 +1166,7 @@ public class JobServiceImpl implements JobService {
 
     /**
      * Fetches all open SF Jobs on the TC DB and supplies them to
-     * {@link SalesforceJobOppService#updateJobs(Collection)} where they are combined with open jobs
+     * {@link SalesforceJobOppService#updateJobs(List)} where they are combined with open jobs
      * from SF whose stage has recently changed (click method link for further details). The
      * resulting collection is used to update the TC opps with values from their SF equivalents.
      *
@@ -1198,7 +1197,6 @@ public class JobServiceImpl implements JobService {
             salesforceJobOppService.updateJobs(sfIds);
         } catch (Exception e) {
             LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
                 .action("JobService.updateOpenJobs")
                 .message("Failed to update open jobs")
                 .logError(e);
