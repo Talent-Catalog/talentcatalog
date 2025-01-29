@@ -456,9 +456,25 @@ public class SystemAdminApi {
 //    }
 
     @GetMapping("sf-sync-open-jobs")
-    public String sfSyncOpenJobs() {
+    ResponseEntity<?> sfSyncOpenJobs() {
+      try {
+        LogBuilder.builder(log)
+            .action("Sync Open Jobs From SF")
+            .message("Manually triggered")
+            .logInfo();
+
         jobService.initiateOpenJobSyncFromSf();
-        return "started";
+
+        return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+      } catch(Exception e) {
+        LogBuilder.builder(log)
+            .action("Sync Open Jobs From SF")
+            .message("Manually triggered operation failed")
+            .logInfo();
+
+        // Return 500 Internal Server Error including error in body for display on frontend
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+      }
     }
 
   /**
