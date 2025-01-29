@@ -161,7 +161,7 @@ export class CandidateFieldService {
         this.levelGetNameFormatter, null, true),
       new CandidateFieldInfo("IELTS Score", "ieltsScore", null,
         this.ieltsScoreFormatter, null, true),
-    new CandidateFieldInfo("DETOfficial Exam", "englishAssessmentScoreDet", null,
+    new CandidateFieldInfo("DET Score", "englishAssessmentScoreDet", null,
       this.englishAssessmentScoreDetFormatter, null, true),
       new CandidateFieldInfo("NCLC Score", "frenchAssessmentScoreNclc", null,
         this.nclcScoreFormatter, null, true),
