@@ -648,13 +648,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
                 case CANDIDATE ->
                     "SELECT " + candidateOpportunityRetrievalFields
-                    + " FROM Opportunity WHERE "
-                    + "(IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
-                    + salesforceConfig.getDaysAgoRecent() + "))"
-                    + " AND (RecordTypeId = '"
-                    + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
-                    + " OR RecordTypeId = '"
-                    + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
+                    + " FROM Opportunity"
+                    + " WHERE IsClosed = false"
+                    + " AND LastStageChangeDate > N_DAYS_AGO:" + salesforceConfig.getDaysAgoRecent()
+                    + " AND (RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
+                    + " OR RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
 
                 default ->
                     throw new IllegalArgumentException("Unsupported OpportunityType: " + type);
@@ -689,9 +687,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
 
             case CANDIDATE ->
-                "SELECT " + candidateOpportunityRetrievalFields +
-                " FROM Opportunity WHERE "
-                + "(Id IN (" + idsAsString + ")"
+                "SELECT " + candidateOpportunityRetrievalFields
+                + " FROM Opportunity WHERE"
+                + " Id IN (" + idsAsString + ")"
                 + " AND (RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitment() + "'"
                 + " OR RecordTypeId = '" + salesforceRecordTypeConfig.getCandidateRecruitmentCan() + "')";
 
@@ -2361,6 +2359,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         // Update the candidate opp
         createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);
+    }
+
+    @Override
+    public List<Opportunity> removeDuplicatesFromOppList(List<Opportunity> sfOpps) {
+        Map<String, Opportunity> uniqueOppsMap = new HashMap<>();
+
+        for (Opportunity sfOpp : sfOpps) {
+            uniqueOppsMap.putIfAbsent(sfOpp.getId(), sfOpp);
+        }
+
+        return new ArrayList<>(uniqueOppsMap.values());
     }
 
 }

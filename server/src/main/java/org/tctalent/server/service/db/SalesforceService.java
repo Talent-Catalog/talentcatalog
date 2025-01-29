@@ -370,4 +370,12 @@ public interface SalesforceService {
      */
     void updateSfCaseRelocationInfo(CandidateOpportunity candidateOpportunity)
         throws NoSuchObjectException, SalesforceException, WebClientException;
+
+    /**
+     * Removes objects from of type Opportunity from given List if they share the same ID
+     * @param sfOpps the List to be filtered for duplicates
+     * @return the filtered List
+     */
+    List<Opportunity> removeDuplicatesFromOppList(List<Opportunity> sfOpps);
+
 }

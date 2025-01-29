@@ -52,11 +52,11 @@ public class CandidateOppBackgroundProcessingServiceImpl
    * updated from Salesforce. Can also be called from {@code SystemAdminApi.sfSyncOpenCases()}
    */
   @Scheduled(cron = "0 0 23 * * ?", zone = "GMT")
-//  @SchedulerLock(
-//      name = "CandidateOppBackgroundProcessingService_updateOpenCases",
-//      lockAtLeastFor = "PT23H",
-//      lockAtMostFor = "PT23H"
-//  )
+  @SchedulerLock(
+      name = "CandidateOppBackgroundProcessingService_initiateBackgroundCaseUpdate",
+      lockAtLeastFor = "PT23H",
+      lockAtMostFor = "PT23H"
+  )
   public void initiateBackgroundCaseUpdate() {
     try {
       List<String> sfIds = candidateOpportunityService.findAllNonNullSfIdsByClosedFalse();
@@ -82,8 +82,11 @@ public class CandidateOppBackgroundProcessingServiceImpl
         sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.CANDIDATE));
       }
 
-      // Add any opps that were reopened on Salesforce
+      // Add any opps that were potentially reopened on Salesforce
       sfOpps.addAll(salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.CANDIDATE));
+
+      // The previous step will have introduced duplicates that have to be removed
+      sfOpps = salesforceService.removeDuplicatesFromOppList(sfOpps);
 
       LogBuilder.builder(log)
           .action("UpdateCasesFromSf")

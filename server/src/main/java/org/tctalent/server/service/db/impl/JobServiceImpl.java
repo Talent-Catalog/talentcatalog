@@ -1238,8 +1238,11 @@ public class JobServiceImpl implements JobService {
                 sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.JOB));
             }
 
-            // Add any opps that were reopened on Salesforce
+            // Add any opps that were potentially reopened on Salesforce
             sfOpps.addAll(salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.JOB));
+
+            // The previous step will have introduced duplicates that have to be removed
+            sfOpps = salesforceService.removeDuplicatesFromOppList(sfOpps);
 
             LogBuilder.builder(log)
                 .action("UpdateJobs")
