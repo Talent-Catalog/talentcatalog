@@ -69,6 +69,27 @@ public class SystemMetricsImpl implements SystemMetrics {
     return lastCpuValue.get(); // Return last valid value if no metric or an error occurs
   }
 
+  /**
+   * Calculates the total memory utilisation across all JVM memory pools.
+   * <p>
+   * Micrometer reports JVM memory usage as separate metrics for different memory pools,
+   * categorised into "heap" and "non-heap" memory areas. These memory pools include:
+   * - Heap memory: G1 Eden Space, G1 Survivor Space, G1 Old Gen, etc.
+   * - Non-heap memory: Metaspace, CodeHeap for JIT compilation, etc.
+   * <p>
+   * See the JvmMemoryUsageTest#testJvmMemoryUsedAggregation unit test for details and the
+   * Micrometer JVM Memory Metrics source code:
+   * <a href="https://github.com/micrometer-metrics/micrometer/blob/main/micrometer-core/src/main/java/io/micrometer/core/instrument/binder/jvm/JvmMemoryMetrics.java">
+   * JvmMemoryMetrics.java</a>
+   * <p>
+   * Since Micrometer does not provide a pre-aggregated "total memory used" metric, this
+   * method explicitly sums up the individual memory usage (`jvm.memory.used`) and maximum
+   * capacity (`jvm.memory.max`) values across all memory pools.
+   * <p>
+   * The total memory utilisation is then calculated and returned.
+   *
+   * @return A formatted string representing total JVM memory utilisation as a percentage.
+   */
   @Override
   public String getMemoryUtilization() {
     try {
