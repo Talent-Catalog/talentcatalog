@@ -19,6 +19,7 @@ package org.tctalent.server.logging;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.RequiredSearch;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -71,18 +72,20 @@ public class SystemMetricsImpl implements SystemMetrics {
   @Override
   public String getMemoryUtilization() {
     try {
-      // Get used memory
-      RequiredSearch usedMemorySearch = meterRegistry.get("jvm.memory.used");
-      Gauge usedMemoryGauge = usedMemorySearch.gauge();
-      double usedMemory = usedMemoryGauge.value();
+      // Get all gauges for jvm.memory.used
+      Collection<Gauge> usedMemoryGauges = meterRegistry.get("jvm.memory.used").gauges();
+      double totalUsedMemory = usedMemoryGauges.stream()
+          .mapToDouble(Gauge::value)
+          .sum();
 
-      // Get max memory
-      RequiredSearch maxMemorySearch = meterRegistry.get("jvm.memory.max");
-      Gauge maxMemoryGauge = maxMemorySearch.gauge();
-      double maxMemory = maxMemoryGauge.value();
+      // Get all gauges for jvm.memory.max
+      Collection<Gauge> maxMemoryGauges = meterRegistry.get("jvm.memory.max").gauges();
+      double totalMaxMemory = maxMemoryGauges.stream()
+          .mapToDouble(Gauge::value)
+          .sum();
 
-      if (!Double.isNaN(usedMemory) && !Double.isNaN(maxMemory) && maxMemory > 0) {
-        double memoryUtilization = Math.min((usedMemory / maxMemory) * 100, 100);
+      if (!Double.isNaN(totalUsedMemory) && !Double.isNaN(totalMaxMemory) && totalMaxMemory > 0) {
+        double memoryUtilization = Math.min((totalUsedMemory / totalMaxMemory) * 100, 100);
         String formattedValue = String.format("%.2f%%", memoryUtilization);
         lastMemValue.set(formattedValue);
         return formattedValue;
