@@ -52,11 +52,11 @@ public class CandidateOppBackgroundProcessingServiceImpl
    * updated from Salesforce. Can also be called from {@code SystemAdminApi.sfSyncOpenCases()}
    */
   @Scheduled(cron = "0 0 23 * * ?", zone = "GMT")
-  @SchedulerLock(
-      name = "CandidateOppBackgroundProcessingService_updateOpenCases",
-      lockAtLeastFor = "PT23H",
-      lockAtMostFor = "PT23H"
-  )
+//  @SchedulerLock(
+//      name = "CandidateOppBackgroundProcessingService_updateOpenCases",
+//      lockAtLeastFor = "PT23H",
+//      lockAtMostFor = "PT23H"
+//  )
   public void initiateBackgroundCaseUpdate() {
     try {
       List<String> sfIds = candidateOpportunityService.findAllNonNullSfIdsByClosedFalse();

@@ -49,6 +49,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -1175,10 +1176,10 @@ public class JobServiceImpl implements JobService {
      * not the preferred user behaviour, but until safeguards are put in place, this scheduled
      * update (daily at 1am GMT) keeps TC data as accurate as possible.
      */
+    @Transactional
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
     @SchedulerLock(name = "JobService_initiateOpenJobSyncFromSf", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
-    @Async
     @Override
     public void initiateOpenJobSyncFromSf() {
         try {
@@ -1197,8 +1198,8 @@ public class JobServiceImpl implements JobService {
             syncOpenJobsFromSf(sfIds);
         } catch (Exception e) {
             LogBuilder.builder(log)
-                .action("JobService.updateOpenJobs")
-                .message("Failed to update open jobs")
+                .action("JobService_initiateOpenJobSyncFromSf")
+                .message("Failed to update open Jobs from Salesforce counterparts")
                 .logError(e);
         }
     }
@@ -1222,8 +1223,8 @@ public class JobServiceImpl implements JobService {
     private void syncOpenJobsFromSf(List<String> sfIds) throws SalesforceException {
         if (sfIds != null && !sfIds.isEmpty()) {
             LogBuilder.builder(log)
-                .action("UpdateJobsFromSf")
-                .message("Updating job opportunities from Salesforce")
+                .action("JobServiceImpl_syncOpenJobsFromSf")
+                .message("Updating open Job Opportunities from Salesforce")
                 .logInfo();
 
             // Fetch Salesforce equivalents in batches - because there's a 4,000-character limit on
@@ -1315,9 +1316,6 @@ public class JobServiceImpl implements JobService {
                 .logError();
         }
         request.setStage(stage);
-
-        // CLOSING COMMENTS
-        request.setClosingComments(sfOpp.getClosingComments());
 
         return request;
     }

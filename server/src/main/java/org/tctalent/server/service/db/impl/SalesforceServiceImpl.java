@@ -641,9 +641,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             String query = switch (type) {
                 case JOB ->
                     "SELECT " + jobOpportunityRetrievalFields
-                    + " FROM Opportunity WHERE "
-                    + "(IsClosed = false AND LastStageChangeDate > N_DAYS_AGO:"
-                    + salesforceConfig.getDaysAgoRecent() + "))"
+                    + " FROM Opportunity"
+                    + " WHERE IsClosed = false"
+                    + " AND LastStageChangeDate > N_DAYS_AGO:" + salesforceConfig.getDaysAgoRecent()
                     + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
 
                 case CANDIDATE ->
@@ -683,9 +683,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         String query = switch (type) {
             case JOB ->
-                "SELECT " + jobOpportunityRetrievalFields +
-                " FROM Opportunity WHERE "
-                + "(Id IN (" + idsAsString + ")"
+                "SELECT " + jobOpportunityRetrievalFields
+                + " FROM Opportunity WHERE"
+                + " Id IN (" + idsAsString + ")"
                 + " AND RecordTypeId = '" + salesforceRecordTypeConfig.getEmployerJob() + "'";
 
             case CANDIDATE ->
