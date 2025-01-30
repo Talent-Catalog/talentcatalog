@@ -55,7 +55,7 @@ export class CandidateTaskComponent implements OnInit {
 
     this.addRequiredFormControls();
 
-    if (this.selectedTask.task.docLink) {
+    if (this.selectedTask.task.docLink && this.selectedTask.task.taskType == "Simple") {
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.docLink);
     }
 
