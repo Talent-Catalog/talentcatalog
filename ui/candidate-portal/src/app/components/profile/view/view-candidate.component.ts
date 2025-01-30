@@ -24,6 +24,7 @@ import {forkJoin, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {Location} from "@angular/common";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-view-candidate',
@@ -53,11 +54,17 @@ export class ViewCandidateComponent implements OnInit {
   constructor(private candidateService: CandidateService,
               private chatService: ChatService,
               private localStorageService: LocalStorageService,
-              private location: Location) { }
+              private location: Location,
+              private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.fetchCandidate();
-    this.selectDefaultTab();
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      // If there is a tab param, set that as the active tab
+      // If there is no tab param, check the browser cache for the last active tab or if none get the default tab.
+      tab ? this.setActiveTabId(tab) : this.fetchCachedTab();
+    });
   }
 
   /**
@@ -87,30 +94,29 @@ export class ViewCandidateComponent implements OnInit {
       });
   }
 
-  private selectDefaultTab() {
-    // todo if url has a tab param use that, otherwise use memory
-
-
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID != null ? defaultActiveTabID : this.defaultTabId;
-    this.setActiveTabId(this.activeTabId);
+  private fetchCachedTab() {
+    const cachedActiveTabID: string = this.localStorageService.get(this.lastTabKey);
+    // If there isn't a cached active tab, set it to the defaultTabId
+    this.activeTabId = cachedActiveTabID != null ? cachedActiveTabID : this.defaultTabId;
+    this.setTabParam(this.activeTabId)
   }
 
   onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
+    this.setTabParam(event.nextId);
   }
 
   private setActiveTabId(id: string) {
     this.activeTabId = id;
     this.localStorageService.set(this.lastTabKey, id);
-    this.setTabParam(this.activeTabId)
   }
 
+  // Update the URL to include the tab param and the current active tab
   setTabParam(activeTab: string) {
     const currentUrl = this.location.path();
     const baseUrl = currentUrl.split('?')[0];
     const updatedUrl = `${baseUrl}?tab=${activeTab}`;
-    this.location.replaceState(updatedUrl); // Update the URL without reloading
+    this.location.replaceState(updatedUrl);
   }
 
   private setCandidate(candidate: Candidate) {
