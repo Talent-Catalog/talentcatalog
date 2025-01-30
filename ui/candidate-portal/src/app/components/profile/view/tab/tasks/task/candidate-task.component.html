@@ -47,7 +47,7 @@
 </div>
 
 <!-- DISPLAY DOC IF PRESENT -->
-<ng-container *ngIf="selectedTask.task.taskType === 'Simple' && selectedTask.task.docLink != null">
+<ng-container *ngIf="selectedTask.task.docLink != null">
   <iframe [src]="url" style="width: 100%;height: 500px"></iframe>
 </ng-container>
 
