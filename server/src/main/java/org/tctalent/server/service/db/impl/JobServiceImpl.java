@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -1250,6 +1251,7 @@ public class JobServiceImpl implements JobService {
                 .logInfo();
 
             int count = 0;
+            int updates = 0;
 
             for (Opportunity sfOpp : sfOpps) {
                 String id = sfOpp.getId();
@@ -1257,38 +1259,47 @@ public class JobServiceImpl implements JobService {
                 SalesforceJobOpp tcOpp = salesforceJobOppRepository.findBySfId(id)
                     .orElse(null);
                 if (tcOpp != null) {
-                    UpdateJobRequest updateRequest = extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
-                    updateJobFromRequest(tcOpp, updateRequest);
-                    salesforceJobOppRepository.save(tcOpp);
+                    UpdateJobRequest updateRequest =
+                        extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
+                    if (updateRequest != null) {
+                        updateJobFromRequest(tcOpp, updateRequest);
+                        salesforceJobOppRepository.save(tcOpp);
+                        updates++;
+                    }
                 }
                 count++;
 
-                if (count % 100 == 0) {
+                if ((count % 100 == 0) || count == sfOpps.size()) {
                     LogBuilder.builder(log)
                         .action("Sync Open Jobs From Salesforce")
-                        .message("Processed " + count + " Job Opportunities from Salesforce")
+                        .message("Processed " + count + " Job Opps from Salesforce, of which "
+                            + updates + " led to update of TC equivalent.")
                         .logInfo();
                 }
             }
-            LogBuilder.builder(log)
-                .action("Sync Open Jobs From Salesforce")
-                .message("Successfully completed update of " + count +
-                    " Job Opportunities from Salesforce")
-                .logInfo();
         }
     }
 
-    private UpdateJobRequest extractUpdateJobRequestFromSalesforceOpp(
+    /**
+     * Creates {@link UpdateJobRequest} from a Salesforce Job Opportunity. Only adds a value if the
+     * SF version is non-null and different to the TC version. Returns null if no values added.
+     * @param sfOpp SF Opp from which oppParams will be extracted
+     * @param tcOpp TC equivalent to which it will be compared
+     * @return {@link UpdateJobRequest} if any values added, otherwise null
+     */
+    private @Nullable UpdateJobRequest extractUpdateJobRequestFromSalesforceOpp(
         @NonNull Opportunity sfOpp,
         @NonNull SalesforceJobOpp tcOpp
     ) {
         UpdateJobRequest request = new UpdateJobRequest();
+        int changes = 0;
 
         // NEXT STEP
         // Change only if SF value is non-null and user-entered value different to TC version
         if (sfOpp.getNextStep() != null) {
             if (isNextStepDifferent(tcOpp.getNextStep(), sfOpp.getNextStep())) {
                 request.setNextStep(sfOpp.getNextStep());
+                changes++;
             }
         }
 
@@ -1296,8 +1307,11 @@ public class JobServiceImpl implements JobService {
         final String nextStepDueDate = sfOpp.getNextStepDueDate();
         if (nextStepDueDate != null) {
             try {
-                request.setNextStepDueDate(
-                    LocalDate.parse(nextStepDueDate));
+                LocalDate parsedDate = LocalDate.parse(nextStepDueDate);
+                if (!Objects.equals(tcOpp.getNextStepDueDate(), parsedDate)) {
+                    request.setNextStepDueDate(parsedDate);
+                    changes++;
+                }
             } catch (DateTimeParseException ex) {
                 LogBuilder.builder(log)
                     .action("extractUpdateJobRequestFromSalesforceOpp")
@@ -1308,9 +1322,12 @@ public class JobServiceImpl implements JobService {
         }
 
         // STAGE
-        JobOpportunityStage stage = null;
         try {
-            stage = JobOpportunityStage.textToEnum(sfOpp.getStageName());
+            JobOpportunityStage stage = JobOpportunityStage.textToEnum(sfOpp.getStageName());
+            if (tcOpp.getStage() != stage) {
+                request.setStage(stage);
+                changes++;
+            }
         } catch (IllegalArgumentException e) {
             LogBuilder.builder(log)
                 .action("extractUpdateJobRequestFromSalesforceOpp")
@@ -1318,9 +1335,8 @@ public class JobServiceImpl implements JobService {
                     " in Job Opp from Salesforce: " + sfOpp.getName())
                 .logError();
         }
-        request.setStage(stage);
 
-        return request;
+        return changes > 0 ? request : null;
     }
 
     @Override

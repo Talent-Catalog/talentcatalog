@@ -1051,6 +1051,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
      * adds a value if the SF version is non-null and different to the TC version. Returns null if
      * no values have been added.
      * @param sfOpp SF Opp from which oppParams will be extracted
+     * @param tcOpp TC equivalent to which it will be compared
      * @return {@link CandidateOpportunityParams} if any values added, otherwise null
      */
     private @Nullable CandidateOpportunityParams extractParamsFromSalesforceOpp(
