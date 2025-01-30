@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -1023,35 +1024,47 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
     @Transactional
     @Override
-    public void processCaseUpdateBatch(List<Opportunity> oppBatch) {
+    public int processCaseUpdateBatch(List<Opportunity> oppBatch) {
+        int updates = 0; // For tracking no. of records actually updated
+
         for (Opportunity sfOpp : oppBatch) {
+
+            // Fetch TC equivalent of SF Opp
             String sfId = sfOpp.getId();
-            // Fetch SF equivalent of TC Opp
             CandidateOpportunity tcOpp =
                 candidateOpportunityRepository.findBySfId(sfId).orElse(null);
 
             if (tcOpp != null) {
                 CandidateOpportunityParams oppParams = extractParamsFromSalesforceOpp(sfOpp, tcOpp);
-                updateCandidateOpportunity(tcOpp, oppParams);
+                if (oppParams != null) {
+                    updateCandidateOpportunity(tcOpp, oppParams);
+                    updates++;
+                }
             }
         }
+
+        return updates;
     }
 
     /**
-     * Creates {@link CandidateOpportunityParams} from a Salesforce Candidate Opportunity.
+     * Creates {@link CandidateOpportunityParams} from a Salesforce Candidate Opportunity. Only
+     * adds a value if the SF version is non-null and different to the TC version. Returns null if
+     * no values have been added.
      * @param sfOpp SF Opp from which oppParams will be extracted
+     * @return {@link CandidateOpportunityParams} if any values added, otherwise null
      */
-    private CandidateOpportunityParams extractParamsFromSalesforceOpp(
+    private @Nullable CandidateOpportunityParams extractParamsFromSalesforceOpp(
         @NonNull Opportunity sfOpp,
         @NonNull CandidateOpportunity tcOpp
     ) {
         CandidateOpportunityParams oppParams = new CandidateOpportunityParams();
+        int changes = 0;
 
         // NEXT STEP
-        // Change only if SF value is non-null and user-entered value different to TC version
         if (sfOpp.getNextStep() != null) {
             if (isNextStepDifferent(tcOpp.getNextStep(), sfOpp.getNextStep())) {
                 oppParams.setNextStep(sfOpp.getNextStep());
+                changes++;
             }
         }
 
@@ -1059,8 +1072,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         final String nextStepDueDate = sfOpp.getNextStepDueDate();
         if (nextStepDueDate != null) {
             try {
-                oppParams.setNextStepDueDate(
-                    LocalDate.parse(nextStepDueDate));
+                LocalDate parsedDate = LocalDate.parse(nextStepDueDate);
+                if (!Objects.equals(tcOpp.getNextStepDueDate(), parsedDate)) {
+                    oppParams.setNextStepDueDate(parsedDate);
+                    changes++;
+                }
             } catch (DateTimeParseException ex) {
                 LogBuilder.builder(log)
                     .action("LoadCandidateOpportunity")
@@ -1071,9 +1087,13 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
 
         // STAGE
-        CandidateOpportunityStage stage = null;
         try {
-            stage = CandidateOpportunityStage.textToEnum(sfOpp.getStageName());
+            CandidateOpportunityStage stage =
+                CandidateOpportunityStage.textToEnum(sfOpp.getStageName());
+            if (tcOpp.getStage() != stage) {
+                oppParams.setStage(stage);
+                changes++;
+            }
         } catch (IllegalArgumentException e) {
             LogBuilder.builder(log)
                 .action("LoadCandidateOpportunity")
@@ -1081,13 +1101,31 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                     " in Candidate Opp from Salesforce: " + sfOpp.getName())
                 .logError();
         }
-        oppParams.setStage(stage);
 
-        oppParams.setClosingComments(sfOpp.getClosingComments());
-        oppParams.setClosingCommentsForCandidate(sfOpp.getClosingCommentsForCandidate());
-        oppParams.setEmployerFeedback(sfOpp.getEmployerFeedback());
+        // CLOSING COMMENTS
+        String closingComments = sfOpp.getClosingComments();
+        if (closingComments != null && !Objects.equals(tcOpp.getClosingComments(), closingComments)) {
+            oppParams.setClosingComments(closingComments);
+            changes++;
+        }
 
-        return oppParams;
+        // CANDIDATE CLOSING COMMENTS
+        String candidateClosingComments = sfOpp.getClosingCommentsForCandidate();
+        if (candidateClosingComments != null &&
+                !Objects.equals(tcOpp.getClosingCommentsForCandidate(), candidateClosingComments)) {
+            oppParams.setClosingCommentsForCandidate(candidateClosingComments);
+            changes++;
+        }
+
+        // EMPLOYER FEEDBACK
+        String employerFeedback = sfOpp.getEmployerFeedback();
+        if (employerFeedback != null &&
+            !Objects.equals(tcOpp.getEmployerFeedback(), employerFeedback)) {
+            oppParams.setEmployerFeedback(employerFeedback);
+            changes++;
+        }
+
+        return changes > 0 ? oppParams : null;
     }
 
     @Override

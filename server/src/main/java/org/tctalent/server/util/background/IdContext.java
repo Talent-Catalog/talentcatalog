@@ -43,4 +43,9 @@ public class IdContext {
      * The number of ids to process during each processing call.
      */
     private long numToProcess;
+
+    /**
+     * Enables count of another processing variable, e.g. no. of records actually updated
+     */
+    private Long count;
 }

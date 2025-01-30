@@ -53,7 +53,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
    */
   @Scheduled(cron = "0 0 23 * * ?", zone = "GMT")
   @SchedulerLock(
-      name = "CandidateOppBackgroundProcessingService_initiateBackgroundCaseUpdate",
+      name = "CandidateOppSyncFromSalesforce",
       lockAtLeastFor = "PT23H",
       lockAtMostFor = "PT23H"
   )
@@ -65,8 +65,8 @@ public class CandidateOppBackgroundProcessingServiceImpl
         LogBuilder.builder(log)
             .action("UpdateCasesFromSf")
             .message(
-                "Found " + sfIds.size() + " TC Candidate Opps which will be synced with their "
-                    + "Salesforce equivalents"
+                "Found " + sfIds.size() + " TC Candidate Opps which will be compared with their "
+                    + "Salesforce equivalents and updated with any new data."
             )
             .logInfo();
       }
@@ -92,9 +92,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
           .action("UpdateCasesFromSf")
           .message(
               "Fetched " + sfOpps.size() + " Candidate Opps from Salesforce, including " +
-                  (sfOpps.size() - sfIds.size())
-                  + " that were closed on the TC but reopened by a user on "
-                  + "Salesforce.")
+                  (sfOpps.size() - sfIds.size()) + " closed on TC but reopened by a user on SF.")
           .logInfo();
 
       if (!sfOpps.isEmpty()) {
@@ -105,7 +103,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
         BackRunner<IdContext> backRunner = new BackRunner<>();
 
         ScheduledFuture<?> scheduledFuture = backRunner.start(taskScheduler, backProcessor,
-            new IdContext(null, 200), 20);
+            new IdContext(null, 200, 0L), 20);
       }
 
     } catch (Exception e) {
@@ -129,14 +127,17 @@ public class CandidateOppBackgroundProcessingServiceImpl
         // sublist method's 2nd param 'toIndex' is exclusive, so we add 1 to the last index.
         List<Opportunity> nextBatch = sfOpps.subList((int) firstIndex, (int) lastIndex + 1);
 
+        long currentUpdateCount = ctx.getCount();
         // Delegate the actual processing to the appropriate service
-        candidateOpportunityService.processCaseUpdateBatch(nextBatch);
+        currentUpdateCount += candidateOpportunityService.processCaseUpdateBatch(nextBatch);
+        ctx.setCount(currentUpdateCount);
 
         // Log progress
         LogBuilder.builder(log)
             .action("UpdateCasesFromSf")
             .message("Completed processing " + (lastIndex + 1) + " of " + sfOpps.size() +
-                " Candidate Opps from Salesforce")
+                " Candidate Opps from Salesforce, of which " + currentUpdateCount +
+                " led to update of TC equivalent.")
             .logInfo();
 
         ctx.setLastProcessedId(lastIndex);
