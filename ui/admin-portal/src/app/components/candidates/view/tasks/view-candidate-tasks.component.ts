@@ -23,7 +23,7 @@ import {
 } from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
 import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {CreateTaskAssignmentRequest, TaskAssignmentService} from "../../../../services/task-assignment.service";
+import {TaskAssignmentService} from "../../../../services/task-assignment.service";
 import {TaskAssignment, taskAssignmentSort} from "../../../../model/task-assignment";
 import {
   CandidateAttachmentService,
@@ -33,9 +33,6 @@ import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
-import {TaskService} from 'src/app/services/task.service';
-import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
-
 @Component({
   selector: 'app-view-candidate-tasks',
   templateUrl: './view-candidate-tasks.component.html',
@@ -57,8 +54,6 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   constructor(private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService,
               private taskAssignmentService: TaskAssignmentService,
-              private taskService: TaskService,
-              private duolingoCouponService: DuolingoCouponService,
               private modalService: NgbModal) { }
 
   ngOnInit(): void {
@@ -106,15 +101,8 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   }
 
-  assignDuolingoCouponTask() {
-    this.duolingoCouponService.assignCouponToCandidate(this.candidate.id).subscribe(
-      () => {
-        this.candidateService.updateCandidate();
-      },
-      error => {
-        this.error = error;
-      }
-    );
+  handleError(error: any) {
+    this.error = error;
   }
 
   editTaskAssignment(ta: TaskAssignment) {

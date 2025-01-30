@@ -99,7 +99,8 @@ export class AssignTasksCandidateComponent implements OnInit {
     if(task.name === 'duolingoTest') {
       this.duolingoCouponService.assignCouponToCandidate(this.candidateId).subscribe(
         () => {
-          this.taskAssignment(request);
+          this.activeModal.close();
+          this.saving = false;
         },
         error => {
           this.error = error;
@@ -107,22 +108,17 @@ export class AssignTasksCandidateComponent implements OnInit {
         }
       );
     } else {
-      this.taskAssignment(request);
-    }
-
-  }
-
-  taskAssignment(request: CreateTaskAssignmentRequest) {
-    this.taskAssignmentService.createTaskAssignment(request).subscribe(
-      (taskAssignment: TaskAssignment) => {
-          this.activeModal.close(taskAssignment);
+      this.taskAssignmentService.createTaskAssignment(request).subscribe(
+        (taskAssignment: TaskAssignment) => {
+            this.activeModal.close(taskAssignment);
+            this.saving = false;
+          },
+        error => {
+          this.error = error;
           this.saving = false;
-        },
-      error => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
+        }
+      );
+    }
   }
 
   cancel() {

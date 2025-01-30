@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -35,36 +34,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
-import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.SavedList;
-import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.TaskAssignmentImpl;
-import org.tctalent.server.model.db.TaskImpl;
-import org.tctalent.server.model.db.User;
-import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.service.db.DuolingoCouponService;
-import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.TaskService;
+import org.tctalent.server.service.db.email.EmailHelper;
 
 @Service
 @Slf4j
 public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
-  private final AuthService authService;
   private final DuolingoCouponRepository couponRepository;
   private final CandidateRepository candidateRepository;
-  private final TaskAssignmentRepository taskAssignmentRepository;
-  private final TaskService taskService;
+  private final EmailHelper emailHelper;
 
   private static final DateTimeFormatter FORMATTER1 = DateTimeFormatter.ofPattern(
       "yyyy/MM/dd HH:mm:ss");
@@ -74,14 +63,10 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
   @Autowired
   public DuolingoCouponServiceImpl(DuolingoCouponRepository couponRepository,
       CandidateRepository candidateRepository,
-      TaskAssignmentRepository taskAssignmentRepository,
-      AuthService authService,
-      TaskService taskService) {
-    this.authService = authService;
+      EmailHelper emailHelper) {
     this.couponRepository = couponRepository;
     this.candidateRepository = candidateRepository;
-    this.taskAssignmentRepository = taskAssignmentRepository;
-    this.taskService = taskService;
+    this.emailHelper = emailHelper;
   }
 
 
@@ -128,7 +113,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
   @Override
   @Transactional
   public DuolingoCoupon assignCouponToCandidate(Long candidateId)
-      throws NoSuchObjectException, EntityExistsException {
+      throws NoSuchObjectException {
     return candidateRepository.findById(candidateId).map(candidate -> {
       // Find the first available coupon
       Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatus(
@@ -145,34 +130,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
       coupon.setDateSent(LocalDateTime.now());
       coupon.setCouponStatus(DuolingoCouponStatus.SENT);
       couponRepository.save(coupon);
-
-      List<TaskAssignmentImpl> taskAssignments = candidate.getTaskAssignments();
-
-      // Check if there's any "duolingoTest" task with an active status
-      boolean foundDuolingoTest = taskAssignments.stream()
-          .anyMatch(taskAssignment ->
-              "duolingoTest".equals(taskAssignment.getTask().getName()) &&
-                  Status.active.equals(taskAssignment.getStatus())
-          );
-
-      if (!foundDuolingoTest) {
-        TaskAssignmentImpl taskAssignment = new TaskAssignmentImpl();
-        TaskImpl task = taskService.getByName("duolingoTest");
-
-        // Get the logged-in user or throw an exception if not logged in
-        User user = authService.getLoggedInUser()
-            .orElseThrow(() -> new InvalidSessionException("User is not logged in"));
-
-        // Set task assignment properties
-        taskAssignment.setTask(task);
-        taskAssignment.setActivatedBy(user);
-        taskAssignment.setActivatedDate(OffsetDateTime.now());
-        taskAssignment.setCandidate(candidate);
-        taskAssignment.setStatus(Status.active);
-
-        // Save the task assignment
-        taskAssignmentRepository.save(taskAssignment);
-      }
+      emailHelper.sendDuolingoCouponEmail(candidate.getUser());
 
       return coupon;
     }).orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + candidateId + " not found"));

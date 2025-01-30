@@ -28,9 +28,7 @@
       <span class="small font-italic">Comment?</span>
       <div class="d-flex">
         <div *ngIf="editable" class="mx-2">
-          <button class="btn btn-primary btn-sm" (click)="assignDuolingoCouponTask()">
-             Send Duolingo coupon
-          </button>
+          <app-duolingo-assignment [candidate]="candidate" (errorOccurred)="handleError($event)"></app-duolingo-assignment>
         </div>
         <div *ngIf="editable">
           <button class="btn btn-primary btn-sm" (click)="assignTask()">
