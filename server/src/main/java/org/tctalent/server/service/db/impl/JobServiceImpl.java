@@ -1179,46 +1179,44 @@ public class JobServiceImpl implements JobService {
      */
     @Transactional
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
-    @SchedulerLock(name = "JobService_initiateOpenJobSyncFromSf", lockAtLeastFor = "PT23H",
+    @SchedulerLock(name = "JobOppSyncFromSalesforce", lockAtLeastFor = "PT23H",
         lockAtMostFor = "PT23H")
     @Override
     public void initiateOpenJobSyncFromSf() {
         try {
-            //Find all open Salesforce jobs
+            // Find all open Jobs on TC
             SearchJobRequest request = new SearchJobRequest();
             request.setSfOppClosed(false);
 
             List<SalesforceJobOpp> jobs = searchJobsUnpaged(request);
 
-            //Populate sfIds of jobs
+            // Populate List with their SF IDs
             List<String> sfIds = jobs.stream()
                 .map(SalesforceJobOpp::getSfId)
                 .collect(Collectors.toList());
 
-            //Now update them from Salesforce
+            // Now update them from their Salesforce equivalent, if changes made there
             syncOpenJobsFromSf(sfIds);
         } catch (Exception e) {
             LogBuilder.builder(log)
-                .action("JobService_initiateOpenJobSyncFromSf")
-                .message("Failed to update open Jobs from Salesforce counterparts")
+                .action("JobOppSyncFromSalesforce")
+                .message("Failed to update open Jobs from Salesforce equivalents")
                 .logError(e);
         }
     }
 
     /**
-     * Updates existing Salesforce cache records (SalesforceJobOpp's) corresponding to the given
-     * Salesforce ids.
+     * Updates TC Jobs corresponding to the given SF IDs, if the SF equivalent has new changes.
      * <p/>
-     * Will also update records for job opportunities which are open on SF
-     * and which are locally cached, even if their ids are not in the given list of ids.
-     * This is useful for job opportunities which have been closed and then are reopened on SF.
-     * Typically, we only pass in ids of local job opps that are open in order to limit the total
-     * number of ids. Otherwise, the total number of ids being passed in will grow infinitely
-     * over time (and might eventually crash the SF link by making the SF query too long).
-     * This way the id's can be limited to open job opps only - ignoring closed opps. This
-     * approach ensures that closed opps can be reopened as a result of this update.
+     * Will also update TC Jobs open on SF even if not provided, which is useful for Jobs which have
+     * been closed on the TC and then are reopened on SF. Typically, we only pass in IDs of local
+     * Jobs that are open in order to limit the total number of IDs. Otherwise, the total number of
+     * IDs being passed in will grow infinitely over time (and might eventually crash the SF link by
+     * making the SF query too long). This way the id's can be limited to open job opps only -
+     * ignoring closed opps. This approach ensures that closed opps can be reopened as a result of
+     * this update.
      *
-     * @param sfIds Salesforce ids of cache records to be updated from Salesforce
+     * @param sfIds Salesforce IDs of cache records to be updated from Salesforce
      * @throws SalesforceException if there are issues contacting Salesforce
      */
     private void syncOpenJobsFromSf(List<String> sfIds) throws SalesforceException {
@@ -1232,18 +1230,26 @@ public class JobServiceImpl implements JobService {
             // single strings in a SOQL WHERE clause, which the concatenated sfIds might exceed.
             int totalItems = sfIds.size();
             int batchSize = 100;
-            List<Opportunity> sfOpps = new ArrayList<>();
+
+            // Fetch from Salesforce any potentially reopened Opps and use to initialise list of
+            // sfOpps to be used for potential updates.
+            List<Opportunity> potentialReopenedOpps =
+                salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.JOB);
+            List<Opportunity> sfOpps = new ArrayList<>(potentialReopenedOpps);
+
+            // To avoid duplicates in the next step, create Set of SF IDs for comparison
+            Set<String> sfOppIds = sfOpps.stream()
+                .map(Opportunity::getId)
+                .collect(Collectors.toSet());
 
             for (int i = 0; i < totalItems; i += batchSize) {
                 List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
+
+                // Remove any ID that exists in the reopenedOppIds Set
+                batch.removeIf(sfOppIds::contains);
+
                 sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.JOB));
             }
-
-            // Add any opps that were potentially reopened on Salesforce
-            sfOpps.addAll(salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.JOB));
-
-            // The previous step will have introduced duplicates that have to be removed
-            sfOpps = salesforceService.removeDuplicatesFromOppList(sfOpps);
 
             LogBuilder.builder(log)
                 .action("UpdateJobs")
