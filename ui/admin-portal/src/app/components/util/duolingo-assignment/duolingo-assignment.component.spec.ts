@@ -66,7 +66,7 @@ describe('DuolingoAssignmentComponent', () => {
   it('should emit errorOccurred event on failure', () => {
     const errorResponse = {message: 'Error assigning coupon'};
     spyOn(component.errorOccurred, 'emit');
-    duolingoCouponServiceSpy.assignCouponToCandidate.and.returnValue(throwError(() => errorResponse));
+    duolingoCouponServiceSpy.assignCouponToCandidate.and.returnValue(throwError(errorResponse));
 
     component.assignDuolingoCouponTask();
 
