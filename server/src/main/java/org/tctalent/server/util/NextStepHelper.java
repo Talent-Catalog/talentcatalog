@@ -16,10 +16,10 @@
 
 package org.tctalent.server.util;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.Nullable;
+import org.springframework.lang.NonNull;
 
 /**
  * Some utilities for managing opportunity next steps
@@ -122,7 +122,7 @@ public class NextStepHelper {
      * @return boolean - true if different
      */
     public static boolean isNextStepDifferent(String currentNextStep,
-        @NotNull String requestedNextStep) {
+        @NonNull String requestedNextStep) {
         if (currentNextStep == null) {
             // requestedNextStep is never null, so they must be different in this case.
             return true;

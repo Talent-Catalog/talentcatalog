@@ -18,7 +18,9 @@ package org.tctalent.server.service.db.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -61,39 +63,30 @@ public class CandidateOppBackgroundProcessingServiceImpl
     try {
       List<String> sfIds = candidateOpportunityService.findAllNonNullSfIdsByClosedFalse();
 
-      if (!sfIds.isEmpty()) {
-        LogBuilder.builder(log)
-            .action("UpdateCasesFromSf")
-            .message(
-                "Found " + sfIds.size() + " TC Candidate Opps which will be compared with their "
-                    + "Salesforce equivalents and updated with any new data."
-            )
-            .logInfo();
-      }
-
       // Fetch Salesforce equivalents in batches - necessary because there's a 4,000-character limit
       // on single strings in a SOQL WHERE clause, which the concatenated sfIds might exceed.
       int totalItems = sfIds.size();
       int batchSize = 100;
-      List<Opportunity> sfOpps = new ArrayList<>();
+
+      // Fetch from Salesforce any potentially reopened Opps and use to initialise list of
+      // sfOpps to be used for potential updates.
+      List<Opportunity> potentialReopenedOpps =
+        salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.CANDIDATE);
+      List<Opportunity> sfOpps = new ArrayList<>(potentialReopenedOpps);
+
+      // To avoid duplicates in the next step, create Set of SF IDs for comparison
+      Set<String> sfOppIds = sfOpps.stream()
+          .map(Opportunity::getId)
+          .collect(Collectors.toSet());
 
       for (int i = 0; i < totalItems; i += batchSize) {
         List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
+
+        // Remove any ID that exists in the reopenedOppIds Set
+        batch.removeIf(sfOppIds::contains);
+
         sfOpps.addAll(salesforceService.fetchOpportunitiesById(batch, OpportunityType.CANDIDATE));
       }
-
-      // Add any opps that were potentially reopened on Salesforce
-      sfOpps.addAll(salesforceService.fetchOpportunitiesByOpenOnSF(OpportunityType.CANDIDATE));
-
-      // The previous step will have introduced duplicates that have to be removed
-      sfOpps = salesforceService.removeDuplicatesFromOppList(sfOpps);
-
-      LogBuilder.builder(log)
-          .action("UpdateCasesFromSf")
-          .message(
-              "Fetched " + sfOpps.size() + " Candidate Opps from Salesforce, including " +
-                  (sfOpps.size() - sfIds.size()) + " closed on TC but reopened by a user on SF.")
-          .logInfo();
 
       if (!sfOpps.isEmpty()) {
         // Create BackProcessor

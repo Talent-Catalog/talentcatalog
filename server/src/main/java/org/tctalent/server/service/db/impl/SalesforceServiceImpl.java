@@ -2361,15 +2361,4 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);
     }
 
-    @Override
-    public List<Opportunity> removeDuplicatesFromOppList(List<Opportunity> sfOpps) {
-        Map<String, Opportunity> uniqueOppsMap = new HashMap<>();
-
-        for (Opportunity sfOpp : sfOpps) {
-            uniqueOppsMap.putIfAbsent(sfOpp.getId(), sfOpp);
-        }
-
-        return new ArrayList<>(uniqueOppsMap.values());
-    }
-
 }

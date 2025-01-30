@@ -195,4 +195,5 @@ public interface CandidateOpportunityService {
      * @return List of sfIds for all Candidate Opps matching the query criteria
      */
     List<String> findAllNonNullSfIdsByClosedFalse();
+
 }

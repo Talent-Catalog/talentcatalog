@@ -1169,13 +1169,14 @@ public class JobServiceImpl implements JobService {
     /**
      * Fetches all open SF Jobs on the TC DB and supplies them to {@link #syncOpenJobsFromSf(List)}
      * where they are combined with open jobs from SF whose stage has recently changed. The
-     * resulting collection is used to update the TC opps with values from their SF equivalents.
+     * resulting collection is used to update the TC opps with values from their SF equivalents, if
+     * changes have been made there.
      *
      * <p>While that would seem to favour changes made on SF, that is not the outcome: because the
-     * TC updates SF opps in real-time, in most cases the overwrites here are redundant, except when
-     * SF data has diverged because a user made changes to an opp on SF instead of the TC. That is
-     * not the preferred user behaviour, but until safeguards are put in place, this scheduled
-     * update (daily at 1am GMT) keeps TC data as accurate as possible.
+     * TC updates SF opps in real-time, most SF records contain TC data - in which cases no update
+     * will be performed. It is not the preferred user behaviour for updates to be made on SF, but
+     * until safeguards are put in place, this scheduled update (daily at 1am GMT) keeps TC data as
+     * accurate as possible.
      */
     @Transactional
     @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
@@ -1256,32 +1257,41 @@ public class JobServiceImpl implements JobService {
                 .message("Loaded " + sfOpps.size() + " job opportunities from Salesforce")
                 .logInfo();
 
-            int count = 0;
-            int updates = 0;
+            processOpenJobSyncBatch(sfOpps);
+        }
+    }
 
-            for (Opportunity sfOpp : sfOpps) {
-                String id = sfOpp.getId();
-                //Fetch DB with id
-                SalesforceJobOpp tcOpp = salesforceJobOppRepository.findBySfId(id)
-                    .orElse(null);
-                if (tcOpp != null) {
-                    UpdateJobRequest updateRequest =
-                        extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
-                    if (updateRequest != null) {
-                        updateJobFromRequest(tcOpp, updateRequest);
-                        salesforceJobOppRepository.save(tcOpp);
-                        updates++;
-                    }
-                }
-                count++;
+    /**
+     * Takes a List containing objects of type {@link Opportunity}, populated by Salesforce Job Opps,
+     * and updates their TC equivalent if changes have been made on Salesforce.
+     * @param sfOpps List of {@link Opportunity} to update from
+     */
+    private void processOpenJobSyncBatch(List<Opportunity> sfOpps) {
+        int count = 0;
+        int updates = 0;
 
-                if ((count % 100 == 0) || count == sfOpps.size()) {
-                    LogBuilder.builder(log)
-                        .action("Sync Open Jobs From Salesforce")
-                        .message("Processed " + count + " Job Opps from Salesforce, of which "
-                            + updates + " led to update of TC equivalent.")
-                        .logInfo();
+        for (Opportunity sfOpp : sfOpps) {
+            String id = sfOpp.getId();
+            //Fetch DB with id
+            SalesforceJobOpp tcOpp = salesforceJobOppRepository.findBySfId(id)
+                .orElse(null);
+            if (tcOpp != null) {
+                UpdateJobRequest updateRequest =
+                    extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
+                if (updateRequest != null) {
+                    updateJobFromRequest(tcOpp, updateRequest);
+                    salesforceJobOppRepository.save(tcOpp);
+                    updates++;
                 }
+            }
+            count++;
+
+            if ((count % 100 == 0) || count == sfOpps.size()) {
+                LogBuilder.builder(log)
+                    .action("Sync Open Jobs From Salesforce")
+                    .message("Processed " + count + " Job Opps from Salesforce, of which "
+                        + updates + " led to update of TC equivalent.")
+                    .logInfo();
             }
         }
     }

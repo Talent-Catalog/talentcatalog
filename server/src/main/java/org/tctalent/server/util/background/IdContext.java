@@ -45,7 +45,8 @@ public class IdContext {
     private long numToProcess;
 
     /**
-     * Enables count of another processing variable, e.g. no. of records actually updated
+     * Enables count across entire process of any other processing variable, e.g. no. of records
+     * actually updated.
      */
     private Long count;
 }

@@ -17,7 +17,7 @@
 package org.tctalent.server.service.db;
 
 /**
- * Service for background processing of candidate opportunities
+ * Service for background processing of Candidate Opportunities
  */
 public interface CandidateOppBackgroundProcessingService {
 
@@ -27,8 +27,7 @@ public interface CandidateOppBackgroundProcessingService {
    * recently reopened on Salesforce.
    *
    * <p>The intent is to keep the TC up to date when users have updated Opps from Salesforce instead
-   * of the TC, as is preferred. Because the TC updates SF in real time, many updates will be
-   * redundant and the desired master-slave balance is maintained.
+   * of the TC, as is preferred. Updates are only made when the Salesforce record contains new data.
    */
   void initiateBackgroundCaseUpdate();
 
