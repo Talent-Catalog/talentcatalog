@@ -24,6 +24,7 @@ import {Partner} from "../../model/partner";
 import {AuthenticationService} from "../../services/authentication.service";
 import {LocalStorageService} from "../../services/local-storage.service";
 import {Location} from "@angular/common";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -47,67 +48,62 @@ export class HomeComponent implements OnInit {
     protected savedSearchService: SavedSearchService,
     protected authorizationService: AuthorizationService,
     protected authenticationService: AuthenticationService,
-    protected location: Location
+    protected location: Location,
+    protected route: ActivatedRoute
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
 
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
+    this.fetchCachedSubCategory();
     this.loggedInPartner = this.authenticationService.getLoggedInUser()?.partner;
     // This is called in order for the navigation tabs, this.nav, to be set.
     // Make this call in ngOnInit(). Do not do it ngAfterViewChecked() - doing so will throw
     // NG0100 errors because selectDefaultTabs() changes the activeTabId after the view has been
     // checked.
     // See: https://angular.io/errors/NG0100
-    this.selectDefaultTab();
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      // If there is a tab param, set that as the active tab
+      // If there is no tab param, check the browser cache for the last active tab or if none get the default tab.
+      tab ? this.setActiveTabId(tab) : this.fetchCachedTab();
+    });
   }
 
   onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
+    this.setTabParam(event.nextId);
   }
 
   onSavedSearchSubtypeChange($event: SavedSearchTypeSubInfo) {
     this.setSelectedSavedSearchSubtype($event.savedSearchSubtype);
   }
 
-  private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.setActiveTabId(defaultActiveTabID == null ? this.defaultTabId : defaultActiveTabID);
+  private fetchCachedTab() {
+    const cachedActiveTabId: string = this.localStorageService.get(this.lastTabKey);
+    // If there isn't a cached active tab, set it to the defaultTabId
+    this.activeTabId = cachedActiveTabId != null ? cachedActiveTabId : this.defaultTabId;
+    this.setTabParam(this.activeTabId);
+  }
 
-    if (defaultActiveTabID == null) {
-      this.setSelectedSavedSearchSubtype(this.savedSearchTypeSubInfos[0].savedSearchSubtype);
-    } else {
-      const defaultCategory: string = this.localStorageService.get(this.lastCategoryTabKey);
-      this.setSelectedSavedSearchSubtype(defaultCategory == null ? 0 : +defaultCategory);
-    }
+  private fetchCachedSubCategory() {
+    // Get and set the subtype category (e.g. occupation category in search by occupations tab)
+    const cachedSubCategory: string = this.localStorageService.get(this.lastCategoryTabKey);
+    this.selectedSavedSearchSubtype = cachedSubCategory == null ? 0 : +cachedSubCategory;
   }
 
   protected setActiveTabId(id: string) {
-
     this.activeTabId = id;
-
-    //The typed saved search tabs have id's which look like "type:profession", "type:jobs",
-    //"type:other". Unpack the id to identify the search type
-    const parts = id.split(':');
-    if (parts[0] === 'type' && parts.length === 2) {
-
-      const type: SavedSearchType = SavedSearchType[parts[1]];
-      this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[type].categories;
-
-    }
-
     this.localStorageService.set(this.lastTabKey, id);
-
-    this.setTabParam(id);
   }
 
-
+  // Update the URL to include the tab param and the current active tab
   setTabParam(activeTab: string) {
     const currentUrl = this.location.path();
     const baseUrl = currentUrl.split('?')[0];
     const updatedUrl = `${baseUrl}?tab=${activeTab}`;
-    this.location.replaceState(updatedUrl); // Update the URL without reloading
+    this.location.replaceState(updatedUrl);
   }
 
   private setSelectedSavedSearchSubtype(savedSearchSubtype: number) {

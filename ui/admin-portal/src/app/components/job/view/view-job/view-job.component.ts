@@ -232,12 +232,6 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     this.activeTabId = defaultActiveTabID;
   }
 
-  setTabParam(activeTab: string) {
-    const currentUrl = this.location.path(); // Get the current URL
-    const updatedUrl = `${currentUrl}?tab=${activeTab}`;
-    this.location.replaceState(updatedUrl); // Update the URL without reloading
-  }
-
   onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
   }

@@ -21,6 +21,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {HomeComponent} from "../../candidates/home.component";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {Location} from "@angular/common";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-search-home',
@@ -34,9 +35,10 @@ export class SearchHomeComponent extends HomeComponent {
     protected savedSearchService: SavedSearchService,
     protected authService: AuthorizationService,
     protected authenticationService: AuthenticationService,
-    protected location: Location
+    protected location: Location,
+    protected route: ActivatedRoute
   ) {
-    super(localStorageService, savedSearchService, authService, authenticationService, location);
+    super(localStorageService, savedSearchService, authService, authenticationService, location, route);
     this.lastTabKey = 'SearchHomeLastTab';
     this.lastCategoryTabKey = 'SearchHomeLastCategoryTab';
     this.defaultTabId = 'MySearches';

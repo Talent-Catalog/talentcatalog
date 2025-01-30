@@ -23,6 +23,7 @@ import {ChatPost, JobChat, JobChatType, JobChatUserInfo} from "../../../model/ch
 import {forkJoin, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-view-candidate',
@@ -32,6 +33,7 @@ import {LocalStorageService} from "../../../services/local-storage.service";
 export class ViewCandidateComponent implements OnInit {
 
   private lastTabKey: string = 'CandidateLastTab';
+  private defaultTabId: string = 'Profile';
   activeTabId: string;
   chatsForAllJobs: JobChat[];
   sourceChat: JobChat;
@@ -50,7 +52,8 @@ export class ViewCandidateComponent implements OnInit {
 
   constructor(private candidateService: CandidateService,
               private chatService: ChatService,
-              private localStorageService: LocalStorageService) { }
+              private localStorageService: LocalStorageService,
+              private location: Location) { }
 
   ngOnInit(): void {
     this.fetchCandidate();
@@ -85,8 +88,12 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   private selectDefaultTab() {
+    // todo if url has a tab param use that, otherwise use memory
+
+
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+    this.activeTabId = defaultActiveTabID != null ? defaultActiveTabID : this.defaultTabId;
+    this.setActiveTabId(this.activeTabId);
   }
 
   onTabChanged(event: NgbNavChangeEvent) {
@@ -96,6 +103,14 @@ export class ViewCandidateComponent implements OnInit {
   private setActiveTabId(id: string) {
     this.activeTabId = id;
     this.localStorageService.set(this.lastTabKey, id);
+    this.setTabParam(this.activeTabId)
+  }
+
+  setTabParam(activeTab: string) {
+    const currentUrl = this.location.path();
+    const baseUrl = currentUrl.split('?')[0];
+    const updatedUrl = `${baseUrl}?tab=${activeTab}`;
+    this.location.replaceState(updatedUrl); // Update the URL without reloading
   }
 
   private setCandidate(candidate: Candidate) {

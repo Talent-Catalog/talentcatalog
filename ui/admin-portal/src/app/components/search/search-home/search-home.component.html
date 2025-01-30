@@ -54,11 +54,10 @@
   </ng-container>
 
   <!--  Standard searches for occupations-->
-  <ng-container ngbNavItem="type:{{SavedSearchType[SavedSearchType.profession]}}">
-    <a ngbNavLink title="Searches of {{savedSearchTypeInfos[SavedSearchType.profession].title}}">Searches by {{savedSearchTypeInfos[SavedSearchType.profession].title}}</a>
+  <ng-container ngbNavItem="Occupations">
+    <a ngbNavLink title="Searches of occupations">Searches by Occupations</a>
 
     <ng-template ngbNavContent>
-      <div *ngIf="savedSearchTypeSubInfos" class="no-gutters">
         <app-browse-candidate-sources
           [sourceType]="CandidateSourceType.SavedSearch"
           [searchBy]="SearchBy.type"
@@ -68,7 +67,6 @@
           (subtypeChange)="onSavedSearchSubtypeChange($event)"
         >
         </app-browse-candidate-sources>
-      </div>
     </ng-template>
   </ng-container>
 
