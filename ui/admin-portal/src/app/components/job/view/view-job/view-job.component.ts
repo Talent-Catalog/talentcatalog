@@ -14,15 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {MainSidePanelBase} from "../../../util/split/MainSidePanelBase";
@@ -43,9 +35,7 @@ import {
   JobPrepSuggestedSearches
 } from "../../../../model/job-prep-item";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {
-  CandidateSourceCandidateService
-} from "../../../../services/candidate-source-candidate.service";
+import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
 import {Opportunity} from "../../../../model/opportunity";
 import {AuthenticationService} from "../../../../services/authentication.service";
 import {forkJoin, Observable} from "rxjs";
@@ -240,6 +230,12 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
     this.activeTabId = defaultActiveTabID;
+  }
+
+  setTabParam(activeTab: string) {
+    const currentUrl = this.location.path(); // Get the current URL
+    const updatedUrl = `${currentUrl}?tab=${activeTab}`;
+    this.location.replaceState(updatedUrl); // Update the URL without reloading
   }
 
   onTabChanged(event: NgbNavChangeEvent) {

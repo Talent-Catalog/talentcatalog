@@ -20,6 +20,7 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {HomeComponent} from "../../candidates/home.component";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {Location} from "@angular/common";
 
 
 @Component({
@@ -33,9 +34,10 @@ export class ListHomeComponent extends HomeComponent {
     protected localStorageService: LocalStorageService,
     protected savedSearchService: SavedSearchService,
     protected authService: AuthorizationService,
-    protected authenticationService: AuthenticationService
+    protected authenticationService: AuthenticationService,
+    protected location: Location
   ) {
-    super(localStorageService, savedSearchService, authService, authenticationService);
+    super(localStorageService, savedSearchService, authService, authenticationService, location);
     this.lastTabKey = 'CandidateHomeLastTab';
     this.lastCategoryTabKey = 'CandidateHomeLastCategoryTab';
     this.defaultTabId = 'MyLists';

@@ -18,15 +18,12 @@ import {Component, OnInit} from '@angular/core';
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy, SearchOppsBy} from "../../model/base"
-import {
-  SavedSearchService,
-  SavedSearchTypeInfo,
-  SavedSearchTypeSubInfo
-} from "../../services/saved-search.service";
+import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from "../../services/saved-search.service";
 import {AuthorizationService} from "../../services/authorization.service";
 import {Partner} from "../../model/partner";
 import {AuthenticationService} from "../../services/authentication.service";
 import {LocalStorageService} from "../../services/local-storage.service";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-home',
@@ -49,7 +46,8 @@ export class HomeComponent implements OnInit {
     protected localStorageService: LocalStorageService,
     protected savedSearchService: SavedSearchService,
     protected authorizationService: AuthorizationService,
-    protected authenticationService: AuthenticationService
+    protected authenticationService: AuthenticationService,
+    protected location: Location
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
@@ -100,6 +98,16 @@ export class HomeComponent implements OnInit {
     }
 
     this.localStorageService.set(this.lastTabKey, id);
+
+    this.setTabParam(id);
+  }
+
+
+  setTabParam(activeTab: string) {
+    const currentUrl = this.location.path();
+    const baseUrl = currentUrl.split('?')[0];
+    const updatedUrl = `${baseUrl}?tab=${activeTab}`;
+    this.location.replaceState(updatedUrl); // Update the URL without reloading
   }
 
   private setSelectedSavedSearchSubtype(savedSearchSubtype: number) {
