@@ -40,9 +40,6 @@
   </div>
 
   <div class="mt-4 mx-3 text-center flex-shrink-0">
-    <div class="mb-2" *ngIf="selectedTask?.task?.helpLink">
-      <a class="btn btn-sm btn-primary" target="_blank" [href]="selectedTask?.task?.helpLink">{{ 'TASKS.TASK.VIEWHELP' | translate }} <fa-icon class="ms-1" icon="question-circle"></fa-icon></a>
-    </div>
     <button class="btn btn-sm btn-secondary" (click)="goBack()">
       <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'TASKS.TASK.RETURN' | translate }}
     </button>
