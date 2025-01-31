@@ -138,6 +138,8 @@ salesforce:
   daysAgoRecent: 7
   recordType:
     employerJob: 0121N000001890wQAA
+    candidateRecruitment: 0121N000001890rQAA
+    candidateRecruitmentCan: 0123l000001DxSjAAK
   tbb:
     jordanAccount: 0013l00002Jm1rRAAR
     lebanonAccount: 0013l00002Jm2sqAAB
