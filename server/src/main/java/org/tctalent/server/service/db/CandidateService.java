@@ -150,6 +150,14 @@ public interface CandidateService {
 
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
+    /**
+     * Sets the transient answer field on Question Task Assignments, these come from various places either the candidate
+     * property table (stored as task name and answer values) or it's stored in a field on the candidate object.
+     * This method allows us to pass in the page of candidates from a search/list of candidates and then populate the fields.
+     * @param candidates: page of candidates from a search paged method (saved search or saved list)
+     */
+    void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates);
+
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
 
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
