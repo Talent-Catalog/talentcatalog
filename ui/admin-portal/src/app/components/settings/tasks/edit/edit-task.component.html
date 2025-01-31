@@ -47,9 +47,10 @@
         <input type="number" class="form-control" id="daysToComplete" formControlName="daysToComplete">
       </div>
       <div class="mb-3">
-        <label class="form-label" for="helpLink">Help Link</label>
-        <input type="text" class="form-control" id="helpLink" formControlName="helpLink">
-        <div *ngIf="taskForm.controls.helpLink.errors?.pattern">Please provide valid url</div>
+        <label class="form-label" for="docLink">Document Link</label>
+        <input type="text" class="form-control" id="docLink" formControlName="docLink">
+        <div class="form-text">Note: If this is a Simple task type, the candidate will be prompted to 'agree' to the document via checkbox.</div>
+        <div *ngIf="taskForm.controls.docLink.errors?.pattern">Please provide valid url</div>
       </div>
       <div class="form-check-inline mb-3">
         <label class="form-label" for="optional">Optional?</label>

@@ -55,8 +55,8 @@ export class CandidateTaskComponent implements OnInit {
 
     this.addRequiredFormControls();
 
-    if (this.selectedTask.task.helpLink && this.selectedTask.task.taskType == "Simple") {
-      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.helpLink);
+    if (this.selectedTask.task.docLink) {
+      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.selectedTask?.task?.docLink);
     }
 
     // todo this validation seems very messy! May be a better way to handle this. Perhaps use seperate forms?

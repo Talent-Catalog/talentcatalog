@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,24 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {UntypedFormGroup} from "@angular/forms";
-import {TaskAssignment} from "../../../../../../../model/task-assignment";
-
-@Component({
-  selector: 'app-view-simple-task',
-  templateUrl: './view-simple-task.component.html',
-  styleUrls: ['./view-simple-task.component.scss']
-})
-export class ViewSimpleTaskComponent implements OnInit {
-  @Input() form: UntypedFormGroup;
-  @Input() selectedTask: TaskAssignment;
-  hasDoc: boolean;
-
-  constructor() { }
-
-  ngOnInit(): void {
-    this.hasDoc = this.selectedTask.task.docLink != null;
-  }
-
-}
+alter table users
+    add column email_verified boolean default false,
+    add column email_verification_token varchar(255),
+    add column email_verification_token_issued_time timestamp;

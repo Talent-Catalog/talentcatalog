@@ -141,7 +141,7 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.[0].users[0].firstName", is("test")))
         .andExpect(jsonPath("$.[0].users[0].lastName", is("user")))
         .andExpect(jsonPath("$.[0].tasks[0].id", is(148)))
-        .andExpect(jsonPath("$.[0].tasks[0].helpLink", is("http://help.link")))
+        .andExpect(jsonPath("$.[0].tasks[0].docLink", is("http://help.link")))
         .andExpect(jsonPath("$.[0].tasks[0].taskType", is("Simple")))
         .andExpect(jsonPath("$.[0].tasks[0].displayName", is("task display name")))
         .andExpect(jsonPath("$.[0].tasks[0].name", is("a test task")))
