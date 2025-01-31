@@ -578,6 +578,13 @@ public class CandidateServiceImpl implements CandidateService {
         return candidate;
     }
 
+    @Override
+    public void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        }
+    }
+
     /**
      * Sets transient fields on the given task assignments.
      * @param taskAssignments Task assignments
