@@ -22,7 +22,7 @@
         <span class="fw-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span>
         <span class="fw-bolder font-italic" *ngIf="selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.OPTIONAL' | translate }}</span>
       </h4>
-      <div *ngIf="selectedTask.task.taskType !== 'Question'">{{selectedTask?.task?.description}}</div>
+      <div *ngIf="selectedTask.task.taskType !== 'Question'" [innerHtml]="selectedTask?.task?.description"></div>
     </div>
 
     <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">

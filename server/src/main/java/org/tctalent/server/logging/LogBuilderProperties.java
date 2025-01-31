@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,32 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.task;
+package org.tctalent.server.logging;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.util.html.HtmlSanitizer;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+/**
+ * Configuration properties for the {@code LogBuilder}.
+ * <p>
+ * These properties control whether CPU and memory utilisation metrics are included in log messages.
+ *
+ * @author sadatmalik
+ */
 @Getter
 @Setter
-public class UpdateTaskRequest {
-    @NotBlank
-    private String displayName;
-
-    @NotBlank
-    private String description;
-
-    @NotNull
-    private Integer daysToComplete;
-
-    private String helpLink;
-
-    @NotNull
-    private boolean optional;
-
-    public void setDescription(String description) {
-        this.description = HtmlSanitizer.sanitize(description);
-    }
+@Component
+@ConfigurationProperties(prefix = "logbuilder")
+public class LogBuilderProperties {
+  private boolean includeCpuUtilization;
+  private boolean includeMemoryUtilization;
 }

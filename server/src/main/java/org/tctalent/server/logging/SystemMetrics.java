@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,32 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.task;
+package org.tctalent.server.logging;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.util.html.HtmlSanitizer;
+/**
+ * Provides methods to retrieve formatted system metrics such as available metrics,
+ * CPU utilisation, and memory utilisation.
+ *
+ * @author sadatmalik
+ */
+public interface SystemMetrics {
 
-@Getter
-@Setter
-public class UpdateTaskRequest {
-    @NotBlank
-    private String displayName;
+  String getAvailableMetrics();
 
-    @NotBlank
-    private String description;
+  String getCpuUtilization();
 
-    @NotNull
-    private Integer daysToComplete;
+  String getMemoryUtilization();
 
-    private String helpLink;
-
-    @NotNull
-    private boolean optional;
-
-    public void setDescription(String description) {
-        this.description = HtmlSanitizer.sanitize(description);
-    }
 }
