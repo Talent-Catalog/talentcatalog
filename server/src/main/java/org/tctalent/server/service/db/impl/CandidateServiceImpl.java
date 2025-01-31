@@ -371,8 +371,6 @@ public class CandidateServiceImpl implements CandidateService {
         Page<Candidate> candidatesPage = candidateRepository.findAll(
                 new GetSavedListCandidatesQuery(savedList, request), request.getPageRequestWithoutSort());
 
-        // todo fetch the candidate answer fields (populateTransientFields method) for each candidate on the page
-
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
             .listId(savedList.getId())
