@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URL;
 import java.time.OffsetDateTime;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -46,6 +46,7 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
@@ -157,7 +158,9 @@ public class NotificationServiceImpl implements NotificationService {
                     //Notify all source partners
                     final List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
                     for (PartnerImpl sourcePartner : sourcePartners) {
-                        notifySourcePartner(sourcePartner, chat, userNotifications);
+                        if (sourcePartner.getStatus().equals(Status.active)) {
+                            notifySourcePartner(sourcePartner, chat, userNotifications);
+                        }
                     }
                     notifyParticipants(chat, userNotifications);
                 }
