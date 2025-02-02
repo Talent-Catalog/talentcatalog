@@ -46,7 +46,7 @@ export class EditTaskComponent implements OnInit {
         description: [task.description, Validators.required],
         daysToComplete: [task.daysToComplete, Validators.required],
         optional: [task.optional, Validators.required],
-        helpLink: [task.helpLink],
+        docLink: [task.docLink],
       });
       this.loading = false;
     });
@@ -59,7 +59,7 @@ export class EditTaskComponent implements OnInit {
       description: this.taskForm.value.description,
       daysToComplete: this.taskForm.value.daysToComplete,
       optional: this.taskForm.value.optional,
-      helpLink: this.taskForm.value.helpLink,
+      docLink: this.taskForm.value.docLink,
     }
     this.taskService.update(this.taskId, request).subscribe(
       (task) => {

@@ -24,7 +24,7 @@ describe('Task Interface', () => {
     description: 'This is a sample task.',
     displayName: 'Sample Task Display Name',
     optional: true,
-    helpLink: 'https://example.com/help',
+    docLink: 'https://example.com/help',
     taskType: TaskType.Question,
     uploadType: UploadType.cv,
     uploadSubfolderName: 'subfolder',
@@ -57,8 +57,8 @@ describe('Task Interface', () => {
     expect(mockTask.optional).toBe(true);
   });
 
-  it('should have the correct helpLink property', () => {
-    expect(mockTask.helpLink).toBe('https://example.com/help');
+  it('should have the correct docLink property', () => {
+    expect(mockTask.docLink).toBe('https://example.com/help');
   });
 
   it('should have the correct taskType property', () => {

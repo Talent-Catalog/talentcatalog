@@ -29,6 +29,8 @@ import {JobService} from "../../../services/job.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {SearchOppsBy} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {Location} from "@angular/common";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-job-home',
@@ -61,9 +63,11 @@ export class JobHomeComponent extends HomeComponent {
     protected savedSearchService: SavedSearchService,
     protected authorizationService: AuthorizationService,
     protected authenticationService: AuthenticationService,
-    protected candidateService: CandidateService
+    protected candidateService: CandidateService,
+    protected location: Location,
+    protected route: ActivatedRoute
   ) {
-    super(localStorageService, savedSearchService, authorizationService, authenticationService);
+    super(localStorageService, savedSearchService, authorizationService, authenticationService, location, route);
     this.lastTabKey = 'JobsHomeLastTab';
     this.lastCategoryTabKey = 'JobsHomeLastCategoryTab';
     this.defaultTabId = 'StarredJobs';

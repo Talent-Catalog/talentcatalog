@@ -39,7 +39,6 @@ import {EditCandidateContactComponent} from "../../contact/edit/edit-candidate-c
 })
 export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
   clickedOldIntake: boolean;
-
   constructor(candidateService: CandidateService,
               countryService: CountryService,
               educationLevelService: EducationLevelService,
