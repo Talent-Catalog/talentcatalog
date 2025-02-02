@@ -88,6 +88,15 @@ import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
+
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
+import org.tctalent.server.request.user.emailverify.ResetEmailVerificationRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
+import org.tctalent.server.exception.VerifyEmailSendFailedException;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -520,6 +529,76 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getSystemAdminUser() {
         return findByUsernameAndRole(SystemAdminConfiguration.SYSTEM_ADMIN_NAME, Role.systemadmin);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void sendVerifyEmailRequest(SendVerifyEmailRequest request) {
+        User user = userRepository.findByEmailIgnoreCase(request.getEmail());
+        if (user != null) {
+            user.setEmailVerificationToken(UUID.randomUUID().toString());
+            user.setEmailVerificationTokenIssuedDate(OffsetDateTime.now());
+            userRepository.save(user);
+
+            try {
+                emailHelper.sendVerificationEmail(user);
+            } catch (VerifyEmailSendFailedException e) {
+                LogBuilder.builder(log)
+                        .action("SendVerificationEmail")
+                        .message("Unable to send verification email for " + user.getEmail())
+                        .logError(e);
+            }
+        } else {
+            LogBuilder.builder(log)
+                    .action("GenerateVerificationToken")
+                    .message("Unable to send verification email for " + request.getEmail())
+                    .logError();
+        }
+    }
+
+    @Override
+    public void checkEmailVerificationToken(CheckEmailVerificationTokenRequest request) {
+        User user = userRepository.findByEmailVerificationToken(request.getToken());
+
+        if (user == null) {
+            throw new InvalidEmailVerificationTokenException();
+        } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(2))) {
+            throw new ExpiredEmailTokenException();
+        }
+
+        log.info("Email verification token is valid.");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void verifyEmail(VerifyEmailRequest request) {
+        User user = userRepository.findByEmailVerificationToken(request.getToken());
+        log.info("Received verify email request: {}", request);
+        log.info("Email verification token: {}", user.getEmailVerificationToken());
+        log.info("Email verification token issued date: {}", user.getEmailVerificationTokenIssuedDate());
+
+        if (user != null) {
+            log.info("Email verification token: {}", user.getEmailVerificationToken());
+            log.info("Email verification token issued date: {}", user.getEmailVerificationTokenIssuedDate());
+            log.info("Email is verified and it is updated in the database.");
+
+            user.setEmailVerified(true);
+            user.setEmailVerificationTokenIssuedDate(user.getEmailVerificationTokenIssuedDate());
+            user.setEmailVerificationToken(user.getEmailVerificationToken());
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void resetEmailVerification(ResetEmailVerificationRequest request) {
+        User user = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        user.setEmailVerified(false);
+        user.setEmailVerificationTokenIssuedDate(null);
+        user.setEmailVerificationToken(null);
+        userRepository.save(user);
     }
 
     /**

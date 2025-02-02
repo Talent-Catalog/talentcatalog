@@ -39,6 +39,11 @@ import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
+import org.tctalent.server.request.user.emailverify.ResetEmailVerificationRequest;
+
 public interface UserService {
 
     /**
@@ -75,6 +80,16 @@ public interface UserService {
     void generateResetPasswordToken(SendResetPasswordEmailRequest request);
     void updatePassword(UpdateUserPasswordRequest request);
     void updateUserPassword(long id, UpdateUserPasswordRequest request);
+
+
+    // Generates an email verification token and sends a verification email.
+    void sendVerifyEmailRequest(SendVerifyEmailRequest request);
+    // Checks the validity of the email verification token.
+    void checkEmailVerificationToken(CheckEmailVerificationTokenRequest request);
+    // Verifies the user's email using the verification token.
+    void verifyEmail(VerifyEmailRequest request);
+    // Updates the user's email verification status.
+    void resetEmailVerification(ResetEmailVerificationRequest request);
 
     User findByUsernameAndRole(String username, Role role);
 

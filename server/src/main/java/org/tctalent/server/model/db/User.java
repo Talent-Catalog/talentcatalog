@@ -308,6 +308,53 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.passwordUpdatedDate = passwordUpdatedDate;
     }
 
+
+    /**
+     * The email verification token sent to the user for verifying their email address.
+     */
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
+
+    /**
+     * The timestamp when the email verification token was issued.
+     */
+    @Column(name = "email_verification_token_issued_time")
+    private OffsetDateTime verificationTokenIssuedDate;
+
+    /**
+     * Indicates whether the user's email address has been verified.
+     */
+    @Column(name = "email_verified" , nullable = false)
+    private boolean emailVerified;
+
+
+    // New getters and setters for email verification
+
+    public String getEmailVerificationToken() {
+        return emailVerificationToken;
+    }
+
+    public void setEmailVerificationToken(String emailVerificationToken) {
+        this.emailVerificationToken = emailVerificationToken;
+    }
+
+    public OffsetDateTime getEmailVerificationTokenIssuedDate() {
+        return verificationTokenIssuedDate;
+    }
+
+    public void setEmailVerificationTokenIssuedDate(OffsetDateTime verificationTokenIssuedDate) {
+        this.verificationTokenIssuedDate = verificationTokenIssuedDate;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
     public String getSelectedLanguage() {
         return selectedLanguage;
     }

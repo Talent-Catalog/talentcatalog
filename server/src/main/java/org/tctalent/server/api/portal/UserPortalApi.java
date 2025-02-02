@@ -41,6 +41,14 @@ import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
+import org.tctalent.server.request.user.emailverify.ResetEmailVerificationRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
+import org.springframework.web.bind.annotation.PutMapping;
+
 @RestController
 @RequestMapping("/api/portal/user")
 public class UserPortalApi {
@@ -87,6 +95,31 @@ public class UserPortalApi {
         userService.resetPassword(request);
     }
 
+    @PostMapping(value="verify-email")
+    public void sendVerifyEmailRequest(@RequestBody SendVerifyEmailRequest request)
+            throws NoSuchObjectException, ReCaptchaInvalidException {
+        //Do check for automated reset requests. Throws exception if it looks
+        //automated.
+        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "email");
+        userService.sendVerifyEmailRequest(request);
+    }
+
+    @PostMapping(value="check-email-verification-token")
+    public void checkEmailVerificationToken(@RequestBody CheckEmailVerificationTokenRequest request)
+            throws ExpiredEmailTokenException, InvalidEmailVerificationTokenException {
+        userService.checkEmailVerificationToken(request);
+    }
+
+    @PostMapping(value="verify-email-token")
+    public void verifyEmail(@RequestBody VerifyEmailRequest request) {
+        userService.verifyEmail(request);
+    }
+
+    @PutMapping(value="reset-email-verification")
+    public void resetEmailVerification(@RequestBody ResetEmailVerificationRequest request) {
+        userService.resetEmailVerification(request);
+    }
+
     private DtoBuilder userBriefDto() {
         return new DtoBuilder()
                 .add("id")
@@ -94,6 +127,7 @@ public class UserPortalApi {
                 .add("email")
                 .add("firstName")
                 .add("lastName")
+                .add("emailVerified")
                 ;
     }
 
