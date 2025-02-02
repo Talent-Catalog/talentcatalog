@@ -56,6 +56,9 @@ export class CandidateFieldService {
   private ieltsScoreFormatter = (value) => {
     return this.getIeltsScore(value);
   }
+  private englishAssessmentScoreDetFormatter = (value) => {
+    return this.getEnglishAssessmentScoreDet(value);
+  }
 
   private nclcScoreFormatter = (value) => {
     return this.getNclcScore(value);
@@ -158,6 +161,8 @@ export class CandidateFieldService {
         this.levelGetNameFormatter, null, true),
       new CandidateFieldInfo("IELTS Score", "ieltsScore", null,
         this.ieltsScoreFormatter, null, true),
+    new CandidateFieldInfo("DET Score", "englishAssessmentScoreDet", null,
+      this.englishAssessmentScoreDetFormatter, null, true),
       new CandidateFieldInfo("NCLC Score", "frenchAssessmentScoreNclc", null,
         this.nclcScoreFormatter, null, true),
       new CandidateFieldInfo("Legal status", "residenceStatus", null,
@@ -322,7 +327,13 @@ export class CandidateFieldService {
     }
     return score;
   }
-
+  getEnglishAssessmentScoreDet(candidate: Candidate): string {
+    let score: string = null;
+    if (candidate?.englishAssessmentScoreDet != null) {
+      score = candidate.englishAssessmentScoreDet + ' (Det)';
+    }
+    return score;
+  }
   getNclcScore(candidate: Candidate): string {
     let score: string = null;
     if (candidate?.frenchAssessmentScoreNclc != null) {
