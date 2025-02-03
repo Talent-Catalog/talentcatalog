@@ -485,19 +485,19 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   public toggleMuted() {
     this.error = null;
-    this.loading = true;
     const request: UpdateCandidateMutedRequest = {
       muted: !this.candidate.muted
     };
     this.candidateService.updateMuted(this.candidate.id, request).subscribe(
       () => {
-        this.loading = false;
         //Update candidate with new status
         this.candidate.muted = request.muted;
+
+        //Refresh to get new candidate notes.
+        this.refreshCandidateProfile();
       },
       (error) => {
         this.error = error;
-        this.loading = false;
       });
 
   }

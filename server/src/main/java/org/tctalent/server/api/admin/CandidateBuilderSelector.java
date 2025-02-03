@@ -157,6 +157,7 @@ public class CandidateBuilderSelector {
         final DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
             .add("status")
+            .add("muted")
             .add("candidateNumber")
             .add("publicId")
             .add("gender")
