@@ -869,9 +869,17 @@ public class CandidateServiceImpl implements CandidateService {
     public void updateMutedStatus(long id, UpdateCandidateMutedRequest request) {
         final Candidate candidate = candidateRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
-        candidate.setMuted(request.isMuted());
-        candidateRepository.save(candidate);
-        //TODO JC Generate candidate note
+
+        if (request.isMuted() != candidate.isMuted()) {
+            candidate.setMuted(request.isMuted());
+            candidateRepository.save(candidate);
+
+            //Generate candidate note
+            String message = "Candidate's chats were " +
+                (candidate.isMuted() ? "muted" : "unmuted");
+            candidateNoteService.createCandidateNote(
+                new CreateCandidateNoteRequest(candidate.getId(), message, null));
+        }
     }
 
     @Override
