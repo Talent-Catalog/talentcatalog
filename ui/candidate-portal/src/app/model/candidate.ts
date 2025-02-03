@@ -88,6 +88,7 @@ export interface Candidate extends HasId {
   shareableDoc: CandidateAttachment;
   listShareableCv: CandidateAttachment;
   listShareableDoc: CandidateAttachment;
+  muted: boolean;
   shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
@@ -684,6 +685,19 @@ export function hasIeltsExam(candidate: Candidate): boolean {
   } else {
     return false;
   }
+}
+
+export function isMuted(candidate: Candidate): boolean {
+  //Default is to treat as muted if the candidate or muted attribute is not defined
+  let isMuted = true;
+  if (candidate) {
+    //Candidate is defined
+    if (candidate.muted != null) {
+      //Muted attribute is defined - so just use it
+      isMuted = candidate.muted;
+    }
+  }
+  return isMuted;
 }
 
 export function checkIeltsScoreType(candidate: Candidate): string {
