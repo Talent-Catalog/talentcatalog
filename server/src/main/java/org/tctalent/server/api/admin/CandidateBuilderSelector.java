@@ -52,6 +52,7 @@ public class CandidateBuilderSelector {
         new HashSet<>(Arrays.asList(
             "id",
             "status",
+            "muted",
             "candidateNumber",
             "publicId",
             "gender",

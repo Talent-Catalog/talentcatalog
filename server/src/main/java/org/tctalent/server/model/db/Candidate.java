@@ -1167,6 +1167,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
 
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
+
     public SurveyType getSurveyType() { return surveyType; }
 
     public void setSurveyType(SurveyType surveyType) { this.surveyType = surveyType; }

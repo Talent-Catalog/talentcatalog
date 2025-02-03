@@ -253,6 +253,16 @@
             </a>
             <!-- Tab content — either the chats or a button to create one with help text -->
             <ng-template ngbNavContent>
+
+              <!-- Mute/Unmute candidate button for non read only users-->
+              <div *ngIf="!isReadOnlyUser()">
+                <div class="text-center mt-5 mb-4">
+                  <button class="btn btn-secondary mb-1" (click)="toggleMuted()">
+                    {{computeMuteButtonLabel()}}
+                  </button>
+                </div>
+              </div>
+
               <app-view-chat-posts *ngIf="candidateChat; else createChatButton"
                                    [readOnly] = "isReadOnlyUser()"
                                    [chat]="candidateChat">

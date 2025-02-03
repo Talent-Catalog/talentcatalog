@@ -23,6 +23,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.tctalent.server.exception.UnauthorisedActionException;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.User;
@@ -69,6 +70,11 @@ public class ChatPublishApi {
     public Map<String, Object> sendPost(Post post, @DestinationVariable("chatId") Long chatId) {
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
+            throw new UnauthorisedActionException("publish post");
+        }
+
+        Candidate candidate = loggedInUser.getCandidate();
+        if (candidate != null && candidate.isMuted()) {
             throw new UnauthorisedActionException("publish post");
         }
 

@@ -20,6 +20,7 @@ import {
   CandidateIntakeData,
   CandidateOpportunityParams,
   UpdateCandidateListOppsRequest,
+  UpdateCandidateMutedRequest,
   UpdateCandidateOppsRequest,
   UpdateCandidateShareableDocsRequest,
   UpdateCandidateShareableNotesRequest,
@@ -103,6 +104,10 @@ export class CandidateService implements IntakeService {
 
   updateStatus(details: UpdateCandidateStatusRequest): Observable<void>  {
     return this.http.put<void>(`${this.apiUrl}/status`, details);
+  }
+
+  updateMuted(id: number, request: UpdateCandidateMutedRequest): Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/${id}/muted`, request);
   }
 
   updateInfo(id: number, details): Observable<Candidate>  {
