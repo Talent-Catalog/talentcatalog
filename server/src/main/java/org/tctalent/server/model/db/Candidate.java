@@ -101,6 +101,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      */
     /* todo Flyway
     alter table candidate add muted boolean default false not null;
+    alter table candidate add allNotifications boolean default false not null;
+
      */
     private boolean muted;
 
