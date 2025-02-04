@@ -22,11 +22,13 @@ import {LanguageService} from "../../services/language.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../model/survey-type";
 import {BrandingService} from "../../services/branding.service";
 import {ExternalLinkService} from "../../services/external-link.service";
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+
 })
 export class HomeComponent implements OnInit {
 
@@ -37,16 +39,32 @@ export class HomeComponent implements OnInit {
   user: User;
   lang: string;
   partnerName: string;
+  emailVerified: boolean;
 
   constructor(private candidateService: CandidateService,
               private languageService: LanguageService,
               private brandingService: BrandingService,
-              private externalLinkService: ExternalLinkService) {
+              private externalLinkService: ExternalLinkService,
+              private userService: UserService
+            ) {
+  }
+
+  openModal(modal: any) {
+    modal.openModal(); // Call the modal's open method
   }
 
   ngOnInit() {
     this.loading = true;
     this.lang = this.languageService.getSelectedLanguage();
+
+    this.userService.getMyUser().subscribe(
+      (user) => {
+        this.emailVerified = user.emailVerified;
+      },
+      (error) => {
+        this.error = error;
+      }
+    );
 
     this.candidateService.getStatus().subscribe(
       (candidate) => {
@@ -101,6 +119,5 @@ export class HomeComponent implements OnInit {
   getEligibilityLink(): string {
     return this.externalLinkService.getLink('eligibility', this.lang);
   }
-
 }
 

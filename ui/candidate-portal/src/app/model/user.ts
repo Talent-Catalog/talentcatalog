@@ -37,6 +37,9 @@ export class User {
   usingMfa: boolean;
   mfaConfigured: boolean;
   partner: Partner;
+  emailVerified: boolean;
+  emailVerificationToken: string;
+  emailVerificationTokenIssuedDate: number;
 
   //Can be populated after upload
   name: string;
@@ -107,4 +110,9 @@ export function roleGreaterThan(role1: Role, role2: Role): boolean {
   }
 
   return greaterRoles.includes(role1);
+}
+
+export class SendVerifyEmailRequest {
+  email: string;
+  reCaptchaV3Token: string;
 }

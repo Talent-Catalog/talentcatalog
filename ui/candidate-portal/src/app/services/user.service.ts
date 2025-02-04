@@ -20,6 +20,7 @@ import {Observable} from 'rxjs';
 import {environment} from "../../environments/environment";
 import {User} from '../model/user';
 import {SendResetPasswordEmailRequest} from "../model/candidate";
+import {SendVerifyEmailRequest} from "../model/user";
 
 @Injectable({
   providedIn: 'root'
@@ -77,4 +78,17 @@ export class UserService {
   resetPassword(request) {
     return this.http.post(`${this.apiUrl}/reset-password`, request);
   }
+
+  sendVerifyEmail(request:SendVerifyEmailRequest) {
+    return this.http.post(`${this.apiUrl}/verify-email`, request);
+  }
+
+  checkEmailVerificationToken(request: { token: string }) {
+    return this.http.post(`${this.apiUrl}/check-email-verification-token`, request);
+  }
+
+  verifyEmail(request: { token: string }) {
+    return this.http.post(`${this.apiUrl}/verify-email-token`, request);
+  }
+  
 }
