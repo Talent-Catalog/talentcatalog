@@ -1173,6 +1173,17 @@ public class CandidateServiceImpl implements CandidateService {
             queryParameters.getUtmTerm() != null;
     }
 
+    // Helper function to check and reset email verification if email is updated
+    private void checkAndResetEmailVerification(User user, String newEmail) {
+        if (!Objects.equals(user.getEmail(), newEmail)) {
+            user.setEmailVerified(false);
+            user.setEmailVerificationToken(null);
+            user.setEmailVerificationTokenIssuedDate(null);
+        } else {
+            // Email is not updated, no need to reset email verification
+        }
+    }
+
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
         User user = authService.getLoggedInUser()
@@ -1181,6 +1192,8 @@ public class CandidateServiceImpl implements CandidateService {
         // Check update request for a duplicate email or phone number
         validateContactRequest(user, request);
 
+        // Check and reset email verification if email is updated
+        checkAndResetEmailVerification(user, request.getEmail());
         user.setEmail(request.getEmail());
         user = userRepository.save(user);
         Candidate candidate = user.getCandidate();

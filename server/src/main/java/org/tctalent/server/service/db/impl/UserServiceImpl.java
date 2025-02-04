@@ -91,7 +91,6 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
-import org.tctalent.server.request.user.emailverify.ResetEmailVerificationRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
 import org.tctalent.server.exception.VerifyEmailSendFailedException;
@@ -562,7 +561,7 @@ public class UserServiceImpl implements UserService {
 
         if (user == null) {
             throw new InvalidEmailVerificationTokenException();
-        } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(2))) {
+        } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(24))) {
             throw new ExpiredEmailTokenException();
         }
 
@@ -587,18 +586,6 @@ public class UserServiceImpl implements UserService {
             user.setEmailVerificationToken(user.getEmailVerificationToken());
             userRepository.save(user);
         }
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void resetEmailVerification(ResetEmailVerificationRequest request) {
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
-        user.setEmailVerified(false);
-        user.setEmailVerificationTokenIssuedDate(null);
-        user.setEmailVerificationToken(null);
-        userRepository.save(user);
     }
 
     /**

@@ -43,11 +43,9 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
-import org.tctalent.server.request.user.emailverify.ResetEmailVerificationRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
 import org.tctalent.server.exception.ExpiredEmailTokenException;
-import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/portal/user")
@@ -115,11 +113,6 @@ public class UserPortalApi {
         userService.verifyEmail(request);
     }
 
-    @PutMapping(value="reset-email-verification")
-    public void resetEmailVerification(@RequestBody ResetEmailVerificationRequest request) {
-        userService.resetEmailVerification(request);
-    }
-
     private DtoBuilder userBriefDto() {
         return new DtoBuilder()
                 .add("id")
@@ -128,6 +121,8 @@ public class UserPortalApi {
                 .add("firstName")
                 .add("lastName")
                 .add("emailVerified")
+                .add("emailVerificationToken")
+                .add("emailVerificationTokenIssuedDate")
                 ;
     }
 

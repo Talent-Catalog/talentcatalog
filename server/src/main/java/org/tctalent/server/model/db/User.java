@@ -320,7 +320,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
      * The timestamp when the email verification token was issued.
      */
     @Column(name = "email_verification_token_issued_time")
-    private OffsetDateTime verificationTokenIssuedDate;
+    private OffsetDateTime emailVerificationTokenIssuedDate;
 
     /**
      * Indicates whether the user's email address has been verified.
@@ -340,11 +340,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public OffsetDateTime getEmailVerificationTokenIssuedDate() {
-        return verificationTokenIssuedDate;
+        return emailVerificationTokenIssuedDate;
     }
 
-    public void setEmailVerificationTokenIssuedDate(OffsetDateTime verificationTokenIssuedDate) {
-        this.verificationTokenIssuedDate = verificationTokenIssuedDate;
+    public void setEmailVerificationTokenIssuedDate(OffsetDateTime emailVerificationTokenIssuedDate) {
+        this.emailVerificationTokenIssuedDate = emailVerificationTokenIssuedDate;
     }
 
     public Boolean getEmailVerified() {
