@@ -111,4 +111,9 @@ public class Opportunity extends SalesforceObjectBase {
         return "Opportunity";
     }
 
+    public enum OpportunityType {
+        JOB,
+        CANDIDATE
+    }
+
 }

@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+import static org.tctalent.server.util.NextStepHelper.isNextStepDifferent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -671,19 +674,20 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 opp.setStage(newStage);
             }
 
-            //Process next step
-            User loggedInUser = userService.getLoggedInUser();
-            if (loggedInUser == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
+            if (oppParams.getNextStep() != null) {
+                // NEXT STEP PROCESSING
+                // Update may be automated, in which case attribute to System Admin
+                User userForAttribution = userService.getLoggedInUser();
+                if (userForAttribution == null) {
+                    userForAttribution = userService.getSystemAdminUser();
+                }
+                final String processedNextStep = auditStampNextStep(
+                    userForAttribution.getUsername(), LocalDate.now(),
+                    opp.getNextStep(), oppParams.getNextStep());
 
-            final String processedNextStep = auditStampNextStep(
-                loggedInUser.getUsername(), LocalDate.now(),
-                opp.getNextStep(), oppParams.getNextStep());
+                opp.setNextStep(processedNextStep);
 
-            // If next step details changing, send automated post to JobCreatorSourcePartner chat.
-            if (oppParams.getNextStep() != null
-            ) {
+                // If next step details changed, automate post to JobCreatorSourcePartner chat.
                 // To compare previous next step to new one, need to ensure neither is null.
                 // Cases are auto-populated with a value for next step when created, but this has
                 // not always been the case.
@@ -699,7 +703,6 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 // doesn't set a new one, then submits) it will not be used (see below) — so, for
                 // purpose of comparison we give it the same value as the current due date (no
                 // message will be sent because they're the same).
-                // TODO: next step due date should be a required value in the form
                 LocalDate requestDueDate =
                     oppParams.getNextStepDueDate() == null ?
                         currentDueDate : oppParams.getNextStepDueDate();
@@ -736,17 +739,20 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 }
             }
 
-            opp.setNextStep(processedNextStep);
-
-            // A next step always needs a due date
             final LocalDate requestDueDate = oppParams.getNextStepDueDate();
             if (requestDueDate != null) {
                 opp.setNextStepDueDate(requestDueDate);
             }
 
-            opp.setClosingComments(oppParams.getClosingComments());
-            opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
-            opp.setEmployerFeedback(oppParams.getEmployerFeedback());
+            if (oppParams.getClosingComments() != null) {
+                opp.setClosingComments(oppParams.getClosingComments());
+            }
+            if (oppParams.getClosingCommentsForCandidate() != null) {
+                opp.setClosingCommentsForCandidate(oppParams.getClosingCommentsForCandidate());
+            }
+            if (oppParams.getEmployerFeedback() != null) {
+                opp.setEmployerFeedback(oppParams.getEmployerFeedback());
+            }
         }
 
         return candidateOpportunityRepository.save(opp);
@@ -1014,6 +1020,118 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         return candidate.getUser().getFirstName() + " "
                 + candidate.getUser().getLastName()
                 + " (" + candidate.getCandidateNumber() + ")";
+    }
+
+    @Transactional
+    @Override
+    public int processCaseUpdateBatch(List<Opportunity> oppBatch) {
+        int updates = 0; // For tracking no. of records actually updated
+
+        for (Opportunity sfOpp : oppBatch) {
+
+            // Fetch TC equivalent of SF Opp
+            String sfId = sfOpp.getId();
+            CandidateOpportunity tcOpp =
+                candidateOpportunityRepository.findBySfId(sfId).orElse(null);
+
+            if (tcOpp != null) {
+                CandidateOpportunityParams oppParams = extractParamsFromSalesforceOpp(sfOpp, tcOpp);
+                if (oppParams != null) {
+                    updateCandidateOpportunity(tcOpp, oppParams);
+                    updates++;
+                }
+            }
+        }
+
+        return updates;
+    }
+
+    /**
+     * Creates {@link CandidateOpportunityParams} from a Salesforce Candidate Opportunity. Only
+     * adds a value if the SF version is non-null and different to the TC version. Returns null if
+     * no values have been added.
+     * @param sfOpp SF Opp from which oppParams will be extracted
+     * @param tcOpp TC equivalent to which it will be compared
+     * @return {@link CandidateOpportunityParams} if any values added, otherwise null
+     */
+    private @Nullable CandidateOpportunityParams extractParamsFromSalesforceOpp(
+        @NonNull Opportunity sfOpp,
+        @NonNull CandidateOpportunity tcOpp
+    ) {
+        CandidateOpportunityParams oppParams = new CandidateOpportunityParams();
+        int changes = 0;
+
+        // NEXT STEP
+        if (sfOpp.getNextStep() != null) {
+            if (isNextStepDifferent(tcOpp.getNextStep(), sfOpp.getNextStep())) {
+                oppParams.setNextStep(sfOpp.getNextStep());
+                changes++;
+            }
+        }
+
+        // NEXT STEP DUE DATE
+        final String nextStepDueDate = sfOpp.getNextStepDueDate();
+        if (nextStepDueDate != null) {
+            try {
+                LocalDate parsedDate = LocalDate.parse(nextStepDueDate);
+                if (!Objects.equals(tcOpp.getNextStepDueDate(), parsedDate)) {
+                    oppParams.setNextStepDueDate(parsedDate);
+                    changes++;
+                }
+            } catch (DateTimeParseException ex) {
+                LogBuilder.builder(log)
+                    .action("LoadCandidateOpportunity")
+                    .message("Error decoding nextStepDueDate: " + nextStepDueDate +
+                        " in Candidate Opp from Salesforce: " + sfOpp.getName())
+                    .logError();
+            }
+        }
+
+        // STAGE
+        try {
+            CandidateOpportunityStage stage =
+                CandidateOpportunityStage.textToEnum(sfOpp.getStageName());
+            if (tcOpp.getStage() != stage) {
+                oppParams.setStage(stage);
+                changes++;
+            }
+        } catch (IllegalArgumentException e) {
+            LogBuilder.builder(log)
+                .action("LoadCandidateOpportunity")
+                .message("Error decoding stage: " + sfOpp.getStageName() +
+                    " in Candidate Opp from Salesforce: " + sfOpp.getName())
+                .logError();
+        }
+
+        // CLOSING COMMENTS
+        String closingComments = sfOpp.getClosingComments();
+        if (closingComments != null && !Objects.equals(tcOpp.getClosingComments(), closingComments)) {
+            oppParams.setClosingComments(closingComments);
+            changes++;
+        }
+
+        // CANDIDATE CLOSING COMMENTS
+        String candidateClosingComments = sfOpp.getClosingCommentsForCandidate();
+        if (candidateClosingComments != null &&
+                !Objects.equals(tcOpp.getClosingCommentsForCandidate(), candidateClosingComments)) {
+            oppParams.setClosingCommentsForCandidate(candidateClosingComments);
+            changes++;
+        }
+
+        // EMPLOYER FEEDBACK
+        String employerFeedback = sfOpp.getEmployerFeedback();
+        if (employerFeedback != null &&
+            !Objects.equals(tcOpp.getEmployerFeedback(), employerFeedback)) {
+            oppParams.setEmployerFeedback(employerFeedback);
+            changes++;
+        }
+
+        return changes > 0 ? oppParams : null;
+    }
+
+    @Override
+    public List<String> findAllNonNullSfIdsByClosedFalse() {
+        return candidateOpportunityRepository.findAllNonNullSfIdsByClosedFalse();
     }
 
 }

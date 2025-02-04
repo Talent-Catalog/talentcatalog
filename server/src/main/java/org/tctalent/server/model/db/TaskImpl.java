@@ -44,7 +44,7 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
     private boolean admin;
     private Integer daysToComplete;
     private String description;
-    private String helpLink;
+    private String docLink;
     private String displayName;
     private String name;
     private boolean optional;

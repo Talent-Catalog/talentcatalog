@@ -14,32 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.task;
+package org.tctalent.server.service.db;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.util.html.HtmlSanitizer;
+/**
+ * Service for background processing of Candidate Opportunities
+ */
+public interface CandidateOppBackgroundProcessingService {
 
-@Getter
-@Setter
-public class UpdateTaskRequest {
-    @NotBlank
-    private String displayName;
+  /**
+   * Initiates background processing of updates to all open TC Candidate Opps from their Salesforce
+   * equivalents, provided they have one. Will also update Opps that are closed on the TC but
+   * recently reopened on Salesforce.
+   *
+   * <p>The intent is to keep the TC up to date when users have updated Opps from Salesforce instead
+   * of the TC, as is preferred. Updates are only made when the Salesforce record contains new data.
+   */
+  void initiateBackgroundCaseUpdate();
 
-    @NotBlank
-    private String description;
-
-    @NotNull
-    private Integer daysToComplete;
-
-    private String docLink;
-
-    @NotNull
-    private boolean optional;
-
-    public void setDescription(String description) {
-        this.description = HtmlSanitizer.sanitize(description);
-    }
 }
