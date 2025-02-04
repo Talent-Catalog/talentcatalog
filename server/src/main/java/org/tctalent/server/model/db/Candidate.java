@@ -99,11 +99,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      * A candidate can be muted by their source partner if they are not respecting the TC's chat
      * rules. They can subsequently be unmuted.
      */
-    /* todo Flyway
-    alter table candidate add muted boolean default false not null;
-    alter table candidate add allNotifications boolean default false not null;
-
-     */
     private boolean muted;
 
     /**
