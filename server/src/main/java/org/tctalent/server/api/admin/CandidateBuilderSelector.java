@@ -54,6 +54,7 @@ public class CandidateBuilderSelector {
             "status",
             "candidateNumber",
             "publicId",
+            "allNotifications",
             "gender",
             "dob",
             "yearOfArrival",
@@ -158,6 +159,7 @@ public class CandidateBuilderSelector {
             .add("status")
             .add("candidateNumber")
             .add("publicId")
+            .add("allNotifications")
             .add("gender")
             .add("dob")
             .add("phone")

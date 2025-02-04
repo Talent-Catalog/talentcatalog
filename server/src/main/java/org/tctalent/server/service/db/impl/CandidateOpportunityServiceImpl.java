@@ -627,20 +627,14 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         CandidateOpportunity opp = getCandidateOpportunity(id);
 
-        //todo Update nextStep with stamp if it has changed
-        //Can't do in setNextStep method of opp because we don't have user
-        //Is there a danger in modifying request? Same request can be applied to multiple opps.
-        //Not really a problem - that multi update should be treated as new for everyone anyway.
-        //todo Where do those multi updates get done?
-
         final SalesforceJobOpp jobOpp = opp.getJobOpp();
         final Candidate candidate = opp.getCandidate();
 
         //Update Salesforce
         createUpdateCandidateOpportunities(Collections.singletonList(candidate), jobOpp, request);
 
-        //todo I think this is already called by the above method - but we need the updated opp
-        //which we don't get from the above methods
+        //This is already called by the above method - but we need the updated opp
+        //which we don't get from the above call which is designed to update multiple opps.
         opp = createOrUpdateCandidateOpportunity(candidate, request, jobOpp );
 
         return opp;
@@ -716,7 +710,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                         null
                     );
 
-                    String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+                    String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
                     // Set the chat post content
                     Post autoPostNextStepChange = new Post();
@@ -842,7 +836,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
      */
     private void publishRemovedFromSubmissionListPosts(CandidateOpportunity opp, CandidateOpportunityStage newStage) {
         Candidate candidate = opp.getCandidate();
-        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+        String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
         Post autoPostRemovedFromSubList = new Post();
         autoPostRemovedFromSubList.setContent("The candidate " + candidateNameAndNumber +
@@ -890,7 +884,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
      */
     private void publishAddedToSubmissionListPosts(CandidateOpportunity opp) {
         Candidate candidate = opp.getCandidate();
-        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+        String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
         Post autoPostAddedToSubList = new Post();
         autoPostAddedToSubList.setContent("The candidate " + candidateNameAndNumber +
@@ -933,7 +927,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 null
         );
 
-        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+        String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
         // Set the chat post content
         Post autoPostCandidateOppStageChange = new Post();
@@ -961,7 +955,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
      */
     private void publishOppAcceptedPosts(CandidateOpportunity opp) {
         Candidate candidate = opp.getCandidate();
-        String candidateNameAndNumber = getCandidateNameNumber(opp.getCandidate());
+        String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
         Post autoPostAcceptedJobOffer = new Post();
         autoPostAcceptedJobOffer.setContent("The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
                 + opp.getJobOpp().getName() + " and is now a member of the <a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>.");
@@ -1015,7 +1009,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
      * Get candidate name and number string for automated chat posts
      * @param candidate Candidate to get details from
      */
-    private String getCandidateNameNumber(Candidate candidate) {
+    private String constructCandidateNameNumber(Candidate candidate) {
         // Get candidate name and number for automated chat posts
         return candidate.getUser().getFirstName() + " "
                 + candidate.getUser().getLastName()

@@ -68,6 +68,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String candidateNumber;
     private String publicId;
 
+    private boolean allNotifications;
+
     @Transient
     private Long contextSavedListId;
 
@@ -1110,6 +1112,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setAddress1(String address1) {
         this.address1 = address1;
+    }
+
+    public boolean isAllNotifications() {
+        return allNotifications;
+    }
+
+    public void setAllNotifications(boolean allNotifications) {
+        this.allNotifications = allNotifications;
     }
 
     public String getCity() {return city;}
