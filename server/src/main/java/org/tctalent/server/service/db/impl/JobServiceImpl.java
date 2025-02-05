@@ -76,7 +76,6 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
-import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.model.sf.Account;
@@ -359,9 +358,7 @@ public class JobServiceImpl implements JobService {
         //Add chats with each source partner
         List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
         for (PartnerImpl sourcePartner : sourcePartners) {
-            if (sourcePartner.getStatus().equals(Status.active)) {
-                jobChatService.createJobCreatorSourcePartnerChat(job, sourcePartner);
-            }
+            jobChatService.createJobCreatorSourcePartnerChat(job, sourcePartner);
         }
     }
 

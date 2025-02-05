@@ -162,6 +162,7 @@ public class PartnerServiceImpl implements PartnerService {
     public List<PartnerImpl> listSourcePartners() {
         SearchPartnerRequest request = new SearchPartnerRequest();
         request.setSourcePartner(true);
+        request.setStatus(Status.active);
         return search(request);
     }
 

@@ -46,7 +46,6 @@ import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
@@ -158,9 +157,7 @@ public class NotificationServiceImpl implements NotificationService {
                     //Notify all source partners
                     final List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
                     for (PartnerImpl sourcePartner : sourcePartners) {
-                        if (sourcePartner.getStatus().equals(Status.active)) {
-                            notifySourcePartner(sourcePartner, chat, userNotifications);
-                        }
+                        notifySourcePartner(sourcePartner, chat, userNotifications);
                     }
                     notifyParticipants(chat, userNotifications);
                 }
