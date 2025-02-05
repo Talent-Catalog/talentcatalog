@@ -146,6 +146,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -2471,6 +2472,15 @@ public class CandidateServiceImpl implements CandidateService {
 
         save(candidate, true);
 
+    }
+
+    @Override
+    public void updateNotificationPreference(long id,
+        UpdateCandidateNotificationPreferenceRequest request) throws NoSuchObjectException {
+        final Candidate candidate = candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+        candidate.setAllNotifications(request.isAllNotifications());
+        save(candidate, false);
     }
 
     @Override

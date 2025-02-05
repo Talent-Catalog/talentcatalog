@@ -64,6 +64,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -511,6 +512,15 @@ public interface CandidateService {
      * @throws NoSuchObjectException if no candidate is found with that id
      */
     void updateIntakeData(long id, CandidateIntakeDataUpdate data)
+        throws NoSuchObjectException;
+
+    /**
+     * Updates a candidate's notification preferences
+     * @param id ID of candidate
+     * @param request Request containing notification preferences
+     * @throws NoSuchObjectException if no candidate is found with that id
+     */
+    void updateNotificationPreference(long id, UpdateCandidateNotificationPreferenceRequest request)
         throws NoSuchObjectException;
 
     /**

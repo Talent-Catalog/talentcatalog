@@ -18,7 +18,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
-import {Candidate} from '../model/candidate';
+import {Candidate, UpdateCandidateNotificationPreferenceRequest} from '../model/candidate';
 import {map} from 'rxjs/operators';
 import {LocalStorageService} from "./local-storage.service";
 
@@ -148,4 +148,10 @@ export class CandidateService {
   getCandidateDestinations(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/destinations`);
   }
+
+  updateNotificationPreference(request: UpdateCandidateNotificationPreferenceRequest):
+    Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/notification`, request);
+  }
+
 }

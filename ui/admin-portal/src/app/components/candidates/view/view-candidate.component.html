@@ -253,6 +253,32 @@
             </a>
             <!-- Tab content — either the chats or a button to create one with help text -->
             <ng-template ngbNavContent>
+
+              <!-- Candidate's notification preferences for non read only users-->
+              <div *ngIf="!isReadOnlyUser()">
+                <ng-template #notificationPreferencesTip>
+                  <div>
+                    <p>
+                      You should not normally change this!
+                    </p>
+                    <p>
+                      The candidate decides what chat notifications they would like to see.
+                      Normally we should respect their decision.
+                    </p>
+                  </div>
+                </ng-template>
+
+                <div class="mt-5 mb-4">
+                  <button class="btn btn-secondary mb-1" (click)="toggleNotificationPreferences()"
+                          title="">
+                    {{computeNotificationButtonLabel()}}
+                  </button>
+                  <button class="tool-tip-button" [ngbTooltip]="notificationPreferencesTip" triggers="click">
+                    <i class="fa-regular fa-circle-question fa-xs"></i>
+                  </button>
+                </div>
+              </div>
+
               <app-view-chat-posts *ngIf="candidateChat; else createChatButton"
                                    [readOnly] = "isReadOnlyUser()"
                                    [chat]="candidateChat">

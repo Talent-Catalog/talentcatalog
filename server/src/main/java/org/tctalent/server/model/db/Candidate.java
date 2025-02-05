@@ -68,6 +68,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String candidateNumber;
     private String publicId;
 
+    /**
+     * True if candidate wants to receive all notifications.
+     * If false, the candidate will only receive notifications when they are well progressed in
+     * a job opportunity.
+     */
     private boolean allNotifications;
 
     @Transient

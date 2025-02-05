@@ -20,6 +20,7 @@ import {
   CandidateIntakeData,
   CandidateOpportunityParams,
   UpdateCandidateListOppsRequest,
+  UpdateCandidateNotificationPreferenceRequest,
   UpdateCandidateOppsRequest,
   UpdateCandidateShareableDocsRequest,
   UpdateCandidateShareableNotesRequest,
@@ -89,6 +90,11 @@ export class CandidateService implements IntakeService {
 
   updateLinks(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
+  }
+
+  updateNotificationPreference(id: number, request: UpdateCandidateNotificationPreferenceRequest):
+    Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/${id}/notification`, request);
   }
 
   updateShareableNotes(

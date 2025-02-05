@@ -48,6 +48,7 @@ export interface Candidate extends HasId {
   candidateNumber: string;
   publicId: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -459,6 +460,10 @@ export interface UpdateCandidateStatusInfo {
 export interface UpdateCandidateStatusRequest {
   candidateIds: number[];
   info: UpdateCandidateStatusInfo;
+}
+
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
 }
 
 export enum FamilyRelations {
