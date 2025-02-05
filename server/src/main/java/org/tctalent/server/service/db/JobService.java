@@ -252,7 +252,7 @@ public interface JobService {
     /**
      * Updates all open Jobs from their corresponding records on Salesforce
      */
-    void updateOpenJobs();
+    void initiateOpenJobSyncFromSf();
 
     /**
      * Uploads the given file to the JobDescription subfolder of the folder associated with the
