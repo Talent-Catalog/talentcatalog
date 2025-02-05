@@ -15,7 +15,11 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {Candidate, CandidateStatus} from "../../../model/candidate";
+import {
+  Candidate,
+  CandidateStatus,
+  UpdateCandidateNotificationPreferenceRequest
+} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
@@ -218,4 +222,24 @@ export class ViewCandidateComponent implements OnInit {
   onMarkChatAsRead() {
     this.chatService.markChatAsRead(this.sourceChat);
   }
+
+  public computeNotificationButtonLabel() {
+    return "Notification " + (this.candidate?.allNotifications ? "Opt Out": "Opt In");
+  }
+
+  public toggleNotificationPreferences() {
+    this.error = null;
+    const request: UpdateCandidateNotificationPreferenceRequest = {
+      allNotifications: !this.candidate.allNotifications
+    };
+    this.candidateService.updateNotificationPreference(request).subscribe(
+      () => {
+        //Update candidate with new preference
+        this.candidate.allNotifications = request.allNotifications;
+      },
+      (error) => {
+        this.error = error;
+      });
+  }
+
 }

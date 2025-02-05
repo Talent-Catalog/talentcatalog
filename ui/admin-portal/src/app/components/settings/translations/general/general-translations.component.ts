@@ -817,7 +817,8 @@ const ALL_FIELDS = {
       "LINK-EDIT-BTN": null,
       "LINK-REMOVE-BTN": null,
       "LINK-SAVE-BTN": null,
-      "LINK-CANCEL-BTN": null
+      "LINK-CANCEL-BTN": null,
+      "NOTIFICATION_PREFERENCE_HELP": null
   },
   "CHAT_INFO": {
       "LABEL": {

@@ -85,6 +85,17 @@
             {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
           </div>
 
+          <!-- Candidate's notification preferences-->
+          <div class="mt-5 mb-4">
+            <button class="btn btn-secondary mb-1" (click)="toggleNotificationPreferences()"
+                    title="">
+              {{computeNotificationButtonLabel()}}
+            </button>
+            <div>
+              {{ 'CHAT.NOTIFICATION_PREFERENCE_HELP' | translate }}
+            </div>
+          </div>
+
           <app-view-chat-posts
             [chat]="sourceChat"
           >
