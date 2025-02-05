@@ -91,6 +91,20 @@
           </app-view-chat-posts>
         </ng-template>
       </ng-container>
+
+      <!-- SERVICES -->
+      <ng-container ngbNavItem="Services">
+        <a ngbNavLink>
+          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
+          <fa-icon icon="handshake"></fa-icon>
+        </a>
+        <ng-template ngbNavContent>
+          <app-services
+            [candidate]="candidate"
+            (refresh)="fetchCandidate()">
+          </app-services>
+        </ng-template>
+      </ng-container>
     </nav>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
   </ng-container>

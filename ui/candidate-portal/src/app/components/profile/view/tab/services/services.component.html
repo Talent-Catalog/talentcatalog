@@ -1,0 +1,65 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="container">
+
+  <app-error [error]="error"></app-error>
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading && selectedService" >
+    <app-duolingo-coupon
+      [selectedService]="selectedService"
+      [candidate]="candidate"
+      (back)="unSelectService()">
+    </app-duolingo-coupon>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !selectedService">
+    <div>
+      <div class="d-flex justify-content-between align-items-baseline mt-4 mb-4">
+        <div>
+          <h3>{{ 'SERVICES.ONGOING.HEADER' | translate }}</h3>
+          <p class="text-muted">{{ 'SERVICES.ONGOING.NOTE' | translate }}</p>
+        </div>
+      </div>
+      <div class="table-responsive-sm">
+        <table class="table table-hover bg-white">
+          <thead class="table-light">
+          <tr>
+            <th>{{ 'SERVICES.TABLE.NAME' | translate }}</th>
+            <th class="text-center w-15">Description</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let service of activeServices" (click)="selectService(service)">
+            <td>
+              <div class="link underline">{{service}}</div>
+            </td>
+          </tr>
+          <!-- loading -->
+          <tr *ngIf="loading">
+            <td colspan="42">
+              <i class="fas fa-spinner fa-spin"></i> {{ 'LOADING' | translate }}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>

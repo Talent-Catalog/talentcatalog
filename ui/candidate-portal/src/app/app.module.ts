@@ -124,6 +124,7 @@ import {
   faFileUpload,
   faFolderOpen,
   faGlobe,
+  faHandshake,
   faLink,
   faListCheck,
   faMessage,
@@ -218,6 +219,8 @@ import {
 import {
   DestinationComponent
 } from "./components/register/destinations/destination/destination.component";
+import {ServicesComponent} from './components/profile/view/tab/services/services.component';
+import {DuolingoCouponComponent} from './components/profile/view/tab/services/duolingo-coupon/duolingo-coupon.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -295,7 +298,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     RegistrationCandidateExamComponent,
     DeleteExamComponent,
     RegistrationDestinationsComponent,
-    DestinationComponent
+    DestinationComponent,
+    ServicesComponent,
+    DuolingoCouponComponent
   ],
   imports: [
     BrowserModule,
@@ -376,7 +381,8 @@ export class AppModule {
       faUser,
       faListCheck,
       faBriefcase,
-      faMessage
+      faMessage,
+      faHandshake
     );
   }
 }
