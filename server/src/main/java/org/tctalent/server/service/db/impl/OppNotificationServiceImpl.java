@@ -233,10 +233,27 @@ public class OppNotificationServiceImpl implements OppNotificationService {
      */
     private void publishStageChangePosts(CandidateOpportunity opp, CandidateOpportunityStage newStage) {
 
-        final Candidate candidate = opp.getCandidate();
-        if (!candidate.isAllNotifications()) {
-            //TODO JC Candidates may not get all notifications depending on their preference
+        //This code only works for unclosed stages. Ignore if called with a closed stage.
+        if (newStage.isClosed()) {
+            return;
         }
+
+        final Candidate candidate = opp.getCandidate();
+
+        //     Candidate Related Chats
+
+        //Candidates who have opted in to receiving all notifications are notified for all
+        //stages after "prospect".
+        //Candidates who have not opted in to all notifications are only notified once they get
+        //past the "review" stage.
+        CandidateOpportunityStage lastExcludedStage = candidate.isAllNotifications()
+            ? CandidateOpportunityStage.prospect : CandidateOpportunityStage.cvReview;
+
+        if (newStage.ordinal() > lastExcludedStage.ordinal()) {
+            //TODO JC Post to candidate related chats
+        }
+
+        //     Non Candidate Related Chats
 
         // Find the relevant job chat
         JobChat jcspChat = jobChatService.getOrCreateJobChat(
