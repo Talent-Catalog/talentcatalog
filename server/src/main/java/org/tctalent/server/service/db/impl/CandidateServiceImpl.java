@@ -147,6 +147,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -1389,7 +1390,7 @@ public class CandidateServiceImpl implements CandidateService {
      * This method only manages changes to the candidate portal's Additional Info section - not the admin portal equivalent
      */
     @Override
-    public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
+    public Candidate updateOtherInfo(UpdateCandidateOtherInfoRequest request) {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());

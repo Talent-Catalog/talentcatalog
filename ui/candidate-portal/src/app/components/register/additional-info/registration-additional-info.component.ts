@@ -140,7 +140,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.saving = true;
 
     if (this.usAfghan) {
-      this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+      this.candidateService.updateCandidateOtherInfo(this.form.value).subscribe(
         (candidate) => {
 
           this.saving = false;
@@ -160,7 +160,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
         (response) => {
 
-          this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+          this.candidateService.updateCandidateOtherInfo(this.form.value).subscribe(
             (candidate) => {
 
               this.saving = false;
