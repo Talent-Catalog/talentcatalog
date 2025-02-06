@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
+
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import jakarta.validation.constraints.NotBlank;
@@ -88,7 +90,9 @@ import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tctalent.server.service.db.CandidateDependantService;
+import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.SalesforceService;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import reactor.core.publisher.Mono;
@@ -194,6 +198,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
     private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
     private final CandidateDependantService candidateDependantService;
+    private final UserService userService;
 
     private PrivateKey privateKey;
 
@@ -212,12 +217,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Autowired
     public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
         SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
-        CandidateDependantService candidateDependantService) {
+        CandidateDependantService candidateDependantService, UserService userService) {
         this.emailHelper = emailHelper;
         this.salesforceConfig = salesforceConfig;
         this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
         this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
         this.candidateDependantService = candidateDependantService;
+        this.userService = userService;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
@@ -420,17 +426,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 // a failsafe in case admin users haven't clicked the 'Update case stats' button
                 // when updating relocating dependant info, which can be set on a visa job check
                 // or directly on the Candidate Opp via the 'Upload' tab.
-                // Typically, would use CandidateOpportunityService here, but that would create a
-                // dependency cycle between beans — so instead querying the SalesforceJobOpp to get
-                // the CandidateOpportunity required for processSfCaseRelocationInfo()
                 if (relocationInfo == null && stage == CandidateOpportunityStage.offer) {
-                    Optional<CandidateOpportunity> candidateOpp =
-                        jobOpportunity.getCandidateOpportunities()
-                            .stream()
-                            .filter(opp -> opp.getCandidate().getId().equals(candidate.getId()))
-                            .findFirst();
-                    if (candidateOpp.isPresent()) {
-                        relocationInfo = processSfCaseRelocationInfo(candidateOpp.get(), candidate);
+                    CandidateOpportunity candidateOpp =
+                        fetchCandidateOppGivenJobAndCandidate(jobOpportunity, candidate);
+                    if (candidateOpp != null) {
+                        relocationInfo = processSfCaseRelocationInfo(candidateOpp, candidate);
                     }
                 }
             }
@@ -444,7 +444,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 opportunityRequest.setStageName(stageName);
             }
             if (nextStep != null) {
-                opportunityRequest.setNextStep(nextStep);
+                CandidateOpportunity candidateOpp =
+                    fetchCandidateOppGivenJobAndCandidate(jobOpportunity, candidate);
+
+                String processedNextStep = processNextStep(candidateOpp, nextStep);
+
+                opportunityRequest.setNextStep(processedNextStep);
             }
             if (nextStepDueDate != null) {
                 opportunityRequest.setNextStepDueDate(nextStepDueDate);
@@ -2359,6 +2364,50 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         // Update the candidate opp
         createOrUpdateCandidateOpportunities(candidateList, candidateOppParams, sfJobOpp);
+    }
+
+    /**
+     * Calling {@link CandidateOpportunityService} from this service would cause a circular
+     * dependency, so instead this method fetches the relevant Candidate Opp for a given Job and
+     * candidate, provided there is one, by querying the {@link SalesforceJobOpp}.
+     * @param job the presumed parent Job of the Candidate Opp to be fetched
+     * @param candidate the candidate presumed to be associated with the Opp to be fetched
+     * @return {@link CandidateOpportunity} if one fits the criteria, otherwise null
+     */
+    private @Nullable CandidateOpportunity fetchCandidateOppGivenJobAndCandidate(
+        SalesforceJobOpp job,
+        Candidate candidate
+    ) {
+        Optional<CandidateOpportunity> candidateOpp = job.getCandidateOpportunities()
+            .stream()
+            .filter(opp -> opp.getCandidate().getId().equals(candidate.getId()))
+            .findFirst();
+
+        return candidateOpp.orElse(null);
+    }
+
+    /**
+     * If requested Next Step differs from current, provides an audit stamped version.
+     * @param candidateOpp the Candidate Opp whose Next Step may be updated
+     * @param nextStep the user-entered value, prior to audit stamp
+     * @return processed Next Step String
+     */
+    private String processNextStep(@Nullable CandidateOpportunity candidateOpp, String nextStep) {
+        // Some updates may be automated, so we attribute these to SystemAdmin
+        User userForAttribution = userService.getLoggedInUser();
+        if (userForAttribution == null) {
+            userForAttribution = userService.getSystemAdminUser();
+        }
+
+        String currentNextStep =
+            candidateOpp == null ? null : candidateOpp.getNextStep();
+
+        return auditStampNextStep(
+            userForAttribution.getUsername(),
+            LocalDate.now(),
+            currentNextStep,
+            nextStep
+        );
     }
 
 }
