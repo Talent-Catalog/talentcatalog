@@ -16,7 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
 import static org.tctalent.server.util.NextStepHelper.isNextStepDifferent;
 
 import java.io.File;
@@ -102,6 +101,7 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
+import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -152,6 +152,7 @@ public class JobServiceImpl implements JobService {
     private final SavedSearchService savedSearchService;
     private final JobOppIntakeService jobOppIntakeService;
     private final ChatPostService chatPostService;
+    private final NextStepProcessingService nextStepProcessingService;
 
     /**
      * Updates the closing logic to say tha when a job is closed in the given stage, then any
@@ -827,15 +828,8 @@ public class JobServiceImpl implements JobService {
         }
 
         if (request.getNextStep() != null) {
-            // NEXT STEP PROCESSING
-            // Update may be automated, in which case attribute to System Admin
-            User userForAttribution = userService.getLoggedInUser();
-            if (userForAttribution == null) {
-                userForAttribution = userService.getSystemAdminUser();
-            }
-
-            String processedNextStep = auditStampNextStep(userForAttribution.getUsername(),
-                LocalDate.now(), job.getNextStep(), request.getNextStep());
+            final String processedNextStep =
+                nextStepProcessingService.processNextStep(job, request.getNextStep());
 
             job.setNextStep(processedNextStep);
 

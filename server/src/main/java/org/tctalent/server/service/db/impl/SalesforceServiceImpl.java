@@ -16,8 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
-
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import jakarta.validation.constraints.NotBlank;
@@ -65,7 +63,6 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.AbstractOpportunity;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateLanguage;
@@ -92,8 +89,8 @@ import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityPar
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.SalesforceService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
 import reactor.core.publisher.Mono;
@@ -199,7 +196,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final SalesforceRecordTypeConfig salesforceRecordTypeConfig;
     private final SalesforceTbbAccountsConfig salesforceTbbAccountsConfig;
     private final CandidateDependantService candidateDependantService;
-    private final UserService userService;
+    private final NextStepProcessingService nextStepProcessingService;
 
     private PrivateKey privateKey;
 
@@ -216,15 +213,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private String accessToken = null;
 
     @Autowired
-    public SalesforceServiceImpl(EmailHelper emailHelper, SalesforceConfig salesforceConfig,
-        SalesforceRecordTypeConfig salesforceRecordTypeConfig, SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
-        CandidateDependantService candidateDependantService, UserService userService) {
+    public SalesforceServiceImpl(
+        EmailHelper emailHelper, SalesforceConfig salesforceConfig,
+        SalesforceRecordTypeConfig salesforceRecordTypeConfig,
+        SalesforceTbbAccountsConfig salesforceTbbAccountsConfig,
+        CandidateDependantService candidateDependantService,
+        NextStepProcessingService nextStepProcessingService
+    ) {
         this.emailHelper = emailHelper;
         this.salesforceConfig = salesforceConfig;
         this.salesforceRecordTypeConfig = salesforceRecordTypeConfig;
         this.salesforceTbbAccountsConfig = salesforceTbbAccountsConfig;
         this.candidateDependantService = candidateDependantService;
-        this.userService = userService;
+        this.nextStepProcessingService = nextStepProcessingService;
 
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
@@ -448,7 +449,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 CandidateOpportunity candidateOpp =
                     fetchCandidateOppGivenJobAndCandidate(jobOpportunity, candidate);
 
-                String processedNextStep = processNextStep(candidateOpp, nextStep);
+                String processedNextStep =
+                    nextStepProcessingService.processNextStep(candidateOpp, nextStep);
 
                 opportunityRequest.setNextStep(processedNextStep);
             }
@@ -1007,7 +1009,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public void updateEmployerOpportunityStage(
         SalesforceJobOpp job, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
         throws SalesforceException, WebClientException {
-        String processedNextStep = processNextStep(job, nextStep);
+        final String processedNextStep = nextStepProcessingService.processNextStep(job, nextStep);
 
         EmployerOppStageUpdateRequest sfRequest =
             new EmployerOppStageUpdateRequest(stage, processedNextStep, dueDate);
@@ -2386,30 +2388,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             .findFirst();
 
         return candidateOpp.orElse(null);
-    }
-
-    /**
-     * If requested Next Step differs from current, provides an audit stamped version.
-     * @param opp the Opp whose Next Step may be updated
-     * @param nextStep the user-entered value, prior to audit stamp
-     * @return processed Next Step String
-     */
-    private String processNextStep(@Nullable AbstractOpportunity opp, String nextStep) {
-        // Some updates may be automated, so we attribute these to SystemAdmin
-        User userForAttribution = userService.getLoggedInUser();
-        if (userForAttribution == null) {
-            userForAttribution = userService.getSystemAdminUser();
-        }
-
-        String currentNextStep =
-            opp == null ? null : opp.getNextStep();
-
-        return auditStampNextStep(
-            userForAttribution.getUsername(),
-            LocalDate.now(),
-            currentNextStep,
-            nextStep
-        );
     }
 
 }
