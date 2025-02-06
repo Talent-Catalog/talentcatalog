@@ -159,12 +159,20 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public List<PartnerImpl> listSourcePartners() {
+    public List<PartnerImpl> listActiveSourcePartners() {
         SearchPartnerRequest request = new SearchPartnerRequest();
         request.setSourcePartner(true);
         request.setStatus(Status.active);
         return search(request);
     }
+
+    @Override
+    public List<PartnerImpl> listAllSourcePartners() {
+        SearchPartnerRequest request = new SearchPartnerRequest();
+        request.setSourcePartner(true);
+        return search(request);
+    }
+
 
     @Override
     public List<PartnerImpl> search(SearchPartnerRequest request) {

@@ -356,7 +356,7 @@ public class JobServiceImpl implements JobService {
         jobChatService.createJobCreatorChat(JobChatType.JobCreatorAllSourcePartners, job);
 
         //Add chats with each source partner
-        List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+        List<PartnerImpl> sourcePartners = partnerService.listActiveSourcePartners();
         for (PartnerImpl sourcePartner : sourcePartners) {
             jobChatService.createJobCreatorSourcePartnerChat(job, sourcePartner);
         }

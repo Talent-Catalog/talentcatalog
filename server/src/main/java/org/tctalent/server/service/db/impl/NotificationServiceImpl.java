@@ -155,7 +155,7 @@ public class NotificationServiceImpl implements NotificationService {
                     notifyDestinationPartner(chat, userNotifications);
 
                     //Notify all source partners
-                    final List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    final List<PartnerImpl> sourcePartners = partnerService.listActiveSourcePartners();
                     for (PartnerImpl sourcePartner : sourcePartners) {
                         notifySourcePartner(sourcePartner, chat, userNotifications);
                     }
