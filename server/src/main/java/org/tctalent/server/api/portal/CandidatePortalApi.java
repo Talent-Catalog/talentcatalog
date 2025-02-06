@@ -346,6 +346,7 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("additionalInfo")
                 .add("linkedInLink")
+                .add("allNotifications")
                 ;
     }
 
@@ -500,6 +501,7 @@ public class CandidatePortalApi {
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")
                 .add("linkedInLink")
+                .add("allNotifications")
                 .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 .add("candidateOpportunities", candidateOpportunityDto())
                 .add("candidateDestinations", destinationsDto())

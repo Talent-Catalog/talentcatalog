@@ -40,7 +40,8 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     surveyTypes: true,
     additionalInfo: true,
     candidateSurvey: true,
-    linkedInLink: true
+    linkedInLink: true,
+    allNotifications: true
   };
   // Component states
   saving: boolean;
@@ -63,6 +64,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       surveyTypeId: [null, Validators.required],
       surveyComment: [''],
       linkedInLink: ['', Validators.pattern(linkedInRegex)],
+      allNotifications: [false],
     });
 
     this.candidateService.getCandidateSurvey().subscribe(
@@ -89,21 +91,28 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     );
 
     this.candidateService.getCandidateAdditionalInfo().subscribe(
-      (response) => {
+      (candidate) => {
         this.form.patchValue({
-          additionalInfo: response.additionalInfo,
-          linkedInLink: response.linkedInLink
+          additionalInfo: candidate.additionalInfo,
+          linkedInLink: candidate.linkedInLink,
+          allNotifications: candidate.allNotifications
         });
         this._loading.additionalInfo = false;
         this._loading.linkedInLink = false;
+        this._loading.allNotifications = false;
       },
       (error) => {
         this.error = error;
         this._loading.additionalInfo = false;
         this._loading.linkedInLink = false;
+        this._loading.allNotifications = false;
       }
     );
 
+  }
+
+  get allNotifications(): boolean {
+    return this.form.controls.allNotifications.value;
   }
 
   loadDropDownData() {
