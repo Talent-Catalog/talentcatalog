@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -31,22 +31,50 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.TaskImpl;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
+import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.DuolingoCouponService;
+import org.tctalent.server.service.db.SavedListService;
+import org.tctalent.server.service.db.TaskAssignmentService;
+import org.tctalent.server.service.db.TaskService;
 
 @RestController
 @RequestMapping("/api/admin/coupon")
 @Slf4j
 public class DuolingoCouponAdminApi {
 
+  private final AuthService authService;
   private final DuolingoCouponService couponService;
+  private final SavedListService savedListService;
+  private final TaskAssignmentService taskAssignmentService;
+  private final TaskService taskService;
+  private final CandidateService candidateService;
 
   @Autowired
-  public DuolingoCouponAdminApi(DuolingoCouponService couponService) {
+  public DuolingoCouponAdminApi(DuolingoCouponService couponService,
+      SavedListService savedListService,
+      AuthService authService,
+      TaskAssignmentService taskAssignmentService,
+      TaskService taskService,
+      CandidateService candidateService) {
+    this.authService = authService;
     this.couponService = couponService;
+    this.savedListService = savedListService;
+    this.taskAssignmentService = taskAssignmentService;
+    this.taskService = taskService;
+    this.candidateService = candidateService;
   }
 
   // Endpoint to import coupons from CSV data
@@ -75,8 +103,28 @@ public class DuolingoCouponAdminApi {
 
   // Endpoint to assign an available coupon to a candidate
   @PostMapping("{candidateId}/assign")
-  public DuolingoCouponResponse assignCouponToCandidate(@PathVariable("candidateId") Long candidateId) {
+  public DuolingoCouponResponse assignCouponToCandidate(
+      @PathVariable("candidateId") Long candidateId)
+      throws InvalidSessionException, NoSuchObjectException, EntityExistsException {
+
+    User user = authService.getLoggedInUser()
+        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+    List<DuolingoCouponResponse> coupons = couponService.getCouponsForCandidate(candidateId);
+
+    for (DuolingoCouponResponse coupon : coupons) {
+      if (coupon.getDuolingoCouponStatus().equals(DuolingoCouponStatus.SENT)) {
+        throw new EntityExistsException("coupon", "for this candidate");
+      }
+    }
+
     DuolingoCoupon coupon = couponService.assignCouponToCandidate(candidateId);
+
+    TaskImpl task = taskService.getByName("duolingoTest");
+    Candidate candidate = candidateService.getCandidate(candidateId);
+    taskAssignmentService.assignTaskToCandidate(user, task, candidate, null,
+        null);
+
     return new DuolingoCouponResponse(
         coupon.getId(),
         coupon.getCouponCode(),
@@ -85,7 +133,7 @@ public class DuolingoCouponAdminApi {
         coupon.getCouponStatus()
     );
   }
-  
+
   // Endpoint to retrieve all coupons assigned to a candidate
   @GetMapping("{candidateId}")
   public List<DuolingoCouponResponse> getCouponsForCandidate(
@@ -118,5 +166,21 @@ public class DuolingoCouponAdminApi {
     );
   }
 
+  // Endpoint to assign available coupons to a saved list candidate
+  @PostMapping("assign-to-list")
+  public void assignCouponsToList(@Valid @RequestBody Long listId)
+      throws NoSuchObjectException, InvalidSessionException {
+
+    User user = authService.getLoggedInUser()
+        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+    SavedList savedList = savedListService.get(listId);
+
+    couponService.assignCouponsToList(savedList);
+
+    TaskImpl task = taskService.getByName("duolingoTest");
+
+    savedListService.associateTaskWithList(user, task, savedList);
+  }
 
 }

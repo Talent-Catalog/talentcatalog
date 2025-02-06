@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.ImportFailedException;
@@ -23,6 +24,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.response.DuolingoCouponResponse;
 
 /**
@@ -105,4 +107,14 @@ public interface DuolingoCouponService {
    * @return an Optional containing the Candidate if found, otherwise empty.
    */
   Candidate findCandidateByCouponCode(String couponCode) throws NoSuchObjectException;
+
+  /**
+   * Assign available coupons to candidates in a saved list.
+   * <p/>
+   * This method assigns available coupons to candidates in a saved list.
+   *
+   * @param list the SavedList containing the candidates to whom coupons should be assigned.
+   * @throws NoSuchObjectException if there are not enough coupons available
+   */
+  void assignCouponsToList(SavedList list) throws NoSuchObjectException;
 }
