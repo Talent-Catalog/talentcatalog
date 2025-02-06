@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -102,6 +103,111 @@ public class CandidateStatAdminApi {
         return dto;
     }
 
+    /**
+     * Returns the
+     */
+    @GetMapping("names")
+    public List<Map<String, Object>> getAllStatNames() {
+        String title;
+        String chartType;
+        List<StatReport> statReports = new ArrayList<>();
+
+        title = "Gender";
+        chartType = "bar";
+        statReports.add(new StatReport(title, null, chartType));
+
+        title = "Registrations";
+        chartType = "bar";
+        statReports.add(new StatReport(title, null, chartType));
+        statReports.add(new StatReport(title + " (by occupations)", null, chartType));
+
+        title = "Birth years";
+        chartType = "bar";
+        statReports.add(new StatReport(title, null, chartType));
+        statReports.add(new StatReport(title + " (male)", null, chartType));
+        statReports.add(new StatReport(title + " (female)", null, chartType));
+
+        title = "LinkedIn";
+        chartType = "bar";
+        statReports.add(new StatReport(title + " links", null, chartType));
+        statReports.add(new StatReport(title + " links by candidate registration date", null, chartType));
+
+        title = "UNHCR";
+        chartType = "bar";
+        statReports.add(new StatReport(title + " Registered", null, chartType));
+        statReports.add(new StatReport(title + " Status", null, chartType));
+
+        title = "Referrers";
+        chartType = "bar";
+        statReports.add(new StatReport(title, null, chartType));
+        statReports.add(new StatReport(title + " (male)", null, chartType));
+        statReports.add(new StatReport(title + " (female)", null, chartType));
+
+        title = "Nationalities";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+        statReports.add(new StatReport(title + " (Jordan)", null, null));
+        statReports.add(new StatReport(title + " (Lebanon)", null, null));
+
+        title = "Source Countries";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+
+        title = "Statuses";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+        statReports.add(new StatReport(title + " (Jordan)", null, null));
+        statReports.add(new StatReport(title + " (Lebanon)", null, null));
+
+        title = "Occupations";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+
+        title = "Most Common Occupations";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+
+        title = "Max Education Level";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+
+        title = "Languages";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+
+        title = "Survey";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (Jordan)", null, null));
+        statReports.add(new StatReport(title + " (Lebanon)", null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+
+        title = "Spoken English Language Level";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+
+        title = "Spoken French Language Level";
+        statReports.add(new StatReport(title, null, null));
+        statReports.add(new StatReport(title + " (male)", null, null));
+        statReports.add(new StatReport(title + " (female)", null, null));
+
+        //Construct the dto - just a list of all individual report dtos
+        List<Map<String, Object>> dto = new ArrayList<>();
+        for (StatReport statReport: statReports) {
+            dto.add(statDto().buildReport(statReport));
+        }
+
+        return dto;
+    }
+
     @NonNull
     private List<StatReport> getAllStatsByNewMethod(CandidateStatsRequest request) {
         //Pick up any source country restrictions based on current user
@@ -134,13 +240,13 @@ public class CandidateStatAdminApi {
 
             //Report based on set of candidates or date range
             statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
-                candidateIds, sourceCountryIds, null);
+                candidateIds, sourceCountryIds, null, request.getStatNames());
         } else {
             final Long searchId = request.getSearchId();
             if (searchId == null) {
                 //No list and no search - this will report on all data
                 statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
-                    null, sourceCountryIds, null);
+                    null, sourceCountryIds, null, request.getStatNames());
             } else {
 
                 // SEARCH
@@ -160,7 +266,7 @@ public class CandidateStatAdminApi {
                     Set<Long> candidateIds = savedSearchService.searchCandidates(searchId);
 
                     statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
-                        candidateIds, sourceCountryIds, null);
+                        candidateIds, sourceCountryIds, null, request.getStatNames());
 
                 } else {
                     //SEARCH just containing Postgres SQL (no Elastic search)
@@ -171,7 +277,7 @@ public class CandidateStatAdminApi {
                     String constraint = "candidate.id in (" + sql + ")";
 
                     statReports = createNewReports(request.getDateFrom(), request.getDateTo(),
-                        null, sourceCountryIds, constraint);
+                        null, sourceCountryIds, constraint, request.getStatNames());
                 }
             }
         }
@@ -179,45 +285,55 @@ public class CandidateStatAdminApi {
     }
 
     private List<StatReport> createNewReports(
-        LocalDate dateFrom,
-        LocalDate dateTo,
-        Set<Long> candidateIds,
-        List<Long> sourceCountryIds,
-        String constraint) {
+            LocalDate dateFrom,
+            LocalDate dateTo,
+            Set<Long> candidateIds,
+            List<Long> sourceCountryIds,
+            String constraint,
+            List<String> statNames) {
 
         String title;
         String chartType;
 
         List<StatReport> statReports = new ArrayList<>();
 
+
         title = "Gender";
-        chartType = "bar";
-        statReports.add(new StatReport(title,
-            candidateStatsService.computeGenderStats(
-                dateFrom, dateTo, candidateIds, sourceCountryIds, constraint), chartType));
+        if (statNames.contains(title)) {
+            chartType = "bar";
+            statReports.add(new StatReport(title,
+                    candidateStatsService.computeGenderStats(
+                            dateFrom, dateTo, candidateIds, sourceCountryIds, constraint), chartType));
+        }
 
-        title = "Registrations";
-        chartType = "bar";
-        statReports.add(new StatReport(title,
-            candidateStatsService.computeRegistrationStats(
-                dateFrom, dateTo, candidateIds, sourceCountryIds, constraint), chartType));
-        statReports.add(new StatReport(title + " (by occupations)",
-            candidateStatsService.computeRegistrationOccupationStats(
-                dateFrom, dateTo, candidateIds, sourceCountryIds, constraint)));
+        if (statNames.contains(title)) {
+            title = "Registrations";
+            chartType = "bar";
+            statReports.add(new StatReport(title,
+                    candidateStatsService.computeRegistrationStats(
+                            dateFrom, dateTo, candidateIds, sourceCountryIds, constraint), chartType));
+            statReports.add(new StatReport(title + " (by occupations)",
+                    candidateStatsService.computeRegistrationOccupationStats(
+                            dateFrom, dateTo, candidateIds, sourceCountryIds, constraint)));
+        }
 
-        title = "Birth years";
-        chartType = "bar";
-        statReports.add(new StatReport(title,
-            candidateStatsService.computeBirthYearStats(
-                null, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint),
-            chartType));
-        statReports.add(new StatReport(title + " (male)",
-            candidateStatsService.computeBirthYearStats(
-                Gender.male, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint),
-            chartType));
-        statReports.add(new StatReport(title + " (female)",
-            candidateStatsService.computeBirthYearStats(
-                Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint), chartType));
+        //todo what to do about titles that are additions? Is there a better way to loop through the titles?
+        if (statNames.contains(title)) {
+            title = "Birth years";
+            chartType = "bar";
+            statReports.add(new StatReport(title,
+                    candidateStatsService.computeBirthYearStats(
+                            null, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint),
+                    chartType));
+            statReports.add(new StatReport(title + " (male)",
+                    candidateStatsService.computeBirthYearStats(
+                            Gender.male, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint),
+                    chartType));
+            statReports.add(new StatReport(title + " (female)",
+                    candidateStatsService.computeBirthYearStats(
+                            Gender.female, dateFrom, dateTo, candidateIds, sourceCountryIds, constraint), chartType));
+        }
+
 
         title = "LinkedIn";
         chartType = "bar";

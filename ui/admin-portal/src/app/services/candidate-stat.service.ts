@@ -26,6 +26,7 @@ export interface CandidateStatsRequest {
   searchId?: number;
   dateFrom?: string;
   dateTo?: string;
+  statNames?: string[];
 }
 
 @Injectable({providedIn: 'root'})
@@ -37,6 +38,10 @@ export class CandidateStatService {
 
   getAllStats(details: CandidateStatsRequest): Observable<StatReport[]> {
     return this.http.post<StatReport[]>(`${this.apiUrl}/all`, details);
+  }
+
+  getAllStatNames(): Observable<StatReport[]> {
+    return this.http.get<StatReport[]>(`${this.apiUrl}/names`);
   }
 
 }

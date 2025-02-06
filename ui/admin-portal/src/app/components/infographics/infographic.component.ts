@@ -25,6 +25,8 @@ import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
 import {SavedSearchService} from "../../services/saved-search.service";
 import {saveBlob} from "../../util/file";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {SelectStatsComponent} from "./select-stats/select-stats.component";
 
 @Component({
   selector: 'app-infographic',
@@ -39,6 +41,7 @@ export class InfographicComponent implements OnInit {
   lists: SavedList[] = [];
   searches: SavedSearch[] = [];
   statReports: StatReport[];
+  statNames: StatReport[];
   statsFilter: UntypedFormGroup;
   statsName: string;
   listFromUrl: boolean = false;
@@ -47,6 +50,7 @@ export class InfographicComponent implements OnInit {
               private statService: CandidateStatService,
               private savedListService: SavedListService,
               private savedSearchService: SavedSearchService,
+              private modalService: NgbModal,
               private fb: UntypedFormBuilder) {
   }
 
@@ -57,10 +61,17 @@ export class InfographicComponent implements OnInit {
       savedList: [null],
       savedSearch: [null],
       dateFrom: ['', [Validators.required]],
-      dateTo: ['', [Validators.required]]
+      dateTo: ['', [Validators.required]],
+      selectedStatNames: [null]
     });
 
     this.loadListsAndSearches();
+
+    this.statService.getAllStatNames().subscribe(
+      (results) => {
+        this.statNames = results;
+      }
+    )
   }
 
   get dateFrom(): string { return this.statsFilter.value.dateFrom; }
@@ -74,6 +85,9 @@ export class InfographicComponent implements OnInit {
     const savedSearch: SavedSearch = this.statsFilter.value.savedSearch;
     //Control always returns an object
     return savedSearch;
+  }
+  get selectedStats(): string[] {
+    return this.statsFilter.value.selectedStatNames;
   }
 
   private loadListsAndSearches() {
@@ -141,13 +155,23 @@ export class InfographicComponent implements OnInit {
   submitStatsRequest(runOldStats: boolean){
     this.loading = true;
     this.error = null;
+    const selectStatsModal = this.modalService.open(SelectStatsComponent, {
+      centered: true,
+      backdrop: 'static',
+      size: "lg"
+    });
+
+    selectStatsModal.result
+      .then((response) => console.log(response))
+      .catch(() => { /* Isn't possible */ });
 
     const request: CandidateStatsRequest = {
       runOldStats: runOldStats,
       listId: this.savedList == null ? null : this.savedList.id,
       searchId: this.savedSearch == null ? null : this.savedSearch.id,
       dateFrom: this.dateFrom,
-      dateTo: this.dateTo
+      dateTo: this.dateTo,
+      statNames: this.selectedStats
     }
 
     if (this.savedList) {

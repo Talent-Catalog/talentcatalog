@@ -17,6 +17,7 @@
 package org.tctalent.server.request.candidate.stat;
 
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -54,5 +55,10 @@ public class CandidateStatsRequest {
      * If null, then we report up to most recent data
      */
     private LocalDate dateTo;
+
+    /**
+     * The names of the stats to be run
+     */
+    private List<String> statNames;
 
 }
