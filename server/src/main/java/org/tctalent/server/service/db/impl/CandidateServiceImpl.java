@@ -2479,8 +2479,17 @@ public class CandidateServiceImpl implements CandidateService {
         UpdateCandidateNotificationPreferenceRequest request) throws NoSuchObjectException {
         final Candidate candidate = candidateRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
-        candidate.setAllNotifications(request.isAllNotifications());
-        save(candidate, false);
+
+        if (request.isAllNotifications() != candidate.isAllNotifications()) {
+            candidate.setAllNotifications(request.isAllNotifications());
+            save(candidate, false);
+
+            //Generate candidate note
+            String message = "Candidate's chat notification preference was changed to " +
+                (candidate.isAllNotifications() ? "opt in to all notifications" : "opt out of all notifications");
+            candidateNoteService.createCandidateNote(
+                new CreateCandidateNoteRequest(candidate.getId(), message, null));
+        }
     }
 
     @Override
