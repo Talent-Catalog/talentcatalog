@@ -629,7 +629,8 @@ public class JobServiceImpl implements JobService {
             final String nextStep = nowDate + ": Waiting to receive candidate CVs for review";
 
             salesforceService.updateEmployerOpportunityStage(
-                job.getSfId(), JobOpportunityStage.candidateSearch, nextStep, submissionDueDate);
+                job, JobOpportunityStage.candidateSearch, nextStep, submissionDueDate
+            );
         }
 
         job.setPublishedBy(loggedInUser);
@@ -1068,8 +1069,7 @@ public class JobServiceImpl implements JobService {
         final JobOpportunityStage stage = request.getStage();
         final String nextStep = request.getNextStep();
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
-        salesforceService.updateEmployerOpportunityStage(
-            job.getSfId(), stage, nextStep, nextStepDueDate);
+        salesforceService.updateEmployerOpportunityStage(job, stage, nextStep, nextStepDueDate);
 
         final String jobName = request.getJobName();
         if (jobName != null) {

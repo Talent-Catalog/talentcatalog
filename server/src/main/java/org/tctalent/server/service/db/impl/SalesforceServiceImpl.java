@@ -65,6 +65,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.AbstractOpportunity;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateLanguage;
@@ -1004,13 +1005,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void updateEmployerOpportunityStage(
-        String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
+        SalesforceJobOpp job, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
         throws SalesforceException, WebClientException {
+        String processedNextStep = processNextStep(job, nextStep);
 
         EmployerOppStageUpdateRequest sfRequest =
-            new EmployerOppStageUpdateRequest(stage, nextStep, dueDate);
+            new EmployerOppStageUpdateRequest(stage, processedNextStep, dueDate);
 
-        executeUpdate(sfId, sfRequest);
+        executeUpdate(job.getSfId(), sfRequest);
     }
 
     @Override
@@ -2369,7 +2371,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     /**
      * Calling {@link CandidateOpportunityService} from this service would cause a circular
      * dependency, so instead this method fetches the relevant Candidate Opp for a given Job and
-     * candidate, provided there is one, by querying the {@link SalesforceJobOpp}.
+     * candidate by querying the {@link SalesforceJobOpp}, provided there is one.
      * @param job the presumed parent Job of the Candidate Opp to be fetched
      * @param candidate the candidate presumed to be associated with the Opp to be fetched
      * @return {@link CandidateOpportunity} if one fits the criteria, otherwise null
@@ -2388,11 +2390,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     /**
      * If requested Next Step differs from current, provides an audit stamped version.
-     * @param candidateOpp the Candidate Opp whose Next Step may be updated
+     * @param opp the Opp whose Next Step may be updated
      * @param nextStep the user-entered value, prior to audit stamp
      * @return processed Next Step String
      */
-    private String processNextStep(@Nullable CandidateOpportunity candidateOpp, String nextStep) {
+    private String processNextStep(@Nullable AbstractOpportunity opp, String nextStep) {
         // Some updates may be automated, so we attribute these to SystemAdmin
         User userForAttribution = userService.getLoggedInUser();
         if (userForAttribution == null) {
@@ -2400,7 +2402,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
 
         String currentNextStep =
-            candidateOpp == null ? null : candidateOpp.getNextStep();
+            opp == null ? null : opp.getNextStep();
 
         return auditStampNextStep(
             userForAttribution.getUsername(),
