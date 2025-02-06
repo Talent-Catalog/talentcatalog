@@ -18,11 +18,17 @@
 <div class="d-sm-flex justify-content-between">
   <div>
     <div class="mb-4 mt-4">
-      <h4>Display Name
-      </h4>
       <div>
+        <div class="d-sm-flex justify-content-between mb-2">
         <h4>Steps to take the Duolingo English Test (DET)</h4>
-        <p>Dear candidate,</p>
+          <div class="d-flex justify-content-center">
+            <button class="btn btn-sm btn-secondary" (click)="goBack()">
+              <fa-icon class="me-1" icon="arrow-left"></fa-icon>
+              {{ 'SERVICES.SERVICE.RETURN' | translate }}
+            </button>
+          </div>
+        </div>
+        <h4>Dear candidate,</h4>
         <b>
           We hope you are doing well. You are receiving this email because we need you to take the Duolingo English Test
           (DET).
@@ -126,11 +132,6 @@
         </ul>
       </div>
     </div>
-  </div>
-  <div class="mt-4 mx-3 text-center flex-shrink-0">
-    <button class="btn btn-sm btn-secondary" (click)="goBack()">
-      <fa-icon class="me-1" icon="arrow-left"></fa-icon> {{ 'SERVICES.SERVICE.RETURN' | translate }}
-    </button>
   </div>
 </div>
 
