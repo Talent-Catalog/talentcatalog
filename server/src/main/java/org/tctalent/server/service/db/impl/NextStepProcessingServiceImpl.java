@@ -32,7 +32,7 @@ import org.tctalent.server.service.db.UserService;
 public class NextStepProcessingServiceImpl implements NextStepProcessingService {
     private final UserService userService;
 
-    public String processNextStep(@Nullable AbstractOpportunity opp, String nextStep) {
+    public String processNextStep(@Nullable AbstractOpportunity opp, @Nullable String nextStep) {
         // Some updates may be automated, so we attribute these to SystemAdmin
         User userForAttribution = userService.getLoggedInUser();
         if (userForAttribution == null) {
