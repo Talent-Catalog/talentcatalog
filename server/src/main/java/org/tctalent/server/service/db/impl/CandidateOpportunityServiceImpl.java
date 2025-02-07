@@ -151,7 +151,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         if (create) {
             //Create the automated post to notify that a new has been created for a candidate.
-            oppNotificationService.notifyNewOpp(opp);
+            oppNotificationService.notifyNewCase(opp);
         }
 
         return opp;
@@ -638,7 +638,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         if (oppParams != null) {
 
-            oppNotificationService.notifyOppChanges(opp, oppParams);
+            oppNotificationService.notifyCaseChanges(opp, oppParams);
 
             final CandidateOpportunityStage newStage = oppParams.getStage();
             if (newStage != null) {

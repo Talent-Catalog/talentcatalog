@@ -17,7 +17,9 @@
 package org.tctalent.server.service.db;
 
 import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
+import org.tctalent.server.request.job.UpdateJobRequest;
 
 /**
  * Manages notifications that go out as the result of changes to opportunities
@@ -30,14 +32,29 @@ public interface OppNotificationService {
      * Sends out posts on relevant chats notifying subscribers about the given changes to the given
      * candidate opportunity (case).
      * @param opp Candidate opportunity
-     * @param changes Changes
+     * @param changes Changes to opportunity
      */
-    void notifyOppChanges(CandidateOpportunity opp, CandidateOpportunityParams changes);
+    void notifyCaseChanges(CandidateOpportunity opp, CandidateOpportunityParams changes);
 
     /**
      * Sends out posts on relevant chats notifying subscribers about the given new
      * candidate opportunity (case).
      * @param opp Candidate opportunity
      */
-    void notifyNewOpp(CandidateOpportunity opp);
+    void notifyNewCase(CandidateOpportunity opp);
+
+    /**
+     * Sends out posts on relevant chats notifying subscribers about the given changes to the given
+     * job opportunity.
+     * @param job Job opportunity
+     * @param changes Changes to opportunity
+     */
+    void notifyJobOppChanges(SalesforceJobOpp job, UpdateJobRequest changes);
+
+    /**
+     * Sends out posts on relevant chats notifying subscribers about the given new
+     * job opportunity.
+     * @param job Job opportunity
+     */
+    void notifyNewJobOpp(SalesforceJobOpp job);
 }

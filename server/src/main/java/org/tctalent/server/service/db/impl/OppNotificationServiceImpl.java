@@ -16,23 +16,24 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
-
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.model.db.AbstractOpportunity;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
-import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.NextStepWithDueDate;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
+import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.UserService;
 
@@ -42,10 +43,11 @@ import org.tctalent.server.service.db.UserService;
 public class OppNotificationServiceImpl implements OppNotificationService {
     private final ChatPostService chatPostService;
     private final JobChatService jobChatService;
+    private final NextStepProcessingService nextStepProcessingService;
     private final UserService userService;
 
     @Override
-    public void notifyOppChanges(CandidateOpportunity opp, CandidateOpportunityParams changes) {
+    public void notifyCaseChanges(CandidateOpportunity opp, CandidateOpportunityParams changes) {
         if (changes != null) {
             final CandidateOpportunityStage newStage = changes.getStage();
             if (newStage != null) {
@@ -64,68 +66,96 @@ public class OppNotificationServiceImpl implements OppNotificationService {
                 }
             }
 
-            if (changes.getNextStep() != null) {
-                // NEXT STEP PROCESSING
-                User userForAttribution = userService.getLoggedInUser();
-                if (userForAttribution == null) {
-                    userForAttribution = userService.getSystemAdminUser();
-                }
-                final String processedNextStep = auditStampNextStep(
-                    userForAttribution.getUsername(), LocalDate.now(),
-                    opp.getNextStep(), changes.getNextStep());
+            // NEXT STEP PROCESSING
+            String processedNextStep =
+                nextStepProcessingService.processNextStep(opp, changes.getNextStep());
 
-                // If next step details changed, automate post to JobCreatorSourcePartner chat.
-                // To compare previous next step to new one, need to ensure neither is null.
-                // Cases are auto-populated with a value for next step when created, but this has
-                // not always been the case.
-                String currentNextStep = opp.getNextStep() == null ? "" : opp.getNextStep();
+            NextStepWithDueDate requested =
+                new NextStepWithDueDate(processedNextStep, changes.getNextStepDueDate());
 
-                // If only the due date has changed, we still want to send a message.
-                // As above, there are some old cases with null values that need to be dealt with.
-                LocalDate currentDueDate =
-                    opp.getNextStepDueDate() == null ?
-                        LocalDate.of(1970, 1, 1) : opp.getNextStepDueDate();
+            NextStepWithDueDate current =
+                new NextStepWithDueDate(opp.getNextStep(), opp.getNextStepDueDate());
 
-                // If the request due date is null (user deletes the existing value in the form but
-                // doesn't set a new one, then submits) it will not be used (see below) — so, for
-                // purpose of comparison we give it the same value as the current due date (no
-                // message will be sent because they're the same).
-                LocalDate requestDueDate =
-                    changes.getNextStepDueDate() == null ?
-                        currentDueDate : changes.getNextStepDueDate();
+            if (!requested.equals(current)) {
+                // Find the relevant job chat
+                JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                    JobChatType.JobCreatorSourcePartner,
+                    opp.getJobOpp(),
+                    opp.getCandidate().getUser().getPartner(),
+                    null
+                );
 
-                if (!processedNextStep.equals(currentNextStep) || !requestDueDate.equals(currentDueDate)) {
-                    // Find the relevant job chat
-                    JobChat jcspChat = jobChatService.getOrCreateJobChat(
-                        JobChatType.JobCreatorSourcePartner,
-                        opp.getJobOpp(),
-                        opp.getCandidate().getUser().getPartner(),
-                        null
-                    );
-
-                    String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
-
-                    // Set the chat post content
-                    Post autoPostNextStepChange = new Post();
-                    autoPostNextStepChange.setContent(
-                        "💼 <b>" + opp.getName()
-                            + "</b> 🪜<br> The next step details have changed for this case relating to candidate "
-                            + candidateNameAndNumber
-                            + ".<br><b>Next step:</b> " + processedNextStep
-                            + "<br><b>Due date:</b> "
-                            + (changes.getNextStepDueDate() == null ?
-                            opp.getNextStepDueDate() : changes.getNextStepDueDate())
-                    );
-
-                    // Create the chat post
-                    ChatPost nextStepChangeChatPost = chatPostService.createPost(
-                        autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
-
-                    // Publish the chat post
-                    chatPostService.publishChatPost(nextStepChangeChatPost);
-                }
+                String s =
+                    "The next step details have changed for this case relating to candidate " +
+                        constructCandidateNameNumber(opp.getCandidate());
+                String mess = constructNextStepMessage(opp, requested, s);
+                publishMessage(jcspChat, mess);
             }
         }
+    }
+
+    @Override
+    public void notifyNewCase(CandidateOpportunity opp) {
+        Candidate candidate = opp.getCandidate();
+        String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
+
+        Post autoPostNewOpp = new Post();
+        autoPostNewOpp.setContent("The candidate " + candidateNameAndNumber +
+            " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
+
+        // Note that we don't post to candidates until they get past the prospect stage
+        if (opp.getStage() != CandidateOpportunityStage.prospect) {
+            // AUTO CHAT TO PROSPECT CHAT
+            JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect,
+                null,null, candidate);
+            publishPost(prospectChat, autoPostNewOpp);
+        }
+
+        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
+        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner,
+            opp.getJobOpp(), candidate.getUser().getPartner(), null);
+        publishPost(jcspChat, autoPostNewOpp);
+    }
+
+    @Override
+    public void notifyJobOppChanges(SalesforceJobOpp opp, UpdateJobRequest changes) {
+        // NEXT STEP PROCESSING
+        String processedNextStep =
+            nextStepProcessingService.processNextStep(opp, changes.getNextStep());
+
+        NextStepWithDueDate requested =
+            new NextStepWithDueDate(processedNextStep, changes.getNextStepDueDate());
+
+        NextStepWithDueDate current =
+            new NextStepWithDueDate(opp.getNextStep(), opp.getNextStepDueDate());
+
+        if (!requested.equals(current)) {
+            // Find the relevant job chat
+            JobChat jcspChat = jobChatService.getOrCreateJobChat(
+                JobChatType.JobCreatorAllSourcePartners,
+                opp,
+                null,
+                null
+            );
+
+            String s = "The next step details for this job opportunity have changed:";
+            String mess = constructNextStepMessage(opp, requested, s);
+            publishMessage(jcspChat, mess);
+        }
+    }
+
+    @Override
+    public void notifyNewJobOpp(SalesforceJobOpp job) {
+        JobChat jobChat = jobChatService.getOrCreateJobChat(
+            JobChatType.JobCreatorAllSourcePartners, job, null, null);
+
+        String mess = "💼 <b>A new job has been published!</b></br>"
+            + "<b>Job Name:</b> </br>" + job.getName() + "</br>"
+            + "<b> Job Creator: </b> </br>" + job.getJobCreator() + "</br>"
+            + "<b> Job Country: </b> </br>" + job.getCountry().getName() + "</br>"
+            + "</br>"; // Add a newline for readability
+
+        publishMessage(jobChat, mess);
     }
 
     /**
@@ -139,12 +169,15 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             + " (" + candidate.getCandidateNumber() + ")";
     }
 
+    private String constructNextStepMessage(
+        AbstractOpportunity opp, NextStepWithDueDate step, String keyMessage) {
+        return "💼 <b>" + opp.getName() + "</b> 🪜<br> " + keyMessage
+            + ".<br><b>Next step:</b> " + step.nextStep()
+            + "<br><b>Due date:</b> " + (step.dueDate() == null ? "none" : step.dueDate());
+    }
+
     /**
      * Publish posts for a candidate opportunity that is moved to a closing stage.
-     * Publish to:
-     * - JobCreatorSourcePartner chat
-     * - CandidateProspect chat
-     * - CandidateRecruiting chat
      * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
      * @param newStage CandidateOpportunityStage - closing stage that the opp is being changed to
      */
@@ -152,8 +185,8 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         Candidate candidate = opp.getCandidate();
         String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
-        Post autoPostRemovedFromSubList = new Post();
-        autoPostRemovedFromSubList.setContent("The candidate " + candidateNameAndNumber +
+        Post autoPostClosedOpp = new Post();
+        autoPostClosedOpp.setContent("The candidate " + candidateNameAndNumber +
             " has been removed for the job '" + opp.getJobOpp().getName() +
             "' with the reason " + newStage.getSalesforceStageName() + ".");
 
@@ -162,68 +195,18 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             // AUTO CHAT TO PROSPECT CHAT
             JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
                 null, candidate);
-            // Create the chat post
-            ChatPost prospectChatPostRemoved = chatPostService.createPost(
-                autoPostRemovedFromSubList, prospectChat, userService.getSystemAdminUser());
-            // Publish chat post
-            chatPostService.publishChatPost(prospectChatPostRemoved);
+            publishPost(prospectChat, autoPostClosedOpp);
         }
 
         // AUTO CHAT TO RECRUITING CHAT
         JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
             candidate.getUser().getPartner(), candidate);
-        // Create the chat post
-        ChatPost recruitingChatPostRemoved = chatPostService.createPost(
-            autoPostRemovedFromSubList, recruitingChat, userService.getSystemAdminUser());
-        // Publish chat post
-        chatPostService.publishChatPost(recruitingChatPostRemoved);
+        publishPost(recruitingChat, autoPostClosedOpp);
 
         // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
         JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
             candidate.getUser().getPartner(), null);
-        // Create the chat post
-        ChatPost jcspChatPostRemoved = chatPostService.createPost(
-            autoPostRemovedFromSubList, jcspChat, userService.getSystemAdminUser());
-        // Publish chat post
-        chatPostService.publishChatPost(jcspChatPostRemoved);
-    }
-
-    /**
-     * Publish posts for after a Candidate Opportunity is created (e.g. Added to submission list)
-     * and the stage is now prospect.
-     * Publish to:
-     * - CandidateProspect chat
-     * - JobCreatorSourcePartner chat.
-     * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
-     */
-    public void notifyNewOpp(CandidateOpportunity opp) {
-        Candidate candidate = opp.getCandidate();
-        String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
-
-        Post autoPostAddedToSubList = new Post();
-        autoPostAddedToSubList.setContent("The candidate " + candidateNameAndNumber +
-            " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
-
-        // Note that we don't post to candidates until they get past the prospect stage
-        if (opp.getStage() != CandidateOpportunityStage.prospect) {
-            // AUTO CHAT TO PROSPECT CHAT
-            JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect,
-                null,null, candidate);
-            // Create the chat post
-            ChatPost prospectChatPost = chatPostService.createPost(
-                autoPostAddedToSubList, prospectChat, userService.getSystemAdminUser());
-            //publish chat post
-            chatPostService.publishChatPost(prospectChatPost);
-        }
-
-        // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
-        JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
-            candidate.getUser().getPartner(), null);
-        // Create the chat post
-        ChatPost jcspChatPost = chatPostService.createPost(
-            autoPostAddedToSubList, jcspChat, userService.getSystemAdminUser());
-        //publish chat post
-        chatPostService.publishChatPost(jcspChatPost);
+        publishPost(jcspChat, autoPostClosedOpp);
     }
 
     /**
@@ -274,19 +257,11 @@ public class OppNotificationServiceImpl implements OppNotificationService {
                 + newStage + "'."
         );
 
-        // Create the chat post
-        ChatPost candidateOppStageChangeChatPost = chatPostService.createPost(
-            autoPostCandidateOppStageChange, jcspChat, userService.getSystemAdminUser());
-
-        // Publish the chat post
-        chatPostService.publishChatPost(candidateOppStageChangeChatPost);
+        publishPost(jcspChat, autoPostCandidateOppStageChange);
     }
 
     /**
      * Publish post for a candidate opportunity stage change to acceptance. Notify all previous chats.
-     * - CandidateProspect chat
-     * - CandidateRecruiting chat
-     * - JobCreatorSourcePartner chat
      * @param opp CandidateOpportunity - the candidate opp that's stage is being changed
      */
     private void publishOppAcceptedPosts(CandidateOpportunity opp) {
@@ -299,29 +274,33 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         // AUTO CHAT TO PROSPECT CHAT
         JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
             null, candidate);
-        // Create the chat post
-        ChatPost prospectChatPostAccepted = chatPostService.createPost(
-            autoPostAcceptedJobOffer, prospectChat, userService.getSystemAdminUser());
-        // Publish chat post
-        chatPostService.publishChatPost(prospectChatPostAccepted);
+        publishPost(prospectChat, autoPostAcceptedJobOffer);
 
         // AUTO CHAT TO RECRUITING CHAT
         JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
             candidate.getUser().getPartner(), candidate);
-        // Create the chat post
-        ChatPost recruitingChatPostAccepted = chatPostService.createPost(
-            autoPostAcceptedJobOffer, recruitingChat, userService.getSystemAdminUser());
-        // Publish chat post
-        chatPostService.publishChatPost(recruitingChatPostAccepted);
+        publishPost(recruitingChat, autoPostAcceptedJobOffer);
 
         // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
         JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
             candidate.getUser().getPartner(), null);
-        // Create the chat post
-        ChatPost jcspChatPostAccepted = chatPostService.createPost(
-            autoPostAcceptedJobOffer, jcspChat, userService.getSystemAdminUser());
-        // Publish chat post
-        chatPostService.publishChatPost(jcspChatPostAccepted);
+        publishPost(jcspChat, autoPostAcceptedJobOffer);
     }
 
+    private void publishMessage(JobChat chat, String mess) {
+
+        // Set the chat post content
+        Post post = new Post();
+        post.setContent(mess);
+
+        publishPost(chat, post);
+    }
+
+    private void publishPost(JobChat chat, Post post) {
+        // Create the chat post
+        ChatPost chatPost = chatPostService.createPost(post, chat, userService.getSystemAdminUser());
+
+        // Publish the chat post
+        chatPostService.publishChatPost(chatPost);
+    }
 }
