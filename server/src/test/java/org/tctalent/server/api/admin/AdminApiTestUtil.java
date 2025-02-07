@@ -435,7 +435,7 @@ public class AdminApiTestUtil {
         task.setDescription("a test task description");
         task.setDisplayName("task display name");
         task.setOptional(false);
-        task.setHelpLink("http://help.link");
+        task.setDocLink("http://help.link");
         return task;
     }
 
@@ -472,7 +472,7 @@ public class AdminApiTestUtil {
         savedList.setFolderjdlink("http://folder.jd.link");
         savedList.setPublishedDocLink("http://published.doc.link");
         savedList.setRegisteredJob(true);
-        savedList.setTbbShortName("Saved list Tbb short name");
+        savedList.setTcShortName("Saved list Tc short name");
         savedList.setCreatedBy(caller);
         savedList.setCreatedDate(OffsetDateTime.parse("2023-10-30T12:30:00+02:00"));
         savedList.setUpdatedBy(caller);

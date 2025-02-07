@@ -1,0 +1,7 @@
+Dear [(${displayName})],
+
+You have received a Duolingo English Test coupon. Please log in to our portal [(${loginURL})] and visit the "Services" tab to view the steps required to take the exam.
+
+If you have any questions, feel free to reach out.
+
+Best regards,

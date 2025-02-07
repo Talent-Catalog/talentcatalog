@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2024 Talent Catalog.
  *
@@ -32,7 +31,7 @@ export const MockSavedList: SavedList = {
   folderlink: 'example.com/folder',
   folderjdlink: 'example.com/folder/jd',
   publishedDocLink: 'example.com/published',
-  tbbShortName: 'TBB',
+  tcShortName: 'TC',
   sfJobCountry: 'USA',
   sfJobStage: 'Prospect',
   fixed: true,
@@ -48,7 +47,7 @@ export const MockSavedList: SavedList = {
     description: 'Task description',
     displayName: 'Task 1',
     optional: false,
-    helpLink: 'example.com/help',
+    docLink: 'example.com/help',
     taskType: TaskType.Question,
     uploadType: UploadType.degree,
     uploadSubfolderName: 'subfolder',

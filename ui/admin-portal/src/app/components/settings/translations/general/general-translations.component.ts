@@ -358,12 +358,6 @@ const ALL_FIELDS = {
         "SUBMIT": null,
         "UPDATE": null
       },
-      "LANDING": {
-        "TITLE": null,
-        "PARA1": null,
-        "PARA2": null,
-        "BUTTON1": null
-      },
       "CONTACT": {
         "LABEL": {
           "EMAIL": null,
@@ -829,6 +823,13 @@ const ALL_FIELDS = {
       "LABEL": {
         "PARTICIPANTS": null,
         "PURPOSE": null,
+      },
+      "HEADING": {
+        "CANDIDATE_PROSPECT": null,
+        "ALL_JOB_CANDIDATES": null,
+        "JOB_CREATOR_SOURCE_PARTNER": null,
+        "CANDIDATE_RECRUITING": null,
+        "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
       },
       "PARTICIPANTS": {
         "CANDIDATE_PROSPECT": null,

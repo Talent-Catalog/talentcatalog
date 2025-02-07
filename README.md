@@ -214,9 +214,11 @@ just run this and manually copy/paste the values from the CSV file as prompted.
    aws configure
    ```
 
-- Terraform (for setting up our AWS infrastructure)
+- Terraform (for setting up our AWS infrastructure). 
+- NOTE: Due to Terraform licensing changes as simple "brew install terraform" no longer works.
    ```
-   brew install terraform 
+   brew tap hashicorp/tap
+   brew install hashicorp/tap/terraform
    ```
 
 Once installed, you can run Terraform from the directory containing your main Terraform

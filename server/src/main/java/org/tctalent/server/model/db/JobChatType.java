@@ -18,7 +18,10 @@ package org.tctalent.server.model.db;
 
 /**
  * Different kinds of job chats.
- *
+ * <p>
+ * NB: if creating a new JobChatType we must add and define new translations for its details.
+ * See TC Wiki for how-to.
+ *</p>
  * @author John Cameron
  */
 public enum JobChatType {

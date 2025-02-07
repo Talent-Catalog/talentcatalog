@@ -31,7 +31,7 @@ export class ViewSimpleTaskComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.hasDoc = this.selectedTask.task.helpLink != null;
+    this.hasDoc = this.selectedTask.task.docLink != null;
   }
 
 }

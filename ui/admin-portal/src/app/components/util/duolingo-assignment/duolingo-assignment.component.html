@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2024 Talent Catalog.
+  ~ Copyright (c) 2025 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,16 +14,6 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="container">
-
-  <h1 class="text-center">{{ 'REGISTRATION.LANDING.TITLE' | translate }}</h1>
-
-  <p [innerHTML]="'REGISTRATION.LANDING.PARA1' | translate"></p>
-
-  <p>{{ 'REGISTRATION.LANDING.PARA2' | translate }}</p>
-
-  <div class="text-center">
-    <button class="btn btn-primary" (click)="next()">{{ 'REGISTRATION.LANDING.BUTTON1' | translate }}</button>
-  </div>
-
-</div>
+<button class="btn btn-primary btn-sm" (click)="assignDuolingoCouponTask()">
+  Send Duolingo coupon
+</button>

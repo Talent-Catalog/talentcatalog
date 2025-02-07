@@ -193,20 +193,36 @@
               </div>
               <div class="col">
                 <div class="tag-light fw-600">
-                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i=index; first as isFirst">
-                    <span *ngIf="exam.exam != 'Other'; else otherExam"
-                          [ngClass]="{'me-4': exam.exam != null}">
-                      {{exam.exam}}
-                      <span class="text-info">{{exam.score}}</span>
-                    </span>
+                  <ng-container *ngFor="let exam of candidateIntakeData?.candidateExams; let i = index">
+                    <ng-container *ngIf="exam.exam === 'DETOfficial'; else otherExam">
+                      <!-- DETOfficial Exam Section -->
+                      <span class="d-inline-flex align-items-center me-4" [title]="getExamInfo(exam.score).tooltip">
+                  <img src="assets/images/duo-owl.png" alt="Duo Owl" class="duo-owl-icon" />
+
+                  <span class="me-1 ms-2" [ngClass]="getExamInfo(exam.score).className">
+                    {{ getExamLabel(exam) }}
+                  </span>
+
+                  <span class="text-info" [attr.title]="getExamInfo(exam.score).tooltip">
+                    {{ exam.score }}
+                  </span>
+                </span>
+                    </ng-container>
+
                     <ng-template #otherExam>
-                      <span class="me-4">{{exam.otherExam}}
-                        <span class="text-info">{{exam.score}}</span>
-                      </span>
+                <span *ngIf="exam.exam !== 'Other'; else otherExamName" [ngClass]="{'me-4': exam.exam != null}">
+                  {{ exam.exam }} <span class="text-info">{{ exam.score }}</span>
+                </span>
+                    </ng-template>
+
+                    <ng-template #otherExamName>
+                <span class="me-4">
+                  {{ exam.otherExam }}
+                  <span class="text-info">{{ exam.score }}</span>
+                </span>
                     </ng-template>
                   </ng-container>
                 </div>
-
               </div>
               <div class="col-1">
                 <button type="button" class="btn btn-primary btn-sm" (click)="addExamRecord($event)">

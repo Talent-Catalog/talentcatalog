@@ -32,6 +32,10 @@ export class ViewChatComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  get chatHeadingKey(): string {
+    return this.chatService.getChatHeadingKey(this.chat.type);
+  }
+
   get chatParticipantsKey(): string {
     return this.chatService.getChatInfoParticipantsKey(this.chat.type);
   }

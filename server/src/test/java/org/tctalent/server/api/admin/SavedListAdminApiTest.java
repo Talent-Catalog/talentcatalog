@@ -207,7 +207,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.folderjdlink", is("http://folder.jd.link")))
             .andExpect(jsonPath("$.publishedDocLink", is("http://published.doc.link")))
             .andExpect(jsonPath("$.registeredJob", is(true)))
-            .andExpect(jsonPath("$.tbbShortName", is("Saved list Tbb short name")))
+            .andExpect(jsonPath("$.tcShortName", is("Saved list Tc short name")))
             .andExpect(jsonPath("$.createdBy.firstName", is("test")))
             .andExpect(jsonPath("$.createdBy.lastName", is("user")))
             .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
@@ -217,7 +217,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.users[0].firstName", is("test")))
             .andExpect(jsonPath("$.users[0].lastName", is("user")))
             .andExpect(jsonPath("$.tasks[0].id", is(148)))
-            .andExpect(jsonPath("$.tasks[0].helpLink", is("http://help.link")))
+            .andExpect(jsonPath("$.tasks[0].docLink", is("http://help.link")))
             .andExpect(jsonPath("$.tasks[0].taskType", is("Simple")))
             .andExpect(jsonPath("$.tasks[0].displayName", is("task display name")))
             .andExpect(jsonPath("$.tasks[0].name", is("a test task")))
@@ -521,7 +521,7 @@ class SavedListAdminApiTest extends ApiTestBase {
 
     @Test
     @DisplayName("update tbb short name succeeds")
-    void updateTbbShortName() throws Exception {
+    void updateTcShortName() throws Exception {
         UpdateShortNameRequest request = new UpdateShortNameRequest();
 
         mockMvc.perform(put(BASE_PATH + SHORT_NAME_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
@@ -534,6 +534,6 @@ class SavedListAdminApiTest extends ApiTestBase {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(savedListService).updateTbbShortName(any(UpdateShortNameRequest.class));
+        verify(savedListService).updateTcShortName(any(UpdateShortNameRequest.class));
     }
 }

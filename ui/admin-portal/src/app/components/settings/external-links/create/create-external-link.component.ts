@@ -43,7 +43,7 @@ export class CreateExternalLinkComponent implements OnInit {
   ngOnInit() {
     this.form = this.fb.group({
       savedListId: [null, Validators.required],
-      tbbShortName: [null, Validators.required],
+      tcShortName: [null, Validators.required],
     });
     const request: SearchSavedListRequest = {
       owned: true,

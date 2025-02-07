@@ -58,13 +58,14 @@ public interface Task extends Auditable {
     String getDisplayName();
 
     /**
-     * Link which refers to help for a candidate on what they need to do to complete this task.
-     * If a help link exists it will be linked to in a help button in the candidate task view.
-     * If linking to a document, this can be embedded into the page in simple task's (e.g. display document in page to allow checkbox agreement).
+     * A link to a document that is associated with a task. The doc link will be embedded into the task's page on the
+     * candidate portal. For Simple Tasks if doc link exists the label will change to be an agreement label
+     * (e.g. do you agree to the document) as opposed to simple task without doc link which shows a
+     * 'have you completed task' label. This allows for tasks to be used as document agreement.
      * @return Typically a link to a document or web page.
      */
     @Nullable
-    String getHelpLink();
+    String getDocLink();
 
     /**
      * Unique id identifying this task

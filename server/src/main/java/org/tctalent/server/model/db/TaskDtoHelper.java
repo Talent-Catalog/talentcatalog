@@ -88,7 +88,7 @@ public class TaskDtoHelper {
             .add("description")
             .add("displayName")
             .add("optional")
-            .add("helpLink")
+            .add("docLink")
             .add("taskType")
             .add("uploadType")
             .add("uploadSubfolderName")

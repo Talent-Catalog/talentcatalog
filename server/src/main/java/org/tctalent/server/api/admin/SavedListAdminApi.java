@@ -282,8 +282,8 @@ public class SavedListAdminApi implements
     }
 
     @PutMapping("/short-name")
-    public void updateTbbShortName(@RequestBody UpdateShortNameRequest request) {
-        savedListService.updateTbbShortName(request);
+    public void updateTcShortName(@RequestBody UpdateShortNameRequest request) {
+        savedListService.updateTcShortName(request);
     }
 
 }

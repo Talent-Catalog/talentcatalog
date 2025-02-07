@@ -262,7 +262,7 @@
                 </div>
 
                 <!-- UNHCR STATUS -->
-                <div class="col-md-6">
+                <div *ngIf="!isEmployerPartner()" class="col-md-6" id="uncrStatusFilter">
                   <label class="form-label">UNHCR Status</label>
                   <ng-select
                     id="unhcrStatusOptions"
@@ -457,7 +457,7 @@
               </ng-select>
             </div>
 
-            <div class="col-md-4">
+            <div *ngIf="!isEmployerPartner()" class="col-md-4">
               <label class="form-label">Survey Type</label>
               <ng-select
                 id="surveyType"
@@ -482,7 +482,7 @@
             </div>
 
             <!-- REFERRER -->
-            <div class="col-md-4">
+            <div *ngIf="!isEmployerPartner()" class="col-md-4" id="referrerFilter">
               <label class="form-label" for="referrer">Referrer</label>
               <button class="tool-tip-button"
                       [ngbTooltip]="referrerTooltip"
@@ -586,7 +586,7 @@
             </div>
 
             <!-- POTENTIAL DUPLICATE -->
-            <div *ngIf="!searchIsElastic && canViewCandidateName()" class="col-md-2">
+            <div *ngIf="!searchIsElastic && canViewCandidateName() && !isEmployerPartner()" class="col-md-2">
               <label class="form-label" for="potentialDuplicate">Potential Duplicate</label>
               <ng-select id="potentialDuplicate"
                          placeholder="Select"

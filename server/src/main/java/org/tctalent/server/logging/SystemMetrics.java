@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2024 Talent Catalog.
+/*
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-/* TODO: Remove after demo */
-.container > * {
-  margin-bottom: 1em;
+package org.tctalent.server.logging;
+
+/**
+ * Provides methods to retrieve formatted system metrics such as available metrics,
+ * CPU utilisation, and memory utilisation.
+ *
+ * @author sadatmalik
+ */
+public interface SystemMetrics {
+
+  String getAvailableMetrics();
+
+  String getCpuUtilization();
+
+  String getMemoryUtilization();
+
 }

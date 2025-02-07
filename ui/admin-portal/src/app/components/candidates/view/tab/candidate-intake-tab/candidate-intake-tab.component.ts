@@ -44,7 +44,6 @@ import {calculateAge} from "../../../../../model/candidate";
   styleUrls: ['./candidate-intake-tab.component.scss']
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
-
   constructor(candidateService: CandidateService,
               countryService: CountryService,
               educationLevelService: EducationLevelService,

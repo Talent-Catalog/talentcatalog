@@ -14,25 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {RegistrationService} from '../../../services/registration.service';
+package org.tctalent.server.service.db;
 
-@Component({
-  selector: 'app-registration-landing',
-  templateUrl: './registration-landing.component.html',
-  styleUrls: ['./registration-landing.component.scss']
-})
+/**
+ * Service for background processing of Candidate Opportunities
+ */
+public interface CandidateOppBackgroundProcessingService {
 
-//todo this component is no longer used - can be removed. Replaced by squarespace website.
-//NB: remember also to remove the translations, which are prone to cause confusion if retained.
-export class RegistrationLandingComponent implements OnInit {
+  /**
+   * Initiates background processing of updates to all open TC Candidate Opps from their Salesforce
+   * equivalents, provided they have one. Will also update Opps that are closed on the TC but
+   * recently reopened on Salesforce.
+   *
+   * <p>The intent is to keep the TC up to date when users have updated Opps from Salesforce instead
+   * of the TC, as is preferred. Updates are only made when the Salesforce record contains new data.
+   */
+  void initiateBackgroundCaseUpdate();
 
-  constructor(private registrationService: RegistrationService) { }
-
-  ngOnInit() {
-  }
-
-  next() {
-    this.registrationService.next();
-  }
 }

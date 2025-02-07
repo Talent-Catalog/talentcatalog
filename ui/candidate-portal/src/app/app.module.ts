@@ -32,9 +32,6 @@ import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translat
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
 
 import {
-  RegistrationLandingComponent
-} from './components/register/landing/registration-landing.component';
-import {
   RegistrationContactComponent
 } from './components/register/contact/registration-contact.component';
 import {
@@ -234,7 +231,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     HeaderComponent,
     LandingComponent,
-    RegistrationLandingComponent,
     RegistrationContactComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,

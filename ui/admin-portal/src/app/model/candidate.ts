@@ -601,6 +601,7 @@ export enum Exam {
   IELTSGen = "IELTS General",
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
+  DETOfficial = "DETOfficial",
   Other = "Other"
 }
 

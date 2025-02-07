@@ -118,6 +118,7 @@ export interface UpdateJobRequest extends OpportunityProgressParams {
   evergreen?: boolean;
   roleName?: string;
   sfId?: string;
+  jobName?: string;
   sfJoblink?: string;
   skipCandidateSearch?: boolean;
   submissionDueDate?: Date;
