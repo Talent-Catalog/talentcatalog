@@ -392,6 +392,8 @@ public class CandidateBuilderSelector {
                 .add("id")
                 .add("exam")
                 .add("score")
+                .add("year")
+                .add("notes")
                 ;
     }
 

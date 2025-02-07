@@ -19,6 +19,7 @@ package org.tctalent.server.logging;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.RequiredSearch;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -68,21 +69,44 @@ public class SystemMetricsImpl implements SystemMetrics {
     return lastCpuValue.get(); // Return last valid value if no metric or an error occurs
   }
 
+  /**
+   * Calculates the total memory utilisation across all JVM memory pools.
+   * <p>
+   * Micrometer reports JVM memory usage as separate metrics for different memory pools,
+   * categorised into "heap" and "non-heap" memory areas. These memory pools include:
+   * - Heap memory: G1 Eden Space, G1 Survivor Space, G1 Old Gen, etc.
+   * - Non-heap memory: Metaspace, CodeHeap for JIT compilation, etc.
+   * <p>
+   * See the JvmMemoryUsageTest#testJvmMemoryUsedAggregation unit test for details and the
+   * Micrometer JVM Memory Metrics source code:
+   * <a href="https://github.com/micrometer-metrics/micrometer/blob/main/micrometer-core/src/main/java/io/micrometer/core/instrument/binder/jvm/JvmMemoryMetrics.java">
+   * JvmMemoryMetrics.java</a>
+   * <p>
+   * Since Micrometer does not provide a pre-aggregated "total memory used" metric, this
+   * method explicitly sums up the individual memory usage (`jvm.memory.used`) and maximum
+   * capacity (`jvm.memory.max`) values across all memory pools.
+   * <p>
+   * The total memory utilisation is then calculated and returned.
+   *
+   * @return A formatted string representing total JVM memory utilisation as a percentage.
+   */
   @Override
   public String getMemoryUtilization() {
     try {
-      // Get used memory
-      RequiredSearch usedMemorySearch = meterRegistry.get("jvm.memory.used");
-      Gauge usedMemoryGauge = usedMemorySearch.gauge();
-      double usedMemory = usedMemoryGauge.value();
+      // Get all gauges for jvm.memory.used
+      Collection<Gauge> usedMemoryGauges = meterRegistry.get("jvm.memory.used").gauges();
+      double totalUsedMemory = usedMemoryGauges.stream()
+          .mapToDouble(Gauge::value)
+          .sum();
 
-      // Get max memory
-      RequiredSearch maxMemorySearch = meterRegistry.get("jvm.memory.max");
-      Gauge maxMemoryGauge = maxMemorySearch.gauge();
-      double maxMemory = maxMemoryGauge.value();
+      // Get all gauges for jvm.memory.max
+      Collection<Gauge> maxMemoryGauges = meterRegistry.get("jvm.memory.max").gauges();
+      double totalMaxMemory = maxMemoryGauges.stream()
+          .mapToDouble(Gauge::value)
+          .sum();
 
-      if (!Double.isNaN(usedMemory) && !Double.isNaN(maxMemory) && maxMemory > 0) {
-        double memoryUtilization = Math.min((usedMemory / maxMemory) * 100, 100);
+      if (!Double.isNaN(totalUsedMemory) && !Double.isNaN(totalMaxMemory) && totalMaxMemory > 0) {
+        double memoryUtilization = Math.min((totalUsedMemory / totalMaxMemory) * 100, 100);
         String formattedValue = String.format("%.2f%%", memoryUtilization);
         lastMemValue.set(formattedValue);
         return formattedValue;
