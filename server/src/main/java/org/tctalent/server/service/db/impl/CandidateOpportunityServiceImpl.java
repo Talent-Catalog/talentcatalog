@@ -90,11 +90,11 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final CandidateService candidateService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
+    private final NextStepProcessingService nextStepProcessingService;
     private final OppNotificationService oppNotificationService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
     private final UserService userService;
-    private final NextStepProcessingService nextStepProcessingService;
 
     /**
      * Creates or updates CandidateOpportunities associated with the given candidates going for
