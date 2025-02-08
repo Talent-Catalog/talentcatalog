@@ -117,6 +117,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.DuolingoApiService;
+import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.DuolingoExamService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
@@ -210,6 +211,7 @@ public class SystemAdminApi {
     private String environment;
     private final DuolingoApiService duolingoApiService;
     private final DuolingoExamService duolingoExamService;
+    private final DuolingoCouponService duolingoCouponService;
 
     @Autowired
     public SystemAdminApi(
@@ -233,7 +235,9 @@ public class SystemAdminApi {
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
         SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService) {
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService,
+        DuolingoCouponService duolingoCouponService
+        ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -268,6 +272,7 @@ public class SystemAdminApi {
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
       this.duolingoExamService = duolingoExamService;
+      this.duolingoCouponService = duolingoCouponService;
     }
 
     @GetMapping("set_public_ids")
@@ -356,6 +361,12 @@ public class SystemAdminApi {
     duolingoExamService.updateCandidateExams();
   }
 
+  @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
+  @SchedulerLock(name = "CouponSchedulerTask_markCouponsAsExpired", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+  @Transactional
+  public void markCouponsAsExpired() {
+    duolingoCouponService.markCouponsAsExpired();;
+  }
     @GetMapping("flush_user_cache")
     public void flushUserCache() {
         cacheService.flushUserCache();
