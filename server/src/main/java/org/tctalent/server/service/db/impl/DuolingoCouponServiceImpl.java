@@ -40,10 +40,12 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.service.db.DuolingoCouponService;
+import org.tctalent.server.service.db.email.EmailHelper;
 
 @Service
 @Slf4j
@@ -51,6 +53,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   private final DuolingoCouponRepository couponRepository;
   private final CandidateRepository candidateRepository;
+  private final EmailHelper emailHelper;
 
   private static final DateTimeFormatter FORMATTER1 = DateTimeFormatter.ofPattern(
       "yyyy/MM/dd HH:mm:ss");
@@ -59,9 +62,11 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Autowired
   public DuolingoCouponServiceImpl(DuolingoCouponRepository couponRepository,
-      CandidateRepository candidateRepository) {
+      CandidateRepository candidateRepository,
+      EmailHelper emailHelper) {
     this.couponRepository = couponRepository;
     this.candidateRepository = candidateRepository;
+    this.emailHelper = emailHelper;
   }
 
 
@@ -107,7 +112,8 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional
-  public DuolingoCoupon assignCouponToCandidate(Long candidateId) throws NoSuchObjectException {
+  public DuolingoCoupon assignCouponToCandidate(Long candidateId)
+      throws NoSuchObjectException {
     return candidateRepository.findById(candidateId).map(candidate -> {
       // Find the first available coupon
       Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatus(
@@ -124,6 +130,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
       coupon.setDateSent(LocalDateTime.now());
       coupon.setCouponStatus(DuolingoCouponStatus.SENT);
       couponRepository.save(coupon);
+      emailHelper.sendDuolingoCouponEmail(candidate.getUser());
 
       return coupon;
     }).orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + candidateId + " not found"));
@@ -175,19 +182,28 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional
-  public void markCouponsAsExpired() {
-    // Exclude both EXPIRED and REDEEMED statuses
-    List<DuolingoCoupon> expiredCoupons = couponRepository.findAllByExpirationDateBeforeAndCouponStatusNotIn(
-        LocalDateTime.now(),
-        List.of(DuolingoCouponStatus.EXPIRED, DuolingoCouponStatus.REDEEMED)
-    );
+  public void assignCouponsToList(SavedList list) throws NoSuchObjectException {
+    Set<Candidate> candidates = list.getCandidates();
 
-    if (!expiredCoupons.isEmpty()) {
-      expiredCoupons.forEach(coupon -> coupon.setCouponStatus(DuolingoCouponStatus.EXPIRED));
-      couponRepository.saveAll(expiredCoupons);
+    // Find if there is available coupons
+    List<DuolingoCoupon> availableCoupons = getAvailableCoupons();
+
+    if (availableCoupons.isEmpty() || candidates.size() > availableCoupons.size()) {
+      // Throw exception if no coupon are available, or if there are more candidates than coupons
+      throw new NoSuchObjectException("No available coupons for list ID " + list.getId());
+    }
+
+    for (Candidate candidate : candidates) {
+      //Assign coupon to candidate if they do not have one
+      List<DuolingoCoupon> coupons = couponRepository.findAllByCandidateId(candidate.getId());
+      // Assign a coupon if no coupons exist or none are in the SENT status
+      boolean hasSentCoupon = coupons.stream()
+          .anyMatch(coupon -> coupon.getCouponStatus() == DuolingoCouponStatus.SENT);
+      if (!hasSentCoupon) {
+        assignCouponToCandidate(candidate.getId());
+      }
     }
   }
-
   // Utility Methods
 
   /**

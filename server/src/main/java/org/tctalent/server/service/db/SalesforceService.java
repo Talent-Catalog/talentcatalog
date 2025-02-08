@@ -337,7 +337,7 @@ public interface SalesforceService {
      * Updates the Salesforce Employer opportunity record corresponding to the given Salesforce id
      * to the given stage, next step and due date.
      *
-     * @param sfId Salesforce id of opportunity.
+     * @param job The given {@link SalesforceJobOpp}
      * @param stage New stage
      * @param nextStep New next step
      * @param dueDate Next step due date
@@ -345,7 +345,7 @@ public interface SalesforceService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void updateEmployerOpportunityStage(
-        String sfId, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
+        SalesforceJobOpp job, JobOpportunityStage stage, String nextStep, LocalDate dueDate)
         throws SalesforceException, WebClientException;
 
     /**

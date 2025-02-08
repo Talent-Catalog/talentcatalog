@@ -16,7 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
 import static org.tctalent.server.util.NextStepHelper.isNextStepDifferent;
 
 import java.io.File;
@@ -78,6 +77,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
+import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.UserService;
@@ -100,6 +100,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final GoogleDriveConfig googleDriveConfig;
     private final FileSystemService fileSystemService;
     private final ChatPostService chatPostService;
+    private final NextStepProcessingService nextStepProcessingService;
 
     /**
      * Creates or updates CandidateOpportunities associated with the given candidates going for
@@ -675,15 +676,8 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             }
 
             if (oppParams.getNextStep() != null) {
-                // NEXT STEP PROCESSING
-                // Update may be automated, in which case attribute to System Admin
-                User userForAttribution = userService.getLoggedInUser();
-                if (userForAttribution == null) {
-                    userForAttribution = userService.getSystemAdminUser();
-                }
-                final String processedNextStep = auditStampNextStep(
-                    userForAttribution.getUsername(), LocalDate.now(),
-                    opp.getNextStep(), oppParams.getNextStep());
+                final String processedNextStep =
+                    nextStepProcessingService.processNextStep(opp, oppParams.getNextStep());
 
                 opp.setNextStep(processedNextStep);
 

@@ -17,9 +17,12 @@
 package org.tctalent.server.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.tctalent.server.util.NextStepHelper.auditStampNextStep;
 import static org.tctalent.server.util.NextStepHelper.constructNextStepAuditStamp;
+import static org.tctalent.server.util.NextStepHelper.isNextStepDifferent;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -97,4 +100,30 @@ class NextStepHelperTest {
         String processed = auditStampNextStep(name, date, currentNextStep, requestedNextStep);
         assertEquals(constructNextStepAuditStamp(name, date, requestedNextStep), processed);
     }
+
+    @Test
+    void isNextStepDifferent_nullCurrentNextStep_returnsTrue() {
+        assertTrue(isNextStepDifferent(null, "A step."));
+    }
+
+    @Test
+    void auditStampNextStep_noChange_returnsFalse() {
+        String nextStep = "Complete intake";
+        assertFalse(isNextStepDifferent(nextStep, nextStep));
+    }
+
+    @Test
+    void auditStampNextStep_sameValueDiffAuditStamp_returnsFalse() {
+        String currentNextStep = "01Mar24| Complete intake --john";
+        String requestedNextStep = "03Mar24| Complete intake --sam";
+        assertFalse(isNextStepDifferent(currentNextStep, requestedNextStep));
+    }
+
+    @Test
+    void auditStampNextStep_diffValueSameAuditStamp_returnsTrue() {
+        String currentNextStep = "01Mar24| Complete intake --john";
+        String requestedNextStep = "01Mar24| Do nothing --john";
+        assertTrue(isNextStepDifferent(currentNextStep, requestedNextStep));
+    }
+
 }

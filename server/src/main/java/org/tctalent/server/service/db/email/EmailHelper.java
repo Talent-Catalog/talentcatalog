@@ -282,6 +282,33 @@ public class EmailHelper {
         }
     }
 
+    public void sendDuolingoCouponEmail(User user) throws EmailSendFailedException {
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
+            ctx.setVariable("year", currentYear());
+
+            subject = "Talent Catalog - Duolingo English Test Coupon (DET) & Next Steps";
+            bodyText = textTemplateEngine.process("duolingo-coupon", ctx);
+            bodyHtml = htmlTemplateEngine.process("duolingo-coupon", ctx);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("DuolingoCouponEmail")
+                .message("error sending duolingo coupon email")
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
 
     private String currentYear() {
         return LocalDate.now().getYear() + "";
