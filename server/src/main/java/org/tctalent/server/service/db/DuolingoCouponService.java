@@ -105,4 +105,20 @@ public interface DuolingoCouponService {
    * @return an Optional containing the Candidate if found, otherwise empty.
    */
   Candidate findCandidateByCouponCode(String couponCode) throws NoSuchObjectException;
+
+  /**
+   * Expires all coupons that have passed their expiration date.
+   * <p>
+   * This method identifies all coupons with an expiration date before the current time
+   * that are not already marked as {@code EXPIRED} or {@code REDEEMED}. It updates their status
+   * to {@code EXPIRED} and saves the changes to the database.
+   * <p>
+   * The following coupon statuses are considered:
+   * <ul>
+   *   <li><b>Updated:</b> {@code AVAILABLE}, {@code ASSIGNED}, {@code SENT} → Changed to {@code EXPIRED}.</li>
+   *   <li><b>Excluded:</b> {@code REDEEMED}, {@code EXPIRED} → Not modified.</li>
+   * </ul>
+   */
+  void markCouponsAsExpired();
 }
+
