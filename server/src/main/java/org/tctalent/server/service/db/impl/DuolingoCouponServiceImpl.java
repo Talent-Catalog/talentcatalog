@@ -204,6 +204,21 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
       }
     }
   }
+
+  @Override
+  @Transactional
+  public void markCouponsAsExpired() {
+    // Exclude both EXPIRED and REDEEMED statuses
+    List<DuolingoCoupon> expiredCoupons = couponRepository.findAllByExpirationDateBeforeAndCouponStatusNotIn(
+        LocalDateTime.now(),
+        List.of(DuolingoCouponStatus.EXPIRED, DuolingoCouponStatus.REDEEMED)
+    );
+
+    if (!expiredCoupons.isEmpty()) {
+      expiredCoupons.forEach(coupon -> coupon.setCouponStatus(DuolingoCouponStatus.EXPIRED));
+      couponRepository.saveAll(expiredCoupons);
+    }
+  }
   // Utility Methods
 
   /**
