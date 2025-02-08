@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tctalent.server.response.DuolingoDashboardResponse;
@@ -70,7 +71,7 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
         }
         else {
           // Create and save new exam record
-          createAndSaveNewExam(candidateOpt, newScore, newYear, newNotes);
+          createAndSaveNewExam(candidateOpt, couponCode, newScore, newYear, newNotes);
         }
       }
     }
@@ -85,13 +86,13 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
     );
   }
 
-  private void createAndSaveNewExam(Candidate candidate, String newScore, String newYear, String newNotes) {
+  private void createAndSaveNewExam(Candidate candidate, String couponCode, String newScore, String newYear, String newNotes) {
     CreateCandidateExamRequest candidateExamRequest = new CreateCandidateExamRequest();
     candidateExamRequest.setExam(Exam.DETOfficial);
     candidateExamRequest.setScore(newScore);
     candidateExamRequest.setYear(Long.valueOf(newYear));
     candidateExamRequest.setNotes(newNotes);
-
+    duolingoCouponService.updateCouponStatus(couponCode, DuolingoCouponStatus.REDEEMED);
     candidateExamService.createExam(candidate.getId(), candidateExamRequest);
     LogBuilder.builder(log)
         .action("UpdateCandidateExams")
