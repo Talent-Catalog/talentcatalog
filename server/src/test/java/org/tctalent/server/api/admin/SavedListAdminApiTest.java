@@ -217,7 +217,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.users[0].firstName", is("test")))
             .andExpect(jsonPath("$.users[0].lastName", is("user")))
             .andExpect(jsonPath("$.tasks[0].id", is(148)))
-            .andExpect(jsonPath("$.tasks[0].helpLink", is("http://help.link")))
+            .andExpect(jsonPath("$.tasks[0].docLink", is("http://help.link")))
             .andExpect(jsonPath("$.tasks[0].taskType", is("Simple")))
             .andExpect(jsonPath("$.tasks[0].displayName", is("task display name")))
             .andExpect(jsonPath("$.tasks[0].name", is("a test task")))

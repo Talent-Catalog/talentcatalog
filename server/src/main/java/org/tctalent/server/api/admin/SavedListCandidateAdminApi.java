@@ -184,6 +184,9 @@ public class SavedListCandidateAdminApi implements
 
         savedListService.setCandidateContext(savedListId, candidates);
 
+        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
+        candidateService.populateCandidatesTransientTaskAssignments(candidates);
+
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);
     }

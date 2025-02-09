@@ -34,7 +34,7 @@ public class UpdateTaskRequest {
     @NotNull
     private Integer daysToComplete;
 
-    private String helpLink;
+    private String docLink;
 
     @NotNull
     private boolean optional;

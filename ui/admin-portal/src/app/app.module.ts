@@ -807,6 +807,7 @@ import {
   ImportDuolingoCouponsComponent
 } from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
 import {DetScoreValidationComponent} from './components/util/det-score-validation/det-score-validation.component';
+import {DuolingoAssignmentComponent} from './components/util/duolingo-assignment/duolingo-assignment.component';
 import { VerifyEmailComponent } from './components/account/verify-email/verify-email.component';
 
 @NgModule({
@@ -1133,6 +1134,7 @@ import { VerifyEmailComponent } from './components/account/verify-email/verify-e
     DuplicatesDetailComponent,
     ImportDuolingoCouponsComponent,
     DetScoreValidationComponent,
+    DuolingoAssignmentComponent,
     VerifyEmailComponent
   ],
   imports: [

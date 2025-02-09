@@ -136,7 +136,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   @SchedulerLock(name = "BackgroundProcessingService_processPotentialDuplicateCandidates",
       lockAtLeastFor = "PT2H", lockAtMostFor = "PT2H")
   public void processPotentialDuplicateCandidates() {
-    this.candidateService.cleanUpResolvedDuplicates();
+    candidateService.cleanUpResolvedDuplicates();
     initiateDuplicateProcessing();
   }
 
@@ -144,7 +144,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   public void initiateDuplicateProcessing() {
     // Obtain list of IDs of candidates who meet potential duplicate criteria but not yet identified
     List<Long> potentialDupeIds =
-        this.candidateRepository.findIdsOfPotentialDuplicateCandidates(false);
+        candidateRepository.findIdsOfPotentialDuplicateCandidates(false);
 
     // Implement background processing
     BackProcessor<PageContext> backProcessor =

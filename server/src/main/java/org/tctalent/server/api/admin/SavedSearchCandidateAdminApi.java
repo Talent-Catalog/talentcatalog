@@ -37,6 +37,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -56,16 +57,19 @@ public class SavedSearchCandidateAdminApi implements
     IManyToManyApi<SavedSearchGetRequest, UpdateSavedListContentsRequest> {
 
     private final SavedSearchService savedSearchService;
+    private final CandidateService candidateService;
     private final CandidateBuilderSelector builderSelector;
 
     @Autowired
     public SavedSearchCandidateAdminApi(
-        CandidateOpportunityService candidateOpportunityService,
-        CountryService countryService,
-        OccupationService occupationService,
-        SavedSearchService savedSearchService,
-        UserService userService) {
+            CandidateOpportunityService candidateOpportunityService,
+            CountryService countryService,
+            OccupationService occupationService,
+            SavedSearchService savedSearchService,
+            UserService userService,
+            CandidateService candidateService) {
         this.savedSearchService = savedSearchService;
+        this.candidateService = candidateService;
         builderSelector = new CandidateBuilderSelector(
             candidateOpportunityService, countryService, occupationService, userService);
     }
@@ -79,6 +83,9 @@ public class SavedSearchCandidateAdminApi implements
                 savedSearchService.searchCandidates(savedSearchId, request);
 
         savedSearchService.setCandidateContext(savedSearchId, candidates);
+
+        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
+        candidateService.populateCandidatesTransientTaskAssignments(candidates);
 
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidates);

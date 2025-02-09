@@ -65,7 +65,7 @@ export class CandidateFieldInfo {
   getValue(candidate: Candidate, source: CandidateSource): string {
     let value;
     // Need to format field with the candidate object not value
-    if (this.fieldPath === "ieltsScore" || this.fieldPath === "frenchAssessmentScoreNclc" ||
+    if (this.fieldPath === "ieltsScore" || this.fieldPath === "englishAssessmentScoreDet" || this.fieldPath === "frenchAssessmentScoreNclc" ||
       this.fieldPath === "latestIntake" || this.fieldPath === "latestIntakeDate" ||
       this.fieldPath === "nextStep" || this.fieldPath === "addedBy") {
       value = candidate;

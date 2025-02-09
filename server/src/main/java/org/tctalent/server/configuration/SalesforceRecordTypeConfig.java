@@ -37,4 +37,14 @@ public class SalesforceRecordTypeConfig {
      * Salesforce RecordType ID of Employer Job opportunities
      */
     private String employerJob;
+
+    /**
+     * Salesforce RecordType ID of general Candidate Opportunities
+     */
+    private String candidateRecruitment;
+
+    /**
+     * Salesforce RecordType ID of Canadian Candidate Opportunities
+     */
+    private String candidateRecruitmentCan;
 }

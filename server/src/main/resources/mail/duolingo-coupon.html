@@ -1,0 +1,45 @@
+<!--
+  ~ Copyright (c) 2025 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Talent Catalog Portal</title>
+</head>
+<body>
+<div>
+  <p>Dear <span th:text="${displayName}"></span>,</p>
+  <p>
+    <strong>You have received a Duolingo English Test coupon.</strong>
+  </p>
+  <p>
+
+    Please log in to <a th:href="${loginUrl}">our portal</a> and visit the "Services"
+    tab to view the steps required to take the exam.
+  </p>
+
+  <p>
+    If you have any questions, feel free to reach out.
+  </p>
+
+  <p>
+    Best regards,
+  </p>
+</div>
+</body>
+</html>

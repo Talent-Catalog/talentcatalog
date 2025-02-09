@@ -576,6 +576,13 @@ public class CandidateServiceImpl implements CandidateService {
         return candidate;
     }
 
+    @Override
+    public void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        }
+    }
+
     /**
      * Sets transient fields on the given task assignments.
      * @param taskAssignments Task assignments
@@ -1673,8 +1680,10 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-        return candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
+        Candidate candidate = candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
                 .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
+        populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+        return candidate;
     }
 
     @Override

@@ -28,7 +28,7 @@ export interface Task extends Auditable {
   description: string;
   displayName: string;
   optional: boolean;
-  helpLink: string;
+  docLink: string;
   taskType: TaskType;
   uploadType: UploadType;
   uploadSubfolderName: string;

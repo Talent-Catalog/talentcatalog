@@ -435,7 +435,7 @@ public class AdminApiTestUtil {
         task.setDescription("a test task description");
         task.setDisplayName("task display name");
         task.setOptional(false);
-        task.setHelpLink("http://help.link");
+        task.setDocLink("http://help.link");
         return task;
     }
 
