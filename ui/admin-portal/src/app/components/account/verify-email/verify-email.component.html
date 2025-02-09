@@ -15,13 +15,13 @@
                               stroke="#10B0E3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
 
-                    <h2>{{ 'HOME.EMAIL_VERIFICATION.IDLE.TITLE' | translate }}</h2>
-                    <p>{{ 'HOME.EMAIL_VERIFICATION.IDLE.DESCRIPTION' | translate }}  <b>{{ userEmail }}</b>.</p>
-                    <p [innerHTML]="'HOME.EMAIL_VERIFICATION.IDLE.UPDATE_EMAIL' | translate"></p>
+                    <h2>Verify your Email</h2>
+                    <p>Click the button below to send a verification email to: <b>{{this.userEmail}}</b>.</p>
+                    <p>If you would like to update your email please click<a> here.</a></p>
                     <button
                             class="btn btn-primary"
                             *ngIf="state === 'idle'"
-                            (click)="sendVerifyEmail(null)">{{ 'HOME.EMAIL_VERIFICATION.IDLE.SEND_BUTTON' | translate }}
+                            (click)="sendVerifyEmail(null)">Send Email
                     </button>
                 </div>
 
@@ -29,8 +29,8 @@
                     <div class="spinner-border text-info" role="status">
 
                     </div>
-                    <h2>{{ "HOME.EMAIL_VERIFICATION.LOADING.TITLE" | translate }}  .</h2>
-                    <p>{{ "HOME.EMAIL_VERIFICATION.LOADING.DESCRIPTION" | translate }} </p>
+                    <h2>Sending Email..</h2>
+                    <p>Please wait while we send the verification email.</p>
                 </div>
 
                 <div *ngIf="state === 'emailSent'">
@@ -47,13 +47,13 @@
                         <path d="M18.8041 11.1546L17.635 11.8295" stroke="#10B0E3" stroke-linecap="round"/>
                     </svg>
 
-                    <h2>{{ "HOME.EMAIL_VERIFICATION.EMAIL_SENT.TITLE" | translate }} </h2>
-                    <p [innerHTML]='"HOME.EMAIL_VERIFICATION.EMAIL_SENT.DESCRIPTION" | translate:{ email: userEmail }'></p>
-                    <p [innerHTML]='"HOME.EMAIL_VERIFICATION.EMAIL_SENT.SPAM" | translate'></p>
+                    <h2>Email Sent"</h2>
+                    <p>We've sent a verification email to your inbox <b>{{this.userEmail}}</b>. Please check your email and click the link to verify your account.</p>
+                    <p>If you don't see it, check your <b>spam folder</b>. <br> If you would like to update your email please click <a href="/profile/edit/contact"></a></p>
                     <button
                             class="btn btn-primary"
                             *ngIf="state === 'emailSent' || state === 'error'"
-                            (click)="sendVerifyEmail(null)">{{ "HOME.EMAIL_VERIFICATION.EMAIL_SENT.BUTTON" | translate }}
+                            (click)="sendVerifyEmail(null)">Resend Email
                     </button>
                 </div>
 
@@ -75,9 +75,9 @@
                         </defs>
                     </svg>
 
-                    <h2>{{ "HOME.EMAIL_VERIFICATION.EMAIL_VERIFIED.TITLE" | translate }} </h2>
+                    <h2>Email Verified</h2>
                     <p>
-                        {{ "HOME.EMAIL_VERIFICATION.EMAIL_VERIFIED.DESCRIPTION" | translate }}
+                      Your email has been verified.
                     </p>
                 </div>
 
@@ -91,9 +91,8 @@
                     <h2>{{ errorMessage }}</h2>
                     <button
                             class="btn btn-primary"
-                            (click)="sendVerifyEmail(null)">{{ "HOME.EMAIL_VERIFICATION.ERROR.BUTTON" | translate }}
+                            (click)="sendVerifyEmail(null)">Resend Email
                     </button>
-                    <p></p>
                 </div>
             </div>
         </div>

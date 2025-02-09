@@ -17,5 +17,21 @@
 <app-header *ngIf="showHeader"></app-header>
 
 <div class="container-fluid">
+  <!-- Notification Banner -->
+  <div *ngIf="emailVerified===false" class="text-start verify-email-button" style="margin-top: 1rem;">
+    <div class="toast-container position-fixed bottom-0 end-0">
+      <div #toastElement class="toast align-items-center text-bg-light border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body d-flex flex-column p-30">
+            <p>Verifying your email helps secure your account and ensures you receive important updates. Click here to </p>
+            <button class="btn btn-primary" (click)="openModal(modal)">Verify your Email</button>
+          </div>
+          <button type="button" class="btn-close ms-auto me-2 mt-2" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+    <!-- The Modal Component -->
+    <app-verify-email #modal></app-verify-email>
+  </div>
   <router-outlet></router-outlet>
 </div>

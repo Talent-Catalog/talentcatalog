@@ -22,6 +22,7 @@ import {SearchResults} from '../model/search-results';
 import {UpdateUserRequest, User} from '../model/user';
 import {SearchUserRequest} from "../model/base";
 import {SendResetPasswordEmailRequest} from "../model/candidate";
+import {SendVerifyEmailRequest} from "../model/user";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -112,5 +113,17 @@ export class UserService {
 
   resetMfa(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/mfa-reset/${id}`, null);
+  }
+
+  sendVerifyEmail(request:SendVerifyEmailRequest) {
+    return this.http.post(`${this.apiUrl}/verify-email`, request);
+  }
+
+  checkEmailVerificationToken(request: { token: string }) {
+    return this.http.post(`${this.apiUrl}/check-email-verification-token`, request);
+  }
+
+  verifyEmail(request: { token: string }) {
+    return this.http.post(`${this.apiUrl}/verify-email-token`, request);
   }
 }
