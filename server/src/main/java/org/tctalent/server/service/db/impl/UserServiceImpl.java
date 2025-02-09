@@ -310,6 +310,16 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    private void checkAndResetEmailVerification(User user, String newEmail) {
+        if (user.getEmail() == null ? newEmail != null : !user.getEmail().equals(newEmail)) {
+            user.setEmailVerified(false);
+            user.setEmailVerificationToken(null);
+            user.setEmailVerificationTokenIssuedDate(null);
+        } else {
+            // Email is not updated, no need to reset email verification
+        }
+    }
+
     @Override
     @Transactional
     public User updateUser(long id, UpdateUserRequest request) throws UsernameTakenException, InvalidRequestException {
@@ -319,6 +329,7 @@ public class UserServiceImpl implements UserService {
 
         // Only update if logged in user role is admin OR source partner admin AND they created the user.
         if (authoriseAdminUser()) {
+            checkAndResetEmailVerification(user, request.getEmail());
             populateUserFields(user, request, loggedInUser);
             userRepository.save(user);
         } else {

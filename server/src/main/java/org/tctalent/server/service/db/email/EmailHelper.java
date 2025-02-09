@@ -171,7 +171,7 @@ public class EmailHelper {
             final Context ctx = new Context();
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
-            String verificationUrl =  "http://localhost:4200/verify-email?token=" + token;
+            String verificationUrl =  "http://localhost:4201/verify-email?token=" + token;
 //          String verificationUrl = (user.getRole() == Role.user ? portalUrl : adminUrl) + "/verify-email?token=" + token;
             ctx.setVariable("verificationUrl", verificationUrl);
             ctx.setVariable("year", currentYear());

@@ -49,6 +49,11 @@ import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
+
 @RestController
 @RequestMapping("/api/admin/user")
 @RequiredArgsConstructor
@@ -124,6 +129,24 @@ public class UserAdminApi {
         userService.resetPassword(request);
     }
 
+    @PostMapping(value="verify-email")
+    public void sendVerifyEmailRequest(@RequestBody SendVerifyEmailRequest request)
+            throws NoSuchObjectException, ReCaptchaInvalidException {
+        userService.sendVerifyEmailRequest(request);
+    }
+
+    @PostMapping(value="check-email-verification-token")
+    public void checkEmailVerificationToken(@RequestBody CheckEmailVerificationTokenRequest request)
+            throws ExpiredTokenException, InvalidEmailVerificationTokenException {
+        userService.checkEmailVerificationToken(request);
+    }
+
+    @PostMapping(value="verify-email-token")
+    public void verifyEmail(@RequestBody VerifyEmailRequest request) {
+        userService.verifyEmail(request);
+    }
+
+
     @PutMapping("/mfa-reset/{id}")
     public void mfaReset(@PathVariable("id") long id) {
         this.userService.mfaReset(id);
@@ -155,6 +178,9 @@ public class UserAdminApi {
                 .add("usingMfa")
                 .add("mfaConfigured")
                 .add("partner", PartnerDtoHelper.getPartnerDto())
+                .add("emailVerified")
+                .add("emailVerificationToken")
+                .add("emailVerificationTokenIssuedDate")
                 ;
     }
 
