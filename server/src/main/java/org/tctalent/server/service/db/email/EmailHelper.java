@@ -171,8 +171,7 @@ public class EmailHelper {
             final Context ctx = new Context();
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
-            String verificationUrl =  "http://localhost:4201/verify-email?token=" + token;
-//          String verificationUrl = (user.getRole() == Role.user ? portalUrl : adminUrl) + "/verify-email?token=" + token;
+            String verificationUrl = (user.getRole() == Role.user ? portalUrl : adminUrl) + "/verify-email?token=" + token;
             ctx.setVariable("verificationUrl", verificationUrl);
             ctx.setVariable("year", currentYear());
 
@@ -186,67 +185,6 @@ public class EmailHelper {
             bodyHtml = htmlTemplateEngine.process("verify-email", ctx);
 
             log.info("Sending verification email to: {}", email);
-
-            // this is mail trap need to be deleted
-            try {
-                log.info("Sending verification email to mailtrap: {}", email);
-                // Define the API URL and authorization key
-                String url = "https://sandbox.api.mailtrap.io/api/send/3413445";
-                String apiKey = "4f2dcd406272235e46e3d759ce0fb512";
-
-                // Create the JSON payload
-                String payload = "{"
-                        + "\"from\":{\"email\":\"test@mailtrap.io\",\"name\":\"Talent Catalog\"},"
-                        + "\"to\":[{\"email\":\"" + email + "\"}],"
-                        + "\"subject\":\"" + subject + "\","
-                        + "\"text\":\"" + bodyText.replace("\"", "\\\"").replace("\n", "\\n") + "\","
-                        + "\"html\":\"" + bodyHtml.replace("\"", "\\\"").replace("\n", "\\n") + "\","
-                        + "\"category\":\"Email Verification Test\""
-                        + "}";
-
-                // Open a connection
-                URL apiUrl = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
-
-                // Configure the request
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Authorization", "Bearer " + apiKey);
-                connection.setRequestProperty("Content-Type", "application/json");
-                connection.setDoOutput(true);
-
-                // Write the payload to the request body
-                try (OutputStream os = connection.getOutputStream()) {
-                    byte[] input = payload.getBytes("utf-8");
-                    os.write(input, 0, input.length);
-                }
-
-                // Get the response
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
-                        StringBuilder response = new StringBuilder();
-                        String responseLine;
-                        while ((responseLine = br.readLine()) != null) {
-                            response.append(responseLine.trim());
-                        }
-                        log.info("Test email sent successfully via Mailtrap: {}", response.toString());
-                    }
-                } else {
-                    try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"))) {
-                        StringBuilder errorResponse = new StringBuilder();
-                        String responseLine;
-                        while ((responseLine = br.readLine()) != null) {
-                            errorResponse.append(responseLine.trim());
-                        }
-                        log.error("Failed to send test email via Mailtrap. Response: {}", errorResponse.toString());
-                    }
-                }
-
-                connection.disconnect();
-            } catch (Exception e) {
-                log.error("Error while sending email via Mailtrap", e);
-            }
-            // mail trap finishes here
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
             log.info("Verification email sent successfully to: {}", email);
