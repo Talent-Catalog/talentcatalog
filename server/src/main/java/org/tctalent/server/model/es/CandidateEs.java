@@ -85,6 +85,7 @@ public class CandidateEs {
             "dob",
             "maxEducationLevel",
             "ieltsScore",
+            "englishAssessmentScoreDet",
             "residenceStatus",
             "numberDependants",
     };
@@ -223,6 +224,9 @@ public class CandidateEs {
     private BigDecimal ieltsScore;
 
     @Field(type = FieldType.Long)
+    private Long englishAssessmentScoreDet;
+
+    @Field(type = FieldType.Long)
     private Long numberDependants;
 
     private Long fullIntakeCompletedDate;
@@ -289,6 +293,7 @@ public class CandidateEs {
         this.dob = candidate.getDob();
         this.residenceStatus = candidate.getResidenceStatus();
         this.ieltsScore = candidate.getIeltsScore();
+        this.englishAssessmentScoreDet = candidate.getEnglishAssessmentScoreDet();
         this.numberDependants = candidate.getNumberDependants();
 
 
@@ -490,7 +495,7 @@ public class CandidateEs {
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields
                 //that are not keyword fields (eg numeric fields).
-                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore",
+                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel","englishAssessmentScoreDet", "ieltsScore",
                     "numberDependants", "dob"};
 
                 boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);
