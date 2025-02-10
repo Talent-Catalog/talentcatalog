@@ -35,6 +35,7 @@ import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.OppNotificationService;
+import org.tctalent.server.service.db.PostService;
 import org.tctalent.server.service.db.UserService;
 
 @Service
@@ -44,6 +45,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     private final ChatPostService chatPostService;
     private final JobChatService jobChatService;
     private final NextStepProcessingService nextStepProcessingService;
+    private final PostService postService;
     private final UserService userService;
 
     @Override
@@ -99,8 +101,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         Candidate candidate = opp.getCandidate();
         String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
-        Post autoPostNewOpp = new Post();
-        autoPostNewOpp.setContent("The candidate " + candidateNameAndNumber +
+        Post autoPostNewOpp = postService.createPost("The candidate " + candidateNameAndNumber +
             " is a prospect for the job '" + opp.getJobOpp().getName() +"'.");
 
         // Note that we don't post to candidates until they get past the prospect stage
@@ -185,8 +186,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         Candidate candidate = opp.getCandidate();
         String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
-        Post autoPostClosedOpp = new Post();
-        autoPostClosedOpp.setContent("The candidate " + candidateNameAndNumber +
+        Post autoPostClosedOpp = postService.createPost("The candidate " + candidateNameAndNumber +
             " has been removed for the job '" + opp.getJobOpp().getName() +
             "' with the reason " + newStage.getSalesforceStageName() + ".");
 
@@ -234,6 +234,12 @@ public class OppNotificationServiceImpl implements OppNotificationService {
 
         if (newStage.ordinal() > lastExcludedStage.ordinal()) {
             //TODO JC Post to candidate related chats
+            JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
+                null, candidate);
+
+            Post autoPostStageChange = postService.createPost("???"); //todo Construct candidate friendly message - with translated stage descriptions
+            publishPost(prospectChat, autoPostStageChange);
+
         }
 
         //     Non Candidate Related Chats
@@ -249,8 +255,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         String candidateNameAndNumber = constructCandidateNameNumber(candidate);
 
         // Set the chat post content
-        Post autoPostCandidateOppStageChange = new Post();
-        autoPostCandidateOppStageChange.setContent(
+        Post autoPostCandidateOppStageChange = postService.createPost(
             "💼 <b>" + opp.getName() + "</b> 🪜<br> This case for candidate "
                 + candidateNameAndNumber
                 + " has changed stage from '" + opp.getStage() + "' to '"
@@ -267,9 +272,14 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     private void publishOppAcceptedPosts(CandidateOpportunity opp) {
         Candidate candidate = opp.getCandidate();
         String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
-        Post autoPostAcceptedJobOffer = new Post();
-        autoPostAcceptedJobOffer.setContent("The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
-            + opp.getJobOpp().getName() + " and is now a member of the <a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>.");
+
+        //TODO JC We need a more personal message to candidate about Pathway Club
+        //TODO JC Also the candidate does not need to receive the same message on all their chats.
+        Post autoPostAcceptedJobOffer = postService.createPost(
+            "The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
+                + opp.getJobOpp().getName() + " and is now a member of the <a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>."
+        );
+
 
         // AUTO CHAT TO PROSPECT CHAT
         JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
@@ -290,8 +300,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     private void publishMessage(JobChat chat, String mess) {
 
         // Set the chat post content
-        Post post = new Post();
-        post.setContent(mess);
+        Post post = postService.createPost(mess);
 
         publishPost(chat, post);
     }
