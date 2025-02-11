@@ -14,13 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { environment as prodEnvironment } from './environment.prod';
-
 // This file replaces environment.ts during build by using the `fileReplacements` array.
 // `ng build --staging` replaces `environment.ts` with `environment.staging.ts`.
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  ...prodEnvironment,
+  production: true,
+  apiUrl: '/api/public',
   environmentName: 'staging'
 };
