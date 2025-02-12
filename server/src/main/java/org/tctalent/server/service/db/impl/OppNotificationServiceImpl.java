@@ -36,7 +36,9 @@ import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PostService;
+import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.TranslationHelper;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     private final JobChatService jobChatService;
     private final NextStepProcessingService nextStepProcessingService;
     private final PostService postService;
+    private final TranslationService translationService;
     private final UserService userService;
 
     @Override
@@ -233,11 +236,16 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             ? CandidateOpportunityStage.prospect : CandidateOpportunityStage.cvReview;
 
         if (newStage.ordinal() > lastExcludedStage.ordinal()) {
-            //TODO JC Post to candidate related chats
+            //Post to candidate
             JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
                 null, candidate);
 
-            Post autoPostStageChange = postService.createPost("???"); //todo Construct candidate friendly message - with translated stage descriptions
+            //Extract candidate friendly message relating to the new stage from the translated stage
+            //description.
+            String[] keys = TranslationHelper.getCaseStageTranslationKeys(newStage);
+            String message = translationService.translateToEnglish(keys);
+
+            Post autoPostStageChange = postService.createPost(message);
             publishPost(prospectChat, autoPostStageChange);
 
         }

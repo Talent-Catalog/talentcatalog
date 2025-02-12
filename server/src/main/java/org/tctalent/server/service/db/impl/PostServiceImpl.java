@@ -52,11 +52,11 @@ public class PostServiceImpl implements PostService {
 
             //TODO JC Scan content looking for links and urls.
             //TODO JC Loop through all urls found in content. For each...
-            String url = "???"; //TODO JC Debug
-            LinkPreview linkPreview = linkPreviewService.buildLinkPreview(url);
-            if (linkPreview != null) {
-                post.getLinkPreviews().add(linkPreview);
-            }
+//            String url = "???"; //TODO JC Debug
+//            LinkPreview linkPreview = linkPreviewService.buildLinkPreview(url);
+//            if (linkPreview != null) {
+//                post.getLinkPreviews().add(linkPreview);
+//            }
         }
     }
 }
