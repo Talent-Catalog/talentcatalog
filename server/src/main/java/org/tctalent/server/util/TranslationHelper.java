@@ -25,7 +25,15 @@ import org.tctalent.server.model.db.CandidateOpportunityStage;
  */
 public class TranslationHelper {
 
-    //TODO JC Doc
+    /**
+     * Returns the translation keys corresponding to the description of the given Candidate
+     * Opportunity (Case) stage.
+     * <p/>
+     * These keys can be passed to TranslationService translate methods to fetch the stage
+     * description.
+     * @param stage Case stage
+     * @return Translation keys
+     */
     public static String[] getCaseStageTranslationKeys(CandidateOpportunityStage stage) {
         return new String[] {"CASE-STAGE", stage.name().toUpperCase()};
     }
