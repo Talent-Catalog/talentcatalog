@@ -54,19 +54,26 @@ public class OppNotificationServiceImpl implements OppNotificationService {
     @Override
     public void notifyCaseChanges(CandidateOpportunity opp, CandidateOpportunityParams changes) {
         if (changes != null) {
+            final CandidateOpportunityStage currentStage = opp.getStage();
             final CandidateOpportunityStage newStage = changes.getStage();
             if (newStage != null) {
                 // Stage is changing
-                if (!newStage.equals(opp.getStage())) {
+                if (!newStage.equals(currentStage)) {
                     // If stage is changing to CLOSED (e.g. removed from submission list) publish posts
                     if (newStage.isClosed()) {
                         publishOppClosedPosts(opp, newStage);
-                        // If a stage is changed to ACCEPTANCE (job offer is accepted)
-                    } else if (newStage.equals(CandidateOpportunityStage.acceptance)) {
-                        publishOppAcceptedPosts(opp);
                     } else {
-                        // If non closing stage change, publish posts
+                        //New stage is not a closed stage
+                        //Publish standard stage change post
                         publishStageChangePosts(opp, newStage);
+
+                        //Make a special additional post when candidate has accepted a job offer
+                        //If current stage is before acceptance stage and new stage is acceptance
+                        //or later, then the candidate has accepted the job offer.
+                        if (currentStage.ordinal() < CandidateOpportunityStage.acceptance.ordinal()
+                            && newStage.ordinal() >= CandidateOpportunityStage.acceptance.ordinal()) {
+                            publishOppAcceptedPosts(opp);
+                        }
                     }
                 }
             }
