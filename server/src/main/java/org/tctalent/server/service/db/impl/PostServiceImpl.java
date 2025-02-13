@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -25,9 +26,11 @@ import org.tctalent.server.model.db.LinkPreview;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.service.db.LinkPreviewService;
 import org.tctalent.server.service.db.PostService;
+import org.tctalent.server.util.RegexHelpers;
 
 /**
- * Post service which will try to create {@link LinkPreview}s from any urls found in the post content
+ * Post service which will try to create {@link LinkPreview}s from any urls found in the post
+ * content
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ import org.tctalent.server.service.db.PostService;
 public class PostServiceImpl implements PostService {
 
     private final LinkPreviewService linkPreviewService;
+    private final RegexHelpers regexHelpers;
 
     @NonNull
     @Override
@@ -48,15 +52,18 @@ public class PostServiceImpl implements PostService {
     private void extractLinkPreviews(@NonNull Post post, @Nullable String content) {
         if (content != null) {
             //Replace any existing link previews
-            post.getLinkPreviews().clear();
+            final List<LinkPreview> linkPreviews = post.getLinkPreviews();
+            linkPreviews.clear();
 
-            //TODO JC Scan content looking for links and urls.
-            //TODO JC Loop through all urls found in content. For each...
-//            String url = "???"; //TODO JC Debug
-//            LinkPreview linkPreview = linkPreviewService.buildLinkPreview(url);
-//            if (linkPreview != null) {
-//                post.getLinkPreviews().add(linkPreview);
-//            }
+            List<String> urls = regexHelpers.extractLinkUrlsFromHtml(content);
+
+            //Loop through all urls found in content, building link previews
+            for (String url : urls) {
+                LinkPreview linkPreview = linkPreviewService.buildLinkPreview(url);
+                if (linkPreview != null) {
+                    linkPreviews.add(linkPreview);
+                }
+            }
         }
     }
 }
