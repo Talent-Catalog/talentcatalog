@@ -16,13 +16,14 @@
 
 package org.tctalent.server.request.candidate;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Collection;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.NonNull;
 
 /**
  * Request to update the status of one or more candidates.
@@ -42,14 +43,13 @@ public class UpdateCandidateStatusRequest {
     /**
      * New status and associated other information
      */
-    @NotNull
     private UpdateCandidateStatusInfo info;
 
     public UpdateCandidateStatusRequest(Long... candidateIds) {
         this.candidateIds = Arrays.asList(candidateIds);
     }
 
-    public UpdateCandidateStatusRequest(Collection<Long> candidateIds) {
+    public UpdateCandidateStatusRequest(@NonNull Collection<Long> candidateIds) {
         this.candidateIds = candidateIds;
     }
 

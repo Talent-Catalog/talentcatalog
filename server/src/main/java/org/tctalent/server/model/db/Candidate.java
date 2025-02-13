@@ -94,6 +94,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String linkedInLink;
 
     /**
+     * If true, candidate cannot post to chats. Effectively any chats they see are read only.
+     * <p/>
+     * A candidate can be muted by their source partner if they are not respecting the TC's chat
+     * rules. They can subsequently be unmuted.
+     */
+    private boolean muted;
+
+    /**
      * Candidate's internal id reference with the source partner handling their case.
      * This is the reference used to identify the candidate on the source partner's internal systems.
      * <p/>
@@ -1155,6 +1163,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public String getLinkedInLink() { return linkedInLink; }
 
     public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
 
     public SurveyType getSurveyType() { return surveyType; }
 

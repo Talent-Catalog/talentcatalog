@@ -253,6 +253,39 @@
             </a>
             <!-- Tab content — either the chats or a button to create one with help text -->
             <ng-template ngbNavContent>
+
+              <!-- Mute/Unmute candidate button for non read only users-->
+              <div *ngIf="!isReadOnlyUser()">
+                <ng-template #mutingTip>
+                  <div>
+                    <p>
+                      Muting a candidate prevents them from posting on any chat - but they can see
+                      posts that are sent to them.
+                    </p>
+                    <p>
+                      You should only mute a candidate when their posts do not adhere to TC rules.
+                    </p>
+                    <p>
+                      You can unmute them at any time.
+                    </p>
+                    <p>
+                      Whenever a candidate is muted or unmuted a candidate note is automatically
+                      generated recording the fact.
+                    </p>
+                  </div>
+                </ng-template>
+
+                <div class="mt-5 mb-4">
+                  <button class="btn btn-secondary mb-1" (click)="toggleMuted()"
+                  title="">
+                    {{computeMuteButtonLabel()}}
+                  </button>
+                  <button class="tool-tip-button" [ngbTooltip]="mutingTip" triggers="click">
+                    <i class="fa-regular fa-circle-question fa-xs"></i>
+                  </button>
+                </div>
+              </div>
+
               <app-view-chat-posts *ngIf="candidateChat; else createChatButton"
                                    [readOnly] = "isReadOnlyUser()"
                                    [chat]="candidateChat">

@@ -23,7 +23,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {Candidate} from "../../../../../../../model/candidate";
+import {Candidate, isMuted} from "../../../../../../../model/candidate";
 import {
   CandidateOpportunity,
   isOppStageGreaterThanOrEqualTo
@@ -142,6 +142,10 @@ export class CandidateOppComponent implements OnInit, OnChanges {
   goBack() {
     this.selectedOpp = null;
     this.back.emit();
+  }
+
+  isCandidateMuted() {
+    return isMuted(this.candidate);
   }
 
   setSelectedChatType(selectedChatType: JobChatType) {

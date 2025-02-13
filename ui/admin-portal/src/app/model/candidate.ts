@@ -73,6 +73,7 @@ export interface Candidate extends HasId {
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
   linkedInLink: string;
+  muted: boolean;
   candidateMessage: string;
   maxEducationLevel: EducationLevel;
   folderlink: string;
@@ -474,6 +475,10 @@ export interface UpdateCandidateStatusInfo {
 export interface UpdateCandidateStatusRequest {
   candidateIds: number[];
   info: UpdateCandidateStatusInfo;
+}
+
+export interface UpdateCandidateMutedRequest {
+  muted: boolean;
 }
 
 export enum FamilyRelations {
