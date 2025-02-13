@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,8 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const environment = {
-  production: true,
-  apiUrl: '/api/public',
-  environmentName: 'prod'
-};
+package org.tctalent.server.request.candidate;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * Request to change muted status of a candidate
+ *
+ * @author John Cameron
+ */
+@Getter
+@Setter
+@ToString
+public class UpdateCandidateMutedRequest {
+
+    /**
+     * If true for a candidate, they will not be able to post to chats.
+     */
+    private boolean muted;
+}

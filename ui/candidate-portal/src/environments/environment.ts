@@ -26,7 +26,8 @@ export const environment = {
   apiUrl: 'http://localhost:8080/api/portal',
   systemApiUrl: 'http://localhost:8080/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org',
-  googleAnalyticsId: 'G-K9ML1Y40B4' // for testing
+  googleAnalyticsId: 'G-K9ML1Y40B4', // for testing
+  environmentName: 'local'
 };
 
 /*

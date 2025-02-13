@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,8 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const environment = {
-  production: true,
-  apiUrl: '/api/public',
-  environmentName: 'prod'
-};
+alter table candidate add muted boolean default false not null;
+alter table candidate add all_notifications boolean default false not null;
+

@@ -17,6 +17,8 @@
 // This file replaces environment.ts during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
+// NB: many of these variables are the same in environment.staging.ts - if making changes, consider
+// whether replication for staging is also required.
 
 export const environment = {
   production: true,
@@ -26,5 +28,6 @@ export const environment = {
   apiUrl: '/api/admin',
   systemApiUrl: '/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',
-  assetBaseUrl: '/admin-portal'
+  assetBaseUrl: '/admin-portal',
+  environmentName: 'prod'
 };

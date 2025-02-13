@@ -87,6 +87,7 @@
 
           <app-view-chat-posts
             [chat]="sourceChat"
+            [readOnly]="isCandidateMuted()"
           >
           </app-view-chat-posts>
         </ng-template>

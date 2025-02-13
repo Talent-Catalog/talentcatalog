@@ -25,7 +25,7 @@ import org.tctalent.server.model.db.CandidateStatus;
 
 /**
  * Changing a candidate status includes more than just the new status.
- * In addition, an comment can be supplied which goes into a candidate note and also a
+ * In addition, a comment can be supplied which goes into a candidate note and also a
  * candidate message can be supplied which is emailed to the candidate.
  * <p/>
  * This class encapsulates all the above.
