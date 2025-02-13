@@ -75,25 +75,22 @@
         <label class="form-label" for="selectStats">Select Stats to Run</label>
         <ng-select
           id="selectStats"
-          [items]="statNames"
+          [items]="statOptions"
           [closeOnSelect]="false"
           [clearSearchOnAdd]="true"
           [searchable]="true"
           placeholder="Select or type..."
-          bindLabel="name"
-          bindValue="name"
+          bindLabel="stringValue"
+          bindValue="key"
           multiple = "true"
           maxSelectedItems="8"
-          formControlName="selectedStatNames">
+          formControlName="selectedStats">
         </ng-select>
         <div class="form-text">Due to processing size, maximum 8 stats can be run at a time.</div>
       </div>
       <div class="col-12 col-lg-3">
-        <button class="btn btn-success me-3" (click)="submitStatsRequest(false)" [disabled]="selectedStats == null">
+        <button class="btn btn-success me-3" (click)="submitStatsRequest(false)" [disabled]="selectedStats.length == 0">
           <i class="fas fa-calendar-alt"></i> Run stats
-        </button>
-        <button class="btn btn-accent-2" (click)="submitStatsRequest(true)" [disabled]="selectedStats == null">
-          <i class="fas fa-calendar-alt"></i> Old Run stats
         </button>
       </div>
     </div>

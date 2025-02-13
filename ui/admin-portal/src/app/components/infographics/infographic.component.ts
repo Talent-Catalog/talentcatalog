@@ -25,8 +25,8 @@ import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
 import {SavedSearchService} from "../../services/saved-search.service";
 import {saveBlob} from "../../util/file";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SelectStatsComponent} from "./select-stats/select-stats.component";
+import {EnumOption, enumOptions} from "../../util/enum";
+import {Stat} from "../../model/stat";
 
 @Component({
   selector: 'app-infographic',
@@ -35,13 +35,14 @@ import {SelectStatsComponent} from "./select-stats/select-stats.component";
 })
 export class InfographicComponent implements OnInit {
 
+  public statOptions: EnumOption[] = enumOptions(Stat);
+
   loading: boolean = false;
   dataLoaded: boolean = false;
   error: any;
   lists: SavedList[] = [];
   searches: SavedSearch[] = [];
   statReports: StatReport[];
-  statNames: StatReport[];
   statsFilter: UntypedFormGroup;
   statsName: string;
   listFromUrl: boolean = false;
@@ -50,7 +51,6 @@ export class InfographicComponent implements OnInit {
               private statService: CandidateStatService,
               private savedListService: SavedListService,
               private savedSearchService: SavedSearchService,
-              private modalService: NgbModal,
               private fb: UntypedFormBuilder) {
   }
 
@@ -62,16 +62,10 @@ export class InfographicComponent implements OnInit {
       savedSearch: [null],
       dateFrom: ['', [Validators.required]],
       dateTo: ['', [Validators.required]],
-      selectedStatNames: [null]
+      selectedStats: [[]]
     });
 
     this.loadListsAndSearches();
-
-    this.statService.getAllStatNames().subscribe(
-      (results) => {
-        this.statNames = results;
-      }
-    )
   }
 
   get dateFrom(): string { return this.statsFilter.value.dateFrom; }
@@ -86,8 +80,8 @@ export class InfographicComponent implements OnInit {
     //Control always returns an object
     return savedSearch;
   }
-  get selectedStats(): string[] {
-    return this.statsFilter.value.selectedStatNames;
+  get selectedStats(): Stat[] {
+    return this.statsFilter.value.selectedStats;
   }
 
   private loadListsAndSearches() {
@@ -155,15 +149,6 @@ export class InfographicComponent implements OnInit {
   submitStatsRequest(runOldStats: boolean){
     this.loading = true;
     this.error = null;
-    const selectStatsModal = this.modalService.open(SelectStatsComponent, {
-      centered: true,
-      backdrop: 'static',
-      size: "lg"
-    });
-
-    selectStatsModal.result
-      .then((response) => console.log(response))
-      .catch(() => { /* Isn't possible */ });
 
     const request: CandidateStatsRequest = {
       runOldStats: runOldStats,
@@ -171,7 +156,7 @@ export class InfographicComponent implements OnInit {
       searchId: this.savedSearch == null ? null : this.savedSearch.id,
       dateFrom: this.dateFrom,
       dateTo: this.dateTo,
-      statNames: this.selectedStats
+      selectedStats: this.selectedStats
     }
 
     if (this.savedList) {

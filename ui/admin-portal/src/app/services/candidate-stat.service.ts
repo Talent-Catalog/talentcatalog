@@ -19,6 +19,7 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {StatReport} from "../model/stat-report";
+import {Stat} from "../model/stat";
 
 export interface CandidateStatsRequest {
   runOldStats?: boolean;
@@ -26,7 +27,7 @@ export interface CandidateStatsRequest {
   searchId?: number;
   dateFrom?: string;
   dateTo?: string;
-  statNames?: string[];
+  selectedStats?: Stat[];
 }
 
 @Injectable({providedIn: 'root'})
@@ -38,10 +39,6 @@ export class CandidateStatService {
 
   getAllStats(details: CandidateStatsRequest): Observable<StatReport[]> {
     return this.http.post<StatReport[]>(`${this.apiUrl}/all`, details);
-  }
-
-  getAllStatNames(): Observable<StatReport[]> {
-    return this.http.get<StatReport[]>(`${this.apiUrl}/names`);
   }
 
 }

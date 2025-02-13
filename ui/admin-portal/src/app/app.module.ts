@@ -563,7 +563,6 @@ import {
   ImportDuolingoCouponsComponent
 } from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
 import {DetScoreValidationComponent} from './components/util/det-score-validation/det-score-validation.component';
-import {SelectStatsComponent} from './components/infographics/select-stats/select-stats.component';
 
 @NgModule({
   declarations: [
@@ -888,8 +887,7 @@ import {SelectStatsComponent} from './components/infographics/select-stats/selec
     PotentialDuplicateIconComponent,
     DuplicatesDetailComponent,
     ImportDuolingoCouponsComponent,
-    DetScoreValidationComponent,
-    SelectStatsComponent
+    DetScoreValidationComponent
   ],
   imports: [
     BrowserModule,

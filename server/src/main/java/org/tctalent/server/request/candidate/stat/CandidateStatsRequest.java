@@ -21,6 +21,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tctalent.server.model.db.Stat;
 
 @Getter
 @Setter
@@ -57,8 +58,8 @@ public class CandidateStatsRequest {
     private LocalDate dateTo;
 
     /**
-     * The names of the stats to be run
+     * The selected stats to be run (limited to avoid large processing)
      */
-    private List<String> statNames;
+    private List<Stat> selectedStats;
 
 }
