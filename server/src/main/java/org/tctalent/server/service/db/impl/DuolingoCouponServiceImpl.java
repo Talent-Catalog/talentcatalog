@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -207,6 +209,8 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional
+  @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
+  @SchedulerLock(name = "CouponSchedulerTask_markCouponsAsExpired", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
   public void markCouponsAsExpired() {
     // Exclude both EXPIRED and REDEEMED statuses
     List<DuolingoCoupon> expiredCoupons = couponRepository.findAllByExpirationDateBeforeAndCouponStatusNotIn(
@@ -219,6 +223,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
       couponRepository.saveAll(expiredCoupons);
     }
   }
+
   // Utility Methods
 
   /**

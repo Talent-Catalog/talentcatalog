@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
@@ -46,6 +48,8 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
   private final CandidateExamService candidateExamService;
 
   @Override
+  @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
+  @SchedulerLock(name = "DuolingoSchedulerTask_updateCandidateExams", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
   public void updateCandidateExams() throws NoSuchObjectException {
     List<DuolingoDashboardResponse> dashboardResults = duolingoApiService.getDashboardResults(null, null);
 

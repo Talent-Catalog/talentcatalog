@@ -25,7 +25,13 @@ public interface DuolingoExamService {
 
   /**
    * Updates the candidate exams based on results from the Duolingo dashboard.
-   *
+   * Scheduled task that updates candidate exams for Duolingo on a daily basis.
+   * This method is executed once a day at midnight GMT (00:00:00), and is locked using the
+   * SchedulerLock annotation to ensure that only one instance of the task is running at any
+   * given time. The lock is held for at least 23 hours and at most 23 hours to prevent overlapping
+   * executions if the task takes longer than expected.
+   * The task executes the updateCandidateExams method from the duolingoExamService to perform
+   * the necessary updates on candidate exams.
    * @throws NoSuchObjectException if no candidate is found or any other related errors occur
    */
   void updateCandidateExams() throws NoSuchObjectException;
