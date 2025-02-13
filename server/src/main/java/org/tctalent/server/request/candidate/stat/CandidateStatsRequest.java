@@ -29,6 +29,7 @@ import org.tctalent.server.model.db.Stat;
 public class CandidateStatsRequest {
 
     /**
+     * todo remove this field - no longer run the old stats
      * If not null and true, stats are computed using the old method.
      */
     private Boolean runOldStats;
