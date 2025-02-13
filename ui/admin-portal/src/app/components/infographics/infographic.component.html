@@ -70,14 +70,26 @@
       </div>
     </div>
 
-    <div class="row my-4">
-      <div class="col">
-        <button class="btn btn-success float-end" (click)="submitStatsRequest(true)">
-          <i class="fas fa-calendar-alt"></i> Old Run stats
-        </button>
+    <div class="row align-items-center my-4 flex-lg-fill">
+      <div class="col-12 col-lg-9">
+        <label class="form-label" for="selectStats">Select Stats to Run</label>
+        <ng-select
+          id="selectStats"
+          [items]="statOptions"
+          [closeOnSelect]="false"
+          [clearSearchOnAdd]="true"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="stringValue"
+          bindValue="key"
+          multiple = "true"
+          maxSelectedItems="8"
+          formControlName="selectedStats">
+        </ng-select>
+        <div class="form-text">Due to processing size, maximum 8 stats can be run at a time.</div>
       </div>
-      <div class="col">
-        <button class="btn btn-success float-end" (click)="submitStatsRequest(false)">
+      <div class="col-12 col-lg-3">
+        <button class="btn btn-success me-3" (click)="submitStatsRequest(false)" [disabled]="selectedStats.length == 0">
           <i class="fas fa-calendar-alt"></i> Run stats
         </button>
       </div>
