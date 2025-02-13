@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,40 +16,22 @@
 
 package org.tctalent.server.request.candidate;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tctalent.server.model.db.CandidateNote;
-import org.tctalent.server.model.db.CandidateStatus;
 
 /**
- * Changing a candidate status includes more than just the new status.
- * In addition, a comment can be supplied which goes into a candidate note and also a
- * candidate message can be supplied which is emailed to the candidate.
- * <p/>
- * This class encapsulates all the above.
+ * Request to change muted status of a candidate
  *
  * @author John Cameron
  */
 @Getter
 @Setter
 @ToString
-public class UpdateCandidateStatusInfo {
+public class UpdateCandidateMutedRequest {
 
-  /**
-   * New candidate status
-   */
-  @NotNull
-  private CandidateStatus status;
-
-  /**
-   * Optional comment to be included in {@link CandidateNote}
-   */
-  private String comment;
-
-  /**
-   * Optional message to be sent to the associated candidate
-   */
-  private String candidateMessage;
+    /**
+     * If true for a candidate, they will not be able to post to chats.
+     */
+    private boolean muted;
 }

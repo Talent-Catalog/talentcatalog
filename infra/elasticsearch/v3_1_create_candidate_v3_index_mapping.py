@@ -65,6 +65,7 @@ mappings = {
       "gender": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "id": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "ieltsScore": {"type": "double"},
+      "englishAssessmentScoreDet": {"type": "long"},
       "jobExperiences": {"type": "text"},
       "lastName": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
       "maritalStatus": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},

@@ -64,6 +64,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -175,6 +176,8 @@ public interface CandidateService {
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
 
     void updateCandidateStatus(SavedList savedList, UpdateCandidateStatusInfo info);
+
+    void updateMutedStatus(long id, UpdateCandidateMutedRequest request);
 
     Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request);
 

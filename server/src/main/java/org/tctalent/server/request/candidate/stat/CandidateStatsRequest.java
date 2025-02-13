@@ -17,9 +17,11 @@
 package org.tctalent.server.request.candidate.stat;
 
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tctalent.server.model.db.Stat;
 
 @Getter
 @Setter
@@ -27,6 +29,7 @@ import lombok.ToString;
 public class CandidateStatsRequest {
 
     /**
+     * todo remove this field - no longer run the old stats
      * If not null and true, stats are computed using the old method.
      */
     private Boolean runOldStats;
@@ -54,5 +57,10 @@ public class CandidateStatsRequest {
      * If null, then we report up to most recent data
      */
     private LocalDate dateTo;
+
+    /**
+     * The selected stats to be run (limited to avoid large processing)
+     */
+    private List<Stat> selectedStats;
 
 }

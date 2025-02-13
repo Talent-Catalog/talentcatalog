@@ -388,7 +388,7 @@ class NotificationServiceImplTest {
 
         //Mock source partners returned by partnerService
         List<PartnerImpl> sourcePartners = new ArrayList<>();
-        given(partnerService.listSourcePartners()).willReturn(sourcePartners);
+        given(partnerService.listActiveSourcePartners()).willReturn(sourcePartners);
         sourcePartners.add(createPartner(10, createNonCandidateUser(4, Role.partneradmin)));
         sourcePartners.add(createPartner(20, createNonCandidateUser(8, Role.partneradmin)));
 
