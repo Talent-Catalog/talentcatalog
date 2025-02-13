@@ -466,6 +466,8 @@ public class CandidatePortalApi {
                 .add("whatsapp")
                 /* STATUS */
                 .add("status")
+                /* MUTED */
+                .add("muted")
                 /* PERSONAL */
                 .add("gender")
                 .add("dob")

@@ -52,6 +52,7 @@ public class CandidateBuilderSelector {
         new HashSet<>(Arrays.asList(
             "id",
             "status",
+            "muted",
             "candidateNumber",
             "publicId",
             "allNotifications",
@@ -157,6 +158,7 @@ public class CandidateBuilderSelector {
         final DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
             .add("status")
+            .add("muted")
             .add("candidateNumber")
             .add("publicId")
             .add("allNotifications")

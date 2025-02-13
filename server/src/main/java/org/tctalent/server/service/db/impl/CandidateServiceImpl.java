@@ -146,6 +146,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
@@ -864,6 +865,23 @@ public class CandidateServiceImpl implements CandidateService {
         ucsr.setInfo(info);
 
         updateCandidateStatus(ucsr);
+    }
+
+    @Override
+    public void updateMutedStatus(long id, UpdateCandidateMutedRequest request) {
+        final Candidate candidate = candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        if (request.isMuted() != candidate.isMuted()) {
+            candidate.setMuted(request.isMuted());
+            candidateRepository.save(candidate);
+
+            //Generate candidate note
+            String message = "Candidate's chats were " +
+                (candidate.isMuted() ? "muted" : "unmuted");
+            candidateNoteService.createCandidateNote(
+                new CreateCandidateNoteRequest(candidate.getId(), message, null));
+        }
     }
 
     @Override
