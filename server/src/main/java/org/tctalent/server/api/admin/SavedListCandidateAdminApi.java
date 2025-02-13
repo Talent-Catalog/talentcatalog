@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -109,6 +110,7 @@ public class SavedListCandidateAdminApi implements
         return savedListService.isEmpty(savedListId);
     }
 
+    @NonNull
     @Override
     public List<Map<String, Object>> list(long savedListId) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(savedListId);
@@ -262,7 +264,7 @@ public class SavedListCandidateAdminApi implements
 
         final UpdateCandidateStatusInfo statusUpdateInfo =
             request.getStatusUpdateInfo();
-        if (statusUpdateInfo != null) {
+        if (statusUpdateInfo != null && request.getCandidateIds() != null) {
             UpdateCandidateStatusRequest ucsr =
                 new UpdateCandidateStatusRequest(request.getCandidateIds());
             ucsr.setInfo(statusUpdateInfo);

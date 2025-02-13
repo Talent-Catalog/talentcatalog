@@ -14,12 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-// This file replaces environment.ts during build by using the `fileReplacements` array.
-// `ng build --staging` replaces `environment.ts` with `environment.staging.ts`.
-// The list of file replacements can be found in `angular.json`.
+alter table candidate add muted boolean default false not null;
+alter table candidate add all_notifications boolean default false not null;
 
-export const environment = {
-  production: true,
-  apiUrl: '/api/public',
-  environmentName: 'staging'
-};

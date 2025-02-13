@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URL;
 import java.time.OffsetDateTime;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -155,7 +155,7 @@ public class NotificationServiceImpl implements NotificationService {
                     notifyDestinationPartner(chat, userNotifications);
 
                     //Notify all source partners
-                    final List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    final List<PartnerImpl> sourcePartners = partnerService.listActiveSourcePartners();
                     for (PartnerImpl sourcePartner : sourcePartners) {
                         notifySourcePartner(sourcePartner, chat, userNotifications);
                     }
