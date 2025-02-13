@@ -250,7 +250,7 @@ public class CandidateBuilderSelector {
                 ;
             }
 
-        // Additional properties for the API
+            // Additional properties for the API
             if (DtoType.API.equals(type)) {
                 builder
                     .add("covidVaccinated")
