@@ -50,9 +50,9 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrRegistratio
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrStatusStats;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import java.util.Set;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -102,7 +102,6 @@ class CandidateStatAdminApiTest extends ApiTestBase {
   @BeforeEach
   void setUp() {
     request = new CandidateStatsRequest();
-    request.setRunOldStats(true);
 
     configureAuthentication();
 

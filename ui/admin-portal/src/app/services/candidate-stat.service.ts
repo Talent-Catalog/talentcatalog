@@ -22,7 +22,6 @@ import {StatReport} from "../model/stat-report";
 import {Stat} from "../model/stat";
 
 export interface CandidateStatsRequest {
-  runOldStats?: boolean;
   listId?: number;
   searchId?: number;
   dateFrom?: string;
