@@ -1934,7 +1934,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     request.setPartnerIds(List.of(partner.getId()));
                 } else {
                     //Every one else defaults to seeing candidates from all partners
-                    List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    List<PartnerImpl> sourcePartners = partnerService.listAllSourcePartners();
                     List<Long> partnerIds =
                             sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
                     request.setPartnerIds(partnerIds);
