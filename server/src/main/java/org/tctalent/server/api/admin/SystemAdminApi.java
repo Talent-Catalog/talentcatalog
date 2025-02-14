@@ -124,6 +124,7 @@ import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.NotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
+import org.tctalent.server.service.db.PresetApiService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -181,6 +182,7 @@ public class SystemAdminApi {
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
+    private final PresetApiService presetApiService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -233,7 +235,8 @@ public class SystemAdminApi {
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
         SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService) {
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
+        PresetApiService presetApiService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -265,6 +268,7 @@ public class SystemAdminApi {
       this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
+      this.presetApiService = presetApiService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
       this.duolingoExamService = duolingoExamService;
@@ -3178,6 +3182,12 @@ public class SystemAdminApi {
             // Return 500 Internal Server Error including error in body for display on frontend
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
+    }
+
+    // TODO purely for testing - delete once done
+    @GetMapping("test-preset-api")
+    void testPresetApi() {
+      presetApiService.getDashboards();
     }
 
 }
