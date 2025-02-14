@@ -49,14 +49,9 @@ public class PresetProperties {
   private String apiToken;
 
   /**
-   * The base URL for obtaining a JWT token from the Preset API.
+   * The base URL for obtaining JWT and guest tokens from the Preset API.
    */
   private String authBaseUrl;
-
-  /**
-   * The base URL for making standard requests to the Preset API.
-   */
-  private String apiBaseUrl;
 
   /**
    * The ID of the TC Preset team, required for Preset API interactions

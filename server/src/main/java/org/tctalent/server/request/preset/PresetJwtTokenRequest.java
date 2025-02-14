@@ -42,7 +42,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PresetAuthRequest {
+public class PresetJwtTokenRequest {
 
   /**
    * The API token name used for authentication.

@@ -19,7 +19,6 @@ package org.tctalent.server.service.db.impl;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -38,7 +37,7 @@ public class DuolingoApiServiceImpl implements DuolingoApiService {
   private final WebClient webClient;
 
   @Autowired
-  public DuolingoApiServiceImpl(@Qualifier("duolingoWebClient") WebClient duolingoWebClient) {
+  public DuolingoApiServiceImpl(WebClient duolingoWebClient) {
     this.webClient = duolingoWebClient;
   }
 

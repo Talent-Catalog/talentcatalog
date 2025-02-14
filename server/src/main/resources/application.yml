@@ -266,8 +266,7 @@ preset:
   api:
     apiSecret: ${PRESET_SECRET:1644167811a854a08d31bdc8f63d8818e6a5326bbbcc1c5b88d1c26741d5a3ad}
     apiToken: ${API_TOKEN:0057bb06-b74d-46eb-a633-9e538cd8f1a3}
-    teamId: ${TEAM_ID:}
+    teamId: ${TEAM_ID:7235fedd}
     workspaceId: ${WORKSPACE_ID:987e2e02}
     intelligenceDashId: ${INTELLIGENCE_DASH_ID:}
-    authBaseUrl: https://api.app.preset.io/v1/auth/
-    apiBaseUrl: https://987e2e02.us2a.app.preset.io/
+    authBaseUrl: https://api.app.preset.io/v1/

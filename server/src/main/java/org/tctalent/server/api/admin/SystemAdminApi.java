@@ -3187,7 +3187,8 @@ public class SystemAdminApi {
     // TODO purely for testing - delete once done
     @GetMapping("test-preset-api")
     void testPresetApi() {
-      presetApiService.getDashboards();
+      LogBuilder.builder(log)
+          .message(presetApiService.fetchGuestToken());
     }
 
 }
