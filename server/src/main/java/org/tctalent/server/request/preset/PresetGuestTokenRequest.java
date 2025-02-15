@@ -44,30 +44,24 @@ import lombok.Setter;
  *   </a>
  */
 @Getter
-@Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class PresetGuestTokenRequest {
 
-  private User user;
-  private List<Resource> resources;
+  private PresetUser user;
+  private List<PresetResource> resources;
   private List<Object> rls;
 
   @Getter
-  @Setter
   @AllArgsConstructor
-  @NoArgsConstructor
-  public static class User {
+  public static class PresetUser {
     private String username;
     private String firstName;
     private String lastName;
   }
 
   @Getter
-  @Setter
   @AllArgsConstructor
-  @NoArgsConstructor
-  public static class Resource {
+  public static class PresetResource {
     private String type;
     private String id;
   }

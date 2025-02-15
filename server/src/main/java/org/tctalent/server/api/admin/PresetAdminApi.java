@@ -32,8 +32,9 @@ public class PresetAdminApi {
   private final PresetApiService presetApiService;
 
   @GetMapping(value = "guest-token")
-  public String fetchGuestToken() {
-    return presetApiService.fetchGuestToken();
+  // TODO String should perhaps be a request object, but perhaps not necessary
+  public String fetchGuestToken(String dashboardId) {
+    return presetApiService.fetchGuestToken(dashboardId);
   }
 
 }

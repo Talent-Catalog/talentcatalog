@@ -268,5 +268,4 @@ preset:
     apiToken: ${API_TOKEN:0057bb06-b74d-46eb-a633-9e538cd8f1a3}
     teamId: ${TEAM_ID:7235fedd}
     workspaceId: ${WORKSPACE_ID:987e2e02}
-    intelligenceDashId: ${INTELLIGENCE_DASH_ID:}
     authBaseUrl: https://api.app.preset.io/v1/

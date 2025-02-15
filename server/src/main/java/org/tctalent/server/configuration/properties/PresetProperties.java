@@ -63,9 +63,4 @@ public class PresetProperties {
    */
   private String workspaceId;
 
-  /**
-   * The ID of the TC Preset dashboard, required for Preset API interactions
-   */
-  private String intelligenceDashId;
-
 }

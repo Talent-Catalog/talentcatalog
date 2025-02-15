@@ -14,43 +14,56 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.preset;
+package org.tctalent.server.response;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
- * Represents the request payload for authenticating with the Preset API.
- * <p>
- * This class is used to send authentication credentials (name and secret)
- * when requesting a JWT token from the Preset API. Both can be obtained via the
- * <a href="https://manage.app.preset.io/app/user">Preset Manager user edit UI</a> - the user must
- * be a workspace admin.
- * </p>
+ * Represents the response from the Preset API guest token request.
  *
- * <p>Example JSON representation:</p>
+ * <p>The Preset API returns a JSON response containing a guest token which is required for
+ * dashboard embedding
+ *
+ * <p>Example JSON response:
  * <pre>
  * {
- *   "name": "API_token",
- *   "secret": "API_secret"
+ *   "data": {
+ *     "payload": {
+ *       "token": "your_guest_token_here"
+ *     }
+ *   }
  * }
  * </pre>
  *
  * @see <a href="https://api-docs.preset.io/">Preset API Documentation</a>
  */
 @Getter
-@AllArgsConstructor
-public class PresetJwtTokenRequest {
+public class PresetGuestTokenResponse {
 
   /**
-   * The API token name used for authentication.
+   * The data containing the payload.
    */
-  private String name;
+  @JsonProperty("data")
+  private Data data;
 
-  /**
-   * The API secret key used for authentication.
-   */
-  private String secret;
+  @Getter
+  public static class Data {
+    /**
+     * The payload that contains the guest token.
+     */
+    @JsonProperty("payload")
+    private Payload payload;
+  }
+
+  @Getter
+  public static class Payload {
+
+    /**
+     * This field represents the guest token.
+     */
+    @JsonProperty("token")
+    private String guestToken;
+  }
 
 }

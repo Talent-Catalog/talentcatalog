@@ -23,6 +23,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
  */
 public interface PresetApiService {
 
-  String fetchGuestToken() throws WebClientResponseException;
+  String fetchGuestToken(String dashboardId) throws WebClientResponseException;
 
 }

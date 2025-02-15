@@ -3188,7 +3188,7 @@ public class SystemAdminApi {
     @GetMapping("test-preset-api")
     void testPresetApi() {
       LogBuilder.builder(log)
-          .message(presetApiService.fetchGuestToken());
+          .message(presetApiService.fetchGuestToken("ef47023f-ccb3-4bed-88c7-3bdf830ae15f"));
     }
 
 }

@@ -16,18 +16,24 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.time.Duration;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.tctalent.server.configuration.properties.PresetProperties;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.request.preset.PresetGuestTokenRequest;
-import org.tctalent.server.request.preset.PresetGuestTokenRequest.User;
+import org.tctalent.server.request.preset.PresetGuestTokenRequest.PresetResource;
+import org.tctalent.server.request.preset.PresetGuestTokenRequest.PresetUser;
 import org.tctalent.server.request.preset.PresetJwtTokenRequest;
-import org.tctalent.server.response.PresetAuthResponse;
+import org.tctalent.server.response.PresetGuestTokenResponse;
+import org.tctalent.server.response.PresetJwtTokenResponse;
 import org.tctalent.server.service.db.PresetApiService;
+import reactor.util.retry.Retry;
 
 @Slf4j
 @Service
@@ -43,22 +49,25 @@ public class PresetApiServiceImpl implements PresetApiService {
     this.authClient = WebClient.builder().baseUrl(properties.getAuthBaseUrl()).build();
   }
 
-  public String fetchGuestToken() throws WebClientResponseException {
+  // TODO fetch new token if 401 error
+  public String fetchGuestToken(String dashboardId) throws WebClientResponseException {
     if (jwtToken == null) {
       initialiseJwtToken();
     }
 
-    PresetGuestTokenRequest request = createPresetGuestTokenRequest();
+    PresetGuestTokenRequest request = createPresetGuestTokenRequest(dashboardId);
 
-    // TODO: needs to handle expired/invalid token (retry a few times, fail gracefully)
     try {
       return authClient.post()
           .uri(getGuestTokenUri())
+          .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
           .bodyValue(request)
           .retrieve()
-          .bodyToMono(String.class)
+          .bodyToMono(PresetGuestTokenResponse.class)
+          .map(response -> response.getData().getPayload().getGuestToken())
+          .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))) // Retry x 3 w 2-sec delay
           .block();
-    } catch (WebClientResponseException e) {
+    } catch (Exception e) {
       LogBuilder.builder(log)
           .action("Fetch Preset Guest Token")
           .message("Failed to fetch Preset Guest Token")
@@ -80,8 +89,6 @@ public class PresetApiServiceImpl implements PresetApiService {
   }
 
   private String fetchJwtToken() {
-    // TODO: needs to handle expired/invalid token (retry a few times, fail gracefully)
-
     PresetJwtTokenRequest request = new PresetJwtTokenRequest(
         this.properties.getApiToken(),
         this.properties.getApiSecret()
@@ -92,10 +99,11 @@ public class PresetApiServiceImpl implements PresetApiService {
           .uri("auth/")
           .bodyValue(request)
           .retrieve()
-          .bodyToMono(PresetAuthResponse.class)
-          .map(response -> response.getPayload().getAccessToken())
+          .bodyToMono(PresetJwtTokenResponse.class)
+          .map(response -> response.getPayload().getJwtToken())
+          .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))) // Retry x 3 w 2-sec delay
           .block(); // Blocking call to store token at startup
-    } catch (WebClientResponseException e) {
+    } catch (Exception e) {
       LogBuilder.builder(log)
           .action("Fetch Preset JWT Token")
           .message("Failed to fetch Preset JWT Token")
@@ -104,9 +112,14 @@ public class PresetApiServiceImpl implements PresetApiService {
     }
   }
 
-  private PresetGuestTokenRequest createPresetGuestTokenRequest() {
-    PresetGuestTokenRequest request = new PresetGuestTokenRequest();
-    // TODO add required properties to yml and properties file and populate request
+  private PresetGuestTokenRequest createPresetGuestTokenRequest(String dashboardId) {
+    // TODO create guest_user in Preset w appropriate permissions
+    // TODO perhaps this username should be in the YML, or passed from front-end (if it will vary)
+    PresetUser user = new PresetUser("sam_schlicht", "Sam", "Schlicht");
+    PresetResource resource = new PresetResource("dashboard", dashboardId);
+
+    PresetGuestTokenRequest request =
+        new PresetGuestTokenRequest(user, List.of(resource), List.of());
 
     return request;
   }
