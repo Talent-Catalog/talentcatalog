@@ -70,10 +70,10 @@ public class OppNotificationServiceImpl implements OppNotificationService {
                         publishStageChangePosts(opp, newStage);
 
                         //Make a special additional post when candidate has accepted a job offer
-                        //If current stage is before acceptance stage and new stage is acceptance
-                        //or later, then the candidate has accepted the job offer.
-                        if (currentStage.ordinal() < CandidateOpportunityStage.acceptance.ordinal()
-                            && newStage.ordinal() >= CandidateOpportunityStage.acceptance.ordinal()) {
+                        //If current stage is at or before acceptance stage and new stage is after
+                        //acceptance, then the candidate has accepted the job offer.
+                        if (currentStage.ordinal() <= CandidateOpportunityStage.acceptance.ordinal()
+                            && newStage.ordinal() > CandidateOpportunityStage.acceptance.ordinal()) {
                             publishOppAcceptedPosts(opp);
                         }
                     }
