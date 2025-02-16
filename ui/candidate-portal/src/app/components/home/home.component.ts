@@ -23,12 +23,13 @@ import {US_AFGHAN_SURVEY_TYPE} from "../../model/survey-type";
 import {BrandingService} from "../../services/branding.service";
 import {ExternalLinkService} from "../../services/external-link.service";
 import { UserService } from '../../services/user.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {VerifyEmailComponent} from "../account/verify-email/verify-email.component";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-
 })
 export class HomeComponent implements OnInit {
 
@@ -45,12 +46,9 @@ export class HomeComponent implements OnInit {
               private languageService: LanguageService,
               private brandingService: BrandingService,
               private externalLinkService: ExternalLinkService,
-              private userService: UserService
+              private userService: UserService,
+              private modalService: NgbModal
             ) {
-  }
-
-  openModal(modal: any) {
-    modal.openModal(); // Call the modal's open method
   }
 
   ngOnInit() {
@@ -65,7 +63,6 @@ export class HomeComponent implements OnInit {
         this.error = error;
       }
     );
-
     this.candidateService.getStatus().subscribe(
       (candidate) => {
         this.candidate = candidate || ({status: CandidateStatus.draft} as Candidate);
@@ -96,6 +93,13 @@ export class HomeComponent implements OnInit {
 
   }
 
+  openModal() {
+    const verifyEmailModal = this.modalService.open(VerifyEmailComponent, {
+      centered: true
+    });
+    verifyEmailModal.componentInstance.userEmail = this.user.email;
+  }
+
   /**
    * Return candidate's first name and last name, or empty string if unknown.
    */
@@ -119,5 +123,6 @@ export class HomeComponent implements OnInit {
   getEligibilityLink(): string {
     return this.externalLinkService.getLink('eligibility', this.lang);
   }
+
 }
 

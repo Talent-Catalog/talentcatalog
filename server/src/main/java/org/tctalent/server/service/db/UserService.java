@@ -41,7 +41,6 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
-import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
 
 public interface UserService {
 
@@ -80,12 +79,13 @@ public interface UserService {
     void updatePassword(UpdateUserPasswordRequest request);
     void updateUserPassword(long id, UpdateUserPasswordRequest request);
 
-
-    // Generates an email verification token and sends a verification email.
+    /**
+     * Generates an email verification token and sends a verification email.
+     */
     void sendVerifyEmailRequest(SendVerifyEmailRequest request);
-    // Checks the validity of the email verification token.
-    void checkEmailVerificationToken(CheckEmailVerificationTokenRequest request);
-    // Verifies the user's email using the verification token.
+    /**
+     * Checks the validity of the email verification token and verifies the user's email.
+     */
     void verifyEmail(VerifyEmailRequest request);
 
     User findByUsernameAndRole(String username, Role role);

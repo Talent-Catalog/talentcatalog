@@ -1198,14 +1198,11 @@ public class CandidateServiceImpl implements CandidateService {
             queryParameters.getUtmTerm() != null;
     }
 
-    // Helper function to check and reset email verification if email is updated
     private void checkAndResetEmailVerification(User user, String newEmail) {
         if (!Objects.equals(user.getEmail(), newEmail)) {
             user.setEmailVerified(false);
             user.setEmailVerificationToken(null);
             user.setEmailVerificationTokenIssuedDate(null);
-        } else {
-            // Email is not updated, no need to reset email verification
         }
     }
 

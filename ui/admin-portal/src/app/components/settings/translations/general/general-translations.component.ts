@@ -340,10 +340,6 @@ const ALL_FIELDS = {
           "SPAM": null,
           "BUTTON": null,
         },
-        "EMAIL_VERIFIED" : {
-          "TITLE": null,
-          "DESCRIPTION": null,
-        },
         "ERROR":{
           "BUTTON":null,
         }

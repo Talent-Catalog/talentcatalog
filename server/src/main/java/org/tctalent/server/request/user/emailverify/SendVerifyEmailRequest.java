@@ -26,6 +26,4 @@ import lombok.ToString;
 @ToString
 public class SendVerifyEmailRequest {
     private String email;
-    private String verificationToken;
-    private String reCaptchaV3Token;
 }

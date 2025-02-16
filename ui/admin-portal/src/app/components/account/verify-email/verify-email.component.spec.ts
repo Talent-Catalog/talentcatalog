@@ -14,78 +14,66 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentFixture, fakeAsync, flush, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { VerifyEmailComponent } from './verify-email.component';
 import { UserService } from '../../../services/user.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { ActivatedRoute, Router } from '@angular/router'; // Import Router
-import { MockUser } from '../../../MockData/MockUser';
+import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
+import { of, throwError } from 'rxjs';
+import { By } from '@angular/platform-browser';
 
 describe('VerifyEmailComponent', () => {
   let component: VerifyEmailComponent;
   let fixture: ComponentFixture<VerifyEmailComponent>;
   let userServiceSpy: jasmine.SpyObj<UserService>;
-  let authServiceSpy: jasmine.SpyObj<AuthenticationService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
 
   beforeEach(async () => {
-    const userServiceSpyObj = jasmine.createSpyObj('UserService', ['get', 'sendVerifyEmail', 'checkEmailVerificationToken', 'verifyEmail']);
-    const authServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+    // Create spies for services
+    userServiceSpy = jasmine.createSpyObj('UserService', ['sendVerifyEmail']);
+    activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close']);
 
     await TestBed.configureTestingModule({
       declarations: [VerifyEmailComponent],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, RouterTestingModule],
       providers: [
-        { provide: UserService, useValue: userServiceSpyObj },
-        { provide: AuthenticationService, useValue: authServiceSpyObj },
-        { provide: Router, useValue: routerSpyObj },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'testToken' } } } }
+        { provide: UserService, useValue: userServiceSpy },
+        { provide: NgbActiveModal, useValue: activeModalSpy }
       ]
     }).compileComponents();
-
-    userServiceSpy = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
-    authServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VerifyEmailComponent);
     component = fixture.componentInstance;
-    authServiceSpy.getLoggedInUser.and.returnValue(new MockUser());
-    userServiceSpy.get.and.returnValue(of(new MockUser()));
-    userServiceSpy.checkEmailVerificationToken.and.returnValue(of({"token": "eb154587-2c91-4be9-9bcd-f15450474d24"}));
-    userServiceSpy.verifyEmail.and.returnValue(of({}));
+    component.userEmail = 'test@example.com';
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize user email on ngOnInit', () => {
-    component.ngOnInit();
-    expect(component.userEmail).toBe('john.doe@example.com');
+  it('should display the correct email in the modal', () => {
+    const emailText = fixture.debugElement.query(By.css('p')).nativeElement.textContent;
+    expect(emailText).toContain('test@example.com');
   });
 
-  it('should send verification email and handle success', waitForAsync(() => {
+  it('should update state to "emailSent" on success', () => {
     userServiceSpy.sendVerifyEmail.and.returnValue(of({}));
-    component.sendVerifyEmail('testToken');
-    fixture.whenStable().then(() => {
-      expect(component.emailSent).toBeTrue();
-      expect(component.state).toBe('emailSent');
-    });
-  }));
+    component.sendVerifyEmail();
+    fixture.detectChanges();
+    expect(component.state).toBe('emailSent');
+    expect(component.emailSent).toBeTrue();
+  });
 
-  it('should handle error when sending verification email', waitForAsync(() => {
-    userServiceSpy.sendVerifyEmail.and.returnValue(throwError(() => new Error('Error occurred')));
-    component.sendVerifyEmail('testToken');
-    fixture.whenStable().then(() => {
-      expect(component.state).toBe('error');
-    });
-  }));
+  it('should update state to "error" on failure', () => {
+    userServiceSpy.sendVerifyEmail.and.returnValue(throwError(() => new Error('Email failed')));
+    component.sendVerifyEmail();
+    fixture.detectChanges();
+    expect(component.state).toBe('error');
+  });
+
+  it('should close modal when closeModal is called', () => {
+    component.closeModal();
+    expect(activeModalSpy.close).toHaveBeenCalled();
+  });
 });

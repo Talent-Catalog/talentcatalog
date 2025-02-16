@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {Title} from "@angular/platform-browser";
 import {filter, map} from "rxjs/operators";
@@ -22,7 +22,8 @@ import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
-import { Toast } from 'bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {VerifyEmailComponent } from "./account/verify-email/verify-email.component";
 import { UserService} from "../services/user.service";
 
 @Component({
@@ -34,19 +35,17 @@ export class AppComponent implements OnInit {
 
   showHeader: boolean;
   emailVerified: boolean;
-  userId: number = null;
-  token: string;
+  user: User;
+  showToast: boolean = false;
   private loggedInUserSubcription: Subscription;
-
-  @ViewChild('toastElement', { static: false }) toastElement!: ElementRef;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private authenticationService: AuthenticationService,
     private chatService: ChatService,
     private router: Router,
-    private route: ActivatedRoute,
     private titleService: Title,
+    private modalService: NgbModal,
     private userService: UserService
   ) {
   }
@@ -55,12 +54,13 @@ export class AppComponent implements OnInit {
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
         this.onChangedLogin(user);
-        this.userId = user.id;
-        if (this.userId) {
-          this.isEmailVerified(this.userId);
+        this.user = user;
+        if (this.user.id) {
+          this.isEmailVerified(this.user.id);
         }
       }
     )
+
     this.subscribeForTitleChanges()
   }
 
@@ -71,21 +71,6 @@ export class AppComponent implements OnInit {
     //If logged out...
     if (user == null) {
       this.onLogout();
-    }
-  }
-
-  ngAfterViewInit() {
-    if (!this.emailVerified && !this.token) {
-      setTimeout(() => {
-        if (this.toastElement) {
-          const toast = new Toast(this.toastElement.nativeElement, {
-            autohide: false // Disable auto-hide
-          });
-          if (!this.token) {
-            toast.show();
-          }
-        }
-      }, 500); // Small delay to ensure the DOM is ready
     }
   }
 
@@ -128,22 +113,25 @@ export class AppComponent implements OnInit {
     );
   }
 
-  openModal(modal: any) {
-    modal.openModal();
+  openModal() {
+    const verifyEmailModal = this.modalService.open(VerifyEmailComponent, {
+      centered: true
+    });
+    verifyEmailModal.componentInstance.userEmail = this.user.email;
+  }
+
+  hideToast() {
+    this.showToast = false;
   }
 
   private isEmailVerified(userId: number): any {
     this.userService.get(userId).subscribe(
       (user) => {
         this.emailVerified = user.emailVerified;
-        this.token = this.route.snapshot.queryParamMap.get('token');
-      },
-      (error) => {
-        this.emailVerified = false;
-        console.error('Error fetching user data', error);
+        if (this.emailVerified === false) {
+          this.showToast = true;
+        }
       }
     );
   }
 }
-
-

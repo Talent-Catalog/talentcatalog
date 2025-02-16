@@ -21,12 +21,4 @@ public class ExpiredEmailTokenException extends ServiceException {
     public ExpiredEmailTokenException() {
         super("expired_email_verification_token", "The email verification token has expired");
     }
-
-    public ExpiredEmailTokenException(String message) {
-        super("expired_email_verification_token", message);
-    }
-
-    public ExpiredEmailTokenException(Throwable cause) {
-        super("expired_email_verification_token", "The  email verification token has expired", cause);
-    }
 }

@@ -91,8 +91,6 @@ export const MockJob: Job = {
     partner: null,
     name: 'John Doe',
     emailVerified: false,
-    emailVerificationToken: 'mockToken',
-    emailVerificationTokenIssuedDate: new Date('2024-05-01').getTime()
   },
   country: { id: 1, name: 'USA', status: 'Active', translatedName: 'United States' },
   employerEntity: { id: 1, name: 'ABC Company', description: 'Some description', hasHiredInternationally: true, sfId: '123', website: 'https://example.com' },
@@ -156,15 +154,11 @@ export const MockJob: Job = {
     partner: null,
     name: 'Jane Smith',
     emailVerified: false,
-    emailVerificationToken: 'mockToken',
-    emailVerificationTokenIssuedDate: new Date('2024-05-01').getTime()
   },
   publishedDate: new Date(),
   jobCreator: { id: 3, name: 'XYZ Partner', abbreviation: 'XYZ', websiteUrl: 'https://xyzpartner.com' },
   stage: JobOpportunityStage.prospect,
-  starringUsers: [{ id: 4, username: 'alicejohnson', firstName: 'Alice', lastName: 'Johnson', email: 'alicejohnson@example.com', role: 'limited', jobCreator: false, approver: null, purpose: 'Some purpose', readOnly: false, sourceCountries: [], status: 'Active', createdDate: Date.now(), createdBy: null, updatedDate: Date.now(), lastLogin: Date.now(), usingMfa: true, mfaConfigured: false, partner: null, name: 'Alice Johnson',emailVerified: false,
-    emailVerificationToken: 'mockToken',
-    emailVerificationTokenIssuedDate: new Date('2024-05-01').getTime() }],
+  starringUsers: [{ id: 4, username: 'alicejohnson', firstName: 'Alice', lastName: 'Johnson', email: 'alicejohnson@example.com', role: 'limited', jobCreator: false, approver: null, purpose: 'Some purpose', readOnly: false, sourceCountries: [], status: 'Active', createdDate: Date.now(), createdBy: null, updatedDate: Date.now(), lastLogin: Date.now(), usingMfa: true, mfaConfigured: false, partner: null, name: 'Alice Johnson',emailVerified: false,}],
   submissionDueDate: new Date(),
    jobOppIntake: { employerCostCommitment: 'High', recruitmentProcess: 'Some process', minSalary: 50000, occupationCode: '123', salaryRange: '50k - 100k', locationDetails: 'Some location details', location: 'Some location', visaPathways: 'Some pathways', benefits: 'Some benefits', educationRequirements: 'Some education requirements', languageRequirements: 'Some language requirements', employmentExperience: 'Some employment experience', skillRequirements: 'Some skill requirements' }
 };

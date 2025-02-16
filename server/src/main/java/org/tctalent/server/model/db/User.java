@@ -329,8 +329,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private boolean emailVerified;
 
 
-    // New getters and setters for email verification
-
     public String getEmailVerificationToken() {
         return emailVerificationToken;
     }

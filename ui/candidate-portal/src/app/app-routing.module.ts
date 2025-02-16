@@ -26,7 +26,6 @@ import {RegisterComponent} from './components/register/register.component';
 import {AuthGuard} from './services/auth.guard';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 import {ViewCandidateComponent} from "./components/profile/view/view-candidate.component";
-import { VerifyEmailComponent } from './components/account/verify-email/verify-email.component';
 
 const routes: Routes = [
   {
@@ -71,11 +70,6 @@ const routes: Routes = [
     component: EditCandidateComponent,
     canActivate: [AuthGuard],
     title: 'Edit Profile'
-  },
-  {
-    path: 'verify-email',
-    component: VerifyEmailComponent,
-    title: 'Verify Email'
   },
   /* Keep wildcard redirect at the bottom of the array */
   {

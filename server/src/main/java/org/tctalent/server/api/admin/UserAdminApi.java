@@ -29,13 +29,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.exception.ExpiredTokenException;
-import org.tctalent.server.exception.InvalidPasswordFormatException;
-import org.tctalent.server.exception.InvalidPasswordTokenException;
-import org.tctalent.server.exception.InvalidSessionException;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.ReCaptchaInvalidException;
-import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.exception.*;
 import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
@@ -50,9 +44,9 @@ import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
-import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
 
 @RestController
 @RequestMapping("/api/admin/user")
@@ -129,23 +123,19 @@ public class UserAdminApi {
         userService.resetPassword(request);
     }
 
-    @PostMapping(value="verify-email")
+    @PostMapping("/verify-email")
     public void sendVerifyEmailRequest(@RequestBody SendVerifyEmailRequest request)
             throws NoSuchObjectException, ReCaptchaInvalidException {
         userService.sendVerifyEmailRequest(request);
     }
 
-    @PostMapping(value="check-email-verification-token")
-    public void checkEmailVerificationToken(@RequestBody CheckEmailVerificationTokenRequest request)
-            throws ExpiredTokenException, InvalidEmailVerificationTokenException {
-        userService.checkEmailVerificationToken(request);
-    }
-
-    @PostMapping(value="verify-email-token")
-    public void verifyEmail(@RequestBody VerifyEmailRequest request) {
+    @GetMapping("/verify-email/{token}")
+    public void verifyEmail(@PathVariable("token") String token) throws ExpiredEmailTokenException, InvalidEmailVerificationTokenException {
+        VerifyEmailRequest request = new VerifyEmailRequest();
+        request.setToken(token);
         userService.verifyEmail(request);
+        System.out.println(token);
     }
-
 
     @PutMapping("/mfa-reset/{id}")
     public void mfaReset(@PathVariable("id") long id) {
@@ -179,8 +169,6 @@ public class UserAdminApi {
                 .add("mfaConfigured")
                 .add("partner", PartnerDtoHelper.getPartnerDto())
                 .add("emailVerified")
-                .add("emailVerificationToken")
-                .add("emailVerificationTokenIssuedDate")
                 ;
     }
 

@@ -16,12 +16,8 @@
 
 package org.tctalent.server.exception;
 
-public class InvalidEmailVerificationTokenException extends RuntimeException {
+public class InvalidEmailVerificationTokenException extends ServiceException {
     public InvalidEmailVerificationTokenException() {
-        super("Invalid email verification token.");
-    }
-
-    public InvalidEmailVerificationTokenException(String message) {
-        super(message);
+        super("invalid_email_token", "The email token is not valid");
     }
 }

@@ -79,16 +79,8 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/reset-password`, request);
   }
 
-  sendVerifyEmail(request:SendVerifyEmailRequest) {
+  sendVerifyEmail(request: SendVerifyEmailRequest) {
     return this.http.post(`${this.apiUrl}/verify-email`, request);
   }
 
-  checkEmailVerificationToken(request: { token: string }) {
-    return this.http.post(`${this.apiUrl}/check-email-verification-token`, request);
-  }
-
-  verifyEmail(request: { token: string }) {
-    return this.http.post(`${this.apiUrl}/verify-email-token`, request);
-  }
-  
 }

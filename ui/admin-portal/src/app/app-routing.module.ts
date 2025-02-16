@@ -45,7 +45,6 @@ import {
   UserChangePasswordComponent
 } from "./components/account/user-change-password/user-change-password.component";
 import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
-import { VerifyEmailComponent } from './components/account/verify-email/verify-email.component';
 
 const routes: Routes = [
   {
@@ -224,11 +223,6 @@ const routes: Routes = [
       hideHeader: true,
       title: 'TC Reset Password'
     }
-  },
-  {
-    path: 'verify-email',
-    component: VerifyEmailComponent,
-    title: 'Verify Email'
   },
   {
     path: '**',

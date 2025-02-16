@@ -90,11 +90,10 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 
 
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
-import org.tctalent.server.request.user.emailverify.CheckEmailVerificationTokenRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
-import org.tctalent.server.exception.VerifyEmailSendFailedException;
 import org.tctalent.server.exception.ExpiredEmailTokenException;
+
 
 @Service
 @Slf4j
@@ -542,7 +541,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void sendVerifyEmailRequest(SendVerifyEmailRequest request) {
         User user = userRepository.findByEmailIgnoreCase(request.getEmail());
         if (user != null) {
@@ -552,7 +551,7 @@ public class UserServiceImpl implements UserService {
 
             try {
                 emailHelper.sendVerificationEmail(user);
-            } catch (VerifyEmailSendFailedException e) {
+            } catch (EmailSendFailedException e) {
                 LogBuilder.builder(log)
                         .action("SendVerificationEmail")
                         .message("Unable to send verification email for " + user.getEmail())
@@ -567,35 +566,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void checkEmailVerificationToken(CheckEmailVerificationTokenRequest request) {
-        User user = userRepository.findByEmailVerificationToken(request.getToken());
-
-        if (user == null) {
-            throw new InvalidEmailVerificationTokenException();
-        } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(24))) {
-            throw new ExpiredEmailTokenException();
-        }
-
-        log.info("Email verification token is valid.");
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void verifyEmail(VerifyEmailRequest request) {
-        User user = userRepository.findByEmailVerificationToken(request.getToken());
-        log.info("Received verify email request: {}", request);
-        log.info("Email verification token: {}", user.getEmailVerificationToken());
-        log.info("Email verification token issued date: {}", user.getEmailVerificationTokenIssuedDate());
+        try {
+            User user = userRepository.findByEmailVerificationToken(request.getToken());
 
-        if (user != null) {
+            if (user == null) {
+                throw new InvalidEmailVerificationTokenException();
+            } else if (OffsetDateTime.now().isAfter(user.getEmailVerificationTokenIssuedDate().plusHours(24))) {
+                emailHelper.sendCompleteVerificationEmail(user, false);
+                throw new ExpiredEmailTokenException();
+            }
+
+            log.info("Email verification token is valid.");
+            log.info("Received verify email request: {}", request);
             log.info("Email verification token: {}", user.getEmailVerificationToken());
             log.info("Email verification token issued date: {}", user.getEmailVerificationTokenIssuedDate());
-            log.info("Email is verified and it is updated in the database.");
 
             user.setEmailVerified(true);
             user.setEmailVerificationTokenIssuedDate(user.getEmailVerificationTokenIssuedDate());
             user.setEmailVerificationToken(user.getEmailVerificationToken());
             userRepository.save(user);
+            emailHelper.sendCompleteVerificationEmail(user, true);
+        } catch (Exception e) {
+            log.error("An unexpected error occurred during email verification", e);
+            throw new ServiceException("email_verification_error", "An unexpected error occurred during email verification", e);
         }
     }
 
