@@ -20,5 +20,6 @@ public enum DtoType {
   MINIMAL,
   PREVIEW,
   FULL,
-  EXTENDED
+  EXTENDED,
+  API
 }
