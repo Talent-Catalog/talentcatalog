@@ -205,9 +205,18 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                 sfJobOpp = salesforceJobOppService.updateJob(sfJobOpp);
             }
 
+            CandidateOpportunityParams oppParams =
+                candidateOppParams != null ? candidateOppParams : new CandidateOpportunityParams();
+            if (candidateOppParams == null) {
+                oppParams.setStage(CandidateOpportunityStage.prospect);
+                oppParams.setNextStep("Contact candidate and do intake");
+                oppParams.setNextStepDueDate(LocalDate.now().plusWeeks(2));
+            }
+
             //Create/update opportunities on Salesforce first
             salesforceService.createOrUpdateCandidateOpportunities(
-                orderedCandidates, candidateOppParams, sfJobOpp);
+                orderedCandidates, oppParams, sfJobOpp);
+
             //Then update opps on local DB. SF opps already created, which will allow us to
             //add sfId to created opps on the local db.
             createOrUpdateCandidateOpportunities(
