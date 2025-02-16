@@ -38,6 +38,7 @@ import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PostService;
 import org.tctalent.server.service.db.TranslationService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.TranslationHelper;
 
 @Service
@@ -45,6 +46,7 @@ import org.tctalent.server.util.TranslationHelper;
 @Slf4j
 public class OppNotificationServiceImpl implements OppNotificationService {
     private final ChatPostService chatPostService;
+    private final EmailHelper emailHelper;
     private final JobChatService jobChatService;
     private final NextStepProcessingService nextStepProcessingService;
     private final PostService postService;
@@ -288,13 +290,13 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         Candidate candidate = opp.getCandidate();
         String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
-        //TODO JC We need a more personal message to candidate about Pathway Club
-        //TODO JC Also the candidate does not need to receive the same message on all their chats.
+        //Email candidate
+        emailHelper.sendOfferAcceptedEmail(candidate.getUser());
+
         Post autoPostAcceptedJobOffer = postService.createPost(
             "The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
                 + opp.getJobOpp().getName() + " and is now a member of the <a href=\"https://pathwayclub.org/about\" target=\"_blank\">Pathway Club</a>."
         );
-
 
         // AUTO CHAT TO PROSPECT CHAT
         JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
@@ -327,4 +329,5 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         // Publish the chat post
         chatPostService.publishChatPost(chatPost);
     }
+
 }

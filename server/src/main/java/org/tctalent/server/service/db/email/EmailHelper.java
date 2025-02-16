@@ -310,6 +310,44 @@ public class EmailHelper {
         }
     }
 
+    /**
+     * Sends email to candidate user when they have accepted a job offer.
+     * <p/>
+     * The purpose of the email is to congratulate them and introduce them to services that may be
+     * useful to them now that they have the job.
+     * @param user Candidate user
+     * @throws EmailSendFailedException If there is a problem sending the email
+     */
+    public void sendOfferAcceptedEmail(User user) throws EmailSendFailedException {
+
+        String emailTo = user.getEmail();
+        String emailCc = "membership@pathwayclub.org";
+        String displayName = user.getDisplayName();
+        Partner partner = user.getPartner();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("partner", partner);
+
+            subject = "Talent Catalog - Congratulations and next steps";
+            bodyText = textTemplateEngine.process("job-accepted", ctx);
+            bodyHtml = htmlTemplateEngine.process("job-accepted", ctx);
+
+            emailSender.sendAsync(emailTo, emailCc, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("OfferAcceptedEmail")
+                .message("error sending offer accepted email")
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
     private String currentYear() {
         return LocalDate.now().getYear() + "";
     }

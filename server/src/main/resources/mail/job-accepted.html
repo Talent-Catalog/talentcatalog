@@ -1,0 +1,61 @@
+<!--
+  ~ Copyright (c) 2025 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Job Accepted</title>
+</head>
+<body>
+<div>
+  <p>Dear <span th:text="${displayName}"></span>,</p>
+  <p>
+    <strong>Congratulations on getting your job!</strong>
+  </p>
+  <p>
+    You are now a member of <a href="https://pathwayclub.org/">Pathway Club</a> - a community of people like you who have used their
+    own skills and the pathway of international employment to find new lives for themselves.
+  </p>
+  <p>
+    Pathway Club is dedicated to building that community and empowering it to help others.
+    You can read more about Pathway Club on the website
+    <a href="https://pathwayclub.org/">pathwayclub.org</a>.
+  </p>
+
+  <p>
+    You will soon receive an email from Pathway Club inviting you to join Pathway Club's global
+    Slack where you will find other people who have taken the same pathway as you, and who can help
+    you on your journey.
+  </p>
+
+  <p>
+    Pathway Club works closely with your local Talent Catalog partner
+    <span th:text="${partner.getAbbreviation()} + ' ' + ${partner.getWebsiteUrl()}"></span>.
+    This is a "no reply" email. So if you have any questions about Pathway Club, please
+    contact <span th:text="${partner.getAbbreviation()}"></span>. They are still your main contact.
+    Pathway Club can also provide financial assistance if necessary but that kind of assistance can
+    only be provided through your local partner.
+  </p>
+
+  <p>
+    Members of Pathway Club look forward to seeing you on our Slack where they can welcome you
+    personally and help you where they can.
+  </p>
+</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+Dear [(${displayName})],
+
+Congratulations on getting your job!
+
+You are now a member of Pathway Club - a community of people like you who have used their own skills and the pathway of international employment to find new lives for themselves.
+
+Pathway Club is dedicated to building that community and empowering it to help others.
+You can read more about Pathway Club on the website pathwayclub.org.
+
+You will soon receive an email from Pathway Club inviting you to join Pathway Club's global Slack where you will find other people who have taken the same pathway as you, and who can help you on your journey.
+
+Pathway Club works closely with your local Talent Catalog partner [(${partner.getAbbreviation()})] [(${partner.getWebsiteUrl()})].
+This is a "no reply" email. So if you have any questions about Pathway Club, please contact [(${partner.getAbbreviation()})]. They are still your main contact.
+Pathway Club can also provide financial assistance if necessary but that kind of assistance can only be provided through your local partner.
+
+Members of Pathway Club look forward to seeing you on our Slack where they can welcome you personally and help you where they can.
