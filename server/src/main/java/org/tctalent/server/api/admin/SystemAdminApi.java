@@ -117,8 +117,6 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.DuolingoApiService;
-import org.tctalent.server.service.db.DuolingoCouponService;
-import org.tctalent.server.service.db.DuolingoExamService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
@@ -210,8 +208,6 @@ public class SystemAdminApi {
     @Value("${environment}")
     private String environment;
     private final DuolingoApiService duolingoApiService;
-    private final DuolingoExamService duolingoExamService;
-    private final DuolingoCouponService duolingoCouponService;
 
     @Autowired
     public SystemAdminApi(
@@ -235,8 +231,7 @@ public class SystemAdminApi {
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
         TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
         SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService,
-        DuolingoCouponService duolingoCouponService
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService
         ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
@@ -271,8 +266,6 @@ public class SystemAdminApi {
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
-      this.duolingoExamService = duolingoExamService;
-      this.duolingoCouponService = duolingoCouponService;
     }
 
     @GetMapping("set_public_ids")
