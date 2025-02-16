@@ -158,6 +158,10 @@ export class GeneralTranslationsComponent implements OnInit {
     return (!value || /^\s*$/.test(value));
   }
 
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
   }
@@ -170,6 +174,7 @@ export class GeneralTranslationsComponent implements OnInit {
     }
   }
 }
+
 
 const ALL_FIELDS = {
     "HEADER": {
