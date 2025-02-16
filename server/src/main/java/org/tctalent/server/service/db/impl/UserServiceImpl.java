@@ -314,9 +314,7 @@ public class UserServiceImpl implements UserService {
             user.setEmailVerified(false);
             user.setEmailVerificationToken(null);
             user.setEmailVerificationTokenIssuedDate(null);
-        } else {
-            // Email is not updated, no need to reset email verification
-        }
+        } 
     }
 
     @Override

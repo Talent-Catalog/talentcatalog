@@ -1214,7 +1214,6 @@ public class CandidateServiceImpl implements CandidateService {
         // Check update request for a duplicate email or phone number
         validateContactRequest(user, request);
 
-        // Check and reset email verification if email is updated
         checkAndResetEmailVerification(user, request.getEmail());
         user.setEmail(request.getEmail());
         user = userRepository.save(user);
