@@ -19,8 +19,6 @@ package org.tctalent.server.request.preset;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Represents the request payload for requesting a guest token from the Preset API.
@@ -49,7 +47,7 @@ public class PresetGuestTokenRequest {
 
   private PresetUser user;
   private List<PresetResource> resources;
-  private List<Object> rls;
+  private List<PresetRlsRule> rls;
 
   @Getter
   @AllArgsConstructor
@@ -64,6 +62,13 @@ public class PresetGuestTokenRequest {
   public static class PresetResource {
     private String type;
     private String id;
+  }
+
+  @Getter
+  @AllArgsConstructor
+  public static class PresetRlsRule {
+    private Integer dataset;
+    private String clause;
   }
 
 }

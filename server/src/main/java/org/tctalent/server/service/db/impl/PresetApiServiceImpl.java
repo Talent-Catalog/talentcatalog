@@ -58,15 +58,11 @@ public class PresetApiServiceImpl implements PresetApiService {
     PresetGuestTokenRequest request = createPresetGuestTokenRequest(dashboardId);
 
     try {
-      return authClient.post()
-          .uri(getGuestTokenUri())
-          .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-          .bodyValue(request)
-          .retrieve()
-          .bodyToMono(PresetGuestTokenResponse.class)
-          .map(response -> response.getData().getPayload().getGuestToken())
-          .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))) // Retry x 3 w 2-sec delay
-          .block();
+      return attemptFetchGuestToken(request);
+    } catch (WebClientResponseException.Unauthorized e) {
+      log.warn("JWT token expired. Reinitializing and retrying...");
+      initialiseJwtToken();
+      return attemptFetchGuestToken(request); // Retry once with a new token
     } catch (Exception e) {
       LogBuilder.builder(log)
           .action("Fetch Preset Guest Token")
@@ -75,6 +71,20 @@ public class PresetApiServiceImpl implements PresetApiService {
       throw e;
     }
   }
+
+  private String attemptFetchGuestToken(PresetGuestTokenRequest request) {
+    return authClient.post()
+        .uri(getGuestTokenUri())
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+        .bodyValue(request)
+        .retrieve()
+        .bodyToMono(PresetGuestTokenResponse.class)
+        .map(response -> response.getData().getPayload().getGuestToken())
+        .retryWhen(Retry.backoff(3, Duration.ofSeconds(2)) // Retry x 3 w 2-sec delay
+            .filter(ex -> !(ex instanceof WebClientResponseException.Unauthorized))) // except if 401
+        .block();
+  }
+
 
   private String getGuestTokenUri() {
     return "teams/"
@@ -115,7 +125,7 @@ public class PresetApiServiceImpl implements PresetApiService {
   private PresetGuestTokenRequest createPresetGuestTokenRequest(String dashboardId) {
     // TODO create guest_user in Preset w appropriate permissions
     // TODO perhaps this username should be in the YML, or passed from front-end (if it will vary)
-    PresetUser user = new PresetUser("sam_schlicht", "Sam", "Schlicht");
+    PresetUser user = new PresetUser("guest_user", "Guest", "User");
     PresetResource resource = new PresetResource("dashboard", dashboardId);
 
     PresetGuestTokenRequest request =
