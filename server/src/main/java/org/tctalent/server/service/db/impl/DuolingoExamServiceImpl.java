@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -53,6 +54,7 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
   @Override
   @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
   @SchedulerLock(name = "DuolingoSchedulerTask_updateCandidateExams", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+  @Transactional
   public void updateCandidateExams() throws NoSuchObjectException {
     List<DuolingoDashboardResponse> dashboardResults = duolingoApiService.getDashboardResults(null, null);
 
@@ -79,7 +81,6 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
         else {
           // Create and save new exam record
          CandidateExam savedCandidateExam = createAndSaveNewExam(candidateOpt, newScore, newYear, newNotes, couponCode);
-
           // Create DuolingoExtraFields and save it
           duolingoExtraFieldsService.createOrUpdateDuolingoExtraFields(
               new DuolingoExtraFieldsRequest(
@@ -114,8 +115,6 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
     candidateExamRequest.setYear(Long.valueOf(newYear));
     candidateExamRequest.setNotes(newNotes);
     duolingoCouponService.updateCouponStatus(couponCode, DuolingoCouponStatus.REDEEMED);
-    candidateExamService.createExam(candidate.getId(), candidateExamRequest);
-
     CandidateExam savedCandidateExam = candidateExamService.createExam(candidate.getId(), candidateExamRequest);
     LogBuilder.builder(log)
         .action("UpdateCandidateExams")
