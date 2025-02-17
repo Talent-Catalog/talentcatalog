@@ -17,16 +17,16 @@
 package org.tctalent.server.service.db.impl;
 
 import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
@@ -74,43 +74,76 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional
-  public void importCoupons(MultipartFile file) {
+  public void importCoupons(MultipartFile file) throws ImportFailedException {
+    // List to hold the new coupons to be saved
     List<DuolingoCoupon> newCoupons = new ArrayList<>();
+    // Set to track already processed coupon codes to avoid duplicates
     Set<String> seenCouponCodes = new HashSet<>();
 
-    try (CSVReader reader = new CSVReader(
-        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
-      reader.readNext(); // Skip header row
-      String[] line;
+    try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+      // Read the header row of the CSV and map column names to their indices
+      String[] headers = reader.readNext();
+      if (headers == null) {
+        // Throw an exception if the CSV file does not have a header row
+        throw new ImportFailedException("CSV header is missing");
+      }
 
-      while ((line = reader.readNext()) != null) {
-        if (line.length < 6) {
-          continue; // Skip rows with insufficient data
-        }
+      // Map column names (after cleaning) to their respective indices
+      Map<String, Integer> columnIndex = new HashMap<>();
+      for (int i = 0; i < headers.length; i++) {
+        // Normalize the header (lowercase, strip whitespaces and BOM characters)
+        String normalizedHeader = headers[i].toLowerCase().replace("\uFEFF", "").strip();
+        columnIndex.put(normalizedHeader, i);
+      }
 
-        String couponCode = line[0];
-        if (seenCouponCodes.contains(couponCode)) {
-          continue; // Skip if already processed
-        }
-        seenCouponCodes.add(couponCode); // Mark code as processed
-
-        if (!couponRepository.existsByCouponCode(couponCode)) {
-          DuolingoCoupon coupon = new DuolingoCoupon();
-          coupon.setCouponCode(couponCode);
-          coupon.setExpirationDate(parseDate(line[2], FORMATTER1, FORMATTER2));
-          coupon.setDateSent(parseDate(line[3], FORMATTER1, FORMATTER2));
-          coupon.setCouponStatus(DuolingoCouponStatus.valueOf(getNullableValue(line[4]).toUpperCase()));
-          newCoupons.add(coupon);
+      // Validate that all required columns are present
+      String[] requiredColumns = {"coupon code", "expiration date", "date sent", "coupon status"};
+      for (String column : requiredColumns) {
+        if (!columnIndex.containsKey(column)) {
+          // Throw exception if any required column is missing
+          throw new ImportFailedException("Missing required column: " + column);
         }
       }
+
+      // Get the indices for each relevant column based on the header mapping
+      int couponCodeIndex = columnIndex.get("coupon code");
+      int expirationDateIndex = columnIndex.get("expiration date");
+      int dateSentIndex = columnIndex.get("date sent");
+      int couponStatusIndex = columnIndex.get("coupon status");
+
+      // Read each line in the CSV
+      String[] line;
+      while ((line = reader.readNext()) != null) {
+        // Ensure the line has the required number of columns
+        if (line.length >= headers.length) {
+          String couponCode = line[couponCodeIndex];
+          // Check if the coupon code is already processed (avoid duplicates)
+          if (!seenCouponCodes.contains(couponCode)) {
+            seenCouponCodes.add(couponCode);
+
+            // Check if the coupon code already exists in the database
+            if (!couponRepository.existsByCouponCode(couponCode)) {
+              // Create a new DuolingoCoupon object
+              DuolingoCoupon coupon = new DuolingoCoupon();
+              coupon.setCouponCode(couponCode);
+              coupon.setExpirationDate(parseDate(line[expirationDateIndex], FORMATTER1, FORMATTER2));
+              coupon.setDateSent(parseDate(line[dateSentIndex], FORMATTER1, FORMATTER2));
+              coupon.setCouponStatus(DuolingoCouponStatus.valueOf(getNullableValue(line[couponStatusIndex]).toUpperCase()));
+              newCoupons.add(coupon);
+            }
+          }
+        }
+      }
+
+      // Save all new coupons to the database if there are any
       if (!newCoupons.isEmpty()) {
         couponRepository.saveAll(newCoupons);
       }
-    } catch (IOException | CsvValidationException e) {
-      throw new ImportFailedException(e);
+
+    } catch (Exception e) {
+      throw new ImportFailedException("An error occurred during the import process: " + e.getMessage());
     }
   }
-
 
   @Override
   @Transactional
