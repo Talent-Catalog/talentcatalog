@@ -41,7 +41,7 @@ import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
+import org.tctalent.server.request.duolingo.UpdateDuolingoCouponStatusRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
