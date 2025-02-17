@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { DuolingoCouponService } from './duolingo-coupon.service';
+import {DuolingoCouponService} from './duolingo-coupon.service';
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {DuolingoCouponResponse, DuolingoCouponStatus} from "../model/duolingo-coupon";
 import {environment} from "../../environments/environment";
@@ -30,8 +30,20 @@ describe('DuolingoCouponService', () => {
   it('should retrieve coupons for a candidate', () => {
     const candidateId = 123;
     const mockCoupons: DuolingoCouponResponse[] = [
-      { id: 1, couponCode: 'COUPON123', duolingoCouponStatus:DuolingoCouponStatus.ASSIGNED,expirationDate:'01/12/2024',dateSent:'01/10/2020' },
-      { id: 2, couponCode: 'COUPON456', duolingoCouponStatus:DuolingoCouponStatus.AVAILABLE,expirationDate:'01/12/2024',dateSent:'01/10/2020'},
+      {
+        id: 1,
+        couponCode: 'COUPON123',
+        duolingoCouponStatus: DuolingoCouponStatus.ASSIGNED,
+        expirationDate: '01/12/2024',
+        dateSent: '01/10/2020'
+      },
+      {
+        id: 2,
+        couponCode: 'COUPON456',
+        duolingoCouponStatus: DuolingoCouponStatus.AVAILABLE,
+        expirationDate: '01/12/2024',
+        dateSent: '01/10/2020'
+      },
     ];
 
     service.getCouponsForCandidate(candidateId).subscribe(coupons => {

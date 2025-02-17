@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {DuolingoCouponService} from "../../../../../../services/duolingo-coupon.service";
+import {DuolingoCouponStatus} from "../../../../../../model/duolingo-coupon";
 
 @Component({
   selector: 'app-duolingo-coupon',
@@ -28,7 +29,7 @@ export class DuolingoCouponComponent implements OnInit {
     this.loading = true;
     this.duolingoCouponService.getCouponsForCandidate(this.candidate.id).subscribe(
       coupons => {
-        this.coupons = coupons.filter(coupon => coupon.duolingoCouponStatus === 'SENT').map(coupon => coupon.couponCode);
+        this.coupons = coupons.filter(coupon => coupon.duolingoCouponStatus === DuolingoCouponStatus.SENT).map(coupon => coupon.couponCode);
         this.loading = false;
       },
       error => {
