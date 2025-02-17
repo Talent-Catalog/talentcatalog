@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -35,6 +36,7 @@ public class DuolingoExtraFieldsServiceImpl implements DuolingoExtraFieldsServic
   private final CandidateExamRepository candidateExamRepository;
 
   @Override
+  @Transactional
   public void createOrUpdateDuolingoExtraFields(
       DuolingoExtraFieldsRequest request) throws NoSuchObjectException {
     DuolingoExtraFields duolingoExtraFields = new DuolingoExtraFields();
@@ -49,7 +51,6 @@ public class DuolingoExtraFieldsServiceImpl implements DuolingoExtraFieldsServic
     duolingoExtraFields.setConversationSubscore(request.getConversationSubscore());
     duolingoExtraFields.setComprehensionSubscore(request.getComprehensionSubscore());
     duolingoExtraFields.setProductionSubscore(request.getProductionSubscore());
-
     // Find the candidate exam by ID and set it
     CandidateExam candidateExam = candidateExamRepository.findById(request.getCandidateExamId())
         .orElseThrow(() -> new NoSuchObjectException("CandidateExam not found with ID: " + request.getCandidateExamId()));
