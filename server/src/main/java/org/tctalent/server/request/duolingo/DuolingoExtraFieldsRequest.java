@@ -14,11 +14,13 @@ package org.tctalent.server.request.duolingo;/*
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class DuolingoExtraFieldsRequest {
   private String certificateUrl;
   private String interviewUrl;
@@ -30,8 +32,4 @@ public class DuolingoExtraFieldsRequest {
   private int comprehensionSubscore;
   private int productionSubscore;
   private Long candidateExamId;
-
-  public DuolingoExtraFieldsRequest(String certificateUrl, String interviewUrl, String verificationDate, int percentScore, int scale, int literacySubscore, int conversationSubscore,
-      int comprehensionSubscore, int productionSubscore, Long id) {
-  }
 }
