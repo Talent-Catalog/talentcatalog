@@ -24,4 +24,7 @@ public class ImportFailedException extends ServiceException {
   public ImportFailedException(Throwable cause) {
     super("import_failed", "Data could not be imported", cause);
   }
+  public ImportFailedException(String message) {
+    super("import_failed", message);
+  }
 }
