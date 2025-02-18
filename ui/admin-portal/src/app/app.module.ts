@@ -564,6 +564,10 @@ import {
 } from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
 import {DetScoreValidationComponent} from './components/util/det-score-validation/det-score-validation.component';
 import {DuolingoAssignmentComponent} from './components/util/duolingo-assignment/duolingo-assignment.component';
+import { PresetEmbedComponent } from './components/intelligence/preset-embed/preset-embed.component';
+import { LoadingIndicatorComponent } from './components/util/loading-indicator/loading-indicator.component';
+import { ErrorDisplayComponent } from './components/util/error-display/error-display.component';
+import { IntelligenceComponent } from './components/intelligence/intelligence.component';
 
 @NgModule({
   declarations: [
@@ -889,7 +893,11 @@ import {DuolingoAssignmentComponent} from './components/util/duolingo-assignment
     DuplicatesDetailComponent,
     ImportDuolingoCouponsComponent,
     DetScoreValidationComponent,
-    DuolingoAssignmentComponent
+    DuolingoAssignmentComponent,
+    PresetEmbedComponent,
+    LoadingIndicatorComponent,
+    ErrorDisplayComponent,
+    IntelligenceComponent
   ],
   imports: [
     BrowserModule,
