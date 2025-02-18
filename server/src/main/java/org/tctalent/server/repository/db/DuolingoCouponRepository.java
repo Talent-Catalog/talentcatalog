@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -86,4 +87,18 @@ public interface DuolingoCouponRepository extends JpaRepository<DuolingoCoupon, 
    * @return a List of Coupons that are unassigned and match the specified status.
    */
   List<DuolingoCoupon> findByCandidateIsNullAndCouponStatus(DuolingoCouponStatus couponStatus);
+
+  /**
+   * Retrieves all coupons that have expired before the specified date
+   * and are not in the given list of statuses.
+   * <p>
+   * This method is useful for identifying coupons that should be marked as expired,
+   * while excluding those that are already expired or redeemed.
+   *
+   * @param expirationDate the expiration date to check against.
+   * @param couponStatuses a list of statuses to exclude from the result (e.g., EXPIRED, REDEEMED).
+   * @return a List of coupons that have expired and are not in the excluded statuses.
+   */
+  List<DuolingoCoupon> findAllByExpirationDateBeforeAndCouponStatusNotIn(
+      LocalDateTime expirationDate, List<DuolingoCouponStatus> couponStatuses);
 }

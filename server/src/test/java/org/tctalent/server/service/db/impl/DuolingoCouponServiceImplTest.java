@@ -197,4 +197,34 @@ class DuolingoCouponServiceImplTest {
 
     assertThrows(NoSuchObjectException.class, () -> couponService.findByCouponCode("code1"));
   }
+
+  @Test
+  @DisplayName("markCouponsAsExpired - updates expired coupons")
+  void testMarkCouponsAsExpired() {
+    // Arrange
+    DuolingoCoupon coupon1 = new DuolingoCoupon();
+    coupon1.setCouponCode("expired1");
+    coupon1.setExpirationDate(LocalDateTime.now().minusDays(1));
+    coupon1.setCouponStatus(DuolingoCouponStatus.AVAILABLE);
+
+    DuolingoCoupon coupon2 = new DuolingoCoupon();
+    coupon2.setCouponCode("expired2");
+    coupon2.setExpirationDate(LocalDateTime.now().minusDays(2));
+    coupon2.setCouponStatus(DuolingoCouponStatus.SENT);
+
+    List<DuolingoCoupon> expiredCoupons = List.of(coupon1, coupon2);
+
+    when(couponRepository.findAllByExpirationDateBeforeAndCouponStatusNotIn(
+        any(LocalDateTime.class), anyList()))
+        .thenReturn(expiredCoupons);
+
+    // Act
+    couponService.markCouponsAsExpired();
+
+    // Assert
+    assertEquals(DuolingoCouponStatus.EXPIRED, coupon1.getCouponStatus());
+    assertEquals(DuolingoCouponStatus.EXPIRED, coupon2.getCouponStatus());
+    verify(couponRepository, times(1)).saveAll(expiredCoupons);
+  }
+
 }
