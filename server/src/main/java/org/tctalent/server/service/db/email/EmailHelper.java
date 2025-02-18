@@ -27,6 +27,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -315,15 +316,17 @@ public class EmailHelper {
      * <p/>
      * The purpose of the email is to congratulate them and introduce them to services that may be
      * useful to them now that they have the job.
-     * @param user Candidate user
+     * @param candidate Candidate user
      * @throws EmailSendFailedException If there is a problem sending the email
      */
-    public void sendOfferAcceptedEmail(User user) throws EmailSendFailedException {
+    public void sendOfferAcceptedEmail(Candidate candidate) throws EmailSendFailedException {
 
+        User user = candidate.getUser();
         String emailTo = user.getEmail();
         String emailCc = "membership@pathwayclub.org";
         String displayName = user.getDisplayName();
         Partner partner = user.getPartner();
+        String candidateNumber = candidate.getCandidateNumber();
 
         String subject;
         String bodyText;
@@ -332,6 +335,7 @@ public class EmailHelper {
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("partner", partner);
+            ctx.setVariable("candidateNumber", candidateNumber);
 
             subject = "Talent Catalog - Congratulations and next steps";
             bodyText = textTemplateEngine.process("job-accepted", ctx);

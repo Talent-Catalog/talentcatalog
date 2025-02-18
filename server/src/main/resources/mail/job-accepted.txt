@@ -1,4 +1,4 @@
-Dear [(${displayName})],
+Dear [(${displayName})] - Talent Catalog candidate [(${candidateNumber})],
 
 Congratulations on getting your job!
 

@@ -291,7 +291,7 @@ public class OppNotificationServiceImpl implements OppNotificationService {
         String candidateNameAndNumber = constructCandidateNameNumber(opp.getCandidate());
 
         //Email candidate
-        emailHelper.sendOfferAcceptedEmail(candidate.getUser());
+        emailHelper.sendOfferAcceptedEmail(candidate);
 
         Post autoPostAcceptedJobOffer = postService.createPost(
             "The candidate " + candidateNameAndNumber + " has accepted the job offer from '"
