@@ -49,7 +49,6 @@ public class PresetApiServiceImpl implements PresetApiService {
     this.authClient = WebClient.builder().baseUrl(properties.getAuthBaseUrl()).build();
   }
 
-  // TODO fetch new token if 401 error
   public String fetchGuestToken(String dashboardId) throws WebClientResponseException {
     if (jwtToken == null) {
       initialiseJwtToken();
@@ -60,7 +59,10 @@ public class PresetApiServiceImpl implements PresetApiService {
     try {
       return attemptFetchGuestToken(request);
     } catch (WebClientResponseException.Unauthorized e) {
-      log.warn("JWT token expired. Reinitializing and retrying...");
+      LogBuilder.builder(log)
+          .action("Fetch Preset Guest Token")
+          .message("JWT token expired. Reinitializing and retrying...")
+          .logWarn();
       initialiseJwtToken();
       return attemptFetchGuestToken(request); // Retry once with a new token
     } catch (Exception e) {
@@ -112,7 +114,7 @@ public class PresetApiServiceImpl implements PresetApiService {
           .bodyToMono(PresetJwtTokenResponse.class)
           .map(response -> response.getPayload().getJwtToken())
           .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))) // Retry x 3 w 2-sec delay
-          .block(); // Blocking call to store token at startup
+          .block();
     } catch (Exception e) {
       LogBuilder.builder(log)
           .action("Fetch Preset JWT Token")
@@ -123,8 +125,6 @@ public class PresetApiServiceImpl implements PresetApiService {
   }
 
   private PresetGuestTokenRequest createPresetGuestTokenRequest(String dashboardId) {
-    // TODO create guest_user in Preset w appropriate permissions
-    // TODO perhaps this username should be in the YML, or passed from front-end (if it will vary)
     PresetUser user = new PresetUser("guest_user", "Guest", "User");
     PresetResource resource = new PresetResource("dashboard", dashboardId);
 
