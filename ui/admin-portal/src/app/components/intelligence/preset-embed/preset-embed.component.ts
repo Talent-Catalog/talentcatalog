@@ -23,7 +23,7 @@ export class PresetEmbedComponent {
         (token) => {
           embedDashboard({
             id: this.dashboardId,
-            supersetDomain: 'http://localhost:8088', // TODO from the embedded dialog
+            supersetDomain: 'https://987e2e02.us2a.app.preset.io/', // TODO from the embedded dialog
             mountPoint: document.getElementById('dashboard'),
             fetchGuestToken: () => token["token"],
             dashboardUiConfig: {

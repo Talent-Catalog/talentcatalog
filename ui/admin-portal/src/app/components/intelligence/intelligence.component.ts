@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 })
 export class IntelligenceComponent {
 
-  dashboardId: string; // TODO from the embedded dialog
+  dashboardId: string = 'ef47023f-ccb3-4bed-88c7-3bdf830ae15f';
 
 }

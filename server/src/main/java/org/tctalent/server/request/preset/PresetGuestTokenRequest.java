@@ -47,14 +47,14 @@ public class PresetGuestTokenRequest {
 
   private PresetUser user;
   private List<PresetResource> resources;
-  private List<PresetRlsRule> rls;
+  private List<Object> rls = List.of(); // If TC user can see dashboard, they see all of it
 
   @Getter
   @AllArgsConstructor
   public static class PresetUser {
     private String username;
-    private String firstName;
-    private String lastName;
+    private String first_name;
+    private String last_name;
   }
 
   @Getter
@@ -62,13 +62,6 @@ public class PresetGuestTokenRequest {
   public static class PresetResource {
     private String type;
     private String id;
-  }
-
-  @Getter
-  @AllArgsConstructor
-  public static class PresetRlsRule {
-    private Integer dataset;
-    private String clause;
   }
 
 }
