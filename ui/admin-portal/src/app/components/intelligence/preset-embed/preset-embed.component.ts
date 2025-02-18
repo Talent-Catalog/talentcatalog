@@ -16,6 +16,11 @@ export class PresetEmbedComponent {
 
   constructor(private presetEmbedService: PresetEmbedService) { }
 
+  ngOnInit(): void {
+    this.embedDashboard().subscribe();
+  }
+
+  // TODO team ID and dashboard ID should probably be fetched from server
   embedDashboard(): Observable<void> {
     this.loading = true;
     return new Observable((observer) => {
@@ -23,7 +28,7 @@ export class PresetEmbedComponent {
         (token) => {
           embedDashboard({
             id: this.dashboardId,
-            supersetDomain: 'https://987e2e02.us2a.app.preset.io/', // TODO from the embedded dialog
+            supersetDomain: 'https://987e2e02.us2a.app.preset.io', // TODO from the embedded dialog
             mountPoint: document.getElementById('dashboard'),
             fetchGuestToken: () => token["token"],
             dashboardUiConfig: {
@@ -37,8 +42,6 @@ export class PresetEmbedComponent {
             },
           });
           this.loading = false;
-          observer.next();
-          observer.complete();
         },
         (error) => {
           this.loading = false;
@@ -47,5 +50,7 @@ export class PresetEmbedComponent {
       );
     });
   }
+
+  // TODO https://docs.preset.io/docs/step-2-deployment#:~:text=Copy-,Tips,-SDK%20Configuration%3A
 
 }
