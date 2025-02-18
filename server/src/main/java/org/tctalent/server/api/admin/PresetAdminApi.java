@@ -19,6 +19,8 @@ package org.tctalent.server.api.admin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.service.db.PresetApiService;
@@ -31,9 +33,8 @@ public class PresetAdminApi {
 
   private final PresetApiService presetApiService;
 
-  @GetMapping(value = "guest-token")
-  // TODO String should perhaps be a request object, but perhaps not necessary
-  public String fetchGuestToken(String dashboardId) {
+  @PostMapping(value = "{dashboardId}/guest-token")
+  public String fetchGuestToken(@PathVariable("dashboardId") String dashboardId) {
     return presetApiService.fetchGuestToken(dashboardId);
   }
 
