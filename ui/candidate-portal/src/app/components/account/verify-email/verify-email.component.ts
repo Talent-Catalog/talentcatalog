@@ -39,9 +39,9 @@ export class VerifyEmailComponent {
     this.state = 'emailSent';
   }
 
-  private handleEmailSentError(error: any) {
-    console.error('Error sending verification email:', error);
-    this.error = error.message;
+  private handleEmailSentError(err: any) {
+    console.error('Error sending verification email:', err);
+    this.error = err.message || 'An error occurred while sending the verification email.';
     this.state = 'error';
   }
 }

@@ -10,7 +10,7 @@
                   <i class="fa-regular fa-envelope fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></i>
                     <h2>Verify your Email</h2>
                     <p>Click the button below to send a verification email to: <b>{{this.userEmail}}</b>.</p>
-                    <p>If you would like to update your email please click<a> here.</a></p>
+                    <p>If you would like to update your email please click<a [routerLink]="['/settings']"> here</a></p>
                     <button
                             class="btn btn-primary"
                             *ngIf="state === 'idle'"
