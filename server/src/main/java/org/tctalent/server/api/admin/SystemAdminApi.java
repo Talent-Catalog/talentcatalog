@@ -73,7 +73,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
-import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.Environment;
@@ -123,7 +122,6 @@ import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.NotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
-import org.tctalent.server.service.db.PresetApiService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -181,7 +179,6 @@ public class SystemAdminApi {
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
-    private final PresetApiService presetApiService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -234,8 +231,8 @@ public class SystemAdminApi {
             TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
             SavedSearchService savedSearchService, PartnerService partnerService,
             CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
-            PresetApiService presetApiService, DuolingoApiService duolingoApiService
-        ) {
+            DuolingoApiService duolingoApiService
+ ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -267,7 +264,6 @@ public class SystemAdminApi {
       this.savedSearchService = savedSearchService;
       this.partnerService = partnerService;
       this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
-      this.presetApiService = presetApiService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
     }

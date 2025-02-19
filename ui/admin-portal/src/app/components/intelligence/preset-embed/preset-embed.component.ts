@@ -1,6 +1,4 @@
-import {Component, Input} from '@angular/core';
-import { embedDashboard } from "@preset-sdk/embedded";
-import {Observable} from "rxjs";
+import {AfterViewInit, Component, Input} from '@angular/core';
 import {PresetEmbedService} from "../../../services/preset-embed.service";
 
 @Component({
@@ -8,49 +6,31 @@ import {PresetEmbedService} from "../../../services/preset-embed.service";
   templateUrl: './preset-embed.component.html',
   styleUrls: ['./preset-embed.component.scss']
 })
-export class PresetEmbedComponent {
-  @Input("dashboardId") dashboardId: string;
+export class PresetEmbedComponent implements AfterViewInit {
+  @Input() dashboardId: string;
 
   error: any;
-  loading: boolean;
+  loading = false;
 
-  constructor(private presetEmbedService: PresetEmbedService) { }
+  constructor(private presetEmbedService: PresetEmbedService) {}
 
-  ngOnInit(): void {
-    this.embedDashboard().subscribe();
-  }
+  ngAfterViewInit(): void {
+    if (!this.dashboardId) {
+      this.error = "Dashboard ID is required";
+      return;
+    }
 
-  // TODO team ID and dashboard ID should probably be fetched from server
-  embedDashboard(): Observable<void> {
     this.loading = true;
-    return new Observable((observer) => {
-      this.presetEmbedService.fetchGuestToken(this.dashboardId).subscribe(
-        (token) => {
-          embedDashboard({
-            id: this.dashboardId,
-            supersetDomain: 'https://987e2e02.us2a.app.preset.io', // TODO from the embedded dialog
-            mountPoint: document.getElementById('dashboard'),
-            fetchGuestToken: () => token["token"],
-            dashboardUiConfig: {
-              hideTitle: true,
-              hideChartControls: true,
-              hideTab: true,
-              filters: {
-                expanded: true,
-              },
-              urlParams: { }
-            },
-          });
-          this.loading = false;
-        },
-        (error) => {
-          this.loading = false;
-          this.error = error;
-        }
-      );
+    this.presetEmbedService.embedDashboard(
+      this.dashboardId,
+      'https://987e2e02.us2a.app.preset.io',
+      document.getElementById('dashboard'),
+    ).subscribe({
+      next: () => this.loading = false,
+      error: (err) => {
+        this.loading = false;
+        this.error = err;
+      }
     });
   }
-
-  // TODO https://docs.preset.io/docs/step-2-deployment#:~:text=Copy-,Tips,-SDK%20Configuration%3A
-
 }
