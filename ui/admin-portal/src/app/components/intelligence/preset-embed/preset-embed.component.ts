@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {PresetEmbedService} from "../../../services/preset-embed.service";
 
 @Component({
@@ -6,7 +6,7 @@ import {PresetEmbedService} from "../../../services/preset-embed.service";
   templateUrl: './preset-embed.component.html',
   styleUrls: ['./preset-embed.component.scss']
 })
-export class PresetEmbedComponent implements AfterViewInit {
+export class PresetEmbedComponent {
   @Input() dashboardId: string;
 
   error: any;
@@ -14,7 +14,7 @@ export class PresetEmbedComponent implements AfterViewInit {
 
   constructor(private presetEmbedService: PresetEmbedService) {}
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     if (!this.dashboardId) {
       this.error = "Dashboard ID is required";
       return;
@@ -23,7 +23,6 @@ export class PresetEmbedComponent implements AfterViewInit {
     this.loading = true;
     this.presetEmbedService.embedDashboard(
       this.dashboardId,
-      'https://987e2e02.us2a.app.preset.io',
       document.getElementById('dashboard'),
     ).subscribe({
       next: () => this.loading = false,

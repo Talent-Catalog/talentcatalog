@@ -11,6 +11,7 @@ import { embedDashboard } from "@preset-sdk/embedded";
 export class PresetEmbedService {
 
   private apiBaseUrl = environment.apiUrl + '/preset';
+  static readonly PRESET_DOMAIN: string = 'https://987e2e02.us2a.app.preset.io';
 
   constructor(private http: HttpClient) { }
 
@@ -20,14 +21,13 @@ export class PresetEmbedService {
 
   embedDashboard(
     dashboardId: string,
-    presetDomain: string,
     mountPoint: HTMLElement
   ): Observable<void> {
     return this.fetchGuestToken(dashboardId).pipe(
       map(token => {
         embedDashboard({
           id: dashboardId,
-          supersetDomain: presetDomain,
+          supersetDomain: PresetEmbedService.PRESET_DOMAIN,
           mountPoint,
           fetchGuestToken: () => token["token"],
           dashboardUiConfig: {

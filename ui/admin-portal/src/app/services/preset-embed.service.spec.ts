@@ -5,7 +5,7 @@ import {HttpClientTestingModule, HttpTestingController} from "@angular/common/ht
 import {environment} from "../../environments/environment";
 import {of} from "rxjs";
 
-fdescribe('PresetEmbedService',
+describe('PresetEmbedService',
   () => {
     let service: PresetEmbedService;
     let httpMock: HttpTestingController;
@@ -53,14 +53,13 @@ fdescribe('PresetEmbedService',
 
     it('should call fetchGuestToken() with the correct dashboardId',
       (done) => {
-        const mockPresetDomain = 'https://preset.example.com';
         const mockElement = document.createElement("div");
 
         // Spy on fetchGuestToken and return a mock token
         const fetchGuestTokenSpy =
           spyOn(service, 'fetchGuestToken').and.returnValue(of(mockGuestToken));
 
-        service.embedDashboard(mockDashboardId, mockPresetDomain, mockElement)
+        service.embedDashboard(mockDashboardId, mockElement)
         .subscribe(() => {
           // Ensure fetchGuestToken was called with the correct dashboardId
           expect(fetchGuestTokenSpy).toHaveBeenCalledWith(mockDashboardId);
