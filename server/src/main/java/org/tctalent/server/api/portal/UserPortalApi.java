@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.exception.InvalidPasswordFormatException;
 import org.tctalent.server.exception.InvalidPasswordTokenException;
@@ -41,11 +40,6 @@ import org.tctalent.server.service.db.CaptchaService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-
-import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
-import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
-import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
-import org.tctalent.server.exception.ExpiredEmailTokenException;
 
 @RestController
 @RequestMapping("/api/portal/user")
@@ -93,20 +87,6 @@ public class UserPortalApi {
         userService.resetPassword(request);
     }
 
-    @PostMapping("/verify-email")
-    public void sendVerifyEmailRequest(@RequestBody SendVerifyEmailRequest request)
-            throws NoSuchObjectException, ReCaptchaInvalidException {
-        userService.sendVerifyEmailRequest(request);
-    }
-
-    @GetMapping("/verify-email/{token}")
-    public void verifyEmail(@PathVariable("token") String token) throws ExpiredEmailTokenException, InvalidEmailVerificationTokenException {
-        VerifyEmailRequest request = new VerifyEmailRequest();
-        request.setToken(token);
-        userService.verifyEmail(request);
-        System.out.println(token);
-    }
-
     private DtoBuilder userBriefDto() {
         return new DtoBuilder()
                 .add("id")
@@ -117,8 +97,4 @@ public class UserPortalApi {
                 .add("emailVerified")
                 ;
     }
-
-
-
-
 }

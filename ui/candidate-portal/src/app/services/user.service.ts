@@ -28,7 +28,7 @@ import {SendVerifyEmailRequest} from "../model/user";
 export class UserService {
 
   apiUrl = environment.apiUrl + '/user';
-
+  adminUrl = environment.chatApiUrl + '/user';
   constructor(private http: HttpClient) {}
 
 
@@ -79,8 +79,9 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/reset-password`, request);
   }
 
+  // This endpoint connects to admin portal user
   sendVerifyEmail(request: SendVerifyEmailRequest) {
-    return this.http.post(`${this.apiUrl}/verify-email`, request);
+    return this.http.post(`${this.adminUrl}/verify-email`, request);
   }
 
 }

@@ -136,7 +136,6 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/portal/user/reset-password").permitAll()
                 .requestMatchers("/api/portal/language/system/**").permitAll()
                 .requestMatchers("/api/portal/language/translations/**").permitAll()
-                .requestMatchers("/api/portal/user/verify-email/**").permitAll()
                 .requestMatchers("/api/portal/**").hasAnyRole("USER")
                 .requestMatchers("/api/admin/auth").permitAll()
                 .requestMatchers("/api/admin/auth/**").permitAll()
@@ -152,7 +151,6 @@ public class SecurityConfiguration {
                 .requestMatchers("/app/**","/app/**").permitAll()
                 .requestMatchers("/topic", "/topic/**").permitAll()
                 .requestMatchers("/status**", "/status/**").permitAll()
-
 
 
                 // DELETE: DELETE SAVE SEARCHES

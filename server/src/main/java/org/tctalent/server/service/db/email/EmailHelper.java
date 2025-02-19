@@ -139,7 +139,8 @@ public class EmailHelper {
     public void sendVerificationEmail(User user) throws EmailSendFailedException {
         if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
             log.error("Invalid user or email. Cannot send verification email.");
-            throw new IllegalArgumentException("Invalid user or email. Cannot send verification email.");
+            throw new IllegalArgumentException(
+                "Invalid user or email. Cannot send verification email.");
         }
 
         String email = user.getEmail();
@@ -147,11 +148,10 @@ public class EmailHelper {
         String token = user.getEmailVerificationToken();
         Partner partner = user.getPartner();
 
-        log.info("Preparing to send verification email to user: {}", email);
-
         if (token == null || token.isEmpty()) {
             log.error("Email verification token is not generated for user: {}", email);
-            throw new IllegalStateException("Email verification token is not generated for user: " + email);
+            throw new IllegalStateException(
+                "Email verification token is not generated for user: " + email);
         }
 
         String subject;
@@ -159,60 +159,49 @@ public class EmailHelper {
         String bodyHtml;
 
         try {
-            log.info("Generating email content for user: {}", email);
 
             final Context ctx = new Context();
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
-            String verificationUrl = "https://tctalent.org/api/" +
-                    (user.getRole() == Role.user ? "portal" : "admin") +
-                    "/user/verify-email/" + token;
+            String verificationUrl = "https://tctalent.org/api/admin/user/verify-email/" + token;
             ctx.setVariable("verificationUrl", verificationUrl);
             ctx.setVariable("year", currentYear());
-
-
-            log.info("Verification URL for user {}: {}", email, verificationUrl);
 
             subject = "Talent Catalog - Verify Your Email";
 
             bodyText = textTemplateEngine.process("verify-email", ctx);
             bodyHtml = htmlTemplateEngine.process("verify-email", ctx);
 
-            log.info("Sending verification email to: {}", email);
-
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
-            log.info("Verification email sent successfully to: {}", email);
-
-        } catch (Exception e) {
-            log.error("Failed to send verification email to: {}", email, e);
-
             LogBuilder.builder(log)
-                    .action("SendVerificationEmail")
-                    .message("Error sending verification email to: " + email)
-                    .logError(e);
+                .action("SendVerificationEmail")
+                .message("Verification email sent successfully to: " + email)
+                .logInfo();
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("SendVerificationEmail")
+                .message("Error sending verification email to: " + email)
+                .logError(e);
 
             throw new EmailSendFailedException(e);
         }
     }
 
-    public void sendCompleteVerificationEmail(User user,  boolean isSuccess) throws EmailSendFailedException {
+    public void sendCompleteVerificationEmail(User user, boolean isSuccess)
+        throws EmailSendFailedException {
         if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
             log.error("Invalid user or email. Cannot send complete verification email.");
-            throw new IllegalArgumentException("Invalid user or email. Cannot send complete verification email.");
+            throw new IllegalArgumentException(
+                "Invalid user or email. Cannot send complete verification email.");
         }
-
         String email = user.getEmail();
         String displayName = user.getDisplayName();
-
-        log.info("Preparing to send Complete verification email to user: {}", email);
 
         String subject;
         String bodyText;
         String bodyHtml;
 
         try {
-            log.info("Generating email content for user: {}", email);
-
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
 
@@ -226,18 +215,17 @@ public class EmailHelper {
                 bodyHtml = htmlTemplateEngine.process("verify-email-failure", ctx);
             }
 
-            log.info("Sending verification email to: {}", email);
-
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
-            log.info("Verification email sent successfully to: {}", email);
+            LogBuilder.builder(log)
+                .action("SendVerificationEmail")
+                .message("Verification email sent successfully to: " + email)
+                .logInfo();
 
         } catch (Exception e) {
-            log.error("Failed to send verification email to: {}", email, e);
-
             LogBuilder.builder(log)
-                    .action("SendCompleteVerificationEmail")
-                    .message("Error sending complete verification email to: " + email)
-                    .logError(e);
+                .action("SendCompleteVerificationEmail")
+                .message("Error sending complete verification email to: " + email)
+                .logError(e);
 
             throw new EmailSendFailedException(e);
         }

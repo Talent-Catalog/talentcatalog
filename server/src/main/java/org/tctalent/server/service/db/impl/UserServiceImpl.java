@@ -87,13 +87,10 @@ import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.qr.EncodedQrImage;
-
-
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
 import org.tctalent.server.exception.ExpiredEmailTokenException;
-
 
 @Service
 @Slf4j
@@ -575,11 +572,6 @@ public class UserServiceImpl implements UserService {
                 emailHelper.sendCompleteVerificationEmail(user, false);
                 throw new ExpiredEmailTokenException();
             }
-
-            log.info("Email verification token is valid.");
-            log.info("Received verify email request: {}", request);
-            log.info("Email verification token: {}", user.getEmailVerificationToken());
-            log.info("Email verification token issued date: {}", user.getEmailVerificationTokenIssuedDate());
 
             user.setEmailVerified(true);
             user.setEmailVerificationTokenIssuedDate(user.getEmailVerificationTokenIssuedDate());

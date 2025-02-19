@@ -48,7 +48,6 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
@@ -140,7 +139,6 @@ public class UserAdminApi {
         VerifyEmailRequest request = new VerifyEmailRequest();
         request.setToken(token);
         userService.verifyEmail(request);
-        System.out.println(token);
     }
 
     @PutMapping("/mfa-reset/{id}")

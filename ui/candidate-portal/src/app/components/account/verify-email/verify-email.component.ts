@@ -11,7 +11,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 export class VerifyEmailComponent {
   state: 'idle' | 'loading' | 'emailSent' | 'error' = 'idle';
   emailSent: boolean = false;
-  error: boolean = false;
+  error: any;
   @Input() userEmail: string;
 
   constructor(
@@ -41,6 +41,7 @@ export class VerifyEmailComponent {
 
   private handleEmailSentError(error: any) {
     console.error('Error sending verification email:', error);
+    this.error = error.message;
     this.state = 'error';
   }
 }

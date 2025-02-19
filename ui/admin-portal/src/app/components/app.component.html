@@ -17,17 +17,7 @@
 <app-header *ngIf="showHeader"></app-header>
 
 <div class="container-fluid">
-  <div  class="text-start verify-email-button" >
-    <ngb-toast *ngIf="showToast"   [autohide]="false" class="position-fixed bottom-0 end-0" style="margin:2rem;">
-      <div class="d-flex" >
-        <div class="toast-body d-flex flex-column p-30">
-          <p>Verifying your email helps secure your account and ensures you receive important updates. Click here to </p>
-          <button class="btn btn-primary" (click)="openModal()">Verify your Email</button>
-        </div>
-        <button type="button" class="btn-close ms-auto me-2 mt-2" aria-label="Close" (click)="hideToast()"></button>
-      </div>
-    </ngb-toast>
-  </div>
+<app-verify-email-toast *ngIf="this.user" [showToast]="showToast"  [userEmail]="this.user.email"></app-verify-email-toast>
 
   <router-outlet></router-outlet>
 </div>

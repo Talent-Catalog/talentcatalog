@@ -22,8 +22,6 @@ import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {VerifyEmailComponent } from "./account/verify-email/verify-email.component";
 import { UserService} from "../services/user.service";
 
 @Component({
@@ -45,7 +43,6 @@ export class AppComponent implements OnInit {
     private chatService: ChatService,
     private router: Router,
     private titleService: Title,
-    private modalService: NgbModal,
     private userService: UserService
   ) {
   }
@@ -111,17 +108,6 @@ export class AppComponent implements OnInit {
         this.titleService.setTitle(title);
       }
     );
-  }
-
-  openModal() {
-    const verifyEmailModal = this.modalService.open(VerifyEmailComponent, {
-      centered: true
-    });
-    verifyEmailModal.componentInstance.userEmail = this.user.email;
-  }
-
-  hideToast() {
-    this.showToast = false;
   }
 
   private isEmailVerified(userId: number): any {
