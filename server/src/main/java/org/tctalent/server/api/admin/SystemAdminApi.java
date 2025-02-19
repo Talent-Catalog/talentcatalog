@@ -117,7 +117,6 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.DuolingoApiService;
-import org.tctalent.server.service.db.DuolingoExamService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
@@ -211,7 +210,6 @@ public class SystemAdminApi {
     @Value("${environment}")
     private String environment;
     private final DuolingoApiService duolingoApiService;
-    private final DuolingoExamService duolingoExamService;
 
     @Autowired
     public SystemAdminApi(
@@ -233,10 +231,11 @@ public class SystemAdminApi {
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-        SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
-        PresetApiService presetApiService, DuolingoApiService duolingoApiService, DuolingoExamService duolingoExamService) {
+            TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
+            SavedSearchService savedSearchService, PartnerService partnerService,
+            CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
+            PresetApiService presetApiService, DuolingoApiService duolingoApiService
+        ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -271,7 +270,6 @@ public class SystemAdminApi {
       this.presetApiService = presetApiService;
       countryForGeneralCountry = getExtraCountryMappings();
       this.duolingoApiService = duolingoApiService;
-      this.duolingoExamService = duolingoExamService;
     }
 
     @GetMapping("set_public_ids")
@@ -339,26 +337,6 @@ public class SystemAdminApi {
         return duolingoApiService.verifyScore(certificateId, birthdate);
     }
 
-  /**
-   * Scheduled task that updates candidate exams for Duolingo on a daily basis.
-   *
-   * This method is executed once a day at midnight GMT (00:00:00), and is locked using the
-   * SchedulerLock annotation to ensure that only one instance of the task is running at any
-   * given time. The lock is held for at least 23 hours and at most 23 hours to prevent overlapping
-   * executions if the task takes longer than expected.
-   *
-   * The task executes the updateCandidateExams method from the duolingoExamService to perform
-   * the necessary updates on candidate exams.
-   *
-   * @throws NoSuchObjectException if there is an issue with updating the exams, such as a missing
-   *         candidate or an invalid exam.
-   */
-  @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
-  @SchedulerLock(name = "DuolingoSchedulerTask_updateCandidateExams", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
-  @Transactional
-  public void updateCandidateExams() throws NoSuchObjectException {
-    duolingoExamService.updateCandidateExams();
-  }
 
     @GetMapping("flush_user_cache")
     public void flushUserCache() {
@@ -3182,14 +3160,6 @@ public class SystemAdminApi {
             // Return 500 Internal Server Error including error in body for display on frontend
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
-    }
-
-    // TODO purely for testing - delete once done
-    @GetMapping("test-preset-api")
-    void testPresetApi() {
-      LogBuilder.builder(log)
-          .message("Tokenage: " + presetApiService.fetchGuestToken("ef47023f-ccb3-4bed-88c7-3bdf830ae15f"))
-          .logInfo();
     }
 
 }
