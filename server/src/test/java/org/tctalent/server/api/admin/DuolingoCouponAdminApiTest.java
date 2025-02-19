@@ -39,7 +39,7 @@ import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.DuolingoCouponService;
-import org.tctalent.server.request.duolingocoupon.UpdateDuolingoCouponStatusRequest;
+import org.tctalent.server.request.duolingo.UpdateDuolingoCouponStatusRequest;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.TaskService;

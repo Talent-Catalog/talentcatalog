@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.duolingocoupon;
+package org.tctalent.server.request.duolingo;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
