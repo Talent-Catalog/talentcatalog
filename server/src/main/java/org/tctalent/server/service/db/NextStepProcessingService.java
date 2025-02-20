@@ -34,6 +34,6 @@ public interface NextStepProcessingService {
      * @param requestedNextStep the user-entered value, prior to audit stamp
      * @return processed Next Step String
      */
-    String processNextStep(@Nullable AbstractOpportunity opp, String requestedNextStep);
+    String processNextStep(@Nullable AbstractOpportunity opp, @Nullable String requestedNextStep);
 
 }

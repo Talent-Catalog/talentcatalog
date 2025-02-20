@@ -50,6 +50,7 @@ export interface Candidate extends HasId {
   candidateNumber: string;
   publicId?: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -454,6 +455,10 @@ export interface UpdateCandidateOppsRequest {
 export interface UpdateCandidateListOppsRequest {
   savedListId: number;
   candidateOppParams?: CandidateOpportunityParams;
+}
+
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
 }
 
 export interface UpdateCandidateShareableNotesRequest {

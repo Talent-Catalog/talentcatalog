@@ -43,6 +43,7 @@ export class MockCandidate implements Candidate {
   id: number = 1;
   candidateNumber: string = "123456";
   status: string = "active";
+  allNotifications = false;
   muted: boolean = false;
   gender: string = Gender.male;
   dob: Date = new Date('1990-01-01');

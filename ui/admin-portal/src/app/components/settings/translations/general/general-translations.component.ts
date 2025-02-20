@@ -571,7 +571,9 @@ const ALL_FIELDS = {
         "ADDITIONALINFO": null,
         "SURVEY": null,
         "SURVEYCOMMENT": null,
-        "LINKEDIN": null
+        "LINKEDIN": null,
+        "NOTIFICATION_PREFERENCE": null,
+        "NOTIFICATION_PREFERENCE_HELP": null
       },
       "UPLOAD": {
         "TITLE": null
@@ -822,7 +824,7 @@ const ALL_FIELDS = {
       "LINK-EDIT-BTN": null,
       "LINK-REMOVE-BTN": null,
       "LINK-SAVE-BTN": null,
-      "LINK-CANCEL-BTN": null
+      "LINK-CANCEL-BTN": null,
   },
   "CHAT_INFO": {
       "LABEL": {

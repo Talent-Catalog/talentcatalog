@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.candidate;
+package org.tctalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.time.LocalDate;
+import javax.annotation.Nullable;
 
-@Setter
-@Getter
-@ToString
-public class UpdateCandidateAdditionalInfoRequest {
+/**
+ * Information associated with a next step
+ *
+ * @author John Cameron
+ */
+public record NextStepWithDueDate(
+    /*
+      Describes what the next step is
+     */
+    @Nullable
+    String nextStep,
 
-    private String additionalInfo;
-
-}
+    /*
+      Optional due date of next step
+     */
+    @Nullable
+    LocalDate dueDate
+) {}

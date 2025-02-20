@@ -23,8 +23,11 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class UpdateCandidateAdditionalInfoRequest {
+public class UpdateCandidateOtherInfoRequest {
 
     private String additionalInfo;
+    private String linkedInLink;
+    private boolean allNotifications;
+    private Boolean submit;
 
 }
