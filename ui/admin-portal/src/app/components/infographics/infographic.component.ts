@@ -128,7 +128,7 @@ export class InfographicComponent implements OnInit {
           this.savedSearchService.get(id).subscribe(
             (savedSearch) => {
               this.statsFilter.controls['savedSearch'].patchValue(savedSearch);
-              this.submitStatsRequest(false);
+              this.submitStatsRequest();
             }, error => {
               this.error = error;
             });
@@ -137,7 +137,7 @@ export class InfographicComponent implements OnInit {
           this.savedListService.get(id).subscribe(
             (savedList) => {
               this.statsFilter.controls['savedList'].patchValue(savedList);
-              this.submitStatsRequest(false);
+              this.submitStatsRequest();
             }, error => {
               this.error = error;
           });
@@ -146,12 +146,11 @@ export class InfographicComponent implements OnInit {
     });
   }
 
-  submitStatsRequest(runOldStats: boolean){
+  submitStatsRequest(){
     this.loading = true;
     this.error = null;
 
     const request: CandidateStatsRequest = {
-      runOldStats: runOldStats,
       listId: this.savedList == null ? null : this.savedList.id,
       searchId: this.savedSearch == null ? null : this.savedSearch.id,
       dateFrom: this.dateFrom,
