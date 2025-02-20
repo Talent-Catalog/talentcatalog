@@ -264,8 +264,8 @@ environment: ${ENVIRONMENT:local}
 # TODO: remove secrets and check we need all the properties at the end
 preset:
   api:
-    apiSecret: ${PRESET_SECRET:1644167811a854a08d31bdc8f63d8818e6a5326bbbcc1c5b88d1c26741d5a3ad}
-    apiToken: ${API_TOKEN:0057bb06-b74d-46eb-a633-9e538cd8f1a3}
-    teamId: ${TEAM_ID:7235fedd}
-    workspaceId: ${WORKSPACE_ID:987e2e02}
+    apiSecret: ${PRESET_SECRET:}
+    apiToken: ${API_TOKEN:}
+    teamId: ${TEAM_ID:}
+    workspaceId: ${WORKSPACE_ID:}
     authBaseUrl: https://api.app.preset.io/v1/
