@@ -1917,7 +1917,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
                 setAccountId(jobOpportunity.getAccountId());
                 setCandidateContactId(candidate.getSfId());
-                setOwnerId(jobOpportunity.getOwnerId());
+                setOwnerId(jobOpportunity.getOwnerId() != null ? jobOpportunity.getOwnerId() : null);
                 setParentOpportunityId(jobOpportunity.getSfId());
 
                 LocalDateTime close = LocalDateTime.now().plusYears(1);
