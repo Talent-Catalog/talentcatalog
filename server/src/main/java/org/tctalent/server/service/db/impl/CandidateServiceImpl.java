@@ -147,6 +147,8 @@ import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -1406,10 +1408,11 @@ public class CandidateServiceImpl implements CandidateService {
      * This method only manages changes to the candidate portal's Additional Info section - not the admin portal equivalent
      */
     @Override
-    public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
+    public Candidate updateOtherInfo(UpdateCandidateOtherInfoRequest request) {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
+        candidate.setAllNotifications(request.isAllNotifications());
         if (request.getLinkedInLink() != null && !request.getLinkedInLink().isEmpty()) {
             String linkedInRegex = "^http[s]?:/\\/(www\\.)?linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
             Pattern p = Pattern.compile(linkedInRegex);
@@ -2489,6 +2492,24 @@ public class CandidateServiceImpl implements CandidateService {
 
         save(candidate, true);
 
+    }
+
+    @Override
+    public void updateNotificationPreference(long id,
+        UpdateCandidateNotificationPreferenceRequest request) throws NoSuchObjectException {
+        final Candidate candidate = candidateRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        if (request.isAllNotifications() != candidate.isAllNotifications()) {
+            candidate.setAllNotifications(request.isAllNotifications());
+            save(candidate, false);
+
+            //Generate candidate note
+            String message = "Candidate's chat notification preference was changed to " +
+                (candidate.isAllNotifications() ? "opt in to all notifications" : "opt out of all notifications");
+            candidateNoteService.createCandidateNote(
+                new CreateCandidateNoteRequest(candidate.getId(), message, null));
+        }
     }
 
     @Override

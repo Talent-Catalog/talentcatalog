@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,17 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.candidate;
+package org.tctalent.server.service.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import org.springframework.lang.NonNull;
+import org.tctalent.server.model.db.chat.Post;
 
-@Setter
-@Getter
-@ToString
-public class UpdateCandidateAdditionalInfoRequest {
+/**
+ * Service for creating {@link Post}'s
+ * <p/>
+ * Posts should normally be created through this service which automatically scans for any urls
+ * in the content and attempts to generate any LinkPreviews if possible.
+ *
+ * @author John Cameron
+ */
+public interface PostService {
 
-    private String additionalInfo;
-
+    /**
+     * Creates post with given content
+     * @param content Content of post
+     * @return Post
+     */
+    @NonNull
+    Post createPost(String content);
 }

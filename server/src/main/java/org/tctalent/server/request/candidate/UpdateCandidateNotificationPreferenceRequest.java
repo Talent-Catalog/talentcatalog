@@ -20,11 +20,20 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@Setter
+/**
+ * Changing a candidate preference on when they are notified of opportunities
+ *
+ * @author John Cameron
+ */
 @Getter
+@Setter
 @ToString
-public class UpdateCandidateAdditionalInfoRequest {
+public class UpdateCandidateNotificationPreferenceRequest {
 
-    private String additionalInfo;
-
+  /**
+   * True if candidate wants to receive all notifications.
+   * If false, the candidate will only receive notifications when they are well progressed in
+   * a job opportunity.
+   */
+  private boolean allNotifications;
 }

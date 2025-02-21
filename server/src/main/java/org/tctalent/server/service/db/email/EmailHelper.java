@@ -27,6 +27,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -304,6 +305,47 @@ public class EmailHelper {
             LogBuilder.builder(log)
                 .action("DuolingoCouponEmail")
                 .message("error sending duolingo coupon email")
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    /**
+     * Sends email to candidate user when they have accepted a job offer.
+     * <p/>
+     * The purpose of the email is to congratulate them and introduce them to services that may be
+     * useful to them now that they have the job.
+     * @param candidate Candidate user
+     * @throws EmailSendFailedException If there is a problem sending the email
+     */
+    public void sendOfferAcceptedEmail(Candidate candidate) throws EmailSendFailedException {
+
+        User user = candidate.getUser();
+        String emailTo = user.getEmail();
+        String emailCc = "membership@pathwayclub.org";
+        String displayName = user.getDisplayName();
+        Partner partner = user.getPartner();
+        String candidateNumber = candidate.getCandidateNumber();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("partner", partner);
+            ctx.setVariable("candidateNumber", candidateNumber);
+
+            subject = "Talent Catalog - Congratulations and next steps";
+            bodyText = textTemplateEngine.process("job-accepted", ctx);
+            bodyHtml = htmlTemplateEngine.process("job-accepted", ctx);
+
+            emailSender.sendAsync(emailTo, emailCc, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("OfferAcceptedEmail")
+                .message("error sending offer accepted email")
                 .logError(e);
 
             throw new EmailSendFailedException(e);

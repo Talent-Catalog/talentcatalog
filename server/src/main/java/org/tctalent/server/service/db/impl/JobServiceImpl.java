@@ -64,9 +64,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateOpportunityStage;
-import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.Employer;
-import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
@@ -76,7 +74,6 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.model.sf.Account;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.model.sf.Opportunity.OpportunityType;
@@ -95,13 +92,12 @@ import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
-import org.tctalent.server.service.db.ChatPostService;
 import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
-import org.tctalent.server.service.db.NextStepProcessingService;
+import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -142,6 +138,7 @@ public class JobServiceImpl implements JobService {
 
     private final JobChatService jobChatService;
     private final JobServiceHelper jobServiceHelper;
+    private final OppNotificationService oppNotificationService;
     private final PartnerService partnerService;
     private final SalesforceBridgeService salesforceBridgeService;
     private final SalesforceConfig salesforceConfig;
@@ -151,8 +148,6 @@ public class JobServiceImpl implements JobService {
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final JobOppIntakeService jobOppIntakeService;
-    private final ChatPostService chatPostService;
-    private final NextStepProcessingService nextStepProcessingService;
 
     /**
      * Updates the closing logic to say tha when a job is closed in the given stage, then any
@@ -651,33 +646,11 @@ public class JobServiceImpl implements JobService {
             SavedList suggestedList = candidateSavedListService.copy(submissionList, request);
             job.setSuggestedList(suggestedList);
         }
-        // Send a message to the job chat
-        sendMessageToJobChat(JobChatType.JobCreatorAllSourcePartners, job, "💼 <b>A new job has been published!</b>");
+
+        // Send out notifications
+        oppNotificationService.notifyNewJobOpp(job);
 
         return salesforceJobOppRepository.save(job);
-    }
-
-    //TODO JC This should be reused - see code in changeJobStage
-    private void sendMessageToJobChat(JobChatType chatType, SalesforceJobOpp job, String messageContent) {
-        // Get or create the job chat based on the provided chat type
-        JobChat jobChat = jobChatService.getOrCreateJobChat(chatType, job, null, null);
-
-        // Create the message post
-        String jobInfo = "<b>Job Name:</b> </br>" + job.getName() + "</br>"
-            + "<b> Job Creator: </b> </br>" + job.getJobCreator() + "</br>"
-            + "<b> Job Country: </b> </br>" + job.getCountry().getName() + "</br>"
-            // Add more job information fields as needed
-            + "</br>"; // Add a newline for readability
-        String fullMessageContent = messageContent + "</br>" + jobInfo; // Combine message content and job info
-
-        Post messagePost = new Post();
-        messagePost.setContent(fullMessageContent);
-
-        // Create the chat post
-        ChatPost chatPost = chatPostService.createPost(messagePost, jobChat, userService.getSystemAdminUser());
-
-        // Publish the chat post
-        chatPostService.publishChatPost(chatPost);
     }
 
 
@@ -819,6 +792,11 @@ public class JobServiceImpl implements JobService {
     }
 
     private void updateJobFromRequest(SalesforceJobOpp job, UpdateJobRequest request) {
+
+        //Perform any notifications before actually applying the change so that we have the
+        //old and current state
+        oppNotificationService.notifyJobOppChanges(job, request);
+
         final Boolean evergreen = request.getEvergreen();
         if (evergreen != null) {
             job.setEvergreen(evergreen);
@@ -827,62 +805,6 @@ public class JobServiceImpl implements JobService {
         final Boolean skipCandidateSearch = request.getSkipCandidateSearch();
         if (skipCandidateSearch != null) {
             job.setSkipCandidateSearch(skipCandidateSearch);
-        }
-
-        if (request.getNextStep() != null) {
-            final String processedNextStep =
-                nextStepProcessingService.processNextStep(job, request.getNextStep());
-
-            job.setNextStep(processedNextStep);
-
-            // If next step details changing, send automated post to JobCreatorAllSourcePartners chat.
-            // To compare previous next step to new one, need to ensure neither is null.
-            // Job opps are auto-populated with a value for next step when created, but this has
-            // not always been the case.
-            String currentNextStep = job.getNextStep() == null ? "" : job.getNextStep();
-
-            // If only the due date has changed, we still want to send a message.
-            // As above, there are some old cases with null values that need to be dealt with.
-            LocalDate currentDueDate =
-                job.getNextStepDueDate() == null ?
-                    LocalDate.of(1970, 1, 1) : job.getNextStepDueDate();
-
-            // If the request due date is null (user deletes the existing value in the form but
-            // doesn't set a new one, then submits) it will not be used (see below) — so, for
-            // purpose of comparison we give it the same value as the current due date (no
-            // message will be sent because they're the same).
-            LocalDate requestDueDate =
-                request.getNextStepDueDate() == null ?
-                    currentDueDate : request.getNextStepDueDate();
-
-            if (!processedNextStep.equals(currentNextStep) || !requestDueDate.equals(
-                currentDueDate)) {
-                // Find the relevant job chat
-                JobChat jcspChat = jobChatService.getOrCreateJobChat(
-                    JobChatType.JobCreatorAllSourcePartners,
-                    job,
-                    null,
-                    null
-                );
-
-                // Set the chat post content
-                Post autoPostNextStepChange = new Post();
-                autoPostNextStepChange.setContent(
-                    "💼 <b>" + job.getName()
-                        + "</b> 🪜<br> The next step details for this job opportunity have changed:"
-                        + "<br><b>Next step:</b> " + processedNextStep
-                        + "<br><b>Due date:</b> "
-                        + (request.getNextStepDueDate() == null ?
-                        job.getNextStepDueDate() : request.getNextStepDueDate())
-                );
-
-                // Create the chat post
-                ChatPost nextStepChangeChatPost = chatPostService.createPost(
-                    autoPostNextStepChange, jcspChat, userService.getSystemAdminUser());
-
-                // Publish the chat post
-                chatPostService.publishChatPost(nextStepChangeChatPost);
-            }
         }
 
         final LocalDate nextStepDueDate = request.getNextStepDueDate();
@@ -925,34 +847,6 @@ public class JobServiceImpl implements JobService {
      * @param stage New stage
      */
     private void changeJobStage(SalesforceJobOpp job, JobOpportunityStage stage) {
-        //Do automation logic
-        // If stage changing, send automate post to JobCreatorAllSourcePartners chat
-        if (!stage.equals(job.getStage())) {
-
-            // Find the relevant job chat
-            JobChat jcaspChat = jobChatService.getOrCreateJobChat(
-                JobChatType.JobCreatorAllSourcePartners,
-                job,
-                null,
-                null
-            );
-
-            // Set the chat post content
-            Post autoPostJobOppStageChange = new Post();
-            autoPostJobOppStageChange.setContent(
-                "💼 <b>" + job.getName()
-                    + "</b> 🪜<br> This job opportunity has changed stage from '" + job.getStage()
-                    + "' to '" + stage + "'."
-            );
-
-            // Create the chat post
-            ChatPost jobOppStageChangeChatPost = chatPostService.createPost(
-                autoPostJobOppStageChange, jcaspChat, userService.getSystemAdminUser());
-
-            // Publish the chat post
-            chatPostService.publishChatPost(jobOppStageChangeChatPost);
-        }
-
         job.setStage(stage);
 
         //Do automation logic
@@ -969,10 +863,6 @@ public class JobServiceImpl implements JobService {
                     job.setEvergreenChild(evergreenChild);
                 }
             }
-        }
-
-        if (stage.isClosed()) {
-            closeUnclosedCandidateOppsForJob(job, stage);
         }
     }
 
