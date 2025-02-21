@@ -143,6 +143,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/admin/user/reset-password-email").permitAll()
                 .requestMatchers("/api/admin/user/check-token").permitAll()
                 .requestMatchers("/api/admin/user/reset-password").permitAll()
+                .requestMatchers("/api/admin/user/verify-email/**").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/published/**").permitAll()
 
@@ -152,7 +153,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/status**", "/status/**").permitAll()
 
 
-            // DELETE: DELETE SAVE SEARCHES
+                // DELETE: DELETE SAVE SEARCHES
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // DELETE: DELETE LIST

@@ -327,6 +327,7 @@ public class CandidateBuilderSelector {
                 .add("updatedDate")
                 .add("lastLogin")
                 .add("partner", partnerDto())
+                .add("emailVerified")
                 ;
     }
 

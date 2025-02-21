@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2024 Talent Catalog.
+  ~ Copyright (c) 2025 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,10 +14,22 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<app-header *ngIf="showHeader"></app-header>
-
-<div class="container-fluid">
-<app-verify-email-toast *ngIf="this.user" [showToast]="showToast"  [userEmail]="this.user.email"></app-verify-email-toast>
-
-  <router-outlet></router-outlet>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Email Verified Successfully</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; text-align: center; }
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .success { color: #14b0e3; font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="success">Your Email is Verified!</h2>
+    <p>Hello <strong>[[${displayName}]]</strong>,</p>
+    <p>Congratulations! Your email has been successfully verified. </p>
 </div>
+</body>
+</html>

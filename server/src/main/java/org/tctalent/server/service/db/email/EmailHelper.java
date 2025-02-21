@@ -137,6 +137,101 @@ public class EmailHelper {
         }
     }
 
+    public void sendVerificationEmail(User user) throws EmailSendFailedException {
+        if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
+            log.error("Invalid user or email. Cannot send verification email.");
+            throw new IllegalArgumentException(
+                "Invalid user or email. Cannot send verification email.");
+        }
+
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+        String token = user.getEmailVerificationToken();
+        Partner partner = user.getPartner();
+
+        if (token == null || token.isEmpty()) {
+            log.error("Email verification token is not generated for user: {}", email);
+            throw new IllegalStateException(
+                "Email verification token is not generated for user: " + email);
+        }
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+
+        try {
+
+            final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
+            ctx.setVariable("displayName", displayName);
+            String verificationUrl = "https://tctalent.org/api/admin/user/verify-email/" + token;
+            ctx.setVariable("verificationUrl", verificationUrl);
+            ctx.setVariable("year", currentYear());
+
+            subject = "Talent Catalog - Verify Your Email";
+
+            bodyText = textTemplateEngine.process("verify-email", ctx);
+            bodyHtml = htmlTemplateEngine.process("verify-email", ctx);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+            LogBuilder.builder(log)
+                .action("SendVerificationEmail")
+                .message("Verification email sent successfully to: " + email)
+                .logInfo();
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("SendVerificationEmail")
+                .message("Error sending verification email to: " + email)
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    public void sendCompleteVerificationEmail(User user, boolean isSuccess)
+        throws EmailSendFailedException {
+        if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
+            log.error("Invalid user or email. Cannot send complete verification email.");
+            throw new IllegalArgumentException(
+                "Invalid user or email. Cannot send complete verification email.");
+        }
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+
+            if (isSuccess) {
+                subject = "Email Verified Successfully";
+                bodyText = textTemplateEngine.process("verify-email-success", ctx);
+                bodyHtml = htmlTemplateEngine.process("verify-email-success", ctx);
+            } else {
+                subject = "Email Verification Failed";
+                bodyText = textTemplateEngine.process("verify-email-failure", ctx);
+                bodyHtml = htmlTemplateEngine.process("verify-email-failure", ctx);
+            }
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+            LogBuilder.builder(log)
+                .action("SendVerificationEmail")
+                .message("Verification email sent successfully to: " + email)
+                .logInfo();
+
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("SendCompleteVerificationEmail")
+                .message("Error sending complete verification email to: " + email)
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
     public void sendIncompleteApplication(User user, String message) throws EmailSendFailedException {
 
         String email = user.getEmail();

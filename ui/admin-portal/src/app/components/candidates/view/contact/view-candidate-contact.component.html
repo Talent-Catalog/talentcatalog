@@ -135,6 +135,7 @@
           <span [innerHtml]="candidate.user.email"
                 appHighlightSearch>
           </span>
+          <span *ngIf="candidate.user.emailVerified" > <i class="fa-regular fa-circle-check " style="color: #10B0E3; margin-left:4px;"></i></span>
         </div>
       </div>
 

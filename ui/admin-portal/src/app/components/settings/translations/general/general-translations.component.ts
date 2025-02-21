@@ -326,6 +326,28 @@ const ALL_FIELDS = {
       "INELIGIBLE": {
         "EXPLANATION": null,
         "BUTTON": null
+      },
+      "EMAIL_VERIFICATION" : {
+        "BUTTON": null,
+        "IDLE": {
+          "TITLE": null,
+          "DESCRIPTION": null,
+          "UPDATE_EMAIL": null,
+          "SEND_BUTTON": null
+        },
+        "LOADING": {
+          "TITLE": null,
+          "DESCRIPTION": null
+        },
+        "EMAIL_SENT" : {
+          "TITLE": null,
+          "DESCRIPTION": null,
+          "SPAM": null,
+          "BUTTON": null,
+        },
+        "ERROR":{
+          "BUTTON":null,
+        }
       }
     },
     "REGISTRATION": {
