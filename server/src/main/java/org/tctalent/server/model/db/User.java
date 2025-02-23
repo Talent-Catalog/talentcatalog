@@ -95,6 +95,24 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private OffsetDateTime passwordUpdatedDate;
 
     /**
+     * The email verification token sent to the user for verifying their email address.
+     */
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
+    /**
+     * The timestamp when the email verification token was issued.
+     */
+    @Column(name = "email_verification_token_issued_time")
+    private OffsetDateTime emailVerificationTokenIssuedDate;
+
+    /**
+     * Indicates whether the user's email address has been verified.
+     */
+    @Column(name = "email_verified" , nullable = false)
+    private boolean emailVerified;
+
+    /**
      * usingMfa is a basic security requirement, checked by default
      * Use boolean rather than Boolean so that default value is false, not null.
      * Null is not allowed in Db definition
@@ -306,6 +324,30 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setPasswordUpdatedDate(OffsetDateTime passwordUpdatedDate) {
         this.passwordUpdatedDate = passwordUpdatedDate;
+    }
+
+    public String getEmailVerificationToken() {
+        return emailVerificationToken;
+    }
+
+    public void setEmailVerificationToken(String emailVerificationToken) {
+        this.emailVerificationToken = emailVerificationToken;
+    }
+
+    public OffsetDateTime getEmailVerificationTokenIssuedDate() {
+        return emailVerificationTokenIssuedDate;
+    }
+
+    public void setEmailVerificationTokenIssuedDate(OffsetDateTime emailVerificationTokenIssuedDate) {
+        this.emailVerificationTokenIssuedDate = emailVerificationTokenIssuedDate;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     public String getSelectedLanguage() {

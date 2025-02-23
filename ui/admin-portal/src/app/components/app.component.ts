@@ -22,6 +22,7 @@ import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
 import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
+import { UserService} from "../services/user.service";
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,9 @@ import {ChatService} from "../services/chat.service";
 export class AppComponent implements OnInit {
 
   showHeader: boolean;
+  emailVerified: boolean;
+  user: User;
+  showToast: boolean = false;
   private loggedInUserSubcription: Subscription;
 
   constructor(
@@ -38,15 +42,19 @@ export class AppComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private chatService: ChatService,
     private router: Router,
-    private titleService: Title
+    private titleService: Title,
+    private userService: UserService
   ) {
   }
 
   ngOnInit(): void {
-
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
         this.onChangedLogin(user);
+        this.user = user;
+        if (this.user.id) {
+          this.isEmailVerified(this.user.id);
+        }
       }
     )
 
@@ -98,6 +106,17 @@ export class AppComponent implements OnInit {
     ).subscribe(
       (title: string) => {
         this.titleService.setTitle(title);
+      }
+    );
+  }
+
+  private isEmailVerified(userId: number): any {
+    this.userService.get(userId).subscribe(
+      (user) => {
+        this.emailVerified = user.emailVerified;
+        if (this.emailVerified === false) {
+          this.showToast = true;
+        }
       }
     );
   }

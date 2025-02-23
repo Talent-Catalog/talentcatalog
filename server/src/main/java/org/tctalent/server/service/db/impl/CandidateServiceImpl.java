@@ -1200,6 +1200,14 @@ public class CandidateServiceImpl implements CandidateService {
             queryParameters.getUtmTerm() != null;
     }
 
+    private void checkAndResetEmailVerification(User user, String newEmail) {
+        if (!Objects.equals(user.getEmail(), newEmail)) {
+            user.setEmailVerified(false);
+            user.setEmailVerificationToken(null);
+            user.setEmailVerificationTokenIssuedDate(null);
+        }
+    }
+
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
         User user = authService.getLoggedInUser()
@@ -1208,6 +1216,7 @@ public class CandidateServiceImpl implements CandidateService {
         // Check update request for a duplicate email or phone number
         validateContactRequest(user, request);
 
+        checkAndResetEmailVerification(user, request.getEmail());
         user.setEmail(request.getEmail());
         user = userRepository.save(user);
         Candidate candidate = user.getCandidate();

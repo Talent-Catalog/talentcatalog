@@ -20,6 +20,7 @@ import {Observable} from 'rxjs';
 import {environment} from "../../environments/environment";
 import {User} from '../model/user';
 import {SendResetPasswordEmailRequest} from "../model/candidate";
+import {SendVerifyEmailRequest} from "../model/user";
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ import {SendResetPasswordEmailRequest} from "../model/candidate";
 export class UserService {
 
   apiUrl = environment.apiUrl + '/user';
-
+  adminUrl = environment.chatApiUrl + '/user';
   constructor(private http: HttpClient) {}
 
 
@@ -77,4 +78,10 @@ export class UserService {
   resetPassword(request) {
     return this.http.post(`${this.apiUrl}/reset-password`, request);
   }
+
+  // This endpoint connects to admin portal user
+  sendVerifyEmail(request: SendVerifyEmailRequest) {
+    return this.http.post(`${this.adminUrl}/verify-email`, request);
+  }
+
 }

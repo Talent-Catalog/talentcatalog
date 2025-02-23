@@ -22,11 +22,14 @@ import {LanguageService} from "../../services/language.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../model/survey-type";
 import {BrandingService} from "../../services/branding.service";
 import {ExternalLinkService} from "../../services/external-link.service";
+import { UserService } from '../../services/user.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {VerifyEmailComponent} from "../account/verify-email/verify-email.component";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
 
@@ -37,17 +40,29 @@ export class HomeComponent implements OnInit {
   user: User;
   lang: string;
   partnerName: string;
+  emailVerified: boolean;
 
   constructor(private candidateService: CandidateService,
               private languageService: LanguageService,
               private brandingService: BrandingService,
-              private externalLinkService: ExternalLinkService) {
+              private externalLinkService: ExternalLinkService,
+              private userService: UserService,
+              private modalService: NgbModal
+            ) {
   }
 
   ngOnInit() {
     this.loading = true;
     this.lang = this.languageService.getSelectedLanguage();
 
+    this.userService.getMyUser().subscribe(
+      (user) => {
+        this.emailVerified = user.emailVerified;
+      },
+      (error) => {
+        this.error = error;
+      }
+    );
     this.candidateService.getStatus().subscribe(
       (candidate) => {
         this.candidate = candidate || ({status: CandidateStatus.draft} as Candidate);
@@ -76,6 +91,13 @@ export class HomeComponent implements OnInit {
 
     this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
 
+  }
+
+  openModal() {
+    const verifyEmailModal = this.modalService.open(VerifyEmailComponent, {
+      centered: true
+    });
+    verifyEmailModal.componentInstance.userEmail = this.user.email;
   }
 
   /**
