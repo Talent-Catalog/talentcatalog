@@ -100,8 +100,6 @@ export class AuthorizationService {
     if (this.isSourcePartner() || this.isJobCreatorPartner()) {
       switch (this.getLoggedInRole()) {
         case Role.systemadmin:
-        case Role.admin:
-        case Role.partneradmin:
           result = true;
       }
     }
