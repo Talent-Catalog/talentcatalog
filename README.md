@@ -331,7 +331,7 @@ reduce your CPU usage
 Then from within the same directory run:
 
    ```
-   ng serve
+   npm start
    ```
 
 You will see log similar to:
@@ -363,7 +363,7 @@ As for the "Candidate Portal", make sure all libraries are installed locally.
 Then from within the same directory run:
 
    ```
-   ng serve
+   npm start
    ```
 
 You will see log similar to:

@@ -1,0 +1,8 @@
+Hello [[${displayName}]],
+
+Unfortunately, your email verification link has expired. Please log in and request a new verification email to complete the process.
+
+If you need assistance, feel free to contact our support team.
+
+Best regards,
+The Talent Catalog Team

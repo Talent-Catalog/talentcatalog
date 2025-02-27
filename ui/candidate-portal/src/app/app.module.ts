@@ -221,6 +221,7 @@ import {
 } from "./components/register/destinations/destination/destination.component";
 import {ServicesComponent} from './components/profile/view/tab/services/services.component';
 import {DuolingoCouponComponent} from './components/profile/view/tab/services/duolingo-coupon/duolingo-coupon.component';
+import { VerifyEmailComponent } from './components/account/verify-email/verify-email.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -301,6 +302,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     DestinationComponent,
     ServicesComponent,
     DuolingoCouponComponent
+    DestinationComponent,
+    VerifyEmailComponent
   ],
   imports: [
     BrowserModule,

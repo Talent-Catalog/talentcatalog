@@ -58,6 +58,8 @@ import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoReques
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -196,6 +198,12 @@ public class CandidateAdminApi {
         return builder.build(candidate);
     }
 
+    @PutMapping("{id}/muted")
+    public void updateMuteStatus(@PathVariable("id") long id,
+        @RequestBody UpdateCandidateMutedRequest request) {
+        candidateService.updateMutedStatus(id, request);
+    }
+
     @PutMapping("status")
     public void updateStatus(@RequestBody UpdateCandidateStatusRequest request) {
         candidateService.updateCandidateStatus(request);
@@ -251,6 +259,12 @@ public class CandidateAdminApi {
         Candidate candidate = candidateService.updateCandidateMedia(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
+    }
+
+    @PutMapping("{id}/notification")
+    public void updateNotificationPreference(@PathVariable("id") long id,
+        @RequestBody UpdateCandidateNotificationPreferenceRequest request) {
+        candidateService.updateNotificationPreference(id, request);
     }
 
     @PutMapping("{id}/registration")

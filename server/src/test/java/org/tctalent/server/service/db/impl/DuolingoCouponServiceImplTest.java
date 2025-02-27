@@ -40,6 +40,7 @@ import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.response.DuolingoCouponResponse;
+import org.tctalent.server.service.db.email.EmailHelper;
 
 class DuolingoCouponServiceImplTest {
 
@@ -48,6 +49,9 @@ class DuolingoCouponServiceImplTest {
 
   @Mock
   private CandidateRepository candidateRepository;
+
+  @Mock
+  private EmailHelper emailHelper;
 
   @InjectMocks
   private DuolingoCouponServiceImpl couponService;
@@ -115,6 +119,7 @@ class DuolingoCouponServiceImplTest {
     assertEquals("code1", assignedCoupon.getCouponCode());
     assertEquals(DuolingoCouponStatus.SENT, assignedCoupon.getCouponStatus());
     verify(couponRepository, times(1)).save(coupon);
+    verify(emailHelper, times(1)).sendDuolingoCouponEmail(candidate.getUser());
   }
 
   @Test
@@ -192,4 +197,34 @@ class DuolingoCouponServiceImplTest {
 
     assertThrows(NoSuchObjectException.class, () -> couponService.findByCouponCode("code1"));
   }
+
+  @Test
+  @DisplayName("markCouponsAsExpired - updates expired coupons")
+  void testMarkCouponsAsExpired() {
+    // Arrange
+    DuolingoCoupon coupon1 = new DuolingoCoupon();
+    coupon1.setCouponCode("expired1");
+    coupon1.setExpirationDate(LocalDateTime.now().minusDays(1));
+    coupon1.setCouponStatus(DuolingoCouponStatus.AVAILABLE);
+
+    DuolingoCoupon coupon2 = new DuolingoCoupon();
+    coupon2.setCouponCode("expired2");
+    coupon2.setExpirationDate(LocalDateTime.now().minusDays(2));
+    coupon2.setCouponStatus(DuolingoCouponStatus.SENT);
+
+    List<DuolingoCoupon> expiredCoupons = List.of(coupon1, coupon2);
+
+    when(couponRepository.findAllByExpirationDateBeforeAndCouponStatusNotIn(
+        any(LocalDateTime.class), anyList()))
+        .thenReturn(expiredCoupons);
+
+    // Act
+    couponService.markCouponsAsExpired();
+
+    // Assert
+    assertEquals(DuolingoCouponStatus.EXPIRED, coupon1.getCouponStatus());
+    assertEquals(DuolingoCouponStatus.EXPIRED, coupon2.getCouponStatus());
+    verify(couponRepository, times(1)).saveAll(expiredCoupons);
+  }
+
 }

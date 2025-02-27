@@ -27,12 +27,8 @@ import {HomeComponent} from './components/candidates/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
-import {
-  EditCandidateStatusComponent
-} from './components/candidates/view/status/edit-candidate-status.component';
-import {
-  DeleteCandidateComponent
-} from './components/candidates/view/delete/delete-candidate.component';
+import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
+import {DeleteCandidateComponent} from './components/candidates/view/delete/delete-candidate.component';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {ErrorInterceptor} from './services/error.interceptor';
@@ -42,24 +38,14 @@ import {SettingsComponent} from './components/settings/settings.component';
 import {SearchUsersComponent} from './components/settings/users/search-users.component';
 import {ConfirmationComponent} from './components/util/confirm/confirmation.component';
 import {SearchCountriesComponent} from './components/settings/countries/search-countries.component';
-import {
-  CreateCountryComponent
-} from './components/settings/countries/create/create-country.component';
+import {CreateCountryComponent} from './components/settings/countries/create/create-country.component';
 import {EditCountryComponent} from './components/settings/countries/edit/edit-country.component';
 import {SearchLanguagesComponent} from './components/settings/languages/search-languages.component';
-import {
-  CreateLanguageComponent
-} from './components/settings/languages/create/create-language.component';
+import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
-import {
-  SearchSavedSearchesComponent
-} from './components/search/load-search/search-saved-searches.component';
-import {
-  CreateUpdateSearchComponent
-} from './components/search/create-update/create-update-search.component';
-import {
-  CandidateSearchCardComponent
-} from './components/util/candidate-search-card/candidate-search-card.component';
+import {SearchSavedSearchesComponent} from './components/search/load-search/search-saved-searches.component';
+import {CreateUpdateSearchComponent} from './components/search/create-update/create-update-search.component';
+import {CandidateSearchCardComponent} from './components/util/candidate-search-card/candidate-search-card.component';
 import {
   CandidateGeneralTabComponent
 } from './components/candidates/view/tab/candidate-general-tab/candidate-general-tab.component';
@@ -72,72 +58,40 @@ import {
 import {
   CandidateEligibilityTabComponent
 } from './components/candidates/view/tab/candidate-eligibility-tab/candidate-eligibility-tab.component';
-import {
-  SearchOccupationsComponent
-} from './components/settings/occupations/search-occupations.component';
-import {
-  CreateOccupationComponent
-} from './components/settings/occupations/create/create-occupation.component';
-import {
-  EditOccupationComponent
-} from './components/settings/occupations/edit/edit-occupation.component';
-import {
-  SearchIndustriesComponent
-} from './components/settings/industries/search-industries.component';
-import {
-  CreateIndustryComponent
-} from './components/settings/industries/create/create-industry.component';
+import {SearchOccupationsComponent} from './components/settings/occupations/search-occupations.component';
+import {CreateOccupationComponent} from './components/settings/occupations/create/create-occupation.component';
+import {EditOccupationComponent} from './components/settings/occupations/edit/edit-occupation.component';
+import {SearchIndustriesComponent} from './components/settings/industries/search-industries.component';
+import {CreateIndustryComponent} from './components/settings/industries/create/create-industry.component';
 import {EditIndustryComponent} from './components/settings/industries/edit/edit-industry.component';
-import {
-  SearchLanguageLevelsComponent
-} from './components/settings/language-levels/search-language-levels.component';
+import {SearchLanguageLevelsComponent} from './components/settings/language-levels/search-language-levels.component';
 import {
   CreateLanguageLevelComponent
 } from './components/settings/language-levels/create/create-language-level.component';
-import {
-  EditLanguageLevelComponent
-} from './components/settings/language-levels/edit/edit-language-level.component';
-import {
-  SearchEducationLevelsComponent
-} from './components/settings/education-levels/search-education-levels.component';
+import {EditLanguageLevelComponent} from './components/settings/language-levels/edit/edit-language-level.component';
+import {SearchEducationLevelsComponent} from './components/settings/education-levels/search-education-levels.component';
 import {
   CreateEducationLevelComponent
 } from './components/settings/education-levels/create/create-education-level.component';
-import {
-  EditEducationLevelComponent
-} from './components/settings/education-levels/edit/edit-education-level.component';
-import {
-  SearchEducationMajorsComponent
-} from './components/settings/education-majors/search-education-majors.component';
+import {EditEducationLevelComponent} from './components/settings/education-levels/edit/edit-education-level.component';
+import {SearchEducationMajorsComponent} from './components/settings/education-majors/search-education-majors.component';
 import {
   CreateEducationMajorComponent
 } from './components/settings/education-majors/create/create-education-major.component';
-import {
-  EditEducationMajorComponent
-} from './components/settings/education-majors/edit/edit-education-major.component';
+import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
 import {
   DropdownTranslationsComponent
 } from './components/settings/translations/dropdowns/dropdown-translations.component';
 
-import {
-  ViewCandidateContactComponent
-} from './components/candidates/view/contact/view-candidate-contact.component';
-import {
-  ViewCandidateLanguageComponent
-} from './components/candidates/view/language/view-candidate-language.component';
+import {ViewCandidateContactComponent} from './components/candidates/view/contact/view-candidate-contact.component';
+import {ViewCandidateLanguageComponent} from './components/candidates/view/language/view-candidate-language.component';
 import {
   EditCandidateContactComponent
 } from './components/candidates/view/contact/edit/edit-candidate-contact.component';
 
-import {
-  ViewCandidateNoteComponent
-} from './components/candidates/view/note/view-candidate-note.component';
-import {
-  CreateCandidateNoteComponent
-} from './components/candidates/view/note/create/create-candidate-note.component';
-import {
-  EditCandidateNoteComponent
-} from './components/candidates/view/note/edit/edit-candidate-note.component';
+import {ViewCandidateNoteComponent} from './components/candidates/view/note/view-candidate-note.component';
+import {CreateCandidateNoteComponent} from './components/candidates/view/note/create/create-candidate-note.component';
+import {EditCandidateNoteComponent} from './components/candidates/view/note/edit/edit-candidate-note.component';
 
 import {
   ViewCandidateEducationComponent
@@ -164,18 +118,12 @@ import {
 import {
   ViewCandidateJobExperienceComponent
 } from './components/candidates/view/occupation/experience/view-candidate-job-experience.component';
-import {
-  CreateUpdateUserComponent
-} from './components/settings/users/create-update-user/create-update-user.component';
+import {CreateUpdateUserComponent} from './components/settings/users/create-update-user/create-update-user.component';
 import {
   CandidateEducationTabComponent
 } from './components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component';
-import {
-  JoinSavedSearchComponent
-} from './components/search/join-search/join-saved-search.component';
-import {
-  CandidateSourceComponent
-} from './components/util/candidate-source/candidate-source.component';
+import {JoinSavedSearchComponent} from './components/search/join-search/join-saved-search.component';
+import {CandidateSourceComponent} from './components/util/candidate-source/candidate-source.component';
 import {
   LanguageLevelFormControlComponent
 } from './components/util/form/language-proficiency/language-level-form-control.component';
@@ -188,9 +136,7 @@ import {
 } from './components/util/candidate-review/candidate-review-status-item.component';
 import {UserPipe} from './components/util/user/user.pipe';
 import {UpdatedByComponent} from './components/util/user/updated-by/updated-by.component';
-import {
-  DateRangePickerComponent
-} from './components/util/form/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
 import {
   EditCandidateJobExperienceComponent
 } from './components/candidates/view/occupation/experience/edit/edit-candidate-job-experience.component';
@@ -207,12 +153,8 @@ import {SortedByComponent} from './components/util/sort/sorted-by.component';
 import {
   EditCandidateLanguageComponent
 } from './components/candidates/view/language/edit/edit-candidate-language.component';
-import {
-  ViewCandidateAccountComponent
-} from './components/candidates/view/account/view-candidate-account.component';
-import {
-  ChangePasswordComponent
-} from './components/account/change-password/change-password.component';
+import {ViewCandidateAccountComponent} from './components/candidates/view/account/view-candidate-account.component';
+import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
 import {
   CreateCandidateAttachmentComponent
 } from './components/candidates/view/attachment/create/create-candidate-attachment.component';
@@ -226,24 +168,16 @@ import {
 import {
   ViewCandidateAdditionalInfoComponent
 } from './components/candidates/view/additional-info/view-candidate-additional-info.component';
-import {
-  ViewCandidateSkillComponent
-} from './components/candidates/view/skill/view-candidate-skill.component';
-import {
-  BrowseCandidateSourcesComponent
-} from './components/candidates/show/browse/browse-candidate-sources.component';
+import {ViewCandidateSkillComponent} from './components/candidates/view/skill/view-candidate-skill.component';
+import {BrowseCandidateSourcesComponent} from './components/candidates/show/browse/browse-candidate-sources.component';
 import {NgChartsModule} from 'ng2-charts';
 import {InfographicComponent} from './components/infographics/infographic.component';
 import {ChartComponent} from './components/infographics/chart/chart.component';
 import {MonthPickerComponent} from './components/util/month-picker/month-picker.component';
-import {
-  CandidateSourceResultsComponent
-} from './components/candidates/show/returns/candidate-source-results.component';
+import {CandidateSourceResultsComponent} from './components/candidates/show/returns/candidate-source-results.component';
 import {DefineSearchComponent} from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from './not-found/not-found.component';
-import {
-  GeneralTranslationsComponent
-} from './components/settings/translations/general/general-translations.component';
+import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
 import {
   ViewCandidateSpecialLinksComponent
 } from './components/candidates/view/special-links/view-candidate-special-links.component';
@@ -251,71 +185,41 @@ import {
   EditCandidateSpecialLinksComponent
 } from './components/candidates/view/special-links/edit/edit-candidate-special-links.component';
 import {NgxWigModule} from 'ngx-wig';
-import {
-  ViewCandidateSurveyComponent
-} from './components/candidates/view/survey/view-candidate-survey.component';
+import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/view-candidate-survey.component';
 import {
   EditCandidateAdditionalInfoComponent
 } from './components/candidates/view/additional-info/edit/edit-candidate-additional-info.component';
-import {
-  EditCandidateSurveyComponent
-} from './components/candidates/view/survey/edit/edit-candidate-survey.component';
-import {
-  CreateUpdateListComponent
-} from './components/list/create-update/create-update-list.component';
+import {EditCandidateSurveyComponent} from './components/candidates/view/survey/edit/edit-candidate-survey.component';
+import {CreateUpdateListComponent} from './components/list/create-update/create-update-list.component';
 import {SelectListComponent} from './components/list/select/select-list.component';
-import {
-  CandidatesSearchComponent
-} from './components/candidates/candidates-search/candidates-search.component';
-import {
-  CandidatesListComponent
-} from './components/candidates/candidates-list/candidates-list.component';
+import {CandidatesSearchComponent} from './components/candidates/candidates-search/candidates-search.component';
+import {CandidatesListComponent} from './components/candidates/candidates-list/candidates-list.component';
 import {
   CreateCandidateOccupationComponent
 } from './components/candidates/view/occupation/create/create-candidate-occupation.component';
 import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
 import {JoblinkComponent} from './components/util/joblink/joblink.component';
-import {
-  CandidateContextNoteComponent
-} from './components/util/candidate-context-note/candidate-context-note.component';
-import {
-  ReturnedHomeComponent
-} from './components/candidates/intake/returned-home/returned-home.component';
+import {CandidateContextNoteComponent} from './components/util/candidate-context-note/candidate-context-note.component';
+import {ReturnedHomeComponent} from './components/candidates/intake/returned-home/returned-home.component';
 import {
   CandidateIntakeTabComponent
 } from './components/candidates/view/tab/candidate-intake-tab/candidate-intake-tab.component';
-import {
-  VisaIssuesComponent
-} from './components/candidates/intake/visa-issues/visa-issues.component';
-import {
-  CitizenshipsComponent
-} from './components/candidates/intake/citizenships/citizenships.component';
+import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/visa-issues.component';
+import {CitizenshipsComponent} from './components/candidates/intake/citizenships/citizenships.component';
 import {
   CandidateCitizenshipCardComponent
 } from './components/candidates/intake/citizenships/card/candidate-citizenship-card.component';
-import {
-  AvailImmediateComponent
-} from './components/candidates/intake/avail-immediate/avail-immediate.component';
+import {AvailImmediateComponent} from './components/candidates/intake/avail-immediate/avail-immediate.component';
 import {FamilyComponent} from './components/candidates/intake/family/family.component';
 import {
   CandidateMiniIntakeTabComponent
 } from './components/candidates/view/tab/candidate-mini-intake-tab/candidate-mini-intake-tab.component';
-import {
-  IntRecruitmentComponent
-} from './components/candidates/intake/int-recruitment/int-recruitment.component';
+import {IntRecruitmentComponent} from './components/candidates/intake/int-recruitment/int-recruitment.component';
 import {RuralComponent} from './components/candidates/intake/rural/rural.component';
-import {
-  ReturnHomeSafeComponent
-} from './components/candidates/intake/return-home-safe/return-home-safe.component';
-import {
-  WorkPermitComponent
-} from './components/candidates/intake/work-permit/work-permit.component';
-import {
-  WorkLegallyComponent
-} from './components/candidates/intake/work-legally/work-legally.component';
-import {
-  WorkStatusComponent
-} from './components/candidates/intake/work-status/work-status.component';
+import {ReturnHomeSafeComponent} from './components/candidates/intake/return-home-safe/return-home-safe.component';
+import {WorkPermitComponent} from './components/candidates/intake/work-permit/work-permit.component';
+import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
+import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryComponent} from './components/candidates/intake/host-entry/host-entry.component';
 import {
   CandidateVisaTabComponent
@@ -327,70 +231,36 @@ import {
 import {
   RegistrationUnrwaComponent
 } from './components/candidates/intake/registration-unrwa/registration-unrwa.component';
-import {
-  HomeLocationComponent
-} from './components/candidates/intake/home-location/home-location.component';
-import {
-  AsylumYearComponent
-} from './components/candidates/intake/asylum-year/asylum-year.component';
-import {
-  VisaAssessmentComponent
-} from './components/candidates/intake/visa-assessment/visa-assessment.component';
-import {
-  VisaCheckAuComponent
-} from './components/candidates/view/tab/candidate-visa-tab/au/visa-check-au.component';
-import {
-  VisaCheckCaComponent
-} from './components/candidates/view/tab/candidate-visa-tab/ca/visa-check-ca.component';
-import {
-  VisaCheckNzComponent
-} from './components/candidates/view/tab/candidate-visa-tab/nz/visa-check-nz.component';
-import {
-  VisaCheckUkComponent
-} from './components/candidates/view/tab/candidate-visa-tab/uk/visa-check-uk.component';
-import {
-  DestinationLimitComponent
-} from './components/candidates/intake/destination-limit/destination-limit.component';
+import {HomeLocationComponent} from './components/candidates/intake/home-location/home-location.component';
+import {AsylumYearComponent} from './components/candidates/intake/asylum-year/asylum-year.component';
+import {VisaAssessmentComponent} from './components/candidates/intake/visa-assessment/visa-assessment.component';
+import {VisaCheckAuComponent} from './components/candidates/view/tab/candidate-visa-tab/au/visa-check-au.component';
+import {VisaCheckCaComponent} from './components/candidates/view/tab/candidate-visa-tab/ca/visa-check-ca.component';
+import {VisaCheckNzComponent} from './components/candidates/view/tab/candidate-visa-tab/nz/visa-check-nz.component';
+import {VisaCheckUkComponent} from './components/candidates/view/tab/candidate-visa-tab/uk/visa-check-uk.component';
+import {DestinationLimitComponent} from './components/candidates/intake/destination-limit/destination-limit.component';
 import {FixedInputComponent} from './components/util/intake/fixed-input/fixed-input.component';
-import {
-  ConfirmContactComponent
-} from './components/candidates/intake/confirm-contact/confirm-contact.component';
+import {ConfirmContactComponent} from './components/candidates/intake/confirm-contact/confirm-contact.component';
 import {ExamsComponent} from './components/candidates/intake/exams/exams.component';
-import {
-  CandidateExamCardComponent
-} from './components/candidates/intake/exams/card/candidate-exam-card.component';
-import {
-  HasNameSelectorComponent
-} from './components/util/has-name-selector/has-name-selector.component';
-import {
-  DestinationJobComponent
-} from './components/candidates/intake/destination-job/destination-job.component';
+import {CandidateExamCardComponent} from './components/candidates/intake/exams/card/candidate-exam-card.component';
+import {HasNameSelectorComponent} from './components/util/has-name-selector/has-name-selector.component';
+import {DestinationJobComponent} from './components/candidates/intake/destination-job/destination-job.component';
 import {CrimeComponent} from './components/candidates/intake/crime/crime.component';
 import {ConflictComponent} from './components/candidates/intake/conflict/conflict.component';
-import {
-  ResidenceStatusComponent
-} from './components/candidates/intake/residence-status/residence-status.component';
-import {
-  WorkAbroadComponent
-} from './components/candidates/intake/work-abroad/work-abroad.component';
+import {ResidenceStatusComponent} from './components/candidates/intake/residence-status/residence-status.component';
+import {WorkAbroadComponent} from './components/candidates/intake/work-abroad/work-abroad.component';
 import {
   HostEntryLegallyComponent
 } from './components/candidates/intake/host-entry-legally/host-entry-legally.component';
-import {
-  LeftHomeReasonComponent
-} from './components/candidates/intake/left-home-reasons/left-home-reason.component';
+import {LeftHomeReasonComponent} from './components/candidates/intake/left-home-reasons/left-home-reason.component';
 import {
   ReturnHomeFutureComponent
 } from './components/candidates/intake/return-home-future/return-home-future.component';
 import {
   ResettlementThirdComponent
 } from './components/candidates/intake/resettlement-third/resettlement-third.component';
-import {
-  HostChallengesComponent
-} from './components/candidates/intake/host-challenges/host-challenges.component';
-import {
-  MaritalStatusComponent
-} from './components/candidates/intake/marital-status/marital-status.component';
+import {HostChallengesComponent} from './components/candidates/intake/host-challenges/host-challenges.component';
+import {MaritalStatusComponent} from './components/candidates/intake/marital-status/marital-status.component';
 import {AutosaveStatusComponent} from './components/util/autosave-status/autosave-status.component';
 import {DragulaModule} from 'ng2-dragula';
 import {
@@ -399,36 +269,20 @@ import {
 import {
   CandidateNameNumSearchComponent
 } from './components/util/candidate-name-num-search/candidate-name-num-search.component';
-import {
-  MilitaryServiceComponent
-} from './components/candidates/intake/military-service/military-service.component';
-import {
-  VisaRejectComponent
-} from './components/candidates/intake/visa-reject/visa-reject.component';
-import {
-  DrivingLicenseComponent
-} from './components/candidates/intake/driving-license/driving-license.component';
+import {MilitaryServiceComponent} from './components/candidates/intake/military-service/military-service.component';
+import {VisaRejectComponent} from './components/candidates/intake/visa-reject/visa-reject.component';
+import {DrivingLicenseComponent} from './components/candidates/intake/driving-license/driving-license.component';
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
-import {
-  DependantsCardComponent
-} from './components/candidates/intake/dependants/card/dependants-card.component';
-import {
-  LangAssessmentComponent
-} from './components/candidates/intake/lang-assessment/lang-assessment.component';
+import {DependantsCardComponent} from './components/candidates/intake/dependants/card/dependants-card.component';
+import {LangAssessmentComponent} from './components/candidates/intake/lang-assessment/lang-assessment.component';
 import {ExtendDatePipe} from './util/date-adapter/extend-date-pipe';
 import {DatePickerComponent} from './components/util/date-picker/date-picker.component';
-import {
-  IntProtectionComponent
-} from "./components/candidates/visa/int-protection/int-protection.component";
+import {IntProtectionComponent} from "./components/candidates/visa/int-protection/int-protection.component";
 import {
   CharacterAssessmentComponent
 } from "./components/candidates/visa/character-assessment/character-assessment.component";
-import {
-  SecurityRiskComponent
-} from "./components/candidates/visa/security-risk/security-risk.component";
-import {
-  TravelDocumentComponent
-} from "./components/candidates/visa/travel-document/travel-document.component";
+import {SecurityRiskComponent} from "./components/candidates/visa/security-risk/security-risk.component";
+import {TravelDocumentComponent} from "./components/candidates/visa/travel-document/travel-document.component";
 import {
   SalaryTsmitComponent
 } from "./components/candidates/visa/visa-job-assessments/salary-tsmit/salary-tsmit.component";
@@ -453,9 +307,7 @@ import {
 import {
   VisaOtherOptionsComponent
 } from "./components/candidates/visa/visa-job-assessments/visa-other-options/visa-other-options.component";
-import {
-  IeltsLevelComponent
-} from "./components/candidates/visa/visa-job-assessments/ielts-level/ielts-level.component";
+import {IeltsLevelComponent} from "./components/candidates/visa/visa-job-assessments/ielts-level/ielts-level.component";
 import {
   QualificationRelevantComponent
 } from "./components/candidates/visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
@@ -465,16 +317,10 @@ import {
 import {
   JobOccupationComponent
 } from "./components/candidates/visa/visa-job-assessments/job-occupation/job-occupation.component";
-import {
-  RiskAssessmentComponent
-} from "./components/candidates/visa/risk-assessment/risk-assessment.component";
-import {
-  HealthAssessmentComponent
-} from "./components/candidates/visa/health-assessment/health-assessment.component";
+import {RiskAssessmentComponent} from "./components/candidates/visa/risk-assessment/risk-assessment.component";
+import {HealthAssessmentComponent} from "./components/candidates/visa/health-assessment/health-assessment.component";
 import {ShowQrCodeComponent} from './components/util/qr/show-qr-code/show-qr-code.component';
-import {
-  HealthIssuesComponent
-} from './components/candidates/intake/health-issues/health-issues.component';
+import {HealthIssuesComponent} from './components/candidates/intake/health-issues/health-issues.component';
 import {
   VisaJobPutForwardComponent
 } from './components/candidates/visa/visa-job-assessments/put-forward/visa-job-put-forward.component';
@@ -487,73 +333,45 @@ import {
 import {
   CandidateStatusSelectorComponent
 } from './components/util/candidate-status-selector/candidate-status-selector.component';
-import {
-  FinalAgreementComponent
-} from './components/candidates/intake/final-agreement/final-agreement.component';
+import {FinalAgreementComponent} from './components/candidates/intake/final-agreement/final-agreement.component';
 import {NgSelectModule} from "@ng-select/ng-select";
 import {
   CreateCandidateLanguageComponent
 } from './components/candidates/view/language/create/create-candidate-language.component';
-import {
-  EditCandidateOppComponent
-} from './components/candidate-opp/edit-candidate-opp/edit-candidate-opp.component';
-import {
-  IeltsScoreValidationComponent
-} from './components/util/ielts-score-validation/ielts-score-validation.component';
+import {EditCandidateOppComponent} from './components/candidate-opp/edit-candidate-opp/edit-candidate-opp.component';
+import {IeltsScoreValidationComponent} from './components/util/ielts-score-validation/ielts-score-validation.component';
 import {FileSelectorComponent} from './components/util/file-selector/file-selector.component';
 import {NewJobComponent} from './components/job/new-job/new-job.component';
-import {
-  OldIntakeInputComponent
-} from './components/util/old-intake-input-modal/old-intake-input.component';
+import {OldIntakeInputComponent} from './components/util/old-intake-input-modal/old-intake-input.component';
 import {
   CandidateShareableNotesComponent
 } from './components/util/candidate-shareable-notes/candidate-shareable-notes.component';
-import {
-  ShareableDocsComponent
-} from './components/candidates/view/shareable-docs/shareable-docs.component';
+import {ShareableDocsComponent} from './components/candidates/view/shareable-docs/shareable-docs.component';
 import {
   PublishedDocColumnSelectorComponent
 } from "./components/util/published-doc-column-selector/published-doc-column-selector.component";
 import {
   CandidateSourceDescriptionComponent
 } from './components/util/candidate-source-description/candidate-source-description.component';
-import {
-  SearchExternalLinksComponent
-} from './components/settings/external-links/search-external-links.component';
-import {
-  CreateExternalLinkComponent
-} from './components/settings/external-links/create/create-external-link.component';
-import {
-  EditExternalLinkComponent
-} from './components/settings/external-links/edit/edit-external-link.component';
-import {
-  CovidVaccinationComponent
-} from './components/candidates/intake/vaccination/covid-vaccination.component';
-import {
-  EnglishThresholdComponent
-} from './components/candidates/visa/english-threshold/english-threshold.component';
+import {SearchExternalLinksComponent} from './components/settings/external-links/search-external-links.component';
+import {CreateExternalLinkComponent} from './components/settings/external-links/create/create-external-link.component';
+import {EditExternalLinkComponent} from './components/settings/external-links/edit/edit-external-link.component';
+import {CovidVaccinationComponent} from './components/candidates/intake/vaccination/covid-vaccination.component';
+import {EnglishThresholdComponent} from './components/candidates/visa/english-threshold/english-threshold.component';
 import {FilterPipe} from "./pipes/filter.pipe";
 import {SafePipe} from "./pipes/safe.pipe";
 import {
   CandidateTaskTabComponent
 } from './components/candidates/view/tab/candidate-task-tab/candidate-task-tab.component';
 import {DownloadCvComponent} from './components/util/download-cv/download-cv.component';
-import {
-  AssignTasksListComponent
-} from './components/tasks/assign-tasks-list/assign-tasks-list.component';
+import {AssignTasksListComponent} from './components/tasks/assign-tasks-list/assign-tasks-list.component';
 import {
   AssignTasksCandidateComponent
 } from './components/tasks/assign-tasks-candidate/assign-tasks-candidate.component';
-import {
-  EditTaskAssignmentComponent
-} from './components/candidates/view/tasks/edit/edit-task-assignment.component';
-import {
-  ViewCandidateTasksComponent
-} from "./components/candidates/view/tasks/view-candidate-tasks.component";
+import {EditTaskAssignmentComponent} from './components/candidates/view/tasks/edit/edit-task-assignment.component';
+import {ViewCandidateTasksComponent} from "./components/candidates/view/tasks/view-candidate-tasks.component";
 import {BrowseTasksComponent} from './components/tasks/browse-tasks/browse-tasks.component';
-import {
-  ViewTaskDetailsComponent
-} from './components/tasks/view-task-details/view-task-details.component';
+import {ViewTaskDetailsComponent} from './components/tasks/view-task-details/view-task-details.component';
 import {SearchTasksComponent} from './components/settings/tasks/search-tasks.component';
 import {TasksMonitorComponent} from './components/util/tasks-monitor/tasks-monitor.component';
 import {
@@ -562,9 +380,7 @@ import {
 import {
   EditCandidateMediaWillingnessComponent
 } from './components/candidates/view/media/edit/edit-candidate-media-willingness.component';
-import {
-  ViewResponseComponent
-} from './components/candidates/view/tasks/view-response/view-response.component';
+import {ViewResponseComponent} from './components/candidates/view/tasks/view-response/view-response.component';
 import {
   ViewCandidateRegistrationComponent
 } from './components/candidates/view/registration/view-candidate-registration.component';
@@ -572,48 +388,30 @@ import {
   EditCandidateRegistrationComponent
 } from './components/candidates/view/registration/edit/edit-candidate-registration.component';
 import {EditTaskComponent} from './components/settings/tasks/edit/edit-task.component';
-import {
-  TasksMonitorListComponent
-} from './components/util/tasks-monitor-list/tasks-monitor-list.component';
-import {
-  SearchPartnersComponent
-} from './components/settings/partners/search-partners/search-partners.component';
+import {TasksMonitorListComponent} from './components/util/tasks-monitor-list/tasks-monitor-list.component';
+import {SearchPartnersComponent} from './components/settings/partners/search-partners/search-partners.component';
 import {
   CreateUpdatePartnerComponent
 } from './components/settings/partners/create-update-partner/create-update-partner.component';
 import {RoleGuardService} from "./services/role-guard.service";
 import {ViewJobComponent} from './components/job/view/view-job/view-job.component';
 import {JobsComponent} from './components/job/jobs/jobs.component';
-import {
-  JobsWithDetailComponent
-} from './components/job/jobs-with-detail/jobs-with-detail.component';
-import {
-  ViewJobFromUrlComponent
-} from './components/job/view/view-job-from-url/view-job-from-url.component';
-import {
-  JobGeneralTabComponent
-} from './components/job/view/tab/job-general-tab/job-general-tab.component';
+import {JobsWithDetailComponent} from './components/job/jobs-with-detail/jobs-with-detail.component';
+import {ViewJobFromUrlComponent} from './components/job/view/view-job-from-url/view-job-from-url.component';
+import {JobGeneralTabComponent} from './components/job/view/tab/job-general-tab/job-general-tab.component';
 import {
   ViewJobDescriptionComponent
 } from './components/job/view/description/view-job-description/view-job-description.component';
-import {
-  ViewJobInfoComponent
-} from './components/job/view/info/view-job-info/view-job-info.component';
+import {ViewJobInfoComponent} from './components/job/view/info/view-job-info/view-job-info.component';
 import {
   ViewJobSubmissionListComponent
 } from './components/job/view/submission-list/view-job-submission-list/view-job-submission-list.component';
-import {
-  EditJobInfoComponent
-} from './components/job/view/info/edit-job-info/edit-job-info.component';
+import {EditJobInfoComponent} from './components/job/view/info/edit-job-info/edit-job-info.component';
 import {
   ViewJobSuggestedListComponent
 } from './components/job/view/suggested-list/view-job-suggested-list/view-job-suggested-list.component';
-import {
-  ViewJobSummaryComponent
-} from './components/job/view/summary/view-job-summary/view-job-summary.component';
-import {
-  EditJobSummaryComponent
-} from './components/job/view/summary/edit-job-summary/edit-job-summary.component';
+import {ViewJobSummaryComponent} from './components/job/view/summary/view-job-summary/view-job-summary.component';
+import {EditJobSummaryComponent} from './components/job/view/summary/edit-job-summary/edit-job-summary.component';
 import {
   JobSuggestedSearchesTabComponent
 } from './components/job/view/tab/job-suggested-searches-tab/job-suggested-searches-tab.component';
@@ -621,12 +419,8 @@ import {
   ViewJobSuggestedSearchesComponent
 } from './components/job/view/suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component';
 import {InputTextComponent} from './components/util/input/input-text/input-text.component';
-import {
-  JobUploadTabComponent
-} from './components/job/view/tab/job-upload-tab/job-upload-tab.component';
-import {
-  ViewJobUploadsComponent
-} from './components/job/view/uploads/view-job-uploads/view-job-uploads.component';
+import {JobUploadTabComponent} from './components/job/view/tab/job-upload-tab/job-upload-tab.component';
+import {ViewJobUploadsComponent} from './components/job/view/uploads/view-job-uploads/view-job-uploads.component';
 import {InputLinkComponent} from './components/util/input/input-link/input-link.component';
 import {
   JobSourceContactsTabComponent
@@ -638,12 +432,8 @@ import {
   ViewJobPreparationItemsComponent
 } from './components/job/view/preparation-items/view-job-preparation-items/view-job-preparation-items.component';
 import {AdminApiComponent} from './components/settings/admin-api/admin-api.component';
-import {
-  JobIntakeTabComponent
-} from './components/job/view/tab/job-intake-tab/job-intake-tab.component';
-import {
-  CostCommitEmployerComponent
-} from './components/job/intake/cost-commit-employer/cost-commit-employer.component';
+import {JobIntakeTabComponent} from './components/job/view/tab/job-intake-tab/job-intake-tab.component';
+import {CostCommitEmployerComponent} from './components/job/intake/cost-commit-employer/cost-commit-employer.component';
 import {
   CandidateJobsTabComponent
 } from './components/candidates/view/tab/candidate-jobs-tab/candidate-jobs-tab.component';
@@ -653,12 +443,8 @@ import {
 import {
   ViewCandidateOppFromUrlComponent
 } from './components/candidate-opp/view-candidate-opp-from-url/view-candidate-opp-from-url.component';
-import {
-  ViewCandidateOppComponent
-} from './components/candidate-opp/view-candidate-opp/view-candidate-opp.component';
-import {
-  CandidateOppsComponent
-} from './components/candidate-opp/candidate-opps/candidate-opps.component';
+import {ViewCandidateOppComponent} from './components/candidate-opp/view-candidate-opp/view-candidate-opp.component';
+import {CandidateOppsComponent} from './components/candidate-opp/candidate-opps/candidate-opps.component';
 import {
   CandidateOppsWithDetailComponent
 } from './components/candidate-opp/candidate-opps-with-detail/candidate-opps-with-detail.component';
@@ -669,9 +455,7 @@ import {
   OpportunityStageNextStepComponent
 } from './components/util/opportunity-stage-next-step/opportunity-stage-next-step.component';
 import {EditOppComponent} from './components/opportunity/edit-opp/edit-opp.component';
-import {
-  PathwayAssessmentComponent
-} from './components/candidates/visa/pathway-assessment/pathway-assessment.component';
+import {PathwayAssessmentComponent} from './components/candidates/visa/pathway-assessment/pathway-assessment.component';
 import {
   CandidateVisaJobComponent
 } from './components/candidates/view/tab/candidate-visa-tab/job/candidate-visa-job.component';
@@ -702,28 +486,20 @@ import {
 } from './components/candidates/visa/visa-job-assessments/occupation-subcategory/occupation-subcategory.component';
 import {DirectiveModule} from "./directives/directive.module";
 import {RxStompService} from "./services/rx-stomp.service";
-import {
-  CreateUpdatePostComponent
-} from './components/chat/create-update-post/create-update-post.component';
+import {CreateUpdatePostComponent} from './components/chat/create-update-post/create-update-post.component';
 import {EnvService} from "./services/env.service";
 import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.component';
 import {ChatsComponent} from './components/chat/chats/chats.component';
-import {
-  ChatsWithPostsComponent
-} from './components/chat/chats-with-posts/chats-with-posts.component';
+import {ChatsWithPostsComponent} from './components/chat/chats-with-posts/chats-with-posts.component';
 import {ViewChatComponent} from './components/chat/view-chat/view-chat.component';
-import {
-  CreateUpdateChatComponent
-} from './components/chat/create-update-chat/create-update-chat.component';
+import {CreateUpdateChatComponent} from './components/chat/create-update-chat/create-update-chat.component';
 import {ViewPostComponent} from './components/chat/view-post/view-post.component';
 import {ManageChatsComponent} from './components/chat/manage-chats/manage-chats.component';
 import {
   JobSourceContactsWithChatsComponent
 } from './components/job/view/source-contacts/job-source-contacts-with-chats/job-source-contacts-with-chats.component';
 import {ViewChatPostsComponent} from './components/chat/view-chat-posts/view-chat-posts.component';
-import {
-  JobGroupChatsTabComponent
-} from './components/job/view/tab/job-group-chats-tab/job-group-chats-tab.component';
+import {JobGroupChatsTabComponent} from './components/job/view/tab/job-group-chats-tab/job-group-chats-tab.component';
 import {
   RelocatingDependantsComponent
 } from './components/candidates/visa/visa-job-assessments/relocating-dependants/relocating-dependants.component';
@@ -731,9 +507,7 @@ import {SearchHomeComponent} from './components/search/search-home/search-home.c
 import {JobHomeComponent} from './components/job/job-home/job-home.component';
 import {ListHomeComponent} from './components/list/list-home/list-home.component';
 import {QuillModule} from 'ngx-quill';
-import {
-  ChatReadStatusComponent
-} from './components/chat/chat-read-status/chat-read-status.component';
+import {ChatReadStatusComponent} from './components/chat/chat-read-status/chat-read-status.component';
 import {
   LanguageThresholdComponent
 } from './components/candidates/visa/visa-job-assessments/language-threshold/language-threshold.component';
@@ -741,20 +515,12 @@ import {
   MonitoringEvaluationConsentComponent
 } from './components/candidates/intake/monitoring-evaluation-consent/monitoring-evaluation-consent.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
-import {
-  UserChangePasswordComponent
-} from './components/account/user-change-password/user-change-password.component';
+import {UserChangePasswordComponent} from './components/account/user-change-password/user-change-password.component';
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
-import {
-  NclcScoreValidationComponent
-} from './components/util/nclc-score-validation/nclc-score-validation.component';
-import {
-  ArrestImprisonComponent
-} from './components/candidates/intake/arrest-imprison/arrest-imprison.component';
+import {NclcScoreValidationComponent} from './components/util/nclc-score-validation/nclc-score-validation.component';
+import {ArrestImprisonComponent} from './components/candidates/intake/arrest-imprison/arrest-imprison.component';
 import {HelpComponent} from './components/help/help.component';
-import {
-  SearchHelpLinksComponent
-} from './components/settings/help-links/search-help-links.component';
+import {SearchHelpLinksComponent} from './components/settings/help-links/search-help-links.component';
 import {
   CreateUpdateHelpLinkComponent
 } from './components/settings/help-links/create-update-help-link/create-update-help-link.component';
@@ -768,9 +534,7 @@ import {
 import {PreviewLinkComponent} from './components/chat/preview-link/preview-link.component';
 import {BuildLinkComponent} from './util/build-link/build-link.component';
 import {LinkTooltipComponent} from './util/link-tooltip/link-tooltip.component';
-import {
-  CandidatesWithChatComponent
-} from './components/chat/candidates-with-chat/candidates-with-chat.component';
+import {CandidatesWithChatComponent} from './components/chat/candidates-with-chat/candidates-with-chat.component';
 import {
   ShowCandidatesWithChatComponent
 } from './components/chat/show-candidates-with-chat/show-candidates-with-chat.component';
@@ -780,18 +544,10 @@ import {
 import {
   EditCandidateDestinationsComponent
 } from './components/candidates/view/destinations/edit/edit-candidate-destinations/edit-candidate-destinations.component';
-import {
-  DestinationFamilyComponent
-} from './components/candidates/visa/destination-family/destination-family.component';
-import {
-  ViewCandidateExamComponent
-} from "./components/candidates/view/exam/view-candidate-exam.component";
-import {
-  CreateCandidateExamComponent
-} from "./components/candidates/view/exam/create/create-candidate-exam.component";
-import {
-  EditCandidateExamComponent
-} from "./components/candidates/view/exam/edit/edit-candidate-exam.component";
+import {DestinationFamilyComponent} from './components/candidates/visa/destination-family/destination-family.component';
+import {ViewCandidateExamComponent} from "./components/candidates/view/exam/view-candidate-exam.component";
+import {CreateCandidateExamComponent} from "./components/candidates/view/exam/create/create-candidate-exam.component";
+import {EditCandidateExamComponent} from "./components/candidates/view/exam/edit/edit-candidate-exam.component";
 import {JoiDataComponent} from './components/job/intake/joi-data/joi-data.component';
 import {
   FindCandidateSourceComponent
@@ -807,6 +563,9 @@ import {
   ImportDuolingoCouponsComponent
 } from "./components/settings/import-duolingo-coupons/import-duolingo-coupons.component";
 import {DetScoreValidationComponent} from './components/util/det-score-validation/det-score-validation.component';
+import {DuolingoAssignmentComponent} from './components/util/duolingo-assignment/duolingo-assignment.component';
+import { VerifyEmailComponent } from './components/account/verify-email/verify-email.component';
+import { VerifyEmailToastComponent } from './components/account/verify-email-toast/verify-email-toast.component';
 
 @NgModule({
   declarations: [
@@ -1131,7 +890,10 @@ import {DetScoreValidationComponent} from './components/util/det-score-validatio
     PotentialDuplicateIconComponent,
     DuplicatesDetailComponent,
     ImportDuolingoCouponsComponent,
-    DetScoreValidationComponent
+    DetScoreValidationComponent,
+    DuolingoAssignmentComponent,
+    VerifyEmailComponent,
+    VerifyEmailToastComponent
   ],
   imports: [
     BrowserModule,

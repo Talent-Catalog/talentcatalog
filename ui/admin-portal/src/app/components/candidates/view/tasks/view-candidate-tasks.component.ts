@@ -33,7 +33,6 @@ import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
-
 @Component({
   selector: 'app-view-candidate-tasks',
   templateUrl: './view-candidate-tasks.component.html',
@@ -100,6 +99,10 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       .then((taskAssignment: TaskAssignment) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  handleError(error: any) {
+    this.error = error;
   }
 
   editTaskAssignment(ta: TaskAssignment) {

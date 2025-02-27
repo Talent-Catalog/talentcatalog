@@ -50,6 +50,7 @@ export interface Candidate extends HasId {
   candidateNumber: string;
   publicId?: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -73,6 +74,7 @@ export interface Candidate extends HasId {
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
   linkedInLink: string;
+  muted: boolean;
   candidateMessage: string;
   maxEducationLevel: EducationLevel;
   folderlink: string;
@@ -455,6 +457,10 @@ export interface UpdateCandidateListOppsRequest {
   candidateOppParams?: CandidateOpportunityParams;
 }
 
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
+}
+
 export interface UpdateCandidateShareableNotesRequest {
   shareableNotes?: string;
 }
@@ -474,6 +480,10 @@ export interface UpdateCandidateStatusInfo {
 export interface UpdateCandidateStatusRequest {
   candidateIds: number[];
   info: UpdateCandidateStatusInfo;
+}
+
+export interface UpdateCandidateMutedRequest {
+  muted: boolean;
 }
 
 export enum FamilyRelations {

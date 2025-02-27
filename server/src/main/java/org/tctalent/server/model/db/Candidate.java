@@ -68,6 +68,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String candidateNumber;
     private String publicId;
 
+    /**
+     * True if candidate wants to receive all notifications.
+     * If false, the candidate will only receive notifications when they are well progressed in
+     * a job opportunity.
+     */
+    private boolean allNotifications;
+
     @Transient
     private Long contextSavedListId;
 
@@ -92,6 +99,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String additionalInfo;
     private String candidateMessage;
     private String linkedInLink;
+
+    /**
+     * If true, candidate cannot post to chats. Effectively any chats they see are read only.
+     * <p/>
+     * A candidate can be muted by their source partner if they are not respecting the TC's chat
+     * rules. They can subsequently be unmuted.
+     */
+    private boolean muted;
 
     /**
      * Candidate's internal id reference with the source partner handling their case.
@@ -1112,6 +1127,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         this.address1 = address1;
     }
 
+    public boolean isAllNotifications() {
+        return allNotifications;
+    }
+
+    public void setAllNotifications(boolean allNotifications) {
+        this.allNotifications = allNotifications;
+    }
+
     public String getCity() {return city;}
 
     public void setCity(String city) {
@@ -1155,6 +1178,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public String getLinkedInLink() { return linkedInLink; }
 
     public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
 
     public SurveyType getSurveyType() { return surveyType; }
 

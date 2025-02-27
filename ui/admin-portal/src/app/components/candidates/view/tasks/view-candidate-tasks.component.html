@@ -17,7 +17,7 @@
 <div *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
-<div *ngIf="error">
+<div *ngIf="error" class="alert alert-danger">
   {{error}}
 </div>
 
@@ -26,10 +26,15 @@
     <span [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">Candidate Tasks: Ongoing</span>
     <div class="d-flex flex-fill justify-content-between align-items-center">
       <span class="small font-italic">Comment?</span>
-      <div *ngIf="editable">
-        <button class="btn btn-primary btn-sm" (click)="assignTask()">
-          <i class="fas fa-plus"></i> Assign task
-        </button>
+      <div class="d-flex">
+        <div *ngIf="editable" class="mx-2">
+          <app-duolingo-assignment [candidate]="candidate" (errorOccurred)="handleError($event)"></app-duolingo-assignment>
+        </div>
+        <div *ngIf="editable">
+          <button class="btn btn-primary btn-sm" (click)="assignTask()">
+            <i class="fas fa-plus"></i> Assign task
+          </button>
+        </div>
       </div>
     </div>
   </div>

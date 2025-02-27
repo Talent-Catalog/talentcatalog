@@ -126,16 +126,28 @@ public class EmailSender {
         String subject,
         String contentText,
         String contentHtml) {
-        doSend(emailTo, subject, contentText, contentHtml);
+        doSend(emailTo, null, subject, contentText, contentHtml);
+    }
+
+    @Async
+    public void sendAsync(String emailTo, String emailCc,
+        String subject,
+        String contentText,
+        String contentHtml) {
+        doSend(emailTo, emailCc, subject, contentText, contentHtml);
     }
 
     private void doSend(String emailTo,
+        @Nullable
+        String emailCc,
         String subject,
         String contentText,
         String contentHtml) {
         LogBuilder.builder(log)
             .action("Email")
-            .message("Sending email to " + emailTo  + " with subject '" + subject + "'")
+            .message("Sending email to " + emailTo +
+                (emailCc != null ? " cc " + emailCc : "") +
+                " with subject '" + subject + "'")
             .logInfo();
 
         MimeMessage email = mailSender.createMimeMessage();
@@ -143,6 +155,9 @@ public class EmailSender {
             MimeMessageHelper helper = new MimeMessageHelper(email, true);
             helper.setFrom(defaultEmail);
             helper.addTo(applyTestOverrideIfRequired(emailTo));
+            if (emailCc != null) {
+                helper.addCc(applyTestOverrideIfRequired(emailCc));
+            }
             helper.setSubject(subject);
             helper.setText(contentText, contentHtml);
 

@@ -17,5 +17,7 @@
 <app-header *ngIf="showHeader"></app-header>
 
 <div class="container-fluid">
+<app-verify-email-toast *ngIf="this.user" [showToast]="showToast"  [userEmail]="this.user.email"></app-verify-email-toast>
+
   <router-outlet></router-outlet>
 </div>

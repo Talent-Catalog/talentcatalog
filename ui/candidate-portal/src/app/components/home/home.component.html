@@ -111,6 +111,10 @@
         </div>
       </ng-container>
 
+      <div *ngIf="emailVerified === false" class="text-start verify-email-button" style="margin-top: 1rem;">
+        <button class="btn btn-primary" (click)="openModal()">{{ 'HOME.EMAIL_VERIFICATION.BUTTON' | translate }}</button>
+      </div>
+
     </ng-container>
 
   </ng-container>

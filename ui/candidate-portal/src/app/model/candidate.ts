@@ -48,6 +48,7 @@ export interface Candidate extends HasId {
   candidateNumber: string;
   publicId: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -88,6 +89,7 @@ export interface Candidate extends HasId {
   shareableDoc: CandidateAttachment;
   listShareableCv: CandidateAttachment;
   listShareableDoc: CandidateAttachment;
+  muted: boolean;
   shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
@@ -461,6 +463,10 @@ export interface UpdateCandidateStatusRequest {
   info: UpdateCandidateStatusInfo;
 }
 
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
+}
+
 export enum FamilyRelations {
   NoRelation = "No relatives",
   Child = "Daughter/Son",
@@ -684,6 +690,19 @@ export function hasIeltsExam(candidate: Candidate): boolean {
   } else {
     return false;
   }
+}
+
+export function isMuted(candidate: Candidate): boolean {
+  //Default is to treat as muted if the candidate or muted attribute is not defined
+  let isMuted = true;
+  if (candidate) {
+    //Candidate is defined
+    if (candidate.muted != null) {
+      //Muted attribute is defined - so just use it
+      isMuted = candidate.muted;
+    }
+  }
+  return isMuted;
 }
 
 export function checkIeltsScoreType(candidate: Candidate): string {

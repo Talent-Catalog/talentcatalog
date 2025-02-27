@@ -17,6 +17,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   Candidate,
+  UpdateCandidateNotificationPreferenceRequest,
+  UpdateCandidateMutedRequest,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -476,5 +478,72 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   public canViewCandidateName() {
     return this.authorizationService.canViewCandidateName();
+  }
+
+  public computeNotificationButtonLabel() {
+    return "Notification " + (this.candidate?.allNotifications ? "Opt Out": "Opt In");
+  }
+
+  public toggleNotificationPreferences() {
+    //Ask user if they are sure. Normally this should be changed by candidate only.
+    const areYouSure = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    areYouSure.componentInstance.title = "Override candidate's chat notification preferences?";
+    areYouSure.componentInstance.message =
+      "The candidate can opt into receiving detailed chat notifications. " +
+      " The default is that they don't - but normally we should respect" +
+      " whatever decision they have made.";
+
+    areYouSure.result
+    .then((result) => {
+      if (result == true) {
+        this.doToggleNotificationPreferences()
+      }
+    })
+    .catch(() => {});
+  }
+
+  private doToggleNotificationPreferences() {
+    this.error = null;
+    const request: UpdateCandidateNotificationPreferenceRequest = {
+      allNotifications: !this.candidate.allNotifications
+    };
+    this.candidateService.updateNotificationPreference(this.candidate.id, request).subscribe(
+      () => {
+        //Update candidate with new preference
+        this.candidate.allNotifications = request.allNotifications;
+
+        //Refresh to get new candidate notes.
+        this.refreshCandidateProfile();
+      },
+      (error) => {
+        this.error = error;
+      });
+  }
+
+  public computeMuteButtonLabel() {
+    return (this.candidate?.muted ? "Unmute": "Mute") + " Candidate";
+  }
+
+  public toggleMuted() {
+    this.error = null;
+    const request: UpdateCandidateMutedRequest = {
+      muted: !this.candidate.muted
+    };
+    this.candidateService.updateMuted(this.candidate.id, request).subscribe(
+      () => {
+        //Update candidate with new status
+        this.candidate.muted = request.muted;
+
+        //Refresh to get new candidate notes.
+        this.refreshCandidateProfile();
+      },
+      (error) => {
+        this.error = error;
+      });
+
   }
 }

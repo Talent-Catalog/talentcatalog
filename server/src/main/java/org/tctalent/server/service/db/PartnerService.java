@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -29,8 +30,6 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
-
-import java.util.List;
 
 /**
  * Service for managing {@link Partner}
@@ -87,7 +86,14 @@ public interface PartnerService {
      * appropriate request.
      * @return All active source partners
      */
-    List<PartnerImpl> listSourcePartners();
+    List<PartnerImpl> listActiveSourcePartners();
+
+    /**
+     * Convenience method which just delegates to {@link #search(SearchPartnerRequest)} with an
+     * appropriate request and returns ALL source partners of any status.
+     * @return All source partners
+     */
+    List<PartnerImpl> listAllSourcePartners();
 
     /**
      * Get the partners from search request

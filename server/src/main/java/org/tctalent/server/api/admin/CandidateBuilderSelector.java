@@ -52,8 +52,10 @@ public class CandidateBuilderSelector {
         new HashSet<>(Arrays.asList(
             "id",
             "status",
+            "muted",
             "candidateNumber",
             "publicId",
+            "allNotifications",
             "gender",
             "dob",
             "yearOfArrival",
@@ -156,8 +158,10 @@ public class CandidateBuilderSelector {
         final DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
             .add("status")
+            .add("muted")
             .add("candidateNumber")
             .add("publicId")
+            .add("allNotifications")
             .add("gender")
             .add("dob")
             .add("phone")
@@ -230,12 +234,13 @@ public class CandidateBuilderSelector {
             }
 
             // Extended DTO used for candidate search card information
-            if (DtoType.EXTENDED.equals(type)) {
+            // We also include these properties in the API DTO
+            if (DtoType.EXTENDED.equals(type) || DtoType.API.equals(type)) {
                 builder
                     .add("candidateLanguages", candidateLanguageDto())
                     .add("candidateDestinations", candidateDestinationDto())
-                    .add("candidateOccupations", candidateOccupationDto())
-                    .add("candidateJobExperiences", candidateJobExperienceDto())
+                    .add("candidateOccupations", candidateOccupationDto(type))
+                    .add("candidateJobExperiences", candidateJobExperienceDto(type))
                     .add("candidateSkills", candidateSkillDto())
                     .add("candidateEducations", candidateEducationDto())
                     .add("candidateCertifications", candidateCertificationDto())
@@ -245,6 +250,68 @@ public class CandidateBuilderSelector {
                     .add("relocatedState")
                     .add("relocatedCountry", countryService.selectBuilder())
                 ;
+            }
+
+            // Additional properties for the API
+            if (DtoType.API.equals(type)) {
+                builder
+                    .add("covidVaccinated")
+                    .add("covidVaccinatedDate")
+                    .add("covidVaccineName")
+                    .add("covidVaccineNotes")
+                    .add("covidVaccinatedStatus")
+                    .add("crimeConvict")
+                    .add("crimeConvictNotes")
+                    .add("destLimit")
+                    .add("destLimitNotes")
+                    .add("candidateCitizenships", candidateCitizenshipDto())
+                    .add("candidateDependants", candidateDependantDto())
+                    .add("candidateMessage")
+                    .add("candidateVisaChecks", candidateVisaCheckDto())
+                    .add("canDrive")
+                    .add("conflict")
+                    .add("contactConsentPartners")
+                    .add("contactConsentRegistration")
+                    .add("drivingLicenseExp")
+                    .add("familyMove")
+                    .add("healthIssues")
+                    .add("hostChallenges")
+                    .add("hostEntryLegally")
+                    .add("hostEntryYear")
+                    .add("intRecruitReasons")
+                    .add("intRecruitOther")
+                    .add("intRecruitRural")
+                    .add("leftHomeReasons")
+                    .add("mediaWillingness")
+                    .add("militaryService")
+                    .add("militaryWanted")
+                    .add("militaryStart")
+                    .add("militaryEnd")
+                    .add("monitoringEvaluationConsent")
+                    .add("partnerRegistered")
+                    .add("partnerEnglish")
+                    .add("partnerIelts")
+                    .add("partnerIeltsScore")
+                    .add("partnerIeltsYr")
+                    .add("returnedHome")
+                    .add("returnHomeSafe")
+                    .add("returnHomeFuture")
+                    .add("resettleThird")
+                    .add("resettleThirdStatus")
+                    .add("unhcrConsent")
+                    .add("unhcrNotRegStatus")
+                    .add("unrwaNotRegStatus")
+                    .add("visaIssues")
+                    .add("visaReject")
+                    .add("workAbroad")
+                    .add("workPermit")
+                    .add("workPermitDesired")
+                    .add("yearOfArrival")
+                    .add("partnerEduLevel", educationLevelDto())
+                    .add("partnerEnglishLevel", languageLevelDto())
+                    .add("partnerOccupation", occupationService.selectBuilder())
+                    .add("partnerCitizenship")
+                    .add("partnerCandidate", shortCandidateDto());
             }
 
             return builder;
@@ -260,6 +327,7 @@ public class CandidateBuilderSelector {
                 .add("updatedDate")
                 .add("lastLogin")
                 .add("partner", partnerDto())
+                .add("emailVerified")
                 ;
     }
 
@@ -390,6 +458,8 @@ public class CandidateBuilderSelector {
                 .add("id")
                 .add("exam")
                 .add("score")
+                .add("year")
+                .add("notes")
                 ;
     }
 
@@ -415,6 +485,7 @@ public class CandidateBuilderSelector {
 
         return builder;
     }
+
     private DtoBuilder candidateLanguageDto() {
         return new DtoBuilder()
             .add("id")
@@ -449,8 +520,33 @@ public class CandidateBuilderSelector {
             ;
     }
 
-    private DtoBuilder candidateOccupationDto() {
+    private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
+            .add("id")
+            .add("hasPassport")
+            .add("passportExp")
+            .add("nationality", countryService.selectBuilder())
+            .add("notes")
+            ;
+    }
+
+    private DtoBuilder candidateDependantDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("relation")
+            .add("dob")
+            .add("gender")
+            .add("name")
+            .add("registered")
+            .add("registeredNumber")
+            .add("registeredNotes")
+            .add("healthConcern")
+            .add("healthNotes")
+            ;
+    }
+
+    private DtoBuilder candidateOccupationDto(DtoType type) {
+        DtoBuilder builder = new DtoBuilder()
             .add("id")
             .add("migrationOccupation")
             .add("occupation", occupationService.selectBuilder())
@@ -460,10 +556,18 @@ public class CandidateBuilderSelector {
             .add("updatedBy", userDto())
             .add("updatedDate")
             ;
+
+            if (DtoType.API.equals(type)) { // include job experiences in candidate occupations for API
+                builder
+                    .add("candidateJobExperiences", candidateJobExperienceDto(type))
+                ;
+            }
+
+            return builder;
     }
 
-    private DtoBuilder candidateJobExperienceDto() {
-        return new DtoBuilder()
+    private DtoBuilder candidateJobExperienceDto(DtoType type) {
+        DtoBuilder builder = new DtoBuilder()
             .add("id")
             .add("companyName")
             .add("role")
@@ -473,8 +577,15 @@ public class CandidateBuilderSelector {
             .add("paid")
             .add("description")
             .add("country", countryService.selectBuilder())
-            .add("candidateOccupation", candidateOccupationDto())
             ;
+
+            if (!DtoType.API.equals(type)) { // do not include candidate occupations in job experiences for API
+                builder
+                    .add("candidateOccupation", candidateOccupationDto(type))
+                ;
+            }
+
+            return builder;
     }
 
     private DtoBuilder candidateSkillDto() {
@@ -526,6 +637,63 @@ public class CandidateBuilderSelector {
             .add("createdDate")
             .add("updatedBy", userDto())
             .add("updatedDate")
+            ;
+    }
+
+    private DtoBuilder candidateVisaCheckDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("country", countryService.selectBuilder())
+            .add("protection")
+            .add("englishThreshold")
+            .add("healthAssessment")
+            .add("characterAssessment")
+            .add("securityRisk")
+            .add("overallRisk")
+            .add("validTravelDocs")
+            .add("pathwayAssessment")
+            .add("destinationFamily")
+            .add("candidateVisaJobChecks", candidateVisaJobCheckDto())
+            ;
+    }
+
+    private DtoBuilder candidateVisaJobCheckDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("jobOpp", salesforceJobOppDto())
+            .add("interest")
+            .add("occupation", occupationService.selectBuilder())
+            .add("salaryTsmit")
+            .add("regional")
+            .add("eligible_494")
+            .add("eligible_186")
+            .add("eligibleOther")
+            .add("putForward")
+            .add("tbbEligibility")
+            .add("ageRequirement")
+            .add("languagesRequired")
+            .add("languagesThresholdMet")
+            ;
+    }
+
+    private DtoBuilder salesforceJobOppDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("country", countryService.selectBuilder())
+            .add("employerEntity", employerEntityDto())
+            .add("publishedDate")
+            .add("stage")
+            .add("submissionDueDate")
+            .add("hiringCommitment")
+            .add("employerHiredInternationally")
+            ;
+    }
+
+    private DtoBuilder employerEntityDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("country", countryService.selectBuilder())
+            .add("hasHiredInternationally")
             ;
     }
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Duolingo Coupon</title>
+</head>
+<body>
+<div>
+  <p>Dear <span th:text="${displayName}"></span>,</p>
+  <p>
+    <strong>You have received a Duolingo English Test coupon.</strong>
+  </p>
+  <p>
+
+    Please log in to <a th:href="${loginUrl}">our portal</a> and visit the "Services"
+    tab to view the steps required to take the exam.
+  </p>
+
+  <p>
+    If you have any questions, feel free to reach out.
+  </p>
+
+  <p>
+    Best regards,
+  </p>
+</div>
+</body>
+</html>
