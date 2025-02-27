@@ -319,8 +319,10 @@ public class JobServiceImpl implements JobService {
         SavedList exclusionList;
         try {
            //Create exclusion list for the employer (account) associated with this job
-           exclusionList =
-               salesforceBridgeService.findSeenCandidates(exclusionListName, job.getAccountId());
+           exclusionList = salesforceBridgeService.findSeenCandidates(
+               exclusionListName,
+               job.getAccountId() != null ? job.getAccountId() : job.getEmployerEntity().getSfId()
+           );
         } catch (Exception ex) {
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
