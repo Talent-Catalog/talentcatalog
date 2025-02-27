@@ -43,11 +43,11 @@ Check out the newest features and enhancements.
 
 <div class="card-container">
   <a href="./v223/search_functionality" class="card">
-    <img src="./assets/images/v230/DuolingoEnglishTest.png" alt="Search Improvements" class="card-image">
+    <img src="./assets/images/v230/DuolingoEnglishTestLogo.png" alt="Duolingo English Test logo" class="card-image">
     <div class="card-body">
       <div class="card-title">Duolingo English Test/TC Integration</div>
       <div class="card-description">
-        Duolingo is providing candidates with free Duolingo English Tests. These tests are able to be assigned and managed 
+        Duolingo is providing candidates with free Duolingo English Tests. These tests can be assigned and managed 
         through the Talent Catalog.
       </div>
       <div class="card-footer">
