@@ -24,6 +24,12 @@ body {
   background-image: none;
 }
 
+@media screen and (min-width: 64em) {
+  .page-header {
+    padding:4rem 6rem
+  }
+}
+
 .project-name {
   font-size: 1.75rem;
   font-family: serif;
