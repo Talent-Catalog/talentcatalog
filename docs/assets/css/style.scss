@@ -25,24 +25,28 @@ body {
 }
 
 .project-name {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
+  font-family: serif;
 }
 
 .project-tagline {
-  font-size: 1.25rem;
+  font-size: 1rem;
+  font-family: sans-serif;
 }
 
-.btn-header {
+.btn {
   background-color: #49B6BD;
   color: #D9D9D9;
+  padding: 10px 18px;
+  border-radius: 8px;
 }
 
 .main-content h1, .main-content h2, .main-content h3, .main-content h4, .main-content h5, .main-content h6 {
   margin-top: 2rem;
   margin-bottom: 1rem;
-  color: #64748B;
-  font-weight: 600;
-  font-family: serif;
+  color: #101828;
+  font-weight: 500;
+  font-family: sans-serif;
 }
 
 .main-content ul, .main-content ol {
@@ -81,6 +85,7 @@ body {
 
 .card:hover {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
 }
 
 a:hover .card-description {
