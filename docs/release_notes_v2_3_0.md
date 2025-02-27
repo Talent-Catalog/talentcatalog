@@ -1,12 +1,9 @@
 ---
-title: What's New in Talent Catalog
+title: Version 2.3.0
+description: Check out the newest features and enhancements
 sass:
   style: compressed
 ---
-
-## Version 2.2.3
-
-Check out the newest features and enhancements.
 
 # New Features
 
