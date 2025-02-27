@@ -18,7 +18,7 @@ sass:
         actions such as extra candidates being added to lists or search filters being replaced.
       </div>
       <div class="card-footer">
-        <button class="btn">Learn more</button>
+        <button class="btn btn-sm">Learn more</button>
       </div>
     </div>
   </a>
@@ -32,7 +32,7 @@ sass:
         More than just stats, we introduce TC Intelligence!
       </div>
       <div class="card-footer">
-        Learn more
+        <button class="btn btn-sm">Learn more</button>
       </div>
     </div>
   </a>
@@ -48,7 +48,7 @@ sass:
         through the Talent Catalog.
       </div>
       <div class="card-footer">
-        Learn more
+        <button class="btn btn-sm">Learn more</button>
       </div>
     </div>
   </a>
@@ -117,7 +117,7 @@ Helpful TC user guides:
         Incorporating Figma into our workflow, we can easily share our plans and early designs with you all.
       </div>
       <div class="card-footer">
-        Learn more
+         <button class="btn btn-sm">Learn more</button>
       </div>
     </div>
   </a>
