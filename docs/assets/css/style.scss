@@ -52,7 +52,7 @@ body {
   margin-bottom: 1rem;
   color: #101828;
   font-weight: 500;
-  font-family: serif;
+  font-family: sans-serif;
 }
 
 .main-content ul, .main-content ol {
@@ -70,8 +70,6 @@ body {
 .card {
   width: calc(50% - 16px);
   box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 8px;
   padding: 16px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -92,6 +90,7 @@ body {
 .card:hover {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
   text-decoration: none;
+  border-bottom: 3px solid #49b6bd;
 }
 
 a:hover .card-description {
@@ -142,9 +141,7 @@ a {
   font-size: 1.35em;
   margin-bottom: 8px;
   color: #101828;
-  font-family: source-serif-pro, serif;
-  font-style: normal;
-  font-weight: 200;
+  font-family: sans-serif;
 }
 
 .card-image {
