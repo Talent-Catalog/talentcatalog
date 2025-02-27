@@ -41,6 +41,7 @@ import {MockPartner} from "./MockPartner";
    mfaConfigured: boolean = false;
    partner:  MockPartner = new MockPartner();
    name: string = "Mock User";
+   emailVerified: boolean;
 
    constructor() {
      // Set the date properties to a specific date value
