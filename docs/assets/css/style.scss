@@ -42,7 +42,7 @@ body {
 
 .btn {
   background-color: #49B6BD;
-  color: #D9D9D9;
+  color: #FFFFFF;
   padding: 10px 18px;
   border-radius: 8px;
 }
@@ -52,7 +52,7 @@ body {
   margin-bottom: 1rem;
   color: #101828;
   font-weight: 500;
-  font-family: sans-serif;
+  font-family: serif;
 }
 
 .main-content ul, .main-content ol {
@@ -140,8 +140,11 @@ a {
 
 .card-title {
   font-size: 1.35em;
-  font-weight: normal;
   margin-bottom: 8px;
+  color: #101828;
+  font-family: source-serif-pro, serif;
+  font-style: normal;
+  font-weight: 200;
 }
 
 .card-image {
