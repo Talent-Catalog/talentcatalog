@@ -221,4 +221,5 @@ export class ViewCandidateComponent implements OnInit {
   onMarkChatAsRead() {
     this.chatService.markChatAsRead(this.sourceChat);
   }
+
 }

@@ -55,6 +55,7 @@ public class CandidateBuilderSelector {
             "muted",
             "candidateNumber",
             "publicId",
+            "allNotifications",
             "gender",
             "dob",
             "yearOfArrival",
@@ -160,6 +161,7 @@ public class CandidateBuilderSelector {
             .add("muted")
             .add("candidateNumber")
             .add("publicId")
+            .add("allNotifications")
             .add("gender")
             .add("dob")
             .add("phone")
@@ -325,6 +327,7 @@ public class CandidateBuilderSelector {
                 .add("updatedDate")
                 .add("lastLogin")
                 .add("partner", partnerDto())
+                .add("emailVerified")
                 ;
     }
 

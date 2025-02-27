@@ -27,6 +27,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -130,6 +131,101 @@ public class EmailHelper {
             LogBuilder.builder(log)
                 .action("ResetPasswordEmail")
                 .message("error sending reset password email")
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    public void sendVerificationEmail(User user) throws EmailSendFailedException {
+        if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
+            log.error("Invalid user or email. Cannot send verification email.");
+            throw new IllegalArgumentException(
+                "Invalid user or email. Cannot send verification email.");
+        }
+
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+        String token = user.getEmailVerificationToken();
+        Partner partner = user.getPartner();
+
+        if (token == null || token.isEmpty()) {
+            log.error("Email verification token is not generated for user: {}", email);
+            throw new IllegalStateException(
+                "Email verification token is not generated for user: " + email);
+        }
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+
+        try {
+
+            final Context ctx = new Context();
+            ctx.setVariable("partner", partner);
+            ctx.setVariable("displayName", displayName);
+            String verificationUrl = "https://tctalent.org/api/admin/user/verify-email/" + token;
+            ctx.setVariable("verificationUrl", verificationUrl);
+            ctx.setVariable("year", currentYear());
+
+            subject = "Talent Catalog - Verify Your Email";
+
+            bodyText = textTemplateEngine.process("verify-email", ctx);
+            bodyHtml = htmlTemplateEngine.process("verify-email", ctx);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+            LogBuilder.builder(log)
+                .action("SendVerificationEmail")
+                .message("Verification email sent successfully to: " + email)
+                .logInfo();
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("SendVerificationEmail")
+                .message("Error sending verification email to: " + email)
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    public void sendCompleteVerificationEmail(User user, boolean isSuccess)
+        throws EmailSendFailedException {
+        if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
+            log.error("Invalid user or email. Cannot send complete verification email.");
+            throw new IllegalArgumentException(
+                "Invalid user or email. Cannot send complete verification email.");
+        }
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+
+            if (isSuccess) {
+                subject = "Email Verified Successfully";
+                bodyText = textTemplateEngine.process("verify-email-success", ctx);
+                bodyHtml = htmlTemplateEngine.process("verify-email-success", ctx);
+            } else {
+                subject = "Email Verification Failed";
+                bodyText = textTemplateEngine.process("verify-email-failure", ctx);
+                bodyHtml = htmlTemplateEngine.process("verify-email-failure", ctx);
+            }
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+            LogBuilder.builder(log)
+                .action("SendVerificationEmail")
+                .message("Verification email sent successfully to: " + email)
+                .logInfo();
+
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("SendCompleteVerificationEmail")
+                .message("Error sending complete verification email to: " + email)
                 .logError(e);
 
             throw new EmailSendFailedException(e);
@@ -304,6 +400,47 @@ public class EmailHelper {
             LogBuilder.builder(log)
                 .action("DuolingoCouponEmail")
                 .message("error sending duolingo coupon email")
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    /**
+     * Sends email to candidate user when they have accepted a job offer.
+     * <p/>
+     * The purpose of the email is to congratulate them and introduce them to services that may be
+     * useful to them now that they have the job.
+     * @param candidate Candidate user
+     * @throws EmailSendFailedException If there is a problem sending the email
+     */
+    public void sendOfferAcceptedEmail(Candidate candidate) throws EmailSendFailedException {
+
+        User user = candidate.getUser();
+        String emailTo = user.getEmail();
+        String emailCc = "membership@pathwayclub.org";
+        String displayName = user.getDisplayName();
+        Partner partner = user.getPartner();
+        String candidateNumber = candidate.getCandidateNumber();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("partner", partner);
+            ctx.setVariable("candidateNumber", candidateNumber);
+
+            subject = "Talent Catalog - Congratulations and next steps";
+            bodyText = textTemplateEngine.process("job-accepted", ctx);
+            bodyHtml = htmlTemplateEngine.process("job-accepted", ctx);
+
+            emailSender.sendAsync(emailTo, emailCc, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("OfferAcceptedEmail")
+                .message("error sending offer accepted email")
                 .logError(e);
 
             throw new EmailSendFailedException(e);

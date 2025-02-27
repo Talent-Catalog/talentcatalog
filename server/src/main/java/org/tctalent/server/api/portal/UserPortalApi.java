@@ -94,10 +94,7 @@ public class UserPortalApi {
                 .add("email")
                 .add("firstName")
                 .add("lastName")
+                .add("emailVerified")
                 ;
     }
-
-
-
-
 }
