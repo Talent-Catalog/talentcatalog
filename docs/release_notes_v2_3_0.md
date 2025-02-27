@@ -11,7 +11,7 @@ Check out the newest features and enhancements.
 # New Features
 
 <div class="card-container">
-  <a href="./v223/search_functionality" class="card-full-width">
+  <a href="./v223/search_functionality" class="card">
     <img src="./assets/images/v223/SearchFunctionalityFull.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">Anonymized Open API</div>
@@ -28,7 +28,7 @@ Check out the newest features and enhancements.
 </div>
 
 <div class="card-container">
-  <a href="./v223/search_functionality" class="card-full-width">
+  <a href="./v223/search_functionality" class="card">
     <img src="./assets/images/v230/PresetLogo.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">TC Intelligence with Preset</div>
@@ -44,7 +44,7 @@ Check out the newest features and enhancements.
 </div>
 
 <div class="card-container">
-  <a href="./v223/search_functionality" class="card-full-width">
+  <a href="./v223/search_functionality" class="card">
     <img src="./assets/images/v230/DuolingoEnglishTest.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">Duolingo English Test/TC Integration</div>
@@ -60,7 +60,7 @@ Check out the newest features and enhancements.
 </div>
 
 <div class="card-container">
-  <div class="card-full-width">
+  <div class="card">
     <img src="./assets/images/v223/ListsAsTags.png" alt="Lists as tags" class="card-image">
     <div class="card-body">
       <div class="card-title">Mute Chats</div>
@@ -90,8 +90,6 @@ Helpful TC user guides:
 ## General Improvements
 
 - Option to 'Skip Candidate Search' on a job, this allows employers to indicate whether they want source partners to search for candidates or prefer to 'skip' and proceed only with candidates they’ve added to the submission list.
-- Admins can redirect URLs pointing to inactive partners, this allows for 'hard coded' URLs (e.g QR codes/printed flyers) to inactive partners remain usable and redirect to the replacement partner.
-- Candidates in saved search results can be reassigned to a new managing partner
 - Capture latest tab via the URL's tab parameter allowing for direct navigation to tab and will allow heat mapping on each tab
 - Selection of stats in TC Stats (max 8) allowing stats to be run on the full database without performance issues
 - Removed 'Run Old Stats' button from TC Stats as has been improved with the newer 'Run Stats' button
@@ -99,6 +97,11 @@ Helpful TC user guides:
 - Added relocated address fields (address, city, state, country) to candidate. Updatable on the candidate portal once the candidate has a case that is past the job offer stage. Can be updated anytime on the admin portal.
 - Relocated country auto-populates with the destination country when a candidate's case is moved to or past the relocated stage.
 - When a relocated address field is updated, a candidate note is created for tracking purposes and to help indicate if a relocated address is up to date.
+- Candidates are automatically informed about Pathway Club (by email) when they have accepted a job offer
+- Job titles now editable by owners and System Admins after publishing
+- Option to set inactive partners' referral links to redirect to a nominated replacement
+- Reassign candidates to new managing partner based on saved search results
+- Submission List view now optionally displays the username and partner org of admin who added each candidate
 
 ## Data Improvements
 - Expose Country ISO codes and Occupation ISCO codes
@@ -106,9 +109,39 @@ Helpful TC user guides:
 - Housekeeping undertaken to align TC data with Salesforce Employer Opportunities
 - Rename tbbShortName to tcShortName
 - Rename task field 'helpLink' to 'docLink' as help links can now be linked to in rich text task descriptions (see #1829). Repurposed field to docLink to be used to display documents in iframe in tasks.
+- Daily scheduled methods keep TC Opportunity data aligned with changes made on Salesforce
+- Candidate relocated address replicated in Salesforce, dynamically displayed only if present
+- Redundant Candidate Visa Job Check fields removed from DB
 
 # UI / UX Enhancements
+<div class="card-container">
+  <a href="./v223/search_functionality" class="card">
+    <img src="./assets/images/v230/SearchRedesign.png" alt="TC redesign" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Sneak Peak into the TC redesign!</div>
+      <div class="card-description">
+        With the help of Hiba, our resident UI/UX designer, we have the capacity to plan a much desired upgrade to the TC user interface. 
+        Incorporating Figma into our workflow, we can easily share our plans and early designs with you all.
+      </div>
+      <div class="card-footer">
+        Learn more
+      </div>
+    </div>
+  </a>
+</div>
 
+<div class="card-container">
+  <a href="./v223/search_functionality" class="card">
+    <img src="./assets/images/v230/ClarityHeatmaps.png" alt="Clarity heatmaps" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Implemented Clarity for heat mapping and screen recording</div>
+      <div class="card-description">
+        Part of the redesign process is gathering data on our users, we have implemented Clarity to provide and analyse heatmaps of user behaviour. 
+        We look forward to sharing the results and using the results to provide data driven design choices.
+      </div>
+    </div>
+  </a>
+</div>
 
 
 ## Other UI / UX Enhancements
@@ -116,11 +149,13 @@ Helpful TC user guides:
 - Added warning not to enter confidential info into General Notes
 - Candidate rows on submission lists now display the full name of the admin who add them
 - Make Job Description more visible on Publish Job screen
+- Enhanced cursor behaviour for clickable links
+- Informative tool-tips, clarifying support text and UI simplification to assist employer users in creating Jobs and using candidate search
 
 # Performance Improvements
 
 - Source partner Candidate Chats tab SQL refactored for faster load times
-- Improved loading times for candidate profiles (in list/search view and full profile view) by fetching full candidate profile data in single API call.
+- Improved loading times for candidate profiles, both in list/search view and full profile view
 
 # Security Fixes
 - De-anonymisation of CV downloads restricted by partner type
@@ -140,12 +175,21 @@ Helpful TC user guides:
 - Candidate's associated with deleted or inactive partners are back appearing in searches
 - Answers to question tasks are back appearing on admin portal
 - Updating a search no longer clears the displayed multi-select selections
+- Accepted offer notification now goes out even if the acceptance stage is skipped
+- Next Step audit stamps replicated in Salesforce
+- Character limit on Job naming to conform with Salesforce restrictions
+- Submission list view infinite loading indicator issue resolved
+- Candidate email search made case-insensitive
+- Spring Boot Security request matchers pattern change
+- Fixed tooltip display issue in candidate search
+- Next Step column displaying correctly in Submission List view
 
 # Developer Notes
 - Upgraded to Spring Boot 3
 - Upgraded Angular to recent version
 - MFA Authenticators now show TalentCatalog instead of TBB
 - Updated copyright
+- Deprecated Github Actions Upload Artifact version upgraded
 - Standardized Terraform: 
 - <a href="https://drive.google.com/file/d/1JZUenkyr2rtVB7h8eElkRvXfwqbCIPQB/view?usp=drive_link" 
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 1</a>, 
