@@ -25,9 +25,7 @@ Check out the newest features and enhancements.
       </div>
     </div>
   </a>
-</div>
 
-<div class="card-container">
   <a href="./v223/search_functionality" class="card">
     <img src="./assets/images/v230/PresetLogo.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
@@ -57,9 +55,7 @@ Check out the newest features and enhancements.
       </div>
     </div>
   </a>
-</div>
 
-<div class="card-container">
   <div class="card">
     <img src="./assets/images/v223/ListsAsTags.png" alt="Lists as tags" class="card-image">
     <div class="card-body">
@@ -128,9 +124,7 @@ Helpful TC user guides:
       </div>
     </div>
   </a>
-</div>
 
-<div class="card-container">
   <a href="./v223/search_functionality" class="card">
     <img src="./assets/images/v230/ClarityHeatmaps.png" alt="Clarity heatmaps" class="card-image">
     <div class="card-body">
