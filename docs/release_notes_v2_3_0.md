@@ -8,7 +8,7 @@ sass:
 # New Features
 
 <div class="card-container">
-  <a href="./v223/search_functionality" class="card">
+  <a href="./v230/anonymized_open_api.md" class="card">
     <img src="./assets/images/v223/SearchFunctionalityFull.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">Anonymized Open API</div>
@@ -23,7 +23,7 @@ sass:
     </div>
   </a>
 
-  <a href="./v223/search_functionality" class="card">
+  <a href="./v230/tc_intelligence.md" class="card">
     <img src="./assets/images/v230/PresetLogo.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">TC Intelligence with Preset</div>
@@ -39,7 +39,7 @@ sass:
 </div>
 
 <div class="card-container">
-  <a href="./v223/search_functionality" class="card">
+  <a href="./v230/duolingo_english_test.md" class="card">
     <img src="./assets/images/v230/DuolingoEnglishTestLogo.png" alt="Duolingo English Test logo" class="card-image">
     <div class="card-body">
       <div class="card-title">Duolingo English Test/TC Integration</div>
@@ -58,8 +58,7 @@ sass:
     <div class="card-body">
       <div class="card-title">Mute Chats</div>
       <div class="card-description">
-        Addition of ability to search based on logical combination of candidates in lists, effectively allowing you to 
-        treat lists as tags for search purposes. Thanks to Mari for this great feature suggestion!
+        TC admins can quietly 'mute' candidate chats, this is useful if a candidate is sending unnecessary chats which spams the chat channel.
       </div>
     </div>
   </div>
