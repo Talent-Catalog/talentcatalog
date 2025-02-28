@@ -8,24 +8,7 @@ sass:
 # New Features
 
 <div class="card-container">
-  <a href="./v223/search_functionality" class="card-full-width">
-    <img src="./assets/images/v223/SearchFunctionalityFull.png" alt="Search Improvements" class="card-image">
-    <div class="card-body">
-      <div class="card-title">Search Improvements</div>
-      <div class="card-description">
-        We have made the search functionality more transparent to users so it is 
-        easier to keep track of the status of your selections and searches. This helps to avoid any unintended 
-        actions such as extra candidates being added to lists or search filters being replaced.
-      </div>
-      <div class="card-footer">
-        Learn more
-      </div>
-    </div>
-  </a>
-</div>
-
-<div class="card-container">
-  <a href="./v230/anonymized_open_api.md" class="card">
+  <a href="./v230/anonymized_open_api" class="card">
     <img src="./assets/images/v223/SearchFunctionalityFull.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">Anonymized Open API</div>
@@ -40,7 +23,7 @@ sass:
     </div>
   </a>
 
-  <a href="./v230/tc_intelligence.md" class="card">
+  <a href="./v230/tc_intelligence" class="card">
     <img src="./assets/images/v230/PresetLogo.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
       <div class="card-title">TC Intelligence with Preset</div>
@@ -56,7 +39,7 @@ sass:
 </div>
 
 <div class="card-container">
-  <a href="./v230/duolingo_english_test.md" class="card">
+  <a href="./v230/duolingo_english_test" class="card">
     <img src="./assets/images/v230/DuolingoEnglishTestLogo.png" alt="Duolingo English Test logo" class="card-image">
     <div class="card-body">
       <div class="card-title">Duolingo English Test/TC Integration</div>
@@ -124,7 +107,7 @@ Helpful TC user guides:
 
 # UI / UX Enhancements
 <div class="card-container">
-  <a href="./v223/search_functionality" class="card">
+  <a href="./v230/tc_redesign" class="card">
     <img src="./assets/images/v230/SearchRedesign.png" alt="TC redesign" class="card-image">
     <div class="card-body">
       <div class="card-title">Sneak Peak into the TC redesign!</div>
