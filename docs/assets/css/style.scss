@@ -96,6 +96,13 @@ body {
   .card {
     width: 100%;
     margin: 16px 0;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    border-bottom: 3px solid #49b6bd;
+  }
+
+  .btn-hover {
+    background-color: #49B6BD;
   }
 }
 
@@ -107,9 +114,6 @@ body {
 
 a:hover .card-description {
   text-decoration: none;
-  > .btn-hover {
-    background-color: #49B6BD;
-  }
 }
 
 a:hover .btn-hover {
