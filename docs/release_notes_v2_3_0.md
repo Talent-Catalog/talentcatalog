@@ -121,7 +121,7 @@ Helpful TC user guides:
     </div>
   </a>
 
-  <a href="./v223/search_functionality" class="card">
+  <div class="card">
     <img src="./assets/images/v230/ClarityHeatmaps.png" alt="Clarity heatmaps" class="card-image">
     <div class="card-body">
       <div class="card-title">Implemented Clarity for heat mapping and screen recording</div>
@@ -130,7 +130,7 @@ Helpful TC user guides:
         We look forward to sharing the results and using the results to provide data driven design choices.
       </div>
     </div>
-  </a>
+  </div>
 </div>
 
 
