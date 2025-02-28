@@ -8,6 +8,23 @@ sass:
 # New Features
 
 <div class="card-container">
+  <a href="./v223/search_functionality" class="card-full-width">
+    <img src="./assets/images/v223/SearchFunctionalityFull.png" alt="Search Improvements" class="card-image">
+    <div class="card-body">
+      <div class="card-title">Search Improvements</div>
+      <div class="card-description">
+        We have made the search functionality more transparent to users so it is 
+        easier to keep track of the status of your selections and searches. This helps to avoid any unintended 
+        actions such as extra candidates being added to lists or search filters being replaced.
+      </div>
+      <div class="card-footer">
+        Learn more
+      </div>
+    </div>
+  </a>
+</div>
+
+<div class="card-container">
   <a href="./v230/anonymized_open_api.md" class="card">
     <img src="./assets/images/v223/SearchFunctionalityFull.png" alt="Search Improvements" class="card-image">
     <div class="card-body">
