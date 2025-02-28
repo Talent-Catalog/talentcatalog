@@ -54,7 +54,7 @@ sass:
   </a>
 
   <div class="card">
-    <img src="./assets/images/v223/ListsAsTags.png" alt="Lists as tags" class="card-image">
+    <img src="./assets/images/v230/MuteChat.png" alt="Mute chats" class="card-image">
     <div class="card-body">
       <div class="card-title">Mute Chats</div>
       <div class="card-description">
