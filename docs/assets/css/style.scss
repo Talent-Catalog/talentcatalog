@@ -22,6 +22,9 @@ body {
   text-align: center;
   color: #64748B;
   background-image: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 @media screen and (min-width: 64em) {
@@ -36,8 +39,9 @@ body {
 }
 
 .project-tagline {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-family: sans-serif;
+  margin-bottom: 0;
 }
 
 .btn {
