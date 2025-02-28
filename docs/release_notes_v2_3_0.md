@@ -1,6 +1,6 @@
 ---
-title: Release Notes
-description: Version 2.3.0
+title: Release Notes 2.3.0
+description: What's new in this release
 sass:
   style: compressed
 ---
