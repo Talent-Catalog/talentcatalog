@@ -5,19 +5,23 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'com.google.cloud.tools.jib' version '3.4.4'
+    id 'org.openapi.generator' version '7.8.0'
 }
 
 group = 'org.tctalent'
@@ -157,7 +161,73 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-core'
     implementation 'io.github.mweirauch:micrometer-jvm-extras:0.2.2'
+
+    //OpenAPI public API code generation
+    //todo jc This is copied from build.gradle for tc-api. Any way of avoiding that duplication?
+    // For OpenAPI 3.0 code generation - todo check if their are curated versions, if not move versions to ext
+    implementation "io.swagger.core.v3:swagger-annotations:2.2.8"
+    implementation "io.swagger.core.v3:swagger-models:2.2.8"
+    implementation "jakarta.validation:jakarta.validation-api:3.0.2"
 }
+
+
+// OpenAPI validation task: Validate the OpenAPI specification
+openApiValidate {
+    inputSpec.set(file('../../tc-api-spec/openapi.yaml').absolutePath)
+    recommend.set(true)
+}
+
+// OpenAPI generation task: Generate API and model classes from the OpenAPI spec
+openApiGenerate {
+    generatorName.set("spring")
+    inputSpec.set(file('../../tc-api-spec/openapi.yaml').absolutePath)
+    outputDir.set("$buildDir/generated")
+    apiPackage.set("org.tctalent.anonymization.api")
+    modelPackage.set("org.tctalent.anonymization.model")
+    configOptions.put("dateLibrary", "java8")
+    configOptions.put("openApiNullable", "false")
+    configOptions.put("useJakartaEe", "true")
+    configOptions.put("useLombokAnnotations", "true")
+    configOptions.put("additionalModelTypeAnnotations", "@lombok.Getter @lombok.Setter")
+    configOptions.put("generateBuilders", "true")
+    library.set("spring-boot")
+    globalProperties.set([
+            modelDocs: "false",
+            apiDocs: "false",
+            apiTests: "false",
+            modelTests: "false",
+            generateAliasAsModel: "true",
+    ])
+}
+
+// Clean-up task: Remove unnecessary generated files
+tasks.named("openApiGenerate").configure {
+    doLast {
+        def generatedMainClass = file("$buildDir/generated/src/main/java/org/openapitools/OpenApiGeneratorApplication.java")
+        if (generatedMainClass.exists()) {
+            generatedMainClass.delete()
+        }
+    }
+}
+
+// Include generated sources in the main source set
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/src/main/java"
+        }
+    }
+}
+
+// Code generation runs before compilation
+compileJava.dependsOn("openApiGenerate")
+
+// Task-specific configuration: Force task outputs to always execute
+tasks.withType(GenerateTask).configureEach {
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+}
+
 
 jib {
     to {
