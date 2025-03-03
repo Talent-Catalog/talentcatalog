@@ -38,8 +38,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.anonymization.model.OfferToAssistCandidatesRequest;
 import org.tctalent.server.model.db.OfferToAssist;
+import org.tctalent.server.request.OfferToAssistRequest;
 import org.tctalent.server.service.db.OfferToAssistService;
 
 /**
@@ -75,10 +75,10 @@ class OfferToAssistAdminApiTest extends ApiTestBase {
 
     @Test
     void create() throws Exception {
-        OfferToAssistCandidatesRequest request = new OfferToAssistCandidatesRequest();
+        OfferToAssistRequest request = new OfferToAssistRequest();
 
         given(offerToAssistService
-            .createOfferToAssist(any(OfferToAssistCandidatesRequest.class)))
+            .createOfferToAssist(any(OfferToAssistRequest.class)))
             .willReturn(offerToAssist);
 
         mockMvc.perform(post(BASE_PATH)
@@ -96,7 +96,7 @@ class OfferToAssistAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.offerId", is(offerToAssist.getPublicId())))
         ;
 
-        verify(offerToAssistService).createOfferToAssist(any(OfferToAssistCandidatesRequest.class));
+        verify(offerToAssistService).createOfferToAssist(any(OfferToAssistRequest.class));
 
     }
 }
