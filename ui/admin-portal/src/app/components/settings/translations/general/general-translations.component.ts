@@ -333,7 +333,8 @@ const ALL_FIELDS = {
           "TITLE": null,
           "DESCRIPTION": null,
           "UPDATE_EMAIL": null,
-          "SEND_BUTTON": null
+          "SEND_BUTTON": null,
+          "LINK": null
         },
         "LOADING": {
           "TITLE": null,
