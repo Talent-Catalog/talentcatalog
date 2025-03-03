@@ -16,7 +16,12 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
@@ -24,6 +29,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 import org.tctalent.anonymization.model.CandidateAssistanceType;
 
 /**
@@ -35,9 +41,20 @@ import org.tctalent.anonymization.model.CandidateAssistanceType;
 @Setter
 @Entity
 @Table(name = "offer_to_assist")
-@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_exam_id_seq", allocationSize = 1)
+@SequenceGenerator(name = "seq_gen", sequenceName = "offer_to_assist_id_seq", allocationSize = 1)
 @NoArgsConstructor
 public class OfferToAssist extends AbstractAuditableDomainObject<Long> {
+
+    /**
+     * Optional additional notes provided by the partner offering assistance.
+     */
+    private String additionalNotes;
+
+    /**
+     * Candidates and optional coupon codes associated with offer.
+     */
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "offerToAssist", cascade = CascadeType.MERGE)
+    private List<CandidateCouponCode> candidateCouponCodes = new ArrayList<>();
 
     /**
      * Unique public ID associated with this OfferToAssist
@@ -45,21 +62,13 @@ public class OfferToAssist extends AbstractAuditableDomainObject<Long> {
     private String publicId;
 
     /**
-     * Candidates and optional coupon codes associated with offer.
-     */
-    private List<CandidateCoupon> candidateCoupons = new ArrayList<>();
-
-    //TODO JC May not be needed - replace with reference to partner entity?
-    private String serviceProviderId;
-
-    /**
      * The reason for expressing interest in the candidate.
      */
+    @Enumerated(EnumType.STRING)
+    @Nullable
     private CandidateAssistanceType reason;
 
-    /**
-     * Optional additional notes provided by the partner offering assistance.
-     */
-    private String additionalNotes;
+    //TODO JC May not be needed - replace with reference to partner entity?
+    private transient String serviceProviderId;
 
 }

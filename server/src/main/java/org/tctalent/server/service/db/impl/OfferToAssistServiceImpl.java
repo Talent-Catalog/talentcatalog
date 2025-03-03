@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.anonymization.model.OfferToAssistCandidatesRequest;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateCoupon;
+import org.tctalent.server.model.db.CandidateCouponCode;
 import org.tctalent.server.model.db.OfferToAssist;
 import org.tctalent.server.repository.db.OfferToAssistRepository;
 import org.tctalent.server.service.db.CandidateService;
@@ -46,7 +46,7 @@ public class OfferToAssistServiceImpl implements OfferToAssistService {
 
         //Convert candidates referred to in the request's CandidateCoupon list from publicIds
         //to actual candidate references.
-        List<CandidateCoupon> candidateCoupons = new ArrayList<>();
+        List<CandidateCouponCode> candidateCouponCodes = new ArrayList<>();
         for (org.tctalent.anonymization.model.CandidateCoupon candidateCouponRequest :
             request.getCandidates()) {
 
@@ -55,20 +55,32 @@ public class OfferToAssistServiceImpl implements OfferToAssistService {
             if (candidate == null) {
                 throw new NoSuchObjectException(Candidate.class, publicId);
             } else {
-                String coupon = candidateCouponRequest.getCouponCode();
-                CandidateCoupon candidateCoupon = new CandidateCoupon(candidate, coupon);
-                candidateCoupons.add(candidateCoupon);
+                CandidateCouponCode candidateCouponCode = new CandidateCouponCode();
+                candidateCouponCode.setCandidate(candidate);
+                candidateCouponCode.setCouponCode(candidateCouponRequest.getCouponCode());
+                candidateCouponCodes.add(candidateCouponCode);
             }
         }
 
         OfferToAssist ota = new OfferToAssist();
         ota.setPublicId(publicIDService.generatePublicID());
 
-        ota.setCandidateCoupons(candidateCoupons);
+        ota.setCandidateCouponCodes(candidateCouponCodes);
 
         ota.setAdditionalNotes(request.getAdditionalNotes());
         ota.setReason(request.getReason());
 
+        ota = offerToAssistRepository.save(ota);
+
+        //Now update candidate coupons with reference to the OTA
+        for (CandidateCouponCode candidateCouponCode : candidateCouponCodes) {
+            candidateCouponCode.setOfferToAssist(ota);
+        }
+
+        //Assign coupons to ota
+        ota.setCandidateCouponCodes(candidateCouponCodes);
+
+        //Update db and return
         return offerToAssistRepository.save(ota);
     }
 }
