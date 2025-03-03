@@ -20,14 +20,17 @@ package org.tctalent.server.api.admin;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.tctalent.anonymization.model.CandidateAssistanceType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.model.db.CandidateCitizenship;
+import org.tctalent.server.model.db.CandidateCouponCode;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
@@ -68,6 +71,7 @@ import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.OfferToAssist;
 import org.tctalent.server.model.db.OtherVisas;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Registration;
@@ -713,6 +717,24 @@ public class AdminApiTestUtil {
         info.setLastPostId(123L);
         info.setLastReadPostId(100L);
         return info;
+    }
+
+    static OfferToAssist getOfferToAssist() {
+        OfferToAssist offerToAssist = new OfferToAssist();
+        offerToAssist.setAdditionalNotes("Notes");
+
+        List<CandidateCouponCode> candidateCouponCodes  = new ArrayList<>();
+        CandidateCouponCode ccc = new CandidateCouponCode();
+        ccc.setCandidate(getCandidate());
+        ccc.setOfferToAssist(offerToAssist);
+        ccc.setId(12345678L);
+        candidateCouponCodes.add(ccc);
+
+        offerToAssist.setCandidateCouponCodes(candidateCouponCodes);
+        offerToAssist.setId(99L);
+        offerToAssist.setPublicId("123456");
+        offerToAssist.setReason(CandidateAssistanceType.Other);
+        return offerToAssist;
     }
 
     public static PartnerImpl getPartner() {
