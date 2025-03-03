@@ -40,7 +40,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.HelpLink;
 import org.tctalent.server.request.helplink.UpdateHelpLinkRequest;
-import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.HelpLinkService;
 
 /**
@@ -54,9 +53,6 @@ class HelpLinkAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/help-link";
 
     private static final HelpLink helpLink = AdminApiTestUtil.getHelpLink();
-
-    @MockBean
-    CountryService countryService;
 
     @MockBean
     HelpLinkService helpLinkService;
