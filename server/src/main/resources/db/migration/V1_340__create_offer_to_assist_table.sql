@@ -8,6 +8,7 @@ create table offer_to_assist
     updated_date timestamptz,
 
     additional_notes text,
+    partner_id bigint not null references partner,
     public_id varchar(22),
     reason text
 );
