@@ -21,6 +21,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -61,14 +63,15 @@ public class OfferToAssist extends AbstractAuditableDomainObject<Long> {
      */
     private String publicId;
 
+    @ManyToOne
+    @JoinColumn(name = "partner_id")
+    private PartnerImpl partner;
+
     /**
      * The reason for expressing interest in the candidate.
      */
     @Enumerated(EnumType.STRING)
     @Nullable
     private CandidateAssistanceType reason;
-
-    //TODO JC May not be needed - replace with reference to partner entity?
-    private transient String serviceProviderId;
 
 }

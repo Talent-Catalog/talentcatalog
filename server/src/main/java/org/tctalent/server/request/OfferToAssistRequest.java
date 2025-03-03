@@ -14,28 +14,29 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.db;
+package org.tctalent.server.request;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.lang.NonNull;
-import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.OfferToAssist;
-import org.tctalent.server.request.OfferToAssistRequest;
+import org.tctalent.anonymization.model.OfferToAssistCandidatesRequest;
 
 /**
- * Service for managing {@link OfferToAssist}'s.
+ * This request is a copy of the request that comes in on the public API, with the added
+ * field of the partner that the request came from.
+ * This will have been deduced from the authentication process on the public api service.
  *
  * @author John Cameron
  */
-public interface OfferToAssistService {
+@Getter
+@Setter
+@ToString
+public class OfferToAssistRequest extends OfferToAssistCandidatesRequest {
 
     /**
-     * Creates an OfferToAssist for certain candidates from the given request.
-     *
-     * @param request Request to create an OfferToAssist.
-     * @return Created OfferToAssist
-     * @throws NoSuchObjectException if there is no such candidate with a given id.
+     * Partner (service provider) associated with offer.
      */
     @NonNull
-    OfferToAssist createOfferToAssist(OfferToAssistRequest request)
-        throws NoSuchObjectException;
+    Long partnerId;
 }

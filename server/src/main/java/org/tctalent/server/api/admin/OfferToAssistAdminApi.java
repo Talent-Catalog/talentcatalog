@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.anonymization.model.OfferToAssistCandidates201Response;
-import org.tctalent.anonymization.model.OfferToAssistCandidatesRequest;
 import org.tctalent.server.model.db.OfferToAssist;
+import org.tctalent.server.request.OfferToAssistRequest;
 import org.tctalent.server.service.db.OfferToAssistService;
 
 /**
@@ -32,7 +32,7 @@ public class OfferToAssistAdminApi {
     @PostMapping
     @NonNull
     public ResponseEntity<OfferToAssistCandidates201Response>
-        create(OfferToAssistCandidatesRequest request) {
+        create(OfferToAssistRequest request) {
 
         //Create OTA
         OfferToAssist ota = offerToAssistService.createOfferToAssist(request);

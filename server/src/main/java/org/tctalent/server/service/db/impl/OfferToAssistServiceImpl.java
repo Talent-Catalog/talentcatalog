@@ -22,14 +22,17 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.tctalent.anonymization.model.OfferToAssistCandidatesRequest;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCouponCode;
 import org.tctalent.server.model.db.OfferToAssist;
+import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.OfferToAssistRepository;
+import org.tctalent.server.request.OfferToAssistRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.OfferToAssistService;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
 
 @Service
@@ -38,10 +41,11 @@ import org.tctalent.server.service.db.PublicIDService;
 public class OfferToAssistServiceImpl implements OfferToAssistService {
     private final CandidateService candidateService;
     private final OfferToAssistRepository offerToAssistRepository;
+    private final PartnerService partnerService;
     private final PublicIDService publicIDService;
 
     @Override
-    public @NonNull OfferToAssist createOfferToAssist(OfferToAssistCandidatesRequest request)
+    public @NonNull OfferToAssist createOfferToAssist(OfferToAssistRequest request)
         throws NoSuchObjectException {
 
         //Convert candidates referred to in the request's CandidateCoupon list from publicIds
@@ -62,12 +66,16 @@ public class OfferToAssistServiceImpl implements OfferToAssistService {
             }
         }
 
+        //Look up partner - throws Exception if not found
+        Partner partner = partnerService.getPartner(request.getPartnerId());
+
         OfferToAssist ota = new OfferToAssist();
         ota.setPublicId(publicIDService.generatePublicID());
 
         ota.setCandidateCouponCodes(candidateCouponCodes);
 
         ota.setAdditionalNotes(request.getAdditionalNotes());
+        ota.setPartner((PartnerImpl) partner);
         ota.setReason(request.getReason());
 
         ota = offerToAssistRepository.save(ota);
