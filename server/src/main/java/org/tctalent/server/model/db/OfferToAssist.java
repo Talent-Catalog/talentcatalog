@@ -63,6 +63,9 @@ public class OfferToAssist extends AbstractAuditableDomainObject<Long> {
      */
     private String publicId;
 
+    /**
+     * Partner (service provider) of this offer
+     */
     @ManyToOne
     @JoinColumn(name = "partner_id")
     private PartnerImpl partner;
