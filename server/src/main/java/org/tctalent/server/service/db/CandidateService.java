@@ -64,9 +64,9 @@ import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateOtherInfoRequest;
-import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -331,6 +331,15 @@ public interface CandidateService {
      */
     @Nullable
     Candidate findByCandidateNumber(String candidateNumber);
+
+    /**
+     * Finds candidate with the given public ID, or null if none found.
+     *
+     * @param publicId ID of desired candidate
+     * @return Candidate or null if none found
+     */
+    @Nullable
+    Candidate findByPublicId(String publicId);
 
     /**
      * Return candidates by their ids
@@ -688,4 +697,5 @@ public interface CandidateService {
     void auditNoteIfRelocatedAddressChange(Candidate candidate, @Nullable String requestRelocatedAddress,
                                                   @Nullable String requestRelocatedCity, @Nullable String requestRelocatedState,
                                                   @Nullable String requestRelocatedCountryName);
+
 }

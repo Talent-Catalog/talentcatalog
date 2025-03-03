@@ -1681,9 +1681,16 @@ public class CandidateServiceImpl implements CandidateService {
         return Optional.of(candidate);
     }
 
+    @Nullable
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
         return candidateRepository.findByCandidateNumber(candidateNumber);
+    }
+
+    @Nullable
+    @Override
+    public Candidate findByPublicId(String publicId) {
+        return candidateRepository.findByPublicId(publicId);
     }
 
     @Override
