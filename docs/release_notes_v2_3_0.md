@@ -18,7 +18,7 @@ sass:
         actions such as extra candidates being added to lists or search filters being replaced.
       </div>
       <div class="card-footer">
-        <div>Learn more</div>
+        <button class="btn btn-sm">Learn more</button>
       </div>
     </div>
   </a>
