@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.OfferToAssistService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
+import org.tctalent.server.service.db.UserService;
 
 @Service
 @AllArgsConstructor
@@ -43,6 +45,7 @@ public class OfferToAssistServiceImpl implements OfferToAssistService {
     private final OfferToAssistRepository offerToAssistRepository;
     private final PartnerService partnerService;
     private final PublicIDService publicIDService;
+    private final UserService userService;
 
     @Override
     public @NonNull OfferToAssist createOfferToAssist(OfferToAssistRequest request)
@@ -67,7 +70,8 @@ public class OfferToAssistServiceImpl implements OfferToAssistService {
         }
 
         //Look up partner - throws Exception if not found
-        Partner partner = partnerService.getPartner(request.getPartnerId());
+        final Long partnerId = request.getPartnerId();
+        Partner partner = partnerService.getPartner(partnerId);
 
         OfferToAssist ota = new OfferToAssist();
         ota.setPublicId(publicIDService.generatePublicID());
@@ -77,6 +81,9 @@ public class OfferToAssistServiceImpl implements OfferToAssistService {
         ota.setAdditionalNotes(request.getAdditionalNotes());
         ota.setPartner((PartnerImpl) partner);
         ota.setReason(request.getReason());
+
+        ota.setCreatedBy(userService.getLoggedInUser());
+        ota.setCreatedDate(OffsetDateTime.now());
 
         ota = offerToAssistRepository.save(ota);
 
