@@ -34,9 +34,10 @@ public class OfferToAssistAdminApi {
     public ResponseEntity<OfferToAssistCandidates201Response>
         create(OfferToAssistRequest request) {
 
-        //Create OTA
+        //Create and store OTA
         OfferToAssist ota = offerToAssistService.createOfferToAssist(request);
 
+        //Create response
         OfferToAssistCandidates201Response response =
             new OfferToAssistCandidates201Response().toBuilder()
                 .offerId(ota.getPublicId())
