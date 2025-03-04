@@ -23,6 +23,7 @@ body {
   color: #64748B;
   background-image: none;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
 }
@@ -30,7 +31,7 @@ body {
 @media screen and (min-width: 64em) {
   .page-header {
     padding: 2rem 6rem;
-    flex-direction: column;
+    flex-direction: row;
   }
 }
 
