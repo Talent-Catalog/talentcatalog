@@ -9,13 +9,12 @@ sass:
 
 <div class="card-container">
   <a href="./v230/anonymized_open_api" class="card">
-    <img src="./assets/images/v223/SearchFunctionalityFull.png" alt="Search Improvements" class="card-image">
+    <img src="./assets/images/v230/OpenApi.png" alt="Open Api" class="card-image">
     <div class="card-body">
       <div class="card-title">Anonymized Open API</div>
       <div class="card-description">
-        We have made the search functionality more transparent to users so it is 
-        easier to keep track of the status of your selections and searches. This helps to avoid any unintended 
-        actions such as extra candidates being added to lists or search filters being replaced.
+        Created an Anonymised Data Service API, so that API endpoints are clearly documented and accessible for 
+        integration and usage by other services.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
