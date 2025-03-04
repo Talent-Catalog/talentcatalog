@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
+import org.tctalent.server.request.duolingo.DuolingoExtraFieldsRequest;
 import org.tctalent.server.response.DuolingoDashboardResponse;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.CandidateExam;
@@ -37,6 +39,7 @@ import org.tctalent.server.service.db.CandidateExamService;
 import org.tctalent.server.service.db.DuolingoApiService;
 import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.DuolingoExamService;
+import org.tctalent.server.service.db.DuolingoExtraFieldsService;
 
 @Service
 @Slf4j
@@ -46,10 +49,12 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
   private final DuolingoApiService duolingoApiService;
   private final DuolingoCouponService duolingoCouponService;
   private final CandidateExamService candidateExamService;
+  private final DuolingoExtraFieldsService duolingoExtraFieldsService;
 
   @Override
   @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
   @SchedulerLock(name = "DuolingoSchedulerTask_updateCandidateExams", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+  @Transactional
   public void updateCandidateExams() throws NoSuchObjectException {
     List<DuolingoDashboardResponse> dashboardResults = duolingoApiService.getDashboardResults(null, null);
 
@@ -75,7 +80,20 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
         }
         else {
           // Create and save new exam record
-          createAndSaveNewExam(candidateOpt, couponCode, newScore, newYear, newNotes);
+         CandidateExam savedCandidateExam = createAndSaveNewExam(candidateOpt, newScore, newYear, newNotes, couponCode);
+          // Create DuolingoExtraFields and save it
+          duolingoExtraFieldsService.createOrUpdateDuolingoExtraFields(
+              new DuolingoExtraFieldsRequest(
+                  result.getCertificateUrl(),
+                  result.getInterviewUrl(),
+                  result.getVerificationDate(),
+                  result.getPercentScore(),
+                  result.getScale(),
+                  result.getLiteracySubscore(),
+                  result.getConversationSubscore(),
+                  result.getComprehensionSubscore(),
+                  result.getProductionSubscore(),
+                  savedCandidateExam.getId()));
         }
       }
     }
@@ -90,18 +108,20 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
     );
   }
 
-  private void createAndSaveNewExam(Candidate candidate, String couponCode, String newScore, String newYear, String newNotes) {
+  private CandidateExam createAndSaveNewExam(Candidate candidate, String newScore, String newYear, String newNotes, String couponCode) {
     CreateCandidateExamRequest candidateExamRequest = new CreateCandidateExamRequest();
     candidateExamRequest.setExam(Exam.DETOfficial);
     candidateExamRequest.setScore(newScore);
     candidateExamRequest.setYear(Long.valueOf(newYear));
     candidateExamRequest.setNotes(newNotes);
     duolingoCouponService.updateCouponStatus(couponCode, DuolingoCouponStatus.REDEEMED);
-    candidateExamService.createExam(candidate.getId(), candidateExamRequest);
+    CandidateExam savedCandidateExam = candidateExamService.createExam(candidate.getId(), candidateExamRequest);
     LogBuilder.builder(log)
         .action("UpdateCandidateExams")
         .message(String.format("New Duolingo exam record added for candidate ID: %s.", candidate.getId()))
         .logInfo();
+
+    return savedCandidateExam;
   }
 
   private String buildNotes(DuolingoDashboardResponse result) {
@@ -113,7 +133,6 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
         result.getConversationSubscore(), result.getComprehensionSubscore(),
         result.getProductionSubscore());
   }
-
   /**
    * Extracts the year from a date string in the format "yyyy-MM-dd".
    *

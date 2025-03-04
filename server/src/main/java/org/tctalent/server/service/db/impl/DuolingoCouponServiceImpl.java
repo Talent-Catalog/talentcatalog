@@ -192,7 +192,8 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
       if (availableCoupon.isEmpty()) {
         // Throw exception if no coupon is available
-        throw new NoSuchObjectException("No available coupons for candidate ID " + candidateId);
+        throw new NoSuchObjectException(
+            "There are no available coupons to assign to the candidate. Please import more coupons from the settings page.");
       }
 
       // Assign the coupon to the candidate and update its status
@@ -261,7 +262,8 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
     if (availableCoupons.isEmpty() || candidates.size() > availableCoupons.size()) {
       // Throw exception if no coupon are available, or if there are more candidates than coupons
-      throw new NoSuchObjectException("No available coupons for list ID " + list.getId());
+      throw new NoSuchObjectException(
+          "There are not enough available coupons to assign to all candidates in the list. Please import more coupons from the settings page.");
     }
 
     for (Candidate candidate : candidates) {

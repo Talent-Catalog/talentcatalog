@@ -427,6 +427,13 @@
               </p>
           </div>
 
+          <div class="col-md-6">
+              <h6>{{ 'CHAT.NOTIFICATION_PREFERENCE' | translate }}</h6>
+              <p>
+                {{candidate?.allNotifications ? "Yes" : "No"}}
+              </p>
+          </div>
+
         </div>
 
         <div *ngIf="!usAfghan" class="row">

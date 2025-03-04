@@ -14,31 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.duolingocoupon;
+package org.tctalent.server.request.candidate;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import org.tctalent.server.model.db.DuolingoCouponStatus;
+import lombok.ToString;
 
 /**
- * Represents a request to update the status of a Duolingo coupon.
- * This request includes the coupon code and the new status to be assigned.
+ * Changing a candidate preference on when they are notified of opportunities
+ *
+ * @author John Cameron
  */
 @Getter
 @Setter
-public class UpdateDuolingoCouponStatusRequest {
-  /**
-   * The unique code of the Duolingo coupon to be updated.
-   * This field must not be blank.
-   */
-  @NotBlank(message = "Coupon code must not be blank")
-  private String couponCode;
-  /**
-   * The new status to be assigned to the Duolingo coupon.
-   * This field must not be blank.
-   */
-  @NotBlank(message = "Status must not be blank")
-  private DuolingoCouponStatus status;
+@ToString
+public class UpdateCandidateNotificationPreferenceRequest {
 
+  /**
+   * True if candidate wants to receive all notifications.
+   * If false, the candidate will only receive notifications when they are well progressed in
+   * a job opportunity.
+   */
+  private boolean allNotifications;
 }

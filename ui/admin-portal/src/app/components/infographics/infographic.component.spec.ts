@@ -18,7 +18,7 @@ import {InfographicComponent} from "./infographic.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {CandidateStatService} from "../../services/candidate-stat.service";
 import {of, throwError} from "rxjs";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {ActivatedRoute} from "@angular/router";
@@ -142,7 +142,7 @@ describe('InfographicComponent', () => {
     mockCandidateStatService.getAllStats.and.returnValue(of(mockStatReports));
 
     // Call the method
-    component.submitStatsRequest(false);
+    component.submitStatsRequest();
 
     // Simulate asynchronous observables
     tick();
@@ -165,7 +165,7 @@ describe('InfographicComponent', () => {
     mockCandidateStatService.getAllStats.and.returnValue(throwError(mockError));
 
     // Call the method
-    component.submitStatsRequest(false);
+    component.submitStatsRequest();
 
     // Simulate asynchronous observables
     tick();

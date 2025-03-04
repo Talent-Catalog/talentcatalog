@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.AbstractTranslatableDomainObject;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Translation;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.translation.CreateTranslationRequest;
 import org.tctalent.server.request.translation.UpdateTranslationRequest;
-import org.tctalent.server.model.db.Country;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -116,13 +116,20 @@ public interface TranslationService {
     Map<String, Object> getTranslationFile(String language);
 
     /**
-     * Look up the translation the given nesting keys
+     * Look up the translation using the given nesting keys
      * @param translations Nested key translations
      * @param keys Keys
      * @return Translation if one found, otherwise null
      */
     @Nullable
     String translate(Map<String, Object> translations, String... keys);
+
+    /**
+     * Look up the English translation using the given nesting keys
+     * @param keys Keys
+     * @return Translation if one found, otherwise null
+     */
+    String translateToEnglish(String... keys);
 
     /**
      * Updates the nested JSON translation file stored on Amazon for the given language with the

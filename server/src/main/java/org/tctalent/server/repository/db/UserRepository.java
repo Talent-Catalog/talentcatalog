@@ -60,6 +60,9 @@ public interface UserRepository extends CacheEvictingRepository<User, Long>, Jpa
             + " and u.status != 'deleted'")
     User findByEmailIgnoreCase(@Param("email") String email);
 
+    @Query("select u from User u where u.emailVerificationToken = :token and u.status != 'deleted'")
+    User findByEmailVerificationToken(@Param("token") String token);
+
     @Query("select u from User u where u.resetToken = :token and u.status != 'deleted'")
     User findByResetToken(@Param("token") String token);
 
