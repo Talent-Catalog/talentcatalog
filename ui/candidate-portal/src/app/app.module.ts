@@ -26,7 +26,8 @@ import {
   NgbDateParserFormatter,
   NgbDatepickerConfig,
   NgbDatepickerI18n,
-  NgbModule
+  NgbModule,
+  NgbCollapseModule
 } from '@ng-bootstrap/ng-bootstrap';
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
@@ -314,6 +315,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
+    NgbCollapseModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
