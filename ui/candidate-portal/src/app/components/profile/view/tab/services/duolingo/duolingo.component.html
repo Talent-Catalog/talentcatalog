@@ -1,0 +1,27 @@
+<ng-container>
+    <app-error [error]="error"></app-error>
+    <app-loading [loading]="loading"></app-loading>
+
+    <div class="service-title">
+        <div class="header">
+            <div>
+                <h2>Duolingo English Assessment</h2>
+                <p>Benefit from Duolingo services and get a free coupons for the test.</p>
+            </div>
+            <img src="assets/images/services/duolingoLogo.png"/>
+        </div>
+    </div>
+    <app-duolingo-coupon *ngIf="selectedCoupon"
+                         [selectedCoupon]="selectedCoupon"
+    >
+    </app-duolingo-coupon>
+    <div class="coupons" *ngIf="!loading && !selectedCoupon">
+        <h3>Coupons</h3>
+        <p>Free coupons to take the Duolingo test.</p>
+
+        <div class="ticket-container" *ngFor="let coupon of coupons" (click)="selectCoupon(coupon)">
+            <h6>Duolingo English Test (DET)</h6>
+            <p><b>Claim Your Free Test!</b></p>
+        </div>
+    </div>
+</ng-container>

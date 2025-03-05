@@ -25,6 +25,7 @@ import {ChatService} from "../../../services/chat.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {Location} from "@angular/common";
 import {ActivatedRoute} from "@angular/router";
+import {Status} from '../../../model/base';
 
 @Component({
   selector: 'app-view-candidate',
@@ -50,6 +51,7 @@ export class ViewCandidateComponent implements OnInit {
   loading: boolean;
   candidate: Candidate;
   usAfghan: boolean;
+  duolingoTask: Object;
 
   constructor(private candidateService: CandidateService,
               private chatService: ChatService,
@@ -84,6 +86,7 @@ export class ViewCandidateComponent implements OnInit {
     this.candidateService.getProfile().subscribe(
       (candidate) => {
         this.setCandidate(candidate);
+        this.setDuolingoTask(candidate);
         this.usAfghan = candidate.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
         this.loading = false;
       },
@@ -122,6 +125,11 @@ export class ViewCandidateComponent implements OnInit {
     this.candidate = candidate;
     this.getCandidateProspectChat();
     this.fetchAllOpportunityChats();
+  }
+
+  private setDuolingoTask(candidate: Candidate) {
+    this.duolingoTask = this.candidate?.taskAssignments.find(t => t.task.name === "duolingoTest" && t.status === Status.active);
+    console.log(this.duolingoTask)
   }
 
   private getCandidateProspectChat() {

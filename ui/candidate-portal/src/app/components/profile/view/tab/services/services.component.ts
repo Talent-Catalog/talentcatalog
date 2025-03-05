@@ -15,35 +15,33 @@
  */
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Candidate} from "../../../../../model/candidate";
-import {Status} from "../../../../../model/base";
+import {Candidate} from '../../../../../model/candidate';
 
 @Component({
-  selector: 'app-services',
-  templateUrl: './services.component.html',
-  styleUrls: ['./services.component.scss']
+    selector: 'app-services',
+    templateUrl: './services.component.html',
+    styleUrls: ['./services.component.scss']
 })
-export class ServicesComponent  {
+export class ServicesComponent {
 
-  selectedService: String
-  error;
-  loading;
-  @Input() candidate: Candidate;
-  @Output() refresh = new EventEmitter();
+    selectedService: String;
+    error;
+    loading;
+    @Input() candidate: Candidate;
+    @Input() duolingoTask: Object;
+    @Output() refresh = new EventEmitter();
 
-  get activeServices(): String[] {
-    const duolingoTask = this.candidate?.taskAssignments.find(t => t.task.name === "duolingoTest" && t.status === Status.active);
+    constructor() {
+    }
 
-    return duolingoTask ? [duolingoTask.task.displayName] : [];
-  }
+    selectService(serviceName: String) {
+        this.selectedService = serviceName;
+        console.log(this.selectedService);
+    }
 
-  selectService(serviceName: String) {
-    this.selectedService = serviceName;
-  }
-
-  unSelectService() {
-    this.selectedService = null;
-    this.refresh.emit();
-  }
-
+    unSelectService() {
+        this.selectedService = null;
+        console.log(this.selectedService);
+        this.refresh.emit();
+    }
 }
