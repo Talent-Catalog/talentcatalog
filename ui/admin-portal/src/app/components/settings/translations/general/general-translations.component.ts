@@ -547,7 +547,8 @@ const ALL_FIELDS = {
       "TAB": {
         "PROFILE": null,
         "TASKS": null,
-        "OPPS": null
+        "OPPS": null,
+        "SERVICES": null,
       },
       "CONTACT": {
         "TITLE": null,
@@ -743,6 +744,18 @@ const ALL_FIELDS = {
     "YES": null,
     "NO": null,
     "UNSURE": null,
+  },
+  "SERVICES": {
+    "ONGOING": {
+      "HEADER": null,
+      "NOTE": null,
+    },
+    "TABLE": {
+      "NAME": null,
+    },
+    "SERVICE": {
+      "RETURN": null
+    }
   },
   "TASKS": {
     "TAB": null,

@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2024 Talent Catalog.
+/*
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  padding: 20px 0;
-}
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-.nav-pills .nav-link {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+import { ServicesComponent } from './services.component';
 
-}
+describe('ServicesComponent', () => {
+  let component: ServicesComponent;
+  let fixture: ComponentFixture<ServicesComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [ServicesComponent]
+    });
+    fixture = TestBed.createComponent(ServicesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

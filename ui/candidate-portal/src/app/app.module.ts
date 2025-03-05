@@ -26,7 +26,8 @@ import {
   NgbDateParserFormatter,
   NgbDatepickerConfig,
   NgbDatepickerI18n,
-  NgbModule
+  NgbModule,
+  NgbCollapseModule
 } from '@ng-bootstrap/ng-bootstrap';
 import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {PhraseAppCompiler} from 'ngx-translate-phraseapp';
@@ -124,6 +125,7 @@ import {
   faFileUpload,
   faFolderOpen,
   faGlobe,
+  faHandshake,
   faLink,
   faListCheck,
   faMessage,
@@ -221,7 +223,10 @@ import {
 import {
   DestinationComponent
 } from "./components/register/destinations/destination/destination.component";
+import {ServicesComponent} from './components/profile/view/tab/services/services.component';
 import { VerifyEmailComponent } from './components/account/verify-email/verify-email.component';
+import {DuolingoCouponComponent} from './components/profile/view/tab/services/duolingo/duolingo-coupon/duolingo-coupon.component';
+import { DuolingoComponent } from './components/profile/view/tab/services/duolingo/duolingo.component';
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -300,7 +305,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     DeleteExamComponent,
     RegistrationDestinationsComponent,
     DestinationComponent,
-    VerifyEmailComponent
+    VerifyEmailComponent,
+    ServicesComponent,
+    DuolingoCouponComponent,
+    DuolingoComponent,
   ],
   imports: [
     BrowserModule,
@@ -309,6 +317,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
+    NgbCollapseModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
@@ -382,6 +391,7 @@ export class AppModule {
       faListCheck,
       faBriefcase,
       faMessage,
+      faHandshake,
       faEnvelope,
       faEnvelopeOpen,
       faTriangleExclamation
