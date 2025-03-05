@@ -4,7 +4,7 @@ import { LoadingIndicatorComponent } from './loading-indicator.component';
 import {TranslateModule} from "@ngx-translate/core";
 import {By} from "@angular/platform-browser";
 
-fdescribe('LoadingIndicatorComponent', () => {
+describe('LoadingIndicatorComponent', () => {
   let component: LoadingIndicatorComponent;
   let fixture: ComponentFixture<LoadingIndicatorComponent>;
 

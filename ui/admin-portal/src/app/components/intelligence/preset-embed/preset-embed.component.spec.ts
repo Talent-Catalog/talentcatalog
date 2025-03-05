@@ -4,7 +4,7 @@ import { PresetEmbedService } from '../../../services/preset-embed.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {of, throwError} from "rxjs";
 
-fdescribe('PresetEmbedComponent', () => {
+describe('PresetEmbedComponent', () => {
   let component: PresetEmbedComponent;
   let fixture: ComponentFixture<PresetEmbedComponent>;
   let presetEmbedService: jasmine.SpyObj<PresetEmbedService>;
