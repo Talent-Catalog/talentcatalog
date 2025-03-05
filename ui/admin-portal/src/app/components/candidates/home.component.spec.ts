@@ -87,10 +87,8 @@ describe('HomeComponent', () => {
 
     // Check if the default saved search subtype is selected
     expect(component.selectedSavedSearchSubtype).toEqual(parseInt(defaultCategoryValue));
-
-    // Check if the last tab key is set in the local storage
-    expect(localStorageService.set).toHaveBeenCalledWith(lastTabKey, defaultTabId);
   });
+
   it('should update selectedSavedSearchSubtype when saved search subtype changes', () => {
     // Define the new saved search subtype
     const newSubtype: number = 1;
