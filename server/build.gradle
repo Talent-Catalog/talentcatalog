@@ -157,6 +157,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-core'
     implementation 'io.github.mweirauch:micrometer-jvm-extras:0.2.2'
+
+    // tc api
+    implementation "io.github.sadatmalik:tc-api-spec:1.0.1"
 }
 
 jib {
