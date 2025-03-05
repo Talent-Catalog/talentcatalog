@@ -1,0 +1,22 @@
+.coupon {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.coupon .collapse-button {
+  text-align: start;
+  margin: 1rem 0;
+  background-color: #ceeef8;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+}
+
+.test-button {
+  background-color: #89E219;
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  padding: 1rem 2rem;
+}
