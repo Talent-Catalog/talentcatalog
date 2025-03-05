@@ -41,11 +41,13 @@ public class PresetApiServiceImpl implements PresetApiService {
   private final PresetProperties properties;
   private final WebClient authClient;
   private String jwtToken = null;
+  private static final String AUTH_BASE_URL = "https://api.app.preset.io/v1/";
+  private static final String TEAM_ID = "https://api.app.preset.io/v1/";
 
   @Autowired
   public PresetApiServiceImpl(PresetProperties properties) {
     this.properties = properties;
-    this.authClient = WebClient.builder().baseUrl(properties.getAuthBaseUrl()).build();
+    this.authClient = WebClient.builder().baseUrl(AUTH_BASE_URL).build();
   }
 
   public String fetchGuestToken(String dashboardId) throws WebClientResponseException {
@@ -88,7 +90,7 @@ public class PresetApiServiceImpl implements PresetApiService {
 
   private String getGuestTokenUri() {
     return "teams/"
-        + properties.getTeamId()
+        + TEAM_ID
         + "/workspaces/"
         + properties.getWorkspaceId()
         + "/guest-token/";

@@ -23,12 +23,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Configuration properties for the Preset API integration.
  *
- * <p>This class contains the properties used to connect to the Preset API,
- * including the API secret for authentication and the base URL for API requests.
- * These properties are injected from the application's configuration files,
- * `application.yml`, using the prefix "preset.api".
+ * <p>This class contains the properties used to interact with the Preset API, when they are either
+ * secret or might change depending on the running TC environment. They are injected from the
+ * application's configuration files, `application.yml`, using the prefix "preset.api".
  */
-// TODO align properties with final version of application.yml - some may not be needed
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "preset.api")
@@ -47,16 +45,6 @@ public class PresetProperties {
    * <p>This secret is required to authenticate API requests to Preset services.
    */
   private String apiToken;
-
-  /**
-   * The base URL for obtaining JWT and guest tokens from the Preset API.
-   */
-  private String authBaseUrl;
-
-  /**
-   * The ID of the TC Preset team, required for Preset API interactions
-   */
-  private String teamId;
 
   /**
    * The ID of the TC Preset workspace, required for Preset API interactions

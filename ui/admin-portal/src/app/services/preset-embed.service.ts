@@ -11,7 +11,7 @@ import { embedDashboard } from "@preset-sdk/embedded";
 export class PresetEmbedService {
 
   private apiBaseUrl = environment.apiUrl + '/preset';
-  static readonly PRESET_DOMAIN: string = 'https://987e2e02.us2a.app.preset.io';
+  private presetDomain: string = 'https://' + environment.presetWorkspaceId + '.us2a.app.preset.io';
 
   constructor(private http: HttpClient) { }
 
@@ -27,7 +27,7 @@ export class PresetEmbedService {
       map(token => {
         embedDashboard({
           id: dashboardId,
-          supersetDomain: PresetEmbedService.PRESET_DOMAIN,
+          supersetDomain: this.presetDomain,
           mountPoint,
           fetchGuestToken: () => token["token"],
           dashboardUiConfig: {

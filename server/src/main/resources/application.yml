@@ -260,12 +260,9 @@ translation:
 environment: ${ENVIRONMENT:local}
 
 # Preset API Configuration:
-# Contains the API secret, base URL and URL components for interacting with the Preset API.
-# TODO: remove secrets and check we need all the properties at the end
+# Contains the secret or TC-environment-contingent properties required to interact w the Preset API.
 preset:
   api:
     apiSecret: ${PRESET_SECRET:}
     apiToken: ${API_TOKEN:}
-    teamId: ${TEAM_ID:}
     workspaceId: ${WORKSPACE_ID:}
-    authBaseUrl: https://api.app.preset.io/v1/
