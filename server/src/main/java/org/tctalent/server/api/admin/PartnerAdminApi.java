@@ -16,13 +16,15 @@
 
 package org.tctalent.server.api.admin;
 
-import java.util.List;
-import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -111,6 +113,12 @@ public class PartnerAdminApi implements
 
         Partner partner = partnerService.update(id, request);
         return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    @GetMapping("public-api-key/{api-key}")
+    public ResponseEntity<Long> findPartnerIdByPublicApiKey(@PathVariable("api-key") String apiKey) {
+        //TODO JC Debug - can return a partner id or null
+        return ResponseEntity.ok(2L);
     }
 
     @PutMapping("{id}/update-job-contact")
