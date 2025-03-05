@@ -7,7 +7,7 @@
             <!-- Modal Body -->
             <div class="modal-body">
                 <div *ngIf="state === 'idle'">
-                  <fa-icon [icon]="faEnvelope" class="fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></fa-icon>
+                  <fa-icon icon="envelope" class="fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></fa-icon>
                   <h2>{{ 'HOME.EMAIL_VERIFICATION.IDLE.TITLE' | translate }}</h2>
                    <p>{{ 'HOME.EMAIL_VERIFICATION.IDLE.DESCRIPTION' | translate }}  <b>{{ userEmail }}</b>.</p>
                   <p>
@@ -28,7 +28,7 @@
                 </div>
 
                 <div *ngIf="state === 'emailSent'">
-                     <fa-icon [icon]="faEnvelopeOpen" class="fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></fa-icon>
+                     <fa-icon icon="envelope-open" class="fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></fa-icon>
                     <h2>{{ "HOME.EMAIL_VERIFICATION.EMAIL_SENT.TITLE" | translate }} </h2>
                     <p>{{"HOME.EMAIL_VERIFICATION.EMAIL_SENT.DESCRIPTION" | translate}}<b>{{ userEmail }}</b></p>
                     <p>{{"HOME.EMAIL_VERIFICATION.EMAIL_SENT.SPAM" | translate}}</p>
@@ -40,7 +40,7 @@
                 </div>
 
                 <div *ngIf="state === 'error'">
-                    <fa-icon [icon]="faTriangleExclamation" class="fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></fa-icon>
+                    <fa-icon icon="triangle-exclamation" class="fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></fa-icon>
                     <h2>{{ error }}</h2>
                     <button
                             class="btn btn-primary"

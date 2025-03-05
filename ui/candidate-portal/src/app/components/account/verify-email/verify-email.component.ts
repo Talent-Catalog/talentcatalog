@@ -2,7 +2,6 @@ import {Component, Input} from '@angular/core';
 import {UserService} from '../../../services/user.service';
 import {SendVerifyEmailRequest} from '../../../model/user';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import { faEnvelope, faEnvelopeOpen, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-verify-email',
@@ -14,9 +13,6 @@ export class VerifyEmailComponent {
   emailSent: boolean = false;
   error: any;
   @Input() userEmail: string;
-  faEnvelope: any = faEnvelope;
-  faEnvelopeOpen: any = faEnvelopeOpen;
-  faTriangleExclamation: any = faTriangleExclamation;
 
   constructor(
     private userService: UserService,

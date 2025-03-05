@@ -132,7 +132,10 @@ import {
   faQuestionCircle,
   faTimes,
   faUser,
-  faXmark
+  faXmark,
+  faEnvelope,
+  faEnvelopeOpen,
+  faTriangleExclamation
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -378,7 +381,10 @@ export class AppModule {
       faUser,
       faListCheck,
       faBriefcase,
-      faMessage
+      faMessage,
+      faEnvelope,
+      faEnvelopeOpen,
+      faTriangleExclamation
     );
   }
 }
