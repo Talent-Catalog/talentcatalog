@@ -21,6 +21,8 @@ import {SavedSearchService} from '../../services/saved-search.service';
 import {AuthenticationService} from '../../services/authentication.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageService} from "../../services/local-storage.service";
+import {ActivatedRoute} from "@angular/router";
+import {of} from "rxjs";
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -43,7 +45,8 @@ describe('HomeComponent', () => {
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },
         SavedSearchService,
-        AuthenticationService
+        AuthenticationService,
+        { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
       ]
     }).compileComponents();
   }));
