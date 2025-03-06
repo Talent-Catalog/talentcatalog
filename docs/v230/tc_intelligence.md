@@ -6,6 +6,7 @@ sass:
 ---
 ## Introducing TC Intelligence
 Todo text
+Todo maybe screenshot close up of filters?
 
 <div class="card-image-container-narrow">
   <img src="./../assets/images/v230/TCIntelligenceFilters.png" 
