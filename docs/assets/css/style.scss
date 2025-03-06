@@ -107,6 +107,10 @@ body {
   .btn.btn-sm {
     background-color: #49B6BD;
   }
+
+  .site-footer {
+    flex-direction: column-reverse;
+  }
 }
 
 .card:hover {
@@ -231,10 +235,6 @@ a .card-description {
 .site-footer {
   display: flex;
   justify-content: space-between;
-}
-
-@media screen and (max-width: 768px) {
-  flex-direction: column-reverse;
 }
 
 .site-footer-owner a {
