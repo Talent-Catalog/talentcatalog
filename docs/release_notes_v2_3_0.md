@@ -23,7 +23,7 @@ sass:
   </a>
 
   <a href="./v230/tc_intelligence" class="card">
-    <img src="./assets/images/v230/PresetLogo.png" alt="Search Improvements" class="card-image">
+    <img src="./assets/images/v230/TCIntelligenceCard.png" alt="TC Intelligence" class="card-image">
     <div class="card-body">
       <div class="card-title">TC Intelligence with Preset</div>
       <div class="card-description">
