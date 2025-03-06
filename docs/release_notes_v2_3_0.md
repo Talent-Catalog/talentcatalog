@@ -39,7 +39,7 @@ sass:
 
 <div class="card-container">
   <a href="./v230/duolingo_english_test" class="card">
-    <img src="./assets/images/v230/DuolingoEnglishTestLogo.png" alt="Duolingo English Test logo" class="card-image">
+    <img src="./assets/images/v230/DET.png" alt="Duolingo English Test logo" class="card-image">
     <div class="card-body">
       <div class="card-title">Duolingo English Test/TC Integration</div>
       <div class="card-description">
