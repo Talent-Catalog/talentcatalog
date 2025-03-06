@@ -13,7 +13,9 @@ export class PresetEmbedService {
   private apiBaseUrl = environment.apiUrl + '/preset';
   private presetDomain: string = 'https://' + environment.presetWorkspaceId + '.us2a.app.preset.io';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    console.log(this.presetDomain);
+  }
 
   public fetchGuestToken(dashboardId: string): Observable<string> {
     return this.http.post<string>(`${this.apiBaseUrl}/${dashboardId}/guest-token`, null);

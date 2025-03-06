@@ -18,37 +18,35 @@ package org.tctalent.server.service.db.impl;
 
 import java.time.Duration;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.tctalent.server.configuration.properties.PresetProperties;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.preset.PresetGuestTokenRequest;
 import org.tctalent.server.request.preset.PresetGuestTokenRequest.PresetResource;
 import org.tctalent.server.request.preset.PresetGuestTokenRequest.PresetUser;
 import org.tctalent.server.request.preset.PresetJwtTokenRequest;
 import org.tctalent.server.response.PresetJwtTokenResponse;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.PresetApiService;
 import reactor.util.retry.Retry;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class PresetApiServiceImpl implements PresetApiService {
 
   private final PresetProperties properties;
-  private final WebClient authClient;
+  private final AuthService authService;
   private String jwtToken = null;
   private static final String AUTH_BASE_URL = "https://api.app.preset.io/v1/";
-  private static final String TEAM_ID = "https://api.app.preset.io/v1/";
-
-  @Autowired
-  public PresetApiServiceImpl(PresetProperties properties) {
-    this.properties = properties;
-    this.authClient = WebClient.builder().baseUrl(AUTH_BASE_URL).build();
-  }
+  private static final String TEAM_ID = "7235fedd";
 
   public String fetchGuestToken(String dashboardId) throws WebClientResponseException {
     if (jwtToken == null) {
@@ -76,6 +74,8 @@ public class PresetApiServiceImpl implements PresetApiService {
   }
 
   private String attemptFetchGuestToken(PresetGuestTokenRequest request) {
+    WebClient authClient = getAuthClient();
+
     return authClient.post()
         .uri(getGuestTokenUri())
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
@@ -106,6 +106,8 @@ public class PresetApiServiceImpl implements PresetApiService {
         this.properties.getApiSecret()
     );
 
+    WebClient authClient = getAuthClient();
+
     try {
       return authClient.post()
           .uri("auth/")
@@ -125,13 +127,22 @@ public class PresetApiServiceImpl implements PresetApiService {
   }
 
   private PresetGuestTokenRequest createPresetGuestTokenRequest(String dashboardId) {
-    PresetUser user = new PresetUser("guest_user", "Guest", "User");
+    User tcUser = authService.getLoggedInUser()
+        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+    PresetUser presetUser =
+        new PresetUser(tcUser.getUsername(), tcUser.getFirstName(), tcUser.getLastName());
+
     PresetResource resource = new PresetResource("dashboard", dashboardId);
 
     PresetGuestTokenRequest request =
-        new PresetGuestTokenRequest(user, List.of(resource), List.of());
+        new PresetGuestTokenRequest(presetUser, List.of(resource), List.of());
 
     return request;
+  }
+
+  private WebClient getAuthClient() {
+    return WebClient.builder().baseUrl(AUTH_BASE_URL).build();
   }
 
 }

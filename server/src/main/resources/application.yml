@@ -264,5 +264,5 @@ environment: ${ENVIRONMENT:local}
 preset:
   api:
     apiSecret: ${PRESET_SECRET:}
-    apiToken: ${API_TOKEN:}
-    workspaceId: ${WORKSPACE_ID:}
+    apiToken: ${PRESET_API_TOKEN:}
+    workspaceId: ${PRESET_WORKSPACE_ID:}

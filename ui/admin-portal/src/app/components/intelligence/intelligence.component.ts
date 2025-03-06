@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 })
 export class IntelligenceComponent {
 
-  allCandidatesDashboardId: string = 'ef47023f-ccb3-4bed-88c7-3bdf830ae15f';
+  allCandidatesDashboardId: string = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
 
 }
