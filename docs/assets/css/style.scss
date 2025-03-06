@@ -116,7 +116,6 @@ body {
 
 a:hover .card-description {
   text-decoration: none;
-  margin-bottom: 0;
 }
 
 a:hover .btn-sm {
@@ -126,6 +125,12 @@ a:hover .btn-sm {
 a {
   color: #4DB6C1;
   text-decoration: none;
+}
+
+// For cards with links (and therefore should have a 'learn more' footer) remove the margin bottom.
+// This means cards with footers and without will be aligned the same.
+a .card-description {
+  margin-bottom: 0;
 }
 
 .card-no-border {
