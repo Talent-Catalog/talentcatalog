@@ -123,7 +123,7 @@ Helpful TC user guides:
   <div class="card">
     <img src="./assets/images/v230/ClarityHeatmaps.png" alt="Clarity heatmaps" class="card-image">
     <div class="card-body">
-      <div class="card-title">Implemented Clarity for heat mapping and screen recording</div>
+      <div class="card-title">Implemented heat mapping and screen recording</div>
       <div class="card-description">
         Part of the redesign process is gathering data on our users, we have implemented Clarity to provide and analyse heatmaps of user behaviour. 
         We look forward to sharing the results and using the results to provide data driven design choices.
