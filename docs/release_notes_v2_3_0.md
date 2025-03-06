@@ -107,11 +107,11 @@ Helpful TC user guides:
 # UI / UX Enhancements
 <div class="card-container">
   <a href="./v230/tc_redesign" class="card">
-    <img src="./assets/images/v230/SearchRedesign.png" alt="TC redesign" class="card-image">
+    <img src="./assets/images/v230/TCRedesign.png" alt="TC redesign" class="card-image">
     <div class="card-body">
       <div class="card-title">Sneak Peak into the TC redesign!</div>
       <div class="card-description">
-        With the help of Hiba, our resident UI/UX designer, we have the capacity to plan a much desired upgrade to the TC user interface. 
+        With the help of Hiba, our resident UI/UX designer, we are beginning a much desired upgrade to the TC user interface. 
         Incorporating Figma into our workflow, we can easily share our plans and early designs with you all.
       </div>
       <div class="card-footer">
