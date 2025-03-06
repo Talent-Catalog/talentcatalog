@@ -9,9 +9,7 @@ sass:
 
 <div class="card-container">
   <a href="./v230/anonymized_open_api" class="card">
-    <div class="card-image">
-        <img src="./assets/images/v230/OpenApi.png" alt="Open Api">
-    </div>
+    <img src="./assets/images/v230/OpenApi.png" alt="Open Api" class="card-image">
     <div class="card-body">
       <div class="card-title">Anonymized Open API</div>
       <div class="card-description">
@@ -25,9 +23,7 @@ sass:
   </a>
 
   <a href="./v230/tc_intelligence" class="card">
-    <div class="card-image">
-        <img src="./assets/images/v230/TCIntelligenceCard.png" alt="TC Intelligence">
-    </div>
+    <img src="./assets/images/v230/TCIntelligenceCard.png" alt="TC Intelligence" class="card-image">
     <div class="card-body">
       <div class="card-title">TC Intelligence with Preset</div>
       <div class="card-description">
@@ -43,9 +39,7 @@ sass:
 
 <div class="card-container">
   <a href="./v230/duolingo_english_test" class="card">
-    <div class="card-image">
-        <img src="./assets/images/v230/DET.png" alt="Duolingo English Test logo">
-    </div>
+    <img src="./assets/images/v230/DET.png" alt="Duolingo English Test logo" class="card-image">
     <div class="card-body">
       <div class="card-title">Duolingo English Test/TC Integration</div>
       <div class="card-description">
@@ -59,9 +53,7 @@ sass:
   </a>
 
   <div class="card">
-    <div class="card-image">
-        <img src="./assets/images/v230/MuteChat.png" alt="Mute chats">
-    </div>
+    <img src="./assets/images/v230/MuteChat.png" alt="Mute chats" class="card-image">
     <div class="card-body">
       <div class="card-title">Mute Chats</div>
       <div class="card-description">
@@ -115,9 +107,7 @@ Helpful TC user guides:
 # UI / UX Enhancements
 <div class="card-container">
   <a href="./v230/tc_redesign" class="card">
-    <div class="card-image">
-        <img src="./assets/images/v230/TCRedesign.png" alt="TC redesign">
-    </div>
+    <img src="./assets/images/v230/TCRedesign.png" alt="TC redesign" class="card-image">
     <div class="card-body">
       <div class="card-title">Sneak Peak into the TC redesign!</div>
       <div class="card-description">
@@ -131,9 +121,7 @@ Helpful TC user guides:
   </a>
 
   <div class="card">
-    <div class="card-image">
-        <img src="./assets/images/v230/ClarityHeatmaps.png" alt="Clarity heatmaps">
-    </div>
+    <img src="./assets/images/v230/ClarityHeatmaps.png" alt="Clarity heatmaps" class="card-image">
     <div class="card-body">
       <div class="card-title">Implemented Clarity for heat mapping and screen recording</div>
       <div class="card-description">

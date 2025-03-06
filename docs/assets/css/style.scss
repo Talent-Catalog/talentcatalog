@@ -207,6 +207,11 @@ a {
   font-size: 1em;
   color: #101828;;
   flex-grow: 1;
+  padding-bottom: 2em;
+}
+
+a .card-description {
+  padding-bottom: 0;
 }
 
 .card-image-caption {
