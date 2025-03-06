@@ -127,12 +127,6 @@ a {
   text-decoration: none;
 }
 
-// For cards with links (and therefore should have a 'learn more' footer) remove the margin bottom.
-// This means cards with footers and without will be aligned the same.
-a .card-description {
-  margin-bottom: 0;
-}
-
 .card-no-border {
   width: calc(50% - 16px);
   box-sizing: border-box;
@@ -193,13 +187,13 @@ a .card-description {
 
 .card-image-container-narrow {
   text-align: center;
+  max-width: calc(50% - 16px);
 }
 
 .card-image-container-narrow .card-image {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   margin-bottom: 0;
-  max-width: calc(50% - 16px);
 }
 
 @media screen and (max-width: 768px) {
@@ -213,7 +207,6 @@ a .card-description {
   font-size: 1em;
   color: #101828;;
   flex-grow: 1;
-  margin-bottom: 2em;
 }
 
 .card-image-caption {
@@ -224,10 +217,9 @@ a .card-description {
 .card-footer {
   font-size: 0.75em;
   text-align: center;
-  align-items: end;
+  margin-top: 0.75em;
   color: #49B6BD;
   flex-grow: 1;
-  height: 35px;
 }
 
 .site-footer-owner a {
