@@ -179,8 +179,7 @@ Helpful TC user guides:
 - MFA Authenticators now show TalentCatalog instead of TBB
 - Updated copyright
 - Deprecated Github Actions Upload Artifact version upgraded
-- Standardized Terraform: 
-- <a href="https://drive.google.com/file/d/1JZUenkyr2rtVB7h8eElkRvXfwqbCIPQB/view?usp=drive_link" 
+- Standardized Terraform: <a href="https://drive.google.com/file/d/1JZUenkyr2rtVB7h8eElkRvXfwqbCIPQB/view?usp=drive_link" 
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 1</a>, 
 <a href="https://drive.google.com/file/d/1kEiK77T8_krmqX-TxVodmNAJhDznbocA/view?usp=drive_link" 
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 2</a>, 
