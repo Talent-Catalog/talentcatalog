@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2024 Talent Catalog.
+/*
+ * Copyright (c) 2025 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  padding: 20px 0;
+
+/**
+ * Enum to represent the various statuses a coupon can have.
+ */
+export enum DuolingoCouponStatus {
+  AVAILABLE = 'AVAILABLE',
+  ASSIGNED = 'ASSIGNED',
+  REDEEMED = 'REDEEMED',
+  EXPIRED = 'EXPIRED',
+  SENT = 'SENT',
 }
 
-.nav-pills .nav-link {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+export interface DuolingoCouponResponse {
+  id: number;
+  couponCode: string;
+  expirationDate: string;
+  dateSent: string;
+  duolingoCouponStatus: DuolingoCouponStatus;
+}
 
+export interface UpdateCouponStatusRequest {
+  couponCode: string;
+  status: string;
 }
