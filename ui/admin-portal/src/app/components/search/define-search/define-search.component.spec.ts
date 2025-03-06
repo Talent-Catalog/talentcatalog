@@ -37,7 +37,7 @@ import {
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 
-fdescribe('DefineSearchComponent', () => {
+describe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
   let fixture: ComponentFixture<DefineSearchComponent>;
   let searchQueryServiceSpy: jasmine.SpyObj<SearchQueryService>;

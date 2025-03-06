@@ -89,7 +89,8 @@ describe('InfographicComponent', () => {
       savedList: null,
       savedSearch: null,
       dateFrom: '',
-      dateTo: ''
+      dateTo: '',
+      selectedStats: []
     });
 
     const dateFromControl = component.statsFilter.get('dateFrom');

@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
       (user) => {
         this.onChangedLogin(user);
         this.user = user;
-        if (this.user.id) {
+        if (this.user?.id) {
           this.isEmailVerified(this.user.id);
         }
       }
