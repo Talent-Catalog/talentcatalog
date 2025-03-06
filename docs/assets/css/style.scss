@@ -92,6 +92,11 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  margin-bottom: 2em;
+}
+
+.card a {
+  margin-bottom: 0;
 }
 
 @media screen and (max-width: 768px) {
