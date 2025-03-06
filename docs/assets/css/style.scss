@@ -54,6 +54,7 @@ body {
   color: #FFFFFF;
   padding: 10px 18px;
   border-radius: 8px;
+  text-align: center;
 }
 
 .btn.btn-sm {
@@ -229,6 +230,11 @@ a .card-description {
 
 .site-footer {
   display: flex;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 768px) {
+  flex-direction: column-reverse;
 }
 
 .site-footer-owner a {
