@@ -217,9 +217,10 @@ a {
 .card-footer {
   font-size: 0.75em;
   text-align: center;
+  align-items: end;
   color: #49B6BD;
   flex-grow: 1;
-  margin: 1em 0;
+  height: 35px;
 }
 
 .site-footer-owner a {
