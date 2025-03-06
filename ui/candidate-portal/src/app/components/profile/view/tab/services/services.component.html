@@ -1,0 +1,40 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="container">
+    <app-error [error]="error"></app-error>
+    <app-loading [loading]="loading"></app-loading>
+
+    <app-duolingo *ngIf="selectedService"
+                  [candidate]="candidate">
+    </app-duolingo>
+
+    <ng-container *ngIf="!loading && !selectedService">
+        <div class="service-title">
+            <h2>Services</h2>
+            <p>Explore our services tailored to assist you.</p>
+        </div>
+        <div class="service-card" (click)="selectService('duolingo')">
+
+            <div>
+                <span class="service-tag">Duolingo</span>
+                <h3>Duolingo English Assessment</h3>
+                <p>Benefit from Duolingo services and get a free coupons for the test.</p>
+            </div>
+            <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
+        </div>
+    </ng-container>
+</div>
