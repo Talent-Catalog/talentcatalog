@@ -92,11 +92,6 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-bottom: 2em;
-}
-
-.card a {
-  margin-bottom: 0;
 }
 
 @media screen and (max-width: 768px) {
@@ -121,6 +116,7 @@ body {
 
 a:hover .card-description {
   text-decoration: none;
+  margin-bottom: 0;
 }
 
 a:hover .btn-sm {
@@ -212,6 +208,7 @@ a {
   font-size: 1em;
   color: #101828;;
   flex-grow: 1;
+  margin-bottom: 2em;
 }
 
 .card-image-caption {

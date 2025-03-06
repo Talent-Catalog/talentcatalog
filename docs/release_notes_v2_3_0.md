@@ -59,7 +59,6 @@ sass:
       <div class="card-description">
         TC admins can quietly 'mute' candidate chats, this is useful if a candidate is sending unnecessary chats which spams the chat channel.
       </div>
-      <div class="card-footer"></div>
     </div>
   </div>
 </div>
