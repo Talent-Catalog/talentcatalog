@@ -162,6 +162,9 @@ dependencies {
     implementation 'io.micrometer:micrometer-core'
     implementation 'io.github.mweirauch:micrometer-jvm-extras:0.2.2'
 
+    // tc api
+    implementation "io.github.sadatmalik:tc-api-spec:1.0.1"
+
     //OpenAPI public API code generation
     //todo jc This is copied from build.gradle for tc-api. Any way of avoiding that duplication?
     // For OpenAPI 3.0 code generation - todo check if their are curated versions, if not move versions to ext
