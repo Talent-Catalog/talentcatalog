@@ -4,3 +4,5 @@ description: Duolingo English Test
 sass:
   style: compressed
 ---
+
+The TC is thrilled to be partnering with global leader in language 
