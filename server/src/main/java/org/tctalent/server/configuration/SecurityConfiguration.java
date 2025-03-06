@@ -229,6 +229,10 @@ public class SecurityConfiguration {
                 // POST: REQUEST INFOGRAPHICS
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/stat/all").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // POST: OFFER TO ASSIST
+                .requestMatchers(HttpMethod.POST, "/api/admin/ota").hasAnyRole(
+                    "SYSTEMADMIN", "ADMIN")
+
                 /*
                  * CHECKING CHATS
                  */
