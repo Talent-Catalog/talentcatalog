@@ -134,7 +134,10 @@ import {
   faQuestionCircle,
   faTimes,
   faUser,
-  faXmark
+  faXmark,
+  faEnvelope,
+  faEnvelopeOpen,
+  faTriangleExclamation
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOccupationComponent
@@ -302,11 +305,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     DeleteExamComponent,
     RegistrationDestinationsComponent,
     DestinationComponent,
+    VerifyEmailComponent,
     ServicesComponent,
-    DestinationComponent,
     DuolingoCouponComponent,
     DuolingoComponent,
-    VerifyEmailComponent
   ],
   imports: [
     BrowserModule,
@@ -389,7 +391,10 @@ export class AppModule {
       faListCheck,
       faBriefcase,
       faMessage,
-      faHandshake
+      faHandshake,
+      faEnvelope,
+      faEnvelopeOpen,
+      faTriangleExclamation
     );
   }
 }
