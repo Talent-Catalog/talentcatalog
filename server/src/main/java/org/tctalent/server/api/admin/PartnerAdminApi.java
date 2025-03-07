@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -115,6 +116,8 @@ public class PartnerAdminApi implements
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }
 
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("public-api-key/{api-key}")
     public ResponseEntity<Long> findPartnerIdByPublicApiKey(@PathVariable("api-key") String apiKey) {
         //TODO JC Debug - can return a partner id or null

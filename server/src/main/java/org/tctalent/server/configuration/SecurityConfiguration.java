@@ -101,7 +101,7 @@ import org.tctalent.server.security.TcUserDetailsService;
 @EnableMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
-        prePostEnabled = false)
+        prePostEnabled = true)
 public class SecurityConfiguration {
 
     @Autowired
