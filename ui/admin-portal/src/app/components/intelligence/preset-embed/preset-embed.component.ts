@@ -24,12 +24,11 @@ export class PresetEmbedComponent {
     this.presetEmbedService.embedDashboard(
       this.dashboardId,
       document.getElementById('dashboard'),
-    ).subscribe({
-      next: () => this.loading = false,
-      error: (err) => {
-        this.loading = false;
-        this.error = err;
-      }
+    ).then(() => {
+      this.loading = false;
+    }).catch((err) => {
+      this.loading = false;
+      this.error = err;
     });
   }
 }

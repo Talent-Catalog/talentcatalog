@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
-import {Observable} from "rxjs";
 import {embedDashboard, EmbeddedDashboard} from "@preset-sdk/embedded";
 import {map} from "rxjs/operators";
 
@@ -31,8 +30,8 @@ export class PresetEmbedService {
   embedDashboard(
     dashboardId: string,
     mountPoint: HTMLElement
-  ): Observable<void> {
-    embedDashboard({
+  ): Promise<EmbeddedDashboard> {
+    return embedDashboard({
       id: dashboardId,
       supersetDomain: this.presetDomain,
       mountPoint,
