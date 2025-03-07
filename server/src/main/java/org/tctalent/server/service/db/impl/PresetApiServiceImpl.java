@@ -37,9 +37,9 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.PresetApiService;
 import reactor.util.retry.Retry;
 
-@Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class PresetApiServiceImpl implements PresetApiService {
 
   private final PresetProperties properties;
