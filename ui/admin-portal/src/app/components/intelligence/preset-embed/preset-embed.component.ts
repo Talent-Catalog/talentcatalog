@@ -7,28 +7,37 @@ import {PresetEmbedService} from "../../../services/preset-embed.service";
   styleUrls: ['./preset-embed.component.scss']
 })
 export class PresetEmbedComponent {
-  @Input() dashboardId: string;
+  @Input() private dashboardId: string;
+  private dashboardContainer: HTMLElement;
 
   error: any;
   loading = false;
 
-  constructor(private presetEmbedService: PresetEmbedService) {}
+  constructor(private presetEmbedService: PresetEmbedService) { }
 
   ngOnInit(): void {
-    if (!this.dashboardId) {
-      this.error = "Dashboard ID is required";
-      return;
-    }
-
     this.loading = true;
+    this.dashboardContainer = document.getElementById('dashboard');
+
     this.presetEmbedService.embedDashboard(
       this.dashboardId,
-      document.getElementById('dashboard'),
-    ).then(() => {
+      this.dashboardContainer,
+    ).then((dashboard) => {
       this.loading = false;
+      this.setDashboardIframeSize();
     }).catch((err) => {
       this.loading = false;
       this.error = err;
     });
   }
+
+  private setDashboardIframeSize(): void {
+    const dashboardIframe =
+      this.dashboardContainer.querySelector('iframe');
+    if (dashboardIframe) {
+      dashboardIframe.style.width = '100%'; // Set the width as needed
+      dashboardIframe.style.height = '1000px'; // Set the height as needed
+    }
+  }
+
 }
