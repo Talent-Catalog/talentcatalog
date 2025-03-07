@@ -17,12 +17,13 @@
 package org.tctalent.server.service.db;
 
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.tctalent.server.response.preset.PresetGuestTokenResponse;
 
 /**
  * Interface for interacting with the Preset API
  */
 public interface PresetApiService {
 
-  String fetchGuestToken(String dashboardId) throws WebClientResponseException;
+  PresetGuestTokenResponse fetchGuestToken(String dashboardId) throws WebClientResponseException;
 
 }

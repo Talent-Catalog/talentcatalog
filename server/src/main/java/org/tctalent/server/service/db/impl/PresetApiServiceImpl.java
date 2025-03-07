@@ -32,7 +32,8 @@ import org.tctalent.server.request.preset.PresetGuestTokenRequest;
 import org.tctalent.server.request.preset.PresetGuestTokenRequest.PresetResource;
 import org.tctalent.server.request.preset.PresetGuestTokenRequest.PresetUser;
 import org.tctalent.server.request.preset.PresetJwtTokenRequest;
-import org.tctalent.server.response.PresetJwtTokenResponse;
+import org.tctalent.server.response.preset.PresetGuestTokenResponse;
+import org.tctalent.server.response.preset.PresetJwtTokenResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.PresetApiService;
 import reactor.util.retry.Retry;
@@ -48,7 +49,7 @@ public class PresetApiServiceImpl implements PresetApiService {
   private static final String AUTH_BASE_URL = "https://api.app.preset.io/v1/";
   private static final String TEAM_ID = "7235fedd";
 
-  public String fetchGuestToken(String dashboardId) throws WebClientResponseException {
+  public PresetGuestTokenResponse fetchGuestToken(String dashboardId) throws WebClientResponseException {
     if (jwtToken == null) {
       initialiseJwtToken();
     }
@@ -73,7 +74,7 @@ public class PresetApiServiceImpl implements PresetApiService {
     }
   }
 
-  private String attemptFetchGuestToken(PresetGuestTokenRequest request) {
+  private PresetGuestTokenResponse attemptFetchGuestToken(PresetGuestTokenRequest request) {
     WebClient authClient = getAuthClient();
 
     return authClient.post()
@@ -81,7 +82,7 @@ public class PresetApiServiceImpl implements PresetApiService {
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
         .bodyValue(request)
         .retrieve()
-        .bodyToMono(String.class)
+        .bodyToMono(PresetGuestTokenResponse.class)
         .retryWhen(Retry.backoff(3, Duration.ofSeconds(2)) // Retry x 3 w 2-sec delay
             .filter(ex -> !(ex instanceof WebClientResponseException.Unauthorized))) // except if 401
         .block();

@@ -14,22 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.response;
+package org.tctalent.server.response.preset;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * Represents the response from the Preset API JWT token request.
+ * Represents the response from the Preset API guest token request.
  *
- * <p>The Preset API returns a JSON response containing a JWT token which is required for subsequent
- * API requests.
+ * <p>The Preset API returns a JSON response containing a guest token which is required for
+ * dashboard embedding
  *
  * <p>Example JSON response:
  * <pre>
  * {
- *   "payload": {
- *     "access_token": "your_jwt_token_here"
+ *   "data": {
+ *     "payload": {
+ *       "token": "your_guest_token_here"
+ *     }
  *   }
  * }
  * </pre>
@@ -37,20 +39,24 @@ import lombok.Getter;
  * @see <a href="https://api-docs.preset.io/">Preset API Documentation</a>
  */
 @Getter
-public class PresetJwtTokenResponse {
+public class PresetGuestTokenResponse {
 
   /**
-   * The payload containing authentication details.
+   * The payload that contains the guest token.
    */
   @JsonProperty("payload")
   private Payload payload;
 
   /**
-   * Represents the payload that contains the JWT token.
+   * Represents the payload that contains the guest token.
    */
   @Getter
   public static class Payload {
-    @JsonProperty("access_token")
-    private String jwtToken;
+    /**
+     * Represents the guest token.
+     */
+    @JsonProperty("token")
+    private String guestToken;
   }
+
 }

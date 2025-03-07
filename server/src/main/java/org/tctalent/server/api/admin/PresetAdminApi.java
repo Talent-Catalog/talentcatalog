@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.response.preset.PresetGuestTokenResponse;
 import org.tctalent.server.service.db.PresetApiService;
 
 @Slf4j
@@ -34,7 +35,7 @@ public class PresetAdminApi {
   private final PresetApiService presetApiService;
 
   @PostMapping(value = "{dashboardId}/guest-token")
-  public String fetchGuestToken(@PathVariable("dashboardId") String dashboardId) {
+  public PresetGuestTokenResponse fetchGuestToken(@PathVariable("dashboardId") String dashboardId) {
     return presetApiService.fetchGuestToken(dashboardId);
   }
 
