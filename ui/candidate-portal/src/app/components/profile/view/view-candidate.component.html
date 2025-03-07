@@ -23,7 +23,8 @@
   <ng-container *ngIf="!loading">
 
     <!-- TABS -->
-    <nav ngbNav #nav="ngbNav" class="nav-pills nav-fill" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+    <nav ngbNav #nav="ngbNav" class="nav-pills nav-fill flex-nowrap" [activeId]="activeTabId"
+         (navChange)="onTabChanged($event)">
 
       <!-- PROFILE -->
       <ng-container ngbNavItem="Profile">
@@ -90,6 +91,21 @@
             [readOnly]="isCandidateMuted()"
           >
           </app-view-chat-posts>
+        </ng-template>
+      </ng-container>
+
+      <!-- SERVICES -->
+      <ng-container ngbNavItem="Services" *ngIf="duolingoTask">
+        <a ngbNavLink>
+          <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
+          <fa-icon icon="handshake"></fa-icon>
+        </a>
+        <ng-template ngbNavContent>
+          <app-services
+            [candidate]="candidate"
+            [duolingoTask]="duolingoTask"
+            (refresh)="fetchCandidate()">
+          </app-services>
         </ng-template>
       </ng-container>
     </nav>

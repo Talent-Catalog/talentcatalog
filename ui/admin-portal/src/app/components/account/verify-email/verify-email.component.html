@@ -10,7 +10,7 @@
                   <i class="fa-regular fa-envelope fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></i>
                     <h2>Verify your Email</h2>
                     <p>Click the button below to send a verification email to: <b>{{this.userEmail}}</b>.</p>
-                    <p>If you would like to update your email please click<a [routerLink]="['/settings']"> here</a></p>
+                    <p>If you would like to update your email please click<a (click)="closeModal()" routerLink="/settings"> here</a></p>
                     <button
                             class="btn btn-primary"
                             *ngIf="state === 'idle'"
@@ -27,9 +27,9 @@
 
                 <div *ngIf="state === 'emailSent'">
                   <i class="fa-solid fa-envelope-open-text fa-2xl" style="color: #10B0E3; margin-bottom: 2rem;"></i>
-                    <h2>Email Sent"</h2>
+                    <h2>Email Sent</h2>
                     <p>We've sent a verification email to your inbox <b>{{this.userEmail}}</b>. Please check your email and click the link to verify your account.</p>
-                    <p>If you don't see it, check your <b>spam folder</b>. <br> If you would like to update your email please click <a href="/profile/edit/contact"></a></p>
+                    <p>If you don't see it, check your <b>spam folder</b>. <br> If you would like to update your email please click <a (click)="closeModal()" routerLink="/settings">here</a></p>
                     <button
                             class="btn btn-primary"
                             *ngIf="state === 'emailSent' || state === 'error'"
