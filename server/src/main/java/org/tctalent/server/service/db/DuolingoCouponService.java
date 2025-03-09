@@ -16,15 +16,16 @@
 
 package org.tctalent.server.service.db;
 
-import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
-import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.response.DuolingoCouponResponse;
 
 /**
@@ -55,7 +56,8 @@ public interface DuolingoCouponService {
    * @param candidateId the ID of the candidate to whom the coupon will be assigned.
    * @return an Optional containing the assigned Coupon if successful, or empty if no coupons are available.
    */
-  DuolingoCoupon assignCouponToCandidate(Long candidateId);
+  DuolingoCouponResponse assignCouponToCandidate(Long candidateId, User user)
+      throws InvalidSessionException, NoSuchObjectException, EntityExistsException;
 
   /**
    * Retrieves all coupons assigned to a specific candidate.
@@ -113,10 +115,10 @@ public interface DuolingoCouponService {
    * <p/>
    * This method assigns available coupons to candidates in a saved list.
    *
-   * @param list the SavedList containing the candidates to whom coupons should be assigned.
+   * @param listId the SavedList id containing the candidates to whom coupons should be assigned.
    * @throws NoSuchObjectException if there are not enough coupons available
    */
-  void assignCouponsToList(SavedList list) throws NoSuchObjectException;
+  void assignCouponsToList(Long listId, User user) throws NoSuchObjectException;
 
   /* Expires all coupons that have passed their expiration date.
    * <p>
