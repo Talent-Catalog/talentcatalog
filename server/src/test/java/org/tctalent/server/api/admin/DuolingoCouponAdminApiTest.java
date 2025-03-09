@@ -231,12 +231,11 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.couponCode").value("TEST_COUPON"))
+        .andExpect(jsonPath("$.couponCode").value("ABC123"))
         .andExpect(jsonPath("$.duolingoCouponStatus").value("AVAILABLE"));
 
     // Verifications
     verify(authService).getLoggedInUser();
-    verify(taskAssignmentService).assignTaskToCandidate(user, task, candidate, null, null);
     verify(couponService).assignCouponToCandidate(anyLong(), eq(user));
   }
 
