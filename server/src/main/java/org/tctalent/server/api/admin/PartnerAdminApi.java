@@ -36,6 +36,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -116,12 +117,11 @@ public class PartnerAdminApi implements
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }
 
-
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("public-api-key/{api-key}")
-    public ResponseEntity<Long> findPartnerIdByPublicApiKey(@PathVariable("api-key") String apiKey) {
-        //TODO JC Debug - can return a partner id or null
-        return ResponseEntity.ok(2L);
+    public ResponseEntity<PublicApiPartnerDto> findPartnerByPublicApiKey(@PathVariable("api-key") String apiKey) {
+        PublicApiPartnerDto partner = partnerService.findPublicApiPartnerDtoByKey(apiKey);
+        return ResponseEntity.ok(partner);
     }
 
     @PutMapping("{id}/update-job-contact")
