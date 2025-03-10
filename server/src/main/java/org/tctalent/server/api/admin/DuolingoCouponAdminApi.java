@@ -183,7 +183,7 @@ public class DuolingoCouponAdminApi {
     savedListService.associateTaskWithList(user, task, savedList);
   }
 
-  // Endpoint to count the number of available coupons with a specific status.
+  // Endpoint to count the number of available coupons.
   @GetMapping("count")
   public Map<String, Object> countAvailableCoupons() {
     try {
