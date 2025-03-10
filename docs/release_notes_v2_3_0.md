@@ -80,6 +80,7 @@ Helpful TC user guides:
 
 ## General Improvements
 
+- Email verification implemented for both candidate and admin users to reduce the number of bad or mistyped emails
 - Option to 'Skip Candidate Search' on a job, this allows employers to indicate whether they want source partners to search for candidates or prefer to 'skip' and proceed only with candidates they’ve added to the submission list.
 - Capture latest tab via the URL's tab parameter allowing for direct navigation to tab and will allow heat mapping on each tab
 - Selection of stats in TC Stats (max 8) allowing stats to be run on the full database without performance issues
