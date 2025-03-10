@@ -131,4 +131,15 @@ public interface DuolingoCouponService {
     * </ul>
    */
   void markCouponsAsExpired();
+
+  /**
+   * Retrieves the total count of available (unassigned) coupons.
+   * <p/>
+   * This method returns the number of coupons that are not currently assigned
+   * to any candidate, allowing these coupons to be available for assignment.
+   *
+   * @return the count of unassigned and available coupons.
+   */
+  int countAvailableCoupons();
+
 }
