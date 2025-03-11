@@ -6,7 +6,7 @@ sass:
 ---
 ## Introducing TC Intelligence
 Preset is a cutting-edge Business Intelligence platform used by the likes of Microsoft,
-airbnb and Tesla. 
+Airbnb and Tesla. 
 
 TC Intelligence brings that power to bear on real-time TC data, supplying 
 users with a powerful toolkit for advanced data exploration and presentation-ready visualisations.
