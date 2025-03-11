@@ -7,7 +7,7 @@ import {PresetEmbedService} from "../../../services/preset-embed.service";
   styleUrls: ['./preset-embed.component.scss']
 })
 export class PresetEmbedComponent {
-  @Input() private dashboardId: string;
+  @Input() dashboardId: string;
   private dashboardContainer: HTMLElement;
 
   error: any;
@@ -19,24 +19,30 @@ export class PresetEmbedComponent {
     this.loading = true;
     this.dashboardContainer = document.getElementById('dashboard');
 
-    this.presetEmbedService.embedDashboard(
-      this.dashboardId,
-      this.dashboardContainer,
-    ).then((dashboard) => {
+    if (!this.dashboardId) {
+      this.error = 'Dashboard embedding requires a valid dashboard ID from the parent component.';
       this.loading = false;
-      this.setDashboardIframeSize();
-    }).catch((err) => {
+      return;
+    }
+
+    if (!this.dashboardContainer) {
+      this.error = 'Dashboard embedding requires an element with ID "dashboard" as a mount point.';
       this.loading = false;
-      this.error = err;
-    });
+      return;
+    }
+
+    this.presetEmbedService.embedDashboard(this.dashboardId, this.dashboardContainer)
+    .then(() => this.setDashboardIframeSize())
+    .catch((err) => this.error = err)
+    .finally(() => this.loading = false);
   }
 
   private setDashboardIframeSize(): void {
     const dashboardIframe =
       this.dashboardContainer.querySelector('iframe');
     if (dashboardIframe) {
-      dashboardIframe.style.width = '100%'; // Set the width as needed
-      dashboardIframe.style.height = '1000px'; // Set the height as needed
+      dashboardIframe.style.width = '100%';
+      dashboardIframe.style.height = window.innerHeight + 'px';
     }
   }
 

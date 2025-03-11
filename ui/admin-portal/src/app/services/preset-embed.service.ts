@@ -27,7 +27,7 @@ export class PresetEmbedService {
         .toPromise();
   }
 
-  embedDashboard(
+  public embedDashboard(
     dashboardId: string,
     mountPoint: HTMLElement
   ): Promise<EmbeddedDashboard> {
