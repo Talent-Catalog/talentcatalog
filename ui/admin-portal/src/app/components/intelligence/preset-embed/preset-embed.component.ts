@@ -32,17 +32,23 @@ export class PresetEmbedComponent {
     }
 
     this.presetEmbedService.embedDashboard(this.dashboardId, this.dashboardContainer)
-    .then(() => this.setDashboardIframeSize())
-    .catch((err) => this.error = err)
-    .finally(() => this.loading = false);
+      .then(() => this.setDashboardIframeSize())
+      .catch((err) => this.error = err)
+      .finally(() => this.loading = false);
   }
 
+  /**
+   * Sets the iframe to fill the available screen size, ensuring that the bottom LH 'Apply filters'
+   * and 'Clear all' buttons are visible, which was otherwise prone to cause confusion.
+   * @private
+   */
   private setDashboardIframeSize(): void {
     const dashboardIframe =
       this.dashboardContainer.querySelector('iframe');
     if (dashboardIframe) {
+      const yOffset = dashboardIframe.getBoundingClientRect().top;
       dashboardIframe.style.width = '100%';
-      dashboardIframe.style.height = window.innerHeight + 'px';
+      dashboardIframe.style.height = (window.innerHeight - yOffset) + 'px';
     }
   }
 
