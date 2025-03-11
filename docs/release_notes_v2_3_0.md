@@ -27,8 +27,8 @@ sass:
     <div class="card-body">
       <div class="card-title">TC Intelligence with Preset</div>
       <div class="card-description">
-        The TC has incorporated Preset to take our data analysis to another level. 
-        More than just stats, we introduce TC Intelligence!
+        TC Intelligence brings the power of Preset to the Talent Catalog: analyse and present 
+        advanced, interactive visualisations with real-time TC data!
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
