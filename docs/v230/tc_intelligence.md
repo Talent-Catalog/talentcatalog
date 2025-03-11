@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 ## Introducing TC Intelligence
-Preset is a modern, industry-leading Business Intelligence platform used by the likes of Microsoft,
+Preset is a cutting-edge, industry-leading Business Intelligence platform used by the likes of Microsoft,
 airbnb and Tesla. 
 
 TC Intelligence brings that power to bear on real-time TC data, supplying 
