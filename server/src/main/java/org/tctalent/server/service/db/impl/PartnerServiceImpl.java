@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -33,6 +34,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.PartnerJobRelation;
 import org.tctalent.server.model.db.PartnerJobRelationKey;
+import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
@@ -49,9 +51,10 @@ import org.tctalent.server.service.db.PartnerService;
 @AllArgsConstructor
 @Slf4j
 public class PartnerServiceImpl implements PartnerService {
+    private final CountryService countryService;
     private final PartnerRepository partnerRepository;
     private final PartnerJobRelationRepository partnerJobRelationRepository;
-    private final CountryService countryService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public @NonNull PartnerImpl create(UpdatePartnerRequest request)
@@ -101,6 +104,28 @@ public class PartnerServiceImpl implements PartnerService {
 
         partner.setSflink(request.getSflink());
         partner.setWebsiteUrl(request.getWebsiteUrl());
+    }
+
+    @Nullable
+    @Override
+    public PublicApiPartnerDto findPublicApiPartnerDtoByKey(String apiKey) {
+        //Iterate though all users with public api key hashes - finding one that matches the apiKey.
+        //Note that you can't just compute the apiKey hash and look up for a matching hash because
+        //each hash call on the same apiKey will produce a different hash value - this is because
+        //a random "salt" is added to each hash call.
+        //See, for example, https://auth0.com/blog/hashing-in-action-understanding-bcrypt/
+        //
+        //Note also that the public API server stores successfully validated apiKeys and their
+        //associated partners in an in memory hash table (cache) so this method is only called for
+        //the first time each ApiKey is encountered - or when the hashtable is cleared (eg server
+        //restarts).
+
+        PublicApiPartnerDto partner = partnerRepository.findPublicApiPartnerDtos().stream()
+            .filter(p -> passwordEncoder.matches(apiKey, p.getPublicApiKeyHash()))
+            .findFirst()
+            .orElse(null);
+
+        return partner;
     }
 
     @NonNull

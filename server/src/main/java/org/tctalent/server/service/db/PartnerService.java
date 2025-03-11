@@ -25,6 +25,7 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -37,6 +38,15 @@ import org.tctalent.server.request.partner.UpdatePartnerRequest;
  * @author John Cameron
  */
 public interface PartnerService {
+
+
+    /**
+     * Finds the active partner associated with the given public api key, if any.
+     * @param apiKey Public API key
+     * @return DTO of matching partner, or null if none found
+     */
+    @Nullable
+    PublicApiPartnerDto findPublicApiPartnerDtoByKey(String apiKey);
 
     /**
      * Get the Partner with the given id.
@@ -77,7 +87,7 @@ public interface PartnerService {
 
     /**
      * Lists all active partners
-     * @return
+     * @return Active partners
      */
     List<PartnerImpl> listPartners();
 
