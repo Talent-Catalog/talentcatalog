@@ -722,6 +722,7 @@ public class AdminApiTestUtil {
     static OfferToAssist getOfferToAssist() {
         OfferToAssist offerToAssist = new OfferToAssist();
         offerToAssist.setAdditionalNotes("Notes");
+        offerToAssist.setPartner(getPartner());
 
         List<CandidateCouponCode> candidateCouponCodes  = new ArrayList<>();
         CandidateCouponCode ccc = new CandidateCouponCode();
@@ -733,7 +734,7 @@ public class AdminApiTestUtil {
         offerToAssist.setCandidateCouponCodes(candidateCouponCodes);
         offerToAssist.setId(99L);
         offerToAssist.setPublicId("123456");
-        offerToAssist.setReason(CandidateAssistanceType.Other);
+        offerToAssist.setReason(CandidateAssistanceType.OTHER);
         return offerToAssist;
     }
 

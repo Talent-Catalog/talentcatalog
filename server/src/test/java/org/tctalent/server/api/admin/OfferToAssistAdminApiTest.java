@@ -76,6 +76,7 @@ class OfferToAssistAdminApiTest extends ApiTestBase {
     @Test
     void create() throws Exception {
         OfferToAssistRequest request = new OfferToAssistRequest();
+        request.setPartnerId(12345L);
 
         given(offerToAssistService
             .createOfferToAssist(any(OfferToAssistRequest.class)))
