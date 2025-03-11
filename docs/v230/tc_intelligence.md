@@ -28,7 +28,7 @@ encouraged to come forward with feedback and ideas to drive its continued improv
        alt="Tree chart visualisation showing the occupations breakdown of female Syrian candidates" 
        class="card-image">
   <div style="color: #666; margin-top: 4px;">
-    Tree chart visualisation showing the occupations breakdown of female Syrian candidates
+    Tree chart visualisation showing the occupations breakdown of female Syrian candidates aged 25-34
   </div>
 </div>
 
