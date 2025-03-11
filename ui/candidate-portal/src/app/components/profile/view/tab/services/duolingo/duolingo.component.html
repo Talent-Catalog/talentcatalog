@@ -5,8 +5,8 @@
     <div class="service-title">
         <div class="header">
             <div>
-                <h2>Duolingo English Assessment</h2>
-                <p>Benefit from Duolingo services and get a free coupons for the test.</p>
+                <h2>{{ 'SERVICES.DUOLINGO.TITLE' | translate }}</h2>
+                <p>{{ 'SERVICES.DUOLINGO.DESCRIPTION' | translate }}</p>
             </div>
             <img src="assets/images/services/duolingoLogo.png"/>
         </div>
@@ -16,12 +16,12 @@
     >
     </app-duolingo-coupon>
     <div class="coupons" *ngIf="!loading && !selectedCoupon">
-        <h3>Coupons</h3>
-        <p>Free coupons to take the Duolingo test.</p>
+        <h3>{{ 'SERVICES.DUOLINGO.COUPONS_TITLE' | translate }}</h3>
+        <p>{{ 'SERVICES.DUOLINGO.COUPONS_DESC' | translate }}</p>
 
         <div class="ticket-container" *ngFor="let coupon of coupons" (click)="selectCoupon(coupon)">
-            <h6>Duolingo English Test (DET)</h6>
-            <p><b>Claim Your Free Test!</b></p>
+            <h6>{{ 'SERVICES.DUOLINGO.COUPON_TITLE' | translate }}</h6>
+            <p><b>{{ 'SERVICES.DUOLINGO.COUPON_CTA' | translate }}</b></p>
         </div>
     </div>
 </ng-container>

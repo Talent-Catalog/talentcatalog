@@ -24,15 +24,15 @@
 
     <ng-container *ngIf="!loading && !selectedService">
         <div class="service-title">
-            <h2>Services</h2>
-            <p>Explore our services tailored to assist you.</p>
+          <h2>{{ 'SERVICES.TITLE' | translate }}</h2>
+          <p>{{ 'SERVICES.DESCRIPTION' | translate }}</p>
         </div>
         <div class="service-card" (click)="selectService('duolingo')">
 
             <div>
-                <span class="service-tag">Duolingo</span>
-                <h3>Duolingo English Assessment</h3>
-                <p>Benefit from Duolingo services and get a free coupons for the test.</p>
+              <span class="service-tag">{{ 'SERVICES.DUOLINGO.TAG' | translate }}</span>
+              <h3>{{ 'SERVICES.DUOLINGO.TITLE' | translate }}</h3>
+              <p>{{ 'SERVICES.DUOLINGO.DESCRIPTION' | translate }}</p>
             </div>
             <img src="assets/images/services/duolingoLogo.png" alt="Duolingo logo"/>
         </div>
