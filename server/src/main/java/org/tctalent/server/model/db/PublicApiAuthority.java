@@ -19,6 +19,12 @@ package org.tctalent.server.model.db;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * These are the authorities defining which public API end points are available to different
+ * partners.
+ * <p/>
+ * Each partner with access to the public API will have a set of these authorities.
+ */
 public enum PublicApiAuthority {
     READ_CANDIDATE_DATA,
     SUBMIT_JOB_MATCHES,
