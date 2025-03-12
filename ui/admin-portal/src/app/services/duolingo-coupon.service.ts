@@ -74,4 +74,11 @@ export class DuolingoCouponService {
     return this.http.post<void>(`${this.apiBaseUrl}/assign-to-list`, listId);
   }
 
+  /**
+   * Get the count of available coupons
+   */
+  countAvailableCoupons(): Observable<any> {
+    return this.http.get<any>(`${this.apiBaseUrl}/count`);
+  }
+
 }
