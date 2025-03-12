@@ -19,7 +19,10 @@
     <app-loading [loading]="loading"></app-loading>
 
     <app-duolingo *ngIf="selectedService"
-                  [candidate]="candidate">
+                  [candidate]="candidate"
+                  (refresh)="refresh.emit()"
+                  [activeDuolingoTask]="activeDuolingoTask"
+    >
     </app-duolingo>
 
     <ng-container *ngIf="!loading && !selectedService">

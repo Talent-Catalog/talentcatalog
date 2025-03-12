@@ -12,7 +12,10 @@
         </div>
     </div>
     <app-duolingo-coupon *ngIf="selectedCoupon"
+                         [candidate]="candidate"
+                         (refresh)="refresh.emit()"
                          [selectedCoupon]="selectedCoupon"
+                         [activeDuolingoTask]="activeDuolingoTask"
     >
     </app-duolingo-coupon>
     <div class="coupons" *ngIf="!loading && !selectedCoupon">

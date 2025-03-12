@@ -38,6 +38,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
@@ -45,10 +46,15 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.TaskImpl;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.service.db.DuolingoCouponService;
+import org.tctalent.server.service.db.SavedListService;
+import org.tctalent.server.service.db.TaskAssignmentService;
+import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 @Service
@@ -58,6 +64,9 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
   private final DuolingoCouponRepository couponRepository;
   private final CandidateRepository candidateRepository;
   private final EmailHelper emailHelper;
+  private final SavedListService savedListService;
+  private final TaskAssignmentService taskAssignmentService;
+  private final TaskService taskService;
 
   private static final DateTimeFormatter FORMATTER1 = DateTimeFormatter.ofPattern(
       "yyyy/MM/dd HH:mm:ss");
@@ -67,10 +76,16 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
   @Autowired
   public DuolingoCouponServiceImpl(DuolingoCouponRepository couponRepository,
       CandidateRepository candidateRepository,
+      SavedListService savedListService,
+      TaskAssignmentService taskAssignmentService,
+      TaskService taskService,
       EmailHelper emailHelper) {
     this.couponRepository = couponRepository;
     this.candidateRepository = candidateRepository;
     this.emailHelper = emailHelper;
+    this.savedListService = savedListService;
+    this.taskAssignmentService = taskAssignmentService;
+    this.taskService = taskService;
   }
 
 
@@ -183,31 +198,69 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional
-  public DuolingoCoupon assignCouponToCandidate(Long candidateId)
-      throws NoSuchObjectException {
-    return candidateRepository.findById(candidateId).map(candidate -> {
-      // Find the first available coupon
-      Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatus(
-          DuolingoCouponStatus.AVAILABLE);
+  public DuolingoCouponResponse assignCouponToCandidate(Long candidateId, User user)
+      throws NoSuchObjectException, EntityExistsException {
 
-      if (availableCoupon.isEmpty()) {
-        // Throw exception if no coupon is available
-        throw new NoSuchObjectException(
-            "There are no available coupons to assign to the candidate. Please import more coupons from the settings page.");
+    List<DuolingoCouponResponse> coupons = getCouponsForCandidate(candidateId);
+
+    for (DuolingoCouponResponse coupon : coupons) {
+      if (coupon.getDuolingoCouponStatus().equals(DuolingoCouponStatus.SENT)) {
+        throw new EntityExistsException("coupon", "for this candidate");
       }
+    }
 
-      // Assign the coupon to the candidate and update its status
-      DuolingoCoupon coupon = availableCoupon.get();
-      coupon.setCandidate(candidate);
-      coupon.setDateSent(LocalDateTime.now());
-      coupon.setCouponStatus(DuolingoCouponStatus.SENT);
-      couponRepository.save(coupon);
-      emailHelper.sendDuolingoCouponEmail(candidate.getUser());
+    Candidate candidate = candidateRepository.findById(candidateId)
+        .orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + candidateId + " not found"));
+    Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatus(
+        DuolingoCouponStatus.AVAILABLE);
 
-      return coupon;
-    }).orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + candidateId + " not found"));
+    if (availableCoupon.isEmpty()) {
+      throw new NoSuchObjectException(
+          "There are no available coupons to assign to the candidate. Please import more coupons from the settings page.");
+    }
+
+    DuolingoCoupon coupon = availableCoupon.get();
+    coupon.setCandidate(candidate);
+    coupon.setDateSent(LocalDateTime.now());
+    coupon.setCouponStatus(DuolingoCouponStatus.SENT);
+    couponRepository.save(coupon);
+    emailHelper.sendDuolingoCouponEmail(candidate.getUser());
+
+    TaskImpl claimCouponButtonTask = taskService.getByName("claimCouponButton");
+    taskAssignmentService.assignTaskToCandidate(user, claimCouponButtonTask, candidate, null, null);
+
+    return new DuolingoCouponResponse(
+        coupon.getId(),
+        coupon.getCouponCode(),
+        coupon.getExpirationDate(),
+        coupon.getDateSent(),
+        coupon.getCouponStatus()
+    );
   }
 
+  @Override
+  @Transactional
+  public void assignCouponsToList(Long listId, User user) throws NoSuchObjectException {
+    SavedList savedList = savedListService.get(listId);
+    Set<Candidate> candidates = savedList.getCandidates();
+
+    // Find available coupons
+    List<DuolingoCoupon> availableCoupons = getAvailableCoupons();
+
+    if (availableCoupons.isEmpty() || candidates.size() > availableCoupons.size()) {
+      throw new NoSuchObjectException(
+          "There are not enough available coupons to assign to all candidates in the list. Please import more coupons from the settings page.");
+    }
+
+    for (Candidate candidate : candidates) {
+      boolean hasSentCoupon = couponRepository.findAllByCandidateId(candidate.getId())
+          .stream().anyMatch(coupon -> coupon.getCouponStatus() == DuolingoCouponStatus.SENT);
+
+      if (!hasSentCoupon) {
+        assignCouponToCandidate(candidate.getId(), user);
+      }
+    }
+  }
 
 
   @Override
@@ -252,31 +305,6 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
         .orElse(null);
   }
 
-  @Override
-  @Transactional
-  public void assignCouponsToList(SavedList list) throws NoSuchObjectException {
-    Set<Candidate> candidates = list.getCandidates();
-
-    // Find if there is available coupons
-    List<DuolingoCoupon> availableCoupons = getAvailableCoupons();
-
-    if (availableCoupons.isEmpty() || candidates.size() > availableCoupons.size()) {
-      // Throw exception if no coupon are available, or if there are more candidates than coupons
-      throw new NoSuchObjectException(
-          "There are not enough available coupons to assign to all candidates in the list. Please import more coupons from the settings page.");
-    }
-
-    for (Candidate candidate : candidates) {
-      //Assign coupon to candidate if they do not have one
-      List<DuolingoCoupon> coupons = couponRepository.findAllByCandidateId(candidate.getId());
-      // Assign a coupon if no coupons exist or none are in the SENT status
-      boolean hasSentCoupon = coupons.stream()
-          .anyMatch(coupon -> coupon.getCouponStatus() == DuolingoCouponStatus.SENT);
-      if (!hasSentCoupon) {
-        assignCouponToCandidate(candidate.getId());
-      }
-    }
-  }
 
   @Override
   @Transactional

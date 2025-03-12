@@ -20,9 +20,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.request.task.TaskListRequest;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateAttachmentService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.TaskService;
@@ -55,13 +57,16 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
+    private final AuthService authService;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
         TaskAssignmentRepository taskAssignmentRepository,
+        AuthService authService,
         TaskService taskService) {
         this.candidateAttachmentService = candidateAttachmentService;
         this.taskAssignmentRepository = taskAssignmentRepository;
+        this.authService = authService;
         this.taskService = taskService;
     }
 
@@ -136,6 +141,14 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
                 if (taskAssignment.getCompletedDate() == null) {
                     taskAssignment.setCompletedDate(OffsetDateTime.now());
                 }
+                if ("claimCouponButton".equals(taskAssignment.getTask().getName())) {
+                    // Fetch the "duolingoTest" task
+                    TaskImpl duolingoTestTask = taskService.getByName("duolingoTest");
+                    int daysToComplete = duolingoTestTask.getDaysToComplete() != null ? duolingoTestTask.getDaysToComplete() : 0;
+
+                    // Assign the duolingoTest task to the candidate
+                    assignTaskToCandidate(getLoggedInUser(), duolingoTestTask, taskAssignment.getCandidate(), null, LocalDate.now().plusDays(daysToComplete));
+                }
             } else {
                 taskAssignment.setCompletedDate(null);
             }
@@ -186,6 +199,7 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     @Override
     public void completeTaskAssignment(TaskAssignment ta) {
         ta.setCompletedDate(OffsetDateTime.now());
+
         taskAssignmentRepository.save((TaskAssignmentImpl) ta);
     }
 
@@ -215,4 +229,15 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         return taskAssignments;
     }
 
+    @Override
+    public List<TaskAssignmentImpl> findByTaskIdAndCandidateIdAndStatus(
+        Long taskId, Long candidateId, Status status) {
+        return taskAssignmentRepository.findByTask_IdAndCandidate_IdAndStatus(taskId, candidateId, status);
+    }
+
+    private User getLoggedInUser() {
+        User user = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        return user;
+    }
 }
