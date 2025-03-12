@@ -20,7 +20,7 @@ import {PartnerService} from "../../../../services/partner.service";
 import {CountryService} from "../../../../services/country.service";
 import {UserService} from "../../../../services/user.service";
 import {NgbActiveModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockPartner} from "../../../../MockData/MockPartner";
 import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
@@ -149,6 +149,8 @@ describe('CreateUpdatePartnerComponent', () => {
       jobCreator: false,
       logo: "",
       notificationEmail: "",
+      publicApiAccess: false,
+      publicApiAuthorities: [],
       registrationLandingPage: "",
       sflink: "",
       sourceCountryIds: [],

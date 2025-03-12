@@ -114,6 +114,7 @@ public class PartnerAdminApi implements
         request.setEmployer(employer);
 
         Partner partner = partnerService.update(id, request);
+
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }
 

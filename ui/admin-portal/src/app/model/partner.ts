@@ -34,6 +34,9 @@ export interface PartnerSimpleAttributes {
   logo: string;
   name: string;
   notificationEmail: string;
+  publicApiAccess: boolean;
+  publicApiAuthorities: string[];
+  publicApiKey?: string;
   registrationLandingPage: string;
   sflink: string;
   sourcePartner: boolean;

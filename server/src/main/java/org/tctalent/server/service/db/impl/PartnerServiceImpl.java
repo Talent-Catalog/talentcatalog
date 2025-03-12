@@ -44,6 +44,7 @@ import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.PartnerSpecification;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
+import org.tctalent.server.security.PublicApiKeyGenerator;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.PartnerService;
 
@@ -85,6 +86,8 @@ public class PartnerServiceImpl implements PartnerService {
             }
         }
         partner.setSourceCountries(sourceCountries);
+
+        //TODO JC If requesting api access, generate key
 
         return partnerRepository.save(partner);
     }
@@ -225,6 +228,31 @@ public class PartnerServiceImpl implements PartnerService {
 
         Partner partner = getPartner(id);
 
+        // Public API access fields
+        //TODO JC Similar code needed in create
+        boolean currentPublicApiAccess = partner.isPublicApiAccess();
+        if (currentPublicApiAccess != request.isPublicApiAccess()) {
+            //Partner api access has changed:
+            if (request.isPublicApiAccess()) {
+                //New request for public api access
+
+                // Generate the plain API key
+                String plainApiKey = PublicApiKeyGenerator.generateApiKey();
+                // Hash the API key for secure storage
+                String hashedKey = passwordEncoder.encode(plainApiKey);
+                partner.setPublicApiKey(plainApiKey);
+                partner.setPublicApiKeyHash(hashedKey);
+            } else {
+                //Giving up public api access
+                //Clear hashed key
+                partner.setPublicApiKeyHash(null);
+                //Note that disabling a key requires clearing the cache (through restart or otherwise)
+            }
+        }
+        //Update public api authorities (even if not currently using public api)
+        partner.setPublicApiAuthorities(request.getPublicApiAuthorities());
+
+        //Source countries
         Set<Country> sourceCountries = new HashSet<>();
         Set<Long> sourceCountryIds = request.getSourceCountryIds();
         if (sourceCountryIds != null) {

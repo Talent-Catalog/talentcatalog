@@ -41,6 +41,11 @@
       </div>
 
       <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="publicApiAccess" formControlName="publicApiAccess">
+        <label class="form-check-label" for="publicApiAccess">Public API access?</label>
+      </div>
+
+      <div class="form-check">
         <input class="form-check-input" type="checkbox" id="sourcePartner" formControlName="sourcePartner">
         <label class="form-check-label" for="sourcePartner">Source Partner?</label>
         <div *ngIf="form.errors?.['sourcePartnerIsJobCreator'] && (form.touched || form.dirty)"

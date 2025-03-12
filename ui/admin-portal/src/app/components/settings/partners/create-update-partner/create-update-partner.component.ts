@@ -154,6 +154,9 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
       notificationEmail: [this.partner?.notificationEmail],
+      publicApiAccess: [this.partner?.publicApiAccess],
+      publicApiAuthorities: [this.partner?.publicApiAuthorities],
+
       registrationLandingPage: [this.partner?.registrationLandingPage],
       sflink: [this.partner?.sflink, [Validators.pattern(`${salesforceUrlPattern}|${salesforceSandboxUrlPattern}`)]],
       sourceCountries: [this.partner?.sourceCountries],
@@ -236,6 +239,8 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       logo: this.form.value.logo,
       name: this.form.value.name,
       notificationEmail: this.form.value.notificationEmail,
+      publicApiAccess: this.form.value.publicApiAccess,
+      publicApiAuthorities: this.form.value.publicApiAuthorities,
       jobCreator: this.form.value.jobCreator,
       registrationLandingPage: this.form.value.registrationLandingPage,
       sflink: this.form.value.sflink,
