@@ -23,6 +23,7 @@ import {User} from "../model/user";
 import {Subscription} from "rxjs";
 import {ChatService} from "../services/chat.service";
 import { UserService} from "../services/user.service";
+import {environment} from "../../environments/environment";
 
 @Component({
   selector: 'app-root',
@@ -152,5 +153,5 @@ export class AppComponent implements OnInit {
     });
   }
 }
-}
+
 declare let gtag: Function;
