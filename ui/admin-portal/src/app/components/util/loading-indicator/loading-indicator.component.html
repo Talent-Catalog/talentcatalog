@@ -1,3 +1,7 @@
-<div class="text-start" *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> {{ 'LOADING' | translate }}
+<div>
+  <span class="text-start" *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i> {{ 'LOADING' | translate }}
+    <!-- Keeps elements from bouncing around when toggling between loading and not loading -->
+  </span>
+  <br *ngIf="!loading && holdTheLine">
 </div>

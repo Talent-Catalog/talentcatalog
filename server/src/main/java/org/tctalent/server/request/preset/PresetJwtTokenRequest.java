@@ -18,7 +18,6 @@ package org.tctalent.server.request.preset;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Represents the request payload for authenticating with the Preset API.
@@ -26,7 +25,8 @@ import lombok.Setter;
  * This class is used to send authentication credentials (name and secret)
  * when requesting a JWT token from the Preset API. Both can be obtained via the
  * <a href="https://manage.app.preset.io/app/user">Preset Manager user edit UI</a> - the user must
- * be a workspace admin.
+ * be a workspace admin. At March 2025 we use the 'TC Intelligence' Preset user, whose email is
+ * tech@talentbeyondboundaries.org.
  * </p>
  *
  * <p>Example JSON representation:</p>

@@ -52,4 +52,25 @@ describe('LoadingIndicatorComponent', () => {
     const loadingDiv = fixture.debugElement.query(By.css('.text-start'));
     expect(loadingDiv).toBeNull(); // The loading div should not be present
   });
+
+  it('should retain an empty line when not loading and holdTheLine is true',
+    () => {
+    component.holdTheLine = true;
+    component.loading = false; // Ensure loading is false
+    fixture.detectChanges(); // Trigger change detection
+
+    const brElement = fixture.debugElement.query(By.css('br'));
+    expect(brElement).toBeTruthy(); // Check if <br> exists
+  });
+
+  it('should not retain an empty line when not loading and holdTheLine is false',
+    () => {
+    component.holdTheLine = false;
+    component.loading = false; // Ensure loading is false
+    fixture.detectChanges(); // Trigger change detection
+
+    const brElement = fixture.debugElement.query(By.css('br'));
+    expect(brElement).toBeNull(); // Check if <br> exists
+  });
+
 });

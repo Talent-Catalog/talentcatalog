@@ -45,9 +45,21 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PresetGuestTokenRequest {
 
+  /**
+   * Details of the user to whom the guest token and subsequent session will be attributed: used to
+   * maintain Preset metrics and audit logs. No corresponding Preset user is required, the values
+   * passed just need to be unique and sufficiently identifying to be useful.
+   */
   private PresetUser user;
+  /**
+   * The resource to which access is requested.
+   */
   private List<PresetResource> resources;
-  private List<Object> rls = List.of(); // If TC user can see dashboard, they see all of it
+  /**
+   * Row-level security for the user: since TC users are currently all intended to have the same
+   * access, we generally submit an empty list here.
+   */
+  private List<Object> rls;
 
   @Getter
   @AllArgsConstructor
@@ -60,6 +72,9 @@ public class PresetGuestTokenRequest {
   @Getter
   @AllArgsConstructor
   public static class PresetResource {
+    /**
+     * Type of resource - usually 'dashboard'.
+     */
     private String type;
     private String id;
   }

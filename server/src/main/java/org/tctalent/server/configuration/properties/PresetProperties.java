@@ -47,7 +47,7 @@ public class PresetProperties {
   private String apiToken;
 
   /**
-   * The ID of the TC Preset workspace, required for Preset API interactions
+   * The ID of the TC Preset workspace, required for Preset API interactions.
    */
   private String workspaceId;
 

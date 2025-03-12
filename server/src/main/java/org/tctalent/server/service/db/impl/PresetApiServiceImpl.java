@@ -49,7 +49,8 @@ public class PresetApiServiceImpl implements PresetApiService {
   private static final String AUTH_BASE_URL = "https://api.app.preset.io/v1/";
   private static final String TEAM_ID = "7235fedd";
 
-  public PresetGuestTokenResponse fetchGuestToken(String dashboardId) throws WebClientResponseException {
+  public PresetGuestTokenResponse fetchGuestToken(String dashboardId)
+      throws WebClientResponseException {
     if (jwtToken == null) {
       initialiseJwtToken();
     }
@@ -88,19 +89,6 @@ public class PresetApiServiceImpl implements PresetApiService {
         .block();
   }
 
-
-  private String getGuestTokenUri() {
-    return "teams/"
-        + TEAM_ID
-        + "/workspaces/"
-        + properties.getWorkspaceId()
-        + "/guest-token/";
-  }
-
-  private void initialiseJwtToken() {
-    this.jwtToken = fetchJwtToken();
-  }
-
   private String fetchJwtToken() {
     PresetJwtTokenRequest request = new PresetJwtTokenRequest(
         this.properties.getApiToken(),
@@ -127,6 +115,10 @@ public class PresetApiServiceImpl implements PresetApiService {
     }
   }
 
+  private void initialiseJwtToken() {
+    this.jwtToken = fetchJwtToken();
+  }
+
   private PresetGuestTokenRequest createPresetGuestTokenRequest(String dashboardId) {
     User tcUser = authService.getLoggedInUser()
         .orElseThrow(() -> new InvalidSessionException("Not logged in"));
@@ -144,6 +136,14 @@ public class PresetApiServiceImpl implements PresetApiService {
 
   private WebClient getAuthClient() {
     return WebClient.builder().baseUrl(AUTH_BASE_URL).build();
+  }
+
+  private String getGuestTokenUri() {
+    return "teams/"
+        + TEAM_ID
+        + "/workspaces/"
+        + properties.getWorkspaceId()
+        + "/guest-token/";
   }
 
 }

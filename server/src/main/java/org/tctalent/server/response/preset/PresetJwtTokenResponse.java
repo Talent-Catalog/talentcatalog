@@ -53,4 +53,5 @@ public class PresetJwtTokenResponse {
     @JsonProperty("access_token")
     private String jwtToken;
   }
+
 }

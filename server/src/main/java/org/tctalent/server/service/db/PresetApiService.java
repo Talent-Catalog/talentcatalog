@@ -24,6 +24,19 @@ import org.tctalent.server.response.preset.PresetGuestTokenResponse;
  */
 public interface PresetApiService {
 
+  /**
+   * Fetches a guest token from the Preset API that can be used to embed the specified dashboard.
+   *
+   * <p>Begins by obtaining a JWT token to authenticate the subsequent guest token request. Both
+   * requests are attempted up to 3 times in the event of a regular exception. A JWT token is
+   * time-limited, so it is re-initialised if the guest token request returns a 401 error, and in
+   * this case the attempt to fetch the guest token is performed once more.
+   * @param dashboardId The unique identifier of the dashboard that is to be embedded.
+   * @return The {@link PresetGuestTokenResponse} object containing the guest token.
+   *  @throws WebClientResponseException If the request to fetch the token fails due to network
+   *  issues or an error response from the Preset API.
+   *  @throws RuntimeException If any unexpected error occurs during the process.
+   */
   PresetGuestTokenResponse fetchGuestToken(String dashboardId) throws WebClientResponseException;
 
 }

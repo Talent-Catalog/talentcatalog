@@ -73,6 +73,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.Environment;
@@ -228,11 +229,10 @@ public class SystemAdminApi {
             JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
             SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
             GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-            TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-            SavedSearchService savedSearchService, PartnerService partnerService,
-            CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
-            DuolingoApiService duolingoApiService
- ) {
+        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
+        SavedSearchService savedSearchService, PartnerService partnerService,
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService
+        ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;

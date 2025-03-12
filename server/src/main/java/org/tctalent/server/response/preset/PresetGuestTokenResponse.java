@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * Represents the response from the Preset API guest token request.
+ * Represents the response from a Preset API guest token request.
  *
  * <p>The Preset API returns a JSON response containing a guest token which is required for
- * dashboard embedding
+ * dashboard embedding.
  *
  * <p>Example JSON response:
  * <pre>

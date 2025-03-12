@@ -18,7 +18,6 @@ package org.tctalent.server.api.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +33,12 @@ public class PresetAdminApi {
 
   private final PresetApiService presetApiService;
 
+  /**
+   * Generates and returns a guest token for embedding a Preset dashboard.
+   *
+   * @param dashboardId The unique identifier of the dashboard for which guest token is requested.
+   * @return A {@link PresetGuestTokenResponse} containing the generated guest token.
+   */
   @PostMapping(value = "{dashboardId}/guest-token")
   public PresetGuestTokenResponse fetchGuestToken(@PathVariable("dashboardId") String dashboardId) {
     return presetApiService.fetchGuestToken(dashboardId);
