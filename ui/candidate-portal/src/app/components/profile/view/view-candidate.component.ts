@@ -88,17 +88,18 @@ export class ViewCandidateComponent implements OnInit {
    * Only candidates who have filtered opps can see the jobs tab
    */
   get canSeeJobTab(): boolean {
-    return this.filteredOpps != null;
+    return this.filteredOpps?.length > 0;
   }
 
   /**
    * Filter out prospect opportunities and closed due to "candidateMistakenProspect" stage
    */
   filterOppsToDisplay() {
+    this.filteredOpps = [];
     if (this.candidate?.candidateOpportunities.length > 0) {
       this.filteredOpps = this.candidate.candidateOpportunities.filter(
-        opp => CandidateOpportunityStage[opp.stage] !=
-        (CandidateOpportunityStage.prospect || CandidateOpportunityStage.candidateMistakenProspect))
+        opp => CandidateOpportunityStage[opp.stage] != CandidateOpportunityStage.prospect &&
+          CandidateOpportunityStage[opp.stage] != CandidateOpportunityStage.candidateMistakenProspect)
     }
   }
 
