@@ -50,6 +50,14 @@ export interface PartnerSimpleAttributes {
   redirectPartner?: ShortPartner;
 }
 
+export enum PublicApiAuthority {
+  READ_CANDIDATE_DATA = "READ_CANDIDATE_DATA",
+  SUBMIT_JOB_MATCHES = "SUBMIT_JOB_MATCHES",
+  OFFER_CANDIDATE_SERVICES = "OFFER_CANDIDATE_SERVICES",
+  REGISTER_CANDIDATES = "REGISTER_CANDIDATES",
+  ADMIN = "ADMIN"
+}
+
 export interface Employer {
   id: number;
   name: string;

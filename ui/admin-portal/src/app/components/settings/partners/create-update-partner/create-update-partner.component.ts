@@ -25,7 +25,7 @@ import {
   Validators
 } from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
-import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
+import {Partner, PublicApiAuthority, UpdatePartnerRequest} from "../../../../model/partner";
 import {
   salesforceSandboxUrlPattern,
   salesforceUrlPattern,
@@ -34,7 +34,7 @@ import {
 } from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
-import {enumOptions} from "../../../../util/enum";
+import {EnumOption, enumOptions} from "../../../../util/enum";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
 import {User} from "../../../../model/user";
 import {UserService} from "../../../../services/user.service";
@@ -122,6 +122,8 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   partner: Partner;
   partnerUsers: User[];
   statuses = enumOptions(Status);
+  publicApiAuthorityOptions: EnumOption[] = enumOptions(PublicApiAuthority);
+
   working: boolean;
 
 
@@ -219,6 +221,10 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
 
   get create(): boolean {
     return !this.partner;
+  }
+
+  get publicApiAccess(): boolean {
+    return this.form.value.publicApiAccess;
   }
 
   get title(): string {
