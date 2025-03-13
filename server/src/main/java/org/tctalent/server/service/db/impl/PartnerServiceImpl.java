@@ -68,6 +68,9 @@ public class PartnerServiceImpl implements PartnerService {
 
         PartnerImpl partner = new PartnerImpl();
 
+        // Public API access fields
+        populatePublicApiAccessFields(request, partner);
+
         //Populate common attributes
         populateCommonAttributes(request, partner);
 
@@ -76,18 +79,7 @@ public class PartnerServiceImpl implements PartnerService {
         partner.setAutoAssignable(request.isAutoAssignable());
 
         //Source countries
-        Set<Country> sourceCountries = new HashSet<>();
-        Set<Long> sourceCountryIds = request.getSourceCountryIds();
-        if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
-            //Check that all countries are known - populate set
-            for (Long sourceCountryId : sourceCountryIds) {
-                Country country = countryService.getCountry(sourceCountryId);
-                sourceCountries.add(country);
-            }
-        }
-        partner.setSourceCountries(sourceCountries);
-
-        //TODO JC If requesting api access, generate key
+        populateSourceCountries(request.getSourceCountryIds(), partner);
 
         return partnerRepository.save(partner);
     }
@@ -107,6 +99,42 @@ public class PartnerServiceImpl implements PartnerService {
 
         partner.setSflink(request.getSflink());
         partner.setWebsiteUrl(request.getWebsiteUrl());
+    }
+
+    private void populatePublicApiAccessFields(UpdatePartnerRequest request, Partner partner) {
+        boolean currentPublicApiAccess = partner.isPublicApiAccess();
+        if (currentPublicApiAccess != request.isPublicApiAccess()) {
+            //Partner api access has changed:
+            if (request.isPublicApiAccess()) {
+                //New request for public api access
+
+                // Generate the plain API key
+                String plainApiKey = PublicApiKeyGenerator.generateApiKey();
+                // Hash the API key for secure storage
+                String hashedKey = passwordEncoder.encode(plainApiKey);
+                partner.setPublicApiKey(plainApiKey);
+                partner.setPublicApiKeyHash(hashedKey);
+            } else {
+                //Giving up public api access
+                //Clear hashed key
+                partner.setPublicApiKeyHash(null);
+                //Note that disabling a key requires clearing the cache (through restart or otherwise)
+            }
+        }
+        //Update public api authorities (even if not currently using public api)
+        partner.setPublicApiAuthorities(request.getPublicApiAuthorities());
+    }
+
+    private void populateSourceCountries(Set<Long> sourceCountryIds, Partner partner) {
+        Set<Country> sourceCountries = new HashSet<>();
+        if (sourceCountryIds != null && !sourceCountryIds.isEmpty()) {
+            //Check that all countries are known - populate set
+            for (Long sourceCountryId : sourceCountryIds) {
+                Country country = countryService.getCountry(sourceCountryId);
+                sourceCountries.add(country);
+            }
+        }
+        partner.setSourceCountries(sourceCountries);
     }
 
     @Nullable
@@ -229,39 +257,10 @@ public class PartnerServiceImpl implements PartnerService {
         Partner partner = getPartner(id);
 
         // Public API access fields
-        //TODO JC Similar code needed in create
-        boolean currentPublicApiAccess = partner.isPublicApiAccess();
-        if (currentPublicApiAccess != request.isPublicApiAccess()) {
-            //Partner api access has changed:
-            if (request.isPublicApiAccess()) {
-                //New request for public api access
-
-                // Generate the plain API key
-                String plainApiKey = PublicApiKeyGenerator.generateApiKey();
-                // Hash the API key for secure storage
-                String hashedKey = passwordEncoder.encode(plainApiKey);
-                partner.setPublicApiKey(plainApiKey);
-                partner.setPublicApiKeyHash(hashedKey);
-            } else {
-                //Giving up public api access
-                //Clear hashed key
-                partner.setPublicApiKeyHash(null);
-                //Note that disabling a key requires clearing the cache (through restart or otherwise)
-            }
-        }
-        //Update public api authorities (even if not currently using public api)
-        partner.setPublicApiAuthorities(request.getPublicApiAuthorities());
+        populatePublicApiAccessFields(request, partner);
 
         //Source countries
-        Set<Country> sourceCountries = new HashSet<>();
-        Set<Long> sourceCountryIds = request.getSourceCountryIds();
-        if (sourceCountryIds != null) {
-            //Check that all countries are known - populate set
-            for (Long sourceCountryId : sourceCountryIds) {
-                Country country = countryService.getCountry(sourceCountryId);
-                sourceCountries.add(country);
-            }
-        }
+        populateSourceCountries(request.getSourceCountryIds(), partner);
 
         //Populate common attributes
         populateCommonAttributes(request, partner);
@@ -271,7 +270,6 @@ public class PartnerServiceImpl implements PartnerService {
         partner.setDefaultPartnerRef(request.isDefaultPartnerRef());
         partner.setRegistrationLandingPage(request.getRegistrationLandingPage());
         partner.setAutoAssignable(request.isAutoAssignable());
-        partner.setSourceCountries(sourceCountries);
 
         if (request.getRedirectPartnerId() != null) {
             PartnerImpl newPartner = manageRedirectPartnerAssignment(request.getRedirectPartnerId());

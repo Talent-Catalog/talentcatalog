@@ -136,7 +136,8 @@ export class SearchPartnersComponent implements OnInit {
     if (partner.publicApiKey != null) {
       //Pop up api key display
       const confirmationModal = this.modalService.open(ConfirmationComponent);
-      confirmationModal.componentInstance.title = "Copy partner's public API key"
+      confirmationModal.componentInstance.title = "Copy partner's public API key";
+      confirmationModal.componentInstance.showCancel = false;
       confirmationModal.componentInstance.message =
         "This public API key, " + partner.publicApiKey + ", should be provided to the partner." +
         " It should not be saved anywhere." +
