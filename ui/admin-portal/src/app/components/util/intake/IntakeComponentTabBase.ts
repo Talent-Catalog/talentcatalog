@@ -272,23 +272,23 @@ export abstract class IntakeComponentTabBase implements OnInit {
    *
    * @param {CandidateExam} exam - The exam object to evaluate.
    * @returns {string} - The label for the exam.
-   *    - 'Best & Newest Score' for the exam with the highest score and the most recent date.
-   *    - 'Newest Score' for the most recent exam only.
-   *    - 'Best Score' for the exam with the highest score only.
-   *    - 'DET Official' for any other exam.
+   *    - 'DET Official' for the exam with the highest score and the most recent date.
+   *    - 'DET Official Newest' for the most recent exam only.
+   *    - 'DET Official Best ' for the exam with the highest score only.
+   *    - 'DET' for any other exam.
    */
   getExamLabel(exam: CandidateExam): string {
     const mostRecent = this.getMostRecentDetOfficialExam(this.candidateIntakeData?.candidateExams);
     const highestScore = this.getHighestScoreDetOfficialExam(this.candidateIntakeData?.candidateExams);
 
     if (exam === mostRecent && exam === highestScore) {
-      this.examLabels[exam.id] = 'Best & Newest Score';
-    } else if (exam === mostRecent) {
-      this.examLabels[exam.id] = 'Newest Score';
-    } else if (exam === highestScore) {
-      this.examLabels[exam.id] = 'Best Score';
-    } else {
       this.examLabels[exam.id] = 'DET Official';
+    } else if (exam === mostRecent) {
+      this.examLabels[exam.id] = 'DET Official Newest';
+    } else if (exam === highestScore) {
+      this.examLabels[exam.id] = 'DET Official Best';
+    } else {
+      this.examLabels[exam.id] = 'DET';
     }
     return this.examLabels[exam.id];
   }

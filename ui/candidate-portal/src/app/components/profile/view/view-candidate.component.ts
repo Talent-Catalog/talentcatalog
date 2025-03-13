@@ -26,6 +26,7 @@ import {LocalStorageService} from "../../../services/local-storage.service";
 import {Location} from "@angular/common";
 import {ActivatedRoute} from "@angular/router";
 import {Status} from '../../../model/base';
+import {TaskAssignment, taskAssignmentSort} from "../../../model/task-assignment";
 import {CandidateOpportunity, CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 
 @Component({
@@ -53,7 +54,7 @@ export class ViewCandidateComponent implements OnInit {
   loading: boolean;
   candidate: Candidate;
   usAfghan: boolean;
-  duolingoTask: Object;
+  activeDuolingoTask: TaskAssignment;
 
   constructor(private candidateService: CandidateService,
               private chatService: ChatService,
@@ -106,8 +107,9 @@ export class ViewCandidateComponent implements OnInit {
   fetchCandidate() {
     this.candidateService.getProfile().subscribe(
       (candidate) => {
+        console.log("Refreshed",candidate)
         this.setCandidate(candidate);
-        this.setDuolingoTask(candidate);
+        this.activeDuolingoTask = this.getActiveDuolingoTask();
         this.filterOppsToDisplay();
         this.usAfghan = candidate.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
         this.loading = false;
@@ -149,10 +151,16 @@ export class ViewCandidateComponent implements OnInit {
     this.fetchAllOpportunityChats();
   }
 
-  private setDuolingoTask(candidate: Candidate) {
-    this.duolingoTask = this.candidate?.taskAssignments.find(t => t.task.name === "duolingoTest" && t.status === Status.active);
-    console.log(this.duolingoTask)
+  private getActiveDuolingoTask(): TaskAssignment | null {
+    const task = this.candidate?.taskAssignments.find(t =>
+      (t.task.name === 'claimCouponButton' || t.task.name === 'duolingoTest') &&
+      t.completedDate == null &&
+      t.abandonedDate == null &&
+      t.status === Status.active
+    );
+    return task || null;
   }
+
 
   private getCandidateProspectChat() {
     this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {

@@ -3,6 +3,7 @@ package org.tctalent.server.api.admin;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,7 @@ import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
@@ -123,32 +126,6 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
 
 
   @Test
-  @DisplayName("Assign coupon to candidate succeeds")
-  void assignCouponToCandidateSucceeds() throws Exception {
-
-    given(authService.getLoggedInUser()).willReturn(Optional.of(user));
-    given(couponService.assignCouponToCandidate(anyLong())).willReturn(coupon);
-    given(taskService.getByName(DUOLINGO_TEST_TASK_NAME)).willReturn(task);
-    given(candidateService.getCandidate(anyLong())).willReturn(candidate);
-    given(taskAssignmentService.assignTaskToCandidate(user, task, candidate, null, null))
-        .willReturn(taskAssignment);
-
-    mockMvc.perform(post(BASE_PATH + ASSIGN_COUPON_PATH, CANDIDATE_ID)
-            .with(csrf())
-            .header("Authorization", "Bearer " + "jwt-token")
-            .accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.couponCode", is(COUPON_CODE)))
-        .andExpect(jsonPath("$.duolingoCouponStatus", is("AVAILABLE")));
-
-    verify(authService).getLoggedInUser();
-    verify(taskAssignmentService).assignTaskToCandidate(user, task, candidate, null, null);
-    verify(couponService).assignCouponToCandidate(anyLong());
-  }
-
-  @Test
   @DisplayName("Get coupons for candidate succeeds")
   void getCouponsForCandidateSucceeds() throws Exception {
     given(couponService.getCouponsForCandidate(anyLong())).willReturn(List.of(new DuolingoCouponResponse(
@@ -212,22 +189,55 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
     Long testListId = 1L;
 
     given(authService.getLoggedInUser()).willReturn(Optional.of(user));
-    given(taskService.getByName(DUOLINGO_TEST_TASK_NAME)).willReturn(task);
-    given(savedListService.get(anyLong())).willReturn(savedList);
 
     mockMvc.perform(post(BASE_PATH + ASSIGN_TO_LIST_PATH)
             .with(csrf())
             .header("Authorization", "Bearer jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .content(String.valueOf(testListId)))
+            .content(objectMapper.writeValueAsString(testListId)))
         .andDo(print())
         .andExpect(status().isOk());
 
-    verify(savedListService).get(testListId);
-    verify(couponService).assignCouponsToList(savedList);
-    verify(taskService).getByName(DUOLINGO_TEST_TASK_NAME);
-    verify(savedListService).associateTaskWithList(user, task, savedList);
-
+    verify(authService).getLoggedInUser();
+    verify(couponService).assignCouponsToList(testListId, user);
   }
+
+
+  @Test
+  @DisplayName("Assign coupon to candidate succeeds")
+  void assignCouponToCandidateSucceeds() throws Exception {
+    // Mock objects
+    DuolingoCouponResponse couponResponse = new DuolingoCouponResponse(
+        123L,
+        "ABC123",
+        LocalDateTime.of(2025, 3, 1, 12, 0),
+        LocalDateTime.now(),
+        DuolingoCouponStatus.AVAILABLE
+    );
+
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(user));
+    given(couponService.assignCouponToCandidate(anyLong(), eq(user))).willReturn(couponResponse);
+    given(taskService.getByName(DUOLINGO_TEST_TASK_NAME)).willReturn(task);
+    given(candidateService.getCandidate(anyLong())).willReturn(candidate);
+    given(taskAssignmentService.assignTaskToCandidate(user, task, candidate, null, null))
+        .willReturn(taskAssignment);
+
+    mockMvc.perform(post(BASE_PATH + ASSIGN_COUPON_PATH, CANDIDATE_ID)
+            .with(csrf())
+            .header("Authorization", "Bearer jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.couponCode").value("ABC123"))
+        .andExpect(jsonPath("$.duolingoCouponStatus").value("AVAILABLE"));
+
+    // Verifications
+    verify(authService).getLoggedInUser();
+    verify(couponService).assignCouponToCandidate(anyLong(), eq(user));
+  }
+
+
 }
