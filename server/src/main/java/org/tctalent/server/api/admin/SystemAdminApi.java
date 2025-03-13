@@ -343,7 +343,7 @@ public class SystemAdminApi {
             .logInfo();
     }
 
-    @GetMapping("notifyOfChatsWithNewPosts")
+    @GetMapping("notifyOfChatsWithNewUnreadPosts")
     public void notifyOfNewChatPosts() {
         notificationService.notifyUsersOfChatsWithNewUnreadPosts();
     }
