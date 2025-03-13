@@ -73,7 +73,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
-import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.Environment;
@@ -346,7 +345,7 @@ public class SystemAdminApi {
 
     @GetMapping("notifyOfChatsWithNewPosts")
     public void notifyOfNewChatPosts() {
-        notificationService.notifyUsersOfChatsWithNewPosts();
+        notificationService.notifyUsersOfChatsWithNewUnreadPosts();
     }
 
     /**

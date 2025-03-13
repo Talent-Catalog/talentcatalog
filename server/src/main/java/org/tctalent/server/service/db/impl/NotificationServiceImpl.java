@@ -82,11 +82,11 @@ public class NotificationServiceImpl implements NotificationService {
     @SchedulerLock(name = "NotificationService_scheduledNotifyOfChatsWithNewPosts", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     @Transactional
     public void scheduledNotifyOfChatsWithNewPosts() {
-        notifyUsersOfChatsWithNewPosts();
+        notifyUsersOfChatsWithNewUnreadPosts();
     }
 
     @Override
-    public void notifyUsersOfChatsWithNewPosts() {
+    public void notifyUsersOfChatsWithNewUnreadPosts() {
         Map<Long, Set<JobChat>> userNotifications = computeUserNotifications();
 
         sendEmailsFromNotifications(userNotifications);
@@ -276,20 +276,22 @@ public class NotificationServiceImpl implements NotificationService {
                     .filter(chat -> !jobChatUserService.isChatReadByUser(chat, user))
                     .collect(Collectors.toSet());
 
-                String s = unreadChats.stream()
-                    .map(c -> c.getId().toString())
-                    .collect(Collectors.joining(","));
+                if (!unreadChats.isEmpty()) {
+                    String s = unreadChats.stream()
+                            .map(c -> c.getId().toString())
+                            .collect(Collectors.joining(","));
 
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("notifyOfChatsWithNewPosts")
-                    .message("Notifying user " + userId + " about posts to chats " + s)
-                    .logInfo();
+                    LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("notifyOfChatsWithNewPosts")
+                            .message("Notifying user " + userId + " about posts to chats " + s)
+                            .logInfo();
 
-                List<EmailNotificationLink> links = computeEmailNotificationLinks(
-                    isCandidate, unreadChats, baseUrl);
+                    List<EmailNotificationLink> links = computeEmailNotificationLinks(
+                            isCandidate, unreadChats, baseUrl);
 
-                emailHelper.sendNewChatPostsForUserEmail(user, isCandidate, links);
+                    emailHelper.sendNewChatPostsForUserEmail(user, isCandidate, links);
+                }
             }
         }
     }
