@@ -932,21 +932,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return null;
     }
 
-    /**
-     * This filters out candidate opportunites that are in the prospect stage or are closed.
-     * We want to only display this filtered list of opportunities to the candidate portal to help manage expectations
-     * and reduce the impact if they are mistakenly added to a submission list.
-     */
-    @Transient
-    @Nullable
-    public List<CandidateOpportunity> getActiveCandidateOppsGreaterThanProspect() {
-        if (candidateOpportunities != null && !candidateOpportunities.isEmpty()) {
-            return candidateOpportunities.stream().filter(
-                    opp -> !opp.isClosed() && !opp.getStage().equals(CandidateOpportunityStage.prospect)).toList();
-        }
-       return null;
-    }
-
     // todo : is there a better way to get this value for published doc by consolidating into one method and passing in a Exam type?
     public String getOetOverall() {
         String score = null;

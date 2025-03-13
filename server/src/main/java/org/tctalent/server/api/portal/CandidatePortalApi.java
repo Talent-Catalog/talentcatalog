@@ -506,7 +506,6 @@ public class CandidatePortalApi {
                 .add("allNotifications")
                 .add("taskAssignments", TaskDtoHelper.getTaskAssignmentDto())
                 .add("candidateOpportunities", candidateOpportunityDto())
-                .add("activeCandidateOppsGreaterThanProspect", candidateOpportunityDto())
                 .add("candidateDestinations", destinationsDto())
                 ;
     }

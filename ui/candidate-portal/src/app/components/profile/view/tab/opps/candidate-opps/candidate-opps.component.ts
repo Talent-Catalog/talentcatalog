@@ -30,6 +30,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   error: string;
   loading: boolean;
   @Input() candidate: Candidate;
+  @Input() filteredOpps: CandidateOpportunity[];
   @Output() refresh = new EventEmitter();
 
   //Map of job chats by opp id
@@ -48,10 +49,6 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     if (changes.candidate) {
       this.fetchChats();
     }
-  }
-
-  get activeOppsGreaterThanProspect(): CandidateOpportunity[] {
-    return this.candidate?.activeCandidateOppsGreaterThanProspect;
   }
 
   selectOpp(opp: CandidateOpportunity) {
@@ -106,7 +103,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   }
 
   private fetchChats() {
-    let opportunities = this.candidate.activeCandidateOppsGreaterThanProspect;
+    let opportunities = this.candidate.candidateOpportunities;
     for (const opp of opportunities) {
       this.fetchOppChats(opp);
     }
