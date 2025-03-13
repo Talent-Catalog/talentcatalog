@@ -108,6 +108,7 @@ export interface Candidate extends HasId {
   candidateAttachments?: CandidateAttachment[];
   taskAssignments?: TaskAssignment[];
   candidateOpportunities: CandidateOpportunity[];
+  activeCandidateOppsGreaterThanProspect: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
   // relocated address fields

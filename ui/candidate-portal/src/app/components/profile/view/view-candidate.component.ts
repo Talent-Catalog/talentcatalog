@@ -82,6 +82,13 @@ export class ViewCandidateComponent implements OnInit {
     return canSee;
   }
 
+  /**
+   * Only candidates with at least one opp that is past prospect (and not closed) can see tab
+   */
+  get canSeeJobTab(): boolean {
+    return this.candidate?.activeCandidateOppsGreaterThanProspect.length > 0;
+  }
+
   fetchCandidate() {
     this.candidateService.getProfile().subscribe(
       (candidate) => {

@@ -14,15 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {CandidateOpportunity} from "../../../../../../model/candidate-opportunity";
 import {forkJoin, Observable} from "rxjs";
@@ -58,8 +50,8 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     }
   }
 
-  get opps(): CandidateOpportunity[] {
-    return this.candidate?.candidateOpportunities;
+  get activeOppsGreaterThanProspect(): CandidateOpportunity[] {
+    return this.candidate?.activeCandidateOppsGreaterThanProspect;
   }
 
   selectOpp(opp: CandidateOpportunity) {
@@ -114,7 +106,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   }
 
   private fetchChats() {
-    let opportunities = this.candidate.candidateOpportunities;
+    let opportunities = this.candidate.activeCandidateOppsGreaterThanProspect;
     for (const opp of opportunities) {
       this.fetchOppChats(opp);
     }

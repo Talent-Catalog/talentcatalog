@@ -55,7 +55,7 @@
       </ng-container>
 
       <!-- JOBS (Candidate Opportunities) -->
-      <ng-container ngbNavItem="Opps">
+      <ng-container *ngIf="canSeeJobTab" ngbNavItem="Opps">
         <a ngbNavLink>
           <span class="me-2 d-none d-md-inline">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
           <fa-icon icon="briefcase" class="me-2"></fa-icon>
