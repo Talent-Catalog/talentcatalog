@@ -29,6 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,12 +42,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.anonymization.model.RegisterCandidate201Response;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChatUserInfo;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
@@ -58,8 +63,8 @@ import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoReques
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
-import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -372,6 +377,15 @@ public class CandidateAdminApi {
         Candidate candidate = candidateService.completeIntake(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping("register-by-partner")
+    @NonNull
+    public ResponseEntity<RegisterCandidate201Response>
+    registerCandidateByPartner(@Valid @RequestBody RegisterCandidateByPartnerRequest request) {
+
+        return null; //TODO JC
     }
 
     @PutMapping("resolve-tasks")
