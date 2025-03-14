@@ -27,7 +27,8 @@ export const environment = {
   systemApiUrl: 'http://localhost:8080/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org',
   assetBaseUrl: '',
-  environmentName: 'local'
+  environmentName: 'local',
+  presetWorkspaceId: '987e2e02'
 };
 
 /*

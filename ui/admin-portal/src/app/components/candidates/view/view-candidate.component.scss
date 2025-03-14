@@ -37,3 +37,18 @@
 .card-header {
   font-size: 17px;
 }
+
+:host ::ng-deep .mute-tip .tooltip-inner {
+  text-align: left;
+  font-size: small;
+  background-color: #000000;
+  padding: 1em;
+  max-width: 200px;
+}
+
+.mute-btn-align {
+  top: 30px;
+  left: 18px;
+  position: relative;
+  text-align: end;
+}
