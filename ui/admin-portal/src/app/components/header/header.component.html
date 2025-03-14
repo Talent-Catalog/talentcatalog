@@ -50,9 +50,13 @@
             Stats
           </a>
         </li>
-        <li class="nav-item" [routerLinkActive]="'active'">
+        <li class="nav-item"
+            [routerLinkActive]="'active'"
+            *ngIf="canViewCandidateName() && !isEmployerPartner()">
           <a title="Talent Catalog data exploration and visualisation"
-             class="nav-link" [routerLink]="'/intelligence'" [routerLinkActive]="'active'">
+             class="nav-link"
+             [routerLink]="'/intelligence'"
+             [routerLinkActive]="'active'">
             Intelligence
           </a>
         </li>
