@@ -258,3 +258,11 @@ translation:
 #Identifies the running environment — AWS task definitions hold the corresponding value, e.g. 'prod'/'staging'
 #Options for injecting into code: https://www.baeldung.com/spring-boot-properties-env-variables
 environment: ${ENVIRONMENT:local}
+
+# Preset API Configuration:
+# Contains the secret or TC-environment-contingent properties required to interact w the Preset API.
+preset:
+  api:
+    apiSecret: ${PRESET_SECRET:}
+    apiToken: ${PRESET_API_TOKEN:}
+    workspaceId: ${PRESET_WORKSPACE_ID:}

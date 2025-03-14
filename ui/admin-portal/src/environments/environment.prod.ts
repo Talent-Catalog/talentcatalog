@@ -29,5 +29,6 @@ export const environment = {
   systemApiUrl: '/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',
   assetBaseUrl: '/admin-portal',
-  environmentName: 'prod'
+  environmentName: 'prod',
+  presetWorkspaceId: '987e2e02'
 };

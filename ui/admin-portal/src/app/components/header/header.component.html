@@ -46,7 +46,15 @@
         </li>
         <li class="nav-item" [routerLinkActive]="'active'" *ngIf="!isEmployerPartner()">
           <a title="Statistics about the Talent Catalog"
-             class="nav-link" [routerLink]="'/infographics'" [routerLinkActive]="'active'">Stats</a>
+             class="nav-link" [routerLink]="'/infographics'" [routerLinkActive]="'active'">
+            Stats
+          </a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a title="Talent Catalog data exploration and visualisation"
+             class="nav-link" [routerLink]="'/intelligence'" [routerLinkActive]="'active'">
+            Intelligence
+          </a>
         </li>
       </ul>
 

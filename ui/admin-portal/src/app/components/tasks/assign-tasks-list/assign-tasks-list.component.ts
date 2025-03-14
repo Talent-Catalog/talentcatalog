@@ -114,7 +114,7 @@ export class AssignTasksListComponent implements OnInit {
       savedListId: this.savedList.id,
       taskId: task.id,
     }
-    if(task.name === 'duolingoTest') {
+    if(task.name === 'claimCouponButton') {
       this.duolingoCouponService.assignCouponToList(this.savedList.id).subscribe(
         () => {
           this.refreshTaskAssociations();
