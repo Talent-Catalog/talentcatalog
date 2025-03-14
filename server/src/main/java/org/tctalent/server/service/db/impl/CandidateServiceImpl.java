@@ -65,7 +65,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.CountryRestrictionException;
@@ -75,6 +77,7 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
@@ -130,6 +133,7 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.PagedSearchRequest;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -1183,6 +1187,68 @@ public class CandidateServiceImpl implements CandidateService {
         loginRequest.setUsername( candidate.getUser().getUsername());
         loginRequest.setPassword(request.getPassword());
         return loginRequest;
+    }
+
+    @Override
+    public Candidate registerByPartner(RegisterCandidateByPartnerRequest request) {
+
+        final CandidateRegistration registrationData = request.getRegistrationData();
+
+        String email = registrationData.getIdentity().getEmail();
+        String phone = registrationData.getPhone();
+        String whatsapp = registrationData.getWhatsapp();
+
+        String username = null;
+        if (!ObjectUtils.isEmpty(email)) {
+            username = email;
+        } else if (!ObjectUtils.isEmpty(phone)) {
+            username = phone;
+        } else if (!ObjectUtils.isEmpty(whatsapp)) {
+            username = whatsapp;
+        }
+        if (username == null) {
+            throw new InvalidRequestException("Must specify at least one method of contact");
+        }
+
+        //Initial password is same as username.
+        //TODO JC Prompt to change password on first login
+        String passwordEncrypted = passwordHelper.encodePassword(username);
+
+        //Partner who is submitting registration
+        //TODO JC Need to add registeredBy to Candidate entity
+        final Long partnerId = request.getPartnerId();
+
+        //TODO JC Compute sourcePartner. Use checkForChangedPartner, defaulting to DefaultSourcePartner
+        String countryIsoCode = null;
+        if (registrationData.getCountry() != null) {
+            countryIsoCode = registrationData.getCountry().getIsoCode();
+        }
+//        countryService.findCountryByIsoCode(countryIsoCode); todo
+        Partner sourcePartner = null;
+
+
+        CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
+        createCandidateRequest.setUsername(username);
+        createCandidateRequest.setEmail(registrationData.getIdentity().getEmail());
+        createCandidateRequest.setPhone(registrationData.getPhone());
+        createCandidateRequest.setWhatsapp(registrationData.getWhatsapp());
+        createCandidateRequest.setContactConsentRegistration(registrationData.getContactConsentRegistration());
+        createCandidateRequest.setContactConsentPartners(registrationData.getContactConsentTcPartners());
+
+        //ipAddress and query parameters are not relevant for partner registrations.
+        Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, null,
+            null, passwordEncrypted);
+
+        //This is the minimal registration - the rest of their data just determines the quality of their rego
+        //At this point they are on the database with a public ID and the ability to log in
+
+        //TODO JC See how Sadat used MapStruct. EntityMapper
+//        final List<org.tctalent.anonymization.model.CandidateExam> candidateExams = registrationData.getCandidateExams();
+//        final org.tctalent.anonymization.model.Country nationality = registrationData.getNationality();
+//        candidate.setNationality(countryService.findCountryByIsoCode());
+
+        //TODO JC registerByPartner not implemented in CandidateServiceImpl
+        throw new NotImplementedException("CandidateServiceImpl", "registerByPartner");
     }
 
     /**

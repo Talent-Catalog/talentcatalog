@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.NonNull;
+import org.tctalent.anonymization.model.RegisterCandidateRequest;
 
 /**
  * This request is a copy of the request that comes in on the public API, with the added
@@ -31,7 +32,7 @@ import org.springframework.lang.NonNull;
 @Getter
 @Setter
 @ToString
-public class RegisterCandidateByPartnerRequest {
+public class RegisterCandidateByPartnerRequest extends RegisterCandidateRequest {
 
     /**
      * Partner (service provider) associated with offer.

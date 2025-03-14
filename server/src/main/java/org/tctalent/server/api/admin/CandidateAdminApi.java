@@ -28,6 +28,7 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -385,7 +386,17 @@ public class CandidateAdminApi {
     public ResponseEntity<RegisterCandidate201Response>
     registerCandidateByPartner(@Valid @RequestBody RegisterCandidateByPartnerRequest request) {
 
-        return null; //TODO JC
+        //Create candidate from registration request
+        Candidate candidate = candidateService.registerByPartner(request);
+
+        //Create response
+        RegisterCandidate201Response response =
+            new RegisterCandidate201Response().toBuilder()
+                .publicId(candidate.getPublicId())
+                .message("Candidate successfully registered.")
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("resolve-tasks")

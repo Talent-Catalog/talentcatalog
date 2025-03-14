@@ -50,6 +50,7 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.LoginRequest;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
@@ -228,6 +229,14 @@ public interface CandidateService {
      * @return A login request generated for the newly created candidate.
      */
     LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest);
+
+    /**
+     * Create (ie register) a candidate from registration information supplied by a partner
+     * (eg UNHCR).
+     * @param request Request containing the candidate data needed to register a candidate.
+     * @return The registered candidate
+     */
+    Candidate registerByPartner(RegisterCandidateByPartnerRequest request);
 
     Candidate updateContact(UpdateCandidateContactRequest request);
 
