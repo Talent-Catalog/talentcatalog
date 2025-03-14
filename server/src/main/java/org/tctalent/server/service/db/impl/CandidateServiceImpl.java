@@ -138,9 +138,9 @@ import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CreateCandidateRequest;
-import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -1055,7 +1055,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest) {
+    public LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }

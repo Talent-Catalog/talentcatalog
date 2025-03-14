@@ -35,7 +35,7 @@ import org.tctalent.server.exception.ReCaptchaInvalidException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
 import org.tctalent.server.request.LoginRequest;
-import org.tctalent.server.request.candidate.RegisterCandidateRequest;
+import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.UserService;
@@ -78,7 +78,7 @@ public class AuthPortalApi {
 
     @PostMapping("register")
     public Map<String, Object> register(
-        HttpServletRequest httpRequest, @Valid @RequestBody RegisterCandidateRequest request)
+        HttpServletRequest httpRequest, @Valid @RequestBody SelfRegistrationRequest request)
             throws AccountLockedException, ReCaptchaInvalidException {
 
         LoginRequest loginRequest = candidateService.register(request, httpRequest);
