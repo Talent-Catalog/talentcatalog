@@ -88,6 +88,7 @@ import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.model.db.CandidateLanguage;
+import org.tctalent.server.model.db.CandidateMapper;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -239,6 +240,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final CandidateMapper candidateMapper;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
     private final FileSystemService fileSystemService;
@@ -1193,6 +1195,9 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate registerByPartner(RegisterCandidateByPartnerRequest request) {
 
         final CandidateRegistration registrationData = request.getRegistrationData();
+
+        //TODO JC Create candidate with the lot here and then do post processing
+        Candidate candidateTest = candidateMapper.candidateRegistrationToCandidate(registrationData);
 
         String email = registrationData.getIdentity().getEmail();
         String phone = registrationData.getPhone();

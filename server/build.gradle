@@ -24,6 +24,8 @@ group = 'org.tctalent'
 version = '0.0.1-SNAPSHOT'
 ext {
     isDev = System.properties['env'] == 'dev'
+    mapstructVersion = "1.6.3"
+    lombokMapstructBindingVersion = "0.2.0"
 }
 
 java {
@@ -32,9 +34,14 @@ java {
     }
 }
 
-//See https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes
 tasks.withType(JavaCompile).configureEach {
+    //See https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes
     options.compilerArgs.add("-parameters")
+
+    //MapStruct integration with Spring
+    options.compilerArgs += [
+            "-Amapstruct.defaultComponentModel=spring"
+    ]
 }
 
 //@SpringBootTest's typically won't work during GitHub builds because they require that the whole
@@ -160,6 +167,12 @@ dependencies {
 
     // tc api
     implementation "io.github.sadatmalik:tc-api-spec:1.0.1"
+
+    // Mapstruct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation "com.google.code.findbugs:jsr305:3.0.2" // todo - move version to ext - not a spring boot curated dep
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
 }
 
 jib {
