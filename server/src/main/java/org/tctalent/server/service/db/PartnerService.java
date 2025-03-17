@@ -119,6 +119,8 @@ public interface PartnerService {
      */
     Page<PartnerImpl> searchPaged(SearchPartnerRequest request);
 
+
+
     /**
      * Create a partner.
      * @param request Request contains partner data
@@ -130,6 +132,8 @@ public interface PartnerService {
     @NonNull
     PartnerImpl create(UpdatePartnerRequest request)
         throws EntityExistsException, InvalidRequestException, NoSuchObjectException;
+
+    void setPublicIds(List<PartnerImpl> partners);
 
     /**
      * Update the partner with the given ID.

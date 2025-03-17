@@ -17,7 +17,7 @@ import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.PageContext;
 
 /**
- * TODO JC Doc
+ * Processes candidates a page at a time
  *
  * @author John Cameron
  */
