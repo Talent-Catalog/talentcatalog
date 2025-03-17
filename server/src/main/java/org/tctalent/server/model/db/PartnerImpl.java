@@ -16,9 +16,8 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.HashSet;
-import java.util.Set;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -31,6 +30,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
@@ -90,6 +91,22 @@ public class PartnerImpl extends AbstractDomainObject<Long>
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner", cascade = CascadeType.MERGE)
     private Set<PartnerJobRelation> partnerJobRelations = new HashSet<>();
+
+    /**
+     * Authorities granted to this partner on the public API.
+     * <p/>
+     * Empty if partner does not have access to the public API
+     */
+    @Convert(converter = PublicApiAuthorityConverter.class)
+    private Set<PublicApiAuthority> publicApiAuthorities = new HashSet<>();
+
+    /**
+     * Hash of public API key used by partner to access the public API.
+     * <p/>
+     * Null if partner does not have access to the public API
+     */
+    @Nullable
+    private String publicApiKeyHash;
 
     @Nullable
     public String getSfId() {

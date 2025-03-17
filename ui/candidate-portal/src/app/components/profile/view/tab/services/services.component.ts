@@ -16,6 +16,7 @@
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Candidate} from '../../../../../model/candidate';
+import {TaskAssignment} from "../../../../../model/task-assignment";
 
 @Component({
     selector: 'app-services',
@@ -28,7 +29,7 @@ export class ServicesComponent {
     error;
     loading;
     @Input() candidate: Candidate;
-    @Input() duolingoTask: Object;
+    @Input() activeDuolingoTask: TaskAssignment;
     @Output() refresh = new EventEmitter();
 
     constructor() {

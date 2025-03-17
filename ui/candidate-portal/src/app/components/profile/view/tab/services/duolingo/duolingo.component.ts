@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from '../../../../../../model/candidate';
 import {DuolingoCouponService} from '../../../../../../services/duolingo-coupon.service';
 import {DuolingoCouponStatus} from '../../../../../../model/duolingo-coupon';
+import {TaskAssignment} from "../../../../../../model/task-assignment";
 
 @Component({
     selector: 'app-duolingo',
@@ -10,6 +11,7 @@ import {DuolingoCouponStatus} from '../../../../../../model/duolingo-coupon';
 })
 export class DuolingoComponent implements OnInit {
     @Input() candidate: Candidate;
+    @Input() activeDuolingoTask: TaskAssignment;
     selectedCoupon: Object;
     coupons: string[];
     loading: boolean;
