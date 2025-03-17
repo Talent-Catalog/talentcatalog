@@ -27,6 +27,7 @@ import {Location} from "@angular/common";
 import {ActivatedRoute} from "@angular/router";
 import {Status} from '../../../model/base';
 import {TaskAssignment, taskAssignmentSort} from "../../../model/task-assignment";
+import {CandidateOpportunity, CandidateOpportunityStage} from "../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-view-candidate',
@@ -40,6 +41,7 @@ export class ViewCandidateComponent implements OnInit {
   activeTabId: string;
   chatsForAllJobs: JobChat[];
   sourceChat: JobChat;
+  filteredOpps: CandidateOpportunity[];
 
   //Candidate only sees source chat if is not empty. That way they can't start posting themselves
   //until someone else has posted in the chat.
@@ -83,12 +85,32 @@ export class ViewCandidateComponent implements OnInit {
     return canSee;
   }
 
+  /**
+   * Only candidates who have filtered opps can see the jobs tab
+   */
+  get canSeeJobTab(): boolean {
+    return this.filteredOpps?.length > 0;
+  }
+
+  /**
+   * Filter out prospect opportunities and closed due to "candidateMistakenProspect" stage
+   */
+  filterOppsToDisplay() {
+    this.filteredOpps = [];
+    if (this.candidate?.candidateOpportunities.length > 0) {
+      this.filteredOpps = this.candidate.candidateOpportunities.filter(
+        opp => CandidateOpportunityStage[opp.stage] != CandidateOpportunityStage.prospect &&
+          CandidateOpportunityStage[opp.stage] != CandidateOpportunityStage.candidateMistakenProspect)
+    }
+  }
+
   fetchCandidate() {
     this.candidateService.getProfile().subscribe(
       (candidate) => {
         console.log("Refreshed",candidate)
         this.setCandidate(candidate);
         this.activeDuolingoTask = this.getActiveDuolingoTask();
+        this.filterOppsToDisplay();
         this.usAfghan = candidate.surveyType?.id === US_AFGHAN_SURVEY_TYPE;
         this.loading = false;
       },

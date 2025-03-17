@@ -24,7 +24,7 @@ package org.tctalent.server.service.db;
 public interface NotificationService {
 
     /**
-     * Sends emails to notify users of new posts to chats that they are subscribed to.
+     * Sends emails to notify users of new unread posts to chats that they are subscribed to.
      */
-    void notifyUsersOfChatsWithNewPosts();
+    void notifyUsersOfChatsWithNewUnreadPosts();
 }
