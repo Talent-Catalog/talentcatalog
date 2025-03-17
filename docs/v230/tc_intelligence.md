@@ -20,7 +20,7 @@ The first dashboard in this offering enables analysis of the full candidate data
 interactive filters capable of quickly isolating segments in response to your most obscure query. 
 
 Further dashboards are already on the way: TC Intelligence is not only a step forward in terms of 
-quality — it also offers a short lead time independent of the usual release cycle. Users are 
+quality: it also offers a short lead time independent of the usual release cycle. Users are 
 encouraged to come forward with feedback and ideas to drive its continued improvement and expansion.
 
 <div class="card-image-container-narrow">
