@@ -50,15 +50,16 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.LoginRequest;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -227,7 +228,15 @@ public interface CandidateService {
      * @param httpRequest HTTP request for registration
      * @return A login request generated for the newly created candidate.
      */
-    LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest);
+    LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest);
+
+    /**
+     * Create (ie register) a candidate from registration information supplied by a partner
+     * (eg UNHCR).
+     * @param request Request containing the candidate data needed to register a candidate.
+     * @return The registered candidate
+     */
+    Candidate registerByPartner(RegisterCandidateByPartnerRequest request);
 
     Candidate updateContact(UpdateCandidateContactRequest request);
 

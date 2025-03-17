@@ -67,6 +67,7 @@ public class PartnerDtoHelper {
             .add("publicApiAccess")
             .add("publicApiAuthorities")
             .add("publicApiKey")
+            .add("publicId")
             .add("sourcePartner")
             .add("status")
             .add("websiteUrl")

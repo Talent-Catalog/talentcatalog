@@ -47,6 +47,7 @@ import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.security.PublicApiKeyGenerator;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.PublicIDService;
 
 @Service
 @AllArgsConstructor
@@ -56,6 +57,7 @@ public class PartnerServiceImpl implements PartnerService {
     private final PartnerRepository partnerRepository;
     private final PartnerJobRelationRepository partnerJobRelationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PublicIDService publicIDService;
 
     @Override
     public @NonNull PartnerImpl create(UpdatePartnerRequest request)
@@ -67,6 +69,7 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         PartnerImpl partner = new PartnerImpl();
+        partner.setPublicId(publicIDService.generatePublicID());
 
         // Public API access fields
         populatePublicApiAccessFields(request, partner);
@@ -242,6 +245,18 @@ public class PartnerServiceImpl implements PartnerService {
         Page<PartnerImpl> partners = partnerRepository.findAll(
             PartnerSpecification.buildSearchQuery(request), request.getPageRequest());
         return partners;
+    }
+
+    @Override
+    public void setPublicIds(List<PartnerImpl> partners) {
+        for (Partner partner : partners) {
+            if (partner.getPublicId() == null) {
+                partner.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!partners.isEmpty()) {
+            partnerRepository.saveAll(partners);
+        }
     }
 
     @Override

@@ -98,6 +98,11 @@ public interface Partner extends SourcePartner, RecruiterPartner, EmployerPartne
      */
     boolean isPublicApiAccess();
 
+    /**
+     * Public ID of partner
+     */
+    String getPublicId();
+    void setPublicId(String publicId);
 
     /**
      * Salesforce ID (extracted from {@link #getSflink()}).

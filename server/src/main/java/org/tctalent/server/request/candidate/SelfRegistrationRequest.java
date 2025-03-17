@@ -23,7 +23,7 @@ import org.tctalent.server.model.db.HasTcQueryParameters;
 
 @Getter
 @Setter
-public class RegisterCandidateRequest extends BaseCandidateContactRequest
+public class SelfRegistrationRequest extends BaseCandidateContactRequest
     implements HasTcQueryParameters {
     private String username;
     private String password;
