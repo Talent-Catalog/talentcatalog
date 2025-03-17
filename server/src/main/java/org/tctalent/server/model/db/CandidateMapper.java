@@ -23,7 +23,7 @@ import org.mapstruct.ValueMapping;
 import org.tctalent.anonymization.model.CandidateRegistration;
 
 /**
- * TODO JC Doc
+ * Candidate related mappings.
  *
  * @author John Cameron
  */
