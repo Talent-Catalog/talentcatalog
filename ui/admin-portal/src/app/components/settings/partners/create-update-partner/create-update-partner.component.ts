@@ -25,7 +25,7 @@ import {
   Validators
 } from "@angular/forms";
 import {PartnerService} from "../../../../services/partner.service";
-import {Partner, UpdatePartnerRequest} from "../../../../model/partner";
+import {Partner, PublicApiAuthority, UpdatePartnerRequest} from "../../../../model/partner";
 import {
   salesforceSandboxUrlPattern,
   salesforceUrlPattern,
@@ -34,7 +34,7 @@ import {
 } from "../../../../model/base";
 import {Country} from "../../../../model/country";
 import {CountryService} from "../../../../services/country.service";
-import {enumOptions} from "../../../../util/enum";
+import {EnumOption, enumOptions} from "../../../../util/enum";
 import {FormComponentBase} from "../../../util/form/FormComponentBase";
 import {User} from "../../../../model/user";
 import {UserService} from "../../../../services/user.service";
@@ -122,6 +122,8 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
   partner: Partner;
   partnerUsers: User[];
   statuses = enumOptions(Status);
+  publicApiAuthorityOptions: EnumOption[] = enumOptions(PublicApiAuthority);
+
   working: boolean;
 
 
@@ -154,6 +156,9 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       logo: [this.partner?.logo],
       name: [this.partner?.name, Validators.required],
       notificationEmail: [this.partner?.notificationEmail],
+      publicApiAccess: [this.partner?.publicApiAccess],
+      publicApiAuthorities: [this.partner?.publicApiAuthorities],
+
       registrationLandingPage: [this.partner?.registrationLandingPage],
       sflink: [this.partner?.sflink, [Validators.pattern(`${salesforceUrlPattern}|${salesforceSandboxUrlPattern}`)]],
       sourceCountries: [this.partner?.sourceCountries],
@@ -218,6 +223,10 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
     return !this.partner;
   }
 
+  get publicApiAccess(): boolean {
+    return this.form.value.publicApiAccess;
+  }
+
   get title(): string {
     return this.create ? "Add New Partner"
       : "Update Partner";
@@ -236,6 +245,8 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       logo: this.form.value.logo,
       name: this.form.value.name,
       notificationEmail: this.form.value.notificationEmail,
+      publicApiAccess: this.form.value.publicApiAccess,
+      publicApiAuthorities: this.form.value.publicApiAuthorities,
       jobCreator: this.form.value.jobCreator,
       registrationLandingPage: this.form.value.registrationLandingPage,
       sflink: this.form.value.sflink,

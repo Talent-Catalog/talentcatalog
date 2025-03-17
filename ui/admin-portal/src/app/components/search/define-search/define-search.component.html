@@ -142,7 +142,7 @@
                 [clearSearchOnAdd]="true"
                 placeholder="Select or type..."
                 bindLabel="stringValue"
-                [formControlName]="'statusesDisplay'">
+                formControlName="statusesDisplay">
                 <ng-template ng-header-tmp>
                   <div class="d-flex justify-content-between">
                     <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateStatusOptions, 'statusesDisplay'); $event.preventDefault()">Select All</button>

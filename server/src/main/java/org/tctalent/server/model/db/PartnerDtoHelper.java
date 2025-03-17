@@ -64,6 +64,9 @@ public class PartnerDtoHelper {
             .add("logo")
             .add("name")
             .add("notificationEmail")
+            .add("publicApiAccess")
+            .add("publicApiAuthorities")
+            .add("publicApiKey")
             .add("sourcePartner")
             .add("status")
             .add("websiteUrl")
@@ -71,6 +74,12 @@ public class PartnerDtoHelper {
             .add("sflink")
             .add("sourceCountries", countryDto())
             .add("redirectPartner", shortPartnerDto())
+            ;
+    }
+
+    private static DtoBuilder publicApiAuthorityDto() {
+        return new DtoBuilder()
+            .add("name")
             ;
     }
 

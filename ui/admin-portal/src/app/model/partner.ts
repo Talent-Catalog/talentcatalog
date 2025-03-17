@@ -34,6 +34,9 @@ export interface PartnerSimpleAttributes {
   logo: string;
   name: string;
   notificationEmail: string;
+  publicApiAccess: boolean;
+  publicApiAuthorities: string[];
+  publicApiKey?: string;
   registrationLandingPage: string;
   sflink: string;
   sourcePartner: boolean;
@@ -45,6 +48,14 @@ export interface PartnerSimpleAttributes {
   status: string;
   websiteUrl: string;
   redirectPartner?: ShortPartner;
+}
+
+export enum PublicApiAuthority {
+  READ_CANDIDATE_DATA = "READ_CANDIDATE_DATA",
+  SUBMIT_JOB_MATCHES = "SUBMIT_JOB_MATCHES",
+  OFFER_CANDIDATE_SERVICES = "OFFER_CANDIDATE_SERVICES",
+  REGISTER_CANDIDATES = "REGISTER_CANDIDATES",
+  ADMIN = "ADMIN"
 }
 
 export interface Employer {

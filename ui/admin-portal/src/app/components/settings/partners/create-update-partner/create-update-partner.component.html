@@ -49,9 +49,29 @@
         </div>
       </div>
 
-      <div class="form-check mb-3">
+      <div class="form-check">
         <input class="form-check-input" type="checkbox" id="employerPartner" formControlName="employerPartner">
         <label class="form-check-label" for="employerPartner">Employer Partner?</label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="publicApiAccess" formControlName="publicApiAccess">
+        <label class="form-check-label" for="publicApiAccess">Public API access?</label>
+      </div>
+
+      <div *ngIf="publicApiAccess" class="mb-3">
+        <label class="form-label">Public API Authorities</label>
+        <ng-select
+          id="publicApiAuthorities"
+          [items]="publicApiAuthorityOptions"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [clearSearchOnAdd]="true"
+          placeholder="Select or type..."
+          bindLabel="stringValue"
+          bindValue="key"
+          formControlName="publicApiAuthorities">
+        </ng-select>
       </div>
 
       <div class="mb-3">
