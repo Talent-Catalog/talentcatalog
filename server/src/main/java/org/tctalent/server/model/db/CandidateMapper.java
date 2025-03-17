@@ -34,6 +34,8 @@ public interface CandidateMapper {
     @Mapping(target = "phone")
     @Mapping(target = "whatsapp")
     @Mapping(target = "gender")
+    @Mapping(target = "contactConsentRegistration")
+    @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
     Candidate candidateRegistrationToCandidate(CandidateRegistration registrationInfo);
 
 

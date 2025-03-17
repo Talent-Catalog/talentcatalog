@@ -77,7 +77,6 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.NotImplementedException;
 import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.exception.UsernameTakenException;
@@ -113,6 +112,7 @@ import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.UserMapper;
 import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
@@ -240,6 +240,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final UserMapper userMapper;
     private final CandidateMapper candidateMapper;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
@@ -1194,10 +1195,10 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate registerByPartner(RegisterCandidateByPartnerRequest request) {
 
-        final CandidateRegistration registrationData = request.getRegistrationData();
+        //All candidates have User role of user.
+        Role candidateUserRole = Role.user;
 
-        //TODO JC Create candidate with the lot here and then do post processing
-        Candidate candidateTest = candidateMapper.candidateRegistrationToCandidate(registrationData);
+        final CandidateRegistration registrationData = request.getRegistrationData();
 
         String email = registrationData.getIdentity().getEmail();
         String phone = registrationData.getPhone();
@@ -1215,45 +1216,61 @@ public class CandidateServiceImpl implements CandidateService {
             throw new InvalidRequestException("Must specify at least one method of contact");
         }
 
+        //Check for duplicate usernames (email, phone number)
+        User existing = userRepository.findByUsernameAndRole(username, candidateUserRole);
+        if (existing != null) {
+            throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
+        }
+
         //Initial password is same as username.
         //TODO JC Prompt to change password on first login
         String passwordEncrypted = passwordHelper.encodePassword(username);
 
-        //Partner who is submitting registration
-        //TODO JC Need to add registeredBy to Candidate entity
-        final Long partnerId = request.getPartnerId();
-
+        //Must have source partner
         //TODO JC Compute sourcePartner. Use checkForChangedPartner, defaulting to DefaultSourcePartner
         String countryIsoCode = null;
         if (registrationData.getCountry() != null) {
             countryIsoCode = registrationData.getCountry().getIsoCode();
         }
 //        countryService.findCountryByIsoCode(countryIsoCode); todo
-        Partner sourcePartner = null;
+        //TODO JC For now just assign default source partner
+        Partner sourcePartner = partnerService.getDefaultSourcePartner();
 
 
-        CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
-        createCandidateRequest.setUsername(username);
-        createCandidateRequest.setEmail(registrationData.getIdentity().getEmail());
-        createCandidateRequest.setPhone(registrationData.getPhone());
-        createCandidateRequest.setWhatsapp(registrationData.getWhatsapp());
-        createCandidateRequest.setContactConsentRegistration(registrationData.getContactConsentRegistration());
-        createCandidateRequest.setContactConsentPartners(registrationData.getContactConsentTcPartners());
+        //UserMapper creates user from Identity
+        User user = userMapper.userIdentityToUser(registrationData.getIdentity());
+        user.setRole(candidateUserRole);
+        user.setUsername(username);
+        user.setStatus(Status.active);
+        user.setPartner((PartnerImpl) sourcePartner);
+        user.setAuditFields(userService.getSystemAdminUser());
 
-        //ipAddress and query parameters are not relevant for partner registrations.
-        Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, null,
-            null, passwordEncrypted);
+        /* Set the password */
+        user.setPasswordEnc(passwordEncrypted);
 
-        //This is the minimal registration - the rest of their data just determines the quality of their rego
-        //At this point they are on the database with a public ID and the ability to log in
+        //Save the user
+        user = userRepository.save(user);
 
-        //TODO JC See how Sadat used MapStruct. EntityMapper
-//        final List<org.tctalent.anonymization.model.CandidateExam> candidateExams = registrationData.getCandidateExams();
-//        final org.tctalent.anonymization.model.Country nationality = registrationData.getNationality();
-//        candidate.setNationality(countryService.findCountryByIsoCode());
+        //TODO JC CandidateMapper is not complete. Currently only mapping selected fields.
+        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationData);
+        candidate.setPublicId(publicIDService.generatePublicID());
+        candidate.setUser(user);
 
-        //TODO JC registerByPartner not implemented in CandidateServiceImpl
-        throw new NotImplementedException("CandidateServiceImpl", "registerByPartner");
+        //Partner who is submitting registration
+        final Long partnerId = request.getPartnerId();
+        candidate.setRegisteredBy((PartnerImpl) partnerService.getPartner(partnerId));
+
+        //TODO JC Determine final status based on data provided.
+        CandidateStatus candidateStatus = CandidateStatus.draft; //todo assume draft for now
+        candidate.setStatus(candidateStatus);
+
+        candidate.setAuditFields(userService.getSystemAdminUser());
+
+        candidate = save(candidate, true);
+
+        //TODO JC Send email with login details to candidate
+
+        return candidate;
     }
 
     /**
