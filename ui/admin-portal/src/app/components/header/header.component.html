@@ -58,7 +58,7 @@
         </li>
       </ul>
 
-      <div class="me-3" *ngIf="canViewCandidateName()">
+      <div class="me-3" *ngIf="canViewCandidateName() && !isEmployerPartner()">
         <input id="quickExternalIdSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doExternalIdSearch"
@@ -72,7 +72,7 @@
         </ng-template>
       </div>
 
-      <div class="me-3" *ngIf="canViewCandidateName()">
+      <div class="me-3" *ngIf="canViewCandidateName() && !isEmployerPartner()">
         <input id="quickEmailOrPhoneSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doEmailOrPhoneSearch"
@@ -86,7 +86,7 @@
         </ng-template>
       </div>
 
-      <div class="me-3">
+      <div class="me-3" *ngIf="!isEmployerPartner()">
         <app-candidate-name-num-search></app-candidate-name-num-search>
       </div>
     </div>
