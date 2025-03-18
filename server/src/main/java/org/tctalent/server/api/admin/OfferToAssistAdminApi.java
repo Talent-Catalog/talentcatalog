@@ -52,7 +52,7 @@ public class OfferToAssistAdminApi {
     @PostMapping
     @NonNull
     public ResponseEntity<OfferToAssistCandidates201Response>
-    create(@Valid @RequestBody OfferToAssistRequest request) {
+        create(@Valid @RequestBody OfferToAssistRequest request) {
 
         //Create and store OTA
         OfferToAssist ota = offerToAssistService.createOfferToAssist(request);
