@@ -17,8 +17,10 @@
 package org.tctalent.server.api.admin;
 
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -29,8 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.anonymization.model.OfferToAssistCandidates201Response;
 import org.tctalent.server.model.db.OfferToAssist;
+import org.tctalent.server.request.KeywordPagedSearchRequest;
 import org.tctalent.server.request.OfferToAssistRequest;
 import org.tctalent.server.service.db.OfferToAssistService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * TC API for OTA's (Offers To Assist candidates)
@@ -48,18 +52,55 @@ public class OfferToAssistAdminApi {
     @PostMapping
     @NonNull
     public ResponseEntity<OfferToAssistCandidates201Response>
-        create(@Valid @RequestBody OfferToAssistRequest request) {
+    create(@Valid @RequestBody OfferToAssistRequest request) {
 
         //Create and store OTA
         OfferToAssist ota = offerToAssistService.createOfferToAssist(request);
 
         //Create response
         OfferToAssistCandidates201Response response =
-            new OfferToAssistCandidates201Response().toBuilder()
-                .offerId(ota.getPublicId())
-                .message("Your offer has been successfully recorded.")
-                .build();
+                new OfferToAssistCandidates201Response().toBuilder()
+                        .offerId(ota.getPublicId())
+                        .message("Your offer has been successfully recorded.")
+                        .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("search")
+    public Map<String, Object> search(@RequestBody KeywordPagedSearchRequest request) {
+        Page<OfferToAssist> otas = offerToAssistService.searchOffersToAssist(request);
+        return offerToAssistDtoBuilder().buildPage(otas);
+    }
+
+    private DtoBuilder offerToAssistDtoBuilder() {
+        return new DtoBuilder()
+                .add("id")
+                .add("createdBy", userDto())
+                .add("createdDate")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
+                .add("additionalNotes")
+                .add("partner", partnerDto())
+                .add("publicId")
+                .add("reason")
+                ;
+    }
+
+    private DtoBuilder partnerDto() {
+        return new DtoBuilder()
+                .add("abbreviation")
+                .add("id")
+                .add("publicId")
+                .add("name")
+                .add("websiteUrl")
+                ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("username")
+                ;
     }
 }

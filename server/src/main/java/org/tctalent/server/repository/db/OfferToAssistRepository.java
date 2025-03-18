@@ -17,8 +17,8 @@
 package org.tctalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.tctalent.server.model.db.OfferToAssist;
 
-public interface OfferToAssistRepository extends JpaRepository<OfferToAssist, Long> {
-
+public interface OfferToAssistRepository extends JpaRepository<OfferToAssist, Long>, JpaSpecificationExecutor<OfferToAssist> {
 }

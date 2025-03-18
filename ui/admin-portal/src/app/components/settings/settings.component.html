@@ -147,6 +147,15 @@
       </app-import-duolingo-coupons>
     </ng-template>
   </ng-container>
+
+  <!-- Offer's To Assist -->
+  <ng-container ngbNavItem="ota" *ngIf="systemAdminOnly()">
+    <a ngbNavLink>Offers To Assist</a>
+    <ng-template ngbNavContent>
+      <app-offer-to-assist>
+      </app-offer-to-assist>
+    </ng-template>
+  </ng-container>
 </nav>
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
