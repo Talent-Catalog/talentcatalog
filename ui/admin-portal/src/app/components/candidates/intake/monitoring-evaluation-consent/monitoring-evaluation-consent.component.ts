@@ -20,6 +20,7 @@ import {YesNo} from "../../../../model/candidate";
 import {UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
+import {AuthorizationService} from '../../../../services/authorization.service';
 
 @Component({
   selector: 'app-monitoring-evaluation-consent',
@@ -27,10 +28,11 @@ import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
   styleUrls: ['./monitoring-evaluation-consent.component.scss']
 })
 export class MonitoringEvaluationConsentComponent extends IntakeComponentBase implements OnInit {
-
+  loading: boolean;
   public consentOptions: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+  constructor(fb: UntypedFormBuilder, private candidateService: CandidateService,
+              private authService: AuthorizationService) {
     super(fb, candidateService);
   }
 
@@ -38,6 +40,24 @@ export class MonitoringEvaluationConsentComponent extends IntakeComponentBase im
     this.form = this.fb.group({
       monitoringEvaluationConsent: [{value: this.candidateIntakeData?.monitoringEvaluationConsent, disabled: !this.editable}],
     });
+  }
+
+  createUpdateSalesforce() {
+    this.error = null;
+    this.loading = true;
+    this.candidateService.createUpdateLiveCandidate(this.candidate.id).subscribe(
+      candidate => {
+        this.candidateService.updateCandidate();
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      });
+  }
+
+  canAccessSalesforce(): boolean {
+    return this.authService.canAccessSalesforce();
   }
 
 }
