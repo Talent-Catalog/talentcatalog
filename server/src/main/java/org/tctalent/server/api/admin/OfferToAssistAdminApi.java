@@ -59,10 +59,10 @@ public class OfferToAssistAdminApi {
 
         //Create response
         OfferToAssistCandidates201Response response =
-                new OfferToAssistCandidates201Response().toBuilder()
-                        .offerId(ota.getPublicId())
-                        .message("Your offer has been successfully recorded.")
-                        .build();
+            new OfferToAssistCandidates201Response().toBuilder()
+                    .offerId(ota.getPublicId())
+                    .message("Your offer has been successfully recorded.")
+                    .build();
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
