@@ -15,7 +15,7 @@ export class ImportDuolingoCouponsComponent implements OnInit{
   paginatedData: string[][] = [];
   selectedFile: File | null = null;
   availableCouponsCount: number = 0;
-
+  csvImported = false;
   currentPage = 1;
   pageSize = 30; // Number of items per page
   // List of required columns
@@ -95,6 +95,7 @@ export class ImportDuolingoCouponsComponent implements OnInit{
       next: (response) => {
         this.working = false;
         this.getAvailableCouponsCount();
+        this.csvImported = true;
         alert('CSV data imported successfully!');
       },
       error: (error) => {

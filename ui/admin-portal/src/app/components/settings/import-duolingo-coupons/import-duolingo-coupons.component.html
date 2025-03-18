@@ -15,7 +15,9 @@
       (pageChange)="onPageChange($event)"
   ></ngb-pagination>
 
-  Found {{csvData?.length}} Coupons
+  <div class="text-muted mb-2 align-middle" *ngIf="csvImported">
+    Found {{ csvData?.length }} Coupons
+  </div>
 </div>
 
 <!-- Display the number of available coupons here -->
