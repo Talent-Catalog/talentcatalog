@@ -1,4 +1,4 @@
-import {OfferToAssist} from './offer-to-assist';
+import {CandidateAssistanceType, OfferToAssist} from './offer-to-assist';
 import {User} from "./user";
 import {Partner} from "./partner";
 
@@ -16,8 +16,8 @@ describe('OfferToAssist', () => {
       updatedDate: new Date("2024-05-02"),
       additionalNotes: 'notes',
       partner: partner,
-      publicId: 1,
-      reason: 'a reason'
+      publicId: '1234abcd',
+      reason: CandidateAssistanceType.JOB_OPPORTUNITY
     };
 
     // Assertions
@@ -28,7 +28,7 @@ describe('OfferToAssist', () => {
     expect(ota.updatedDate).toBeTruthy();
     expect(ota.additionalNotes).toEqual('notes');
     expect(ota.partner).toEqual(partner);
-    expect(ota.publicId).toBe(1);
-    expect(ota.reason).toBe('a reason');
+    expect(ota.publicId).toEqual('1234abcd');
+    expect(ota.reason).toEqual('Job Opportunity');
   });
 });

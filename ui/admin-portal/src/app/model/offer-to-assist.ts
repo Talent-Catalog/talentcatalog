@@ -9,7 +9,7 @@ export interface OfferToAssist {
   updatedDate: Date,
   additionalNotes: string,
   partner: Partner,
-  publicId: number,
+  publicId: string,
   reason: CandidateAssistanceType
 }
 
