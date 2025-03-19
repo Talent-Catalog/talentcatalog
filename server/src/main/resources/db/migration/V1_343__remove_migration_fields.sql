@@ -1,0 +1,1 @@
+ALTER TABLE candidate DROP COLUMN migration_nationality;
