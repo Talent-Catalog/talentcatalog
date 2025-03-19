@@ -2192,7 +2192,7 @@ public class CandidateServiceImpl implements CandidateService {
                     NOT_AUTHORIZED, //First name
                     NOT_AUTHORIZED, //Last name
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
-                    candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                    candidate.getCountry() != null ? candidate.getCountry().getName() : null,
                     candidate.getNationality() != null ? candidate.getNationality().getName() : null,
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
                     NOT_AUTHORIZED, //Email
@@ -2226,7 +2226,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate.getUser().getFirstName(),
                     candidate.getUser().getLastName(),
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
-                    candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                    candidate.getCountry() != null ? candidate.getCountry().getName() : null,
                     candidate.getNationality() != null ? candidate.getNationality().getName() : null,
                     candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
                     candidate.getUser().getEmail(),
