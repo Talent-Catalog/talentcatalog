@@ -1353,6 +1353,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return candidateVisaChecks;
     }
 
+    public void setCandidateVisaChecks(List<CandidateVisaCheck> candidateVisaChecks) {
+        this.candidateVisaChecks = candidateVisaChecks;
+    }
+
     @Nullable
     public String getFolderlink() {
         return folderlink;
