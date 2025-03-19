@@ -32,13 +32,23 @@ export enum Environment {
 export class EnvService {
   private _env: Environment
   private _sfLightningUrl: string
+  private _allCandidatesDashboardId: string
+  private _presetWorkspaceId: string
 
   get env(): Environment {
-    return this._env
+    return this._env;
   }
 
   get sfLightningUrl(): string {
-    return this._sfLightningUrl
+    return this._sfLightningUrl;
+  }
+
+  get allCandidatesDashboardId(): string {
+    return this._allCandidatesDashboardId;
+  }
+
+  get presetWorkspaceId(): string {
+    return this._presetWorkspaceId;
   }
 
   constructor() {}
@@ -54,14 +64,21 @@ export class EnvService {
     const hostname = window && window.location && window.location.hostname
 
     if ((/^.*localhost.*/.test(hostname))) {
-      this._env = Environment.Local
-      this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/'
+      this._env = Environment.Local;
+      this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/';
+      this._allCandidatesDashboardId =  '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
+      this._presetWorkspaceId = '987e2e02';
     } else if ((/^tctalent-test.org/.test(hostname))) {
-      this._env = Environment.Staging
-      this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/'
+      this._env = Environment.Staging;
+      this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/';
+      this._allCandidatesDashboardId = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
+      this._presetWorkspaceId = '987e2e02';
     } else if ((/^tctalent.org/.test(hostname))) {
-      this._env = Environment.Prod
-      this._sfLightningUrl = 'https://talentbeyondboundaries.lightning.force.com/'
+      this._env = Environment.Prod;
+      this._sfLightningUrl = 'https://talentbeyondboundaries.lightning.force.com/';
+      // TODO: plug in Preset prod variables
+      this._allCandidatesDashboardId = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
+      this._presetWorkspaceId = '987e2e02';
     }
   }
 }

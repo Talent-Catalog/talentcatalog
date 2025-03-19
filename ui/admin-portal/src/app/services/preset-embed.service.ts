@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {embedDashboard, EmbeddedDashboard} from "@preset-sdk/embedded";
 import {map} from "rxjs/operators";
+import {EnvService} from "./env.service";
 
 interface PresetGuestTokenResponse {
   payload: {
@@ -15,23 +16,9 @@ interface PresetGuestTokenResponse {
 })
 export class PresetEmbedService {
 
-  private apiBaseUrl = environment.apiUrl + '/preset';
-  private presetDomain: string = 'https://' + environment.presetWorkspaceId + '.us2a.app.preset.io';
+  private readonly apiBaseUrl = environment.apiUrl + '/preset';
 
-  constructor(private http: HttpClient) { }
-
-  /**
-   * Fetches a guest token from TC server, which connects to Preset API.
-   * @param dashboardId - The unique identifier of the dashboard, obtained from the Preset dashboard UI.
-   * @return A Promise resolving to a PresetGuestTokenResponse object containing a guest token.
-   * @private
-   */
-  private fetchGuestToken(dashboardId: string): Promise<string> {
-    return this.http
-        .post<PresetGuestTokenResponse>(`${this.apiBaseUrl}/${dashboardId}/guest-token`, null)
-        .pipe(map(response => response.payload.token))
-        .toPromise();
-  }
+  constructor(private http: HttpClient, private envService: EnvService) { }
 
   /**
    * Embeds a Preset dashboard in the calling component.
@@ -63,6 +50,23 @@ export class PresetEmbedService {
         urlParams: {}
       },
     });
+  }
+
+  /**
+   * Fetches a guest token from TC server, which connects to Preset API.
+   * @param dashboardId - The unique identifier of the dashboard, obtained from the Preset dashboard UI.
+   * @return A Promise resolving to a PresetGuestTokenResponse object containing a guest token.
+   * @private
+   */
+  private fetchGuestToken(dashboardId: string): Promise<string> {
+    return this.http
+        .post<PresetGuestTokenResponse>(`${this.apiBaseUrl}/${dashboardId}/guest-token`, null)
+        .pipe(map(response => response.payload.token))
+        .toPromise();
+  }
+
+  private get presetDomain(): string {
+    return `https://${this.envService.presetWorkspaceId}.us2a.app.preset.io`;
   }
 
 }
