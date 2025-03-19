@@ -1,1 +1,1 @@
-ALTER TABLE candidate DROP COLUMN migration_nationality;
+alter table candidate drop column migration_nationality;
