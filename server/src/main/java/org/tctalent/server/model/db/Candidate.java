@@ -278,8 +278,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @JoinColumn(name = "migration_education_major_id")
     private EducationMajor migrationEducationMajor;
 
-    private String migrationNationality;
-
     /**
      * Url link to corresponding candidate folder on Google Drive, if one exists.
      */
@@ -1353,26 +1351,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
         candidateVisaChecks.sort(null);
         return candidateVisaChecks;
-    }
-
-    public void setCandidateVisaChecks(List<CandidateVisaCheck> candidateVisaChecks) {
-        this.candidateVisaChecks = candidateVisaChecks;
-    }
-
-    public String getMigrationCountry() {
-        return migrationNationality;
-    }
-
-    public void setMigrationCountry(String migrationCountry) {
-        this.migrationNationality = migrationCountry;
-    }
-
-    public String getMigrationNationality() {
-        return migrationNationality;
-    }
-
-    public void setMigrationNationality(String migrationNationality) {
-        this.migrationNationality = migrationNationality;
     }
 
     @Nullable
