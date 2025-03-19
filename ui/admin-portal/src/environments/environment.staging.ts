@@ -30,5 +30,5 @@ export const environment = {
   assetBaseUrl: '/admin-portal',
   environmentName: 'staging',
   presetWorkspaceId: '987e2e02',
-  googleAnalyticsId: 'G-BPDYWB77Y3'
+  googleAnalyticsId: 'G-K9ML1Y40B4' // for testing
 };
