@@ -183,6 +183,39 @@ update candidate_language
 set language_id = 344 -- French
 where trim(migration_language) = 'French';
 
+update candidate_language
+set language_id = 10019 -- French
+where trim(migration_language) = 'Burmese';
+
+update candidate_language
+set language_id = 10004 -- Amharic is the official national language of Ethiopia.
+where trim(migration_language) = 'Ethiopian language';
+
+update candidate_language
+set language_id = 7343 -- German
+where trim(migration_language) = 'الالمانية';
+
+update candidate_language
+set language_id = 10018 -- Bulgarian
+where trim(migration_language) = 'البلغارية';
+
+update candidate_language
+set language_id = 10044 -- Finnish
+where trim(migration_language) = 'الفنلنديه';
+
+
+update candidate_language
+set language_id = 10167 -- Uzbek
+where trim(migration_language) = 'uzbecki';
+
+update candidate_language
+set language_id = 345 -- Russian
+where trim(migration_language) = 'الروسية';
+
+update candidate_language
+set language_id = 10134 -- Romanian
+where trim(migration_language) in ('رومانيا','رومانية','اللغة الرومانية','الرومانية');
+
 -- Handle multi-language entries by splitting into separate rows
 
 -- 1. Assyrian -armenian-syriac-kurdish-languages -> Assyrian (10007), Armenian (347), Kurdish (10089)
@@ -237,7 +270,7 @@ where trim(migration_language) in ('العربية والانكليزية', 'ا�
 insert into candidate_language (candidate_id, language_id, written_level_id, spoken_level_id)
 select candidate_id, 342, written_level_id, spoken_level_id -- English
 from candidate_language
-where trim(migration_language) in ('العربية والانكليزية', 'العربية والأنكليزية');
+where trim(migration_language) in ('العربية والانكليزية', 'العربية والأنكليزية','العربية والأنكليزية');
 
 -- 5. العربيه و الفرنسيه والانكليزيه -> Arabic (343), French (344), English (342)
 -- Update original row to Arabic
@@ -269,4 +302,4 @@ where trim(migration_language) = 'اللغة العربية .اللغة الإن
 -- Other multi-language entries (using primary language)
 update candidate_language
 set language_id = 343 -- Arabic (first language listed)
-where trim(migration_language) in ('الانجليزية،  الفرنسية. الروسية ،العربية', 'الكردية و العربية و التركية', 'اللغة الأنجليزية واللغة العربيه', 'العربيه والانكليزيه');
+where trim(migration_language) in ('الانجليزية،  الفرنسية. الروسية ،العربية', 'الكردية و العربية و التركية', 'اللغة الأنجليزية واللغة العربيه', 'اللغة العربية اقصد','العربيه والانكليزيه','اللغة العربية. لغتي الأم ','اللغة اليابانية','غير ذلك','غير ذكل','لا يوجد');
