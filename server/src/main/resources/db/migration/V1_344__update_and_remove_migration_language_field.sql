@@ -203,10 +203,13 @@ update candidate_language
 set language_id = 10044 -- Finnish
 where trim(migration_language) = 'الفنلنديه';
 
-
 update candidate_language
 set language_id = 10167 -- Uzbek
 where trim(migration_language) = 'uzbecki';
+
+update candidate_language
+set language_id = 10097 -- Luganda
+where trim(migration_language) = 'Ugandan languages';
 
 update candidate_language
 set language_id = 345 -- Russian
