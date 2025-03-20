@@ -265,12 +265,12 @@ where trim(migration_language) = 'Zaghawa language and English language and Arab
 -- Update original row to Arabic
 update candidate_language
 set language_id = 343 -- Arabic
-where trim(migration_language) in ('العربية والانكليزية', 'العربية والأنكليزية');
+where trim(migration_language) in ('العربية والانكليزية', 'العربية والأنكليزية', 'العربية  الانجليزية','اللغة العربية. لغتي الأم');
 -- Insert English
 insert into candidate_language (candidate_id, language_id, written_level_id, spoken_level_id)
 select candidate_id, 342, written_level_id, spoken_level_id -- English
 from candidate_language
-where trim(migration_language) in ('العربية والانكليزية', 'العربية والأنكليزية','العربية والأنكليزية');
+where trim(migration_language) in ('العربية والانكليزية', 'العربية والأنكليزية','العربية  الانجليزية', 'اللغة العربية. لغتي الأم');
 
 -- 5. العربيه و الفرنسيه والانكليزيه -> Arabic (343), French (344), English (342)
 -- Update original row to Arabic
