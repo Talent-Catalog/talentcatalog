@@ -76,10 +76,7 @@ public class OfferToAssistAdminApi {
     private DtoBuilder offerToAssistDtoBuilder() {
         return new DtoBuilder()
                 .add("id")
-                .add("createdBy", userDto())
                 .add("createdDate")
-                .add("updatedBy", userDto())
-                .add("updatedDate")
                 .add("additionalNotes")
                 .add("partner", partnerDto())
                 .add("publicId")
@@ -94,13 +91,6 @@ public class OfferToAssistAdminApi {
                 .add("publicId")
                 .add("name")
                 .add("websiteUrl")
-                ;
-    }
-
-    private DtoBuilder userDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("username")
                 ;
     }
 }

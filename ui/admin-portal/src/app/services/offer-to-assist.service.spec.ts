@@ -5,7 +5,6 @@ import {SearchResults} from "../model/search-results";
 import {environment} from "../../environments/environment";
 import {CandidateAssistanceType, OfferToAssist} from "../model/offer-to-assist";
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {MockUser} from "../MockData/MockUser";
 import {MockPartner} from "../MockData/MockPartner";
 
 describe('OfferToAssistService', () => {
@@ -33,9 +32,8 @@ describe('OfferToAssistService', () => {
     const searchRequest = { keyword: 'test' };
     const dummySearchResults: SearchResults<OfferToAssist> = {
       content: [{ id: 1, partner: new MockPartner(), publicId: '1234abcd',
-          reason: CandidateAssistanceType.JOB_OPPORTUNITY , additionalNotes: 'test',
-          createdBy: new MockUser(), createdDate:  new Date("2024-05-01"),
-          updatedBy: new MockUser(), updatedDate: new Date("2024-05-02"),},
+          reason: CandidateAssistanceType.JOB_OPPORTUNITY ,
+          additionalNotes: 'test', createdDate:  new Date("2024-05-01")},
       ],
       totalElements: 1
     } as SearchResults<OfferToAssist>

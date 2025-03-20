@@ -10,10 +10,7 @@ describe('OfferToAssist', () => {
     // Mock data
     const ota: OfferToAssist = {
       id: 1,
-      createdBy: createdBy,
       createdDate: new Date("2024-05-01"),
-      updatedBy: updatedBy,
-      updatedDate: new Date("2024-05-02"),
       additionalNotes: 'notes',
       partner: partner,
       publicId: '1234abcd',
@@ -22,10 +19,7 @@ describe('OfferToAssist', () => {
 
     // Assertions
     expect(ota.id).toEqual(1);
-    expect(ota.createdBy).toEqual(createdBy);
     expect(ota.createdDate).toBeTruthy();
-    expect(ota.updatedBy).toEqual(updatedBy);
-    expect(ota.updatedDate).toBeTruthy();
     expect(ota.additionalNotes).toEqual('notes');
     expect(ota.partner).toEqual(partner);
     expect(ota.publicId).toEqual('1234abcd');

@@ -23,7 +23,8 @@ import org.tctalent.server.model.db.OfferToAssist;
 import org.tctalent.server.request.KeywordPagedSearchRequest;
 
 /**
- * TODO CC doc
+ * Build the search query using the Keyword Paged Search Request which contains a string
+ * keyword field.
  *
  * @author Caroline Cameron
  */
@@ -45,7 +46,6 @@ public class OfferToAssistSpecification {
                         cb.or(
                                 cb.like(cb.lower(ota.get("partner").get("name")), likeMatchTerm),
                                 cb.like(cb.lower(ota.get("publicId")), likeMatchTerm),
-                                cb.like(cb.lower(ota.get("createdBy").get("username")), likeMatchTerm),
                                 cb.like(cb.lower(ota.get("reason")), likeMatchTerm)
                         ));
             }

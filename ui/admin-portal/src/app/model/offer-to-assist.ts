@@ -1,12 +1,8 @@
-import {User} from "./user";
 import {Partner} from "./partner";
 
 export interface OfferToAssist {
   id: 1,
-  createdBy: User,
   createdDate: Date,
-  updatedBy: User,
-  updatedDate: Date,
   additionalNotes: string,
   partner: Partner,
   publicId: string,

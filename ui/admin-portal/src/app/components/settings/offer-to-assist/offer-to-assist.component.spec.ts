@@ -5,7 +5,6 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {OfferToAssistService} from "../../../services/offer-to-assist.service";
 import {SearchResults} from "../../../model/search-results";
 import {CandidateAssistanceType, OfferToAssist} from "../../../model/offer-to-assist";
-import {MockUser} from "../../../MockData/MockUser";
 import {MockPartner} from "../../../MockData/MockPartner";
 import {of} from "rxjs";
 
@@ -22,10 +21,7 @@ describe('OfferToAssistComponent', () => {
     totalElements: 1,
     content: [
       {id: 1,
-      createdBy: new MockUser(),
       createdDate: new Date("2024-05-01"),
-      updatedBy: new MockUser(),
-      updatedDate: new Date("2024-05-02"),
       additionalNotes: 'notes',
       partner: new MockPartner(),
       publicId: '1234abcd',
