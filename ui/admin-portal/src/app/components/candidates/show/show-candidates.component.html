@@ -354,7 +354,7 @@
 
     <!-- Third Group of Inputs (Right-aligned) -->
     <div *ngIf="isSavedList()" class="row row-cols-auto justify-content-end mb-2">
-      <div *ngIf="isContentModifiable()" class="col">
+      <div *ngIf="isContentModifiable() && !isEmployerPartner()" class="col">
         <input id="quickNumberOrNameSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doNumberOrNameSearch"

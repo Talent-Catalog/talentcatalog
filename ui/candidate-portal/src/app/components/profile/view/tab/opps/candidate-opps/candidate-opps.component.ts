@@ -14,15 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {CandidateOpportunity} from "../../../../../../model/candidate-opportunity";
 import {forkJoin, Observable} from "rxjs";
@@ -38,6 +30,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   error: string;
   loading: boolean;
   @Input() candidate: Candidate;
+  @Input() filteredOpps: CandidateOpportunity[];
   @Output() refresh = new EventEmitter();
 
   //Map of job chats by opp id
@@ -56,10 +49,6 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
     if (changes.candidate) {
       this.fetchChats();
     }
-  }
-
-  get opps(): CandidateOpportunity[] {
-    return this.candidate?.candidateOpportunities;
   }
 
   selectOpp(opp: CandidateOpportunity) {

@@ -101,4 +101,17 @@ public interface DuolingoCouponRepository extends JpaRepository<DuolingoCoupon, 
    */
   List<DuolingoCoupon> findAllByExpirationDateBeforeAndCouponStatusNotIn(
       LocalDateTime expirationDate, List<DuolingoCouponStatus> couponStatuses);
+
+  /**
+   * Counts the number of coupons that are available, meaning they are not assigned
+   * to any candidate and have a specific coupon status.
+   * <p/>
+   * This method is useful for determining how many coupons are available for assignment,
+   * based on the coupon status (e.g., "ACTIVE").
+   *
+   * @param couponStatus the status of the coupons to count (e.g., "ACTIVE").
+   * @return the number of available coupons with the specified status.
+   */
+  int countByCandidateIsNullAndCouponStatus(DuolingoCouponStatus couponStatus);
+
 }

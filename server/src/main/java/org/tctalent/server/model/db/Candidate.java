@@ -119,6 +119,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String partnerRef;
 
     /**
+     * If null the candidate registered themselves.
+     * If not null, the candidate was registered through the public API by the given partner.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "registered_by")
+    @Nullable
+    private PartnerImpl registeredBy;
+
+    /**
      * IP address of candidate when they registered
      */
     @Nullable
@@ -1852,6 +1861,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public String getLeftHomeNotes() { return leftHomeNotes; }
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
+
+    @Nullable
+    public PartnerImpl getRegisteredBy() {
+        return registeredBy;
+    }
+
+    public void setRegisteredBy(@Nullable PartnerImpl registeredBy) {
+        this.registeredBy = registeredBy;
+    }
 
     @Nullable
     public String getRegoIp() {

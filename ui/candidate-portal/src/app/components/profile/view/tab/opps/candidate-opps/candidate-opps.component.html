@@ -45,7 +45,7 @@
           </thead>
 
           <tbody>
-          <tr *ngFor="let opp of opps" (click)="selectOpp(opp)">
+          <tr *ngFor="let opp of filteredOpps" (click)="selectOpp(opp)">
             <td [title]="opp.jobOpp.name">
                 <div class="link underline">
                   <app-chat-read-status
@@ -63,7 +63,7 @@
           </tr>
 
           <!-- no results -->
-          <tr *ngIf="!loading && !opps?.length">
+          <tr *ngIf="!loading && !filteredOpps?.length">
             <td colspan="42" class="text-center">
               <span class="text-muted">({{ 'CANDIDATE-OPPS.TABLE.NONE' | translate }})</span>
             </td>

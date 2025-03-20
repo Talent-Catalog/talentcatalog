@@ -23,6 +23,8 @@ import {NO_ERRORS_SCHEMA} from '@angular/core';
 import MockSavedSearchTypeInfo from "../../../MockData/MockSavedSearchTypeInfo";
 import {MockUser} from "../../../MockData/MockUser";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {of} from "rxjs";
+import {ActivatedRoute} from "@angular/router";
 
 describe('SearchHomeComponent', () => {
   let component: SearchHomeComponent;
@@ -42,7 +44,8 @@ describe('SearchHomeComponent', () => {
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },
         { provide: SavedSearchService, useValue: searchServiceSpy },
-        { provide: AuthenticationService, useValue: authenticationSpy }
+        { provide: AuthenticationService, useValue: authenticationSpy },
+        { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

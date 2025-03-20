@@ -16,8 +16,11 @@
 
 package org.tctalent.server.model.db.partner;
 
+import java.util.Set;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.PublicApiAuthority;
 import org.tctalent.server.model.db.User;
 
 /**
@@ -67,6 +70,39 @@ public interface Partner extends SourcePartner, RecruiterPartner, EmployerPartne
      */
     @Nullable
     User getJobContact();
+
+    /**
+     * Authorities granted to this partner on the public API.
+     * <p/>
+     * Empty if partner does not have access to the public API
+     */
+    @NonNull
+    Set<PublicApiAuthority> getPublicApiAuthorities();
+    void setPublicApiAuthorities(@NonNull Set<PublicApiAuthority> authorities);
+
+    /**
+     * Hash of Public API Key
+     */
+    String getPublicApiKeyHash();
+    void setPublicApiKeyHash(String keyHash);
+
+    /**
+     * Public API Key
+     */
+    String getPublicApiKey();
+    void setPublicApiKey(String appiKey);
+
+    /**
+     * True if the partner has public api access.
+     * @return True if the partner has public api access.
+     */
+    boolean isPublicApiAccess();
+
+    /**
+     * Public ID of partner
+     */
+    String getPublicId();
+    void setPublicId(String publicId);
 
     /**
      * Salesforce ID (extracted from {@link #getSflink()}).

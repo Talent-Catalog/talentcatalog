@@ -33,6 +33,15 @@
                [items]="consentOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key">
     </ng-select>
+    <div class="d-flex justify-content-end align-items-baseline">
+       <span *ngIf="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+      </span>
+      <button *ngIf="canAccessSalesforce()" class="btn btn-primary mt-3"
+              (click)="createUpdateSalesforce()">
+        <i class="fab fa-salesforce"></i> Create/update Salesforce
+      </button>
+    </div>
   </div>
 
 </form>

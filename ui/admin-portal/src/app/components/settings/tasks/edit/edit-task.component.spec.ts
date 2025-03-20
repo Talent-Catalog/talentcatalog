@@ -22,6 +22,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {of, throwError} from "rxjs";
 import {Task} from "../../../../model/task";
+import {NgxWigModule} from "ngx-wig";
 
 describe('EditTaskComponent', () => {
   let component: EditTaskComponent;
@@ -53,7 +54,7 @@ describe('EditTaskComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditTaskComponent],
-      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule, NgxWigModule],
       providers: [
         { provide: TaskService, useValue: taskServiceSpyObj },
         { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }

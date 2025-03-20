@@ -16,9 +16,8 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.HashSet;
-import java.util.Set;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -31,6 +30,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
@@ -46,6 +47,7 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     implements Partner {
 
     private Long id;
+    private String publicId;
 
     @Nullable
     private String abbreviation;
@@ -75,6 +77,14 @@ public class PartnerImpl extends AbstractDomainObject<Long>
     private Employer employer;
 
     /**
+     * True if the partner has public api access.
+     * @return True if the partner has public api access.
+     */
+    public boolean isPublicApiAccess() {
+        return publicApiKeyHash != null;
+    }
+
+    /**
      * True if this partner is a job creator - ie the partner can have users who can create jobs
      */
     private boolean jobCreator;
@@ -90,6 +100,41 @@ public class PartnerImpl extends AbstractDomainObject<Long>
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner", cascade = CascadeType.MERGE)
     private Set<PartnerJobRelation> partnerJobRelations = new HashSet<>();
+
+    /**
+     * Authorities granted to this partner on the public API.
+     * <p/>
+     * Empty if partner does not have access to the public API
+     */
+    @Convert(converter = PublicApiAuthorityConverter.class)
+    private Set<PublicApiAuthority> publicApiAuthorities = new HashSet<>();
+
+    /**
+     * Convert null authorities to empty authorities
+     * @param authorities Authorities - can be null
+     */
+    public void setPublicApiAuthorities(@Nullable Set<PublicApiAuthority> authorities) {
+        this.publicApiAuthorities = authorities == null ? new HashSet<>() : authorities;
+    }
+
+    /**
+     * Public API key used by partner to access the public API.
+     * <p/>
+     * This is a transient value (ie not stored on the database) which is only populated when
+     * an API key is first created. It is sent to the user's browser just once so that it can
+     * be copied and sent securely to the partner in question. No copy is kept by TC staff.
+     */
+    @Transient
+    @Nullable
+    private String publicApiKey;
+
+    /**
+     * Hash of public API key used by partner to access the public API.
+     * <p/>
+     * Null if partner does not have access to the public API
+     */
+    @Nullable
+    private String publicApiKeyHash;
 
     @Nullable
     public String getSfId() {

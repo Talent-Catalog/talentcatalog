@@ -45,6 +45,7 @@ import {
   UserChangePasswordComponent
 } from "./components/account/user-change-password/user-change-password.component";
 import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
+import {IntelligenceComponent} from "./components/intelligence/intelligence.component";
 
 const routes: Routes = [
   {
@@ -184,6 +185,17 @@ const routes: Routes = [
             component: InfographicComponent,
             data: {title: 'TC Stats'}
           },
+        ]
+      },
+      {
+        path: 'intelligence',
+        children: [
+          {
+            path: '',
+            pathMatch: 'full' as const,
+            component: IntelligenceComponent,
+            data: {title: 'TC Intelligence'}
+          }
         ]
       },
       {

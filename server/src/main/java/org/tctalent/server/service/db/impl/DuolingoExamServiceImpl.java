@@ -29,6 +29,10 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.Exam;
+import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TaskAssignmentImpl;
+import org.tctalent.server.model.db.TaskImpl;
+import org.tctalent.server.model.db.task.TaskAssignment;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tctalent.server.request.duolingo.DuolingoExtraFieldsRequest;
 import org.tctalent.server.response.DuolingoDashboardResponse;
@@ -40,6 +44,8 @@ import org.tctalent.server.service.db.DuolingoApiService;
 import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.DuolingoExamService;
 import org.tctalent.server.service.db.DuolingoExtraFieldsService;
+import org.tctalent.server.service.db.TaskAssignmentService;
+import org.tctalent.server.service.db.TaskService;
 
 @Service
 @Slf4j
@@ -50,6 +56,8 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
   private final DuolingoCouponService duolingoCouponService;
   private final CandidateExamService candidateExamService;
   private final DuolingoExtraFieldsService duolingoExtraFieldsService;
+  private final TaskAssignmentService taskAssignmentService;
+  private final TaskService taskService;
 
   @Override
   @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
@@ -94,6 +102,8 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
                   result.getComprehensionSubscore(),
                   result.getProductionSubscore(),
                   savedCandidateExam.getId()));
+
+          completeDuolingoTestTask(candidateOpt);
         }
       }
     }
@@ -152,4 +162,24 @@ public class DuolingoExamServiceImpl implements DuolingoExamService {
       return null;
     }
   }
+  private void completeDuolingoTestTask(Candidate candidate) {
+    // Find the 'duolingoTest' task by its name
+    TaskImpl duolingoTestTask = taskService.getByName("duolingoTest");
+
+    // Fetch the task assignment for the candidate 
+    TaskAssignmentImpl taskAssignment = taskAssignmentService.findByTaskIdAndCandidateIdAndStatus(
+            duolingoTestTask.getId(),candidate.getId(),  Status.active)
+        .stream()
+        .findFirst()
+        .orElseThrow(() -> new NoSuchObjectException(TaskAssignment.class, duolingoTestTask.getId()));
+
+    // Mark the task as complete
+    taskAssignmentService.completeTaskAssignment(taskAssignment);
+
+    LogBuilder.builder(log)
+        .action("CompleteDuolingoTestTask")
+        .message(String.format("Completed Duolingo Test task for candidate ID: %s.", candidate.getId()))
+        .logInfo();
+  }
+
 }

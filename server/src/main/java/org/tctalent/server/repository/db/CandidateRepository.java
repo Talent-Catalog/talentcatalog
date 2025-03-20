@@ -268,6 +268,8 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     Candidate findByCandidateNumber(String candidateNumber);
 
+    Candidate findByPublicId(String publicId);
+
     /**
      * ADMIN PORTAL INFOGRAPHICS METHODS: includes source country restrictions.
      */
@@ -849,7 +851,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     @Query(
         value =
             """
-            SELECT DISTINCT c FROM Candidate c
+            SELECT c FROM Candidate c
              JOIN c.user u
              JOIN JobChat jc ON c.id = jc.candidate.id
              JOIN ChatPost cp ON jc.id = cp.jobChat.id
@@ -859,6 +861,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                  OR LOWER(u.firstName) LIKE :keyword
                  OR LOWER(u.lastName) LIKE :keyword
                  OR c.candidateNumber LIKE :keyword)
+             GROUP BY c.id
             """
     )
     Page<Candidate> findCandidatesWithActiveChat(

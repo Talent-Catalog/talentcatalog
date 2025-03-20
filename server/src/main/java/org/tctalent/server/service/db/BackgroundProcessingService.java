@@ -64,6 +64,11 @@ public interface BackgroundProcessingService {
   void setCandidatePublicIds();
 
   /**
+   * Adds publicID to any partner that doesn't have one
+   */
+  void setPartnerPublicIds();
+
+  /**
    * Adds publicID to any saved list that doesn't have one
    */
   void setSavedListPublicIds();

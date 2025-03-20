@@ -333,7 +333,8 @@ const ALL_FIELDS = {
           "TITLE": null,
           "DESCRIPTION": null,
           "UPDATE_EMAIL": null,
-          "SEND_BUTTON": null
+          "SEND_BUTTON": null,
+          "LINK": null
         },
         "LOADING": {
           "TITLE": null,
@@ -744,16 +745,26 @@ const ALL_FIELDS = {
     "NO": null,
     "UNSURE": null,
   },
-  "SERVICES": {
-    "ONGOING": {
-      "HEADER": null,
-      "NOTE": null,
-    },
-    "TABLE": {
-      "NAME": null,
-    },
-    "SERVICE": {
-      "RETURN": null
+  'SERVICES': {
+    'TITLE': null,
+    'DESCRIPTION': null,
+    'DUOLINGO': {
+      'TAG': null,
+      'TITLE': null,
+      'DESCRIPTION': null,
+      'COUPONS_TITLE': null,
+      'COUPONS_DESC': null,
+      'COUPON_TITLE': null,
+      'COUPON_CTA': null,
+      'EXAM': {
+        'INTRO': null,
+        'INTRO_TEXT': null,
+        'STEPS': null,
+        'STEPS_TEXT': null,
+        'IMPORTANT': null,
+        'GOOD_LUCK': null,
+        'CTA_BUTTON': null
+      }
     }
   },
   "TASKS": {

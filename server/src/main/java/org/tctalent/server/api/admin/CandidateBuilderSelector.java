@@ -73,6 +73,7 @@ public class CandidateBuilderSelector {
             "candidateReviewStatusItems",
             "country",
             "nationality",
+            "registeredBy",
             "regoPartnerParam",
             "regoReferrerParam",
             "regoUtmCampaign",
@@ -205,6 +206,7 @@ public class CandidateBuilderSelector {
             .add("surveyType", surveyTypeDto())
             .add("country", countryService.selectBuilder())
             .add("nationality", countryService.selectBuilder())
+            .add("registeredBy", partnerDto())
             .add("user", userDto(userPropertyFilter))
             .add("candidateReviewStatusItems", reviewDto())
             .add("candidateAttachments", candidateAttachmentDto(userPropertyFilter, type))
@@ -405,6 +407,7 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
             .add("abbreviation")
             .add("id")
+            .add("publicId")
             .add("name")
             .add("websiteUrl")
             ;

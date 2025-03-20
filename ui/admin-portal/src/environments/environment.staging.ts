@@ -28,5 +28,7 @@ export const environment = {
   systemApiUrl: '/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',
   assetBaseUrl: '/admin-portal',
-  environmentName: 'staging'
+  environmentName: 'staging',
+  presetWorkspaceId: '987e2e02',
+  googleAnalyticsId: 'G-K9ML1Y40B4' // for testing
 };

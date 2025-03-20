@@ -27,6 +27,7 @@
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
     "@popperjs/core": "^2.10.2",
+    "@preset-sdk/embedded": "^0.1.11",
     "@stomp/rx-stomp": "^1.1.4",
     "@types/jasmine": "^5.1.4",
     "angular-local-storage": "^0.7.1",

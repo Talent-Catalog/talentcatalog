@@ -1781,4 +1781,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return this.authorizationService.canViewCandidateName();
   }
 
+  public isEmployerPartner() {
+    return this.authorizationService.isEmployerPartner();
+  }
+
 }

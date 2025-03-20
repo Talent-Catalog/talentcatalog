@@ -160,7 +160,9 @@ describe('CandidateIntakeTabComponent', () => {
     const occupationSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
     const languageSpy = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
     const noteSpy = jasmine.createSpyObj('CandidateNoteService', ['getIntakeData']);
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['']);
+    const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+
+    authSpy.getLoggedInUser.and.returnValue(of({ id: 1, name: 'Test User' }));
 
     const citizenshipSpy = jasmine.createSpyObj('CandidateCitizenshipService', ['create']);
     citizenshipSpy.create.and.returnValue(of(null));
@@ -195,6 +197,7 @@ describe('CandidateIntakeTabComponent', () => {
         { provide: CandidateCitizenshipService, useValue: citizenshipSpy },
         { provide: CandidateExamService, useValue: examSpy },
         { provide: CandidateDependantService, useValue: dependantSpy },
+        { provide: AuthenticationService, useValue: authSpy },
         NgbAccordion
       ]
     }).compileComponents();

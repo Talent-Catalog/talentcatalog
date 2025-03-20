@@ -65,7 +65,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.CountryRestrictionException;
@@ -85,6 +87,7 @@ import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.model.db.CandidateLanguage;
+import org.tctalent.server.model.db.CandidateMapper;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -109,6 +112,7 @@ import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.UserMapper;
 import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
@@ -130,6 +134,7 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.PagedSearchRequest;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tctalent.server.request.candidate.CandidateEmailOrPhoneSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -138,9 +143,9 @@ import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CreateCandidateRequest;
-import org.tctalent.server.request.candidate.RegisterCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
@@ -235,6 +240,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final UserMapper userMapper;
+    private final CandidateMapper candidateMapper;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
     private final FileSystemService fileSystemService;
@@ -1055,7 +1062,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request, HttpServletRequest httpRequest) {
+    public LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
@@ -1183,6 +1190,87 @@ public class CandidateServiceImpl implements CandidateService {
         loginRequest.setUsername( candidate.getUser().getUsername());
         loginRequest.setPassword(request.getPassword());
         return loginRequest;
+    }
+
+    @Override
+    public Candidate registerByPartner(RegisterCandidateByPartnerRequest request) {
+
+        //All candidates have User role of user.
+        Role candidateUserRole = Role.user;
+
+        final CandidateRegistration registrationData = request.getRegistrationData();
+
+        String email = registrationData.getIdentity().getEmail();
+        String phone = registrationData.getPhone();
+        String whatsapp = registrationData.getWhatsapp();
+
+        String username = null;
+        if (!ObjectUtils.isEmpty(email)) {
+            username = email;
+        } else if (!ObjectUtils.isEmpty(phone)) {
+            username = phone;
+        } else if (!ObjectUtils.isEmpty(whatsapp)) {
+            username = whatsapp;
+        }
+        if (username == null) {
+            throw new InvalidRequestException("Must specify at least one method of contact");
+        }
+
+        //Check for duplicate usernames (email, phone number)
+        User existing = userRepository.findByUsernameAndRole(username, candidateUserRole);
+        if (existing != null) {
+            throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
+        }
+
+        //Initial password is same as username.
+        //TODO JC Prompt to change password on first login
+        String passwordEncrypted = passwordHelper.encodePassword(username);
+
+        //Must have source partner
+        //TODO JC Compute sourcePartner. Use checkForChangedPartner, defaulting to DefaultSourcePartner
+        String countryIsoCode = null;
+        if (registrationData.getCountry() != null) {
+            countryIsoCode = registrationData.getCountry().getIsoCode();
+        }
+//        countryService.findCountryByIsoCode(countryIsoCode); todo
+        //TODO JC For now just assign default source partner
+        Partner sourcePartner = partnerService.getDefaultSourcePartner();
+
+
+        //UserMapper creates user from Identity
+        User user = userMapper.userIdentityToUser(registrationData.getIdentity());
+        user.setRole(candidateUserRole);
+        user.setUsername(username);
+        user.setStatus(Status.active);
+        user.setPartner((PartnerImpl) sourcePartner);
+        user.setAuditFields(userService.getSystemAdminUser());
+
+        /* Set the password */
+        user.setPasswordEnc(passwordEncrypted);
+
+        //Save the user
+        user = userRepository.save(user);
+
+        //TODO JC CandidateMapper is not complete. Currently only mapping selected fields.
+        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationData);
+        candidate.setPublicId(publicIDService.generatePublicID());
+        candidate.setUser(user);
+
+        //Partner who is submitting registration
+        final Long partnerId = request.getPartnerId();
+        candidate.setRegisteredBy((PartnerImpl) partnerService.getPartner(partnerId));
+
+        //TODO JC Determine final status based on data provided.
+        CandidateStatus candidateStatus = CandidateStatus.draft; //todo assume draft for now
+        candidate.setStatus(candidateStatus);
+
+        candidate.setAuditFields(userService.getSystemAdminUser());
+
+        candidate = save(candidate, true);
+
+        //TODO JC Send email with login details to candidate
+
+        return candidate;
     }
 
     /**
@@ -1681,9 +1769,16 @@ public class CandidateServiceImpl implements CandidateService {
         return Optional.of(candidate);
     }
 
+    @Nullable
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
         return candidateRepository.findByCandidateNumber(candidateNumber);
+    }
+
+    @Nullable
+    @Override
+    public Candidate findByPublicId(String publicId) {
+        return candidateRepository.findByPublicId(publicId);
     }
 
     @Override

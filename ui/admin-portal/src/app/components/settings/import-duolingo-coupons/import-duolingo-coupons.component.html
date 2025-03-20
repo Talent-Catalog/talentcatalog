@@ -15,9 +15,28 @@
       (pageChange)="onPageChange($event)"
   ></ngb-pagination>
 
-  Found {{csvData?.length}} Coupons
+  <div class="text-muted mb-2 align-middle" *ngIf="csvImported">
+    Found {{ csvData?.length }} Coupons
+  </div>
 </div>
+
+<!-- Display the number of available coupons here -->
+<div class="text-muted mb-2 align-middle">
+  Available Coupons: {{ availableCouponsCount }}
+</div>
+
 <div class="modal-body">
+  <!-- Instructional Text with URL -->
+  <div class="alert alert-info">
+    <h5>Instructions for Exporting Duolingo Coupons:</h5>
+    <p>Follow these steps to export your Duolingo coupons:</p>
+    <ol>
+      <li>Log in to Talent Beyond Boundaries Duolingo account at <a href="https://englishtest.duolingo.com" target="_blank">Duolingo Dashboard</a>.</li>
+      <li>Navigate to the <strong>Coupons</strong> section of your account.</li>
+      <li>Export the list of coupons to a CSV file.</li>
+      <li>Once exported, you can upload this CSV file using the form below to import the coupons into the Talent Catalog.</li>
+    </ol>
+  </div>
   <div class="alert alert-danger" *ngIf="error">
     {{ error }}
   </div>

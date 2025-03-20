@@ -46,11 +46,23 @@
         </li>
         <li class="nav-item" [routerLinkActive]="'active'" *ngIf="!isEmployerPartner()">
           <a title="Statistics about the Talent Catalog"
-             class="nav-link" [routerLink]="'/infographics'" [routerLinkActive]="'active'">Stats</a>
+             class="nav-link" [routerLink]="'/infographics'" [routerLinkActive]="'active'">
+            Stats
+          </a>
+        </li>
+        <li class="nav-item"
+            [routerLinkActive]="'active'"
+            *ngIf="canViewCandidateName() && !isEmployerPartner()">
+          <a title="Talent Catalog data exploration and visualisation"
+             class="nav-link"
+             [routerLink]="'/intelligence'"
+             [routerLinkActive]="'active'">
+            Intelligence
+          </a>
         </li>
       </ul>
 
-      <div class="me-3" *ngIf="canViewCandidateName()">
+      <div class="me-3" *ngIf="canViewCandidateName() && !isEmployerPartner()">
         <input id="quickExternalIdSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doExternalIdSearch"
@@ -64,7 +76,7 @@
         </ng-template>
       </div>
 
-      <div class="me-3" *ngIf="canViewCandidateName()">
+      <div class="me-3" *ngIf="canViewCandidateName() && !isEmployerPartner()">
         <input id="quickEmailOrPhoneSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doEmailOrPhoneSearch"
@@ -78,7 +90,7 @@
         </ng-template>
       </div>
 
-      <div class="me-3">
+      <div class="me-3" *ngIf="!isEmployerPartner()">
         <app-candidate-name-num-search></app-candidate-name-num-search>
       </div>
     </div>
