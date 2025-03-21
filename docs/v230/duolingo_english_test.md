@@ -45,7 +45,7 @@ is also a results overview in the accordion header. The results are coloured Gre
 ## Candidate Portal
 Through the Talent Catalog candidate portal, candidate's can:
 
-### Learn more about the Duolingo DET test via the services tab
+### Access the Duolingo DET test via the services tab
 <div class="card-image-container-narrow">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateServicesTab.png" alt="View services tab to access Duolingo coupon mobile">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateServicesTabDesktop.png" alt="View services tab to access Duolingo coupon desktop">
