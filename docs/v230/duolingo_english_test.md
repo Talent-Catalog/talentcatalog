@@ -20,14 +20,8 @@ Through the Talent Catalog admin portal, admins can:
 
 ### Assign coupons to a list of candidates or a candidate individually
 <div class="card-image-container-narrow">
-    <div>
-        <img class="card-image" src="./../assets/images/v230/DuolinoAdminCouponList.png" alt="Assign coupon to list">
-        <div class="card-image-caption">Assign coupons to a list</div>
-    </div>
-    <div>
-        <img class="card-image" src="./../assets/images/v230/DuolingoAdminCouponCandidate.png" alt="Assign coupon to candidate">
-        <div class="card-image-caption">Assign coupon to a candidate</div>
-    </div>
+    <img class="card-image" src="./../assets/images/v230/DuolinoAdminCouponList.png" alt="Assign coupon to list">
+    <img class="card-image" src="./../assets/images/v230/DuolingoAdminCouponCandidate.png" alt="Assign coupon to candidate">
 </div>
 
 ### Monitor if/when the candidate has redeemed the coupon and completed the test
