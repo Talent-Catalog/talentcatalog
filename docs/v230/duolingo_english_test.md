@@ -16,22 +16,33 @@ Through the Talent Catalog admin portal, admins can:
     <img src="./../assets/images/v230/DuolingoAdminUpload.png" 
     alt="Upload coupons via settings tab on admin portal" class="card-image">
 </div>
-<ul>
-    <li>Assign coupons to a list of candidates or a candidate individually, and set a timeframe for the test to be taken</li>
-    <div class="card-container">
-        <div class="card-image-container-narrow">
-            <img class="card-image" src="./../assets/images/v230/DuolinoAdminCouponList.png" alt="Assign coupon to list">
-            <div class="card-image-caption">Assign coupons to a list</div>
-        </div>
-        <div class="card-image-container-narrow">
-            <img class="card-image" src="./../assets/images/v230/DuolingoAdminCouponCandidate.png" alt="Assign coupon to candidate">
-            <div class="card-image-caption">Assign coupon to a candidate</div>
-        </div>
+
+### Assign coupons to a list of candidates or a candidate individually, and set a timeframe for the test to be taken</li>
+<div class="card-image-container">
+    <div class="card-image">
+        <img src="./../assets/images/v230/DuolinoAdminCouponList.png" alt="Assign coupon to list">
+        <div class="card-image-caption">Assign coupons to a list</div>
     </div>
-    <li>Monitor if/when the candidate/s have redeemed the coupon</li>
-    <li>Monitor if/when the candidate/s have completed the DET test</li>
-    <li>See the candidate's test results</li>
-</ul>
+    <div class="card-image">
+        <img src="./../assets/images/v230/DuolingoAdminCouponCandidate.png" alt="Assign coupon to candidate">
+        <div class="card-image-caption">Assign coupon to a candidate</div>
+    </div>
+</div>
+
+### Monitor if/when the candidate has redeemed the coupon AND completed the test
+When coupons are assigned to a candidate, tasks are created to assist with monitoring of a candidate's progress. 
+When a coupon is first assigned they are also assigned a 'Claim DET Coupon' task. Once they have claimed this coupon by 
+clicking the 'Claim Coupon' button on the candidate portal (see candidate's view below) then that task will be autocompleted, 
+and the candidate will be assigned another task - 'Take DET test'. These two tasks can be monitored using our existing 
+tasks monitor symbol in lists and searches, and it can be viewed in more detail by viewing the Tasks tab on the candidate profile.
+view
+<div class="card-image-container">
+    <div class="card-image">
+        <img src="./../assets/images/v230/DuolingoAdminMonitor.png" alt="Monitor candidate coupons through tasks">
+    </div>
+</div>
+### See the candidate's test results
+
 
 Through the Talent Catalog candidate portal, candidate's can:
 <ul>
