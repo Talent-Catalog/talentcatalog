@@ -41,8 +41,16 @@ view
         <img src="./../assets/images/v230/DuolingoAdminMonitor.png" alt="Monitor candidate coupons through tasks">
     </div>
 </div>
-### See the candidate's test results
 
+### View the DET test results
+Every day the TC will pull the latest DET results from Duolingo and import those results into the appropriate candidate's Language Exams 
+section of their candidate profile, under the Intake tabs. These results are detailed in within the exam card but there 
+is also a results overview in the accordion header. The results are coloured Green, Yellow, Red depending on which result category they fall in.
+<div class="card-image-container">
+    <div class="card-image">
+        <img src="./../assets/images/v230/DuolingoAdminResults.png" alt="View candidate DET results through their language exams">
+    </div>
+</div>
 
 Through the Talent Catalog candidate portal, candidate's can:
 <ul>
