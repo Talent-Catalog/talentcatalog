@@ -4,7 +4,6 @@ description: Duolingo English Test
 sass:
   style: compressed
 ---
-# Duolingo English Test Integration
 The Talent Catalog is happy to announce a partnership with Duolingo, allowing selected candidates to access free coupons to take the Duolingo English Test (DET). 
 The DET is a modern English proficiency assessment available online, taking approximately 1 hour and results being returned in 2 days. 
 Working with Duolingo's API we are able to manage the coupons and track the results directly through the Talent Catalog.
@@ -13,7 +12,7 @@ Working with Duolingo's API we are able to manage the coupons and track the resu
 Through the Talent Catalog admin portal, admins can:
 
 ### Upload coupons provided by Duolingo to the TC
-<div class="card-image-container-narrow">
+<div class="card-image-container">
     <img src="./../assets/images/v230/DuolingoAdminUpload.png" 
     alt="Upload coupons via settings tab on admin portal" class="card-image">
 </div>
@@ -32,9 +31,7 @@ and the candidate will be assigned another task - 'Take DET test'. These two tas
 tasks monitor symbol in lists and searches, and it can be viewed in more detail by viewing the Tasks tab on the candidate profile.
 view
 <div class="card-image-container">
-    <div class="card-image">
-        <img src="./../assets/images/v230/DuolingoAdminMonitor.png" alt="Monitor candidate coupons through tasks">
-    </div>
+    <img class="card-image" src="./../assets/images/v230/DuolingoAdminMonitor.png" alt="Monitor candidate coupons through tasks">
 </div>
 
 ### View the DET test results
@@ -42,16 +39,21 @@ Every day the TC will pull the latest DET results from Duolingo and import those
 section of their candidate profile, under the Intake tabs. These results are detailed in within the exam card but there 
 is also a results overview in the accordion header. The results are coloured Green, Yellow, Red depending on which result category they fall in.
 <div class="card-image-container">
-    <div class="card-image">
-        <img src="./../assets/images/v230/DuolingoAdminResults.png" alt="View candidate DET results through their language exams">
-    </div>
+    <img class="card-image" src="./../assets/images/v230/DuolingoAdminResults.png" alt="View candidate DET results through their language exams">
 </div>
 
 ## Candidate Portal
 Through the Talent Catalog candidate portal, candidate's can:
 
 ### Learn more about the Duolingo DET test via the services tab
+<div class="card-image-container">
+    <img class="card-image" src="./../assets/images/v230/DuolingoCandidateServicesMobile.png" alt="View services tab to access Duolingo coupon">
+</div>
 
 ### Redeem Duolingo's free DET coupon
-### Connect to the free DET test and complete within the set timeframe
+// todo screenshot with coupon icon working - currently coupon not appearing
 
+### Connect to the free DET test and complete within the set timeframe
+<div class="card-image-container">
+    <img class="card-image" src="./../assets/images/v230/DuolingoCandidateDETTakeTest.png" alt="Connect and take test">
+</div>
