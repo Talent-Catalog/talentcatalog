@@ -11,7 +11,7 @@ Working with Duolingo's API we are able to manage the coupons and track the resu
 ## Admin Portal
 Through the Talent Catalog admin portal, admins can:
 
-### - Upload coupons provided by Duolingo to the TC
+<h3> - Upload coupons provided by Duolingo to the TC</h3>
 <div class="card-image-container">
     <img src="./../assets/images/v230/DuolingoAdminUpload.png" 
     alt="Upload coupons via settings tab on admin portal" class="card-image">
@@ -47,7 +47,7 @@ Through the Talent Catalog candidate portal, candidate's can:
 
 ### - Learn more about the Duolingo DET test via the services tab
 <div class="card-image-container">
-    <img class="card-image" src="./../assets/images/v230/DuolingoCandidateServicesTab.png" alt="View services tab to access Duolingo coupon">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateServicesTab.png" alt="View services tab to access Duolingo coupon">
 </div>
 
 ### - Redeem Duolingo's free DET coupon
