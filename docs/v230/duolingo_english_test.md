@@ -19,7 +19,7 @@ Through the Talent Catalog admin portal, admins can:
 
 ### Assign coupons to a list of candidates or a candidate individually
 <div class="card-image-container-narrow">
-    <img class="card-image" src="./../assets/images/v230/DuolinoAdminCouponList.png" alt="Assign coupon to list">
+    <img class="card-image" src="./../assets/images/v230/DuolingoAdminCouponList.png" alt="Assign coupon to list">
     <img class="card-image" src="./../assets/images/v230/DuolingoAdminCouponCandidate.png" alt="Assign coupon to candidate">
 </div>
 
@@ -47,7 +47,7 @@ Through the Talent Catalog candidate portal, candidate's can:
 
 ### Learn more about the Duolingo DET test via the services tab
 <div class="card-image-container">
-    <img class="card-image" src="./../assets/images/v230/DuolingoCandidateServicesMobile.png" alt="View services tab to access Duolingo coupon">
+    <img class="card-image" src="./../assets/images/v230/DuolingoCandidateServicesTab.png" alt="View services tab to access Duolingo coupon">
 </div>
 
 ### Redeem Duolingo's free DET coupon
