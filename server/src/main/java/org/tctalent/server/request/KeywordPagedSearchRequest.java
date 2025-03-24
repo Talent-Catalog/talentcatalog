@@ -14,11 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.repository.db;
+package org.tctalent.server.request;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.tctalent.server.model.db.OfferToAssist;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-public interface OfferToAssistRepository extends JpaRepository<OfferToAssist, Long>, JpaSpecificationExecutor<OfferToAssist> {
+/**
+ * A paged search request with additional keyword filter
+ *
+ * @author Caroline Cameron
+ */
+@Getter
+@Setter
+@ToString
+public class KeywordPagedSearchRequest extends PagedSearchRequest {
+
+        /**
+         * Keyword used to filter search results
+         */
+        private String keyword;
+
 }
