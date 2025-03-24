@@ -21,6 +21,7 @@
   <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading">
+    <app-casi-header>
     <div class="d-sm-flex justify-content-between align-items-center">
       <div class="mb-3 text-center text-sm-start">
         <h3>{{ 'PROFILE.TAB.PROFILE' | translate }}</h3>
@@ -28,6 +29,7 @@
       </div>
       <app-download-cv></app-download-cv>
     </div>
+    </app-casi-header>
 
     <!-- CONTACT -->
     <section class="mt-4 mt-sm-0">

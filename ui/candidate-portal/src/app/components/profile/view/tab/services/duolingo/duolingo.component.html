@@ -27,4 +27,13 @@
             <p><b>{{ 'SERVICES.DUOLINGO.COUPON_CTA' | translate }}</b></p>
         </div>
     </div>
+
+  <div  class="exam-result" *ngIf="detExams.length > 0">
+    <h3>{{ 'SERVICES.DUOLINGO.EXAMS.PAST_EXAMS' | translate }}:</h3>
+    <ul>
+      <li *ngFor="let exam of detExams">
+        {{ 'SERVICES.DUOLINGO.EXAMS.SCORE' | translate }}: {{ exam.score }},  {{ 'SERVICES.DUOLINGO.EXAMS.YEAR' | translate }}: {{ exam.year }}
+      </li>
+    </ul>
+  </div>
 </ng-container>
