@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,22 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  //padding: 20px 0;
-}
+import { Component } from '@angular/core';
 
-section {
-  margin-bottom: 40px;
+@Component({
+  selector: 'app-casi-header',
+  templateUrl: './casi-header.component.html',
+  styleUrls: ['./casi-header.component.scss']
+})
+export class CasiHeaderComponent {
 
-  .section-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 0 1em 0;
-
-    h5 {
-      margin: 0;
-    }
-  }
 }

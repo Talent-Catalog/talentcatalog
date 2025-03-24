@@ -30,12 +30,14 @@
 
   <ng-container *ngIf="!loading && !selectedOpp">
     <div>
+      <app-casi-header>
       <div class="d-flex justify-content-between align-items-baseline mb-4">
         <div>
           <h3>{{ 'CANDIDATE-OPPS.HEADER' | translate }}</h3>
           <p class="text-muted">{{ 'CANDIDATE-OPPS.NOTE' | translate }}</p>
         </div>
       </div>
+        </app-casi-header>
       <div class="table-responsive-sm">
         <table class="table table-hover bg-white">
           <thead class="table-light">

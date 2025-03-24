@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,22 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  //padding: 20px 0;
-}
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-section {
-  margin-bottom: 40px;
+import { CasiHeaderComponent } from './casi-header.component';
 
-  .section-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 0 1em 0;
+describe('CasiHeaderComponent', () => {
+  let component: CasiHeaderComponent;
+  let fixture: ComponentFixture<CasiHeaderComponent>;
 
-    h5 {
-      margin: 0;
-    }
-  }
-}
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [CasiHeaderComponent]
+    });
+    fixture = TestBed.createComponent(CasiHeaderComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
