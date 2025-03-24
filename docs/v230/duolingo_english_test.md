@@ -38,8 +38,8 @@ tasks monitor symbol in lists and searches, and it can be viewed in more detail 
 
 ### View the DET test results
 Every day the TC will pull the latest DET results from Duolingo and import those results into the relevant candidates 'Language Exams' 
-section under the Intake tabs of their candidate profile. These results are detailed in within the exam card and there 
-is also a results overview in the accordion header. The results are coloured Green, Yellow, Red depending on which result category they fall in.
+section under the Intake tabs of their candidate profile. These results are detailed within the exam card and there 
+is also a results overview in the accordion header. The results overview is coloured Green, Yellow, Red depending on which result category they fall in.
 <div class="card-image-container">
     <img class="card-image" src="./../assets/images/v230/DuolingoAdminResults.png" alt="View candidate DET results through their language exams">
 </div>
