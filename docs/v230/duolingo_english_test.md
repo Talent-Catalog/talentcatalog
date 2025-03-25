@@ -47,31 +47,37 @@ is also a results overview in the accordion header. The results overview is colo
 ## Candidate Portal
 Through the Talent Catalog candidate portal, candidate's can:
 
-### Access the Duolingo DET test via the services tab
+### Access the Duolingo service via the services tab
 <div class="card-image-container-narrow">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateServicesTab.png" alt="View services tab to access Duolingo coupon mobile">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateServicesTabDesktop.png" alt="View services tab to access Duolingo coupon desktop">
 </div>
 <hr>
 
-### Redeem Duolingo's free DET coupon
+### Access coupon and view results
+If a coupon exists for the candidate, the claim coupon button will appear. If the candidate has claimed the coupon and taken the DET, the results will also appear on this page.
 <div class="card-image-container-narrow">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateClaimMobile.png" alt="Claim Duolingo coupon page mobile">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateClaimDesktop.png" alt="Claim Duolingo coupon page desktop">
 </div>
 <hr>
 
-### Connect to the free DET test and complete within the set timeframe
+### Learn more about the Duolingo English Test and the process
 <div class="card-image-container-narrow">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateTakeTestMobile.png" alt="Take Duolingo test coupon mobile">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateTakeTestDesktop.png" alt="Take Duolingo test coupon desktop">
 </div>
 
+### Redeem the token via the Duolingo checkout
 By clicking on the 'Take the DET for free' button, candidates will be taken to a Duolingo webpage where they are prompted to enter their first and last name.
 Once entered, the checkout page will appear with a unique coupon entered into the promo code field which will take the total down to $0. 
 No card details need to be entered.
+If the coupon has already been redeemed, they will instead go to the Duolingo English Test page where the test can be completed.
 <div class="card-image-container-narrow">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoUseCoupon.png" alt="Duolingo page to claim token">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCouponCheckout.png" alt="Duolingo page checkout">
 </div>
+
+
+
 <hr>
