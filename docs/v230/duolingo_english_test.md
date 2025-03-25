@@ -56,13 +56,15 @@ Through the Talent Catalog candidate portal, candidate's can:
 
 ### Redeem Duolingo's free DET coupon
 <div class="card-image-container-narrow">
-    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateClaimMobile.png" alt="View services tab to access Duolingo coupon mobile">
-    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateClaimDesktop.png" alt="View services tab to access Duolingo coupon desktop">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateClaimMobile.png" alt="Claim Duolingo coupon page mobile">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateClaimDesktop.png" alt="Claim Duolingo coupon page desktop">
 </div>
 <hr>
 
 ### Connect to the free DET test and complete within the set timeframe
 <div class="card-image-container-narrow">
-    <img class="card-image" src="./../assets/images/v230/DuolingoCandidateDETTakeTest.png" alt="Connect and take test">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateTakeTestMobile.png" alt="Take Duolingo test coupon mobile">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateTakeTestDesktop.png" alt="Take Duolingo test coupon desktop">
 </div>
+<hr>
 // todo add a screenshot of the Duolingo checkout page once a candidate clicks on the take DET for Free button and claims their code.
