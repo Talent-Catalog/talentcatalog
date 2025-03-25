@@ -13,9 +13,9 @@ numerous other partners, employers and third-party services. As a result the TC 
 services all parties without being tied to Talent Beyond Boundaries. Part of this process involved creating a unique TC brand!
 Please meet the new TC logo, a logo which we feel signifies the many pathways and people (partners, employers, service providers)
 that lead to a unified goal of employment for refugees.
-<div class="card-image-container-narrow">
+<div class="card-image-container-narrow ">
   <img src="./../assets/images/v230/TCLogo.png" 
-        alt="TC Logo" class="card-image">
+        alt="TC Logo" class="card-image no-shadow">
 </div>
 
 # User Interface - Phase 1
