@@ -95,6 +95,7 @@ body {
   justify-content: space-between;
 }
 
+// Mobile SCSS
 @media screen and (max-width: 768px) {
   .card {
     width: 100%;
@@ -117,7 +118,16 @@ body {
   }
 
   .card-image-container .card-image {
+    max-width: 100%;
+  }
+
+  .card-image-container-narrow {
+    margin: 16px 0;
+  }
+
+  .card-no-border {
     width: 100%;
+    margin: 16px 0;
   }
 }
 
@@ -168,13 +178,6 @@ a {
   justify-content: space-between;
 }
 
-@media screen and (max-width: 768px) {
-  .card-no-border {
-    width: 100%;
-    margin: 16px 0;
-  }
-}
-
 .card-title {
   font-size: 1.35em;
   margin-bottom: 8px;
@@ -207,12 +210,6 @@ a {
   border-radius: 8px;
   margin-bottom: 0;
   max-width: calc(50% - 16px);
-}
-
-@media screen and (max-width: 768px) {
-  .card-image-container-narrow {
-    margin: 16px 0;
-  }
 }
 
 .card-description {
