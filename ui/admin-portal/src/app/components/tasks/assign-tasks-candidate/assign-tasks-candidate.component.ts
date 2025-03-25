@@ -25,6 +25,7 @@ import {
 import {TaskAssignment} from "../../../model/task-assignment";
 import {Task} from "../../../model/task";
 import {DuolingoCouponService} from "../../../services/duolingo-coupon.service";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 @Component({
   selector: 'app-assign-tasks-candidate',
@@ -44,6 +45,7 @@ export class AssignTasksCandidateComponent implements OnInit {
               private fb: UntypedFormBuilder,
               private modalService: NgbModal,
               private taskService: TaskService,
+              private authorizationService: AuthorizationService,
               private duolingoCouponService: DuolingoCouponService,
               private taskAssignmentService: TaskAssignmentService) { }
 
@@ -73,6 +75,12 @@ export class AssignTasksCandidateComponent implements OnInit {
     this.error = null;
     this.taskService.listTasks().subscribe(
       (tasks: Task[]) => {
+        // Check if user is NOT a default source partner
+        if (!this.authorizationService.isDefaultSourcePartner()) {
+          // Filter out tasks with the restricted names
+          tasks = tasks.filter(task => task.name !== "claimCouponButton" && task.name !== "duolingoTest");
+        }
+
         this.allTasks = tasks;
         this.loading = false;
       },
