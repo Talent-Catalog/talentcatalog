@@ -141,7 +141,7 @@ Helpful TC user guides:
 - Candidate rows on submission lists now display the full name of the admin who add them
 - Make Job Description more visible on Publish Job screen
 - Enhanced cursor behaviour for clickable links
-- Informative tool-tips, clarifying support text and UI simplification to assist employer users in creating Jobs and using candidate search
+- More informative tool-tips by clarifying support text and UI simplification to assist employer users in creating jobs and using candidate search
 
 # Performance Improvements
 
