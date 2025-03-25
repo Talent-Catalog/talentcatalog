@@ -62,3 +62,14 @@
   @include color("text-inactive");
   margin-bottom: 8px;
 }
+
+.casi-header {
+  .text-muted {
+    color: white !important;
+  }
+  .btn {
+    color: black;
+    background-color: white;
+  }
+}
+
