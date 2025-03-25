@@ -175,7 +175,7 @@ Helpful TC user guides:
 - Fixed tooltip display issue in candidate search
 - Next Step column displaying correctly in Submission List view
 - Candidates to only receive new chats notification email if the chats are unread
-- Jobs tab on Candidate Portal only appears if there are opportunities past the <em>Prospect</em> stage, excluding the marked closed stage 'Candidate was mistakenly proposed as a prospect for the job'.
+- Jobs tab on Candidate Portal only appears if there are opportunities past the <em>Prospect</em> stage, except for the closed stage <em>'Candidate was mistakenly proposed as a prospect for the job'.</em>
 
 # Developer Notes
 - Upgraded to Spring Boot 3
