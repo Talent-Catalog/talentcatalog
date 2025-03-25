@@ -16,9 +16,11 @@
 
 package org.tctalent.server.service.db;
 
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.OfferToAssist;
+import org.tctalent.server.request.KeywordPagedSearchRequest;
 import org.tctalent.server.request.OfferToAssistRequest;
 
 /**
@@ -38,4 +40,11 @@ public interface OfferToAssistService {
     @NonNull
     OfferToAssist createOfferToAssist(OfferToAssistRequest request)
         throws NoSuchObjectException;
+
+    /**
+     * Searches the offers to assist with an optional keyword filter.
+     * @param request Request with page request and keyword if exists
+     * @return Page of offers to assist
+     */
+    Page<OfferToAssist> searchOffersToAssist(KeywordPagedSearchRequest request);
 }

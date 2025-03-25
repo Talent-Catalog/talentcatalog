@@ -21,15 +21,19 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCouponCode;
 import org.tctalent.server.model.db.OfferToAssist;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.OfferToAssistRepository;
+import org.tctalent.server.repository.db.OfferToAssistSpecification;
+import org.tctalent.server.request.KeywordPagedSearchRequest;
 import org.tctalent.server.request.OfferToAssistRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.OfferToAssistService;
@@ -97,5 +101,18 @@ public class OfferToAssistServiceImpl implements OfferToAssistService {
 
         //Update db and return
         return offerToAssistRepository.save(ota);
+    }
+
+    @Override
+    public Page<OfferToAssist> searchOffersToAssist(KeywordPagedSearchRequest request) {
+        Page<OfferToAssist> otas = offerToAssistRepository.findAll(
+                OfferToAssistSpecification.buildSearchQuery(request), request.getPageRequest());
+
+        LogBuilder.builder(log)
+                .action("SearchOffersToAssist")
+                .message("Found " + otas.getTotalElements() + " offers to assist in search")
+                .logInfo();
+
+        return otas;
     }
 }

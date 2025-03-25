@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2024 Talent Catalog.
+/*
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,22 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  //padding: 20px 0;
-}
+package org.tctalent.server.request;
 
-section {
-  margin-bottom: 40px;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-  .section-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 0 1em 0;
+/**
+ * A paged search request with additional keyword filter
+ *
+ * @author Caroline Cameron
+ */
+@Getter
+@Setter
+@ToString
+public class KeywordPagedSearchRequest extends PagedSearchRequest {
 
-    h5 {
-      margin: 0;
-    }
-  }
+        /**
+         * Keyword used to filter search results
+         */
+        private String keyword;
+
 }
