@@ -1,6 +1,7 @@
 ---
 title: Release Notes 2.3.0
 description: What's new in this release
+permalink: v230
 sass:
   style: compressed
 ---
