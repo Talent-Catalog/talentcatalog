@@ -74,12 +74,12 @@ Once entered, the checkout page will appear with a unique coupon entered into th
 No card details need to be entered.
 If the coupon has already been redeemed, candidate's will instead be redirected to the Duolingo English Test's page to complete the test.
 <div class="card-image-container-narrow">
-    <img class="card-image" src="./../assets/images/v230/DuolingoUseCoupon.png" alt="Duolingo page to claim token">
-    <img class="card-image" src="./../assets/images/v230/DuolingoCouponCheckout.png" alt="Duolingo page checkout">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoUseCoupon.png" alt="Duolingo page to claim token">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCouponCheckout.png" alt="Duolingo page checkout">
 </div>
 <hr>
 
-## Flow Chart of the DET Process
+## Flow Chart of the TC/DET Process
 <div class="card-image-container">
     <img class="card-image" src="./../assets/images/v230/DuolingoFlowChart.png" alt="Duolingo flow chart">
 </div>
