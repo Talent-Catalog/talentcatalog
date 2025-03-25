@@ -31,7 +31,11 @@ export enum Environment {
 
 export class EnvService {
   private _env: Environment
+
+  // Salesforce
   private _sfLightningUrl: string
+
+  // Preset / TC Intelligence
   private _allCandidatesDashboardId: string
   private _presetWorkspaceId: string
 
@@ -68,17 +72,18 @@ export class EnvService {
       this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/';
       this._allCandidatesDashboardId =  '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
       this._presetWorkspaceId = '987e2e02';
+
     } else if ((/^tctalent-test.org/.test(hostname))) {
       this._env = Environment.Staging;
       this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/';
       this._allCandidatesDashboardId = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
       this._presetWorkspaceId = '987e2e02';
+
     } else if ((/^tctalent.org/.test(hostname))) {
       this._env = Environment.Prod;
       this._sfLightningUrl = 'https://talentbeyondboundaries.lightning.force.com/';
-      // TODO: plug in Preset prod variables
-      this._allCandidatesDashboardId = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
-      this._presetWorkspaceId = '987e2e02';
+      this._allCandidatesDashboardId = '3d577f48-a4db-4e7d-95ed-6590d76829cc';
+      this._presetWorkspaceId = 'effaaec0';
     }
   }
 }
