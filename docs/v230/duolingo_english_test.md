@@ -67,6 +67,7 @@ If a coupon exists for the candidate, the claim coupon button will appear. If th
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateTakeTestMobile.png" alt="Take Duolingo test coupon mobile">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateTakeTestDesktop.png" alt="Take Duolingo test coupon desktop">
 </div>
+<hr>
 
 ### Redeem the token via the Duolingo checkout
 By clicking on the 'Take the DET for free' button, candidates will be taken to a Duolingo webpage where they are prompted to enter their first and last name.
