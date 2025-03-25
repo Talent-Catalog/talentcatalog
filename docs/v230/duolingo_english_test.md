@@ -55,7 +55,10 @@ Through the Talent Catalog candidate portal, candidate's can:
 <hr>
 
 ### Redeem Duolingo's free DET coupon
-// todo screenshot with coupon icon working - currently coupon not appearing
+<div class="card-image-container-narrow">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateClaimMobile.png" alt="View services tab to access Duolingo coupon mobile">
+    <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCandidateClaimDesktop.png" alt="View services tab to access Duolingo coupon desktop">
+</div>
 <hr>
 
 ### Connect to the free DET test and complete within the set timeframe
