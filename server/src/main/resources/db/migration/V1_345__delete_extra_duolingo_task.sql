@@ -1,0 +1,1 @@
+delete from task where name = 'takeDuolingoTest';
