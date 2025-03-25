@@ -44,7 +44,7 @@ import org.tctalent.server.service.db.OfferToAssistService;
 public class OfferToAssistAdminApi {
     private final OfferToAssistService offerToAssistService;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_SYSTEMADMIN')")
     @PostMapping
     @NonNull
     public ResponseEntity<OfferToAssistCandidates201Response>
