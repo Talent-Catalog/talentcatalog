@@ -115,6 +115,10 @@ body {
   .project-tagline {
     text-align: center;
   }
+
+  .card-image {
+    max-width: 100%;
+  }
 }
 
 .card:hover {
@@ -207,9 +211,6 @@ a {
 
 @media screen and (max-width: 768px) {
   .card-image-container-narrow {
-    .card-image {
-      max-width: 100%;
-    }
     margin: 16px 0;
   }
 }
