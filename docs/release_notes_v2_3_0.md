@@ -173,6 +173,9 @@ Helpful TC user guides:
 - Spring Boot Security request matchers pattern change
 - Fixed tooltip display issue in candidate search
 - Next Step column displaying correctly in Submission List view
+- Candidates to only receive new chats notification email if the chats are unread
+- Candidates can only see Jobs tab if they are past the prospect stage
+- Candidates can't see the Jobs tab if an opportunity is marked as closed with the stage 'Candidate was mistakenly proposed as a prospect for the job'.
 
 # Developer Notes
 - Upgraded to Spring Boot 3
