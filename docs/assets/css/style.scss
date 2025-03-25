@@ -241,6 +241,9 @@ a .card-description {
 
   .card-image-container-narrow {
     margin: 16px 0;
+    .card-image {
+      max-width: 100%;
+    }
   }
 
   .card-no-border {
