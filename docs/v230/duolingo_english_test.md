@@ -68,7 +68,8 @@ Through the Talent Catalog candidate portal, candidate's can:
 </div>
 
 By clicking on the 'Take the DET for free' button, candidates will be taken to a Duolingo webpage where they are prompted to enter their first and last name.
-Once entered, the checkout page will appear with a unique coupon entered into the promo code field which will take the total down to $0.
+Once entered, the checkout page will appear with a unique coupon entered into the promo code field which will take the total down to $0. 
+No card details need to be entered.
 <div class="card-image-container-narrow">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoUseCoupon.png" alt="Duolingo page to claim token">
     <img class="card-image no-shadow" src="./../assets/images/v230/DuolingoCouponCheckout.png" alt="Duolingo page checkout">
