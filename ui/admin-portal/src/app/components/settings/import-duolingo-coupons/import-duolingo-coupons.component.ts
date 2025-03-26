@@ -14,7 +14,7 @@ export class ImportDuolingoCouponsComponent implements OnInit{
   csvData: string[][] = [];
   paginatedData: string[][] = [];
   selectedFile: File | null = null;
-  availableCouponsCount: number = 0;
+  availableProctoredCouponsCount: number = 0;
   csvImported = false;
   currentPage = 1;
   pageSize = 30; // Number of items per page
@@ -25,7 +25,7 @@ export class ImportDuolingoCouponsComponent implements OnInit{
   constructor(private duolingoCouponService: DuolingoCouponService) {}
 
   ngOnInit() {
-    this.getAvailableCouponsCount();
+    this.getAvailableProctoredCouponsCount();
   }
 
   onFileChange(event: Event): void {
@@ -94,7 +94,7 @@ export class ImportDuolingoCouponsComponent implements OnInit{
     this.duolingoCouponService.importCoupons(this.selectedFile).subscribe({
       next: (response) => {
         this.working = false;
-        this.getAvailableCouponsCount();
+        this.getAvailableProctoredCouponsCount();
         this.csvImported = true;
         alert('CSV data imported successfully!');
       },
@@ -117,13 +117,13 @@ export class ImportDuolingoCouponsComponent implements OnInit{
     this.paginatedData = this.csvData.slice(startIndex, endIndex);
   }
 
-  getAvailableCouponsCount(): void {
-    this.duolingoCouponService.countAvailableCoupons().subscribe(
+  getAvailableProctoredCouponsCount(): void {
+    this.duolingoCouponService.countAvailableProctoredCoupons().subscribe(
       (response) => {
-        this.availableCouponsCount = response.count;
+        this.availableProctoredCouponsCount = response.count;
       },
       (error) => {
-        console.error('Error fetching available coupons count', error);
+        console.error('Error fetching available proctored coupons count', error);
       }
     );
   }
