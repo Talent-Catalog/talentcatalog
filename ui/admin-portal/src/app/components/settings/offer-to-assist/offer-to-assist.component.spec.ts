@@ -7,6 +7,7 @@ import {SearchResults} from "../../../model/search-results";
 import {CandidateAssistanceType, OfferToAssist} from "../../../model/offer-to-assist";
 import {MockPartner} from "../../../MockData/MockPartner";
 import {of} from "rxjs";
+import {NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('OfferToAssistComponent', () => {
   let component: OfferToAssistComponent;
@@ -32,7 +33,7 @@ describe('OfferToAssistComponent', () => {
     const offerToAssistSpy = jasmine.createSpyObj('OfferToAssistService', ['search']);
     TestBed.configureTestingModule({
       declarations: [OfferToAssistComponent],
-      imports: [FormsModule, ReactiveFormsModule],
+      imports: [FormsModule, ReactiveFormsModule, NgbTooltipModule, NgbPaginationModule],
       providers: [
         { provide: OfferToAssistService, useValue: offerToAssistSpy },
       ]
