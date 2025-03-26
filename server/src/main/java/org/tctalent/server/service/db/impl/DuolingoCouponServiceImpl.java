@@ -376,8 +376,14 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional(readOnly = true)
-  public int countAvailableCoupons() {
+  public int countAllAvailableCoupons() {
     return couponRepository.countByCandidateIsNullAndCouponStatus(DuolingoCouponStatus.AVAILABLE);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public int countAvailableProctoredCoupons() {
+    return couponRepository.countByCandidateIsNullAndCouponStatusAndTestType(DuolingoCouponStatus.AVAILABLE,DuolingoTestType.PROCTORED);
   }
 
 }
