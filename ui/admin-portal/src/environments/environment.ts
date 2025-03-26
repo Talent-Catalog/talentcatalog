@@ -28,7 +28,6 @@ export const environment = {
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/dev.files.tbbtalent.org',
   assetBaseUrl: '',
   environmentName: 'local',
-  presetWorkspaceId: '987e2e02',
   googleAnalyticsId: 'G-K9ML1Y40B4' // for testing
 };
 
