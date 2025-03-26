@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.model.db.DuolingoTestType;
 
 /**
  * Repository interface for managing Coupon entities in the database.
@@ -66,27 +67,30 @@ public interface DuolingoCouponRepository extends JpaRepository<DuolingoCoupon, 
   List<DuolingoCoupon> findAllByCandidateId(Long candidateId);
 
   /**
-   * Finds the first available coupon (if any) that has not been assigned to any candidate
-   * and matches a specific coupon status.
+   * Finds the first available coupon (if any) that has not been assigned to any candidate,
+   * matches a specific coupon status, and is designated for a Proctored test.
    * <p/>
-   * This method is useful for allocating unassigned coupons with a particular status.
+   * This method is useful for allocating unassigned coupons with a particular status and test type.
    *
-   * @param couponStatus the status of the coupon (e.g., "ACTIVE").
-   * @return an Optional containing the first unassigned Coupon matching the status if found, or empty otherwise.
+   * @param couponStatus the status of the coupon (e.g., "AVAILABLE").
+   * @param testType the type of Duolingo test (e.g., "PROCTORED").
+   * @return an Optional containing the first unassigned Coupon matching the status and test type if found, or empty otherwise.
    */
-  Optional<DuolingoCoupon> findTop1ByCandidateIsNullAndCouponStatus(
-      DuolingoCouponStatus couponStatus);
+  Optional<DuolingoCoupon> findTop1ByCandidateIsNullAndCouponStatusAndTestType(
+      DuolingoCouponStatus couponStatus, DuolingoTestType testType);
 
   /**
-   * Finds all available coupons that are not assigned to any candidate and match
-   * a specific coupon status.
+   * Finds all available coupons that are not assigned to any candidate,
+   * match a specific coupon status, and correspond to a particular test type.
    * <p/>
    * This method retrieves all coupons that meet the criteria for bulk processing or reporting.
    *
    * @param couponStatus the status of the coupons to retrieve (e.g., "ACTIVE").
-   * @return a List of Coupons that are unassigned and match the specified status.
+   * @param testType the type of Duolingo test (e.g., "PROCTORED").
+   * @return a List of Coupons that are unassigned and match the specified status and test type.
    */
-  List<DuolingoCoupon> findByCandidateIsNullAndCouponStatus(DuolingoCouponStatus couponStatus);
+  List<DuolingoCoupon> findByCandidateIsNullAndCouponStatusAndTestType(
+      DuolingoCouponStatus couponStatus, DuolingoTestType testType);
 
   /**
    * Retrieves all coupons that have expired before the specified date
