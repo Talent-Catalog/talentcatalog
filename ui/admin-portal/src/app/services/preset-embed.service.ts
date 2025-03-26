@@ -23,15 +23,14 @@ export class PresetEmbedService {
   /**
    * Embeds a Preset dashboard in the calling component.
    *
-   * This method initializes and embeds a Preset dashboard into the specified
-   * mount point using the `embedDashboard` function provided by the Preset embed SDK. It retrieves
-   * the necessary guest token and applies default UI configurations.
+   * This method initializes and embeds a Preset dashboard into the specified mount point using the
+   * `embedDashboard` function provided by the Preset embed SDK. It retrieves the necessary guest
+   * token and sets the embedded dashboard's UI configuration.
    *
-   * @param dashboardId - The unique identifier of the dashboard, obtained from the Preset dashboard UI.
+   * @param dashboardId - The unique identifier of the dashboard, obtained from Preset dashboard UI.
    * @param mountPoint - An HTML element that serves as the container for the embedded iframe,
    * typically a `<div>`.
-   * @returns A `Promise` resolving to an `EmbeddedDashboard` instance, which provides methods to
-   * interact with the embedded dashboard.
+   * @returns A `Promise` resolving to an `EmbeddedDashboard` instance.
    */
   public embedDashboard(
     dashboardId: string,
