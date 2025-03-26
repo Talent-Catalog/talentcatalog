@@ -111,11 +111,24 @@ public interface DuolingoCouponRepository extends JpaRepository<DuolingoCoupon, 
    * to any candidate and have a specific coupon status.
    * <p/>
    * This method is useful for determining how many coupons are available for assignment,
-   * based on the coupon status (e.g., "ACTIVE").
+   * based on the coupon status (e.g., "AVAILABLE").
    *
-   * @param couponStatus the status of the coupons to count (e.g., "ACTIVE").
+   * @param couponStatus the status of the coupons to count (e.g., "AVAILABLE").
    * @return the number of available coupons with the specified status.
    */
   int countByCandidateIsNullAndCouponStatus(DuolingoCouponStatus couponStatus);
+
+  /**
+   * Counts the number of available coupons that are not assigned to any candidate,
+   * have the specified coupon status, and match the given test type.
+   *
+   * This method helps determine how many coupons are currently unassigned and
+   * available for use based on their status (e.g., "AVAILABLE") and test type.
+   *
+   * @param couponStatus the status of the coupons to count (e.g., "AVAILABLE").
+   * @param testType     the type of test associated with the coupons.
+   * @return the number of unassigned coupons matching the specified status and test type.
+   */
+  int countByCandidateIsNullAndCouponStatusAndTestType(DuolingoCouponStatus couponStatus, DuolingoTestType testType);
 
 }
