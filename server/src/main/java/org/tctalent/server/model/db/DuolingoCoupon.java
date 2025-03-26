@@ -73,4 +73,11 @@ public class DuolingoCoupon extends AbstractDomainObject<Long> {
   @Enumerated(EnumType.STRING)
   private DuolingoCouponStatus couponStatus;
 
+  /**
+   * The type of Duolingo test.
+   * Stored as a string in the database.
+   */
+  @Column(name = "test_type")
+  @Enumerated(EnumType.STRING)
+  private DuolingoTestType testType;
 }
