@@ -62,7 +62,9 @@ public class OppNotificationServiceImpl implements OppNotificationService {
                 // Stage is changing
                 if (!newStage.equals(currentStage)) {
                     // If stage is changing to CLOSED (e.g. removed from submission list) publish posts
-                    if (newStage.isClosed()) {
+                    // unless the candidate was accidentally added.
+                    if (newStage.isClosed()
+                        && newStage != CandidateOpportunityStage.candidateMistakenProspect) {
                         publishOppClosedPosts(opp, newStage);
                     } else {
                         //New stage is not a closed stage
