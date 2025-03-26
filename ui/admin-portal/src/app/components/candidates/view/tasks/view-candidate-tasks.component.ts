@@ -33,6 +33,7 @@ import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
+import {AuthorizationService} from "../../../../services/authorization.service";
 @Component({
   selector: 'app-view-candidate-tasks',
   templateUrl: './view-candidate-tasks.component.html',
@@ -53,6 +54,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   constructor(private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService,
+              private authorizationService: AuthorizationService,
               private taskAssignmentService: TaskAssignmentService,
               private modalService: NgbModal) { }
 
@@ -190,5 +192,9 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       })
       .catch(() => { /* Isn't possible */
       });
+  }
+
+  isDefaultSourcePartner() {
+    return this.authorizationService.isDefaultSourcePartner();
   }
 }

@@ -25,12 +25,14 @@ import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {TaskService} from 'src/app/services/task.service';
 import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
+import {AuthorizationService} from "../../../../services/authorization.service";
 
 describe('ViewCandidateTasksComponent', () => {
   let component: ViewCandidateTasksComponent;
   let fixture: ComponentFixture<ViewCandidateTasksComponent>;
   let candidateService: jasmine.SpyObj<CandidateService>;
   let taskAssignmentService: jasmine.SpyObj<TaskAssignmentService>;
+  let authorizationService: jasmine.SpyObj<AuthorizationService>;
   let candidateAttachmentService: jasmine.SpyObj<CandidateAttachmentService>;
   let candidateTaskService: jasmine.SpyObj<TaskService>;
   let candidateDuolingoCouponService: jasmine.SpyObj<DuolingoCouponService>;
@@ -42,6 +44,7 @@ describe('ViewCandidateTasksComponent', () => {
     const taskAssignmentServiceSpy = jasmine.createSpyObj('TaskAssignmentService', ['removeTaskAssignment']);
     const candidateAttachmentServiceSpy = jasmine.createSpyObj('CandidateAttachmentService', ['listByType']);
     const taskServiceSpy = jasmine.createSpyObj('TaskService', ['get']);
+    const authorizationServiceSpy = jasmine.createSpyObj('AuthorizationService', ['isDefaultSourcePartner']);
     const duolingoCouponServiceSpy = jasmine.createSpyObj('DuolingoCouponService', ['create']);
 
     await TestBed.configureTestingModule({
@@ -49,6 +52,7 @@ describe('ViewCandidateTasksComponent', () => {
       providers: [
         {provide: CandidateService, useValue: candidateServiceSpy},
         {provide: TaskAssignmentService, useValue: taskAssignmentServiceSpy},
+        {provide: AuthorizationService, useValue: authorizationServiceSpy},
         {provide: CandidateAttachmentService, useValue: candidateAttachmentServiceSpy},
         {provide: TaskService, useValue: taskServiceSpy},
         {provide: DuolingoCouponService, useValue: duolingoCouponServiceSpy},

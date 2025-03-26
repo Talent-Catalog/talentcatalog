@@ -202,23 +202,31 @@ public class OppNotificationServiceImpl implements OppNotificationService {
             " has been removed for the job '" + opp.getJobOpp().getName() +
             "' with the reason " + newStage.getSalesforceStageName() + ".");
 
-        //Only post to candidate if they got past the prospect stage for this job
-        if (opp.getStage() != CandidateOpportunityStage.prospect) {
-            // AUTO CHAT TO PROSPECT CHAT
-            JobChat prospectChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateProspect, null,
-                null, candidate);
-            publishPost(prospectChat, autoPostClosedOpp);
-        }
-
-        // AUTO CHAT TO RECRUITING CHAT
-        JobChat recruitingChat = jobChatService.getOrCreateJobChat(JobChatType.CandidateRecruiting, opp.getJobOpp(),
-            candidate.getUser().getPartner(), candidate);
-        publishPost(recruitingChat, autoPostClosedOpp);
-
         // AUTO CHAT TO JOB CREATOR SOURCE PARTNER CHAT
         JobChat jcspChat = jobChatService.getOrCreateJobChat(JobChatType.JobCreatorSourcePartner, opp.getJobOpp(),
             candidate.getUser().getPartner(), null);
         publishPost(jcspChat, autoPostClosedOpp);
+
+        // Posts within this 'if' clause may be seen by candidates, depending on the prior stage of
+        // this opp and others they are associated with. We don't want to auto-post to candidates re
+        // their accidental inclusion in a submission list.
+        if (newStage != CandidateOpportunityStage.candidateMistakenProspect) {
+
+            //Only post to candidate if they got past the prospect stage for this job
+            if (opp.getStage() != CandidateOpportunityStage.prospect) {
+                // AUTO CHAT TO PROSPECT CHAT
+                JobChat prospectChat = jobChatService.getOrCreateJobChat(
+                    JobChatType.CandidateProspect, null,
+                    null, candidate);
+                publishPost(prospectChat, autoPostClosedOpp);
+            }
+
+            // AUTO CHAT TO RECRUITING CHAT
+            JobChat recruitingChat = jobChatService.getOrCreateJobChat(
+                JobChatType.CandidateRecruiting, opp.getJobOpp(),
+                candidate.getUser().getPartner(), candidate);
+            publishPost(recruitingChat, autoPostClosedOpp);
+        }
     }
 
     /**
