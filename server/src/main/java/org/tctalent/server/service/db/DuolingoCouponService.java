@@ -142,6 +142,16 @@ public interface DuolingoCouponService {
    *
    * @return the count of unassigned and available coupons.
    */
-  int countAvailableCoupons();
+  int countAllAvailableCoupons();
+
+  /**
+   * Retrieves the total count of available (unassigned) proctored coupons.
+   * <p/>
+   * This method returns the number of coupons that are not currently assigned
+   * to any candidate, allowing these coupons to be available for assignment.
+   *
+   * @return the count of unassigned and available proctored coupons.
+   */
+  int countAvailableProctoredCoupons();
 
 }
