@@ -30,15 +30,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.OfferToAssist;
+import org.tctalent.server.request.KeywordPagedSearchRequest;
 import org.tctalent.server.request.OfferToAssistRequest;
 import org.tctalent.server.service.db.OfferToAssistService;
 
@@ -51,8 +58,15 @@ import org.tctalent.server.service.db.OfferToAssistService;
 @AutoConfigureMockMvc
 class OfferToAssistAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/ota";
+    private static final String SEARCH_PATH = "/search";
 
     private static final OfferToAssist offerToAssist = AdminApiTestUtil.getOfferToAssist();
+    private final Page<OfferToAssist> otaPage =
+            new PageImpl<>(
+                    List.of(offerToAssist),
+                    PageRequest.of(0,10, Sort.unsorted()),
+                    1
+            );
 
     @MockBean
     OfferToAssistService offerToAssistService;
@@ -99,5 +113,39 @@ class OfferToAssistAdminApiTest extends ApiTestBase {
 
         verify(offerToAssistService).createOfferToAssist(any(OfferToAssistRequest.class));
 
+    }
+
+    @Test
+    @DisplayName("search offer to assist succeeds")
+    void searchSucceeds() throws Exception {
+        KeywordPagedSearchRequest request = new KeywordPagedSearchRequest();
+        request.setKeyword("part");
+
+        given(offerToAssistService
+                .searchOffersToAssist(any(KeywordPagedSearchRequest.class)))
+                .willReturn(otaPage);
+
+        mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                        .with(csrf())
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.totalElements", is(1)))
+                .andExpect(jsonPath("$.totalPages", is(1)))
+                .andExpect(jsonPath("$.number", is(0)))
+                .andExpect(jsonPath("$.hasNext", is(false)))
+                .andExpect(jsonPath("$.hasPrevious", is(false)))
+                .andExpect(jsonPath("$.content", notNullValue()))
+                .andExpect(jsonPath("$.content.[0].id", is(99)))
+                .andExpect(jsonPath("$.content.[0].partner.name", is("TC Partner")))
+                .andExpect(jsonPath("$.content.[0].publicId", is("123456")))
+                .andExpect(jsonPath("$.content.[0].reason", is("OTHER")));
+
+        verify(offerToAssistService).searchOffersToAssist(any(KeywordPagedSearchRequest.class));
     }
 }

@@ -37,12 +37,10 @@ export class ServicesComponent {
 
     selectService(serviceName: String) {
         this.selectedService = serviceName;
-        console.log(this.selectedService);
     }
 
     unSelectService() {
         this.selectedService = null;
-        console.log(this.selectedService);
         this.refresh.emit();
     }
 }

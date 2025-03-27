@@ -82,11 +82,13 @@
           </app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
-
-          <div class="mt-4 h4 text-center">
+          <div class="chat-title">
+          <app-casi-header >
+            <h3>
             {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+            </h3>
+            </app-casi-header>
           </div>
-
           <app-view-chat-posts
             [chat]="sourceChat"
             [readOnly]="isCandidateMuted()"

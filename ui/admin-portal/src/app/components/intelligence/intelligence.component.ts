@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {EnvService} from "../../services/env.service";
 
 @Component({
   selector: 'app-intelligence',
@@ -7,6 +8,10 @@ import { Component } from '@angular/core';
 })
 export class IntelligenceComponent {
 
-  readonly ALL_CANDIDATES_DASHBOARD_ID: string = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
+  readonly allCandidatesDashboardId: string;
+
+  constructor(private envService: EnvService) {
+    this.allCandidatesDashboardId = this.envService.allCandidatesDashboardId;
+  }
 
 }

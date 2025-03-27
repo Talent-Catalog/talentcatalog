@@ -62,6 +62,7 @@ public enum CandidateOpportunityStage {
         jobWithdrawn("Job withdrawn", true, false, false),
         relocatedNoJobOfferPathway("Relocated no job offer pathway", true, false, false),
         trainingNotCompleted("Training not completed", true, false, false),
+        programSuspended("Program suspended", true, false, false),
         ;
 
         private final String salesforceStageName;

@@ -29,7 +29,7 @@
 .ticket-container {
   width: 276px;
   height: 98px;
-  background-image: url('/assets/images/services/ticket-background.svg');
+  background-image: url('../../../../../../../assets/images/services/ticket-background.svg');
   background-repeat: no-repeat;
   background-size: cover;
   display: flex;
@@ -52,4 +52,8 @@ img {
     width: 90px;
     max-height: fit-content;
   }
+}
+
+.exam-result{
+  padding: 2rem;
 }
