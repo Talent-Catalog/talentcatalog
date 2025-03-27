@@ -153,3 +153,6 @@ where trim(migration_language) = 'السريانية';
 update candidate_language
 set language_id = (select id from language where iso_code = 'ils') -- international sign language
 where trim(migration_language) = 'اصم وابكم';
+
+-- staging should have 0 instances of values for this field where the corresponding candidate_language.language_id is 0
+alter table candidate_language drop column migration_language;
