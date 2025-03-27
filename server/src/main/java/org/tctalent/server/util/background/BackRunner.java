@@ -20,9 +20,11 @@ import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
+import org.tctalent.server.logging.LogBuilder;
 
 /**
  * This is intended to run long tasks in the background without consuming too much CPU.
@@ -43,6 +45,7 @@ import org.springframework.scheduling.support.PeriodicTrigger;
  *
  * @author John Cameron
  */
+@Slf4j
 @Getter
 @Setter
 public class BackRunner<CONTEXT> implements Runnable {
@@ -63,8 +66,18 @@ public class BackRunner<CONTEXT> implements Runnable {
 
     @Override
     public void run() {
-        boolean complete = backProcessor.process(batchContext);
-        if (complete) {
+        try {
+            boolean complete = backProcessor.process(batchContext);
+            if (complete) {
+                scheduledFuture.cancel(true);
+            }
+
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("Background batch processing")
+                .message("Scheduled batch failed due to unchecked exception: " + e.getMessage())
+                .logError(e);
+
             scheduledFuture.cancel(true);
         }
     }
