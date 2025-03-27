@@ -137,6 +137,7 @@ Helpful TC user guides:
 
 ## Other UI / UX Enhancements
 
+- Chat UI enhancement by separating chats by date sent and displaying initials of sender in icon
 - Added warning not to enter confidential info into General Notes
 - Candidate rows on submission lists now display the full name of the admin who add them
 - Make Job Description more visible on Publish Job screen
@@ -183,6 +184,7 @@ Helpful TC user guides:
 - MFA Authenticators now show TalentCatalog instead of TBB
 - Updated copyright
 - Deprecated Github Actions Upload Artifact version upgraded
+- Moved from UA to GA4 tags in admin portal
 - Standardized Terraform: <a href="https://drive.google.com/file/d/1JZUenkyr2rtVB7h8eElkRvXfwqbCIPQB/view?usp=drive_link" 
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 1</a>, 
 <a href="https://drive.google.com/file/d/1kEiK77T8_krmqX-TxVodmNAJhDznbocA/view?usp=drive_link" 
