@@ -9,7 +9,7 @@ Welcome to the Talent Catalog API—our first OpenAPI release on the Talent Cata
 first version of the TC API focuses on connecting recruiters and refugee service providers with 
 candidates.
 
-<div class="card-image-container-narrow">
+<div class="card-image-container">
   <img src="./../assets/images/v230/TCAPIDiagram.png" 
         alt="TC API Network Diagram" class="card-image">
 </div>
@@ -37,7 +37,7 @@ API users benefit from secure access to anonymised TC candidate data, while the 
 displaced talent network benefits from increased access to jobs and refugee services.   
 
 ## Explore the API for Yourself
-<div class="card-image-container-narrow">
+<div class="card-image-container">
   <img src="./../assets/images/v230/TCAPIRedoc.png" 
         alt="TC API Redoc" class="card-image">
 </div>
