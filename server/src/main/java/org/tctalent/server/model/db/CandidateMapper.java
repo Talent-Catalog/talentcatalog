@@ -36,11 +36,19 @@ public interface CandidateMapper {
     @Mapping(target = "gender")
     @Mapping(target = "contactConsentRegistration")
     @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
+    @Mapping(target = "candidateCertifications")
+    @Mapping(target = "candidateOccupations")
     Candidate candidateRegistrationToCandidate(CandidateRegistration registrationInfo);
 
+    CandidateOccupation mapOccupation(org.tctalent.anonymization.model.CandidateOccupation publicOccupation);
 
     @ValueMapping(target="male", source = "MALE")
     @ValueMapping(target="female", source = "FEMALE")
     @ValueMapping(target="other", source = "OTHER")
     Gender publicGenderToInternalGender(org.tctalent.anonymization.model.Gender publicGender);
+
+    @ValueMapping(target="active", source = "ACTIVE")
+    @ValueMapping(target="inactive", source = "INACTIVE")
+    @ValueMapping(target="deleted", source = "DELETED")
+    Status publicStatusToInternalStatus(org.tctalent.anonymization.model.Status publicStatus);
 }
