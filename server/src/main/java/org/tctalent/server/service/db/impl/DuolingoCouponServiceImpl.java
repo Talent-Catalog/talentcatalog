@@ -45,6 +45,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.model.db.DuolingoTestType;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
@@ -183,6 +184,12 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
           coupon.setExpirationDate(parseDate(line[columnIndex.get("expiration date")], FORMATTER1, FORMATTER2));
           coupon.setDateSent(parseDate(line[columnIndex.get("date sent")], FORMATTER1, FORMATTER2));
           coupon.setCouponStatus(DuolingoCouponStatus.valueOf(getNullableValue(line[columnIndex.get("coupon status")]).toUpperCase()));
+          // Set test type based on coupon code prefix
+          if (couponCode.startsWith("ACCNONPROC") || couponCode.startsWith("NONP")) {
+            coupon.setTestType(DuolingoTestType.NON_PROCTORED);
+          } else if (couponCode.startsWith("ACC") || couponCode.startsWith("PROC")) {
+            coupon.setTestType(DuolingoTestType.PROCTORED);
+          }
           newCoupons.add(coupon);
         }
       }
@@ -211,8 +218,8 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
     Candidate candidate = candidateRepository.findById(candidateId)
         .orElseThrow(() -> new NoSuchObjectException("Candidate with ID " + candidateId + " not found"));
-    Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatus(
-        DuolingoCouponStatus.AVAILABLE);
+    Optional<DuolingoCoupon> availableCoupon = couponRepository.findTop1ByCandidateIsNullAndCouponStatusAndTestType(
+        DuolingoCouponStatus.AVAILABLE, DuolingoTestType.PROCTORED);
 
     if (availableCoupon.isEmpty()) {
       throw new NoSuchObjectException(
@@ -288,7 +295,7 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
   @Override
   @Transactional(readOnly = true)
   public List<DuolingoCoupon> getAvailableCoupons() {
-    return couponRepository.findByCandidateIsNullAndCouponStatus(DuolingoCouponStatus.AVAILABLE);
+    return couponRepository.findByCandidateIsNullAndCouponStatusAndTestType(DuolingoCouponStatus.AVAILABLE,DuolingoTestType.PROCTORED);
   }
 
   @Override
@@ -369,8 +376,14 @@ public class DuolingoCouponServiceImpl implements DuolingoCouponService {
 
   @Override
   @Transactional(readOnly = true)
-  public int countAvailableCoupons() {
+  public int countAllAvailableCoupons() {
     return couponRepository.countByCandidateIsNullAndCouponStatus(DuolingoCouponStatus.AVAILABLE);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public int countAvailableProctoredCoupons() {
+    return couponRepository.countByCandidateIsNullAndCouponStatusAndTestType(DuolingoCouponStatus.AVAILABLE,DuolingoTestType.PROCTORED);
   }
 
 }
