@@ -14,8 +14,7 @@ sass:
     <div class="card-body">
       <div class="card-title">TC Anonymized Open API</div>
       <div class="card-description">
-        Created an Anonymised Data Service API, so that API endpoints are clearly documented and accessible for 
-        integration and usage by other services.
+        Introducing the Talent Catalog API—our first OpenAPI release on the Talent Catalog platform!
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
