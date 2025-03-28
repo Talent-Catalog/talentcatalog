@@ -1222,6 +1222,9 @@ public class CandidateServiceImpl implements CandidateService {
             throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
         }
 
+        //Do mapper first so that mapper errors happen before any user is created.
+        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationData);
+
         //Initial password is same as username.
         //TODO JC Prompt to change password on first login
         String passwordEncrypted = passwordHelper.encodePassword(username);
@@ -1251,8 +1254,6 @@ public class CandidateServiceImpl implements CandidateService {
         //Save the user
         user = userRepository.save(user);
 
-        //TODO JC CandidateMapper is not complete. Currently only mapping selected fields.
-        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationData);
         candidate.setPublicId(publicIDService.generatePublicID());
         candidate.setUser(user);
 

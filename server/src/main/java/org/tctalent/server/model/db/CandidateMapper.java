@@ -31,6 +31,8 @@ public interface CandidateMapper {
     @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
     Candidate candidateRegistrationToCandidate(CandidateRegistration registrationInfo);
 
+    //TODO JC Country - need to look up from DB and add Country entity
+
     @ValueMapping(target="Associate", source = "ASSOCIATE")
     @ValueMapping(target="Vocational", source = "VOCATIONAL")
     @ValueMapping(target="Bachelor", source = "BACHELOR")
