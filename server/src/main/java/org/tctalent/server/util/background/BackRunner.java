@@ -75,7 +75,8 @@ public class BackRunner<CONTEXT> implements Runnable {
         } catch (Exception e) {
             LogBuilder.builder(log)
                 .action("Background batch processing")
-                .message("Scheduled batch failed due to unchecked exception: " + e.getMessage())
+                .message("Operation cancelled. Batch failed due to unchecked exception: "
+                    + e.getMessage())
                 .logError(e);
 
             scheduledFuture.cancel(true);

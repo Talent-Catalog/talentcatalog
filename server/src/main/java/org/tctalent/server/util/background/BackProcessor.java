@@ -26,6 +26,11 @@ public interface BackProcessor<CONTEXT> {
 
     /**
      * This method is called repeatedly - with gaps in between - to complete long tasks.
+     *
+     * <p>NB: As defined in {@link BackRunner}, any unchecked exception left to propagate will cancel
+     * the entire operation. This is intended to prevent problems that might result from repeatedly
+     * encountering the same bug when processing large datasets. If you want processing to continue
+     * despite certain exceptions, catch them at a lower level.
      * @param context letting the processor keep track of where it is up to in its processing.
      *                The context object should be updated at the end of each call to this method
      *                to record where processing got up to so that we know where to start processing
