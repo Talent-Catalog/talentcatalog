@@ -34,7 +34,7 @@ job or service opportunity through the API. They do not need to use the Admin Po
 Portal, instead they connect directly to the Talent Catalog servers from their own systems.
 
 API users benefit from secure access to anonymised TC candidate data, while Talent Catalog 
-candidates benefits from increased access to jobs and refugee services.   
+candidates benefit from increased access to jobs and refugee services.   
 
 ## Explore the API for Yourself
 <div class="card-image-container">
