@@ -38,8 +38,8 @@ candidates benefit from increased access to jobs and refugee services.
 
 ## Explore the API for Yourself
 <div class="card-image-container">
-  <img src="./../assets/images/v230/TCAPIRedoc.png" 
-        alt="TC API Redoc" class="card-image">
+  <img src="./../assets/images/v230/TCAPIInteractiveDocumentation2.png" 
+        alt="TC API Interactive Documentation" class="card-image">
 </div>
 
 Discover the potential of the TC API for yourself by visiting our 
