@@ -29,10 +29,7 @@ import {LanguageLevel} from '../../../model/language-level';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import {
-  CandidateNoteService,
-  CreateCandidateNoteRequest
-} from '../../../services/candidate-note.service';
+import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {dateString} from '../../../util/date-adapter/date-adapter';
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -227,7 +224,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
    * @returns {Date | null} - Returns the extracted date if found, or null if no valid date is found.
    */
   private extractVerificationDate(notes: string): Date | null {
-    const dateMatch = notes.match(/Verification Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/);
+    const dateMatch = notes?.match(/Verification Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/);
     return dateMatch ? new Date(dateMatch[1]) : null;
   }
 

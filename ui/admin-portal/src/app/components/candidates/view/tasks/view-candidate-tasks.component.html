@@ -27,7 +27,7 @@
     <div class="d-flex flex-fill justify-content-between align-items-center">
       <span class="small font-italic">Comment?</span>
       <div class="d-flex">
-        <div *ngIf="editable" class="mx-2">
+        <div *ngIf="isDefaultSourcePartner()" class="mx-2">
           <app-duolingo-assignment [candidate]="candidate" (errorOccurred)="handleError($event)"></app-duolingo-assignment>
         </div>
         <div *ngIf="editable">

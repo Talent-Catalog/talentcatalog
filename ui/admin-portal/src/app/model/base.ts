@@ -227,6 +227,10 @@ export class PagedFilteredSearchRequest extends PagedSearchRequest {
   status?: string;
 }
 
+export class KeywordPagedSearchRequest extends PagedSearchRequest {
+  keyword?: string;
+}
+
 export class SearchPartnerRequest extends PagedFilteredSearchRequest {
   contextJobId?: number;
   jobCreator?: boolean;

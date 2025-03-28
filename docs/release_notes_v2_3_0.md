@@ -1,6 +1,7 @@
 ---
 title: Release Notes 2.3.0
 description: What's new in this release
+permalink: v230
 sass:
   style: compressed
 ---
@@ -136,11 +137,12 @@ Helpful TC user guides:
 
 ## Other UI / UX Enhancements
 
+- Chat UI enhancement by separating chats by date sent and displaying initials of sender in icon
 - Added warning not to enter confidential info into General Notes
 - Candidate rows on submission lists now display the full name of the admin who add them
 - Make Job Description more visible on Publish Job screen
 - Enhanced cursor behaviour for clickable links
-- Informative tool-tips, clarifying support text and UI simplification to assist employer users in creating Jobs and using candidate search
+- More informative tool-tips by clarifying support text and UI simplification to assist employer users in creating jobs and using candidate search
 
 # Performance Improvements
 
@@ -173,6 +175,8 @@ Helpful TC user guides:
 - Spring Boot Security request matchers pattern change
 - Fixed tooltip display issue in candidate search
 - Next Step column displaying correctly in Submission List view
+- Candidates to only receive new chats notification email if the chats are unread
+- Jobs tab on Candidate Portal only appears if there are opportunities past the <em>Prospect</em> stage, except for the closed stage <em>'Candidate was mistakenly proposed as a prospect for the job'.</em>
 
 # Developer Notes
 - Upgraded to Spring Boot 3
@@ -180,6 +184,7 @@ Helpful TC user guides:
 - MFA Authenticators now show TalentCatalog instead of TBB
 - Updated copyright
 - Deprecated Github Actions Upload Artifact version upgraded
+- Moved from UA to GA4 tags in admin portal
 - Standardized Terraform: <a href="https://drive.google.com/file/d/1JZUenkyr2rtVB7h8eElkRvXfwqbCIPQB/view?usp=drive_link" 
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 1</a>, 
 <a href="https://drive.google.com/file/d/1kEiK77T8_krmqX-TxVodmNAJhDznbocA/view?usp=drive_link" 

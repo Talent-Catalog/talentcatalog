@@ -107,7 +107,6 @@ export class ViewCandidateComponent implements OnInit {
   fetchCandidate() {
     this.candidateService.getProfile().subscribe(
       (candidate) => {
-        console.log("Refreshed",candidate)
         this.setCandidate(candidate);
         this.activeDuolingoTask = this.getActiveDuolingoTask();
         this.filterOppsToDisplay();

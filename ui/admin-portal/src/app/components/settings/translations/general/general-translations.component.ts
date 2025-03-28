@@ -763,7 +763,10 @@ const ALL_FIELDS = {
         'STEPS_TEXT': null,
         'IMPORTANT': null,
         'GOOD_LUCK': null,
-        'CTA_BUTTON': null
+        'CTA_BUTTON': null,
+        'PAST_EXAMS': null,
+        'SCORE': null,
+        'YEAR': null
       }
     }
   },
