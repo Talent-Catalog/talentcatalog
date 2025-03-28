@@ -44,15 +44,31 @@ class CandidateMapperTest {
     @Test
     void shouldMapOccupationData() {
         CandidateRegistration registrationInfo = new CandidateRegistration();
-        org.tctalent.anonymization.model.CandidateOccupation publicOccupation = new org.tctalent.anonymization.model.CandidateOccupation();
+        org.tctalent.anonymization.model.CandidateOccupation publicCandidateOccupation =
+            new org.tctalent.anonymization.model.CandidateOccupation();
+
         final int yearsExperience = 5;
-        publicOccupation.setYearsExperience(yearsExperience);
-        registrationInfo.setCandidateOccupations(Collections.singletonList(publicOccupation));
+        publicCandidateOccupation.setYearsExperience(yearsExperience);
+
+        org.tctalent.anonymization.model.Occupation occupation =
+            new org.tctalent.anonymization.model.Occupation();
+        final String occupationName = "Accountant";
+        occupation.setName(occupationName);
+        final String isco08Code = "123456";
+        occupation.setIsco08Code(isco08Code);
+        publicCandidateOccupation.setOccupation(occupation);
+
+        registrationInfo.setCandidateOccupations(Collections.singletonList(publicCandidateOccupation));
         Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
         assertNotNull(candidate);
         final List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
         assertNotNull(candidateOccupations);
         assertEquals(1, candidateOccupations.size());
-        assertEquals(yearsExperience, candidateOccupations.get(0).getYearsExperience());
+        final CandidateOccupation candidateOccupation = candidateOccupations.get(0);
+        assertEquals(yearsExperience, candidateOccupation.getYearsExperience());
+        assertEquals(isco08Code, candidateOccupation.getOccupation().getIsco08Code());
+        assertEquals(occupationName, candidateOccupation.getOccupation().getName());
+
+
     }
 }

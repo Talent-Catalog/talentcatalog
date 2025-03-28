@@ -16,7 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ValueMapping;
@@ -29,26 +28,51 @@ import org.tctalent.anonymization.model.CandidateRegistration;
  */
 @Mapper
 public interface CandidateMapper {
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "city")
-    @Mapping(target = "phone")
-    @Mapping(target = "whatsapp")
-    @Mapping(target = "gender")
-    @Mapping(target = "contactConsentRegistration")
     @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
-    @Mapping(target = "candidateCertifications")
-    @Mapping(target = "candidateOccupations")
     Candidate candidateRegistrationToCandidate(CandidateRegistration registrationInfo);
 
-    CandidateOccupation mapOccupation(org.tctalent.anonymization.model.CandidateOccupation publicOccupation);
+    @ValueMapping(target="Associate", source = "ASSOCIATE")
+    @ValueMapping(target="Vocational", source = "VOCATIONAL")
+    @ValueMapping(target="Bachelor", source = "BACHELOR")
+    @ValueMapping(target="Masters", source = "MASTERS")
+    @ValueMapping(target="Doctoral", source = "DOCTORAL")
+    EducationType publicToInternalEducationType(org.tctalent.anonymization.model.EducationType publicEnum);
+
+    @ValueMapping(target="NoResponse", source = "NO_RESPONSE")
+    @ValueMapping(target="OET", source = "OET")
+    @ValueMapping(target="OETRead", source = "OET_READ")
+    @ValueMapping(target="OETList", source = "OET_LIST")
+    @ValueMapping(target="OETLang", source = "OET_LANG")
+    @ValueMapping(target="IELTSGen", source = "IELTS_GEN")
+    @ValueMapping(target="IELTSAca", source = "IELTS_ACA")
+    @ValueMapping(target="TOEFL", source = "TOEFL")
+    @ValueMapping(target="Other", source = "OTHER")
+    Exam publicToInternalExam(org.tctalent.anonymization.model.Exam publicEnum);
 
     @ValueMapping(target="male", source = "MALE")
     @ValueMapping(target="female", source = "FEMALE")
     @ValueMapping(target="other", source = "OTHER")
-    Gender publicGenderToInternalGender(org.tctalent.anonymization.model.Gender publicGender);
+    Gender publicToInternalGender(org.tctalent.anonymization.model.Gender publicGender);
+
+    @ValueMapping(target="NoResponse", source = "NO_RESPONSE")
+    @ValueMapping(target="ValidPassport", source = "VALID_PASSPORT")
+    @ValueMapping(target="InvalidPassport", source = "INVALID_PASSPORT")
+    @ValueMapping(target="NoPassport", source = "NO_PASSPORT")
+    HasPassport publicToInternalHasPassport(org.tctalent.anonymization.model.HasPassport publicEnum);
 
     @ValueMapping(target="active", source = "ACTIVE")
     @ValueMapping(target="inactive", source = "INACTIVE")
     @ValueMapping(target="deleted", source = "DELETED")
-    Status publicStatusToInternalStatus(org.tctalent.anonymization.model.Status publicStatus);
+    Status publicToInternalStatus(org.tctalent.anonymization.model.Status publicStatus);
+
+    @ValueMapping(target="NoResponse", source = "NO_RESPONSE")
+    @ValueMapping(target="Yes", source = "YES")
+    @ValueMapping(target="No", source = "NO")
+    YesNo publicToInternalYesNo(org.tctalent.anonymization.model.YesNo publicEnum);
+
+    @ValueMapping(target="NoResponse", source = "NO_RESPONSE")
+    @ValueMapping(target="Yes", source = "YES")
+    @ValueMapping(target="No", source = "NO")
+    @ValueMapping(target="Unsure", source = "UNSURE")
+    YesNoUnsure publicToInternalYesNoUnsure(org.tctalent.anonymization.model.YesNoUnsure publicEnum);
 }
