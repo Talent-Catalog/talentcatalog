@@ -8,10 +8,10 @@ sass:
 # New Features
 
 <div class="card-container">
-  <a href="./v230/anonymized_open_api" class="card">
+  <a href="./v230/tc_anonymized_open_api" class="card">
     <img src="./assets/images/v230/OpenApi.png" alt="Open Api" class="card-image">
     <div class="card-body">
-      <div class="card-title">Anonymized Open API</div>
+      <div class="card-title">TC Anonymized Open API</div>
       <div class="card-description">
         Created an Anonymised Data Service API, so that API endpoints are clearly documented and accessible for 
         integration and usage by other services.
