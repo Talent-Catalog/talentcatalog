@@ -80,6 +80,12 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     }
 
     @Override
+    public LanguageLevel findByLevel(int level) {
+        return languageLevelRepository.findByLevel(level)
+            .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, level));
+    }
+
+    @Override
     public LanguageLevel getLanguageLevel(long id) {
         return this.languageLevelRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, id));

@@ -35,6 +35,9 @@ import org.tctalent.server.model.db.YesNoUnsure;
  */
 @Mapper(uses = {
     CountryMapper.class,
+    EducationLevelMapper.class,
+    EducationMajorMapper.class,
+    LanguageLevelMapper.class,
     LanguageMapper.class,
     OccupationMapper.class,
     PartnerMapper.class
