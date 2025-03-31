@@ -14,12 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.model.db.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ValueMapping;
 import org.tctalent.anonymization.model.CandidateRegistration;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.EducationType;
+import org.tctalent.server.model.db.Exam;
+import org.tctalent.server.model.db.Gender;
+import org.tctalent.server.model.db.HasPassport;
+import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.YesNo;
+import org.tctalent.server.model.db.YesNoUnsure;
 
 /**
  * Candidate related mappings.

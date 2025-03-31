@@ -14,10 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.model.db.mapper;
 
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tctalent.server.model.db.Country;
 import org.tctalent.server.service.db.CountryService;
 //TODO JC Need LanguageLevel, EducationMajor, EducationLevel, etc? entities all mapped - probably all need indexes.
 /**

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.anonymization.model.CandidateRegistration;
+import org.tctalent.server.model.db.mapper.CandidateMapper;
 
 @SpringBootTest
 class CandidateMapperTest {
