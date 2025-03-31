@@ -57,7 +57,7 @@ class CandidateMapperTest {
             new org.tctalent.anonymization.model.Occupation();
         final String occupationName = "Accountant";
         occupation.setName(occupationName);
-        final String isco08Code = "123456";
+        final String isco08Code = "2411";
         occupation.setIsco08Code(isco08Code);
         publicCandidateOccupation.setOccupation(occupation);
 
