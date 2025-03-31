@@ -342,12 +342,13 @@ public interface CandidateService {
     Candidate findByCandidateNumber(String candidateNumber);
 
     /**
-     * Finds candidate with the given public ID, or null if none found.
+     * Finds candidate with the given public ID.
      *
      * @param publicId ID of desired candidate
-     * @return Candidate or null if none found
+     * @return Candidate
+     * @throws NoSuchObjectException if not found
      */
-    @Nullable
+    @NonNull
     Candidate findByPublicId(String publicId);
 
     /**

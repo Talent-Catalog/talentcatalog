@@ -59,5 +59,7 @@ public interface PartnerRepository extends CacheEvictingRepository<PartnerImpl, 
         + " where p.id in (:ids) order by p.name asc" )
     List<String> getNamesForIds(@Param("ids") List<Long> ids);
 
+    Optional<PartnerImpl> findByPublicId(String publicId);
+
     List<PartnerImpl> findByStatusOrderByName(Status status);
 }

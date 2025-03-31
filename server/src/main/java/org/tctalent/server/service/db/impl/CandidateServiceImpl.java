@@ -1776,10 +1776,11 @@ public class CandidateServiceImpl implements CandidateService {
         return candidateRepository.findByCandidateNumber(candidateNumber);
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Candidate findByPublicId(String publicId) {
-        return candidateRepository.findByPublicId(publicId);
+        return candidateRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, publicId));
     }
 
     @Override
