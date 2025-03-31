@@ -23,22 +23,25 @@ import org.tctalent.anonymization.model.CandidateRegistration;
 
 /**
  * Candidate related mappings.
- *
  * @author John Cameron
  */
-@Mapper
-public abstract class CandidateMapper {
-    @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
-    public abstract Candidate candidateRegistrationToCandidate(CandidateRegistration registrationInfo);
+@Mapper(uses = {
+    CountryMapper.class,
+    LanguageMapper.class,
+    OccupationMapper.class,
+    PartnerMapper.class
+})
+public interface CandidateMapper {
 
-    //TODO JC Country - need to look up from DB and add Country entity
+    @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
+    Candidate candidateRegistrationToCandidate(CandidateRegistration registrationInfo);
 
     @ValueMapping(target="Associate", source = "ASSOCIATE")
     @ValueMapping(target="Vocational", source = "VOCATIONAL")
     @ValueMapping(target="Bachelor", source = "BACHELOR")
     @ValueMapping(target="Masters", source = "MASTERS")
     @ValueMapping(target="Doctoral", source = "DOCTORAL")
-    public abstract EducationType publicToInternalEducationType(org.tctalent.anonymization.model.EducationType publicEnum);
+    EducationType publicToInternalEducationType(org.tctalent.anonymization.model.EducationType publicEnum);
 
     @ValueMapping(target="NoResponse", source = "NO_RESPONSE")
     @ValueMapping(target="OET", source = "OET")
@@ -49,32 +52,32 @@ public abstract class CandidateMapper {
     @ValueMapping(target="IELTSAca", source = "IELTS_ACA")
     @ValueMapping(target="TOEFL", source = "TOEFL")
     @ValueMapping(target="Other", source = "OTHER")
-    public abstract Exam publicToInternalExam(org.tctalent.anonymization.model.Exam publicEnum);
+    Exam publicToInternalExam(org.tctalent.anonymization.model.Exam publicEnum);
 
     @ValueMapping(target="male", source = "MALE")
     @ValueMapping(target="female", source = "FEMALE")
     @ValueMapping(target="other", source = "OTHER")
-    public abstract Gender publicToInternalGender(org.tctalent.anonymization.model.Gender publicGender);
+    Gender publicToInternalGender(org.tctalent.anonymization.model.Gender publicGender);
 
     @ValueMapping(target="NoResponse", source = "NO_RESPONSE")
     @ValueMapping(target="ValidPassport", source = "VALID_PASSPORT")
     @ValueMapping(target="InvalidPassport", source = "INVALID_PASSPORT")
     @ValueMapping(target="NoPassport", source = "NO_PASSPORT")
-    public abstract HasPassport publicToInternalHasPassport(org.tctalent.anonymization.model.HasPassport publicEnum);
+    HasPassport publicToInternalHasPassport(org.tctalent.anonymization.model.HasPassport publicEnum);
 
     @ValueMapping(target="active", source = "ACTIVE")
     @ValueMapping(target="inactive", source = "INACTIVE")
     @ValueMapping(target="deleted", source = "DELETED")
-    public abstract Status publicToInternalStatus(org.tctalent.anonymization.model.Status publicStatus);
+    Status publicToInternalStatus(org.tctalent.anonymization.model.Status publicStatus);
 
     @ValueMapping(target="NoResponse", source = "NO_RESPONSE")
     @ValueMapping(target="Yes", source = "YES")
     @ValueMapping(target="No", source = "NO")
-    public abstract YesNo publicToInternalYesNo(org.tctalent.anonymization.model.YesNo publicEnum);
+    YesNo publicToInternalYesNo(org.tctalent.anonymization.model.YesNo publicEnum);
 
     @ValueMapping(target="NoResponse", source = "NO_RESPONSE")
     @ValueMapping(target="Yes", source = "YES")
     @ValueMapping(target="No", source = "NO")
     @ValueMapping(target="Unsure", source = "UNSURE")
-    public abstract YesNoUnsure publicToInternalYesNoUnsure(org.tctalent.anonymization.model.YesNoUnsure publicEnum);
+    YesNoUnsure publicToInternalYesNoUnsure(org.tctalent.anonymization.model.YesNoUnsure publicEnum);
 }

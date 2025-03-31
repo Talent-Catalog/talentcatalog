@@ -18,8 +18,10 @@ package org.tctalent.server.service.db;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.request.occupation.CreateOccupationRequest;
 import org.tctalent.server.request.occupation.SearchOccupationRequest;
@@ -27,6 +29,16 @@ import org.tctalent.server.request.occupation.UpdateOccupationRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface OccupationService {
+
+    /**
+     * Find occupation matching given
+     * <a href="https://ilostat.ilo.org/methods/concepts-and-definitions/classification-occupation/">ISCO08 code</a>.
+     * @param isco08Code ISCO code
+     * @return occupation
+     * @throws NoSuchObjectException if not found
+     */
+    @NonNull
+    Occupation findByIsco08Code(String isco08Code);
 
     List<Occupation> listOccupations();
 

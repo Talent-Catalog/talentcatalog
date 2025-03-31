@@ -17,7 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -26,6 +26,8 @@ import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.Status;
 
 public interface OccupationRepository extends JpaRepository<Occupation, Long>, JpaSpecificationExecutor<Occupation> {
+
+    Optional<Occupation> findByIsco08Code(String isco08Code);
 
     @Query(" select o from Occupation o "
             + " where o.status = :status order by o.name asc")

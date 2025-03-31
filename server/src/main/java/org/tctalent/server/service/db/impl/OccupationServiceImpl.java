@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
@@ -57,6 +58,13 @@ public class OccupationServiceImpl implements OccupationService {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.occupationRepository = occupationRepository;
         this.translationService = translationService;
+    }
+
+    @NonNull
+    @Override
+    public Occupation findByIsco08Code(String isco08Code) {
+        return occupationRepository.findByIsco08Code(isco08Code)
+            .orElseThrow(() -> new NoSuchObjectException(Occupation.class, isco08Code));
     }
 
     @Override

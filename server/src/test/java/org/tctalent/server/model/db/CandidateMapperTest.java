@@ -23,15 +23,17 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.anonymization.model.CandidateRegistration;
 
+@SpringBootTest
 class CandidateMapperTest {
+    @Autowired
     private CandidateMapper candidateMapper;
 
     @BeforeEach
     void setUp() {
-        candidateMapper = Mappers.getMapper(CandidateMapper.class);
     }
 
     @Test
@@ -71,4 +73,23 @@ class CandidateMapperTest {
 
 
     }
+
+
+    @Test
+    void shouldMapCountry() {
+        CandidateRegistration registrationInfo = new CandidateRegistration();
+
+        org.tctalent.anonymization.model.Country publicCountry =
+            new org.tctalent.anonymization.model.Country();
+
+        publicCountry.setIsoCode("AU");
+
+        registrationInfo.setCountry(publicCountry);
+        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
+        assertNotNull(candidate);
+        final Country country = candidate.getCountry();
+        assertNotNull(country);
+
+    }
+
 }
