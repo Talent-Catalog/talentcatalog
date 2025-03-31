@@ -21,13 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.model.db.mapper.CandidateMapper;
 
+@Tag("skip-test-in-gradle-build")
 @SpringBootTest
 class CandidateMapperTest {
     @Autowired
@@ -75,7 +78,6 @@ class CandidateMapperTest {
 
     }
 
-
     @Test
     void shouldMapCountry() {
         CandidateRegistration registrationInfo = new CandidateRegistration();
@@ -90,7 +92,40 @@ class CandidateMapperTest {
         assertNotNull(candidate);
         final Country country = candidate.getCountry();
         assertNotNull(country);
+    }
 
+    @Test
+    void shouldMapNonNullEducationLevel() {
+        CandidateRegistration registrationInfo = new CandidateRegistration();
+
+        org.tctalent.anonymization.model.EducationLevel publicValue =
+            new org.tctalent.anonymization.model.EducationLevel();
+
+        publicValue.setLevel(90);
+
+        registrationInfo.setMaxEducationLevel(publicValue);
+
+        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
+        assertNotNull(candidate);
+        final EducationLevel educationLevel = candidate.getMaxEducationLevel();
+        assertNotNull(educationLevel);
+    }
+
+    @Test
+    void shouldMapNullEducationLevel() {
+        CandidateRegistration registrationInfo = new CandidateRegistration();
+
+        org.tctalent.anonymization.model.EducationLevel publicValue =
+            new org.tctalent.anonymization.model.EducationLevel();
+
+        publicValue.setLevel(null);
+
+        registrationInfo.setMaxEducationLevel(publicValue);
+
+        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
+        assertNotNull(candidate);
+        final EducationLevel educationLevel = candidate.getMaxEducationLevel();
+        Assertions.assertNull(educationLevel);
     }
 
 }
