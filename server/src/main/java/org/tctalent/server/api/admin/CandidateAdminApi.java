@@ -380,7 +380,7 @@ public class CandidateAdminApi {
         return builder.build(candidate);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_SYSTEMADMIN')")
     @PostMapping("register-by-partner")
     @NonNull
     public ResponseEntity<RegisterCandidate201Response>
