@@ -19,7 +19,7 @@ package org.tctalent.server.model.db;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tctalent.server.service.db.CountryService;
-//TODO JC Need LanguageLevel, Partner etc? entities all mapped - probably all need indexes.
+//TODO JC Need LanguageLevel, EducationMajor, EducationLevel, etc? entities all mapped - probably all need indexes.
 /**
  * Maps public object to equivalent entity form local database.
  * <p/>
