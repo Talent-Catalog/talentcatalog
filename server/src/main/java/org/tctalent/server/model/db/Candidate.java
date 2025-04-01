@@ -253,7 +253,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @JoinColumn(name = "nationality_id")
     private Country nationality;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
