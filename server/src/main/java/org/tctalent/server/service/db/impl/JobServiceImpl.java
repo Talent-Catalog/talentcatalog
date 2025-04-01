@@ -1185,7 +1185,7 @@ public class JobServiceImpl implements JobService {
             } catch (Exception e) {
                 LogBuilder.builder(log)
                     .action("Process open job sync batch")
-                    .message("Failed to process job with ID " + sfOpp.getId() + ". Error: " +
+                    .message("Failed to process job with SF ID " + sfOpp.getId() + ". Error: " +
                         e.getMessage())
                     .logError(e);
             }
