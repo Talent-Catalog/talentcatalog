@@ -66,9 +66,6 @@ public class CandidateOppBackgroundProcessingServiceImpl
       // Fetch Salesforce equivalents in batches - necessary because there's a 4,000-character limit
       // on single strings in a SOQL WHERE clause, which the concatenated sfIds might exceed.
       int totalItems = sfIds.size();
-      // TODO logging just for debugging - remove once done:
-      log.info("sfIds.size() at outset = {}", sfIds.size());
-      log.info("totalItems at outset = {}", totalItems);
       int batchSize = 100;
 
       // Fetch from Salesforce any potentially reopened Opps and use to initialise list of
@@ -83,12 +80,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
           .collect(Collectors.toSet());
 
       for (int i = 0; i < totalItems; i += batchSize) {
-        // TODO logging just for debugging - remove once done:
-        log.info("sfIds.size() in loop = {}", sfIds.size());
-        log.info("totalItems in loop = {}", totalItems);
-        log.info("i in loop = {}", i);
-        log.info("batchSize in loop = {}", batchSize);
-        List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
+        List<String> batch = new ArrayList<>(sfIds.subList(i, Math.min(i + batchSize, totalItems)));
 
         // Remove any ID that exists in the reopenedOppIds Set
         batch.removeIf(sfOppIds::contains);

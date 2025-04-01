@@ -1130,7 +1130,8 @@ public class JobServiceImpl implements JobService {
                 .collect(Collectors.toSet());
 
             for (int i = 0; i < totalItems; i += batchSize) {
-                List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
+                List<String> batch =
+                    new ArrayList<>(sfIds.subList(i, Math.min(i + batchSize, totalItems)));
 
                 // Remove any ID that exists in the reopenedOppIds Set
                 batch.removeIf(sfOppIds::contains);
@@ -1157,27 +1158,36 @@ public class JobServiceImpl implements JobService {
         int updates = 0;
 
         for (Opportunity sfOpp : sfOpps) {
-            String id = sfOpp.getId();
-            //Fetch DB with id
-            SalesforceJobOpp tcOpp = salesforceJobOppRepository.findBySfId(id)
-                .orElse(null);
-            if (tcOpp != null) {
-                UpdateJobRequest updateRequest =
-                    extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
-                if (updateRequest != null) {
-                    updateJobFromRequest(tcOpp, updateRequest);
-                    salesforceJobOppRepository.save(tcOpp);
-                    updates++;
+            try {
+                String id = sfOpp.getId();
+                //Fetch DB with id
+                SalesforceJobOpp tcOpp = salesforceJobOppRepository.findBySfId(id)
+                    .orElse(null);
+                if (tcOpp != null) {
+                    UpdateJobRequest updateRequest =
+                        extractUpdateJobRequestFromSalesforceOpp(sfOpp, tcOpp);
+                    if (updateRequest != null) {
+                        updateJobFromRequest(tcOpp, updateRequest);
+                        salesforceJobOppRepository.save(tcOpp);
+                        updates++;
+                    }
                 }
-            }
-            count++;
+                count++;
 
-            if ((count % 100 == 0) || count == sfOpps.size()) {
+                if ((count % 100 == 0) || count == sfOpps.size()) {
+                    LogBuilder.builder(log)
+                        .action("Sync Open Jobs From Salesforce")
+                        .message("Processed " + count + " Job Opps from Salesforce, of which "
+                            + updates + " led to update of TC equivalent.")
+                        .logInfo();
+                }
+
+            } catch (Exception e) {
                 LogBuilder.builder(log)
-                    .action("Sync Open Jobs From Salesforce")
-                    .message("Processed " + count + " Job Opps from Salesforce, of which "
-                        + updates + " led to update of TC equivalent.")
-                    .logInfo();
+                    .action("Process open job sync batch")
+                    .message("Failed to process job with ID " + sfOpp.getId() + ". Error: " +
+                        e.getMessage())
+                    .logError(e);
             }
         }
     }
