@@ -17,10 +17,7 @@
 package org.tctalent.server.model.db.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ValueMapping;
-import org.tctalent.anonymization.model.CandidateRegistration;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.model.db.Gender;
@@ -30,22 +27,12 @@ import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 
 /**
- * Candidate related mappings.
+ * Map public and internal versions of enums
+ *
  * @author John Cameron
  */
-@Mapper(uses = {
-    CountryMapper.class,
-    EducationLevelMapper.class,
-    EducationMajorMapper.class,
-    LanguageLevelMapper.class,
-    LanguageMapper.class,
-    OccupationMapper.class,
-    PartnerMapper.class
-})
-public interface CandidateMapper {
-
-    @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
-    Candidate candidateRegistrationToCandidate(CandidateRegistration registrationInfo);
+@Mapper
+public interface EnumsMapper {
 
     @ValueMapping(target="Associate", source = "ASSOCIATE")
     @ValueMapping(target="Vocational", source = "VOCATIONAL")

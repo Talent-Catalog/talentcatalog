@@ -28,13 +28,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.anonymization.model.CandidateRegistration;
-import org.tctalent.server.model.db.mapper.CandidateMapper;
+import org.tctalent.server.model.db.mapper.CandidateAllFieldsMapper;
+import org.tctalent.server.model.db.mapper.CandidateNoJoinsMapper;
 
 @Tag("skip-test-in-gradle-build")
 @SpringBootTest
-class CandidateMapperTest {
+class CandidateNoJoinsMapperTest {
     @Autowired
-    private CandidateMapper candidateMapper;
+    private CandidateNoJoinsMapper candidateNoJoinsMapper;
+    @Autowired
+    private CandidateAllFieldsMapper candidateAllFieldsMapper;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +46,7 @@ class CandidateMapperTest {
     @Test
     void shouldMapEmptyData() {
         CandidateRegistration registrationInfo = new CandidateRegistration();
-        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
+        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationInfo);
         assertNotNull(candidate);
     }
 
@@ -65,7 +68,7 @@ class CandidateMapperTest {
         publicCandidateOccupation.setOccupation(occupation);
 
         registrationInfo.setCandidateOccupations(Collections.singletonList(publicCandidateOccupation));
-        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
+        Candidate candidate = candidateAllFieldsMapper.candidateMapAllFields(registrationInfo);
         assertNotNull(candidate);
         final List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
         assertNotNull(candidateOccupations);
@@ -88,7 +91,7 @@ class CandidateMapperTest {
         publicCountry.setIsoCode("AU");
 
         registrationInfo.setCountry(publicCountry);
-        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
+        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationInfo);
         assertNotNull(candidate);
         final Country country = candidate.getCountry();
         assertNotNull(country);
@@ -105,7 +108,7 @@ class CandidateMapperTest {
 
         registrationInfo.setMaxEducationLevel(publicValue);
 
-        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
+        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationInfo);
         assertNotNull(candidate);
         final EducationLevel educationLevel = candidate.getMaxEducationLevel();
         assertNotNull(educationLevel);
@@ -122,7 +125,7 @@ class CandidateMapperTest {
 
         registrationInfo.setMaxEducationLevel(publicValue);
 
-        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationInfo);
+        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationInfo);
         assertNotNull(candidate);
         final EducationLevel educationLevel = candidate.getMaxEducationLevel();
         Assertions.assertNull(educationLevel);

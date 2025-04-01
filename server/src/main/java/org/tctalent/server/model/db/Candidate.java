@@ -64,6 +64,24 @@ import org.tctalent.server.util.SalesforceHelper;
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
 @Slf4j
 public class Candidate extends AbstractAuditableDomainObject<Long> implements HasPublicId {
+    public final static Set<String> JOINED_FIELDS = Set.of(
+        "candidateAttachments",
+        "candidateCertifications",
+        "candidateCitizenships",
+        "candidateDependants",
+        "candidateDestinations",
+        "candidateEducations",
+        "candidateExams",
+        "candidateJobExperiences",
+        "candidateLanguages",
+        "candidateNotes",
+        "candidateOccupations",
+        "candidateOpportunities",
+        "candidateReviewStatusItems",
+        "candidateSavedLists",
+        "candidateSkills",
+        "candidateVisaChecks"
+    );
 
     private String candidateNumber;
     private String publicId;
@@ -1246,25 +1264,39 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return candidateOccupations;
     }
 
-    public void setCandidateOccupations(List<CandidateOccupation> candidateOccupations) {
-        this.candidateOccupations = candidateOccupations;
+    public void setCandidateOccupations(List<CandidateOccupation> entities) {
+        this.candidateOccupations = entities;
+        if (entities != null) {
+            for (CandidateOccupation entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateNote> getCandidateNotes() {
         return candidateNotes;
     }
 
-    public void setCandidateNotes(List<CandidateNote> candidateNotes) {
-        this.candidateNotes = candidateNotes;
+    public void setCandidateNotes(List<CandidateNote> entities) {
+        this.candidateNotes = entities;
+        if (entities != null) {
+            for (CandidateNote entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateOpportunity> getCandidateOpportunities() {
         return candidateOpportunities;
     }
 
-    public void setCandidateOpportunities(
-        List<CandidateOpportunity> candidateOpportunities) {
-        this.candidateOpportunities = candidateOpportunities;
+    public void setCandidateOpportunities(List<CandidateOpportunity> entities) {
+        this.candidateOpportunities = entities;
+        if (entities != null) {
+            for (CandidateOpportunity entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public Set<CandidateProperty> getCandidateProperties() {
@@ -1279,42 +1311,66 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return candidateEducations;
     }
 
-    public void setCandidateEducations(List<CandidateEducation> candidateEducations) {
-        this.candidateEducations = candidateEducations;
+    public void setCandidateEducations(List<CandidateEducation> entities) {
+        this.candidateEducations = entities;
+        if (entities != null) {
+            for (CandidateEducation entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateLanguage> getCandidateLanguages() {
         return candidateLanguages;
     }
 
-    public void setCandidateLanguages(List<CandidateLanguage> candidateLanguages) {
-        this.candidateLanguages = candidateLanguages;
+    public void setCandidateLanguages(List<CandidateLanguage> entities) {
+        this.candidateLanguages = entities;
+        if (entities != null) {
+            for (CandidateLanguage entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateJobExperience> getCandidateJobExperiences() {
         return candidateJobExperiences;
     }
 
-    public void setCandidateJobExperiences(List<CandidateJobExperience> candidateJobExperiences) {
-        this.candidateJobExperiences = candidateJobExperiences;
+    public void setCandidateJobExperiences(List<CandidateJobExperience> entities) {
+        this.candidateJobExperiences = entities;
+        if (entities != null) {
+            for (CandidateJobExperience entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateCertification> getCandidateCertifications() {
         return candidateCertifications;
     }
 
-    public void setCandidateCertifications(List<CandidateCertification> candidateCertifications) {
-        this.candidateCertifications = candidateCertifications;
+    public void setCandidateCertifications(List<CandidateCertification> entities) {
+        this.candidateCertifications = entities;
+        if (entities != null) {
+            for (CandidateCertification entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public Set<CandidateReviewStatusItem> getCandidateReviewStatusItems() {
         return candidateReviewStatusItems;
     }
 
-    public void setCandidateReviewStatusItems(Set<CandidateReviewStatusItem> candidateReviewStatusItems) {
-        this.candidateReviewStatusItems = candidateReviewStatusItems;
+    public void setCandidateReviewStatusItems(Set<CandidateReviewStatusItem> entities) {
+        this.candidateReviewStatusItems = entities;
+        if (entities != null) {
+            for (CandidateReviewStatusItem entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
-
 
     public EducationMajor getMigrationEducationMajor() {
         return migrationEducationMajor;
@@ -1328,33 +1384,62 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return candidateSkills;
     }
 
-    public void setCandidateSkills(List<CandidateSkill> candidateSkills) {
-        this.candidateSkills = candidateSkills;
+    public void setCandidateSkills(List<CandidateSkill> entities) {
+        this.candidateSkills = entities;
+        if (entities != null) {
+            for (CandidateSkill entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateAttachment> getCandidateAttachments() { return candidateAttachments; }
 
-    public void setCandidateAttachments(List<CandidateAttachment> candidateAttachments) { this.candidateAttachments = candidateAttachments; }
+    public void setCandidateAttachments(List<CandidateAttachment> entities) {
+        this.candidateAttachments = entities;
+        if (entities != null) {
+            for (CandidateAttachment entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
+    }
 
     public List<CandidateCitizenship> getCandidateCitizenships() {
         return candidateCitizenships;
     }
 
-    public void setCandidateCitizenships(List<CandidateCitizenship> candidateCitizenships) {
-        this.candidateCitizenships = candidateCitizenships;
+    public void setCandidateCitizenships(List<CandidateCitizenship> entities) {
+        this.candidateCitizenships = entities;
+        if (entities != null) {
+            for (CandidateCitizenship entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<CandidateExam> getCandidateExams() { return candidateExams; }
 
-    public void setCandidateExams(List<CandidateExam> candidateExams) { this.candidateExams = candidateExams; }
+    public void setCandidateExams(List<CandidateExam> entities) {
+        this.candidateExams = entities;
+        if (entities != null) {
+            for (CandidateExam entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
+    }
 
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
         candidateVisaChecks.sort(null);
         return candidateVisaChecks;
     }
 
-    public void setCandidateVisaChecks(List<CandidateVisaCheck> candidateVisaChecks) {
-        this.candidateVisaChecks = candidateVisaChecks;
+    public void setCandidateVisaChecks(List<CandidateVisaCheck> entities) {
+        this.candidateVisaChecks = entities;
+        if (entities != null) {
+            for (CandidateVisaCheck entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     @Nullable
@@ -1755,14 +1840,28 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @Nullable
     public List<CandidateDependant> getCandidateDependants() { return candidateDependants; }
 
-    public void setCandidateDependants(List<CandidateDependant> candidateDependants) { this.candidateDependants = candidateDependants; }
+    public void setCandidateDependants(List<CandidateDependant> entities) {
+        this.candidateDependants = entities;
+        if (entities != null) {
+            for (CandidateDependant entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
+    }
 
     public List<CandidateDestination> getCandidateDestinations() {
         candidateDestinations.sort(null);
         return candidateDestinations;
     }
 
-    public void setCandidateDestinations(List<CandidateDestination> candidateDestinations) { this.candidateDestinations = candidateDestinations; }
+    public void setCandidateDestinations(List<CandidateDestination> entities) {
+        this.candidateDestinations = entities;
+        if (entities != null) {
+            for (CandidateDestination entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
+    }
 
     @Nullable
     public YesNo getDestLimit() { return destLimit; }
@@ -2339,8 +2438,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return candidateSavedLists;
     }
 
-    public void setCandidateSavedLists(Set<CandidateSavedList> candidateSavedLists) {
-        this.candidateSavedLists = candidateSavedLists;
+    public void setCandidateSavedLists(Set<CandidateSavedList> entities) {
+        this.candidateSavedLists = entities;
+        if (entities != null) {
+            for (CandidateSavedList entity : entities) {
+                entity.setCandidate(this);
+            }
+        }
     }
 
     public List<TaskAssignmentImpl> getTaskAssignments() {
