@@ -1850,7 +1850,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     }
 
     public List<CandidateDestination> getCandidateDestinations() {
-        candidateDestinations.sort(null);
+        if (candidateDestinations != null) {
+            candidateDestinations.sort(null);
+        }
         return candidateDestinations;
     }
 
