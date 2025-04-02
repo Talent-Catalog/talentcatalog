@@ -113,7 +113,6 @@ import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.model.db.mapper.CandidateAllFieldsMapper;
-import org.tctalent.server.model.db.mapper.CandidateNoJoinsMapper;
 import org.tctalent.server.model.db.mapper.UserMapper;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
@@ -242,7 +241,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final UserMapper userMapper;
-    private final CandidateNoJoinsMapper candidateNoJoinsMapper;
     private final CandidateAllFieldsMapper candidateAllFieldsMapper;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;

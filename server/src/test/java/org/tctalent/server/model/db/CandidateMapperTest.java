@@ -29,13 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.model.db.mapper.CandidateAllFieldsMapper;
-import org.tctalent.server.model.db.mapper.CandidateNoJoinsMapper;
 
 @Tag("skip-test-in-gradle-build")
 @SpringBootTest
-class CandidateNoJoinsMapperTest {
-    @Autowired
-    private CandidateNoJoinsMapper candidateNoJoinsMapper;
+class CandidateMapperTest {
     @Autowired
     private CandidateAllFieldsMapper candidateAllFieldsMapper;
 
@@ -46,7 +43,7 @@ class CandidateNoJoinsMapperTest {
     @Test
     void shouldMapEmptyData() {
         CandidateRegistration registrationInfo = new CandidateRegistration();
-        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationInfo);
+        Candidate candidate = candidateAllFieldsMapper.candidateMapAllFields(registrationInfo);
         assertNotNull(candidate);
     }
 
@@ -91,7 +88,7 @@ class CandidateNoJoinsMapperTest {
         publicCountry.setIsoCode("AU");
 
         registrationInfo.setCountry(publicCountry);
-        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationInfo);
+        Candidate candidate = candidateAllFieldsMapper.candidateMapAllFields(registrationInfo);
         assertNotNull(candidate);
         final Country country = candidate.getCountry();
         assertNotNull(country);
@@ -108,7 +105,7 @@ class CandidateNoJoinsMapperTest {
 
         registrationInfo.setMaxEducationLevel(publicValue);
 
-        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationInfo);
+        Candidate candidate = candidateAllFieldsMapper.candidateMapAllFields(registrationInfo);
         assertNotNull(candidate);
         final EducationLevel educationLevel = candidate.getMaxEducationLevel();
         assertNotNull(educationLevel);
@@ -125,7 +122,7 @@ class CandidateNoJoinsMapperTest {
 
         registrationInfo.setMaxEducationLevel(publicValue);
 
-        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationInfo);
+        Candidate candidate = candidateAllFieldsMapper.candidateMapAllFields(registrationInfo);
         assertNotNull(candidate);
         final EducationLevel educationLevel = candidate.getMaxEducationLevel();
         Assertions.assertNull(educationLevel);

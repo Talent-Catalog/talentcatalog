@@ -64,24 +64,6 @@ import org.tctalent.server.util.SalesforceHelper;
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
 @Slf4j
 public class Candidate extends AbstractAuditableDomainObject<Long> implements HasPublicId {
-    public final static Set<String> JOINED_FIELDS = Set.of(
-        "candidateAttachments",
-        "candidateCertifications",
-        "candidateCitizenships",
-        "candidateDependants",
-        "candidateDestinations",
-        "candidateEducations",
-        "candidateExams",
-        "candidateJobExperiences",
-        "candidateLanguages",
-        "candidateNotes",
-        "candidateOccupations",
-        "candidateOpportunities",
-        "candidateReviewStatusItems",
-        "candidateSavedLists",
-        "candidateSkills",
-        "candidateVisaChecks"
-    );
 
     private String candidateNumber;
     private String publicId;
