@@ -1224,13 +1224,8 @@ public class CandidateServiceImpl implements CandidateService {
             throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
         }
 
-        //Do mapper first so that mapper errors happen before any user is created.
-//        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationData);
-
-        Candidate candidate = candidateNoJoinsMapper.candidateEntityFieldsOnly(registrationData);
-        Candidate candidate2 = candidateAllFieldsMapper.candidateMapAllFields(registrationData);
-
-
+        //Map registration data to a Candidate entity
+        Candidate candidate = candidateAllFieldsMapper.candidateMapAllFields(registrationData);
 
         //Initial password is same as username.
         //TODO JC Prompt to change password on first login
@@ -1258,11 +1253,10 @@ public class CandidateServiceImpl implements CandidateService {
         /* Set the password */
         user.setPasswordEnc(passwordEncrypted);
 
-        //Save the user
-        user = userRepository.save(user);
+        //Add the user to the candidate
+        candidate.setUser(user);
 
         candidate.setPublicId(publicIDService.generatePublicID());
-        candidate.setUser(user);
 
         //Partner who is submitting registration
         final Long partnerId = request.getPartnerId();
@@ -1274,6 +1268,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setAuditFields(userService.getSystemAdminUser());
 
+        //Save the candidate to the DB
         candidate = save(candidate, true);
 
         //TODO JC Send email with login details to candidate

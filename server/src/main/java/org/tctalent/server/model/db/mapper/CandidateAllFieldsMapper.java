@@ -17,6 +17,7 @@
 package org.tctalent.server.model.db.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.model.db.Candidate;
 
@@ -37,6 +38,8 @@ import org.tctalent.server.model.db.Candidate;
 })
 public interface CandidateAllFieldsMapper {
 
+    //Take account of one changed field name
+    @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
     Candidate candidateMapAllFields(CandidateRegistration registrationInfo);
 
 }
