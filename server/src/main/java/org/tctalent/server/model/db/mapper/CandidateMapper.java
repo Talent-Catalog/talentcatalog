@@ -36,7 +36,7 @@ import org.tctalent.server.model.db.Candidate;
     PartnerMapper.class,
     SurveyTypeMapper.class
 })
-public interface CandidateAllFieldsMapper {
+public interface CandidateMapper {
 
     //Take account of one changed field name
     @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")

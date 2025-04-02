@@ -112,7 +112,7 @@ import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.YesNoUnsure;
-import org.tctalent.server.model.db.mapper.CandidateAllFieldsMapper;
+import org.tctalent.server.model.db.mapper.CandidateMapper;
 import org.tctalent.server.model.db.mapper.UserMapper;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
@@ -241,7 +241,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final UserMapper userMapper;
-    private final CandidateAllFieldsMapper candidateAllFieldsMapper;
+    private final CandidateMapper candidateMapper;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
     private final FileSystemService fileSystemService;
@@ -1223,7 +1223,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Map registration data to a Candidate entity
-        Candidate candidate = candidateAllFieldsMapper.candidateMapAllFields(registrationData);
+        Candidate candidate = candidateMapper.candidateMapAllFields(registrationData);
 
         //Initial password is same as username.
         //TODO JC Prompt to change password on first login
