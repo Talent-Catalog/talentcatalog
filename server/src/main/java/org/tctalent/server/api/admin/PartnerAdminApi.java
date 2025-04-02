@@ -118,7 +118,7 @@ public class PartnerAdminApi implements
         return PartnerDtoHelper.getPartnerDto().build(partner);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_SYSTEMADMIN')")
     @GetMapping("public-api-key/{api-key}")
     public ResponseEntity<PublicApiPartnerDto> findPartnerByPublicApiKey(@PathVariable("api-key") String apiKey) {
         PublicApiPartnerDto partner = partnerService.findPublicApiPartnerDtoByKey(apiKey);

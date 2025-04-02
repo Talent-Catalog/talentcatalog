@@ -75,10 +75,17 @@ export class DuolingoCouponService {
   }
 
   /**
-   * Get the count of available coupons
+   * Get the count of all available coupons
    */
-  countAvailableCoupons(): Observable<any> {
-    return this.http.get<any>(`${this.apiBaseUrl}/count`);
+  countAllAvailableCoupons(): Observable<any> {
+    return this.http.get<any>(`${this.apiBaseUrl}/count-all`);
+  }
+
+  /**
+   * Get the count of available proctored coupons
+   */
+  countAvailableProctoredCoupons(): Observable<any> {
+    return this.http.get<any>(`${this.apiBaseUrl}/count-proctored`);
   }
 
 }
