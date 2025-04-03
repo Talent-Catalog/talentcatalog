@@ -80,7 +80,7 @@ public class CandidateOppBackgroundProcessingServiceImpl
           .collect(Collectors.toSet());
 
       for (int i = 0; i < totalItems; i += batchSize) {
-        List<String> batch = sfIds.subList(i, Math.min(i + batchSize, totalItems));
+        List<String> batch = new ArrayList<>(sfIds.subList(i, Math.min(i + batchSize, totalItems)));
 
         // Remove any ID that exists in the reopenedOppIds Set
         batch.removeIf(sfOppIds::contains);

@@ -775,18 +775,26 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         int updates = 0; // For tracking no. of records actually updated
 
         for (Opportunity sfOpp : oppBatch) {
+            try {
+                // Fetch TC equivalent of SF Opp
+                String sfId = sfOpp.getId();
+                CandidateOpportunity tcOpp =
+                    candidateOpportunityRepository.findBySfId(sfId).orElse(null);
 
-            // Fetch TC equivalent of SF Opp
-            String sfId = sfOpp.getId();
-            CandidateOpportunity tcOpp =
-                candidateOpportunityRepository.findBySfId(sfId).orElse(null);
-
-            if (tcOpp != null) {
-                CandidateOpportunityParams oppParams = extractParamsFromSalesforceOpp(sfOpp, tcOpp);
-                if (oppParams != null) {
-                    updateCandidateOpportunity(tcOpp, oppParams);
-                    updates++;
+                if (tcOpp != null) {
+                    CandidateOpportunityParams oppParams = extractParamsFromSalesforceOpp(sfOpp, tcOpp);
+                    if (oppParams != null) {
+                        updateCandidateOpportunity(tcOpp, oppParams);
+                        updates++;
+                    }
                 }
+
+            } catch (Exception e) {
+                LogBuilder.builder(log)
+                    .action("Process case update batch")
+                    .message("Failed to process case with SF ID " + sfOpp.getId() + ". Error: " +
+                        e.getMessage())
+                    .logError(e);
             }
         }
 
