@@ -103,7 +103,9 @@ export class SelectListComponent implements OnInit {
       shared: !this.readOnly,
       global: !this.employerPartner && !this.readOnly,
       fixed: false,
-      ownedByMyPartner: this.employerPartner
+      ownedByMyPartner: this.employerPartner,
+      // Don't allow selection of a list if it is a closed submission list
+      sfOppClosed: false
     };
 
     this.savedListService.search(request).subscribe(
