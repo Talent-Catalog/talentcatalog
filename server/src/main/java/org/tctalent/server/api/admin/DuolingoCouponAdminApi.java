@@ -135,13 +135,24 @@ public class DuolingoCouponAdminApi {
   }
 
   // Endpoint to count the number of available coupons.
-  @GetMapping("count")
-  public Map<String, Object> countAvailableCoupons() {
+  @GetMapping("count-all")
+  public Map<String, Object> countAllAvailableCoupons() {
     try {
-      int count = couponService.countAvailableCoupons();
+      int count = couponService.countAllAvailableCoupons();
       return Map.of("status", "success", "count", count);
     } catch (RuntimeException e) {
       return Map.of("status", "failure", "message", "Failed to count available coupons.");
+    }
+  }
+
+  // Endpoint to count the number of available coupons.
+  @GetMapping("count-proctored")
+  public Map<String, Object> countAvailableCoupons() {
+    try {
+      int count = couponService.countAvailableProctoredCoupons();
+      return Map.of("status", "success", "count", count);
+    } catch (RuntimeException e) {
+      return Map.of("status", "failure", "message", "Failed to count available proctored coupons.");
     }
   }
 

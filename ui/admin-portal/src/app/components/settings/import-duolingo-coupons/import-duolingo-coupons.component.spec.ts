@@ -21,7 +21,7 @@ describe('ImportDuolingoCouponsComponent', () => {
 
     fixture = TestBed.createComponent(ImportDuolingoCouponsComponent);
     component = fixture.componentInstance;
-    mockDuolingoCouponService.countAvailableCoupons = jasmine.createSpy('countAvailableCoupons').and.returnValue(of(100)); // Mock the return value if needed
+    mockDuolingoCouponService.countAvailableProctoredCoupons = jasmine.createSpy('countAvailableProctoredCoupons').and.returnValue(of(100)); // Mock the return value if needed
 
     fixture.detectChanges();
   });
