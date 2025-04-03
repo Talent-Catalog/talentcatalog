@@ -755,6 +755,12 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setNationality(countryRepository.getReferenceById(0L));
         candidate.setMaxEducationLevel(educationLevelRepository.getReferenceById(0L));
 
+        candidate = saveNewCandidate(partner, candidate);
+
+        return candidate;
+    }
+
+    private Candidate saveNewCandidate(Partner partner, Candidate candidate) {
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
 
@@ -767,10 +773,8 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setPartnerRef(candidateNumber);
         }
 
-        //Now save again with candidateNumber, updating Elasticsearch
-        candidate = save(candidate, true);
-
-        return candidate;
+        //Save candidate to get id (but don't update Elasticsearch yet)
+        return save(candidate, false);
     }
 
     @Override
@@ -1229,16 +1233,13 @@ public class CandidateServiceImpl implements CandidateService {
         //TODO JC Prompt to change password on first login
         String passwordEncrypted = passwordHelper.encodePassword(username);
 
-        //Must have source partner
-        //TODO JC Compute sourcePartner. Use checkForChangedPartner, defaulting to DefaultSourcePartner
-        String countryIsoCode = null;
-        if (registrationData.getCountry() != null) {
-            countryIsoCode = registrationData.getCountry().getIsoCode();
+        //Assign source partner based on country if there is a country assigned partner.
+        Partner sourcePartner =
+            partnerService.getAutoAssignablePartnerByCountry(candidate.getCountry());
+        if (sourcePartner == null) {
+            //Use default source partner if no country assigned one.
+            sourcePartner = partnerService.getDefaultSourcePartner();
         }
-//        countryService.findCountryByIsoCode(countryIsoCode); todo
-        //TODO JC For now just assign default source partner
-        Partner sourcePartner = partnerService.getDefaultSourcePartner();
-
 
         //UserMapper creates user from Identity
         User user = userMapper.userIdentityToUser(registrationData.getIdentity());
@@ -1267,7 +1268,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setAuditFields(userService.getSystemAdminUser());
 
         //Save the candidate to the DB
-        candidate = save(candidate, true);
+        candidate = saveNewCandidate(sourcePartner, candidate);
 
         //TODO JC Send email with login details to candidate
 
