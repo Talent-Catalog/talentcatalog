@@ -235,7 +235,7 @@ rel="noopener noreferrer nofollow" target="_blank">Terraform video 3</a>.
 - Deployed AWS Aurora Postgres DB for anonymised candidate data used by TC Intelligence
 - Introduce Micrometer and Spring Actuator to TC services for memory and cpu usage metrics
 - TC API: Deployed Mongo DB for anonymised candidate data used by TC API
-- TC API: Deploy interactive API specification documentation on Redocly cloud
+- TC API: Deployed interactive API specification documentation on Redocly cloud
 - TC API: Adds support for AWS Elastic Load Balancer health checks for the API service
 
 ---
