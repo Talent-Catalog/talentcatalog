@@ -57,7 +57,8 @@ export class SelectListComponent implements OnInit {
   jobId: number;
   loading: boolean;
   canChangeStatuses: boolean = true;
-  myListsOnly: boolean = false;
+  readOnly: boolean = false;
+  employerPartner: boolean = false;
   saving: boolean;
   action: string = "Save";
   title: string = "Select List";
@@ -99,9 +100,10 @@ export class SelectListComponent implements OnInit {
     this.loading = true;
     const request: SearchSavedListRequest = {
       owned: true,
-      shared: !this.myListsOnly,
-      global: !this.myListsOnly,
-      fixed: false
+      shared: !this.readOnly,
+      global: !this.employerPartner && !this.readOnly,
+      fixed: false,
+      ownedByMyPartner: this.employerPartner
     };
 
     this.savedListService.search(request).subscribe(

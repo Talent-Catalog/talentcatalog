@@ -18,6 +18,8 @@ package org.tctalent.server.repository.db;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.HashSet;
@@ -29,6 +31,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 
 /**
@@ -99,7 +102,7 @@ public class GetSavedListsQuery implements Specification<SavedList> {
             }
         }
 
-        // (shared OR owned OR global)
+        // (shared OR owned OR global OR owned by partner)
         Predicate disjunction = cb.disjunction();
         if (request.getGlobal() != null && request.getGlobal()) {
             disjunction = cb.or(disjunction,
@@ -116,7 +119,18 @@ public class GetSavedListsQuery implements Specification<SavedList> {
                     sharedIDs.add(sharedList.getId());
                 }
                 disjunction = cb.or(disjunction,
-                        savedList.get("id").in( sharedIDs )
+                        savedList.get("id").in(sharedIDs)
+                );
+            }
+        }
+        //If saved list's job is owned by this user's partner
+        if (request.getOwnedByMyPartner() != null && request.getOwnedByMyPartner()) {
+            if (loggedInUser != null) {
+                Partner loggedInUserPartner = loggedInUser.getPartner();
+                // For reference: the default join type for a join is INNER
+                Join<Object, Object> jobOpp = savedList.join("sfJobOpp", JoinType.LEFT);
+                disjunction = cb.or(disjunction,
+                        cb.equal(jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
                 );
             }
         }

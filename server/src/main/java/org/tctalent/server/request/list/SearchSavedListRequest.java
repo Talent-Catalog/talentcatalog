@@ -38,6 +38,12 @@ public class SearchSavedListRequest extends SearchCandidateSourceRequestPaged {
     private Boolean registeredJob;
 
     /**
+     * If true search will include lists where the partner that is associated with the job (jobCreator) is the same
+     * as the loggedInUser partner
+     */
+    private Boolean ownedByMyPartner;
+
+    /**
      * Only affects search for SavedLists where sfJoblink is not null - ie SavedList's which have
      * an associated job opportunity. Otherwise its value is ignored.
      * Lists which have associated job opportunities will be selected based on whether or not the

@@ -979,7 +979,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
     let readOnly = this.authorizationService.isReadOnly();
-    modal.componentInstance.myListsOnly = readOnly;
+    let employerPartner = this.authorizationService.isEmployerPartner();
+    modal.componentInstance.readOnly = readOnly;
+    modal.componentInstance.employerPartner = employerPartner;
     modal.componentInstance.canChangeStatuses = !readOnly;
     if (this.candidateSource.sfJobOpp != null) {
       modal.componentInstance.jobId = this.candidateSource?.sfJobOpp?.id;
@@ -1545,7 +1547,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     modal.componentInstance.action = "Copy";
     modal.componentInstance.title = "Copy to another List";
     let readOnly = this.authorizationService.isReadOnly();
-    modal.componentInstance.myListsOnly = readOnly;
+    let employerPartner = this.authorizationService.isEmployerPartner();
+    modal.componentInstance.readOnly = readOnly;
+    modal.componentInstance.employerPartner = employerPartner;
     modal.componentInstance.canChangeStatuses = !readOnly;
 
     modal.componentInstance.excludeList = this.candidateSource;
