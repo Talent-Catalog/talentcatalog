@@ -43,7 +43,7 @@ candidates benefit from increased access to jobs and refugee services.
 </div>
 
 Discover the potential of the TC API for yourself by visiting our 
-[Interactive API Documentation](https://talent-catalog-api.redocly.app/openapi). Here, you can try 
+[Interactive API Documentation](https://tc-api.redocly.app/openapi). Here, you can try 
 the API for free using mock data, explore our detailed endpoint documentation, and interact with our 
 API in a hands-on environment.
 
