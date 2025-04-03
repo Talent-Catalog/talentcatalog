@@ -788,10 +788,12 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
                         updates++;
                     }
                 }
+
             } catch (Exception e) {
                 LogBuilder.builder(log)
                     .action("Process case update batch")
-                    .message("Failed to process case with ID " + sfOpp.getId() + ". Error: " + e.getMessage())
+                    .message("Failed to process case with SF ID " + sfOpp.getId() + ". Error: " +
+                        e.getMessage())
                     .logError(e);
             }
         }
