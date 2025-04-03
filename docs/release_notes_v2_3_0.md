@@ -213,7 +213,8 @@ rel="noopener noreferrer nofollow" target="_blank">Terraform video 2</a>,
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 3</a>.
 - TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog API</a>.
 - TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api-spec" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog OpenAPI specification</a>.
-- TC API: Use OpenAPI code generation for Talent Catalog API models and controllers and Mapstuct to map from OpenAPI models to anonymised JPA entities and Mongo documents
+- TC API: Using OpenAPI code generation for Talent Catalog API models and controllers
+- TC API: Using MapStruct to map from OpenAPI models to anonymised JPA entities and Mongo documents
 - TC API: Introduces Spring Batch to perform systematic anonymisation of candidate profiles from TC database
 - TC API: Support Google naming conventions for API enums
 
