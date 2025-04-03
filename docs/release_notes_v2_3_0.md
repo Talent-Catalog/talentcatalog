@@ -97,13 +97,15 @@ Helpful TC user guides:
 
 ## Data Improvements
 - Expose Country ISO codes and Occupation ISCO codes
-- New icon identifying potential duplicate candidate profiles, updating daily and in real-time by the resolution modal opened when icon clicked (HOTFIX)
+- New icon identifying potential duplicate candidate profiles, updating daily and in real-time by the resolution modal opened when icon clicked
 - Housekeeping undertaken to align TC data with Salesforce Employer Opportunities
-- Rename tbbShortName to tcShortName
-- Rename task field 'helpLink' to 'docLink' as help links can now be linked to in rich text task descriptions (see #1829). Repurposed field to docLink to be used to display documents in iframe in tasks.
+- Renamed tbbShortName to tcShortName
+- Renamed task field 'helpLink' to 'docLink' as help links can now be linked to in rich text task descriptions - 'docLink' can now be used to display documents in iframe in tasks.
 - Daily scheduled methods keep TC Opportunity data aligned with changes made on Salesforce
 - Candidate relocated address replicated in Salesforce, dynamically displayed only if present
 - Redundant Candidate Visa Job Check fields removed from DB
+- TC API: Implement handling for skippable exceptions arising during the API anonymisation process
+- TC API: Implement a process to capture any batch failed items during anonymisation so they can be processed manually
 
 # UI / UX Enhancements
 <div class="card-container">
@@ -142,15 +144,22 @@ Helpful TC user guides:
 - Make Job Description more visible on Publish Job screen
 - Enhanced cursor behaviour for clickable links
 - More informative tool-tips by clarifying support text and UI simplification to assist employer users in creating jobs and using candidate search
+- Support for custom donation fields on SF records
+- Updated automated process for Canada Stream A one-month checks
+- Compute year of birth for anonymised TC API candidates
+- TC API: Distinguish TC partner from candidate life partner
 
 # Performance Improvements
 
 - Source partner Candidate Chats tab SQL refactored for faster load times
 - Improved loading times for candidate profiles, both in list/search view and full profile view
+- Resolved system performance issues triggered by AWS Fargate auto-scaling
 
 # Security Fixes
 - De-anonymisation of CV downloads restricted by partner type
 - Display of Jobs data restricted by partner type
+- Implement authentication and authorisation handling for TC API access
+- TC API: Implement API Key Auth for TC API endpoints
 
 # Bug Fixes
 
@@ -170,12 +179,22 @@ Helpful TC user guides:
 - Next Step audit stamps replicated in Salesforce
 - Character limit on Job naming to conform with Salesforce restrictions
 - Submission list view infinite loading indicator issue resolved
-- Candidate email search made case-insensitive
 - Spring Boot Security request matchers pattern change
 - Fixed tooltip display issue in candidate search
 - Next Step column displaying correctly in Submission List view
 - Candidates to only receive new chats notification email if the chats are unread
 - Jobs tab on Candidate Portal only appears if there are opportunities past the <em>Prospect</em> stage, except for the closed stage <em>'Candidate was mistakenly proposed as a prospect for the job'.</em>
+- Fixed a bug where an uploaded file marked as a CV was not actually marking the attachment as a CV
+- Fixed a bug where reactions to post were not being seen until the post was manually refreshed
+- Fixed a bug where a user's non-submission lists were being inadvertently associated with a job
+- Fixed broken eligibility links in the candidate portal
+- Fixed an issue where the system admin api for partner reassignment was not working in staging and prod
+- Fixed a bug where Redis keys were not being correctly configured following the upgrade to Spring 3
+- Fixed a bug where minimum spoken and written language levels were all selecting simultaneously following the upgrade to Angular 16
+- TC API: Fixes a bug where Aurora DB writes could inadvertently fail due to ID clashes with hibernate sequence number generation
+- TC API: Fixes a bug where Mongo DB writes could inadvertently duplicate due to no Mongo transaction management in a non-clustered database
+- TC API: Fixes a bug where authorisation was failing on partner lookups by API key
+- TC API: Fixes a bug to return the correct value in total elements in response to API requests
 
 # Developer Notes
 - Upgraded to Spring Boot 3
@@ -190,10 +209,32 @@ rel="noopener noreferrer nofollow" target="_blank">Terraform video 1</a>,
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 2</a>, 
 <a href="https://drive.google.com/file/d/1wLvXbuIZViKFnqJZd_R5HMsBVQrqhD_4/view?usp=drive_link"
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 3</a>.
+- Upgraded Node to version 18 and Angular to version 16
+- TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog API</a>.
+- TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api-spec" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog OpenAPI specification</a>.
+- TC API: Use OpenAPI code generation for Talent Catalog API models and controllers and Mapstuct to map from OpenAPI models to anonymised JPA entities and Mongo documents
+- TC API: Introduces Spring Batch to perform systematic anonymisation of candidate profiles from TC database
+- TC API: Support Google naming conventions for API enums
 
 ## Code Refactoring
 - Removed unused 'relocating dependants' field from visa job check, this was transferred to candidate opportunity in prior release.
 - Removed unused candidate portal component - RegistrationLandingComponent
+
+## Continuous Integration & Deployment
+- Introduced a process for cherry-picking commits from staging to production to support Hotfixes from committed updates
+- Use docker-compose to for local TC services: Postgres, Elasticsearch, Kibana and Redis
+- Implements CORS for Amplify PR previews on the candidate portal and admin portal
+- TC API: Publish TC API versioned artefacts on Maven Central signed with GPG keys
+- TC API: Auto-deploy API artefacts to Maven in the CI pipeline
+- TC API: Promote tagged Docker images to TC API cloud registry on AWS
+- TC API: Use Terraform to deploy the TC API on to AWS
+
+## Cloud Enhancements
+- Deployed AWS Aurora Postgres DB for anonymised candidate data used by TC Intelligence
+- Introduce Micrometer and Spring Actuator to TC services for memory and cpu usage metrics
+- TC API: Deployed Mongo DB for anonymised candidate data used by TC API
+- TC API: Deploy interactive API specification documentation on Redocly cloud
+- TC API: Adds support for AWS Elastic Load Balancer health checks for the API service
 
 ---
 
