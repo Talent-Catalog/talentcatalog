@@ -106,6 +106,7 @@ Helpful TC user guides:
 - Redundant Candidate Visa Job Check fields removed from DB
 - TC API: Implement handling for skippable exceptions arising during the API anonymisation process
 - TC API: Implement a process to capture any batch failed items during anonymisation so they can be processed manually
+- TC API: Include employed status candidate profiles in anonymised databases
 
 # UI / UX Enhancements
 <div class="card-container">
@@ -185,7 +186,7 @@ Helpful TC user guides:
 - Candidates to only receive new chats notification email if the chats are unread
 - Jobs tab on Candidate Portal only appears if there are opportunities past the <em>Prospect</em> stage, except for the closed stage <em>'Candidate was mistakenly proposed as a prospect for the job'.</em>
 - Fixed a bug where an uploaded file marked as a CV was not actually marking the attachment as a CV
-- Fixed a bug where reactions to post were not being seen until the post was manually refreshed
+- Fixed a bug where reactions to posts were not being seen until the post was manually refreshed
 - Fixed a bug where a user's non-submission lists were being inadvertently associated with a job
 - Fixed broken eligibility links in the candidate portal
 - Fixed an issue where the system admin api for partner reassignment was not working in staging and prod
@@ -198,7 +199,8 @@ Helpful TC user guides:
 
 # Developer Notes
 - Upgraded to Spring Boot 3
-- Upgraded Angular to recent version
+- Upgraded Angular to version 16
+- Upgraded Node to version 18 
 - MFA Authenticators now show TalentCatalog instead of TBB
 - Updated copyright
 - Deprecated Github Actions Upload Artifact version upgraded
@@ -209,7 +211,6 @@ rel="noopener noreferrer nofollow" target="_blank">Terraform video 1</a>,
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 2</a>, 
 <a href="https://drive.google.com/file/d/1wLvXbuIZViKFnqJZd_R5HMsBVQrqhD_4/view?usp=drive_link"
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 3</a>.
-- Upgraded Node to version 18 and Angular to version 16
 - TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog API</a>.
 - TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api-spec" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog OpenAPI specification</a>.
 - TC API: Use OpenAPI code generation for Talent Catalog API models and controllers and Mapstuct to map from OpenAPI models to anonymised JPA entities and Mongo documents
