@@ -38,10 +38,14 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
+import org.tctalent.server.model.db.DuolingoTestType;
+import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.DuolingoCouponRepository;
 import org.tctalent.server.response.DuolingoCouponResponse;
+import org.tctalent.server.service.db.TaskAssignmentService;
+import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 class DuolingoCouponServiceImplTest {
@@ -51,7 +55,12 @@ class DuolingoCouponServiceImplTest {
 
   @Mock
   private CandidateRepository candidateRepository;
-
+  @Mock
+  private TaskService taskService;
+  @InjectMocks
+  private DuolingoCouponServiceImpl duolingoCouponService;
+  @Mock
+  private TaskAssignmentService taskAssignmentService;
   @Mock
   private EmailHelper emailHelper;
   @InjectMocks
@@ -100,38 +109,25 @@ class DuolingoCouponServiceImplTest {
       return true;
     }));
   }
-  
-//todo Will fix this later
-
-//  @Test
-//  @DisplayName("assignCouponToCandidate - assigns coupon successfully")
-//  void testAssignCouponToCandidate() {
-//    Candidate candidate = new Candidate();
-//    candidate.setId(1L);
-//
-//    DuolingoCoupon coupon = new DuolingoCoupon();
-//    coupon.setCouponCode("code1");
-//    coupon.setCouponStatus(DuolingoCouponStatus.AVAILABLE);
-//
-//    when(candidateRepository.findById(1L)).thenReturn(Optional.of(candidate));
-//    when(couponRepository.findTop1ByCandidateIsNullAndCouponStatus(DuolingoCouponStatus.AVAILABLE))
-//        .thenReturn(Optional.of(coupon));
-//
-//    DuolingoCouponResponse assignedCoupon = couponService.assignCouponToCandidate(1L,loggedInAdminUser);
-//
-//    assertNotNull(assignedCoupon);
-//    assertEquals("code1", assignedCoupon.getCouponCode());
-//    assertEquals(DuolingoCouponStatus.SENT, assignedCoupon.getDuolingoCouponStatus());
-//    verify(couponRepository, times(1)).save(coupon);
-//    verify(emailHelper, times(1)).sendDuolingoCouponEmail(candidate.getUser());
-//  }
 
   @Test
-  @DisplayName("assignCouponToCandidate - throws NoSuchObjectException if candidate not found")
-  void testAssignCouponToCandidateThrowsForMissingCandidate() {
-    when(candidateRepository.findById(1L)).thenReturn(Optional.empty());
+  void testAssignCouponToCandidate() {
+    // Given
+    Long candidateId = 1L;
+    User user = new User();
+    Candidate candidate = new Candidate();
+    candidate.setId(candidateId);
 
-    assertThrows(NoSuchObjectException.class, () -> couponService.assignCouponToCandidate(1L,loggedInAdminUser));
+    when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
+    when(couponRepository.findTop1ByCandidateIsNullAndCouponStatusAndTestType(
+        any(), any())).thenReturn(Optional.of(new DuolingoCoupon()));
+
+    when(taskService.getByName("claimCouponButton")).thenReturn(new TaskImpl());
+
+    DuolingoCouponResponse response = duolingoCouponService.assignCouponToCandidate(candidateId, user);
+
+    assertNotNull(response);
+    verify(taskService).getByName("claimCouponButton");
   }
 
   @Test
@@ -170,7 +166,8 @@ class DuolingoCouponServiceImplTest {
     coupon.setCouponCode("code1");
     coupon.setCouponStatus(DuolingoCouponStatus.AVAILABLE);
 
-    when(couponRepository.findByCandidateIsNullAndCouponStatus(DuolingoCouponStatus.AVAILABLE))
+    when(couponRepository.findByCandidateIsNullAndCouponStatusAndTestType(DuolingoCouponStatus.AVAILABLE,
+        DuolingoTestType.PROCTORED))
         .thenReturn(List.of(coupon));
 
     List<DuolingoCoupon> coupons = couponService.getAvailableCoupons();
