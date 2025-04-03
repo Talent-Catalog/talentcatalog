@@ -97,10 +97,10 @@ Helpful TC user guides:
 
 ## Data Improvements
 - Expose Country ISO codes and Occupation ISCO codes
-- New icon identifying potential duplicate candidate profiles, updating daily and in real-time by the resolution modal opened when icon clicked (HOTFIX)
+- New icon identifying potential duplicate candidate profiles, updating daily and in real-time by the resolution modal opened when icon clicked
 - Housekeeping undertaken to align TC data with Salesforce Employer Opportunities
-- Rename tbbShortName to tcShortName
-- Rename task field 'helpLink' to 'docLink' as help links can now be linked to in rich text task descriptions (see #1829). Repurposed field to docLink to be used to display documents in iframe in tasks.
+- Renamed tbbShortName to tcShortName
+- Renamed task field 'helpLink' to 'docLink' as help links can now be linked to in rich text task descriptions - 'docLink' can now be used to display documents in iframe in tasks.
 - Daily scheduled methods keep TC Opportunity data aligned with changes made on Salesforce
 - Candidate relocated address replicated in Salesforce, dynamically displayed only if present
 - Redundant Candidate Visa Job Check fields removed from DB
