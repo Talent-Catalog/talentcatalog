@@ -81,13 +81,13 @@ Helpful TC user guides:
 ## General Improvements
 
 - Email verification implemented for both candidate and admin users to reduce the number of bad or mistyped emails
-- Option to 'Skip Candidate Search' on a job, this allows employers to indicate whether they want source partners to search for candidates or prefer to 'skip' and proceed only with candidates they’ve added to the submission list.
+- Option to 'Skip Candidate Search' on a job, this allows employers to indicate whether they want source partners to search for candidates or prefer to 'skip' and proceed only with candidates they’ve added to the submission list
 - Capture latest tab via the URL's tab parameter allowing for direct navigation to tab and will allow heat mapping on each tab
 - Selection of stats in TC Stats (max 8) allowing stats to be run on the full database without performance issues
 - Removed 'Run Old Stats' button from TC Stats as has been improved with the newer 'Run Stats' button
 - Tasks have rich text descriptions so that links and formatting can be added to a task description
-- Added relocated address fields (address, city, state, country) to candidate. Updatable on the candidate portal once the candidate has a case that is past the job offer stage. Can be updated anytime on the admin portal.
-- Relocated country auto-populates with the destination country when a candidate's case is moved to or past the relocated stage.
+- Added relocated address fields (address, city, state, country) to candidate. Updatable on the candidate portal once the candidate has a case that is past the job offer stage. Can be updated anytime on the admin portal
+- Relocated country auto-populates with the destination country when a candidate's case is moved to or past the relocated stage
 - When a relocated address field is updated a candidate note is created for tracking purposes
 - Candidates are automatically informed about Pathway Club (by email) when they have accepted a job offer
 - Job titles now editable by owners and System Admins after publishing
@@ -102,7 +102,7 @@ Helpful TC user guides:
 - New icon identifying potential duplicate candidate profiles, updating daily and in real-time by the resolution modal opened when icon clicked
 - Housekeeping undertaken to align TC data with Salesforce Employer Opportunities
 - Renamed tbbShortName to tcShortName
-- Renamed task field 'helpLink' to 'docLink' as help links can now be linked to in rich text task descriptions - 'docLink' can now be used to display documents in iframe in tasks.
+- Renamed task field 'helpLink' to 'docLink' as help links can now be linked to in rich text task descriptions - 'docLink' can now be used to display documents in iframe in tasks
 - Daily scheduled methods keep TC Opportunity data aligned with changes made on Salesforce
 - Candidate relocated address replicated in Salesforce, dynamically displayed only if present
 - Redundant Candidate Visa Job Check fields removed from DB
@@ -187,7 +187,7 @@ Helpful TC user guides:
 - Fixed tooltip display issue in candidate search
 - Next Step column displaying correctly in Submission List view
 - Candidates to only receive new chats notification email if the chats are unread
-- Jobs tab on Candidate Portal only appears if there are opportunities past the <em>Prospect</em> stage, except for the closed stage <em>'Candidate was mistakenly proposed as a prospect for the job'.</em>
+- Jobs tab on Candidate Portal only appears if there are opportunities past the <em>Prospect</em> stage, except for the closed stage <em>'Candidate was mistakenly proposed as a prospect for the job'</em>
 - Fixed a bug where an uploaded file marked as a CV was not actually marking the attachment as a CV
 - Fixed a bug where reactions to posts were not being seen until the post was manually refreshed
 - Fixed a bug where a user's non-submission lists were being inadvertently associated with a job
@@ -214,16 +214,16 @@ rel="noopener noreferrer nofollow" target="_blank">Terraform video 1</a>,
 <a href="https://drive.google.com/file/d/1kEiK77T8_krmqX-TxVodmNAJhDznbocA/view?usp=drive_link" 
 rel="noopener noreferrer nofollow" target="_blank">Terraform video 2</a>, 
 <a href="https://drive.google.com/file/d/1wLvXbuIZViKFnqJZd_R5HMsBVQrqhD_4/view?usp=drive_link"
-rel="noopener noreferrer nofollow" target="_blank">Terraform video 3</a>.
-- TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog API</a>.
-- TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api-spec" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog OpenAPI specification</a>.
+rel="noopener noreferrer nofollow" target="_blank">Terraform video 3</a>
+- TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog API</a>
+- TC API: See our new Git repo for the <a href="https://github.com/Talent-Catalog/tc-api-spec" rel="noopener noreferrer nofollow" target="_blank">Talent Catalog OpenAPI specification</a>
 - TC API: Using OpenAPI code generation for Talent Catalog API models and controllers
 - TC API: Using MapStruct to map from OpenAPI models to anonymised JPA entities and Mongo documents
 - TC API: Introduces Spring Batch to perform systematic anonymisation of candidate profiles from TC database
 - TC API: Support Google naming conventions for API enums
 
 ## Code Refactoring
-- Removed unused 'relocating dependants' field from visa job check, this was transferred to candidate opportunity in prior release.
+- Removed unused 'relocating dependants' field from visa job check, this was transferred to candidate opportunity in prior release
 - Removed unused candidate portal component - RegistrationLandingComponent
 
 ## Continuous Integration & Deployment
