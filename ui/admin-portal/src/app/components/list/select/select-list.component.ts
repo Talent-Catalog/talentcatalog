@@ -21,6 +21,7 @@ import {isSubmissionList, SavedList, SearchSavedListRequest} from '../../../mode
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {JobNameAndId} from "../../../model/job";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 
 export interface TargetListSelection {
@@ -57,7 +58,8 @@ export class SelectListComponent implements OnInit {
   jobId: number;
   loading: boolean;
   canChangeStatuses: boolean = true;
-  myListsOnly: boolean = false;
+  readOnly: boolean = false;
+  employerPartner: boolean = false;
   saving: boolean;
   action: string = "Save";
   title: string = "Select List";
@@ -69,7 +71,8 @@ export class SelectListComponent implements OnInit {
   constructor(
     private savedListService: SavedListService,
     private activeModal: NgbActiveModal,
-    private fb: UntypedFormBuilder) { }
+    private fb: UntypedFormBuilder,
+    private authorizationService: AuthorizationService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -99,9 +102,12 @@ export class SelectListComponent implements OnInit {
     this.loading = true;
     const request: SearchSavedListRequest = {
       owned: true,
-      shared: !this.myListsOnly,
-      global: !this.myListsOnly,
-      fixed: false
+      shared: !this.readOnly,
+      global: !this.employerPartner && !this.readOnly,
+      fixed: false,
+      ownedByMyPartner: this.employerPartner && !this.readOnly,
+      // Don't allow selection of a list if it is a closed submission list
+      sfOppClosed: false
     };
 
     this.savedListService.search(request).subscribe(
@@ -182,5 +188,9 @@ export class SelectListComponent implements OnInit {
 
   selectedSubmissionList(): boolean {
     return isSubmissionList(this.savedList);
+  }
+
+  isListMine(): boolean {
+    return this.authorizationService.isCandidateSourceMine(this.savedList);
   }
 }
