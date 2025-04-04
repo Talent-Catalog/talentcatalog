@@ -492,7 +492,6 @@ public class CandidateBuilderSelector {
     private DtoBuilder candidateLanguageDto() {
         return new DtoBuilder()
             .add("id")
-            .add("migrationLanguage")
             .add("language", languageDto())
             .add("writtenLevel", languageLevelDto())
             .add("spokenLevel",languageLevelDto())

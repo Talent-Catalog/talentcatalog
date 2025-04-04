@@ -51,8 +51,6 @@ public class CandidateLanguage  extends AbstractDomainObject<Long> {
     @JoinColumn(name = "spoken_level_id")
     private LanguageLevel spokenLevel;
 
-    private String migrationLanguage;
-
 
     public CandidateLanguage(Candidate candidate, Language language, LanguageLevel writtenLevel,
                              LanguageLevel spokenLevel) {
