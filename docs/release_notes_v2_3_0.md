@@ -68,7 +68,7 @@ sass:
 Helpful TC user guides:
 <ul>
     <li>
-        <a href="https://docs.google.com/document/d/1h5QaUNOSPP-pjJsMCDwXS_SQUrurvLfnBKPX87orgbE/edit?usp=sharing" 
+        <a href="https://docs.google.com/document/d/1aI7dTq9wwucPmY7UMjpsjn9V5sLf1WWpYnhiA_9q43U/edit?usp=sharing" 
         target="_blank">Employer Access User Guide</a>
     </li>
     <li>
@@ -148,6 +148,7 @@ Helpful TC user guides:
 - Support for custom donation fields on SF records
 - Updated automated process for Canada Stream A one-month checks
 - Compute year of birth for anonymised TC API candidates
+- Added additional 'Create/Update Salesforce' button at the end of the full intake
 - TC API: Distinguish TC partner from candidate life partner
 
 # Performance Improvements
@@ -192,6 +193,7 @@ Helpful TC user guides:
 - Fixed an issue where the system admin api for partner reassignment was not working in staging and prod
 - Fixed a bug where Redis keys were not being correctly configured following the upgrade to Spring 3
 - Fixed a bug where minimum spoken and written language levels were all selecting simultaneously following the upgrade to Angular 16
+- Fixed a bug where Duolingo CSV import failed due to changing column order in exported Duolingo CSV
 - TC API: Fixes a bug where Aurora DB writes could inadvertently fail due to ID clashes with hibernate sequence number generation
 - TC API: Fixes a bug where Mongo DB writes could inadvertently duplicate due to no Mongo transaction management in a non-clustered database
 - TC API: Fixes a bug where authorisation was failing on partner lookups by API key
