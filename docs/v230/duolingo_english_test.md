@@ -19,6 +19,7 @@ Through the Talent Catalog admin portal, admins can:
 <hr>
 
 ### Assign coupons to a list of candidates or a candidate individually
+Assigning duolingo coupons is restricted to TBB partners.
 <div class="card-image-container-narrow">
     <img class="card-image" src="./../assets/images/v230/DuolingoAdminCouponList.png" alt="Assign coupon to list">
     <img class="card-image" src="./../assets/images/v230/DuolingoAdminCouponCandidate.png" alt="Assign coupon to candidate">
