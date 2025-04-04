@@ -94,8 +94,8 @@ Helpful TC user guides:
 - Option to set inactive partners' referral links to redirect to a nominated replacement
 - Reassign candidates to new managing partner based on saved search results
 - Submission List view now optionally displays the username and partner org of admin who added each candidate
-- Employer partners are restricted from selecting global lists when adding candidates to a list through the 'Save selection to list' & 'Copy to another list' pop ups
-- Admin user's can only replace candidates in a list if they own the list through the 'Save selection to list' & 'Copy to another list' pop ups
+- Employer partners are restricted from selecting global lists when adding candidates to a list through the 'Save selection to list' & 'Copy to another list' pop-ups
+- Can only replace candidates in a list if the user owns the list through the 'Save selection to list' & 'Copy to another list' pop-ups
 
 ## Data Improvements
 - Expose Country ISO codes and Occupation ISCO codes
