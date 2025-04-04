@@ -58,9 +58,9 @@
           Closed candidate opportunities are hidden unless checkbox 'view closed cases' is checked.
           <br> Submission list contents can't be replaced.</div>
       </div>
-      <div *ngIf="!selectedSubmissionList()" class="mb-3">
+      <div *ngIf="!selectedSubmissionList() && isListMine()" class="mb-3">
         <div class="form-check form-check-reverse form-check-inline">
-          <label class="form-check-label" for="replace">Replace existing list contents?</label>
+          <label class="form-check-label" for="replace">Replace my existing list contents?</label>
           <input class="form-check-input" type="checkbox" [formControlName]="'replace'" id="replace">
         </div>
       </div>

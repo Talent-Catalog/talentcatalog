@@ -21,6 +21,7 @@ import {isSubmissionList, SavedList, SearchSavedListRequest} from '../../../mode
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {JobNameAndId} from "../../../model/job";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 
 export interface TargetListSelection {
@@ -70,7 +71,8 @@ export class SelectListComponent implements OnInit {
   constructor(
     private savedListService: SavedListService,
     private activeModal: NgbActiveModal,
-    private fb: UntypedFormBuilder) { }
+    private fb: UntypedFormBuilder,
+    private authorizationService: AuthorizationService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -186,5 +188,9 @@ export class SelectListComponent implements OnInit {
 
   selectedSubmissionList(): boolean {
     return isSubmissionList(this.savedList);
+  }
+
+  isListMine(): boolean {
+    return this.authorizationService.isCandidateSourceMine(this.savedList);
   }
 }
