@@ -88,14 +88,14 @@ Helpful TC user guides:
 - Tasks have rich text descriptions so that links and formatting can be added to a task description
 - Added relocated address fields (address, city, state, country) to candidate. Updatable on the candidate portal once the candidate has a case that is past the job offer stage. Can be updated anytime on the admin portal.
 - Relocated country auto-populates with the destination country when a candidate's case is moved to or past the relocated stage.
-- When a relocated address field is updated, a candidate note is created for tracking purposes and to help indicate if a relocated address is up to date.
+- When a relocated address field is updated a candidate note is created for tracking purposes
 - Candidates are automatically informed about Pathway Club (by email) when they have accepted a job offer
 - Job titles now editable by owners and System Admins after publishing
 - Option to set inactive partners' referral links to redirect to a nominated replacement
 - Reassign candidates to new managing partner based on saved search results
 - Submission List view now optionally displays the username and partner org of admin who added each candidate
 - Can only replace candidates in a list if the user owns the list through the 'Save selection to list' & 'Copy to another list' pop-ups
-- Employer partners are restricted from selecting global lists when adding candidates to a list through the 'Save selection to list' & 'Copy to another list' pop-ups
+- Employer partners can't add candidate's to global lists through the 'Save selection to list' & 'Copy to another list' pop-ups
 
 ## Data Improvements
 - Expose Country ISO codes and Occupation ISCO codes
