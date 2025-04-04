@@ -1211,13 +1211,9 @@ public class CandidateServiceImpl implements CandidateService {
         String username = null;
         if (!ObjectUtils.isEmpty(email)) {
             username = email;
-        } else if (!ObjectUtils.isEmpty(phone)) {
-            username = phone;
-        } else if (!ObjectUtils.isEmpty(whatsapp)) {
-            username = whatsapp;
         }
         if (username == null) {
-            throw new InvalidRequestException("Must specify at least one method of contact");
+            throw new InvalidRequestException("Must have email");
         }
 
         //Check for duplicate usernames (email, phone number)
@@ -1230,7 +1226,6 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = candidateMapper.candidateMapAllFields(registrationData);
 
         //Initial password is same as username.
-        //TODO JC Prompt to change password on first login
         String passwordEncrypted = passwordHelper.encodePassword(username);
 
         //Assign source partner based on country if there is a country assigned partner.
@@ -1251,6 +1246,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         /* Set the password */
         user.setPasswordEnc(passwordEncrypted);
+        //todo jc Request password change
 
         //Add the user to the candidate
         candidate.setUser(user);
@@ -1261,8 +1257,9 @@ public class CandidateServiceImpl implements CandidateService {
         final Long partnerId = request.getPartnerId();
         candidate.setRegisteredBy((PartnerImpl) partnerService.getPartner(partnerId));
 
-        //TODO JC Determine final status based on data provided.
-        CandidateStatus candidateStatus = CandidateStatus.draft; //todo assume draft for now
+        //Check whether candidate registration can be considered complete.
+        CandidateStatus candidateStatus = isCandidateInfoComplete(candidate) ?
+            CandidateStatus.pending : CandidateStatus.incomplete;
         candidate.setStatus(candidateStatus);
 
         candidate.setAuditFields(userService.getSystemAdminUser());
@@ -1273,6 +1270,16 @@ public class CandidateServiceImpl implements CandidateService {
         //TODO JC Send email with login details to candidate
 
         return candidate;
+    }
+
+    private boolean isCandidateInfoComplete(Candidate candidate) {
+        //We accept it as complete as long as we have an occupation
+        boolean complete = false;
+        final List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
+        if (candidateOccupations != null && !candidateOccupations.isEmpty()) {
+            complete = true;
+        }
+        return complete;
     }
 
     /**
