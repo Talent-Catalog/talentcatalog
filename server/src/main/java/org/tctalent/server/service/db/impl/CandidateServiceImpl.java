@@ -827,7 +827,7 @@ public class CandidateServiceImpl implements CandidateService {
                     info.getComment()));
             if (originalStatus.equals(CandidateStatus.draft) && !info.getStatus()
                     .equals(CandidateStatus.deleted)) {
-                emailHelper.sendRegistrationEmail(candidate.getUser());
+                emailHelper.sendRegistrationEmail(candidate);
 
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
@@ -1246,7 +1246,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         /* Set the password */
         user.setPasswordEnc(passwordEncrypted);
-        //todo jc Request password change
+        //todo jc Request password change - set Candidate's changePasswordFlag to true when it has been implemented
 
         //Add the user to the candidate
         candidate.setUser(user);
@@ -1267,7 +1267,8 @@ public class CandidateServiceImpl implements CandidateService {
         //Save the candidate to the DB
         candidate = saveNewCandidate(sourcePartner, candidate);
 
-        //TODO JC Send email with login details to candidate
+        //Send email with login details to candidate
+        emailHelper.sendRegistrationEmail(candidate);
 
         return candidate;
     }
