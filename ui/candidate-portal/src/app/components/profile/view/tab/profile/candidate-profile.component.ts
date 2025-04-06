@@ -32,6 +32,8 @@ import {LanguageLevelService} from "../../../../../services/language-level.servi
 import {LanguageLevel} from "../../../../../model/language-level";
 import {SurveyTypeService} from "../../../../../services/survey-type.service";
 import {isOppStageGreaterThanOrEqualTo} from "../../../../../model/candidate-opportunity";
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ChangePasswordComponent} from '../../../../account/change-password/change-password.component';
 
 @Component({
   selector: 'app-candidate-profile',
@@ -70,7 +72,8 @@ export class CandidateProfileComponent implements OnInit {
               private languageService: LanguageService,
               private languageLevelService: LanguageLevelService,
               private surveyTypeService: SurveyTypeService,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              private modalService: NgbModal) { }
 
   ngOnInit() {
     const lang = this.route.snapshot.queryParams['lang'];
@@ -197,4 +200,9 @@ export class CandidateProfileComponent implements OnInit {
     return showRelocated;
   }
 
+  openChangePasswordModal() {
+    const  changePasswordModal = this.modalService.open(ChangePasswordComponent, {
+      centered: true
+    });
+  }
 }
