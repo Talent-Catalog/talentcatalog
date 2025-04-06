@@ -240,6 +240,7 @@ export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
   shortName?: boolean;
   registeredJob?: boolean;
   sfOppClosed?: boolean;
+  ownedByMyPartner?: boolean;
 }
 
 export class SavedListGetRequest extends PagedSearchRequest {

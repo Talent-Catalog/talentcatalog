@@ -151,7 +151,6 @@ public class CandidateSpecification {
                             cb.like(cb.lower(candidateJobExperiences.get("description")), likeMatchTerm),
                             cb.like(cb.lower(candidateJobExperiences.get("role")), likeMatchTerm),
                             cb.like(cb.lower(candidateEducations.get("courseName")), likeMatchTerm),
-                            cb.like(cb.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
                             cb.like(cb.lower(candidateSkills.get("skill")), likeMatchTerm),
                             cb.like(cb.lower(occupation.get("name")), likeMatchTerm)
                         )

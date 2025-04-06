@@ -1,5 +1,6 @@
 ---
 title: Search Functionality Improvements
+logo: '../assets/images/TCLogo2.png'
 sass:
   style: compressed
 ---
