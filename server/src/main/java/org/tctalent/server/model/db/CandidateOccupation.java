@@ -64,9 +64,7 @@ public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateJobExperiences(List<CandidateJobExperience> candidateJobExperiences) {
         this.candidateJobExperiences = candidateJobExperiences;
-        candidateJobExperiences.forEach(experience -> {
-            experience.setCandidate(candidate);
-            experience.setCandidateOccupation(this);
-        });
+        candidateJobExperiences.forEach(
+            experience -> experience.setCandidateOccupation(this));
     }
 }

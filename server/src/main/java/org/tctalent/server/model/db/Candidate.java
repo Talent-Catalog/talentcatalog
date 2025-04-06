@@ -1249,17 +1249,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public void setCandidateOccupations(List<CandidateOccupation> entities) {
         this.candidateOccupations = entities;
         if (entities != null) {
-            entities.forEach(entity -> {
-                entity.setCandidate(this);
-                final List<CandidateJobExperience> experiences = entity.getCandidateJobExperiences();
-                if (experiences != null) {
-                    experiences.forEach(experience -> {
-                            experience.setCandidate(this);
-                            experience.setCandidateOccupation(entity);
-                        }
-                    );
-                }
-            });
+            entities.forEach(entity -> entity.setCandidate(this));
         }
     }
 
