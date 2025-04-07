@@ -1205,9 +1205,6 @@ public class CandidateServiceImpl implements CandidateService {
         final CandidateRegistration registrationData = request.getRegistrationData();
 
         String email = registrationData.getIdentity().getEmail();
-        String phone = registrationData.getPhone();
-        String whatsapp = registrationData.getWhatsapp();
-
         String username = null;
         if (!ObjectUtils.isEmpty(email)) {
             username = email;
@@ -1246,7 +1243,9 @@ public class CandidateServiceImpl implements CandidateService {
 
         /* Set the password */
         user.setPasswordEnc(passwordEncrypted);
-        //todo jc Request password change - set Candidate's changePasswordFlag to true when it has been implemented
+
+        //Request password change so that candidates proper password on first login.
+        candidate.setChangePassword(true);
 
         //Add the user to the candidate
         candidate.setUser(user);
