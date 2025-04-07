@@ -64,6 +64,9 @@
         </div>
         <div class="row">
           <div class="col-md-6">
+            <button class="btn  btn-outline-primary" (click)="openChangePasswordModal()">Edit Password</button>
+          </div>
+          <div class="col-md-6">
               <h6>{{ 'PROFILE.CONTACT.WHATSAPP' | translate }}</h6>
               <p>
                 {{candidate?.whatsapp || ''}}

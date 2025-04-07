@@ -63,6 +63,7 @@ import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -71,6 +72,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.UserSpecification;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
@@ -96,6 +98,7 @@ import org.tctalent.server.exception.ExpiredEmailTokenException;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
@@ -123,6 +126,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
+        CandidateRepository candidateRepository,
         CountryRepository countryRepository,
         PasswordHelper passwordHelper,
         AuthenticationManager authenticationManager,
@@ -130,6 +134,7 @@ public class UserServiceImpl implements UserService {
         AuthService authService,
         EmailHelper emailHelper, PartnerService partnerService) {
         this.userRepository = userRepository;
+        this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
@@ -610,6 +615,15 @@ public class UserServiceImpl implements UserService {
         String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
         user.setPasswordEnc(passwordEnc);
         userRepository.save(user);
+
+        /* Update changePassword */
+        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
+            Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
+                .orElseThrow(
+                    () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
+            candidate.setChangePassword(false);
+            candidateRepository.save(candidate);
+        }
     }
 
     /**

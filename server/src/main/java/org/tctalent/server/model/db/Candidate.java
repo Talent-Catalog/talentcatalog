@@ -109,6 +109,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private boolean muted;
 
     /**
+     * Indicates whether the user's password requires update.
+     * If true, the candidate will be required to change their password upon their next login.
+     * This is particularly useful for candidates who are automatically registered by a third party
+     * and assigned a temporary password. When the candidate logs in for the first time, they will
+     * be prompted to change their password.
+     */
+    @Column(name = "change_password" , nullable = false)
+    private boolean changePassword;
+
+    /**
      * Candidate's internal id reference with the source partner handling their case.
      * This is the reference used to identify the candidate on the source partner's internal systems.
      * <p/>
@@ -1187,6 +1197,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setMuted(boolean muted) {
         this.muted = muted;
+    }
+
+    public boolean isChangePassword() {
+        return changePassword;
+    }
+
+    public void setChangePassword(boolean changePassword) {
+        this.changePassword = changePassword;
     }
 
     public SurveyType getSurveyType() { return surveyType; }
