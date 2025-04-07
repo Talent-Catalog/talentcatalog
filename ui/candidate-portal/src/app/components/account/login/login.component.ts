@@ -21,6 +21,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {LoginRequest} from "../../../model/base";
+import {ChangePasswordComponent} from '../change-password/change-password.component';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-login',
@@ -39,7 +41,8 @@ export class LoginComponent implements OnInit {
               private authenticationService: AuthenticationService,
               private candidateService: CandidateService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private modalService: NgbModal) {
   }
 
   ngOnInit() {
@@ -84,6 +87,11 @@ export class LoginComponent implements OnInit {
         // Get candidate number to save in storage to display in the header
         this.candidateService.getCandidateNumber().subscribe(
           (candidate) => {
+            if (candidate.changePassword  === true) {
+              const  changePasswordModal = this.modalService.open(ChangePasswordComponent, {
+                centered: true
+              });
+            }
             this.candidateService.setCandNumberStorage(candidate.candidateNumber);
           }
         )

@@ -217,6 +217,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("candidateNumber")
                 .add("publicId")
+                .add("changePassword")
                 ;
     }
 
