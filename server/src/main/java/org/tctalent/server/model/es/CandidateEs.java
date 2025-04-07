@@ -373,8 +373,6 @@ public class CandidateEs {
             }
         }
 
-        //Education major can also come from the candidate's special migrationEducationMajor field
-        addEducationMajor(candidate.getMigrationEducationMajor());
 
         this.jobExperiences = new ArrayList<>();
         List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
