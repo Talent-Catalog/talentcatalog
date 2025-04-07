@@ -332,15 +332,13 @@ public class CandidateSpecification {
             // MAJOR SEARCH
             if (!Collections.isEmpty(request.getEducationMajorIds())) {
                 candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
-                Join<Candidate, EducationMajor> major = candidateEducations.join("educationMajor", JoinType.LEFT);
-                Join<Candidate, EducationMajor> migrationMajor = candidate.join("migrationEducationMajor", JoinType.LEFT);
 
-                conjunction = cb.and(conjunction, cb.or(
-                        cb.isTrue(major.get("id").in(request.getEducationMajorIds())),
-                        cb.isTrue(migrationMajor.get("id").in(request.getEducationMajorIds())))
+                Join<CandidateEducation, EducationMajor> major = candidateEducations.join("educationMajor", JoinType.LEFT);
+
+                conjunction = cb.and(conjunction,
+                    major.get("id").in(request.getEducationMajorIds())
                 );
             }
-
             // LANGUAGE SEARCH
             if (request.getEnglishMinSpokenLevel() != null || request.getEnglishMinWrittenLevel() != null || request.getOtherLanguageId() != null
                     || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
