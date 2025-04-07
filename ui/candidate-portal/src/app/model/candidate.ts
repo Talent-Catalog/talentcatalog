@@ -90,6 +90,7 @@ export interface Candidate extends HasId {
   listShareableCv: CandidateAttachment;
   listShareableDoc: CandidateAttachment;
   muted: boolean;
+  changePassword: boolean;
   shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
