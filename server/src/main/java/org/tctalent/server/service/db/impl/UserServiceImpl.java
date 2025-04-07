@@ -617,11 +617,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         /* Update changePassword */
-        if (user.getCandidate().isChangePassword()) {
+        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
             Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
                 .orElseThrow(
                     () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
             candidate.setChangePassword(false);
+            candidateRepository.save(candidate);
         }
     }
 
