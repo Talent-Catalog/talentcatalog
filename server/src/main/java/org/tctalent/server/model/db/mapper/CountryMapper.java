@@ -14,16 +14,28 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.model.db.mapper;
 
 import org.mapstruct.Mapper;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.tctalent.server.model.db.Country;
+import org.tctalent.server.service.db.CountryService;
 /**
- * User related mappings.
+ * Maps public object to equivalent entity form local database.
+ * <p/>
+ * For MapStruct Mapper we need to us abstract class instead of interface so that we can inject in
+ * service.
  *
  * @author John Cameron
  */
 @Mapper
-public interface UserMapper {
-    User userIdentityToUser(org.tctalent.anonymization.model.User user);
+public abstract class CountryMapper {
+
+    @Autowired
+    protected CountryService service;
+
+    public Country lookUpCountryFromService(
+        org.tctalent.anonymization.model.Country publicValue) {
+        return publicValue == null ? null : service.findByIsoCode(publicValue.getIsoCode());
+    }
 }

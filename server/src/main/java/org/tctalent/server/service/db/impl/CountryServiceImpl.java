@@ -163,8 +163,15 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
         return country;
     }
 
+    @NonNull
     @Override
-    public Country findCountryByName(String name) {
+    public Country findByIsoCode(String isoCode) {
+        return countryRepository.findByIsoCode(isoCode)
+            .orElseThrow(() ->new NoSuchObjectException(Country.class, isoCode));
+    }
+
+    @Override
+    public Country findByName(String name) {
         return countryRepository.findByNameIgnoreCase(name);
     }
 

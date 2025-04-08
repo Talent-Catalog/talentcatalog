@@ -63,14 +63,10 @@ public class OfferToAssistServiceImpl implements OfferToAssistService {
 
             final String publicId = candidateCouponRequest.getPublicId();
             Candidate candidate = candidateService.findByPublicId(publicId);
-            if (candidate == null) {
-                throw new NoSuchObjectException(Candidate.class, publicId);
-            } else {
-                CandidateCouponCode candidateCouponCode = new CandidateCouponCode();
-                candidateCouponCode.setCandidate(candidate);
-                candidateCouponCode.setCouponCode(candidateCouponRequest.getCouponCode());
-                candidateCouponCodes.add(candidateCouponCode);
-            }
+            CandidateCouponCode candidateCouponCode = new CandidateCouponCode();
+            candidateCouponCode.setCandidate(candidate);
+            candidateCouponCode.setCouponCode(candidateCouponRequest.getCouponCode());
+            candidateCouponCodes.add(candidateCouponCode);
         }
 
         //Look up partner - throws Exception if not found

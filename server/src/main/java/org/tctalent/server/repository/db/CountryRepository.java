@@ -17,6 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -29,6 +30,8 @@ public interface CountryRepository extends CacheEvictingRepository<Country, Long
     @Query(" select c from Country c "
             + " where c.status = :status order by c.name asc")
     List<Country> findByStatus(@Param("status") Status status);
+
+    Optional<Country> findByIsoCode(String isoCode);
 
     @Query(" select distinct c from Country c "
             + " where lower(c.name) = lower(:name)"

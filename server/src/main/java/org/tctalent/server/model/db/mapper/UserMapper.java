@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,18 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.db;
+package org.tctalent.server.model.db.mapper;
 
-import java.util.List;
-import org.springframework.data.domain.Page;
-import org.tctalent.server.model.db.SurveyType;
-import org.tctalent.server.request.survey.SearchSurveyTypeRequest;
+import org.mapstruct.Mapper;
+import org.tctalent.server.model.db.User;
 
-public interface SurveyTypeService {
-    List<SurveyType> listActiveSurveyTypes();
-    Page<SurveyType> searchActiveSurveyTypes(SearchSurveyTypeRequest request);
-    List<SurveyType> listSurveyTypes();
-
-    SurveyType findByName(String name);
+/**
+ * User related mappings.
+ *
+ * @author John Cameron
+ */
+@Mapper
+public interface UserMapper {
+    User userIdentityToUser(org.tctalent.anonymization.model.User user);
 }
-

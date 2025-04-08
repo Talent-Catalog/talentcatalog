@@ -16,7 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,6 +24,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -62,4 +62,11 @@ public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
         this.yearsExperience = yearsExperience;
     }
 
+    public void setCandidateJobExperiences(List<CandidateJobExperience> candidateJobExperiences) {
+        this.candidateJobExperiences = candidateJobExperiences;
+        if (candidateJobExperiences != null) {
+            candidateJobExperiences.forEach(
+                experience -> experience.setCandidateOccupation(this));
+        }
+    }
 }
