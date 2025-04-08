@@ -80,6 +80,7 @@ public class CandidateOccupationPortalApi {
                 .add("id")
                 .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
+                .add("migrationOccupation")
                 ;
     }
 
