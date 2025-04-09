@@ -268,7 +268,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     Candidate findByCandidateNumber(String candidateNumber);
 
-    Candidate findByPublicId(String publicId);
+    Optional<Candidate> findByPublicId(String publicId);
 
     /**
      * ADMIN PORTAL INFOGRAPHICS METHODS: includes source country restrictions.

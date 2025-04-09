@@ -49,6 +49,16 @@ public interface PartnerService {
     PublicApiPartnerDto findPublicApiPartnerDtoByKey(String apiKey);
 
     /**
+     * Finds partner with the given public ID
+     *
+     * @param publicId ID of desired partner
+     * @return Partner
+     * @throws NoSuchObjectException if not found
+     */
+    @NonNull
+    Partner findByPublicId(String publicId);
+
+    /**
      * Get the Partner with the given id.
      * @param partnerId ID of partner to get
      * @return partner

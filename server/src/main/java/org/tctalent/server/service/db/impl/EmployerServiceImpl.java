@@ -59,7 +59,7 @@ public class EmployerServiceImpl implements EmployerService {
         //todo Other account related fields - office size etc
 
         final String accountCountry = account.getCountry();
-        Country country = countryService.findCountryByName(accountCountry);
+        Country country = countryService.findByName(accountCountry);
         employer.setCountry(country);
         if (country == null ){
             emailHelper.sendAlert("Salesforce country " + accountCountry +
