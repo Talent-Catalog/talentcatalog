@@ -152,11 +152,7 @@ export class ViewCandidateComponent implements OnInit {
 
   private getActiveDuolingoTask(): TaskAssignment | null {
     const task = this.candidate?.taskAssignments.find(t =>
-      (t.task.name === 'claimCouponButton' || t.task.name === 'duolingoTest') &&
-      t.completedDate == null &&
-      t.abandonedDate == null &&
-      t.status === Status.active
-    );
+      (t.task.name === 'claimCouponButton' || t.task.name === 'duolingoTest'));
     return task || null;
   }
 

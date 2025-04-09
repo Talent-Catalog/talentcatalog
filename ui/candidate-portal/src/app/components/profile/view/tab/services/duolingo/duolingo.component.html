@@ -28,11 +28,11 @@
         </div>
     </div>
 
-  <div  class="exam-result" *ngIf="detExams.length > 0">
-    <h3>{{ 'SERVICES.DUOLINGO.EXAMS.PAST_EXAMS' | translate }}:</h3>
+  <div  class="exam-result" *ngIf="detExams.length > 0 && !selectedCoupon">
+    <h3>{{ 'SERVICES.DUOLINGO.PAST_EXAMS' | translate }}:</h3>
     <ul>
       <li *ngFor="let exam of detExams">
-        {{ 'SERVICES.DUOLINGO.EXAMS.SCORE' | translate }}: {{ exam.score }},  {{ 'SERVICES.DUOLINGO.EXAMS.YEAR' | translate }}: {{ exam.year }}
+        {{ 'SERVICES.DUOLINGO.SCORE' | translate }}: {{ exam.score }},  {{ 'SERVICES.DUOLINGO.YEAR' | translate }}: {{ exam.year }}
       </li>
     </ul>
   </div>

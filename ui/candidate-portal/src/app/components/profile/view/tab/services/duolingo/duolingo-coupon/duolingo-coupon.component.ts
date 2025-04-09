@@ -22,6 +22,7 @@ export class DuolingoCouponComponent {
   error;
   isCollapsedIntro = false;
   isCollapsedSteps = false;
+  isCollapsedTechnicalSteps = false;
 
   constructor(private couponService: DuolingoCouponService,
               private taskAssignmentService: TaskAssignmentService) {

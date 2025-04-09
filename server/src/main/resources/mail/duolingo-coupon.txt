@@ -1,7 +1,12 @@
 Dear [(${displayName})],
 
-You have received a Duolingo English Test coupon. Please log in to our portal [(${loginURL})] and visit the "Services" tab to view the steps required to take the exam.
+As part of the next steps in your application, you have been provided with a free Duolingo English Test (DET) coupon to assess your English proficiency.
 
-If you have any questions, feel free to reach out.
+To begin, please log in to Talent Catalog [(${loginURL})] and navigate to the “Services” tab for detailed instructions on completing the test.
+
+If you have any questions or encounter any issues, feel free to reach out.
+
+Good luck with your test!
 
 Best regards,
+Talent Beyond Boundaries
