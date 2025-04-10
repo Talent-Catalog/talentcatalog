@@ -17,7 +17,6 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -41,4 +40,5 @@ public interface LanguageLevelService {
 
     boolean deleteLanguageLevel(long id) throws EntityReferencedException;
 
+    LanguageLevel findByLevel(int level);
 }

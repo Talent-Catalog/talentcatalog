@@ -164,6 +164,15 @@ public class PartnerServiceImpl implements PartnerService {
 
     @NonNull
     @Override
+    public Partner findByPublicId(String publicId) {
+        final PartnerImpl partner = partnerRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new NoSuchObjectException(Partner.class, publicId));
+
+        return partner;
+    }
+
+    @NonNull
+    @Override
     public Partner getPartner(long partnerId) throws NoSuchObjectException {
         final PartnerImpl partner = partnerRepository.findById(partnerId)
             .orElseThrow(() -> new NoSuchObjectException(Partner.class, partnerId));

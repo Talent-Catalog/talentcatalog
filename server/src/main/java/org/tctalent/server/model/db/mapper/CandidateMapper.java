@@ -14,33 +14,32 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.model.db;
+package org.tctalent.server.model.db.mapper;
 
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ValueMapping;
 import org.tctalent.anonymization.model.CandidateRegistration;
+import org.tctalent.server.model.db.Candidate;
 
 /**
  * Candidate related mappings.
- *
  * @author John Cameron
  */
-@Mapper
+@Mapper(uses = {
+    CountryMapper.class,
+    EducationLevelMapper.class,
+    EducationMajorMapper.class,
+    EnumsMapper.class,
+    LanguageLevelMapper.class,
+    LanguageMapper.class,
+    OccupationMapper.class,
+    PartnerMapper.class,
+    SurveyTypeMapper.class
+})
 public interface CandidateMapper {
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "city")
-    @Mapping(target = "phone")
-    @Mapping(target = "whatsapp")
-    @Mapping(target = "gender")
-    @Mapping(target = "contactConsentRegistration")
+
+    //Take account of one changed field name
     @Mapping(target = "contactConsentPartners", source = "contactConsentTcPartners")
-    Candidate candidateRegistrationToCandidate(CandidateRegistration registrationInfo);
+    Candidate candidateMapAllFields(CandidateRegistration registrationInfo);
 
-
-    @ValueMapping(target="male", source = "MALE")
-    @ValueMapping(target="female", source = "FEMALE")
-    @ValueMapping(target="other", source = "OTHER")
-    Gender publicGenderToInternalGender(org.tctalent.anonymization.model.Gender publicGender);
 }

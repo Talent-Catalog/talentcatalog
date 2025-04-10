@@ -4,11 +4,15 @@ Dear [(${displayName})],
 
 Thank you for registering on the Talent Catalog
 
+[# th:if="${registeredBy != null}"]You were registered using the data you provided to [(${registeredBy.getName()})]. You can log in (see below) to see or change your data any time.[/]
+
 Your local Talent Catalog partner is [(${partner.getAbbreviation()})] [(${partner.getWebsiteUrl()})].
 
-You can log in again by going to [(${loginUrl})] in your browser.
+You can log in any time by going to [(${loginUrl})] in your browser.
 
 Your Talent Catalog username is [(${username})].
+
+[# th:if="${registeredBy != null}"]You should log in now with your username. Just for this first log in, use your username also as your password. You will then be asked to choose a new password.[/]
 
 If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
 

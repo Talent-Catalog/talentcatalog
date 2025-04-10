@@ -87,7 +87,6 @@ import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.model.db.CandidateLanguage;
-import org.tctalent.server.model.db.CandidateMapper;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -112,8 +111,9 @@ import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.UserMapper;
 import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.model.db.mapper.CandidateMapper;
+import org.tctalent.server.model.db.mapper.UserMapper;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
@@ -755,6 +755,12 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setNationality(countryRepository.getReferenceById(0L));
         candidate.setMaxEducationLevel(educationLevelRepository.getReferenceById(0L));
 
+        candidate = saveNewCandidate(partner, candidate);
+
+        return candidate;
+    }
+
+    private Candidate saveNewCandidate(Partner partner, Candidate candidate) {
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
 
@@ -767,10 +773,8 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setPartnerRef(candidateNumber);
         }
 
-        //Now save again with candidateNumber, updating Elasticsearch
-        candidate = save(candidate, true);
-
-        return candidate;
+        //Save candidate to get id (but don't update Elasticsearch yet)
+        return save(candidate, false);
     }
 
     @Override
@@ -823,7 +827,7 @@ public class CandidateServiceImpl implements CandidateService {
                     info.getComment()));
             if (originalStatus.equals(CandidateStatus.draft) && !info.getStatus()
                     .equals(CandidateStatus.deleted)) {
-                emailHelper.sendRegistrationEmail(candidate.getUser());
+                emailHelper.sendRegistrationEmail(candidate);
 
                 LogBuilder.builder(log)
                     .user(authService.getLoggedInUser())
@@ -1201,19 +1205,12 @@ public class CandidateServiceImpl implements CandidateService {
         final CandidateRegistration registrationData = request.getRegistrationData();
 
         String email = registrationData.getIdentity().getEmail();
-        String phone = registrationData.getPhone();
-        String whatsapp = registrationData.getWhatsapp();
-
         String username = null;
         if (!ObjectUtils.isEmpty(email)) {
             username = email;
-        } else if (!ObjectUtils.isEmpty(phone)) {
-            username = phone;
-        } else if (!ObjectUtils.isEmpty(whatsapp)) {
-            username = whatsapp;
         }
         if (username == null) {
-            throw new InvalidRequestException("Must specify at least one method of contact");
+            throw new InvalidRequestException("Must have email");
         }
 
         //Check for duplicate usernames (email, phone number)
@@ -1222,20 +1219,19 @@ public class CandidateServiceImpl implements CandidateService {
             throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
         }
 
+        //Map registration data to a Candidate entity
+        Candidate candidate = candidateMapper.candidateMapAllFields(registrationData);
+
         //Initial password is same as username.
-        //TODO JC Prompt to change password on first login
         String passwordEncrypted = passwordHelper.encodePassword(username);
 
-        //Must have source partner
-        //TODO JC Compute sourcePartner. Use checkForChangedPartner, defaulting to DefaultSourcePartner
-        String countryIsoCode = null;
-        if (registrationData.getCountry() != null) {
-            countryIsoCode = registrationData.getCountry().getIsoCode();
+        //Assign source partner based on country if there is a country assigned partner.
+        Partner sourcePartner =
+            partnerService.getAutoAssignablePartnerByCountry(candidate.getCountry());
+        if (sourcePartner == null) {
+            //Use default source partner if no country assigned one.
+            sourcePartner = partnerService.getDefaultSourcePartner();
         }
-//        countryService.findCountryByIsoCode(countryIsoCode); todo
-        //TODO JC For now just assign default source partner
-        Partner sourcePartner = partnerService.getDefaultSourcePartner();
-
 
         //UserMapper creates user from Identity
         User user = userMapper.userIdentityToUser(registrationData.getIdentity());
@@ -1248,29 +1244,42 @@ public class CandidateServiceImpl implements CandidateService {
         /* Set the password */
         user.setPasswordEnc(passwordEncrypted);
 
-        //Save the user
-        user = userRepository.save(user);
+        //Request password change so that candidates proper password on first login.
+        candidate.setChangePassword(true);
 
-        //TODO JC CandidateMapper is not complete. Currently only mapping selected fields.
-        Candidate candidate = candidateMapper.candidateRegistrationToCandidate(registrationData);
-        candidate.setPublicId(publicIDService.generatePublicID());
+        //Add the user to the candidate
         candidate.setUser(user);
+
+        candidate.setPublicId(publicIDService.generatePublicID());
 
         //Partner who is submitting registration
         final Long partnerId = request.getPartnerId();
         candidate.setRegisteredBy((PartnerImpl) partnerService.getPartner(partnerId));
 
-        //TODO JC Determine final status based on data provided.
-        CandidateStatus candidateStatus = CandidateStatus.draft; //todo assume draft for now
+        //Check whether candidate registration can be considered complete.
+        CandidateStatus candidateStatus = isCandidateInfoComplete(candidate) ?
+            CandidateStatus.pending : CandidateStatus.incomplete;
         candidate.setStatus(candidateStatus);
 
         candidate.setAuditFields(userService.getSystemAdminUser());
 
-        candidate = save(candidate, true);
+        //Save the candidate to the DB
+        candidate = saveNewCandidate(sourcePartner, candidate);
 
-        //TODO JC Send email with login details to candidate
+        //Send email with login details to candidate
+        emailHelper.sendRegistrationEmail(candidate);
 
         return candidate;
+    }
+
+    private boolean isCandidateInfoComplete(Candidate candidate) {
+        //We accept it as complete as long as we have an occupation
+        boolean complete = false;
+        final List<CandidateOccupation> candidateOccupations = candidate.getCandidateOccupations();
+        if (candidateOccupations != null && !candidateOccupations.isEmpty()) {
+            complete = true;
+        }
+        return complete;
     }
 
     /**
@@ -1775,10 +1784,11 @@ public class CandidateServiceImpl implements CandidateService {
         return candidateRepository.findByCandidateNumber(candidateNumber);
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Candidate findByPublicId(String publicId) {
-        return candidateRepository.findByPublicId(publicId);
+        return candidateRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, publicId));
     }
 
     @Override

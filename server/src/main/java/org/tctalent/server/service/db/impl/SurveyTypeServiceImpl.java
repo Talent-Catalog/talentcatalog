@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
@@ -76,6 +77,9 @@ public class SurveyTypeServiceImpl implements SurveyTypeService {
         return surveyTypes;
     }
 
-
-
+    @Override
+    public SurveyType findByName(String name) {
+        return surveyTypeRepository.findByName(name)
+            .orElseThrow(() -> new NoSuchObjectException(SurveyType.class, name));
+    }
 }

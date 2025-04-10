@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,21 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {Job} from "../../../../../model/job";
+package org.tctalent.server.model.db.mapper;
 
-@Component({
-  selector: 'app-job-source-contacts-tab',
-  templateUrl: './job-source-contacts-tab.component.html',
-  styleUrls: ['./job-source-contacts-tab.component.scss']
-})
-export class JobSourceContactsTabComponent implements OnInit {
-  @Input() job: Job;
-  @Input() fromUrl: boolean;
+import org.mapstruct.Mapper;
+import org.tctalent.server.model.db.User;
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+/**
+ * User related mappings.
+ *
+ * @author John Cameron
+ */
+@Mapper
+public interface UserMapper {
+    User userIdentityToUser(org.tctalent.anonymization.model.User user);
 }

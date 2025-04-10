@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EmailSendFailedException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
@@ -71,11 +72,14 @@ public class EmailHelper {
         emailSender.sendAlert(alertMessage, ex);
     }
 
-    public void sendRegistrationEmail(User user) throws EmailSendFailedException {
+    public void sendRegistrationEmail(Candidate candidate) throws EmailSendFailedException {
 
+        User user = candidate.getUser();
         String email = user.getEmail();
         Partner partner = user.getPartner();
         String displayName = user.getDisplayName();
+        final PartnerImpl registeredBy = candidate.getRegisteredBy();
+        boolean selfRegistered = registeredBy == null;
 
         String subject;
         String bodyText;
@@ -85,6 +89,7 @@ public class EmailHelper {
             ctx.setVariable("partner", partner);
             ctx.setVariable("displayName", displayName);
             ctx.setVariable("username", user.getUsername());
+            ctx.setVariable("registeredBy", registeredBy);
             ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
             ctx.setVariable("year", currentYear());
 
