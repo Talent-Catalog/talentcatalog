@@ -396,7 +396,7 @@ public class EmailHelper {
             ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
             ctx.setVariable("year", currentYear());
 
-            subject = "Talent Catalog - Duolingo English Test Coupon (DET) & Next Steps";
+            subject = "Action Required: Take the Duolingo English Test";
             bodyText = textTemplateEngine.process("duolingo-coupon", ctx);
             bodyHtml = htmlTemplateEngine.process("duolingo-coupon", ctx);
 

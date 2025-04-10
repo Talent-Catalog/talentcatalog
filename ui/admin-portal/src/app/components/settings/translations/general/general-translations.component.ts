@@ -756,17 +756,20 @@ const ALL_FIELDS = {
       'COUPONS_DESC': null,
       'COUPON_TITLE': null,
       'COUPON_CTA': null,
+      'PAST_EXAMS': null,
+      'SCORE': null,
+      'YEAR': null,
       'EXAM': {
+        'DEAR': null,
         'INTRO': null,
-        'INTRO_TEXT': null,
+        'ABOUT': null,
+        'ABOUT_TEXT': null,
+        'TECHNICAL_STEPS': null,
+        'TECHNICAL_STEPS_TEXT': null,
         'STEPS': null,
         'STEPS_TEXT': null,
-        'IMPORTANT': null,
         'GOOD_LUCK': null,
         'CTA_BUTTON': null,
-        'PAST_EXAMS': null,
-        'SCORE': null,
-        'YEAR': null
       }
     }
   },
