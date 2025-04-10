@@ -283,11 +283,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateOpportunity> candidateOpportunities;
 
-    //old data only links to candidate needs to be searchable
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "migration_education_major_id")
-    private EducationMajor migrationEducationMajor;
-
     /**
      * Url link to corresponding candidate folder on Google Drive, if one exists.
      */
@@ -1368,14 +1363,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
                 entity.setCandidate(this);
             }
         }
-    }
-
-    public EducationMajor getMigrationEducationMajor() {
-        return migrationEducationMajor;
-    }
-
-    public void setMigrationEducationMajor(EducationMajor migrationEducationMajor) {
-        this.migrationEducationMajor = migrationEducationMajor;
     }
 
     public List<CandidateSkill> getCandidateSkills() {

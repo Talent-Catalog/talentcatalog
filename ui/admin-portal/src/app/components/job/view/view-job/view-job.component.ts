@@ -62,6 +62,13 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
    * detail display of a selected job
    */
   @Input() showBreadcrumb: boolean = true;
+
+  /**
+   * True if the view job comes from the viewJobFromUrl component, false if the job comes from the jobsWithDetail component.
+   * Depending where it comes from will depending how the chat view appears (as chat is much smaller on side panel).
+   */
+  @Input() fromUrl: boolean;
+
   @Output() jobUpdated = new EventEmitter<Job>();
 
   activeTabId: string;
